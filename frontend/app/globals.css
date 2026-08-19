@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-a: #f7f4ef;
+  --bg-b: #e9e2d8;
+  --ink: #1d2b36;
+  --brand-primary: #008D36;
+  --brand-accent: #f9b233;
+  --brand-secondary: #505BA9;
+  --brand-bg: #F5F5F5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  color: var(--ink);
+  background-color: var(--brand-bg);
+  background-image: url('/background.png');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: repeat;
+}

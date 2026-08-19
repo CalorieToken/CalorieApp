@@ -1,0 +1,22 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle with blue and black -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#505BA9" stroke-width="16"/>
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" stroke-dashoffset="0" opacity="0.8"/>
+  
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8"/>
+  
+  <!-- Fork -->
+  <g transform="translate(80, 100)">
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+    <line x1="-12" y1="-15" x2="-12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"/>
+    <line x1="12" y1="-15" x2="12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"/>
+    <rect x="-16" y="18" width="32" height="8" rx="4" fill="#1a1a1a"/>
+  </g>
+  
+  <!-- Knife -->
+  <g transform="translate(50, 85)">
+    <rect x="0" y="0" width="8" height="35" rx="4" fill="#1a1a1a"/>
+    <rect x="2" y="35" width="4" height="10" rx="2" fill="#1a1a1a"/>
+  </g>
+</svg>

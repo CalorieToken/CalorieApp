@@ -1,0 +1,31 @@
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+
+# Python
+.venv/
+backend/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+backend/.pytest_cache/
+.pytest_cache/
+
+# Database files — never commit live data
+*.db
+*.sqlite
+*.sqlite3
+backend/calorieapp.db
+backend/calorieapp.db.*
+
+# Local environment files — keep .env.example tracked
+.env.local
+frontend/.env.local
+
+# IDE and OS
+.vscode/
+.DS_Store
+Thumbs.db

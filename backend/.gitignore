@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# SQLite database (production data — do not commit)
+calorieapp.db
+
+# Test artifacts
+.pytest_cache/
