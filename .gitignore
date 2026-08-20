@@ -1,31 +1,52 @@
-# Node
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/.turbo/
+# Environment
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+!*.env.staging.example
 
-# Python
-.venv/
-backend/.venv/
-__pycache__/
-**/__pycache__/
-*.pyc
-*.pyo
-backend/.pytest_cache/
-.pytest_cache/
-
-# Database files — never commit live data
+# Databases
 *.db
 *.sqlite
 *.sqlite3
 backend/calorieapp.db
 backend/calorieapp.db.*
 
-# Local environment files — keep .env.example tracked
-.env.local
-frontend/.env.local
+# Python
+.venv/
+venv/
+backend/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+backend/.pytest_cache/
 
-# IDE and OS
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend/.turbo/
+*.tsbuildinfo
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# OS / editor
 .vscode/
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Private curation artifacts
+checkpoints/2026-07-23-project-checkpoint/
+checkpoints/2026-07-23-120229-project-checkpoint/
+.github/copilot-instructions.md
+frontend/tsconfig.tsbuildinfo
