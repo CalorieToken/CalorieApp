@@ -51,9 +51,14 @@ export default function Home() {
 
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-brand-secondary/25 bg-brand-bg text-[10px] font-semibold text-brand-secondary sm:h-11 sm:w-11">
-              OFF
-            </div>
+            <Image
+              src="/openfoodfactslogo.png"
+              alt="Open Food Facts logo"
+              className="h-10 w-auto object-contain sm:h-11"
+              width={110}
+              height={44}
+              priority={false}
+            />
             <p className="text-sm font-semibold text-brand-primary">Open Food Facts</p>
           </div>
           <p className="mt-3 text-xs text-brand-secondary/80">

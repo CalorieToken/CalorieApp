@@ -58,12 +58,20 @@ def health() -> dict[str, str]:
 @app.post("/log-food", response_model=FoodLog)
 def log_food(payload: FoodLogCreate, session: DbSession) -> FoodLog:
     """Persist a food log entry to SQLite and return it with assigned id/created_at."""
+    nutri_score = payload.nutri_score.strip().upper() if payload.nutri_score else None
+    portion_percentage = payload.portion_percentage if payload.portion_percentage is not None else 100.0
     entry = FoodLogDB(
         product_name=payload.product_name,
         calories=payload.calories,
         protein=payload.protein,
         fat=payload.fat,
         carbohydrates=payload.carbohydrates,
+        portion_percentage=portion_percentage,
+        barcode=payload.barcode,
+        image_url=payload.image_url,
+        brand=payload.brand,
+        serving_size=payload.serving_size,
+        nutri_score=nutri_score,
         created_at=datetime.now(UTC),
     )
     session.add(entry)
@@ -83,6 +91,31 @@ def get_logs(
     entries = session.exec(select(FoodLogDB).order_by(FoodLogDB.id.desc()).limit(limit)).all()  # type: ignore[attr-defined]
     logger.info("Returning %s logged food items", len(entries))
     return [FoodLog.model_validate(e.model_dump()) for e in entries]
+
+
+@app.delete("/logs/{log_id}")
+def delete_log(log_id: int, session: DbSession) -> dict[str, int]:
+    """Delete one logged food entry by id."""
+    entry = session.get(FoodLogDB, log_id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Log entry not found")
+
+    session.delete(entry)
+    session.commit()
+    logger.info("Deleted food log entry id=%s", log_id)
+    return {"deleted_id": log_id}
+
+
+@app.delete("/logs")
+def delete_all_logs(session: DbSession) -> dict[str, int]:
+    """Delete all logged food entries."""
+    entries = session.exec(select(FoodLogDB)).all()
+    deleted_count = len(entries)
+    for entry in entries:
+        session.delete(entry)
+    session.commit()
+    logger.info("Deleted all food logs (count=%s)", deleted_count)
+    return {"deleted_count": deleted_count}
 
 
 @app.get("/search-food", response_model=FoodSearchResponse)

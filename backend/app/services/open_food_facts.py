@@ -29,6 +29,10 @@ _PRIMARY_MAX_ATTEMPTS = 3
 _PRIMARY_RETRY_BASE_DELAY_SECONDS = 0.35
 _FALLBACK_MAX_ATTEMPTS = 2
 _FALLBACK_RETRY_BASE_DELAY_SECONDS = 0.5
+_OPEN_FOOD_FACTS_FIELDS = (
+    "product_name,code,image_front_url,image_url,image_small_url,image_front_small_url,"
+    "brands,serving_size,nutriscore_grade,nutriments"
+)
 
 
 def _repair_common_mojibake(text: str) -> str:
@@ -78,6 +82,22 @@ def _extract_image_url(product: dict[str, Any]) -> str | None:
     return None
 
 
+def _extract_brand(product: dict[str, Any]) -> str | None:
+    brands = _to_optional_text(product.get("brands"))
+    if not brands:
+        return None
+    # Open Food Facts often returns comma-separated brands; show the first clean label.
+    first_brand = brands.split(",", 1)[0].strip()
+    return first_brand or None
+
+
+def _extract_nutri_score(product: dict[str, Any]) -> str | None:
+    value = _to_optional_text(product.get("nutriscore_grade"))
+    if not value:
+        return None
+    return value.upper()
+
+
 async def search_food_products(query: str, page_size: int = 10) -> list[FoodSearchResult]:
     params = {
         "search_terms": query,
@@ -85,6 +105,7 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         "action": "process",
         "json": 1,
         "page_size": page_size,
+        "fields": _OPEN_FOOD_FACTS_FIELDS,
     }
 
     safe_query = query.strip()
@@ -120,6 +141,9 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
                 carbohydrates=_to_float(nutriments.get("carbohydrates_100g")),
                 image_url=_extract_image_url(product),
                 barcode=_to_optional_text(product.get("code")),
+                brand=_extract_brand(product),
+                serving_size=_to_optional_text(product.get("serving_size")),
+                nutri_score=_extract_nutri_score(product),
             )
         )
 

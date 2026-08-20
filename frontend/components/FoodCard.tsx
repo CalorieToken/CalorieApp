@@ -39,10 +39,21 @@ export function FoodCard({ item, isLogging, onLog, formatNumber }: FoodCardProps
 
         <div className="min-w-0 flex-1">
           <p className="text-base font-semibold text-brand-primary">{item.product_name}</p>
+          {item.brand ? (
+            <p className="mt-1 truncate text-xs text-brand-secondary/80" title={item.brand}>
+              {item.brand}
+            </p>
+          ) : null}
           {item.barcode ? (
             <p className="mt-1 truncate text-xs text-brand-secondary/75" title={`Barcode: ${item.barcode}`}>
               Barcode: {item.barcode}
             </p>
+          ) : null}
+          {(item.serving_size || item.nutri_score) ? (
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-secondary/75">
+              {item.serving_size ? <p>Serving: {item.serving_size}</p> : null}
+              {item.nutri_score ? <p>Nutri-Score: {item.nutri_score}</p> : null}
+            </div>
           ) : null}
 
           <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
