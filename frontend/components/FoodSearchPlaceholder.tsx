@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { FoodCard } from "@/components/FoodCard";
@@ -173,6 +173,16 @@ export function FoodSearchPlaceholder() {
   const [logError, setLogError] = useState<string | null>(null);
   const [didSearch, setDidSearch] = useState(false);
 
+  async function backendFetch(input: string, init?: RequestInit) {
+    return fetch(input, {
+      ...init,
+      credentials: "include",
+      headers: {
+        ...(init?.headers ?? {}),
+      },
+    });
+  }
+
   const hasResults = useMemo(() => results.length > 0, [results]);
   const hasLogs = useMemo(() => logs.length > 0, [logs]);
   const summary = useMemo(() => {
@@ -250,7 +260,7 @@ export function FoodSearchPlaceholder() {
     }
   }, [logs, selectedLogId]);
 
-  async function fetchLogs() {
+  const fetchLogs = useCallback(async () => {
     if (!BACKEND_BASE_URL) {
       setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
@@ -258,7 +268,7 @@ export function FoodSearchPlaceholder() {
 
     setIsLogsLoading(true);
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/logs`);
+      const response = await backendFetch(`${BACKEND_BASE_URL}/logs`);
       if (!response.ok) {
         throw new Error("Logs request failed.");
       }
@@ -270,11 +280,11 @@ export function FoodSearchPlaceholder() {
     } finally {
       setIsLogsLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [fetchLogs]);
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -296,7 +306,7 @@ export function FoodSearchPlaceholder() {
     setDidSearch(true);
 
     try {
-      const response = await fetch(
+      const response = await backendFetch(
         `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`
       );
 
@@ -349,7 +359,7 @@ export function FoodSearchPlaceholder() {
     setLogError(null);
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/log-food`, {
+      const response = await backendFetch(`${BACKEND_BASE_URL}/log-food`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -379,7 +389,7 @@ export function FoodSearchPlaceholder() {
     setDeletingLogId(logId);
     setLogError(null);
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/logs/${logId}`, {
+      const response = await backendFetch(`${BACKEND_BASE_URL}/logs/${logId}`, {
         method: "DELETE",
       });
       if (response.status === 404) {
@@ -413,7 +423,7 @@ export function FoodSearchPlaceholder() {
     setIsClearingAll(true);
     setLogError(null);
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/logs`, {
+      const response = await backendFetch(`${BACKEND_BASE_URL}/logs`, {
         method: "DELETE",
       });
       if (!response.ok) {

@@ -1,4 +1,5 @@
 import { FoodSearchPlaceholder } from "@/components/FoodSearchPlaceholder";
+import { XamanLoginPanel } from "@/components/XamanLoginPanel";
 import Image from "next/image";
 
 export default function Home() {
@@ -27,6 +28,10 @@ export default function Home() {
 
         {/* Main content */}
         <div className="mt-8">
+          <XamanLoginPanel />
+        </div>
+
+        <div className="mt-6">
           <FoodSearchPlaceholder />
         </div>
       </div>
