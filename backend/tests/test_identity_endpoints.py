@@ -4,11 +4,13 @@ Integration tests for identity endpoints.
 import hashlib
 import hmac
 import json
+import tempfile
 from datetime import UTC, datetime, timedelta
 from secrets import token_urlsafe
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.pool import NullPool
 
 import app.database as db_module
 import app.main as main_module
@@ -514,33 +516,36 @@ class TestIdentityEndpoints:
         monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "supersecret")
         monkeypatch.setattr(main_module, "_CALORIEAPP_CLIENT_ID", "calorieapp-backend")
 
-        concurrent_engine = create_engine(
-            f"sqlite:///file:concurrency-{token_urlsafe(8)}?mode=memory&cache=shared",
-            connect_args={"check_same_thread": False, "uri": True},
-        )
-        SQLModel.metadata.create_all(concurrent_engine)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = f"{tmpdir}/bridge_replay_concurrency.db".replace("\\", "/")
+            concurrent_engine = create_engine(
+                f"sqlite:///{db_path}",
+                connect_args={"check_same_thread": False},
+                poolclass=NullPool,
+            )
+            SQLModel.metadata.create_all(concurrent_engine)
 
-        original_engine = db_module.engine
-        db_module.engine = concurrent_engine
+            original_engine = db_module.engine
+            db_module.engine = concurrent_engine
 
-        try:
-            state = client.post("/api/identity/login/start").json()["state"]
-            headers = _build_bridge_headers(state=state, secret="supersecret", nonce=token_urlsafe(24))
+            try:
+                state = client.post("/api/identity/login/start").json()["state"]
+                headers = _build_bridge_headers(state=state, secret="supersecret", nonce=token_urlsafe(24))
 
-            with TestClient(app) as bridge_client_a, TestClient(app) as bridge_client_b:
-                def validate_once(bridge_client: TestClient) -> int:
-                    response = bridge_client.post(
-                        "/api/identity/login/state/validate",
-                        json={"state": state},
-                        headers=headers,
-                    )
-                    return response.status_code
+                with TestClient(app) as bridge_client_a, TestClient(app) as bridge_client_b:
+                    def validate_once(bridge_client: TestClient) -> int:
+                        response = bridge_client.post(
+                            "/api/identity/login/state/validate",
+                            json={"state": state},
+                            headers=headers,
+                        )
+                        return response.status_code
 
-                with ThreadPoolExecutor(max_workers=2) as executor:
-                    statuses = list(executor.map(validate_once, [bridge_client_a, bridge_client_b]))
-        finally:
-            db_module.engine = original_engine
-            concurrent_engine.dispose()
+                    with ThreadPoolExecutor(max_workers=2) as executor:
+                        statuses = list(executor.map(validate_once, [bridge_client_a, bridge_client_b]))
+            finally:
+                db_module.engine = original_engine
+                concurrent_engine.dispose()
 
         assert sorted(statuses) == [200, 400]
 
