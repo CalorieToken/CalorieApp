@@ -21,6 +21,7 @@ else:
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 _OPTIONAL_LOG_COLUMNS: dict[str, str] = {
+    "owner_id": "TEXT",
     "portion_percentage": "REAL",
     "barcode": "TEXT",
     "image_url": "TEXT",

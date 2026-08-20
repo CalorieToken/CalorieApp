@@ -2,16 +2,45 @@
 Automated backend tests for CalorieApp API endpoints.
 Run from the backend directory: pytest
 """
-from datetime import UTC, datetime
+import hashlib
+from datetime import UTC, datetime, timedelta
+from secrets import token_urlsafe
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel.pool import StaticPool
 
 import app.database as db_module
-from app.models import FoodLogDB
+from app.database import init_db
+from app.main import app
+from app.models import AuthSessionDB, CalorieAppUserDB, FoodLogDB
 from app.schemas import FoodSearchResult
+
+
+SESSION_COOKIE_NAME = "calorieapp_session"
+SESSION_TOKEN_BYTES = 48
+SESSION_ABSOLUTE_LIFETIME_SECONDS = 8 * 60 * 60
+
+
+def _create_session_for_user(user_id: str) -> str:
+    token = token_urlsafe(SESSION_TOKEN_BYTES)
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    now = datetime.now(UTC)
+
+    session_row = AuthSessionDB(
+        session_token_hash=token_hash,
+        calorieapp_user_id=user_id,
+        created_at=now,
+        last_seen_at=now,
+        expires_at=now + timedelta(seconds=SESSION_ABSOLUTE_LIFETIME_SECONDS),
+    )
+    with Session(db_module.engine) as session:
+        session.add(session_row)
+        session.commit()
+
+    return token
 
 
 # ---------------------------------------------------------------------------
@@ -139,7 +168,7 @@ def test_search_food_upstream_failure_returns_502(mock_search: AsyncMock, client
 # POST /log-food
 # ---------------------------------------------------------------------------
 
-def test_log_food_valid_full_schema(client: TestClient) -> None:
+def test_log_food_valid_full_schema(authenticated_client: TestClient) -> None:
     """Valid full payload returns 200 with id and created_at assigned."""
     payload = {
         "product_name": "Banana",
@@ -148,7 +177,7 @@ def test_log_food_valid_full_schema(client: TestClient) -> None:
         "fat": 0.3,
         "carbohydrates": 23.0,
     }
-    response = client.post("/log-food", json=payload)
+    response = authenticated_client.post("/log-food", json=payload)
     assert response.status_code == 200
 
     data = response.json()
@@ -158,9 +187,9 @@ def test_log_food_valid_full_schema(client: TestClient) -> None:
     assert "created_at" in data
 
 
-def test_log_food_valid_minimal_schema(client: TestClient) -> None:
+def test_log_food_valid_minimal_schema(authenticated_client: TestClient) -> None:
     """Only required fields; macro defaults must be 0."""
-    response = client.post("/log-food", json={"product_name": "Rice", "calories": 130.0})
+    response = authenticated_client.post("/log-food", json={"product_name": "Rice", "calories": 130.0})
     assert response.status_code == 200
 
     data = response.json()
@@ -169,28 +198,28 @@ def test_log_food_valid_minimal_schema(client: TestClient) -> None:
     assert data["carbohydrates"] == 0
 
 
-def test_log_food_invalid_negative_calories(client: TestClient) -> None:
+def test_log_food_invalid_negative_calories(authenticated_client: TestClient) -> None:
     """Negative calories violates ge=0 constraint."""
-    response = client.post("/log-food", json={"product_name": "Bad", "calories": -10.0})
+    response = authenticated_client.post("/log-food", json={"product_name": "Bad", "calories": -10.0})
     assert response.status_code == 422
 
 
-def test_log_food_invalid_missing_product_name(client: TestClient) -> None:
+def test_log_food_invalid_missing_product_name(authenticated_client: TestClient) -> None:
     """Missing product_name returns 422."""
-    response = client.post("/log-food", json={"calories": 100.0})
+    response = authenticated_client.post("/log-food", json={"calories": 100.0})
     assert response.status_code == 422
 
 
-def test_log_food_invalid_empty_product_name(client: TestClient) -> None:
+def test_log_food_invalid_empty_product_name(authenticated_client: TestClient) -> None:
     """Empty product_name violates min_length=1 constraint."""
-    response = client.post("/log-food", json={"product_name": "", "calories": 100.0})
+    response = authenticated_client.post("/log-food", json={"product_name": "", "calories": 100.0})
     assert response.status_code == 422
 
 
-def test_log_food_increments_id(client: TestClient) -> None:
+def test_log_food_increments_id(authenticated_client: TestClient) -> None:
     """Successive log entries receive sequential auto-increment ids."""
-    r1 = client.post("/log-food", json={"product_name": "Apple", "calories": 52.0})
-    r2 = client.post("/log-food", json={"product_name": "Orange", "calories": 47.0})
+    r1 = authenticated_client.post("/log-food", json={"product_name": "Apple", "calories": 52.0})
+    r2 = authenticated_client.post("/log-food", json={"product_name": "Orange", "calories": 47.0})
     id1 = r1.json()["id"]
     id2 = r2.json()["id"]
     assert isinstance(id1, int)
@@ -202,19 +231,19 @@ def test_log_food_increments_id(client: TestClient) -> None:
 # GET /logs
 # ---------------------------------------------------------------------------
 
-def test_get_logs_empty(client: TestClient) -> None:
+def test_get_logs_empty(authenticated_client: TestClient) -> None:
     """No logged items returns 200 with empty list."""
-    response = client.get("/logs")
+    response = authenticated_client.get("/logs")
     assert response.status_code == 200
     assert response.json() == []
 
 
-def test_get_logs_returns_logged_items(client: TestClient) -> None:
+def test_get_logs_returns_logged_items(authenticated_client: TestClient) -> None:
     """Items logged via POST /log-food appear in GET /logs (newest first)."""
-    client.post("/log-food", json={"product_name": "Apple", "calories": 52.0})
-    client.post("/log-food", json={"product_name": "Oats", "calories": 389.0})
+    authenticated_client.post("/log-food", json={"product_name": "Apple", "calories": 52.0})
+    authenticated_client.post("/log-food", json={"product_name": "Oats", "calories": 389.0})
 
-    response = client.get("/logs")
+    response = authenticated_client.get("/logs")
     assert response.status_code == 200
 
     logs = response.json()
@@ -223,18 +252,18 @@ def test_get_logs_returns_logged_items(client: TestClient) -> None:
     assert names == {"Apple", "Oats"}
 
 
-def test_get_logs_schema(client: TestClient) -> None:
+def test_get_logs_schema(authenticated_client: TestClient) -> None:
     """Each log entry contains all expected fields."""
-    client.post("/log-food", json={"product_name": "Egg", "calories": 78.0})
-    logs = client.get("/logs").json()
+    authenticated_client.post("/log-food", json={"product_name": "Egg", "calories": 78.0})
+    logs = authenticated_client.get("/logs").json()
     entry = logs[0]
     for field in ("id", "created_at", "product_name", "calories", "protein", "fat", "carbohydrates"):
         assert field in entry, f"Missing field: {field}"
 
 
-def test_get_logs_supports_deterministic_summary_totals(client: TestClient) -> None:
+def test_get_logs_supports_deterministic_summary_totals(authenticated_client: TestClient) -> None:
     """Logged food records can be summed deterministically for frontend daily summary."""
-    client.post(
+    authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Food A",
@@ -244,7 +273,7 @@ def test_get_logs_supports_deterministic_summary_totals(client: TestClient) -> N
             "carbohydrates": 20.0,
         },
     )
-    client.post(
+    authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Food B",
@@ -255,7 +284,7 @@ def test_get_logs_supports_deterministic_summary_totals(client: TestClient) -> N
         },
     )
 
-    logs = client.get("/logs").json()
+    logs = authenticated_client.get("/logs").json()
     assert len(logs) == 2
 
     total_calories = sum(item["calories"] for item in logs)
@@ -269,7 +298,7 @@ def test_get_logs_supports_deterministic_summary_totals(client: TestClient) -> N
     assert total_carbohydrates == 50.0
 
 
-def test_log_food_persists_optional_fields(client: TestClient) -> None:
+def test_log_food_persists_optional_fields(authenticated_client: TestClient) -> None:
     payload = {
         "product_name": "Pesto",
         "calories": 492.0,
@@ -283,7 +312,7 @@ def test_log_food_persists_optional_fields(client: TestClient) -> None:
         "nutri_score": "c",
     }
 
-    response = client.post("/log-food", json=payload)
+    response = authenticated_client.post("/log-food", json=payload)
     assert response.status_code == 200
     data = response.json()
     assert data["barcode"] == "8076809513753"
@@ -293,8 +322,8 @@ def test_log_food_persists_optional_fields(client: TestClient) -> None:
     assert data["nutri_score"] == "C"
 
 
-def test_log_food_with_portion_100_persists(client: TestClient) -> None:
-    response = client.post(
+def test_log_food_with_portion_100_persists(authenticated_client: TestClient) -> None:
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Whole Entry",
@@ -309,8 +338,8 @@ def test_log_food_with_portion_100_persists(client: TestClient) -> None:
     assert response.json()["portion_percentage"] == 100
 
 
-def test_log_food_with_portion_50_persists(client: TestClient) -> None:
-    response = client.post(
+def test_log_food_with_portion_50_persists(authenticated_client: TestClient) -> None:
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Half Entry",
@@ -325,8 +354,8 @@ def test_log_food_with_portion_50_persists(client: TestClient) -> None:
     assert response.json()["portion_percentage"] == 50
 
 
-def test_log_food_with_portion_25_persists(client: TestClient) -> None:
-    response = client.post(
+def test_log_food_with_portion_25_persists(authenticated_client: TestClient) -> None:
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Quarter Entry",
@@ -341,8 +370,8 @@ def test_log_food_with_portion_25_persists(client: TestClient) -> None:
     assert response.json()["portion_percentage"] == 25
 
 
-def test_log_food_without_portion_defaults_to_100(client: TestClient) -> None:
-    response = client.post(
+def test_log_food_without_portion_defaults_to_100(authenticated_client: TestClient) -> None:
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Default Portion",
@@ -357,8 +386,8 @@ def test_log_food_without_portion_defaults_to_100(client: TestClient) -> None:
 
 
 @pytest.mark.parametrize("invalid_portion", [0, -5, 101])
-def test_log_food_invalid_portion_values_rejected(client: TestClient, invalid_portion: int) -> None:
-    response = client.post(
+def test_log_food_invalid_portion_values_rejected(authenticated_client: TestClient, invalid_portion: int) -> None:
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Invalid Portion",
@@ -372,9 +401,9 @@ def test_log_food_invalid_portion_values_rejected(client: TestClient, invalid_po
     assert response.status_code == 422
 
 
-def test_log_food_existing_style_record_still_works(client: TestClient) -> None:
+def test_log_food_existing_style_record_still_works(authenticated_client: TestClient) -> None:
     """Records without optional fields remain valid and retrievable."""
-    response = client.post(
+    response = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Legacy Entry",
@@ -393,7 +422,8 @@ def test_log_food_existing_style_record_still_works(client: TestClient) -> None:
     assert data["nutri_score"] is None
 
 
-def test_legacy_record_without_portion_percentage_still_loads(client: TestClient) -> None:
+def test_legacy_record_without_portion_percentage_still_loads(authenticated_client: TestClient) -> None:
+    """Legacy unowned records remain in storage but are not exposed to normal authenticated queries."""
     with Session(db_module.engine) as session:
         entry = FoodLogDB(
             product_name="Legacy Null Portion",
@@ -407,44 +437,225 @@ def test_legacy_record_without_portion_percentage_still_loads(client: TestClient
         session.add(entry)
         session.commit()
 
-    response = client.get("/logs")
+    response = authenticated_client.get("/logs")
     assert response.status_code == 200
     logs = response.json()
-    legacy = next(item for item in logs if item["product_name"] == "Legacy Null Portion")
-    assert legacy["portion_percentage"] is None
+    assert all(item["product_name"] != "Legacy Null Portion" for item in logs)
 
 
-def test_delete_single_log_entry(client: TestClient) -> None:
-    created = client.post("/log-food", json={"product_name": "Delete Me", "calories": 10.0}).json()
+def test_legacy_null_owner_record_cannot_be_deleted_by_authenticated_user(authenticated_client: TestClient) -> None:
+    """Legacy rows with unknown ownership must not be claimable/deletable by authenticated users."""
+    with Session(db_module.engine) as session:
+        entry = FoodLogDB(
+            product_name="Legacy Null Owner",
+            calories=50.0,
+            protein=1.0,
+            fat=1.0,
+            carbohydrates=10.0,
+            owner_id=None,
+            created_at=datetime.now(UTC),
+        )
+        session.add(entry)
+        session.commit()
+        session.refresh(entry)
+        log_id = entry.id
+
+    response = authenticated_client.delete(f"/logs/{log_id}")
+    assert response.status_code == 403
+
+
+def test_init_db_adds_missing_owner_id_column_to_legacy_food_log_table() -> None:
+    """Legacy SQLite databases must be migrated to include owner_id before authenticated writes."""
+    legacy_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    with legacy_engine.begin() as connection:
+        connection.exec_driver_sql(
+            """
+            CREATE TABLE food_log (
+                id INTEGER PRIMARY KEY,
+                product_name VARCHAR(120),
+                calories FLOAT,
+                protein FLOAT,
+                fat FLOAT,
+                carbohydrates FLOAT,
+                created_at DATETIME
+            )
+            """
+        )
+        connection.exec_driver_sql(
+            """
+            INSERT INTO food_log (id, product_name, calories, protein, fat, carbohydrates, created_at)
+            VALUES (1, 'Legacy Preserved', 123.0, 4.0, 5.0, 6.0, '2026-01-01 00:00:00')
+            """
+        )
+
+    original_engine = db_module.engine
+    db_module.engine = legacy_engine
+    try:
+        init_db()
+
+        with legacy_engine.connect() as connection:
+            columns = connection.exec_driver_sql("PRAGMA table_info(food_log)").fetchall()
+            names = {row[1] for row in columns}
+            assert "owner_id" in names
+
+            rows = connection.exec_driver_sql(
+                "SELECT id, product_name, owner_id FROM food_log WHERE id = 1"
+            ).fetchall()
+            assert len(rows) == 1
+            assert rows[0][0] == 1
+            assert rows[0][1] == "Legacy Preserved"
+            assert rows[0][2] is None
+    finally:
+        db_module.engine = original_engine
+        legacy_engine.dispose()
+
+
+def test_food_logs_are_isolated_between_users_and_delete_all_is_scoped() -> None:
+    """User ownership must isolate reads and scoped deletes across authenticated sessions."""
+    test_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(test_engine)
+
+    original_engine = db_module.engine
+    db_module.engine = test_engine
+    try:
+        with Session(test_engine) as session:
+            user_a = CalorieAppUserDB(status="active")
+            user_b = CalorieAppUserDB(status="active")
+            session.add_all([user_a, user_b])
+            session.commit()
+            user_a_id = user_a.id
+            user_b_id = user_b.id
+
+        with TestClient(app) as client_a, TestClient(app) as client_b:
+            client_a.cookies.set(SESSION_COOKIE_NAME, _create_session_for_user(user_a_id))
+            client_b.cookies.set(SESSION_COOKIE_NAME, _create_session_for_user(user_b_id))
+
+            create_a = client_a.post(
+                "/log-food",
+                json={
+                    "product_name": "A only",
+                    "calories": 101.0,
+                    "protein": 1.0,
+                    "fat": 1.0,
+                    "carbohydrates": 1.0,
+                },
+            )
+            assert create_a.status_code == 200
+            a_log_id = create_a.json()["id"]
+
+            # User B must not see User A logs.
+            logs_b_initial = client_b.get("/logs")
+            assert logs_b_initial.status_code == 200
+            assert all(item["id"] != a_log_id for item in logs_b_initial.json())
+
+            # User B must not be able to delete User A logs.
+            delete_a_by_b = client_b.delete(f"/logs/{a_log_id}")
+            assert delete_a_by_b.status_code == 403
+
+            create_b1 = client_b.post(
+                "/log-food",
+                json={
+                    "product_name": "B1",
+                    "calories": 201.0,
+                    "protein": 2.0,
+                    "fat": 2.0,
+                    "carbohydrates": 2.0,
+                },
+            )
+            create_b2 = client_b.post(
+                "/log-food",
+                json={
+                    "product_name": "B2",
+                    "calories": 202.0,
+                    "protein": 2.0,
+                    "fat": 2.0,
+                    "carbohydrates": 2.0,
+                },
+            )
+            assert create_b1.status_code == 200
+            assert create_b2.status_code == 200
+
+            # User B delete-all must only delete their own records.
+            delete_all_b = client_b.delete("/logs")
+            assert delete_all_b.status_code == 200
+            assert delete_all_b.json()["deleted_count"] == 2
+
+            logs_b_after = client_b.get("/logs")
+            assert logs_b_after.status_code == 200
+            assert logs_b_after.json() == []
+
+            # User A records must remain intact after User B delete-all.
+            logs_a_after = client_a.get("/logs")
+            assert logs_a_after.status_code == 200
+            assert any(item["id"] == a_log_id for item in logs_a_after.json())
+    finally:
+        db_module.engine = original_engine
+        test_engine.dispose()
+
+
+def test_init_db_creates_pending_login_state_table() -> None:
+    """Startup DB init must create the persistent pending login state table."""
+    test_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    original_engine = db_module.engine
+    db_module.engine = test_engine
+    try:
+        init_db()
+        with test_engine.connect() as connection:
+            tables = connection.exec_driver_sql(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+            table_names = {row[0] for row in tables}
+            assert "pendingloginstate" in table_names
+    finally:
+        db_module.engine = original_engine
+        test_engine.dispose()
+
+
+def test_delete_single_log_entry(authenticated_client: TestClient) -> None:
+    created = authenticated_client.post("/log-food", json={"product_name": "Delete Me", "calories": 10.0}).json()
     log_id = created["id"]
 
-    response = client.delete(f"/logs/{log_id}")
+    response = authenticated_client.delete(f"/logs/{log_id}")
     assert response.status_code == 200
     assert response.json()["deleted_id"] == log_id
 
-    logs = client.get("/logs").json()
+    logs = authenticated_client.get("/logs").json()
     assert all(item["id"] != log_id for item in logs)
 
 
-def test_delete_single_log_entry_not_found(client: TestClient) -> None:
-    response = client.delete("/logs/9999")
+def test_delete_single_log_entry_not_found(authenticated_client: TestClient) -> None:
+    response = authenticated_client.delete("/logs/9999")
     assert response.status_code == 404
 
 
-def test_delete_all_logs(client: TestClient) -> None:
-    client.post("/log-food", json={"product_name": "A", "calories": 100.0})
-    client.post("/log-food", json={"product_name": "B", "calories": 200.0})
+def test_delete_all_logs(authenticated_client: TestClient) -> None:
+    authenticated_client.post("/log-food", json={"product_name": "A", "calories": 100.0})
+    authenticated_client.post("/log-food", json={"product_name": "B", "calories": 200.0})
 
-    response = client.delete("/logs")
+    response = authenticated_client.delete("/logs")
     assert response.status_code == 200
     assert response.json()["deleted_count"] == 2
 
-    logs = client.get("/logs").json()
+    logs = authenticated_client.get("/logs").json()
     assert logs == []
 
 
-def test_totals_after_deleting_one_log(client: TestClient) -> None:
-    a = client.post(
+def test_totals_after_deleting_one_log(authenticated_client: TestClient) -> None:
+    a = authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Food A",
@@ -454,7 +665,7 @@ def test_totals_after_deleting_one_log(client: TestClient) -> None:
             "carbohydrates": 20.0,
         },
     ).json()
-    client.post(
+    authenticated_client.post(
         "/log-food",
         json={
             "product_name": "Food B",
@@ -465,8 +676,8 @@ def test_totals_after_deleting_one_log(client: TestClient) -> None:
         },
     )
 
-    client.delete(f"/logs/{a['id']}")
-    logs = client.get("/logs").json()
+    authenticated_client.delete(f"/logs/{a['id']}")
+    logs = authenticated_client.get("/logs").json()
     assert len(logs) == 1
 
     total_calories = sum(item["calories"] for item in logs)
