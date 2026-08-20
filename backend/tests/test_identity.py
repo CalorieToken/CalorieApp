@@ -1,10 +1,12 @@
 """
 Tests for identity service.
 """
+import tempfile
 from datetime import UTC, datetime, timedelta
 
 import pytest
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.pool import NullPool
 from sqlmodel import Session, create_engine, select
 from sqlmodel.pool import StaticPool
 
@@ -428,30 +430,33 @@ class TestPendingLoginState:
     def test_concurrent_consume_allows_only_one_success(self):
         from concurrent.futures import ThreadPoolExecutor
 
-        engine = create_engine(
-            "sqlite://",
-            connect_args={"check_same_thread": False},
-            poolclass=StaticPool,
-        )
-        SQLModel.metadata.create_all(engine)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = f"{tmpdir}/pending_login_state_concurrency.db".replace("\\", "/")
+            engine = create_engine(
+                f"sqlite:///{db_path}",
+                connect_args={"check_same_thread": False},
+                poolclass=NullPool,
+            )
+            SQLModel.metadata.create_all(engine)
 
-        with Session(engine) as session:
-            state, _ = create_pending_login_state(session, state_lifetime_seconds=300)
+            try:
+                with Session(engine) as session:
+                    state, _ = create_pending_login_state(session, state_lifetime_seconds=300)
 
-        def consume_once() -> tuple[bool, str]:
-            with Session(engine) as session:
-                return consume_pending_login_state(session, state)
+                def consume_once() -> tuple[bool, str]:
+                    with Session(engine) as session:
+                        return consume_pending_login_state(session, state)
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            results = list(executor.map(lambda _: consume_once(), [1, 2]))
+                with ThreadPoolExecutor(max_workers=2) as executor:
+                    results = list(executor.map(lambda _: consume_once(), [1, 2]))
 
-        successes = [ok for ok, _ in results if ok]
-        failures = [reason for ok, reason in results if not ok]
-        assert len(successes) == 1
-        assert len(failures) == 1
-        assert failures[0] == "consumed"
-
-        engine.dispose()
+                successes = [ok for ok, _ in results if ok]
+                failures = [reason for ok, reason in results if not ok]
+                assert len(successes) == 1
+                assert len(failures) == 1
+                assert failures[0] == "consumed"
+            finally:
+                engine.dispose()
 
     def test_cleanup_removes_expired_and_keeps_valid(self, test_session: Session):
         valid_state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
