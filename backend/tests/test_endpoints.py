@@ -39,6 +39,8 @@ def test_search_food_valid_query(mock_search: AsyncMock, client: TestClient) -> 
             protein=1.1,
             fat=0.3,
             carbohydrates=23.0,
+            image_url="https://images.openfoodfacts.org/sample-banana.jpg",
+            barcode="1234567890123",
         )
     ]
     response = client.get("/search-food?q=banana")
@@ -54,6 +56,8 @@ def test_search_food_valid_query(mock_search: AsyncMock, client: TestClient) -> 
     assert item["protein"] == 1.1
     assert item["fat"] == 0.3
     assert item["carbohydrates"] == 23.0
+    assert item["image_url"] == "https://images.openfoodfacts.org/sample-banana.jpg"
+    assert item["barcode"] == "1234567890123"
 
 
 @patch("app.main.search_food_products", new_callable=AsyncMock)

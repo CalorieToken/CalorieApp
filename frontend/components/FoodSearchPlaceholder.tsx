@@ -18,6 +18,14 @@ function toNumber(value: unknown): number {
   return value;
 }
 
+function toOptionalText(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 function normalizeFoodItem(value: unknown): FoodSearchItem {
   const raw = (value ?? {}) as Record<string, unknown>;
   const productName =
@@ -31,6 +39,8 @@ function normalizeFoodItem(value: unknown): FoodSearchItem {
     protein: toNumber(raw.protein),
     fat: toNumber(raw.fat),
     carbohydrates: toNumber(raw.carbohydrates),
+    image_url: toOptionalText(raw.image_url),
+    barcode: toOptionalText(raw.barcode),
   };
 }
 

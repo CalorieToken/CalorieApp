@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from typing import Annotated
@@ -14,6 +15,11 @@ from .schemas import FoodLog, FoodLogCreate, FoodSearchResponse
 from .services.open_food_facts import search_food_products
 
 logger = logging.getLogger(__name__)
+
+# Read CORS origins from environment; default to localhost for local development.
+# Format: comma-separated origins (e.g., "https://app.example.com,http://localhost:3000")
+_CORS_ORIGINS_STR = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+_CORS_ORIGINS = [origin.strip() for origin in _CORS_ORIGINS_STR.split(",") if origin.strip()]
 
 
 @asynccontextmanager
@@ -34,7 +40,7 @@ app = FastAPI(
 # V1 allows frontend-backend communication only; no financial or wallet features.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=_CORS_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

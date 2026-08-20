@@ -23,6 +23,8 @@ class FoodSearchResult(BaseModel):
     protein: float = 0
     fat: float = 0
     carbohydrates: float = 0
+    image_url: Optional[str] = None
+    barcode: Optional[str] = None
 
 
 class FoodSearchResponse(BaseModel):

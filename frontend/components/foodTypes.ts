@@ -4,6 +4,8 @@ export type FoodSearchItem = {
   protein: number;
   fat: number;
   carbohydrates: number;
+  image_url?: string | null;
+  barcode?: string | null;
 };
 
 export type FoodSearchResponse = {
