@@ -48,5 +48,4 @@ desktop.ini
 # Private curation artifacts
 checkpoints/2026-07-23-project-checkpoint/
 checkpoints/2026-07-23-120229-project-checkpoint/
-.github/copilot-instructions.md
 frontend/tsconfig.tsbuildinfo
