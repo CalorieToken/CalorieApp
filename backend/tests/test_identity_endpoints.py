@@ -26,6 +26,16 @@ SESSION_TOKEN_BYTES = 48
 SESSION_ABSOLUTE_LIFETIME_SECONDS = 8 * 60 * 60
 
 
+def _set_session_cookie_security_config(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    secure: bool,
+    environment: str | None,
+) -> None:
+    monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", secure)
+    monkeypatch.setattr(main_module, "_CALORIEAPP_ENV", environment)
+
+
 def _canonical_bridge_payload_for_test(
     *,
     client_id: str,
@@ -126,6 +136,41 @@ def client() -> TestClient:
 
 class TestIdentityEndpoints:
     """Test identity API endpoints."""
+
+    @pytest.mark.parametrize(
+        ("environment", "secure", "should_allow"),
+        [
+            ("local", False, True),
+            ("local", True, True),
+            ("staging", False, False),
+            ("production", False, False),
+            (None, False, False),
+            ("unknown", False, False),
+            ("staging", True, True),
+            ("production", True, True),
+        ],
+    )
+    def test_session_cookie_secure_guardrail_configuration(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        environment: str | None,
+        secure: bool,
+        should_allow: bool,
+    ):
+        _set_session_cookie_security_config(monkeypatch, secure=secure, environment=environment)
+
+        if should_allow:
+            main_module._validate_session_cookie_security_configuration()
+        else:
+            with pytest.raises(RuntimeError, match="SESSION_COOKIE_SECURE=false is only allowed"):
+                main_module._validate_session_cookie_security_configuration()
+
+    def test_startup_fails_closed_for_insecure_cookie_outside_local(self, monkeypatch: pytest.MonkeyPatch):
+        _set_session_cookie_security_config(monkeypatch, secure=False, environment="staging")
+
+        with pytest.raises(RuntimeError, match="SESSION_COOKIE_SECURE=false is only allowed"):
+            with TestClient(app):
+                pass
 
     def test_health_returns_200(self, client: TestClient):
         """Health endpoint should return 200."""

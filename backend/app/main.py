@@ -68,6 +68,8 @@ _WORDPRESS_BRIDGE_EXCHANGE_URL = os.getenv(
 _CALORIEAPP_POST_LOGIN_REDIRECT = os.getenv("CALORIEAPP_POST_LOGIN_REDIRECT", "/dashboard")
 _LOGIN_STATE_LIFETIME_SECONDS = int(os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300"))
 _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {"1", "true", "yes"}
+_CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
+_CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
 _BRIDGE_AUTH_MAX_FUTURE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_FUTURE_SECONDS", "30"))
 _BRIDGE_NONCE_RETENTION_SECONDS = int(
@@ -85,9 +87,22 @@ if not _WORDPRESS_BRIDGE_SECRET:
     )
 
 
+def _validate_session_cookie_security_configuration() -> None:
+    if _SESSION_COOKIE_SECURE:
+        return
+
+    if _CALORIEAPP_ENV != "local":
+        environment = "unset" if _CALORIEAPP_ENV is None else _CALORIEAPP_ENV
+        raise RuntimeError(
+            "SESSION_COOKIE_SECURE=false is only allowed when CALORIEAPP_ENV=local "
+            f"(current={environment})"
+        )
+
+
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     """Create database tables on startup."""
+    _validate_session_cookie_security_configuration()
     init_db()
     logger.info("Database initialized")
     logger.info("CORS origins: %s", _CORS_ORIGINS)
