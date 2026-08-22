@@ -9,6 +9,21 @@ The current app is a non-financial nutrition tracking system with:
 - food-search and food-logging behavior
 - server-side identity/session handling
 
+## V1 external identity boundary
+
+IMPLEMENTED / PROTECTED:
+- WordPress/Xaman is an external identity boundary for the current non-custodial identity architecture.
+- CalorieApp uses opaque server-side sessions after external identity verification.
+- An XRPL address may be retained only as external identity metadata.
+- CalorieApp does not custody private keys, seed phrases, or signing credentials.
+- CalorieApp does not sign or submit XRPL transactions and does not provide wallet custody, balances, payments, transfers, exchange/trading, token administration, rewards, or other financial functionality.
+
+FUTURE / REQUIRES SEPARATE APPROVAL:
+- Any financial, token, custody, wallet, payment, transaction, or value-transfer capability.
+- Any expansion of the Xaman/WordPress exception beyond external identity verification.
+
+This is an engineering/governance boundary only. It does not verify or approve any external hosting, DNS, TLS, WordPress, Xaman, Render, Plesk, staging, or production infrastructure.
+
 ## Current identity/session architecture
 
 The current security implementation is protected.

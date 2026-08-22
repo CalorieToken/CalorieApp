@@ -85,3 +85,15 @@ This file records major architecture decisions that have already been made. Thes
 - Rationale: external infra must be independently verified.
 - Status: DECIDED / PROTECTED
 - Protected from casual redesign: YES
+
+## Decision 13: V1 external identity boundary (6G-10A)
+
+- Decision: the original V1 blanket restriction on XRPL, Xaman, and Web3 integration is narrowed solely to permit the intentionally implemented non-custodial external identity architecture.
+- Allowed scope: external Xaman/XUMM authentication through an external WordPress identity bridge, server-side identity verification, opaque CalorieApp sessions, and XRPL address retention only as external identity metadata.
+- Prohibited scope: private-key, seed-phrase, or signing-credential handling; wallet or financial custody; transaction signing or submission; balances; payments; transfers; exchange/trading; token administration; financial-account functionality; rewards/value-transfer functionality; and any other financial functionality.
+- Historical context: the original V1 restriction existed first. Later committed work intentionally introduced the WordPress/Xaman non-custodial identity boundary. This decision formally reconciles those states; the original restriction is narrowed, not silently deleted.
+- Future boundary: any financial, token, custody, wallet, payment, transaction, or value-transfer capability requires a separate architecture decision and dedicated legal/compliance, privacy, security, threat-model, and operational review. This is an engineering/governance boundary, not a legal or regulatory determination.
+- Status: APPROVED
+- Scope: V1 identity architecture only
+- Staging/production approval: NOT GRANTED
+- Protected from casual redesign: YES

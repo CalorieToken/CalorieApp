@@ -12,6 +12,8 @@ import Image from "next/image";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 type PortionOption = "whole" | "half" | "quarter" | "custom";
+const SIGN_IN_REQUIRED_LOG_MESSAGE =
+  "Your session has expired or you are not signed in. Please sign in again to manage food logs.";
 
 function toNumber(value: unknown): number {
   if (typeof value !== "number" || Number.isNaN(value)) {
@@ -269,6 +271,10 @@ export function FoodSearchPlaceholder() {
     setIsLogsLoading(true);
     try {
       const response = await backendFetch(`${BACKEND_BASE_URL}/logs`);
+      if (response.status === 401) {
+        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        return;
+      }
       if (!response.ok) {
         throw new Error("Logs request failed.");
       }
@@ -367,6 +373,11 @@ export function FoodSearchPlaceholder() {
         body: JSON.stringify(payload),
       });
 
+      if (response.status === 401) {
+        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error("Log request failed.");
       }
@@ -392,6 +403,10 @@ export function FoodSearchPlaceholder() {
       const response = await backendFetch(`${BACKEND_BASE_URL}/logs/${logId}`, {
         method: "DELETE",
       });
+      if (response.status === 401) {
+        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        return;
+      }
       if (response.status === 404) {
         throw new Error("Log entry not found.");
       }
@@ -426,6 +441,10 @@ export function FoodSearchPlaceholder() {
       const response = await backendFetch(`${BACKEND_BASE_URL}/logs`, {
         method: "DELETE",
       });
+      if (response.status === 401) {
+        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        return;
+      }
       if (!response.ok) {
         throw new Error("Delete-all request failed.");
       }

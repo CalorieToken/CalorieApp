@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+.env
+.env.local
 
 # SQLite database (production data — do not commit)
 calorieapp.db

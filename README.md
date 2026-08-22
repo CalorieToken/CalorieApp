@@ -1,101 +1,159 @@
-# CalorieApp Monorepo
+# CalorieApp
 
-CalorieApp is a strict-scope, non-financial, non-custodial food and nutrition tracking system.
+CalorieApp is a non-financial, non-custodial food and nutrition tracking project.
 
-## Monorepo Architecture
+The current implementation is a real V1 web application. The broader Calorie ecosystem direction is also being researched and documented, but those future capabilities are not represented as already implemented.
 
-- frontend: Next.js + TypeScript + Tailwind UI layer
-- backend: FastAPI API/data layer
-- docs: roadmap and architecture documentation
-- .github: AI governance and code-generation constraints
+## Project
 
-## Governance Rules
+CalorieApp currently provides a web experience for food search and nutrition logging.
 
-- Frontend handles UI state and rendering only.
-- Backend handles API/data behavior only.
-- No blockchain, wallet, token, custodial, or financial logic in V1.
-- External integration in V1 is limited to Open Food Facts.
+Current application stack:
 
-See .github/copilot-instructions.md for hard constraints.
+- Frontend: Next.js + TypeScript + Tailwind
+- Backend: FastAPI + SQLModel
+- Data: SQLite
+- External food data: Open Food Facts
+- Identity/authentication: server-side identity flow with session cookies
 
-## Phase 1 MVP Scope
+## Current Status
 
-- Food search via frontend -> backend -> Open Food Facts flow
-- Nutrition display (calories/macros)
-- Food logging with SQLite persistence
-- Persistent food log retrieval across backend restarts
+### IMPLEMENTED (V1 web application)
 
-## Run Frontend Independently
+- Food search via backend integration with Open Food Facts
+- Nutrition result display in the web UI
+- Authenticated food logging and retrieval
+- User-scoped log deletion
+- Health endpoint and API-driven frontend/backend integration
+- Session-based authentication with protected food-log endpoints
 
-1. Install Node.js 20+.
-2. Change directory to frontend.
-3. Run npm install.
-4. Run npm run dev.
-5. Open http://localhost:3000.
+### PROPOSED / FUTURE / RESEARCH (not currently implemented)
 
-Frontend development port is fixed: 3000.
+- CalorieDB architecture
+- Decentralized storage concepts (including IPFS and Helia)
+- XRPL transaction-hash correlation and ledger-reference integrity patterns
+- CAL ecosystem integration concepts
+- NFT utility and broader food provenance concepts
+- Production, distribution, wholesale, and retail traceability concepts
+- Biological and laboratory traceability research
+- Native application directions (Android, iOS, Windows, macOS, Linux)
+- Community infrastructure concepts (nodes, validator roles, governance, incentives)
 
-## Run Backend Independently
+### UNKNOWN / REQUIRES INDEPENDENT VERIFICATION
 
-1. Install Python 3.11+.
-2. Change directory to backend.
-3. Run python -m venv .venv.
-4. Activate the virtual environment.
-5. Run pip install -r requirements.txt.
-6. Run python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000.
-7. Open http://127.0.0.1:8000/health.
+- Treasury and issuer-status claims in broader ecosystem discussions
 
-Backend development port is fixed: 8000.
+## Current Architecture
 
-## Backend Startup Helper (Windows PowerShell)
+CalorieApp V1 is intentionally centralized and scope-restricted.
 
-Use the helper to avoid stale backend processes on port 8000:
+1. Next.js frontend provides UI and user interaction flows.
+2. FastAPI backend provides API behavior and business/data logic.
+3. SQLite persists current application data.
+4. Open Food Facts is used as the external food data source.
+5. Identity/authentication is handled through backend-managed session flow.
 
-1. Change directory to backend.
-2. Run .\start-backend.ps1
+Public architecture details: docs/public/architecture.md
 
-This helper will:
+## Current Scope and Boundaries
 
-- Stop any process already listening on port 8000
-- Start one clean backend instance on 127.0.0.1:8000
+CalorieApp V1 is not:
 
-Optional hard reset:
+- a custodial wallet
+- a financial application
+- a payments platform
+- a validator runtime
+- a node runtime
 
-- .\start-backend.ps1 -KillAllPython
+The V1 scope is food and nutrition tracking only.
 
-Warning: KillAllPython terminates all python.exe processes on your machine.
+## Long-Term Vision
 
-## Troubleshooting Inconsistent API Responses
+CalorieApp is intended to evolve toward a broader ecosystem over time. Current research explores how future systems could connect application records, data integrity models, and broader food ecosystem traceability use cases.
 
-If responses look inconsistent (old fields, old behavior, random failures):
+Important boundary:
 
-1. Stop backend processes and start one clean instance using backend/start-backend.ps1.
-2. Verify health endpoint at http://127.0.0.1:8000/health.
-3. Ensure frontend is running on http://localhost:3000 only.
+- Current V1 implementation: active web application features only
+- Future ecosystem architecture: proposed/research direction only
 
-## MVP Backend Endpoints
+## Local Development
 
-- GET /health
-- GET /search-food?q=
-- POST /log-food
-- GET /logs
+## Prerequisites
 
-## Running Backend Tests
+- Node.js 20+
+- Python 3.11+
+
+## Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend environment setup:
+
+- Template file: frontend/.env.example
+- Local runtime file: frontend/.env.local
+- Required variable: NEXT_PUBLIC_BACKEND_URL
+- Local development value: http://localhost:8000
+
+Create frontend/.env.local from the template before running the frontend.
+
+Frontend default local URL: http://localhost:3000
+
+## Backend
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r backend\requirements.txt
+cd backend
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Backend health endpoint: http://127.0.0.1:8000/health
+
+Optional backend startup helper (PowerShell):
+
+```powershell
+cd backend
+.\start-backend.ps1
+```
+
+## Validation
+
+Backend tests:
 
 ```powershell
 cd backend
 pytest
 ```
 
-All tests use FastAPI TestClient and run without a live backend or network connection.
-External API calls are mocked in tests that exercise the search endpoint.
+Frontend checks:
 
-## One-Command Release Gate (Windows PowerShell)
+```powershell
+cd frontend
+npm run lint
+npm run build
+```
 
-From the repo root:
+Optional combined gate from repository root:
 
 ```powershell
 .\release-check.ps1
 ```
 
-This runs backend tests, frontend lint/build, and the developer health check in a single gate.
+## Documentation
+
+- Public architecture: docs/public/architecture.md
+- Public roadmap: docs/public/roadmap.md
+- Public deployment guide: docs/public/deployment.md
+- Public release readiness checklist: docs/public/release-readiness.md
+- Public identity overview: docs/public/identity.md
+
+Research documents are preserved separately under docs/research and should be read as future-direction material, not current implementation claims.
+
+- Research context: docs/research/CALORIE_ECOSYSTEM_ARCHITECTURE_V1.md
+- Research context: docs/research/DECENTRALIZED_ARCHITECTURE_V1.md
+- Research context: docs/research/NATIVE_PLATFORM_ARCHITECTURE_V1.md

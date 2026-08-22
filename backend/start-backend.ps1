@@ -21,6 +21,36 @@ Write-Host ""
 Push-Location $PSScriptRoot
 
 try {
+    $envFilePath = Join-Path $PSScriptRoot ".env"
+    if (Test-Path $envFilePath) {
+        Write-Host "[INFO] Loading backend env file: $envFilePath"
+        Get-Content $envFilePath | ForEach-Object {
+            $line = $_.Trim()
+            if (-not $line -or $line.StartsWith("#")) {
+                return
+            }
+
+            $separatorIndex = $line.IndexOf("=")
+            if ($separatorIndex -lt 1) {
+                return
+            }
+
+            $name = $line.Substring(0, $separatorIndex).Trim()
+            $value = $line.Substring($separatorIndex + 1)
+
+            if ($value.Length -ge 2 -and (
+                ($value.StartsWith('"') -and $value.EndsWith('"')) -or
+                ($value.StartsWith("'") -and $value.EndsWith("'"))
+            )) {
+                $value = $value.Substring(1, $value.Length - 2)
+            }
+
+            Set-Item -Path ("Env:" + $name) -Value $value
+        }
+    } else {
+        Write-Host "[WARN] backend/.env not found. Using shell environment only."
+    }
+
     $frontendListeners = Get-NetTCPConnection -LocalPort $FRONTEND_PORT -State Listen -ErrorAction SilentlyContinue
     if ($frontendListeners) {
         Write-Host "[INFO] Frontend listening on port $FRONTEND_PORT (PID $($frontendListeners[0].OwningProcess))."

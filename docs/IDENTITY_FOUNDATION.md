@@ -1,501 +1,165 @@
-# CalorieApp V2.0 Identity Foundation
+# CalorieApp Identity Foundation
 
-## Architecture Overview
+## Status and scope
 
-CalorieApp V2.0 introduces a secure identity foundation that leverages WordPress's existing XUMM Login authentication while providing independent application-level user management.
+This document describes the current identity contract implemented in the CalorieApp repository.
 
-### Key Design Principles
+**CURRENT IMPLEMENTATION:** CalorieApp V1 is a non-financial, non-custodial food and nutrition application. It uses Xaman/XUMM only as an external identity system through an external WordPress identity bridge.
 
-1. **Do NOT replace XUMM Login 1.3.0** - WordPress remains the authoritative source for Xaman/XRPL address verification
-2. **Application-level identity** - CalorieApp maintains its own internal user model independent of WordPress
-3. **Server-to-server bridge** - Secure identity exchange through short-lived authorization codes
-4. **Privacy by default** - XRPL address is private and only exposed when explicitly needed
-5. **Non-financial architecture** - CalorieApp is purely a nutrition tracking application (V1 scope)
+**APPROVED V1 BOUNDARY:** CalorieApp may perform server-side identity verification, create opaque application sessions, and retain an XRPL address only as external identity metadata. This is an engineering/governance boundary, not a legal or regulatory determination.
 
-## Data Model
+**NOT APPROVED:** private keys, seed phrases, signing credentials, wallet custody, XRPL transaction signing or submission, balances, payments, transfers, exchange/trading, token administration, rewards/value transfer, and other financial functionality. Any such capability requires a separate architecture decision and dedicated legal/compliance, privacy, security, threat-model, and operational review.
 
-### CalorieAppUser
+This document does not verify or approve any WordPress, Xaman, DNS, TLS, Render, Plesk, staging, or production infrastructure.
 
-The internal user identity in CalorieApp.
+## Architecture overview
 
-```sql
-Table: calorieappuser
-- id: UUID (primary key)
-- created_at: DateTime (UTC)
-- updated_at: DateTime (UTC)
-- status: String (default: "active")
-```
-
-Purpose: Immutable, internal user identifier. Never exposed to frontend.
-
-### ExternalIdentity
-
-Links a CalorieAppUser to an external authentication provider (WordPress/XUMM).
-
-```sql
-Table: externalidentity
-- id: UUID (primary key)
-- calorieapp_user_id: UUID (foreign key → calorieappuser.id)
-- provider: String (e.g., "wordpress_xumm")
-- external_subject: String (e.g., WordPress user ID)
-- xrpl_address: String (nullable, e.g., "rN7n7otQDd6...")
-- created_at: DateTime (UTC)
-- last_verified_at: DateTime (UTC)
-
-Unique constraint: (provider, external_subject) = unique
-```
-
-Purpose: Maintains mapping between internal and external identities. Supports future authentication providers.
-
-### AuthorizationCode
-
-One-time authorization code for the identity exchange flow.
-
-```sql
-Table: authorizationcode
-- id: UUID (primary key)
-- code_hash: String (SHA256, unique)
-- external_subject: String (WordPress user ID)
-- xrpl_address: String (nullable)
-- state: String (CSRF protection)
-- login_session_id: String (login attempt ID)
-- created_at: DateTime (UTC)
-- expires_at: DateTime (UTC)
-- used_at: DateTime (nullable)
-- used_by_ip: String (nullable)
-```
-
-Purpose: Prevents replay attacks, enforces single-use semantics, enables state validation.
-
-## Authentication Flow
-
-### Step 1: Login Initiation (Frontend → Backend)
+CalorieApp maintains an internal user model that is distinct from the external identity provider. WordPress is the external bridge for the browser's Xaman/XUMM identity flow; CalorieApp validates the bridge interaction server-side and establishes its own application session.
 
 ```
-POST /api/identity/login/start
-Response:
-{
-  "login_session_id": "uuid-123",
-  "state": "state-value-456",
-  "wordpress_auth_url": "https://calorietoken.net/wp-login.php?..."
-}
+Browser
+  -> CalorieApp login-start API
+  -> external WordPress/Xaman identity flow
+  -> browser callback with code and state
+  -> CalorieApp server-side WordPress bridge exchange
+  -> opaque CalorieApp session cookie
+  -> authenticated CalorieApp APIs
 ```
 
-CalorieApp backend generates:
-- `login_session_id`: Unique identifier for this login attempt
-- `state`: CSRF token stored in frontend session
-- `wordpress_auth_url`: Redirect URL to WordPress
+The browser is not given a CalorieApp raw user ID as an authentication credential. CalorieApp does not become a wallet, transaction signer, or financial service through this identity integration.
 
-### Step 2: WordPress Authentication (Frontend → WordPress → Xaman)
+## Current data model
 
-Browser redirects to `wordpress_auth_url`. User authenticates with Xaman via XUMM Login plugin.
+### CalorieApp user and external identity
 
-WordPress extracts verified XRPL address from Xaman response and stores in WordPress user metadata: `xrpl-r-address`
+`CalorieAppUserDB` is the internal CalorieApp user record. `ExternalIdentityDB` maps an internal user to an external provider and subject. The active provider identifier is `wordpress_xumm`.
 
-### Step 3: WordPress Bridge Redirect (WordPress → Frontend)
+`ExternalIdentityDB.xrpl_address` is nullable external identity metadata. It is not a private key, signing credential, wallet-custody record, balance record, transaction authority, or proof of financial ownership.
 
-WordPress companion bridge plugin:
-1. Detects authenticated WordPress user
-2. Reads `xrpl-r-address` metadata server-side
-3. Generates short-lived (60s) authorization code
-4. Redirects to CalorieApp callback:
-   ```
-   GET https://app.calorietoken.net/auth/callback?code=XXXX&state=YYY
-   ```
+### Pending login state
 
-### Step 4: Code Exchange (Frontend → Backend)
+`PendingLoginStateDB` persists a hashed login state with creation, expiration, status, and consumption timestamps. The backend generates a high-entropy state when login begins; its stored form is SHA-256 hashed. The current default state lifetime is 300 seconds, configurable through `LOGIN_STATE_LIFETIME_SECONDS`.
 
-Frontend submits authorization code:
-```
-POST /api/identity/callback
-{
-  "code": "authorization-code-12345",
-  "state": "state-value-456"
-}
-```
+The callback consumes pending state using a conditional database update. A state can proceed only once while pending and unexpired, which prevents callback replay and concurrent double consumption.
 
-CalorieApp backend validates code and exchanges for identity claims (server-to-server with WordPress).
+### Opaque application sessions
 
-### Step 5: User Creation/Retrieval
+`AuthSessionDB` stores the SHA-256 hash of an opaque CalorieApp session token, the internal user ID, creation and last-seen timestamps, expiry, revocation status, and optional replacement-session linkage.
 
-If external identity exists:
-```
-CalorieAppUser (existing) ← ExternalIdentity ← identity claims
-```
+The session token itself is not stored in the database. Current source sets an 8-hour absolute session lifetime and a 30-minute idle lifetime. A valid request updates `last_seen_at`; expired, idle-expired, revoked, unknown, or userless sessions are rejected. Login can revoke a previously supplied valid session when replacing it.
 
-If new identity:
-```
-ExternalIdentity (new) → CalorieAppUser (new) ← identity claims
-```
+### Bridge replay records
 
-### Step 6: Session Creation
+`BridgeAuthNonceDB` stores hashed bridge nonces with a client ID, context, creation time, and expiry. A unique constraint prevents reuse within the same client/context.
 
-CalorieApp backend creates authenticated session:
-```
-Set-Cookie: calorieapp_user_id=<user_id>; Secure; HttpOnly; SameSite=Strict
-```
+## Current authentication flow
 
-Returns success response. Frontend redirects to authenticated home page.
+### 1. Login start
 
-## API Endpoints
+The browser calls `POST /api/identity/login/start`. The backend creates a pending state and returns:
 
-### Identity Endpoints (Public)
-
-#### `POST /api/identity/login/start`
-
-Initiates the login flow. Returns login session ID, state, and WordPress auth URL.
-
-**No authentication required**
-
-Response:
 ```json
 {
-  "login_session_id": "550e8400-e29b-41d4-a716-446655440000",
-  "state": "random-state-value-12345",
-  "wordpress_auth_url": "https://calorietoken.net/wp-login.php?..."
+  "state": "high-entropy-state",
+  "expires_at": "timestamp",
+  "wordpress_signin_url": "backend-generated WordPress sign-in URL"
 }
 ```
 
-#### `POST /api/identity/callback`
+The backend-generated URL directs the browser to the external WordPress/Xaman flow and includes the WordPress bridge authorize endpoint with the pending state.
 
-Callback endpoint where WordPress bridge redirects after authentication.
+### 2. External identity flow
 
-**No authentication required**
+The browser completes the identity flow outside CalorieApp through WordPress and Xaman/XUMM. The companion WordPress bridge and its Xaman configuration are external dependencies and are not included or verified in this repository.
 
-Request:
-```json
-{
-  "code": "authorization-code-from-wordpress",
-  "state": "state-value-from-login-start"
-}
-```
-
-Response (on success):
-```json
-{
-  "user_id": "550e8400-e29b-41d4-a716-446655440000",
-  "status": "authenticated"
-}
-```
+### 3. Bridge pending-state validation
 
-Sets session cookie: `calorieapp_user_id`
+The bridge may call `POST /api/identity/login/state/validate` to validate a pending state. The current backend verifies these request headers:
 
-### Identity Endpoints (Authenticated)
+- `x-calorieapp-client-id`
+- `x-calorieapp-timestamp`
+- `x-calorieapp-nonce`
+- `x-calorieapp-signature`
 
-#### `GET /api/identity/me`
+The signature is an HMAC-SHA256 over a canonical payload containing the protocol version, client ID, timestamp, nonce, and state. The backend verifies the configured client ID, enforces configured timestamp age/future limits, validates nonce format, compares the HMAC, and atomically reserves the nonce. Replayed nonces are rejected.
 
-Get current authenticated user information.
+### 4. Browser callback and server-side exchange
 
-**Requires session cookie**
+The browser calls `POST /api/identity/callback` with only `code` and `state`.
 
-Response:
-```json
-{
-  "user_id": "550e8400-e29b-41d4-a716-446655440000",
-  "created_at": "2026-08-20T10:30:00Z"
-}
-```
+The backend validates and consumes the pending state before calling the configured WordPress exchange endpoint. The current exchange request uses:
 
-#### `POST /api/identity/logout`
+- `WORDPRESS_BRIDGE_EXCHANGE_URL`
+- JSON body: `code` and `state`
+- `X-CalorieApp-Bridge-Secret`
+- `X-CalorieApp-Client-Id`
 
-Invalidate current session. Does NOT log out of WordPress/XUMM.
+The backend validates the returned identity claims, resolves or creates the CalorieApp user and external-identity mapping, and creates an opaque CalorieApp session. The browser does not provide an XRPL address as an authoritative callback claim.
 
-**Requires session cookie**
+### 5. Session creation and use
 
-Response:
-```json
-{
-  "message": "Logged out successfully"
-}
-```
+On successful callback, the backend sets the `calorieapp_session` cookie. It is configured with:
 
-Clears `calorieapp_user_id` cookie.
+- `HttpOnly=true`
+- `Secure` controlled by `SESSION_COOKIE_SECURE` (default `true` in source)
+- `SameSite=lax`
+- `Path=/`
+- `Max-Age` equal to the configured absolute session lifetime
 
-### Food Log Endpoints (Authenticated)
+Authenticated APIs resolve the cookie token against the corresponding hashed `AuthSessionDB` record. `GET /api/identity/me` returns the current internal user ID and creation time. `POST /api/identity/logout` revokes the current CalorieApp session and clears `calorieapp_session`; it does not log the user out of WordPress or Xaman/XUMM.
 
-All food log endpoints now require authentication.
+## Food authorization
 
-- `POST /log-food` - Log a food item (requires auth)
-- `GET /logs` - Retrieve user's food logs (requires auth)
-- `DELETE /logs/{id}` - Delete a specific log entry (requires auth)
-- `DELETE /logs` - Delete all log entries (requires auth)
+`POST /log-food`, `GET /logs`, `DELETE /logs/{log_id}`, and `DELETE /logs` require an authenticated CalorieApp session.
 
-Food logs are associated with the authenticated user via `owner_id`.
+New food logs receive the authenticated user's `owner_id`. Queries return only logs owned by that user, and deletion rejects entries owned by another user. Legacy V1.2 records with `owner_id=NULL` remain in the database for migration or administrative review, but are intentionally excluded from normal authenticated user queries because ownership is unknown.
 
-**Migration note**: Existing V1.2 food logs without `owner_id` remain readable by authenticated users (support backward compatibility).
+## Configuration terminology
 
-## Server-to-Server Authentication (WordPress ↔ CalorieApp)
-
-The WordPress companion bridge and CalorieApp backend use mutual authentication:
+The current backend reads its identity configuration from environment variables, including:
 
-### Authentication Method
-
-**Recommended**: HMAC-SHA256 with rotating keys stored in environment variables
-
-```python
-# CalorieApp backend
-WORDPRESS_BRIDGE_SECRET = os.getenv("WORDPRESS_BRIDGE_SECRET")
+- `WORDPRESS_URL`
+- `WORDPRESS_BRIDGE_AUTHORIZE_URL`
+- `WORDPRESS_BRIDGE_EXCHANGE_URL`
+- `WORDPRESS_BRIDGE_SECRET`
+- `CALORIEAPP_CLIENT_ID`
+- `CALORIEAPP_POST_LOGIN_REDIRECT`
+- `LOGIN_STATE_LIFETIME_SECONDS`
+- `SESSION_COOKIE_SECURE`
+- `BRIDGE_AUTH_MAX_AGE_SECONDS`
+- `BRIDGE_AUTH_MAX_FUTURE_SECONDS`
+- `BRIDGE_NONCE_RETENTION_SECONDS`
 
-# WordPress .env
-CALORIEAPP_CLIENT_ID = getenv("CALORIEAPP_CLIENT_ID", "calorieapp-backend")
-CALORIEAPP_CLIENT_SECRET = getenv("CALORIEAPP_CLIENT_SECRET")  # Same as WORDPRESS_BRIDGE_SECRET
-```
+Secrets belong in the relevant runtime secret store and must not be placed in documentation, client-side configuration, or source control. The values, host ownership, TLS configuration, and live endpoint behavior are external and unverified here.
 
-### Code Exchange Flow
+## Implemented security controls
 
-1. Frontend receives `code` from WordPress
-2. Frontend submits to CalorieApp: `POST /api/identity/callback`
-3. CalorieApp backend calls WordPress bridge server-to-server:
-   ```
-   POST https://calorietoken.net/wp-json/xummlogin/v1/exchange
-   Headers:
-     - X-Client-Id: calorieapp-backend
-     - X-Signature: HMAC-SHA256(payload, WORDPRESS_BRIDGE_SECRET)
-   Body:
-     {
-       "code": "authorization-code",
-       "nonce": "unique-request-id"
-     }
-   ```
-4. WordPress bridge verifies signature and code validity
-5. WordPress returns verified identity claims:
-   ```json
-   {
-     "external_subject": "wordpress_user_123",
-     "xrpl_address": "rN7n7otQDd6FczFgLdlqtyMVrDHdH6s4vg",
-     "issued_at": "2026-08-20T10:30:00Z",
-     "expires_at": "2026-08-20T10:35:00Z",
-     "jti": "unique-issuance-id"
-   }
-   ```
-6. CalorieApp creates/updates user and establishes session
-
-## Environment Variables
-
-### CalorieApp Backend
-
-```bash
-# Database
-DATABASE_URL=sqlite:///backend/calorieapp.db
-
-# CORS
-CORS_ORIGINS=https://app.calorietoken.net,https://app-staging.calorietoken.net
-
-# WordPress Integration
-WORDPRESS_URL=https://calorietoken.net
-WORDPRESS_BRIDGE_SECRET=your-shared-secret-here  # CRITICAL: Store securely
-
-# CalorieApp Identity
-CALORIEAPP_CLIENT_ID=calorieapp-backend
-CALORIEAPP_CALLBACK_URL=https://app.calorietoken.net/auth/callback
-```
-
-### WordPress (Companion Plugin)
-
-```bash
-# .env or wp-config.php constants
-define("CALORIEAPP_CLIENT_ID", "calorieapp-backend");
-define("CALORIEAPP_CLIENT_SECRET", "your-shared-secret-here");  # Must match WORDPRESS_BRIDGE_SECRET
-define("CALORIEAPP_CALLBACK_URL", "https://app.calorietoken.net/auth/callback");
-```
+- High-entropy pending login state stored as a hash.
+- Atomic pending-state consumption for single-use callback semantics.
+- Opaque, high-entropy session tokens stored only as hashes.
+- Server-side session expiry, idle expiry, revocation, and replacement support.
+- HMAC-SHA256 bridge validation with client ID, timestamp, and one-time nonce replay protection.
+- HttpOnly session cookie with source-configured Secure behavior and `SameSite=lax`.
+- Owner-scoped food-log access and mutation.
+- External identity boundary: no private-key custody and no XRPL transaction signing or submission by CalorieApp.
 
-## Security Considerations
+## Historical / superseded documentation
 
-### Implemented Protections
+Earlier versions of this document described a `calorieapp_user_id` authentication cookie, `SameSite=Strict`, a frontend-managed login-session identifier, ownerless legacy logs being normally readable, and an older WordPress exchange endpoint/header contract. Those descriptions are historical and superseded by the current implementation above.
 
-1. **Authorization Code**
-   - Cryptographically random, high-entropy
-   - Single-use only (replay protected)
-   - Short-lived (60 seconds default)
-   - Hash stored (not plaintext)
+The repository still contains `AuthorizationCodeDB` and related helper functions from the earlier identity-foundation work. They are retained as historical implementation context, but the active backend callback contract is the pending-state validation and external WordPress bridge exchange described in this document. This repository does not establish the implementation or live status of the external WordPress companion plugin.
 
-2. **CSRF Protection**
-   - State parameter required for every login
-   - Frontend generates state before redirect
-   - State verified upon callback
+## Testing and infrastructure status
 
-3. **Session Security**
-   - HttpOnly cookies (prevent JS access)
-   - Secure flag (HTTPS only in production)
-   - SameSite=Strict (CSRF prevention)
-   - Per-request session validation
+Backend identity and endpoint tests cover current session, callback, state, nonce replay, and food-authorization behavior. Test presence does not verify external WordPress/Xaman hosting or a live end-to-end deployment.
 
-4. **Server-to-Server Security**
-   - HMAC-SHA256 request signing
-   - Secrets stored in environment variables
-   - HTTPS only
-   - Nonce/jti prevents replay
+Local development uses the repository's backend and frontend configuration. Staging and production infrastructure, including DNS, TLS, hosts, deployment platforms, bridge configuration, secrets, and database operations, remain planned or external and require independent verification.
 
-5. **Information Disclosure**
-   - XRPL address never returned to frontend unless explicitly requested
-   - WordPress auth cookie never shared with CalorieApp
-   - XUMM API Secret never exposed outside WordPress
-   - Minimal identity claims returned
+## Future work
 
-### NOT Implemented (Requires WordPress Plugin)
-
-- WordPress companion bridge authentication endpoint
-- Authorization code generation on WordPress side
-- XRPL address metadata reads from WordPress
-
-These are handled by a separate WordPress plugin (not included in CalorieApp repository).
-
-## Testing
-
-All identity functionality has comprehensive test coverage:
-
-### Unit Tests (test_identity.py)
-
-- Authorization code generation and hashing
-- Code validation and expiration
-- Replay attack prevention
-- State parameter validation
-- Login session validation
-- User creation and retrieval
-- External identity association
-
-### Integration Tests (test_identity_endpoints.py)
-
-- Login flow endpoint
-- Callback endpoint
-- Authenticated user retrieval
-- Logout functionality
-- Food log authentication requirements
-- Authenticated food log operations
-
-Run tests:
-```bash
-pytest backend/tests/ -v
-```
-
-All 61 tests pass ✓
-
-## Migration from V1.2
-
-### Existing Food Logs
-
-- Not destroyed or invalidated
-- `owner_id` field remains nullable initially
-- Unauthenticated users cannot access them
-- Authenticated users can see both owned and legacy logs (during transition)
-- Future: Explicit migration path for ownership assignment
-
-### Database Migration
-
-No complex migrations needed:
-1. SQLModel creates new tables on startup
-2. Existing `food_log` table remains unchanged
-3. New `calorieappuser`, `externalidentity`, `authorizationcode` tables created
-4. Optional columns added to `food_log` via `ALTER TABLE` helper
-
-## Development Setup (Local)
-
-### Prerequisites
-
-- Python 3.12+
-- FastAPI, SQLModel, Pydantic installed
-- Virtual environment configured
-
-### Local Development Database
-
-```bash
-# Database created automatically on first run
-# Located at: backend/calorieapp.db
-
-# Clear for testing
-rm backend/calorieapp.db
-```
-
-### Run Local Backend
-
-```bash
-cd backend
-python -m uvicorn app.main:app --reload --port 8000
-```
-
-### Local Frontend Configuration
-
-```javascript
-// frontend/.env.local
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_WORDPRESS_URL=http://localhost:8080  // or production WordPress
-```
-
-### Bypass Authentication (Development Only)
-
-For local development without WordPress:
-1. Manually create user in test database
-2. Set session cookie: `calorieapp_user_id=<user_id>`
-3. Access authenticated endpoints
-
-## Deployment Checklist
-
-- [ ] Set `WORDPRESS_BRIDGE_SECRET` in production environment
-- [ ] Set `WORDPRESS_URL` to production WordPress domain
-- [ ] Set `CALORIEAPP_CALLBACK_URL` to production frontend URL
-- [ ] Set `CORS_ORIGINS` to production frontend domain
-- [ ] Configure HTTPS everywhere
-- [ ] Verify WordPress companion plugin is installed and configured
-- [ ] Test login flow end-to-end
-- [ ] Monitor logs for auth errors
-- [ ] Set up database backups
-- [ ] Document any custom environment variables
-
-## Future Enhancements
-
-### Not Implemented in V2.0
-
-- Public profiles / social features
-- Leaderboards
-- NFTs / blockchain integration
-- IPFS usage
-- BigchainDB logging
-- DAO / voting
-- Multi-device session management
-- OAuth2 / OpenID Connect (for third-party apps)
-- Passwordless email login
-- Two-factor authentication
-
-### Design Reserved For Future
-
-- Alternative identity providers (Google, Apple, etc.)
-- Federated identity protocol support
-- Decentralized identity (DIDs)
-- Verifiable credentials
-
-## Support and Troubleshooting
-
-### Common Issues
-
-**Login redirect fails**
-- Verify `WORDPRESS_URL` is correct
-- Check `WORDPRESS_BRIDGE_SECRET` matches on both sides
-- Ensure HTTPS is configured
-
-**State mismatch error**
-- Frontend state not preserved across redirects
-- Check session storage is working
-- Verify CORS is allowing credentials
-
-**Authorization code expired**
-- Code lifetime is 60 seconds
-- Network delay or browser delay
-- Increase timeout if needed (requires code change)
-
-**User not found after auth**
-- Check WordPress bridge plugin installed
-- Verify `xrpl-r-address` metadata exists in WordPress
-- Ensure external_subject format matches (usually WordPress user ID)
-
-## References
-
-- XUMM Login Plugin: https://github.com/xrpfactchecker/xummlogin
-- XRPL Sign-In: https://xrpl.org/xrpl-signers/
-- FastAPI Docs: https://fastapi.tiangolo.com/
-- SQLModel: https://sqlmodel.tiangolo.com/
+The following are not authorized by this document: financial, token, custody, wallet, payment, transaction, or value-transfer capabilities; expanded Web3 functionality; and changes to the external identity boundary. They require separate approval under Decision 6G-10A.
 
 ---
 
-**Last Updated**: 2026-08-20
-**Version**: 2.0.0
-**Status**: Identity Foundation Implemented ✓
+**Last reconciled:** 2026-08-20
+**Status:** Current implementation and approved V1 boundary documented; external infrastructure remains unverified.
