@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { announceAuthState } from "@/components/authEvents";
 
 type MeResponse = {
   user_id: string;
@@ -23,7 +24,7 @@ export function XamanLoginPanel() {
 
   const backendConfigured = useMemo(() => BACKEND_BASE_URL.length > 0, []);
 
-  async function refreshCurrentUser() {
+  const refreshCurrentUser = useCallback(async () => {
     if (!BACKEND_BASE_URL) {
       return;
     }
@@ -34,6 +35,9 @@ export function XamanLoginPanel() {
       });
       if (!response.ok) {
         setCurrentUser(null);
+        if (response.status === 401) {
+          announceAuthState(false);
+        }
         return;
       }
       const data = (await response.json()) as MeResponse;
@@ -41,11 +45,11 @@ export function XamanLoginPanel() {
     } catch {
       setCurrentUser(null);
     }
-  }
+  }, []);
 
   useEffect(() => {
     refreshCurrentUser();
-  }, []);
+  }, [refreshCurrentUser]);
 
   async function handleLogin() {
     if (!BACKEND_BASE_URL) {
@@ -93,11 +97,18 @@ export function XamanLoginPanel() {
         credentials: "include",
       });
 
+      if (response.status === 401) {
+        setCurrentUser(null);
+        announceAuthState(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error("Unable to logout");
       }
 
       setCurrentUser(null);
+      announceAuthState(false);
     } catch {
       setError("Unable to logout right now. Please try again.");
     } finally {

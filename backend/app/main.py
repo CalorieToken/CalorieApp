@@ -8,12 +8,13 @@ from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from secrets import compare_digest, token_urlsafe
 from typing import Annotated, Optional
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote_plus, urlencode, urlsplit
 
 import httpx
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import HTTPError
+from pydantic import ValidationError
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
@@ -59,13 +60,13 @@ _WORDPRESS_BRIDGE_SECRET = os.getenv("WORDPRESS_BRIDGE_SECRET", "")
 _CALORIEAPP_CLIENT_ID = os.getenv("CALORIEAPP_CLIENT_ID", "calorieapp-backend")
 _WORDPRESS_BRIDGE_AUTHORIZE_URL = os.getenv(
     "WORDPRESS_BRIDGE_AUTHORIZE_URL",
-    f"{_WORDPRESS_URL.rstrip('/')}/wp-json/calorieapp/v1/authorize",
+    f"{_WORDPRESS_URL.rstrip('/')}/index.php/wp-json/calorieapp/v1/authorize",
 )
 _WORDPRESS_BRIDGE_EXCHANGE_URL = os.getenv(
     "WORDPRESS_BRIDGE_EXCHANGE_URL",
-    f"{_WORDPRESS_URL.rstrip('/')}/wp-json/calorieapp/v1/exchange",
+    f"{_WORDPRESS_URL.rstrip('/')}/index.php/wp-json/calorieapp/v1/exchange",
 )
-_CALORIEAPP_POST_LOGIN_REDIRECT = os.getenv("CALORIEAPP_POST_LOGIN_REDIRECT", "/dashboard")
+_CALORIEAPP_POST_LOGIN_REDIRECT = os.getenv("CALORIEAPP_POST_LOGIN_REDIRECT", "/")
 _LOGIN_STATE_LIFETIME_SECONDS = int(os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300"))
 _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {"1", "true", "yes"}
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
@@ -99,10 +100,90 @@ def _validate_session_cookie_security_configuration() -> None:
         )
 
 
+def _validate_cors_security_configuration() -> None:
+    if not _CORS_ORIGINS:
+        raise RuntimeError("CORS_ORIGINS must contain at least one explicit origin")
+
+    seen: set[str] = set()
+    for origin in _CORS_ORIGINS:
+        if origin == "*":
+            raise RuntimeError("CORS_ORIGINS cannot use '*' with credentialed requests")
+        if origin in seen:
+            raise RuntimeError(f"CORS_ORIGINS contains duplicate origin: {origin}")
+        seen.add(origin)
+
+        try:
+            parsed = urlsplit(origin)
+            parsed.port
+        except ValueError as exc:
+            raise RuntimeError(f"CORS_ORIGINS contains an invalid origin: {origin}") from exc
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise RuntimeError(f"CORS_ORIGINS contains an invalid origin: {origin}")
+        if parsed.username or parsed.password or parsed.query or parsed.fragment:
+            raise RuntimeError(f"CORS_ORIGINS must contain origins only: {origin}")
+        if parsed.path:
+            raise RuntimeError(f"CORS_ORIGINS must not contain a path or trailing slash: {origin}")
+
+        hostname = (parsed.hostname or "").lower()
+        is_loopback = hostname in {"localhost", "127.0.0.1", "::1"}
+        if parsed.scheme != "https" and not is_loopback:
+            raise RuntimeError(
+                "CORS_ORIGINS requires HTTPS except for localhost development origins: "
+                f"{origin}"
+            )
+
+
+def _parse_secure_bridge_url(name: str, value: str):
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError as exc:
+        raise RuntimeError(f"{name} is not a valid URL") from exc
+
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise RuntimeError(f"{name} must be an absolute HTTPS URL")
+    if parsed.username or parsed.password or parsed.fragment:
+        raise RuntimeError(f"{name} must not contain credentials or a fragment")
+    return parsed, port
+
+
+def _validate_identity_url_configuration() -> None:
+    wordpress, wordpress_port = _parse_secure_bridge_url("WORDPRESS_URL", _WORDPRESS_URL)
+    if wordpress.path not in {"", "/"} or wordpress.query:
+        raise RuntimeError("WORDPRESS_URL must contain only the HTTPS site origin")
+
+    wordpress_origin = (wordpress.scheme, wordpress.hostname.lower(), wordpress_port)
+    for name, value in (
+        ("WORDPRESS_BRIDGE_AUTHORIZE_URL", _WORDPRESS_BRIDGE_AUTHORIZE_URL),
+        ("WORDPRESS_BRIDGE_EXCHANGE_URL", _WORDPRESS_BRIDGE_EXCHANGE_URL),
+    ):
+        parsed, port = _parse_secure_bridge_url(name, value)
+        endpoint_origin = (parsed.scheme, parsed.hostname.lower(), port)
+        if endpoint_origin != wordpress_origin:
+            raise RuntimeError(f"{name} must use the same origin as WORDPRESS_URL")
+        if not parsed.path or parsed.path == "/" or parsed.query:
+            raise RuntimeError(f"{name} must contain a fixed endpoint path without a query")
+
+    redirect = _CALORIEAPP_POST_LOGIN_REDIRECT
+    if (
+        not redirect.startswith("/")
+        or redirect.startswith("//")
+        or "\\" in redirect
+        or any(ord(character) < 32 for character in redirect)
+    ):
+        raise RuntimeError("CALORIEAPP_POST_LOGIN_REDIRECT must be a safe local app path")
+
+    parsed_redirect = urlsplit(redirect)
+    if parsed_redirect.scheme or parsed_redirect.netloc:
+        raise RuntimeError("CALORIEAPP_POST_LOGIN_REDIRECT must be a safe local app path")
+
+
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     """Create database tables on startup."""
     _validate_session_cookie_security_configuration()
+    _validate_cors_security_configuration()
+    _validate_identity_url_configuration()
     init_db()
     logger.info("Database initialized")
     logger.info("CORS origins: %s", _CORS_ORIGINS)
@@ -116,6 +197,27 @@ app = FastAPI(
     version="0.2.0",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def apply_response_security_headers(request: Request, call_next):
+    """Apply API security headers and keep private responses out of caches."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
+
+    path = request.url.path
+    if (
+        path.startswith("/api/identity/")
+        or path == "/logs"
+        or path.startswith("/logs/")
+        or path == "/log-food"
+    ):
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["Pragma"] = "no-cache"
+    return response
 
 # Enable credentials for session-based authentication
 app.add_middleware(
@@ -480,7 +582,7 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
 
     try:
         return IdentityClaimsResponse.model_validate(payload)
-    except Exception as exc:
+    except ValidationError as exc:
         raise HTTPException(status_code=502, detail="Bridge identity claims were malformed") from exc
 
 
@@ -797,11 +899,15 @@ def delete_all_logs(
 
 @app.get("/search-food", response_model=FoodSearchResponse)
 async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> FoodSearchResponse:
+    query = q.strip()
+    if not query:
+        raise HTTPException(status_code=422, detail="Search query must contain visible characters")
+
     try:
-        results = await search_food_products(q)
+        results = await search_food_products(query)
     except HTTPError as exc:
-        logger.warning("Open Food Facts search failed for query=%s: %s", q, exc)
+        logger.warning("Open Food Facts search failed for query=%s: %s", query, exc)
         raise HTTPException(status_code=502, detail="Open Food Facts request failed") from exc
 
-    logger.info("Food search query=%s returned %s results", q, len(results))
-    return FoodSearchResponse(query=q, results=results)
+    logger.info("Food search query=%s returned %s results", query, len(results))
+    return FoodSearchResponse(query=query, results=results)

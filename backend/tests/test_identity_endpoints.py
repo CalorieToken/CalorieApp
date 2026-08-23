@@ -165,6 +165,120 @@ class TestIdentityEndpoints:
             with pytest.raises(RuntimeError, match="SESSION_COOKIE_SECURE=false is only allowed"):
                 main_module._validate_session_cookie_security_configuration()
 
+    @pytest.mark.parametrize(
+        "origins",
+        [
+            [],
+            ["*"],
+            ["https://app.example.com", "https://app.example.com"],
+            ["app.example.com"],
+            ["http://app.example.com"],
+            ["https://app.example.com/path"],
+            ["https://app.example.com/"],
+            ["https://app.example.com:not-a-port"],
+            ["https://user:password@app.example.com"],
+        ],
+    )
+    def test_cors_configuration_rejects_unsafe_origins(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        origins: list[str],
+    ):
+        monkeypatch.setattr(main_module, "_CORS_ORIGINS", origins)
+        with pytest.raises(RuntimeError, match="CORS_ORIGINS"):
+            main_module._validate_cors_security_configuration()
+
+    @pytest.mark.parametrize(
+        "origins",
+        [
+            ["https://app.example.com"],
+            ["https://app.example.com", "https://admin.example.com:8443"],
+            ["http://localhost:3000"],
+            ["http://127.0.0.1:3000"],
+            ["http://[::1]:3000"],
+        ],
+    )
+    def test_cors_configuration_accepts_explicit_safe_origins(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        origins: list[str],
+    ):
+        monkeypatch.setattr(main_module, "_CORS_ORIGINS", origins)
+        main_module._validate_cors_security_configuration()
+
+    def test_startup_fails_closed_for_unsafe_cors_origin(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        monkeypatch.setattr(main_module, "_CORS_ORIGINS", ["*"])
+        with pytest.raises(RuntimeError, match="CORS_ORIGINS"):
+            with TestClient(app):
+                pass
+
+    @pytest.mark.parametrize(
+        "redirect",
+        [
+            "https://evil.example/path",
+            "//evil.example/path",
+            "dashboard",
+            "/\\evil.example/path",
+            "/dashboard\nnext",
+        ],
+    )
+    def test_identity_configuration_rejects_external_or_malformed_post_login_redirects(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        redirect: str,
+    ):
+        monkeypatch.setattr(main_module, "_CALORIEAPP_POST_LOGIN_REDIRECT", redirect)
+        with pytest.raises(RuntimeError, match="CALORIEAPP_POST_LOGIN_REDIRECT"):
+            main_module._validate_identity_url_configuration()
+
+    @pytest.mark.parametrize("redirect", ["/", "/dashboard", "/history?view=recent", "/food/log#top"])
+    def test_identity_configuration_accepts_local_post_login_redirects(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        redirect: str,
+    ):
+        monkeypatch.setattr(main_module, "_CALORIEAPP_POST_LOGIN_REDIRECT", redirect)
+        main_module._validate_identity_url_configuration()
+
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("_WORDPRESS_URL", "http://calorietoken.net"),
+            ("_WORDPRESS_URL", "https://user:password@calorietoken.net"),
+            ("_WORDPRESS_URL", "https://calorietoken.net/site"),
+            ("_WORDPRESS_BRIDGE_AUTHORIZE_URL", "http://calorietoken.net/authorize"),
+            ("_WORDPRESS_BRIDGE_AUTHORIZE_URL", "https://evil.example/authorize"),
+            ("_WORDPRESS_BRIDGE_AUTHORIZE_URL", "https://calorietoken.net"),
+            ("_WORDPRESS_BRIDGE_EXCHANGE_URL", "https://evil.example/exchange"),
+            ("_WORDPRESS_BRIDGE_EXCHANGE_URL", "https://calorietoken.net/exchange?target=other"),
+        ],
+    )
+    def test_identity_configuration_rejects_unsafe_bridge_urls(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        field: str,
+        value: str,
+    ):
+        monkeypatch.setattr(main_module, field, value)
+        with pytest.raises(RuntimeError, match="WORDPRESS"):
+            main_module._validate_identity_url_configuration()
+
+    def test_startup_fails_closed_for_external_post_login_redirect(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        monkeypatch.setattr(
+            main_module,
+            "_CALORIEAPP_POST_LOGIN_REDIRECT",
+            "https://evil.example",
+        )
+        with pytest.raises(RuntimeError, match="CALORIEAPP_POST_LOGIN_REDIRECT"):
+            with TestClient(app):
+                pass
+
     def test_startup_fails_closed_for_insecure_cookie_outside_local(self, monkeypatch: pytest.MonkeyPatch):
         _set_session_cookie_security_config(monkeypatch, secure=False, environment="staging")
 
@@ -187,9 +301,12 @@ class TestIdentityEndpoints:
         assert "expires_at" in data
         assert "wordpress_signin_url" in data
         assert data["wordpress_signin_url"].startswith("https://calorietoken.net/?xl-signin&redirect=")
-        assert "%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize" in data["wordpress_signin_url"]
+        assert "%2Findex.php%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize" in data["wordpress_signin_url"]
         assert "state%3D" in data["wordpress_signin_url"]
         assert len(data["state"]) >= 32
+        assert response.headers["cache-control"] == "no-store"
+        assert response.headers["pragma"] == "no-cache"
+        assert data["expires_at"].endswith("Z")
 
     def test_login_start_generates_unique_high_entropy_states(self, client: TestClient):
         first = client.post("/api/identity/login/start").json()["state"]
@@ -202,7 +319,7 @@ class TestIdentityEndpoints:
         response = client.post("/api/identity/login/start")
         assert response.status_code == 200
         signin_url = response.json()["wordpress_signin_url"]
-        assert "redirect=https%3A%2F%2Fcalorietoken.net%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize%3Fstate%3D" in signin_url
+        assert "redirect=https%3A%2F%2Fcalorietoken.net%2Findex.php%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize%3Fstate%3D" in signin_url
         assert "evil.example" not in signin_url
 
     def test_me_requires_authentication(self, client: TestClient):
@@ -855,7 +972,7 @@ class TestIdentityCallbackFlow:
         callback = client.post("/api/identity/callback", json={"code": "bridge-code", "state": state})
         assert callback.status_code == 200
         payload = callback.json()
-        assert payload["redirect_to"] == "/dashboard"
+        assert payload["redirect_to"] == "/"
         assert payload["created"] is True
         cookie_header = callback.headers.get("set-cookie", "")
         assert f"{SESSION_COOKIE_NAME}=" in cookie_header

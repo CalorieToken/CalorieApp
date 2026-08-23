@@ -6,6 +6,7 @@ export function LoadingState({ variant }: LoadingStateProps) {
   if (variant === "logs") {
     return (
       <div className="mt-4 space-y-2" aria-live="polite" aria-busy="true">
+        <span className="sr-only">Loading food logs...</span>
         <div className="h-14 rounded-lg bg-brand-secondary/10 animate-pulse" />
         <div className="h-14 rounded-lg bg-brand-secondary/10 animate-pulse" />
       </div>
@@ -14,6 +15,7 @@ export function LoadingState({ variant }: LoadingStateProps) {
 
   return (
     <ul className="mt-5 space-y-3" aria-live="polite" aria-busy="true">
+      <li className="sr-only">Searching for foods...</li>
       <li className="rounded-xl border border-brand-secondary/15 bg-white p-5 shadow-sm">
         <div className="h-5 w-2/3 rounded bg-brand-secondary/10 animate-pulse" />
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">

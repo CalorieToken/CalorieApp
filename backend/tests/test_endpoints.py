@@ -58,6 +58,21 @@ def test_health_response_schema(client: TestClient) -> None:
     assert data["service"] == "calorieapp-backend"
 
 
+def test_health_is_not_marked_as_private_session_data(client: TestClient) -> None:
+    response = client.get("/health")
+    assert response.headers.get("cache-control") != "no-store"
+
+
+def test_api_responses_include_baseline_security_headers(client: TestClient) -> None:
+    response = client.get("/health")
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["permissions-policy"] == (
+        "camera=(), microphone=(), geolocation=(), payment=()"
+    )
+
+
 # ---------------------------------------------------------------------------
 # /search-food
 # ---------------------------------------------------------------------------
@@ -155,6 +170,23 @@ def test_search_food_query_too_long_returns_422(client: TestClient) -> None:
     assert response.status_code == 422
 
 
+def test_search_food_whitespace_only_query_returns_422(client: TestClient) -> None:
+    response = client.get("/search-food?q=%20%20%20")
+    assert response.status_code == 422
+
+
+@patch("app.main.search_food_products", new_callable=AsyncMock)
+def test_search_food_normalizes_surrounding_whitespace(
+    mock_search: AsyncMock,
+    client: TestClient,
+) -> None:
+    mock_search.return_value = []
+    response = client.get("/search-food?q=%20banana%20")
+    assert response.status_code == 200
+    assert response.json()["query"] == "banana"
+    mock_search.assert_awaited_once_with("banana")
+
+
 @patch("app.main.search_food_products", new_callable=AsyncMock)
 def test_search_food_upstream_failure_returns_502(mock_search: AsyncMock, client: TestClient) -> None:
     """When Open Food Facts is unreachable the endpoint returns 502."""
@@ -185,6 +217,7 @@ def test_log_food_valid_full_schema(authenticated_client: TestClient) -> None:
     assert data["calories"] == 89.0
     assert data["id"] == 1
     assert "created_at" in data
+    assert data["created_at"].endswith("Z")
 
 
 def test_log_food_valid_minimal_schema(authenticated_client: TestClient) -> None:
@@ -216,6 +249,57 @@ def test_log_food_invalid_empty_product_name(authenticated_client: TestClient) -
     assert response.status_code == 422
 
 
+def test_log_food_rejects_whitespace_only_product_name(
+    authenticated_client: TestClient,
+) -> None:
+    response = authenticated_client.post(
+        "/log-food",
+        json={"product_name": "   ", "calories": 100.0},
+    )
+    assert response.status_code == 422
+
+
+def test_log_food_normalizes_text_fields(authenticated_client: TestClient) -> None:
+    response = authenticated_client.post(
+        "/log-food",
+        json={
+            "product_name": "  Apple  ",
+            "calories": 52.0,
+            "brand": "  Demo Brand  ",
+            "serving_size": "   ",
+            "nutri_score": " b ",
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["product_name"] == "Apple"
+    assert data["brand"] == "Demo Brand"
+    assert data["serving_size"] is None
+    assert data["nutri_score"] == "B"
+
+
+@pytest.mark.parametrize("nutri_score", ["F", "Z", "unknown"])
+def test_log_food_rejects_invalid_nutri_score(
+    authenticated_client: TestClient,
+    nutri_score: str,
+) -> None:
+    response = authenticated_client.post(
+        "/log-food",
+        json={"product_name": "Apple", "calories": 52.0, "nutri_score": nutri_score},
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("field", ["calories", "protein", "fat", "carbohydrates"])
+def test_log_food_rejects_non_finite_nutrition_values(
+    authenticated_client: TestClient,
+    field: str,
+) -> None:
+    payload = {"product_name": "Invalid", "calories": 10.0, field: "Infinity"}
+    response = authenticated_client.post("/log-food", json=payload)
+    assert response.status_code == 422
+
+
 def test_log_food_increments_id(authenticated_client: TestClient) -> None:
     """Successive log entries receive sequential auto-increment ids."""
     r1 = authenticated_client.post("/log-food", json={"product_name": "Apple", "calories": 52.0})
@@ -236,6 +320,14 @@ def test_get_logs_empty(authenticated_client: TestClient) -> None:
     response = authenticated_client.get("/logs")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_private_food_log_responses_disable_http_caching(
+    authenticated_client: TestClient,
+) -> None:
+    response = authenticated_client.get("/logs")
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["pragma"] == "no-cache"
 
 
 def test_get_logs_returns_logged_items(authenticated_client: TestClient) -> None:

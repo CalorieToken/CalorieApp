@@ -2,6 +2,7 @@ import asyncio
 import platform
 import json
 import logging
+import math
 import shutil
 import subprocess
 from typing import Any
@@ -61,6 +62,8 @@ def _to_float(value: Any) -> float:
         return 0.0
     try:
         result = float(value)
+        if not math.isfinite(result):
+            return 0.0
         return round(result, 2)
     except (TypeError, ValueError):
         return 0.0
@@ -95,12 +98,14 @@ def _extract_nutri_score(product: dict[str, Any]) -> str | None:
     value = _to_optional_text(product.get("nutriscore_grade"))
     if not value:
         return None
-    return value.upper()
+    normalized = value.upper()
+    return normalized if normalized in {"A", "B", "C", "D", "E"} else None
 
 
 async def search_food_products(query: str, page_size: int = 10) -> list[FoodSearchResult]:
+    safe_query = query.strip()
     params = {
-        "search_terms": query,
+        "search_terms": safe_query,
         "search_simple": 1,
         "action": "process",
         "json": 1,
@@ -108,7 +113,6 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         "fields": _OPEN_FOOD_FACTS_FIELDS,
     }
 
-    safe_query = query.strip()
     payload: dict[str, Any]
     try:
         payload = await _fetch_primary(params)
@@ -120,7 +124,7 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         )
         try:
             payload = await _fetch_fallback(params)
-        except (ValueError, Exception) as exc:
+        except ValueError as exc:
             logger.error("Open Food Facts fallback failed for query=%r: %s", safe_query, exc)
             raise httpx.HTTPError(f"Open Food Facts fallback failed: {exc}") from exc
 
@@ -212,8 +216,10 @@ async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
                 continue
             raise
 
-    # Should only be reached if both attempts raised a retryable exception.
-    raise last_exc  # type: ignore[misc]
+    # Defensive guard: every retry path records an exception before continuing.
+    if last_exc is None:
+        raise RuntimeError("Open Food Facts primary retry loop ended without a result")
+    raise last_exc
 
 
 def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
@@ -343,7 +349,9 @@ async def _fetch_fallback(params: dict[str, Any]) -> dict[str, Any]:
                 continue
             raise
 
-    raise last_exc  # type: ignore[misc]
+    if last_exc is None:
+        raise RuntimeError("Open Food Facts fallback retry loop ended without a result")
+    raise last_exc
 
 
 def _is_retryable_urllib_error(exc: ValueError) -> bool:

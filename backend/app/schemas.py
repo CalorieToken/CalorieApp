@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 # =========================================================================
@@ -9,7 +9,15 @@ from pydantic import BaseModel, Field
 # =========================================================================
 
 
+def _ensure_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
+
+
 class FoodLogCreate(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False, str_strip_whitespace=True)
+
     product_name: str = Field(..., min_length=1, max_length=120)
     calories: float = Field(..., ge=0)
     protein: float = Field(default=0, ge=0)
@@ -22,13 +30,35 @@ class FoodLogCreate(BaseModel):
     serving_size: Optional[str] = Field(default=None, max_length=80)
     nutri_score: Optional[str] = Field(default=None, min_length=1, max_length=2)
 
+    @field_validator("barcode", "image_url", "brand", "serving_size", mode="after")
+    @classmethod
+    def empty_optional_text_to_none(cls, value: Optional[str]) -> Optional[str]:
+        return value or None
+
+    @field_validator("nutri_score", mode="after")
+    @classmethod
+    def normalize_nutri_score(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        normalized = value.upper()
+        if normalized not in {"A", "B", "C", "D", "E"}:
+            raise ValueError("nutri_score must be one of A, B, C, D, or E")
+        return normalized
+
 
 class FoodLog(FoodLogCreate):
     id: int
     created_at: datetime
 
+    @field_validator("created_at", mode="after")
+    @classmethod
+    def serialize_created_at_as_utc(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
 
 class FoodSearchResult(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
+
     product_name: str
     calories: float = 0
     protein: float = 0
@@ -57,6 +87,11 @@ class IdentityStartResponse(BaseModel):
     state: str
     expires_at: datetime
     wordpress_signin_url: str
+
+    @field_validator("expires_at", mode="after")
+    @classmethod
+    def serialize_expires_at_as_utc(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
 
 
 class IdentityCallbackRequest(BaseModel):
@@ -99,6 +134,11 @@ class IdentityStateValidationResponse(BaseModel):
     valid: bool
     expires_at: datetime
 
+    @field_validator("expires_at", mode="after")
+    @classmethod
+    def serialize_expires_at_as_utc(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
 
 class IdentityClaimsResponse(BaseModel):
     """Verified identity claims from WordPress bridge."""
@@ -109,12 +149,22 @@ class IdentityClaimsResponse(BaseModel):
     expires_at: datetime
     jti: str  # Unique ID for this issuance
 
+    @field_validator("issued_at", "expires_at", mode="after")
+    @classmethod
+    def normalize_claim_timestamps_to_utc(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
 
 class CurrentUserResponse(BaseModel):
     """Current authenticated user information."""
 
     user_id: str
     created_at: datetime
+
+    @field_validator("created_at", mode="after")
+    @classmethod
+    def serialize_created_at_as_utc(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
 
 
 class LogoutResponse(BaseModel):

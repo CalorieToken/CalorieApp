@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { FoodCard } from "@/components/FoodCard";
@@ -9,6 +9,10 @@ import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
+import {
+  AUTH_STATE_CHANGED_EVENT,
+} from "@/components/authEvents";
+import type { AuthStateChangedDetail } from "@/components/authEvents";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 type PortionOption = "whole" | "half" | "quarter" | "custom";
@@ -158,6 +162,11 @@ function nutriScoreGradeFromValue(value: number): "A" | "B" | "C" | "D" | "E" {
 }
 
 export function FoodSearchPlaceholder() {
+  const searchRequestIdRef = useRef(0);
+  const searchAbortControllerRef = useRef<AbortController | null>(null);
+  const logsRequestIdRef = useRef(0);
+  const logMutationInFlightRef = useRef(false);
+  const deleteMutationInFlightRef = useRef(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodSearchItem[]>([]);
   const [logs, setLogs] = useState<FoodSearchItem[]>([]);
@@ -252,6 +261,18 @@ export function FoodSearchPlaceholder() {
     return scaleNutrition(pendingLogItem, selectedPortionPercentage);
   }, [pendingLogItem, selectedPortionPercentage]);
 
+  const clearPrivateLogState = useCallback(() => {
+    // Invalidate any request that began under the previous authentication
+    // state so a late response cannot repopulate another session's logs.
+    logsRequestIdRef.current += 1;
+    setLogs([]);
+    setSelectedLogId(null);
+    setPendingLogItem(null);
+    setPendingLogIndex(null);
+    setIsLogsLoading(false);
+    setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+  }, []);
+
   useEffect(() => {
     if (selectedLogId === null) {
       return;
@@ -263,6 +284,8 @@ export function FoodSearchPlaceholder() {
   }, [logs, selectedLogId]);
 
   const fetchLogs = useCallback(async () => {
+    const requestId = ++logsRequestIdRef.current;
+
     if (!BACKEND_BASE_URL) {
       setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
@@ -271,26 +294,62 @@ export function FoodSearchPlaceholder() {
     setIsLogsLoading(true);
     try {
       const response = await backendFetch(`${BACKEND_BASE_URL}/logs`);
+      if (requestId !== logsRequestIdRef.current) {
+        return;
+      }
       if (response.status === 401) {
-        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        clearPrivateLogState();
         return;
       }
       if (!response.ok) {
         throw new Error("Logs request failed.");
       }
       const data = (await response.json()) as unknown[];
+      if (requestId !== logsRequestIdRef.current) {
+        return;
+      }
       setLogs((data ?? []).map(normalizeFoodItem));
       setLogError(null);
     } catch {
-      setLogError("Unable to load logged foods right now.");
+      if (requestId === logsRequestIdRef.current) {
+        setLogError("Unable to load logged foods right now.");
+      }
     } finally {
-      setIsLogsLoading(false);
+      if (requestId === logsRequestIdRef.current) {
+        setIsLogsLoading(false);
+      }
     }
-  }, []);
+  }, [clearPrivateLogState]);
 
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
+
+  useEffect(() => {
+    return () => {
+      searchAbortControllerRef.current?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleAuthStateChanged(event: Event) {
+      const authEvent = event as CustomEvent<AuthStateChangedDetail>;
+      if (authEvent.detail?.authenticated) {
+        void fetchLogs();
+        return;
+      }
+
+      // Food logs are private session data. Remove them from the rendered UI
+      // immediately when another component completes logout instead of
+      // leaving the previous account's entries visible until a page refresh.
+      clearPrivateLogState();
+    }
+
+    window.addEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthStateChanged);
+    return () => {
+      window.removeEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthStateChanged);
+    };
+  }, [clearPrivateLogState, fetchLogs]);
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -302,10 +361,17 @@ export function FoodSearchPlaceholder() {
 
     const trimmedQuery = query.trim();
     if (!trimmedQuery) {
+      searchAbortControllerRef.current?.abort();
+      searchRequestIdRef.current += 1;
       setResults([]);
       setError("Enter a food name to search.");
       return;
     }
+
+    searchAbortControllerRef.current?.abort();
+    const controller = new AbortController();
+    searchAbortControllerRef.current = controller;
+    const requestId = ++searchRequestIdRef.current;
 
     setIsLoading(true);
     setError(null);
@@ -313,20 +379,32 @@ export function FoodSearchPlaceholder() {
 
     try {
       const response = await backendFetch(
-        `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`
+        `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
+        { signal: controller.signal }
       );
+
+      if (requestId !== searchRequestIdRef.current) {
+        return;
+      }
 
       if (!response.ok) {
         throw new Error("Search request failed.");
       }
 
       const data = (await response.json()) as FoodSearchResponse;
+      if (requestId !== searchRequestIdRef.current) {
+        return;
+      }
       setResults((data.results ?? []).map(normalizeFoodItem));
     } catch {
-      setResults([]);
-      setError("Unable to fetch foods right now. Please try again.");
+      if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
+        setResults([]);
+        setError("Unable to fetch foods right now. Please try again.");
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === searchRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }
 
@@ -345,6 +423,10 @@ export function FoodSearchPlaceholder() {
   }
 
   async function confirmPortionLogging() {
+    if (logMutationInFlightRef.current) {
+      return;
+    }
+
     if (!BACKEND_BASE_URL) {
       setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
@@ -361,6 +443,7 @@ export function FoodSearchPlaceholder() {
 
     const payload = scaleNutrition(pendingLogItem, selectedPortionPercentage);
 
+    logMutationInFlightRef.current = true;
     setIsLogging(pendingLogIndex);
     setLogError(null);
 
@@ -374,7 +457,7 @@ export function FoodSearchPlaceholder() {
       });
 
       if (response.status === 401) {
-        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        clearPrivateLogState();
         return;
       }
 
@@ -387,16 +470,22 @@ export function FoodSearchPlaceholder() {
     } catch {
       setLogError("Unable to log this food right now. Please try again.");
     } finally {
+      logMutationInFlightRef.current = false;
       setIsLogging(null);
     }
   }
 
   async function onDeleteLog(logId: number) {
+    if (deleteMutationInFlightRef.current) {
+      return;
+    }
+
     if (!BACKEND_BASE_URL) {
       setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
     }
 
+    deleteMutationInFlightRef.current = true;
     setDeletingLogId(logId);
     setLogError(null);
     try {
@@ -404,7 +493,7 @@ export function FoodSearchPlaceholder() {
         method: "DELETE",
       });
       if (response.status === 401) {
-        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        clearPrivateLogState();
         return;
       }
       if (response.status === 404) {
@@ -420,11 +509,16 @@ export function FoodSearchPlaceholder() {
     } catch {
       setLogError("Unable to delete this logged food right now. Please try again.");
     } finally {
+      deleteMutationInFlightRef.current = false;
       setDeletingLogId(null);
     }
   }
 
   async function onDeleteAllLogs() {
+    if (deleteMutationInFlightRef.current) {
+      return;
+    }
+
     if (!BACKEND_BASE_URL) {
       setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
@@ -435,6 +529,7 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
+    deleteMutationInFlightRef.current = true;
     setIsClearingAll(true);
     setLogError(null);
     try {
@@ -442,7 +537,7 @@ export function FoodSearchPlaceholder() {
         method: "DELETE",
       });
       if (response.status === 401) {
-        setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
+        clearPrivateLogState();
         return;
       }
       if (!response.ok) {
@@ -453,6 +548,7 @@ export function FoodSearchPlaceholder() {
     } catch {
       setLogError("Unable to clear logged foods right now. Please try again.");
     } finally {
+      deleteMutationInFlightRef.current = false;
       setIsClearingAll(false);
     }
   }
@@ -521,6 +617,7 @@ export function FoodSearchPlaceholder() {
                     : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
                 }`}
                 onClick={() => setPortionOption("whole")}
+                disabled={isLogging !== null}
               >
                 Whole - 100%
               </button>
@@ -532,6 +629,7 @@ export function FoodSearchPlaceholder() {
                     : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
                 }`}
                 onClick={() => setPortionOption("half")}
+                disabled={isLogging !== null}
               >
                 Half - 50%
               </button>
@@ -543,6 +641,7 @@ export function FoodSearchPlaceholder() {
                     : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
                 }`}
                 onClick={() => setPortionOption("quarter")}
+                disabled={isLogging !== null}
               >
                 Quarter - 25%
               </button>
@@ -554,6 +653,7 @@ export function FoodSearchPlaceholder() {
                     : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
                 }`}
                 onClick={() => setPortionOption("custom")}
+                disabled={isLogging !== null}
               >
                 Custom
               </button>
@@ -572,6 +672,7 @@ export function FoodSearchPlaceholder() {
                   max={100}
                   value={customPortion}
                   onChange={(event) => setCustomPortion(event.target.value)}
+                  disabled={isLogging !== null}
                   className="w-24 rounded-md border border-brand-secondary/30 bg-white px-2 py-1 text-sm text-brand-primary outline-none focus:border-brand-primary"
                 />
                 <span className="text-xs font-semibold text-brand-secondary">%</span>
@@ -601,6 +702,7 @@ export function FoodSearchPlaceholder() {
                 type="button"
                 className="rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
                 onClick={cancelPortionLogging}
+                disabled={isLogging !== null}
               >
                 Cancel
               </button>
@@ -624,9 +726,9 @@ export function FoodSearchPlaceholder() {
 
       {!logError && !isLogsLoading ? (
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
-          <h3 className="text-lg font-bold text-brand-primary">Today&apos;s Summary</h3>
+          <h3 className="text-lg font-bold text-brand-primary">Recent Log Summary</h3>
           <p className="mt-1 text-sm text-brand-secondary/80">
-            Totals calculated from currently logged foods.
+            Totals calculated from the food logs currently loaded below.
           </p>
           <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">

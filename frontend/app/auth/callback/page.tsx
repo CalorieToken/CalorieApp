@@ -10,6 +10,28 @@ type CallbackResponse = {
   redirect_to: string;
 };
 
+function safeLocalRedirect(value: unknown): string {
+  if (
+    typeof value !== "string" ||
+    !value.startsWith("/") ||
+    value.startsWith("//") ||
+    value.includes("\\")
+  ) {
+    return "/";
+  }
+
+  try {
+    const base = new URL("https://calorieapp.invalid");
+    const target = new URL(value, base);
+    if (target.origin !== base.origin) {
+      return "/";
+    }
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return "/";
+  }
+}
+
 function AuthCallbackContent() {
   const params = useSearchParams();
   const router = useRouter();
@@ -21,6 +43,8 @@ function AuthCallbackContent() {
   const state = useMemo(() => params.get("state") ?? "", [params]);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function finalizeLogin() {
       if (!BACKEND_BASE_URL) {
         setStatus("error");
@@ -38,6 +62,7 @@ function AuthCallbackContent() {
         const response = await fetch(`${BACKEND_BASE_URL}/api/identity/callback`, {
           method: "POST",
           credentials: "include",
+          signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
           },
@@ -49,31 +74,38 @@ function AuthCallbackContent() {
         }
 
         const payload = (await response.json()) as CallbackResponse;
-        const redirectTo =
-          payload.redirect_to &&
-          payload.redirect_to.startsWith("/") &&
-          !payload.redirect_to.startsWith("//")
-            ? payload.redirect_to
-            : "/";
-
-        router.replace(redirectTo);
+        router.replace(safeLocalRedirect(payload.redirect_to));
       } catch {
-        setStatus("error");
-        setMessage("Sign-in failed. Please try logging in again.");
+        if (!controller.signal.aborted) {
+          setStatus("error");
+          setMessage("Sign-in failed. Please try logging in again.");
+        }
       }
     }
 
-    finalizeLogin();
+    void finalizeLogin();
+    return () => {
+      controller.abort();
+    };
   }, [code, state, router]);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
       <section className="w-full rounded-2xl border border-brand-secondary/20 bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-semibold text-brand-primary">CalorieApp Sign-In</h1>
-        <p className="mt-3 text-sm text-brand-secondary/90">{message}</p>
+        <p
+          className="mt-3 text-sm text-brand-secondary/90"
+          role="status"
+          aria-live="polite"
+        >
+          {message}
+        </p>
 
         {status === "loading" ? (
-          <div className="mx-auto mt-5 h-6 w-6 animate-spin rounded-full border-2 border-brand-secondary/30 border-t-brand-primary" />
+          <div
+            className="mx-auto mt-5 h-6 w-6 animate-spin rounded-full border-2 border-brand-secondary/30 border-t-brand-primary"
+            aria-hidden="true"
+          />
         ) : (
           <Link
             href="/"
@@ -94,8 +126,13 @@ export default function AuthCallbackPage() {
         <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
           <section className="w-full rounded-2xl border border-brand-secondary/20 bg-white p-8 text-center shadow-sm">
             <h1 className="text-xl font-semibold text-brand-primary">CalorieApp Sign-In</h1>
-            <p className="mt-3 text-sm text-brand-secondary/90">Finalizing sign-in...</p>
-            <div className="mx-auto mt-5 h-6 w-6 animate-spin rounded-full border-2 border-brand-secondary/30 border-t-brand-primary" />
+            <p className="mt-3 text-sm text-brand-secondary/90" role="status" aria-live="polite">
+              Finalizing sign-in...
+            </p>
+            <div
+              className="mx-auto mt-5 h-6 w-6 animate-spin rounded-full border-2 border-brand-secondary/30 border-t-brand-primary"
+              aria-hidden="true"
+            />
           </section>
         </main>
       }

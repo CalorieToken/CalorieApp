@@ -32,7 +32,7 @@ export function FoodLogList({
             type="button"
             className="rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onRefresh}
-            disabled={isLoading || isClearingAll}
+            disabled={isLoading || isClearingAll || deletingLogId !== null}
             aria-label="Refresh logged foods"
           >
             {isLoading ? "Refreshing..." : "Refresh"}
@@ -41,7 +41,9 @@ export function FoodLogList({
             type="button"
             className="rounded-full border-2 border-red-300 bg-transparent px-4 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onDeleteAllLogs}
-            disabled={isLoading || isClearingAll || logs.length === 0}
+            disabled={
+              isLoading || isClearingAll || deletingLogId !== null || logs.length === 0
+            }
             aria-label="Delete all logged foods"
           >
             {isClearingAll ? "Deleting..." : "Delete All"}
@@ -87,7 +89,7 @@ export function FoodLogList({
                 type="button"
                 className="shrink-0 rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => item.id && onDeleteLog(item.id)}
-                disabled={!item.id || deletingLogId === item.id || isClearingAll}
+                disabled={!item.id || deletingLogId !== null || isClearingAll || isLoading}
                 aria-label={`Delete ${item.product_name}`}
                 title="Delete logged food"
               >
