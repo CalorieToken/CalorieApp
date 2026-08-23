@@ -24,6 +24,7 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     PendingLoginStateDB,
+    utc_now,
 )
 from app.schemas import IdentityClaimsResponse
 
@@ -74,7 +75,7 @@ def create_pending_login_state(
     post_login_redirect: Optional[str] = None,
 ) -> tuple[str, PendingLoginStateDB]:
     """Create a persistent pending login state transaction and return plaintext state."""
-    created_at = datetime.utcnow()
+    created_at = utc_now()
     expires_at = created_at + timedelta(seconds=state_lifetime_seconds)
 
     for _ in range(3):
@@ -132,7 +133,7 @@ def consume_pending_login_state(
     state: str,
 ) -> tuple[bool, str]:
     """Atomically consume a pending login state so only one callback can proceed."""
-    now = datetime.utcnow()
+    now = utc_now()
     state_hash = hash_login_state(state)
 
     updated = session.exec(
@@ -157,7 +158,7 @@ def consume_pending_login_state(
 
 def cleanup_pending_login_states(session: Session) -> None:
     """Delete expired pending login states opportunistically."""
-    now = datetime.utcnow()
+    now = utc_now()
     session.exec(
         delete(PendingLoginStateDB).where(PendingLoginStateDB.expires_at < now)
     )
