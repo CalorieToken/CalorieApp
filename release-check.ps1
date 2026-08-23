@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$env:NEXT_TELEMETRY_DISABLED = "1"
 
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BackendDir = Join-Path $Root "backend"
@@ -46,6 +47,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 Pop-Location
 
+Write-Step "Backend Python compilation"
+Push-Location $BackendDir
+& $pythonExe -m compileall -q app
+if ($LASTEXITCODE -ne 0) {
+    Pop-Location
+    throw "Backend Python compilation failed"
+}
+Pop-Location
+
 Write-Step "Frontend lint"
 Push-Location $FrontendDir
 npm run lint
@@ -63,6 +73,33 @@ if ($LASTEXITCODE -ne 0) {
     throw "Frontend build failed"
 }
 Pop-Location
+
+Write-Step "Git whitespace validation"
+git -C $Root diff --check
+if ($LASTEXITCODE -ne 0) {
+    throw "Git whitespace validation failed"
+}
+
+Write-Step "Tracked artifact boundary"
+$trackedFiles = @(git -C $Root ls-files)
+if ($LASTEXITCODE -ne 0) {
+    throw "Unable to inspect tracked files"
+}
+
+$forbiddenTrackedFiles = @(
+    $trackedFiles | Where-Object {
+        $normalized = $_ -replace "\\", "/"
+        $isAllowedEnvironmentTemplate = $normalized -match '(^|/)(\.env\.example|[^/]+\.env\.example|[^/]+\.env\.staging\.example)$'
+        $isForbidden = $normalized -match '(^|/)(\.env($|\.)|node_modules/|\.next/|\.venv/|__pycache__/|[^/]+\.(db|sqlite|sqlite3)$)'
+        $isForbidden -and -not $isAllowedEnvironmentTemplate
+    }
+)
+
+if ($forbiddenTrackedFiles.Count -gt 0) {
+    Write-Host "[ERROR] Forbidden runtime or secret-bearing paths are tracked:"
+    $forbiddenTrackedFiles | ForEach-Object { Write-Host "  $_" }
+    throw "Tracked artifact boundary failed"
+}
 
 if (-not $SkipHealthCheck) {
     Write-Step "Developer health check"

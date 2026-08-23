@@ -1,0 +1,29 @@
+# Normalize text in the repository while keeping platform-specific scripts usable.
+* text=auto
+
+# Source, configuration, documentation, and Linux scripts use LF.
+*.py text eol=lf
+*.sh text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.css text eol=lf
+
+# Windows PowerShell scripts keep native Windows line endings on checkout.
+*.ps1 text eol=crlf
+
+# Binary assets must never be line-ending normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary

@@ -40,7 +40,8 @@ build/
 logs/
 
 # OS / editor
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .DS_Store
 Thumbs.db
 desktop.ini

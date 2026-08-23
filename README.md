@@ -144,8 +144,19 @@ Optional combined gate from repository root:
 .\release-check.ps1
 ```
 
+Linux/VM combined gate:
+
+```bash
+./release-check.sh
+```
+
+Both combined gates run backend tests and compilation, frontend lint and build,
+Git whitespace validation, and a tracked-artifact boundary check. The PowerShell
+gate can additionally run the local developer health check.
+
 ## Documentation
 
+- Development workflow: docs/DEVELOPMENT_WORKFLOW.md
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md

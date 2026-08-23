@@ -19,6 +19,7 @@ It is not a legal guarantee and not an internal incident response runbook.
 ## 3. Backend Quality Gate
 
 - Backend tests pass.
+- The pinned Python dependency audit reports no known vulnerabilities.
 - Health endpoint behavior is stable.
 - Error handling remains controlled and non-sensitive.
 
@@ -26,11 +27,13 @@ It is not a legal guarantee and not an internal incident response runbook.
 
 - Lint passes.
 - Production build passes.
+- The production dependency audit reports no critical-severity vulnerabilities.
 - UI handles empty/error backend states without crashes.
 
 ## 5. Security and Secrets
 
 - No secrets committed to repository files.
+- Baseline browser and API security headers remain enabled.
 - Runtime secrets remain in deployment secret stores.
 - Public documentation does not reveal private credentials or internal operational topology.
 
