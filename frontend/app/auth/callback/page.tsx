@@ -10,6 +10,10 @@ type CallbackResponse = {
   redirect_to: string;
 };
 
+type ErrorResponse = {
+  detail?: unknown;
+};
+
 function safeLocalRedirect(value: unknown): string {
   if (
     typeof value !== "string" ||
@@ -30,6 +34,14 @@ function safeLocalRedirect(value: unknown): string {
   } catch {
     return "/";
   }
+}
+
+function safeBackendErrorMessage(status: number, payload: ErrorResponse | null): string {
+  const detail = payload?.detail;
+  if (typeof detail === "string" && detail.trim()) {
+    return `Sign-in failed (${status}): ${detail.trim()}`;
+  }
+  return `Sign-in failed (${status}). Please try logging in again.`;
 }
 
 function AuthCallbackContent() {
@@ -70,7 +82,15 @@ function AuthCallbackContent() {
         });
 
         if (!response.ok) {
-          throw new Error("Callback failed");
+          let payload: ErrorResponse | null = null;
+          try {
+            payload = (await response.json()) as ErrorResponse;
+          } catch {
+            payload = null;
+          }
+          setStatus("error");
+          setMessage(safeBackendErrorMessage(response.status, payload));
+          return;
         }
 
         const payload = (await response.json()) as CallbackResponse;
@@ -78,7 +98,7 @@ function AuthCallbackContent() {
       } catch {
         if (!controller.signal.aborted) {
           setStatus("error");
-          setMessage("Sign-in failed. Please try logging in again.");
+          setMessage("Sign-in failed before the callback completed. Please try again.");
         }
       }
     }
