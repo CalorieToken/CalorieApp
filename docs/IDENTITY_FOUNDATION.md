@@ -40,7 +40,7 @@ The browser is not given a CalorieApp raw user ID as an authentication credentia
 
 `PendingLoginStateDB` persists a hashed login state with creation, expiration, status, and consumption timestamps. The backend generates a high-entropy state when login begins; its stored form is SHA-256 hashed. The current default state lifetime is 300 seconds, configurable through `LOGIN_STATE_LIFETIME_SECONDS`.
 
-The callback consumes pending state using a conditional database update. A state can proceed only once while pending and unexpired, which prevents callback replay and concurrent double consumption.
+The callback validates the pending state before the external bridge exchange and consumes it only after a successful exchange. Consumption still uses a conditional database update, so a state can complete only once while pending and unexpired. This preserves replay resistance while allowing a transient bridge failure to be retried without burning the login attempt.
 
 ### Opaque application sessions
 
@@ -87,14 +87,16 @@ The signature is an HMAC-SHA256 over a canonical payload containing the protocol
 
 The browser calls `POST /api/identity/callback` with only `code` and `state`.
 
-The backend validates and consumes the pending state before calling the configured WordPress exchange endpoint. The current exchange request uses:
+The backend validates the pending state, calls the configured WordPress exchange endpoint, validates the returned identity claims, and only then atomically consumes the pending state. A transient bridge/network failure therefore leaves the state retryable; after a successful exchange, replay or concurrent completion is rejected by the consume gate.
+
+The exchange request uses:
 
 - `WORDPRESS_BRIDGE_EXCHANGE_URL`
 - JSON body: `code` and `state`
 - `X-CalorieApp-Bridge-Secret`
 - `X-CalorieApp-Client-Id`
 
-The backend validates the returned identity claims, resolves or creates the CalorieApp user and external-identity mapping, and creates an opaque CalorieApp session. The browser does not provide an XRPL address as an authoritative callback claim.
+After successful consumption, the backend resolves or creates the CalorieApp user and external-identity mapping and creates an opaque CalorieApp session. The browser does not provide an XRPL address as an authoritative callback claim.
 
 ### 5. Session creation and use
 
@@ -135,7 +137,8 @@ Secrets belong in the relevant runtime secret store and must not be placed in do
 ## Implemented security controls
 
 - High-entropy pending login state stored as a hash.
-- Atomic pending-state consumption for single-use callback semantics.
+- Retry-safe pending-state flow: validation before exchange, atomic consumption after successful exchange.
+- Single-use callback semantics after successful exchange, including replay/concurrent-completion rejection.
 - Opaque, high-entropy session tokens stored only as hashes.
 - Server-side session expiry, idle expiry, revocation, and replacement support.
 - HMAC-SHA256 bridge validation with client ID, timestamp, and one-time nonce replay protection.
@@ -145,13 +148,13 @@ Secrets belong in the relevant runtime secret store and must not be placed in do
 
 ## Historical / superseded documentation
 
-Earlier versions of this document described a `calorieapp_user_id` authentication cookie, `SameSite=Strict`, a frontend-managed login-session identifier, ownerless legacy logs being normally readable, and an older WordPress exchange endpoint/header contract. Those descriptions are historical and superseded by the current implementation above.
+Earlier versions of this document described a `calorieapp_user_id` authentication cookie, `SameSite=Strict`, a frontend-managed login-session identifier, ownerless legacy logs being normally readable, an older WordPress exchange endpoint/header contract, and consuming callback state before the external code exchange. Those descriptions are historical and superseded by the current implementation above.
 
 The repository still contains `AuthorizationCodeDB` and related helper functions from the earlier identity-foundation work. They are retained as historical implementation context, but the active backend callback contract is the pending-state validation and external WordPress bridge exchange described in this document. This repository does not establish the implementation or live status of the external WordPress companion plugin.
 
 ## Testing and infrastructure status
 
-Backend identity and endpoint tests cover current session, callback, state, nonce replay, and food-authorization behavior. Test presence does not verify external WordPress/Xaman hosting or a live end-to-end deployment.
+Backend identity and endpoint tests cover current session, callback, state, nonce replay, retry-safe bridge failure handling, and food-authorization behavior. Test presence does not verify external WordPress/Xaman hosting or a live end-to-end deployment.
 
 Local development uses the repository's backend and frontend configuration. Staging and production infrastructure, including DNS, TLS, hosts, deployment platforms, bridge configuration, secrets, and database operations, remain planned or external and require independent verification.
 
@@ -161,5 +164,5 @@ The following are not authorized by this document: financial, token, custody, wa
 
 ---
 
-**Last reconciled:** 2026-08-20
-**Status:** Current implementation and approved V1 boundary documented; external infrastructure remains unverified.
+**Last reconciled:** 2026-08-24
+**Status:** Retry-safe current implementation and approved V1 boundary documented; external infrastructure remains unverified.
