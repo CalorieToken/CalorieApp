@@ -1,5 +1,7 @@
 """Regression coverage for retry-safe Xaman/WordPress callback handling."""
 
+from datetime import UTC, datetime, timedelta
+
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlmodel import Session
@@ -12,9 +14,13 @@ from app.services.identity import validate_pending_login_state
 
 
 def _claims() -> IdentityClaimsResponse:
+    now = datetime.now(UTC)
     return IdentityClaimsResponse(
         external_subject="wp_user_retry_test",
         xrpl_address="rN7n7otQDd6FczFgLdlqtyMVrDHdH6s4vg",
+        issued_at=now,
+        expires_at=now + timedelta(seconds=60),
+        jti="retry-test-jti",
     )
 
 
