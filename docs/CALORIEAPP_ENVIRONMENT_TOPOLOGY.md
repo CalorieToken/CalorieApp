@@ -2,27 +2,43 @@
 
 **Status:** authoritative working checkpoint for current V1 environment reconciliation
 
-**Purpose:** prevent environment drift, duplicate deployments, and accidental mixing of local development, bridge staging, and production services.
+**Purpose:** prevent environment drift, duplicate deployments, and accidental mixing of local development, bridge staging, production services, and ChatGPT-assisted project work.
 
-This document records only what has been verified from the repository, Render, the Windows development VM, and the current identity design. Unknowns remain explicitly marked as unknown.
+This document records only verified state. Unknowns remain explicitly marked as unknown.
 
-## 1. Source-of-truth rules
+## 1. Operating model: five environments, five roles
+
+| Environment | Role | Authoritative for | Must NOT be used for |
+|---|---|---|---|
+| GitHub `CalorieToken/CalorieApp` | Source control | Application code, reviewed docs, branches, CI | Runtime secrets or ad-hoc deployment state |
+| Windows VM / VS Code | Local development workstation | Local code inspection, development, WP Studio staging | Production hosting or a second live backend |
+| WP Studio `CalorieApp Bridge Staging` | Local WordPress bridge staging | Testing the companion WordPress identity bridge before production install | Real-user production identity traffic |
+| Render | Production CalorieApp runtime | Live frontend and backend services | Bridge development or duplicate experimental backends |
+| ChatGPT workspace/conversation | Orchestration and project control | Planning, audits, GitHub changes, evidence reconciliation, guided checks | Being treated as a deployment/runtime environment |
+
+### Core rule
+
+There is one production application path and one staging bridge path. Do not create additional live equivalents unless a deliberate architecture decision says otherwise.
+
+## 2. Source-of-truth rules
 
 1. **GitHub `CalorieToken/CalorieApp` is the source of truth for application code.**
-2. **Render Production is the source of truth for the live CalorieApp runtime.**
-3. **The Windows VM is development/tooling only unless a component is explicitly promoted.**
-4. **The VM WordPress bridge staging tree is local staging/reference material, not production.**
-5. **The production WordPress/Xaman companion bridge is an external deployment dependency and must be independently verified before claiming end-to-end authentication works.**
-6. **Do not create a second backend, second production bridge, or second Xaman identity path while the existing production path remains recoverable.**
-7. **Do not copy production secrets into local staging.**
+2. **Render Production is the source of truth for the live CalorieApp application runtime.**
+3. **The Windows VM is development/tooling only.**
+4. **WP Studio on the VM is the only current WordPress bridge staging environment.**
+5. **The production WordPress bridge is not yet installed on `calorietoken.net`; production Xaman login is therefore intentionally incomplete.**
+6. **ChatGPT is a coordination layer, not another environment.** Any architecture/runtime claim made in a chat must be reconciled against this document and verified infrastructure before acting on it.
+7. **Do not create a second backend, second production bridge, or second Xaman identity path while the existing intended path remains recoverable.**
+8. **Do not copy production secrets into GitHub, chat, screenshots, or local staging unless a deliberate secret-management decision requires a staging-specific value.**
 
-## 2. Verified production topology
+## 3. Verified production topology
 
 ```text
 Browser
   -> https://calorieapp-frontend.onrender.com
   -> https://calorieapp-backend-rvul.onrender.com
-  -> external WordPress identity bridge expected on https://calorietoken.net
+  -> [production WordPress bridge NOT YET INSTALLED]
+  -> future production bridge on https://calorietoken.net
   -> Xaman/XUMM identity flow
   -> WordPress bridge authorization code
   -> CalorieApp backend callback
@@ -46,63 +62,51 @@ Browser
 - Public URL: `https://calorieapp-backend-rvul.onrender.com`
 - Repository: `CalorieToken/CalorieApp`
 - Branch: `main`
-- Render location in dashboard: `My project -> Production -> calorieapp-backend`
+- Dashboard location: `My project -> Production -> calorieapp-backend`
 - `/health` verified live with response identifying `calorieapp-backend`.
-- The service was initially hard to find because it is nested under the project's Production environment while the frontend appears as an ungrouped service.
 
-## 3. Canonical local development checkout
+## 4. Canonical local development checkout
 
 Windows VM:
 
-- Machine observed: `DESKTOP-FD57AGL`
-- User observed: `desktop-fd57agl\p`
 - Canonical working checkout: `C:\Users\p\CalorieApp`
 - Remote: `https://github.com/CalorieToken/CalorieApp.git`
 - Branch: `main`
 - Observed HEAD checkpoint: `f419519` (`Align local, VS Code, and CI release validation`)
 - Working tree was clean when inspected.
-- Current checkout already contains the committed identity/Xaman implementation, including:
-  - `backend/app/services/identity.py`
-  - `backend/tests/test_identity.py`
-  - `backend/tests/test_identity_endpoints.py`
-  - `docs/IDENTITY_FOUNDATION.md`
-  - `docs/public/identity.md`
-  - `frontend/components/authEvents.ts`
-  - `frontend/components/XamanLoginPanel.tsx`
+- Current checkout contains the committed identity/Xaman implementation, including backend identity services/tests, identity documentation, frontend auth events, and `XamanLoginPanel.tsx`.
 
-The local VM must not be treated as a second production backend.
+**Role:** this checkout is the only normal local CalorieApp development checkout. It must not be treated as another production backend.
 
-## 4. Historical/local copies on the VM
+## 5. Local WP Studio bridge staging
 
-The VM also contains older/checkpoint material:
+Verified WP Studio site:
 
-- `C:\Users\p\CalorieApp-test`
-- `C:\Users\p\CalorieApp_PRIVATE_CHECKPOINT_2026-08-20`
-- `C:\Users\p\CalorieApp_PRIVATE_CHECKPOINT_6C2_2026-08-20`
+- Site name: `CalorieApp Bridge Staging`
+- Local WordPress URL: `http://localhost:8881`
+- Site is runnable through WordPress Studio on the VM.
+- Plugin: `CalorieApp Identity Bridge`
+- Plugin version observed: `0.1.1`
+- Plugin status observed: active.
+- REST `/calorieapp/v1/authorize` is registered locally; requesting it without `state` returns the expected missing-parameter error, confirming the route is active.
 
-Observed checkpoints were older than the canonical checkout. Some contain modified and untracked identity/staging material. These directories are therefore classified as **historical/checkpoint material**, not active development environments.
-
-**Rule:** do not delete them until the Xaman/bridge reconciliation is complete, but do not run or deploy from them.
-
-## 5. Local WordPress identity-bridge staging
-
-Verified staging tree:
+Underlying staging tree:
 
 `C:\Users\p\Studio\calorieapp-bridge-staging`
 
-This contains a WordPress source tree and the companion plugin at:
+Bridge plugin tree:
 
-`wp-content\plugins\calorieapp-identity-bridge`
+`C:\Users\p\Studio\calorieapp-bridge-staging\wp-content\plugins\calorieapp-identity-bridge`
 
-A separate bridge source tree also exists at:
+Separate bridge source tree:
 
 `C:\Users\p\calorieapp-identity-bridge`
 
-The staging plugin implements the expected identity contract, including:
+The staging plugin implements the expected identity contract:
 
 - REST `/authorize`
 - REST `/exchange`
-- state validation against the CalorieApp backend at `/api/identity/login/state/validate`
+- state validation against `/api/identity/login/state/validate`
 - short-lived authorization-code storage
 - state matching / one-time consumption
 - callback allowlist
@@ -110,24 +114,47 @@ The staging plugin implements the expected identity contract, including:
 - configurable backend client ID
 - bridge shared secret
 
-The plugin default backend client ID is `calorieapp-backend`; backend URL and bridge secret default empty and require configuration.
+Observed bridge settings screen currently showed:
 
-### Important isolation finding
+- callback allowlist: empty
+- default callback URL: empty
+- CalorieApp backend URL: empty
+- backend client ID: `calorieapp-backend`
+- bridge secret field: no visible value shown
+- code TTL: `60` seconds
 
-When inspected, the VM had no running `node`, `php`, `mysqld`, `httpd`, or `nginx` process and none of the checked common development ports were listening. The staging WordPress tree is therefore **not currently a second live service**.
+**Interpretation:** staging infrastructure exists and the plugin is active, but staging configuration is not yet complete. This is the correct place to finish bridge validation before any production WordPress install.
 
-No `php.exe` was found on the inspected `C:` drive. The staging tree should therefore be treated as source/reference/staging material, not as a currently executable WordPress instance.
+## 6. Production WordPress status
 
-Test fixtures in the staging plugin contain references to `https://app.calorietoken.net` and related callbacks. These references are not proof of live runtime configuration and must not be interpreted as production settings without separate verification.
+Verified current state:
 
-## 6. Identity architecture contract
+- `calorietoken.net` is the intended production WordPress host for the companion bridge.
+- The CalorieApp bridge has **not yet been installed on the production WordPress site**.
+- The public WordPress REST index therefore does not currently expose the `calorieapp/v1` namespace.
+
+This is expected given the unfinished deployment sequence and must not be misdiagnosed as a broken production plugin.
+
+## 7. Historical/local copies on the VM
+
+The VM also contains older/checkpoint material:
+
+- `C:\Users\p\CalorieApp-test`
+- `C:\Users\p\CalorieApp_PRIVATE_CHECKPOINT_2026-08-20`
+- `C:\Users\p\CalorieApp_PRIVATE_CHECKPOINT_6C2_2026-08-20`
+
+These are classified as **historical/checkpoint material**, not active environments.
+
+**Rule:** do not run, deploy from, or modify them during normal development. Do not delete them until the bridge/Xaman reconciliation is complete and their preservation value has been reviewed.
+
+## 8. Identity architecture contract
 
 Current V1 identity boundary:
 
 - Xaman/XUMM is used only as an external identity mechanism.
 - CalorieApp maintains its own internal user and session model.
 - Browser callback contract is `code + state`.
-- WordPress companion bridge is responsible for mapping the authenticated WordPress/Xaman session to a short-lived CalorieApp authorization code.
+- WordPress companion bridge maps an authenticated WordPress/Xaman session to a short-lived CalorieApp authorization code.
 - Backend validates the pending login state and exchanges the authorization code server-side.
 - CalorieApp then issues an opaque application session cookie.
 
@@ -141,74 +168,91 @@ Not approved in this V1 identity path:
 - token administration
 - rewards or value transfer
 
-## 7. Required production identity configuration
+## 9. Environment flow rules
 
-The backend currently expects identity-related configuration such as:
+### Development flow
 
-- `WORDPRESS_URL`
-- `WORDPRESS_BRIDGE_AUTHORIZE_URL`
-- `WORDPRESS_BRIDGE_EXCHANGE_URL`
-- `WORDPRESS_BRIDGE_SECRET`
-- `CALORIEAPP_CLIENT_ID`
-- `CALORIEAPP_POST_LOGIN_REDIRECT`
-- `LOGIN_STATE_LIFETIME_SECONDS`
-- `SESSION_COOKIE_SECURE`
-- bridge timestamp/nonce controls
+```text
+GitHub feature branch
+  -> C:\Users\p\CalorieApp (local development/testing)
+  -> GitHub PR + CI
+```
 
-The WordPress bridge plugin expects matching configuration for:
+### Bridge staging flow
 
-- callback allowlist
-- CalorieApp backend URL
-- backend client ID
-- bridge secret
+```text
+Bridge source
+  -> WP Studio CalorieApp Bridge Staging (localhost:8881)
+  -> validate bridge routes/config/contract
+  -> only after passing staging: prepare production WordPress install
+```
 
-**Critical requirement:** the bridge shared secret and client ID must match on both sides. Secret values must never be committed to Git or copied into documentation.
+### Production flow
 
-## 8. Current Xaman repair branch
+```text
+GitHub main
+  -> Render frontend/backend
+  -> production WordPress bridge on calorietoken.net (after controlled install)
+  -> Xaman
+```
+
+### ChatGPT flow
+
+```text
+User request/evidence
+  -> verify against GitHub/topology/infrastructure
+  -> propose or execute only within the correct environment
+  -> update this topology document when environment roles change
+```
+
+ChatGPT must not infer that a component is deployed merely because source files exist, or infer that a component is absent merely because it is not visible in one dashboard view.
+
+## 10. Xaman repair branch
 
 Branch: `fix/xaman-callback-retry`
 
-Current branch work includes:
+Branch work includes:
 
 - clearer sanitized callback diagnostics;
-- retry-safe callback ordering so a transient WordPress/Xaman bridge failure does not burn the pending login state;
-- regression coverage that permits retry after a transient bridge failure and still rejects replay after success;
-- updated identity documentation.
+- retry-safe callback ordering so a transient WordPress/Xaman bridge failure does not burn pending login state;
+- regression coverage for retry and replay behavior;
+- updated identity documentation;
+- this environment topology checkpoint.
 
-CI for the repair branch has passed backend tests, dependency checks, repository-boundary checks, frontend audit/lint, and production build.
+The branch remains intentionally unmerged until bridge staging is validated, production bridge deployment is prepared, and a real end-to-end login is tested.
 
-The branch remains intentionally unmerged until the external production bridge configuration is verified and a real end-to-end login is tested.
+## 11. Ordered next gates
 
-## 9. Known unknowns / next verification gates
+Do these in order. Do not skip ahead.
 
-The following are still **UNVERIFIED** and must be checked before merging/deploying the Xaman repair:
+1. **Finish WP Studio staging configuration** using staging-safe values and a defined backend target.
+2. **Validate local bridge behavior**: `/authorize`, backend state validation, `/exchange`, callback allowlist, one-time code behavior.
+3. **Reconcile Render backend identity configuration** with the bridge contract without exposing secrets.
+4. **Package/version the bridge for production** from the validated source; do not edit production ad hoc.
+5. **Install/configure the bridge on `calorietoken.net`** in a controlled production step.
+6. **Run end-to-end Xaman login**: Xaman -> WordPress bridge -> FastAPI callback -> CalorieApp session.
+7. **Verify authenticated food logging/retrieval/deletion.**
+8. **Only then merge/deploy the Xaman retry PR** as appropriate.
+9. **Only after stable authentication resume the frozen showcase work.**
+10. **Review/archive historical VM checkpoints** after the environment is stable.
 
-1. Which exact version of `calorieapp-identity-bridge` is installed on the live `calorietoken.net` WordPress site.
-2. Whether the production WordPress plugin is active.
-3. Whether the production plugin exposes the expected `/calorieapp/v1/authorize` and `/calorieapp/v1/exchange` routes.
-4. Whether the production plugin's CalorieApp backend URL points to `https://calorieapp-backend-rvul.onrender.com`.
-5. Whether the production bridge client ID matches the backend's `CALORIEAPP_CLIENT_ID`.
-6. Whether the production bridge secret matches the backend's `WORDPRESS_BRIDGE_SECRET` (verify presence/match without exposing the value).
-7. Whether the callback allowlist contains the actual deployed CalorieApp callback URL.
-8. Whether Render backend CORS includes the deployed frontend origin.
-9. End-to-end verification: Xaman -> WordPress bridge -> FastAPI callback -> CalorieApp session -> authenticated food logging/retrieval/deletion.
+## 12. Change-control rules
 
-## 10. Change-control rule until reconciliation completes
-
-Until all gates above are verified:
+Until the ordered gates above complete:
 
 - no new Render backend;
-- no second WordPress bridge;
+- no second WordPress staging environment;
+- no second production WordPress bridge;
 - no new Xaman integration path;
-- no deletion of local checkpoints;
-- no production secret copying to VM staging;
-- no merge of the Xaman repair PR;
-- no showcase claims that authenticated Xaman login is working.
+- no running/deploying from historical checkpoint folders;
+- no production secret copying into Git, chat, or screenshots;
+- no merge of the Xaman repair PR merely because application CI is green;
+- no showcase claim that authenticated Xaman login is working.
 
-All future environment changes should update this document in the same PR/commit that changes the relevant deployment contract.
+Any future environment-role change must update this document in the same branch/PR that changes the deployment contract.
 
 ---
 
-**Checkpoint date:** 2026-08-24
+**Checkpoint date:** 2026-08-25
 
-**Current conclusion:** the project is over-layered historically but recoverable. The verified architecture is one GitHub application codebase, one Render production frontend/backend path, one intended external WordPress/Xaman identity bridge, and one dormant local bridge-staging/reference tree. The immediate task is configuration reconciliation, not creation of additional environments.
+**Current conclusion:** the project has accumulated multiple copies and tools, but the intended architecture is now clear: GitHub controls code, the VM is development, WP Studio is the single bridge staging environment, Render is the single production application runtime, production WordPress will host one bridge after staging passes, and ChatGPT coordinates work rather than acting as another runtime.
