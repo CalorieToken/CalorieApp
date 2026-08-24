@@ -21,6 +21,25 @@ SESSION_TOKEN_BYTES = 48
 SESSION_ABSOLUTE_LIFETIME_SECONDS = 8 * 60 * 60
 
 
+# Temporary migration marker: this single test asserts the superseded behavior
+# that a transient bridge failure consumes login state. The corrected behavior
+# is covered by test_xaman_callback_retry.py. Keep the PR draft until the stale
+# test body can be cleanly rewritten/removed rather than carrying this xfail.
+def pytest_collection_modifyitems(items):
+    stale_node_suffix = (
+        "test_identity_endpoints.py::TestIdentityCallbackFlow::"
+        "test_bridge_exchange_failure_consumes_state_and_retry_fails"
+    )
+    for item in items:
+        if item.nodeid.endswith(stale_node_suffix):
+            item.add_marker(
+                pytest.mark.xfail(
+                    reason="Superseded by retry-safe Xaman callback contract and dedicated regression test",
+                    strict=False,
+                )
+            )
+
+
 @pytest.fixture()
 def client() -> TestClient:
     """
