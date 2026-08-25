@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: calorieapp-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: python -m pip install -r requirements.txt
+    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: CALORIEAPP_ENV
+        value: showcase
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: WORDPRESS_URL
+        value: https://calorietoken.net
+      - key: WORDPRESS_BRIDGE_AUTHORIZE_URL
+        value: https://calorietoken.net/index.php/wp-json/calorieapp/v1/authorize
+      - key: WORDPRESS_BRIDGE_EXCHANGE_URL
+        value: https://calorietoken.net/index.php/wp-json/calorieapp/v1/exchange
+      - key: CALORIEAPP_CLIENT_ID
+        value: calorieapp-backend
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: WORDPRESS_BRIDGE_SECRET
+        sync: false
+
+  - type: web
+    name: calorieapp-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- --port $PORT
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.1
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_BACKEND_URL
+        sync: false

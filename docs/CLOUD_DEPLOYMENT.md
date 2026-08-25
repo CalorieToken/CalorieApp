@@ -2,6 +2,11 @@
 
 This guide covers deploying CalorieApp to a cloud showcase environment while maintaining V1 scope and local Windows development capability.
 
+For Render, `render.yaml` is the repository-owned deployment blueprint. It
+defines both services but deliberately leaves `DATABASE_URL`, `CORS_ORIGINS`,
+`WORDPRESS_BRIDGE_SECRET`, and `NEXT_PUBLIC_BACKEND_URL` for Render's secret and
+environment configuration. Never put their production values in Git.
+
 ## Architecture
 - **Frontend**: Next.js 14 (React 18, TypeScript, Tailwind) — typically Vercel or similar
 - **Backend**: FastAPI with SQLite — typically Render, Railway, or similar
@@ -135,6 +140,18 @@ No environment variables needed locally — the code defaults to `http://localho
 - [ ] Frontend build succeeds (`npm run build`)
 - [ ] Health check passes: `curl <backend-url>/health`
 - [ ] End-to-end test: search → log → retrieve in deployed UI
+
+After both services deploy, run the read-only smoke test locally:
+
+```bash
+python tools/deployment_smoke_test.py \
+  --backend-url https://your-backend-domain.com \
+  --frontend-url https://your-frontend-domain.com
+```
+
+The same test can be launched manually from the GitHub Actions workflow named
+`Deployment smoke test`. It checks backend health, the exact credentialed CORS
+origin, and the frontend page without creating accounts or food-log data.
 
 ## Troubleshooting
 
