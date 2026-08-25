@@ -38,3 +38,6 @@ those rights and that all third-party material is identified.
 Security vulnerabilities must not be submitted through a public issue. Follow
 `SECURITY.md` instead.
 
+Use `docs/CONTRIBUTOR_RIGHTS_DECLARATION.md` to gather contribution provenance
+and `docs/ASSET_CREATOR_DECLARATION.md` for visual or other creative assets.
+These templates do not replace the separate written assignment or licence.
