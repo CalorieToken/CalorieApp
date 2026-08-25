@@ -44,6 +44,9 @@ step "Frontend production build"
 step "Git whitespace validation"
 git -C "$repo_root" diff --check
 
+step "Legal and licensing boundary"
+"$python_bin" "$repo_root/tools/check_legal_boundaries.py"
+
 step "Tracked artifact boundary"
 tracked_forbidden="$(
     git -C "$repo_root" ls-files \

@@ -2,6 +2,10 @@
 
 CalorieApp is a non-financial, non-custodial food and nutrition tracking project.
 
+Copyright (c) 2026 ICTHendrikse (KvK 73774693), for original portions created
+by or lawfully assigned to it. All rights reserved except where an explicit
+component licence applies.
+
 The current implementation is a real V1 web application. The broader Calorie ecosystem direction is also being researched and documented, but those future capabilities are not represented as already implemented.
 
 ## Project
@@ -168,3 +172,16 @@ Research documents are preserved separately under docs/research and should be re
 - Research context: docs/research/CALORIE_ECOSYSTEM_ARCHITECTURE_V1.md
 - Research context: docs/research/DECENTRALIZED_ARCHITECTURE_V1.md
 - Research context: docs/research/NATIVE_PLATFORM_ARCHITECTURE_V1.md
+
+## Rights, licensing, and trade marks
+
+This repository is publicly viewable source code, not a grant of a general
+open-source licence. See [LICENSE](LICENSE), [COPYRIGHT.md](COPYRIGHT.md),
+[NOTICE](NOTICE), and [TRADEMARKS.md](TRADEMARKS.md).
+
+The separately packaged CalorieApp Identity Bridge declares
+GPL-2.0-or-later and remains governed by that component licence. Third-party
+dependencies, data, names, and assets retain their own rights and terms.
+
+CalorieToken is identified by the project owner as a registered trade mark of
+Pieter Hendrikse. No trade-mark licence is granted by this repository.

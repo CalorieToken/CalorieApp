@@ -1,0 +1,55 @@
+CalorieApp Repository Licence Notice
+
+Copyright (c) 2026 ICTHendrikse (KvK 73774693), for original portions
+created by or lawfully assigned to ICTHendrikse. All rights reserved.
+
+NO GENERAL LICENCE GRANTED
+
+Except where a file, directory, dependency, asset, or component carries a
+separate explicit licence, no permission is granted to use, copy, modify,
+merge, publish, distribute, sublicense, sell, host, deploy, or create
+derivative works from the material in this repository.
+
+Public visibility of source code does not place it in the public domain and
+does not by itself grant an open-source licence. Any permission must be given
+in a separate written instrument by the relevant rights holder.
+
+EXCEPTIONS AND THIRD-PARTY RIGHTS
+
+1. The WordPress plugin in
+   wordpress-plugins/calorieapp-identity-bridge/ declares
+   GPL-2.0-or-later in its plugin header. That explicit licence governs that
+   component and is not replaced or restricted by this repository-level
+   notice.
+2. Dependencies and third-party components remain subject to their own
+   licences and notices.
+3. Open Food Facts data, branding, and assets remain subject to the terms and
+   rights of their respective owners.
+4. Brand and logo assets may have separate or incomplete historical chains of
+   title. This notice does not assert ownership beyond rights actually held.
+5. Contributions remain subject to the contributor's rights unless a written
+   licence or assignment says otherwise.
+
+RESERVATION
+
+All rights not expressly granted are reserved. Nothing in this notice grants
+rights in any trade mark, trade name, logo, patent, database right, design
+right, confidential information, or other intellectual property.
+
+PATENTS AND PUBLIC DISCLOSURE
+
+No patent licence is granted. The current CalorieApp repository has been
+publicly available since 18 August 2026, and the repository history records
+later public disclosure of the WordPress identity bridge and related
+authentication implementation. The separate CalorieAppTestnet repository has
+public history dating to 20 February 2023. Those disclosures may be relevant
+to novelty and prior-art analysis.
+
+Nothing in this repository or notice is a claim that an idea, method,
+functionality, protocol, or implementation is patentable or covered by a valid
+patent. Copyright protects eligible expression, not ideas or functionality as
+such.
+
+This notice is intended to clarify the repository's current licensing status;
+it does not adjudicate historical authorship or cure an incomplete chain of
+title.

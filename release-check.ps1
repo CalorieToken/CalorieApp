@@ -80,6 +80,12 @@ if ($LASTEXITCODE -ne 0) {
     throw "Git whitespace validation failed"
 }
 
+Write-Step "Legal and licensing boundary"
+& $pythonExe (Join-Path $Root "tools\check_legal_boundaries.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "Legal and licensing boundary failed"
+}
+
 Write-Step "Tracked artifact boundary"
 $trackedFiles = @(git -C $Root ls-files)
 if ($LASTEXITCODE -ne 0) {

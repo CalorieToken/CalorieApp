@@ -42,6 +42,9 @@ jobs:
             exit 1
           fi
 
+      - name: Enforce legal and licensing boundaries
+        run: python tools/check_legal_boundaries.py
+
   backend-tests:
     name: Backend tests (Python 3.11)
     runs-on: ubuntu-latest

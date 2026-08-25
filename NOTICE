@@ -1,0 +1,29 @@
+CalorieApp legal and attribution notice
+
+Repository default:
+  Copyright (c) 2026 ICTHendrikse (KvK 73774693), for original portions
+  created by or lawfully assigned to it. All rights reserved.
+
+Trade mark:
+  CalorieToken is identified by the project owner as a registered trade mark
+  of Pieter Hendrikse. No trade-mark licence is granted.
+
+Explicitly licensed component:
+  wordpress-plugins/calorieapp-identity-bridge/
+  Licence declared by that component: GPL-2.0-or-later
+
+External software:
+  Frontend and backend dependencies are not relicensed by this repository.
+  Their package metadata and upstream licence texts control.
+
+External data and branding:
+  Open Food Facts data, name, logo, and related materials remain subject to
+  their applicable upstream licences and rights.
+
+Unresolved visual provenance:
+  No blanket claim of exclusive copyright is made for the finished
+  CalorieToken logo or related historical design assets until authorship and
+  assignment evidence is complete.
+
+See LICENSE, COPYRIGHT.md, and TRADEMARKS.md for the controlling boundaries.
+
