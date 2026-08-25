@@ -28,6 +28,7 @@ def main() -> None:
         "THIRD_PARTY_NOTICES.md",
         "ASSET_PROVENANCE.md",
         "IP_CLEARANCE.md",
+        "IP_EVIDENCE_REGISTER.md",
     )
     missing = [path for path in required_files if not (ROOT / path).is_file()]
     if missing:
@@ -38,7 +39,8 @@ def main() -> None:
         ("NO GENERAL LICENCE GRANTED", "GPL-2.0-or-later", "no permission is granted", "PATENTS AND PUBLIC DISCLOSURE"),
     )
     require_text("COPYRIGHT.md", ("ICTHendrikse", "not conclusive", "GPL-2.0-or-later"))
-    require_text("TRADEMARKS.md", ("Pieter Hendrikse", "No repository licence grants"))
+    require_text("TRADEMARKS.md", ("Pieter Hendrikse", "019137415", "019125433", "No repository licence grants"))
+    require_text("IP_EVIDENCE_REGISTER.md", ("official EUIPO certificate", "Sensitive certificates"))
     require_text("DATA_LICENSING.md", ("Open Database License", "share-alike"))
     require_text("THIRD_PARTY_NOTICES.md", ("software bill of materials", "GPL-2.0-or-later"))
     require_text("IP_CLEARANCE.md", ("underlying ideas such as calorie tracking", "freedom-to-operate"))

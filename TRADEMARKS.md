@@ -1,9 +1,18 @@
 # Trade marks
 
 CalorieToken is identified by the project owner as a registered trade mark of
-Pieter Hendrikse for the services specified in its European Union registration
-in Nice Class 36. ICTHendrikse is the legal entity identified for the current
-CalorieApp development and repository rights administration.
+Pieter Hendrikse. Public registry data reports two EUIPO records in Nice Class
+36 for “Financial transactions via blockchain”:
+
+- EUTM application `019137415`, CalorieToken figurative mark, filed 30 January
+  2025 and registered 20 May 2025; and
+- EUTM application `019125433`, figurative logo mark, filed 30 December 2024
+  and registered 6 May 2025.
+
+The official EUIPO certificate/register extract controls if any secondary
+source differs. ICTHendrikse is the legal entity identified for current
+CalorieApp development and repository rights administration; it is not stated
+as the owner of these marks.
 
 Nice classification identifies the goods or services covered by a trade-mark
 registration. It is not an AFM licence, MiCA authorisation, approval of a
@@ -19,6 +28,7 @@ GitHub, and other third-party names or marks are nominative references only.
 Those marks remain the property of their respective owners. No affiliation,
 endorsement, or transfer of rights is implied.
 
-The copyright chain for the finished CalorieToken logo artwork remains subject
-to separate provenance and assignment verification. Trade-mark rights and
-copyright in artwork are distinct rights.
+Registration of a figurative mark does not by itself establish copyright
+authorship or assignment. The copyright chain for the finished CalorieToken
+logo artwork remains subject to separate provenance and assignment
+verification. Trade-mark rights and copyright in artwork are distinct rights.
