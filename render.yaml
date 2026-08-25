@@ -25,7 +25,9 @@ services:
       - key: CALORIEAPP_CLIENT_ID
         value: calorieapp-backend
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: calorieapp-postgres
+          property: connectionString
       - key: CORS_ORIGINS
         sync: false
       - key: WORDPRESS_BRIDGE_SECRET
@@ -46,3 +48,9 @@ services:
         value: "1"
       - key: NEXT_PUBLIC_BACKEND_URL
         sync: false
+
+databases:
+  - name: calorieapp-postgres
+    plan: free
+    databaseName: calorieapp
+    user: calorieapp

@@ -71,7 +71,11 @@ pip install -r backend/requirements.txt
 - Use a platform-managed persistent disk or volume.
 - Or use SQLite with regular scheduled backups.
 
-**Post-MVP migration path**: Switch to managed PostgreSQL for better durability and scaling.
+The Render blueprint provisions PostgreSQL for showcase durability. Render's free
+database expires after 30 days, so it is temporary and must be upgraded or migrated
+before expiry. The application uses a standard `DATABASE_URL` and remains portable to
+other PostgreSQL providers; this relational store is separate from future IPFS and
+BigchainDB research directions.
 
 ### 5. Health Check
 
