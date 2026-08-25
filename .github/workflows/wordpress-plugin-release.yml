@@ -1,0 +1,95 @@
+name: WordPress plugin release
+
+on:
+  push:
+    tags:
+      - "calorieapp-identity-bridge-v*"
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: Version declared in the plugin header (for example, 0.1.3)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build verified plugin archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Resolve expected version
+        id: version
+        shell: bash
+        env:
+          DISPATCH_VERSION: ${{ inputs.expected_version }}
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            expected="${GITHUB_REF_NAME#calorieapp-identity-bridge-v}"
+          else
+            expected="${DISPATCH_VERSION}"
+          fi
+          if [[ ! "$expected" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid expected version: $expected" >&2
+            exit 1
+          fi
+          echo "value=$expected" >> "$GITHUB_OUTPUT"
+
+      - name: Run release-builder tests
+        run: python -m unittest tools.tests.test_build_wordpress_plugin_release
+
+      - name: Build deterministic archive and checksum
+        run: |
+          python tools/build_wordpress_plugin_release.py \
+            --expected-version "${{ steps.version.outputs.value }}"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: calorieapp-identity-bridge-${{ steps.version.outputs.value }}
+          path: |
+            dist/calorieapp-identity-bridge-${{ steps.version.outputs.value }}.zip
+            dist/calorieapp-identity-bridge-${{ steps.version.outputs.value }}.zip.sha256
+            dist/calorieapp-identity-bridge-${{ steps.version.outputs.value }}.zip.manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-release:
+    name: Publish tagged GitHub release
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified workflow artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: calorieapp-identity-bridge-${{ needs.build.outputs.version }}
+          path: dist
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/calorieapp-identity-bridge-${VERSION}.zip" \
+            "dist/calorieapp-identity-bridge-${VERSION}.zip.sha256" \
+            "dist/calorieapp-identity-bridge-${VERSION}.zip.manifest.json" \
+            --verify-tag \
+            --generate-notes \
+            --title "CalorieApp Identity Bridge ${VERSION}"

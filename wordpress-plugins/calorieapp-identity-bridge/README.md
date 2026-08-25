@@ -50,3 +50,22 @@ See "Unresolved Integration Item" in SECURITY.md.
 - SECURITY.md
 - CONFIGURATION.md
 - TESTING.md
+
+## Reproducible releases
+
+From the repository root, build the upload-ready ZIP, SHA-256 checksum, and
+machine-readable manifest with:
+
+```bash
+python tools/build_wordpress_plugin_release.py
+```
+
+The builder uses an explicit runtime-file allowlist, rejects unsafe paths and
+symlinks, normalizes ZIP metadata, and verifies the completed archive. It never
+packages tests, dependencies, environment files, nested archives, or repository
+metadata.
+
+CI runs the same builder and its standard-library unit tests. A tag matching
+`calorieapp-identity-bridge-vX.Y.Z` publishes the verified artifacts as a GitHub
+release. A manual workflow run produces downloadable workflow artifacts without
+creating a release.

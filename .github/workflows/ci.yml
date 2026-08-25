@@ -45,6 +45,26 @@ jobs:
       - name: Enforce legal and licensing boundaries
         run: python tools/check_legal_boundaries.py
 
+  wordpress-plugin-release-check:
+    name: WordPress plugin release check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Test deterministic release builder
+        run: python -m unittest tools.tests.test_build_wordpress_plugin_release
+
+      - name: Build and inspect release archive
+        run: python tools/build_wordpress_plugin_release.py
+
   backend-tests:
     name: Backend tests (Python 3.11)
     runs-on: ubuntu-latest
