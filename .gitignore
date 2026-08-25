@@ -11,6 +11,8 @@
 *.db
 *.sqlite
 *.sqlite3
+*.dump
+*.dump.*
 backend/calorieapp.db
 backend/calorieapp.db.*
 

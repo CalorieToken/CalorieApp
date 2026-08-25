@@ -77,6 +77,39 @@ before expiry. The application uses a standard `DATABASE_URL` and remains portab
 other PostgreSQL providers; this relational store is separate from future IPFS and
 BigchainDB research directions.
 
+### Portable PostgreSQL backup
+
+Free Render PostgreSQL does not include provider-managed exports or point-in-time
+recovery. Before the database expires, install matching PostgreSQL client tools and
+create a custom-format backup in an access-controlled, encrypted destination outside
+the repository:
+
+```bash
+export DATABASE_URL='postgresql://...'
+python tools/postgres_backup.py create --output-directory /secure/calorieapp-backups
+```
+
+The tool keeps credentials out of command-line arguments and manifests, creates files
+with owner-only permissions, verifies the archive with `pg_restore --list`, and writes
+a SHA-256 manifest. Backup files contain private user data: never commit them, upload
+them as public CI artifacts, or place them on IPFS/BigchainDB.
+
+Verify a copied backup without connecting to the source database:
+
+```bash
+python tools/postgres_backup.py verify \
+  /secure/calorieapp-backups/calorieapp-YYYYMMDDTHHMMSSZ.dump \
+  --manifest /secure/calorieapp-backups/calorieapp-YYYYMMDDTHHMMSSZ.dump.manifest.json
+```
+
+Restore into a replacement PostgreSQL database only after testing the target and
+setting its credentials through PostgreSQL environment variables:
+
+```bash
+pg_restore --clean --if-exists --no-owner --no-acl --dbname target_database \
+  /secure/calorieapp-backups/calorieapp-YYYYMMDDTHHMMSSZ.dump
+```
+
 ### 5. Health Check
 
 Verify deployment with:
