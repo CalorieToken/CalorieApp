@@ -24,6 +24,10 @@ def main() -> None:
         "TRADEMARKS.md",
         "CONTRIBUTING.md",
         "SECURITY.md",
+        "DATA_LICENSING.md",
+        "THIRD_PARTY_NOTICES.md",
+        "ASSET_PROVENANCE.md",
+        "IP_CLEARANCE.md",
     )
     missing = [path for path in required_files if not (ROOT / path).is_file()]
     if missing:
@@ -35,6 +39,9 @@ def main() -> None:
     )
     require_text("COPYRIGHT.md", ("ICTHendrikse", "not conclusive", "GPL-2.0-or-later"))
     require_text("TRADEMARKS.md", ("Pieter Hendrikse", "No repository licence grants"))
+    require_text("DATA_LICENSING.md", ("Open Database License", "share-alike"))
+    require_text("THIRD_PARTY_NOTICES.md", ("software bill of materials", "GPL-2.0-or-later"))
+    require_text("IP_CLEARANCE.md", ("underlying ideas such as calorie tracking", "freedom-to-operate"))
     require_text(
         "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         ("License: GPL-2.0-or-later",),

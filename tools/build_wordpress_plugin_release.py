@@ -19,6 +19,7 @@ PLUGIN_DIR = ROOT / "wordpress-plugins" / PLUGIN_SLUG
 MAIN_FILE = PLUGIN_DIR / f"{PLUGIN_SLUG}.php"
 RELEASE_FILES = (
     "CONFIGURATION.md",
+    "LICENSE",
     "README.md",
     "SECURITY.md",
     f"{PLUGIN_SLUG}.php",

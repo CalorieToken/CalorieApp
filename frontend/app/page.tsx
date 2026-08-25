@@ -75,6 +75,15 @@ export default function Home() {
               className="font-semibold text-brand-secondary hover:underline"
             >
               Open Food Facts
+            </a>{" "}
+            under the{" "}
+            <a
+              href="https://opendatacommons.org/licenses/odbl/1-0/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-brand-secondary hover:underline"
+            >
+              ODbL
             </a>
           </p>
         </div>
