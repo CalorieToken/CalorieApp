@@ -14,6 +14,8 @@ services:
         value: showcase
       - key: SESSION_COOKIE_SECURE
         value: "true"
+      - key: SESSION_COOKIE_SAMESITE
+        value: none
       - key: WORDPRESS_URL
         value: https://calorietoken.net
       - key: WORDPRESS_BRIDGE_AUTHORIZE_URL

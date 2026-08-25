@@ -1001,12 +1001,14 @@ class TestIdentityCallbackFlow:
 
     def test_callback_cookie_sets_secure_when_configured(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", True)
+        monkeypatch.setattr(main_module, "_SESSION_COOKIE_SAMESITE", "none")
         monkeypatch.setattr(main_module, "_exchange_code_for_claims", lambda code, state: self._stub_claims())
 
         state = client.post("/api/identity/login/start").json()["state"]
         callback = client.post("/api/identity/callback", json={"code": "bridge-code", "state": state})
         assert callback.status_code == 200
         assert "Secure" in callback.headers.get("set-cookie", "")
+        assert "SameSite=none" in callback.headers.get("set-cookie", "")
 
     def test_logout_revokes_session_and_clears_cookie(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", False)

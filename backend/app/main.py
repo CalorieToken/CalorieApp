@@ -69,6 +69,7 @@ _WORDPRESS_BRIDGE_EXCHANGE_URL = os.getenv(
 _CALORIEAPP_POST_LOGIN_REDIRECT = os.getenv("CALORIEAPP_POST_LOGIN_REDIRECT", "/")
 _LOGIN_STATE_LIFETIME_SECONDS = int(os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300"))
 _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {"1", "true", "yes"}
+_SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").strip().lower()
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
 _CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
@@ -89,6 +90,10 @@ if not _WORDPRESS_BRIDGE_SECRET:
 
 
 def _validate_session_cookie_security_configuration() -> None:
+    if _SESSION_COOKIE_SAMESITE not in {"lax", "strict", "none"}:
+        raise RuntimeError("SESSION_COOKIE_SAMESITE must be lax, strict, or none")
+    if _SESSION_COOKIE_SAMESITE == "none" and not _SESSION_COOKIE_SECURE:
+        raise RuntimeError("SESSION_COOKIE_SAMESITE=none requires SESSION_COOKIE_SECURE=true")
     if _SESSION_COOKIE_SECURE:
         return
 
@@ -778,7 +783,7 @@ def identity_callback(
         value=session_token,
         httponly=True,
         secure=_SESSION_COOKIE_SECURE,
-        samesite="lax",
+        samesite=_SESSION_COOKIE_SAMESITE,
         path="/",
         max_age=SESSION_ABSOLUTE_LIFETIME_SECONDS,
     )
@@ -835,7 +840,7 @@ def identity_logout(
         domain=None,
         secure=_SESSION_COOKIE_SECURE,
         httponly=True,
-        samesite="lax",
+        samesite=_SESSION_COOKIE_SAMESITE,
     )
 
     logger.info("User logged out (user_id=%s)", current_user.id)
