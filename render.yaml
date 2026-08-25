@@ -9,7 +9,7 @@ services:
     autoDeployTrigger: commit
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.11
+        value: 3.12.10
       - key: CALORIEAPP_ENV
         value: showcase
       - key: SESSION_COOKIE_SECURE
