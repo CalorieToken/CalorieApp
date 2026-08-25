@@ -71,6 +71,9 @@ CalorieApp V1 is not:
 
 The V1 scope is food and nutrition tracking only.
 
+No wallet custody or financial transaction layer is claimed in V1. See
+[REGULATORY.md](REGULATORY.md) for the MiCA and financial-services boundary.
+
 ## Long-Term Vision
 
 CalorieApp is intended to evolve toward a broader ecosystem over time. Current research explores how future systems could connect application records, data integrity models, and broader food ecosystem traceability use cases.
@@ -184,4 +187,6 @@ GPL-2.0-or-later and remains governed by that component licence. Third-party
 dependencies, data, names, and assets retain their own rights and terms.
 
 CalorieToken is identified by the project owner as a registered trade mark of
-Pieter Hendrikse. No trade-mark licence is granted by this repository.
+Pieter Hendrikse for the services specified in its European Union registration
+in Nice Class 36. The registration is a trade-mark right, not regulatory
+authorisation. No trade-mark licence is granted by this repository.

@@ -6,7 +6,13 @@ Repository default:
 
 Trade mark:
   CalorieToken is identified by the project owner as a registered trade mark
-  of Pieter Hendrikse. No trade-mark licence is granted.
+  of Pieter Hendrikse for the services specified in its European Union
+  registration in Nice Class 36. This is not regulatory authorisation. No
+  trade-mark licence is granted.
+
+Regulatory boundary:
+  Current CalorieApp V1 is non-financial and non-custodial. No wallet custody
+  or financial transaction layer is claimed in V1. See REGULATORY.md.
 
 Explicitly licensed component:
   wordpress-plugins/calorieapp-identity-bridge/
@@ -26,4 +32,3 @@ Unresolved visual provenance:
   assignment evidence is complete.
 
 See LICENSE, COPYRIGHT.md, and TRADEMARKS.md for the controlling boundaries.
-
