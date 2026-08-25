@@ -10,6 +10,17 @@ type CallbackResponse = {
   redirect_to: string;
 };
 
+/*
+ * React Strict Mode can run effects twice during local development.
+ *
+ * The backend intentionally allows each login state to be consumed only once,
+ * so duplicate POSTs to /api/identity/callback must be avoided.
+ *
+ * Cache the in-flight request by code + state so repeated effects share the
+ * same request instead of consuming the state twice.
+ */
+const callbackRequests = new Map<string, Promise<CallbackResponse>>();
+
 function safeLocalRedirect(value: unknown): string {
   if (
     typeof value !== "string" ||
@@ -23,13 +34,54 @@ function safeLocalRedirect(value: unknown): string {
   try {
     const base = new URL("https://calorieapp.invalid");
     const target = new URL(value, base);
+
     if (target.origin !== base.origin) {
       return "/";
     }
+
     return `${target.pathname}${target.search}${target.hash}`;
   } catch {
     return "/";
   }
+}
+
+function submitCallbackOnce(
+  code: string,
+  state: string
+): Promise<CallbackResponse> {
+  const key = `${code}\u0000${state}`;
+
+  const existingRequest = callbackRequests.get(key);
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = fetch(`${BACKEND_BASE_URL}/api/identity/callback`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code, state }),
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`Callback failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as CallbackResponse;
+  });
+
+  callbackRequests.set(key, request);
+
+  request.catch(() => {
+    // Allow a later page reload to retry if the request failed before
+    // successfully completing.
+    if (callbackRequests.get(key) === request) {
+      callbackRequests.delete(key);
+    }
+  });
+
+  return request;
 }
 
 function AuthCallbackContent() {
@@ -43,40 +95,33 @@ function AuthCallbackContent() {
   const state = useMemo(() => params.get("state") ?? "", [params]);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let cancelled = false;
 
     async function finalizeLogin() {
       if (!BACKEND_BASE_URL) {
-        setStatus("error");
-        setMessage("Backend URL is not configured.");
+        if (!cancelled) {
+          setStatus("error");
+          setMessage("Backend URL is not configured.");
+        }
         return;
       }
 
       if (!code || !state) {
-        setStatus("error");
-        setMessage("Missing login callback parameters.");
+        if (!cancelled) {
+          setStatus("error");
+          setMessage("Missing login callback parameters.");
+        }
         return;
       }
 
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/api/identity/callback`, {
-          method: "POST",
-          credentials: "include",
-          signal: controller.signal,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code, state }),
-        });
+        const payload = await submitCallbackOnce(code, state);
 
-        if (!response.ok) {
-          throw new Error("Callback failed");
+        if (!cancelled) {
+          router.replace(safeLocalRedirect(payload.redirect_to));
         }
-
-        const payload = (await response.json()) as CallbackResponse;
-        router.replace(safeLocalRedirect(payload.redirect_to));
       } catch {
-        if (!controller.signal.aborted) {
+        if (!cancelled) {
           setStatus("error");
           setMessage("Sign-in failed. Please try logging in again.");
         }
@@ -84,15 +129,26 @@ function AuthCallbackContent() {
     }
 
     void finalizeLogin();
+
     return () => {
-      controller.abort();
+      /*
+       * Do not abort the backend request here.
+       *
+       * React Strict Mode deliberately runs effect cleanup/setup again during
+       * development. Aborting here can allow the backend to consume the
+       * one-time state while the browser discards the successful response.
+       */
+      cancelled = true;
     };
   }, [code, state, router]);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
       <section className="w-full rounded-2xl border border-brand-secondary/20 bg-white p-8 text-center shadow-sm">
-        <h1 className="text-xl font-semibold text-brand-primary">CalorieApp Sign-In</h1>
+        <h1 className="text-xl font-semibold text-brand-primary">
+          CalorieApp Sign-In
+        </h1>
+
         <p
           className="mt-3 text-sm text-brand-secondary/90"
           role="status"
@@ -125,10 +181,18 @@ export default function AuthCallbackPage() {
       fallback={
         <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
           <section className="w-full rounded-2xl border border-brand-secondary/20 bg-white p-8 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-brand-primary">CalorieApp Sign-In</h1>
-            <p className="mt-3 text-sm text-brand-secondary/90" role="status" aria-live="polite">
+            <h1 className="text-xl font-semibold text-brand-primary">
+              CalorieApp Sign-In
+            </h1>
+
+            <p
+              className="mt-3 text-sm text-brand-secondary/90"
+              role="status"
+              aria-live="polite"
+            >
               Finalizing sign-in...
             </p>
+
             <div
               className="mx-auto mt-5 h-6 w-6 animate-spin rounded-full border-2 border-brand-secondary/30 border-t-brand-primary"
               aria-hidden="true"

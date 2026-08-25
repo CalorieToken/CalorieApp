@@ -8,7 +8,7 @@ from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from secrets import compare_digest, token_urlsafe
 from typing import Annotated, Optional
-from urllib.parse import quote_plus, urlencode, urlsplit
+from urllib.parse import parse_qsl, quote_plus, urlencode, urlsplit, urlunsplit
 
 import httpx
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Query, Request, Response
@@ -140,8 +140,22 @@ def _parse_secure_bridge_url(name: str, value: str):
     except ValueError as exc:
         raise RuntimeError(f"{name} is not a valid URL") from exc
 
-    if parsed.scheme != "https" or not parsed.hostname:
-        raise RuntimeError(f"{name} must be an absolute HTTPS URL")
+    if not parsed.hostname:
+        raise RuntimeError(f"{name} must be an absolute URL")
+
+    hostname = parsed.hostname.lower()
+    is_local_loopback = hostname in {"localhost", "127.0.0.1", "::1"}
+
+    if parsed.scheme != "https":
+        if not (
+            _CALORIEAPP_ENV == "local"
+            and parsed.scheme == "http"
+            and is_local_loopback
+        ):
+            raise RuntimeError(
+                f"{name} must use HTTPS except for loopback URLs when CALORIEAPP_ENV=local"
+            )
+
     if parsed.username or parsed.password or parsed.fragment:
         raise RuntimeError(f"{name} must not contain credentials or a fragment")
     return parsed, port
@@ -150,9 +164,15 @@ def _parse_secure_bridge_url(name: str, value: str):
 def _validate_identity_url_configuration() -> None:
     wordpress, wordpress_port = _parse_secure_bridge_url("WORDPRESS_URL", _WORDPRESS_URL)
     if wordpress.path not in {"", "/"} or wordpress.query:
-        raise RuntimeError("WORDPRESS_URL must contain only the HTTPS site origin")
+        raise RuntimeError("WORDPRESS_URL must contain only the site origin")
 
     wordpress_origin = (wordpress.scheme, wordpress.hostname.lower(), wordpress_port)
+    is_local_wordpress = (
+        _CALORIEAPP_ENV == "local"
+        and wordpress.scheme == "http"
+        and wordpress.hostname.lower() in {"localhost", "127.0.0.1", "::1"}
+    )
+
     for name, value in (
         ("WORDPRESS_BRIDGE_AUTHORIZE_URL", _WORDPRESS_BRIDGE_AUTHORIZE_URL),
         ("WORDPRESS_BRIDGE_EXCHANGE_URL", _WORDPRESS_BRIDGE_EXCHANGE_URL),
@@ -161,8 +181,34 @@ def _validate_identity_url_configuration() -> None:
         endpoint_origin = (parsed.scheme, parsed.hostname.lower(), port)
         if endpoint_origin != wordpress_origin:
             raise RuntimeError(f"{name} must use the same origin as WORDPRESS_URL")
-        if not parsed.path or parsed.path == "/" or parsed.query:
-            raise RuntimeError(f"{name} must contain a fixed endpoint path without a query")
+
+        query_items = parse_qsl(parsed.query, keep_blank_values=True)
+
+        if name == "WORDPRESS_BRIDGE_AUTHORIZE_URL" and parsed.query:
+            if parsed.path not in {"", "/"} or query_items != [("calorieapp_authorize", "1")]:
+                raise RuntimeError(
+                    "WORDPRESS_BRIDGE_AUTHORIZE_URL query form must be exactly "
+                    "/?calorieapp_authorize=1"
+                )
+            continue
+
+        if name == "WORDPRESS_BRIDGE_EXCHANGE_URL" and parsed.query:
+            if not is_local_wordpress:
+                raise RuntimeError(
+                    "WORDPRESS_BRIDGE_EXCHANGE_URL may use a rest_route query only for "
+                    "loopback URLs when CALORIEAPP_ENV=local"
+                )
+            if parsed.path != "/index.php" or query_items != [("rest_route", "/calorieapp/v1/exchange")]:
+                raise RuntimeError(
+                    "WORDPRESS_BRIDGE_EXCHANGE_URL local query form must be exactly "
+                    "/index.php?rest_route=/calorieapp/v1/exchange"
+                )
+            continue
+
+        if parsed.query:
+            raise RuntimeError(f"{name} contains an unsupported query string")
+        if not parsed.path or parsed.path == "/":
+            raise RuntimeError(f"{name} must contain a fixed endpoint path")
 
     redirect = _CALORIEAPP_POST_LOGIN_REDIRECT
     if (
@@ -549,7 +595,18 @@ def _is_valid_state_format(state: str) -> bool:
 
 
 def _build_wordpress_signin_url(state: str) -> str:
-    bridge_authorize_url = f"{_WORDPRESS_BRIDGE_AUTHORIZE_URL}?{urlencode({'state': state})}"
+    parsed = urlsplit(_WORDPRESS_BRIDGE_AUTHORIZE_URL)
+    query_items = parse_qsl(parsed.query, keep_blank_values=True)
+    query_items.append(("state", state))
+    bridge_authorize_url = urlunsplit(
+        (
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            urlencode(query_items),
+            parsed.fragment,
+        )
+    )
     return f"{_WORDPRESS_URL.rstrip('/')}/?xl-signin&redirect={quote_plus(bridge_authorize_url)}"
 
 

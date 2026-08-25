@@ -254,6 +254,8 @@ class TestIdentityEndpoints:
             ("_WORDPRESS_BRIDGE_AUTHORIZE_URL", "https://calorietoken.net"),
             ("_WORDPRESS_BRIDGE_EXCHANGE_URL", "https://evil.example/exchange"),
             ("_WORDPRESS_BRIDGE_EXCHANGE_URL", "https://calorietoken.net/exchange?target=other"),
+            ("_WORDPRESS_BRIDGE_AUTHORIZE_URL", "http://localhost:8881/index.php?rest_route=/calorieapp/v1/authorize"),
+            ("_WORDPRESS_BRIDGE_EXCHANGE_URL", "http://localhost:8881/index.php?rest_route=/calorieapp/v1/exchange"),
         ],
     )
     def test_identity_configuration_rejects_unsafe_bridge_urls(
