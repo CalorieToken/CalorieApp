@@ -60,7 +60,7 @@ _WORDPRESS_BRIDGE_SECRET = os.getenv("WORDPRESS_BRIDGE_SECRET", "")
 _CALORIEAPP_CLIENT_ID = os.getenv("CALORIEAPP_CLIENT_ID", "calorieapp-backend")
 _WORDPRESS_BRIDGE_AUTHORIZE_URL = os.getenv(
     "WORDPRESS_BRIDGE_AUTHORIZE_URL",
-    f"{_WORDPRESS_URL.rstrip('/')}/index.php/wp-json/calorieapp/v1/authorize",
+    f"{_WORDPRESS_URL.rstrip('/')}/?calorieapp_authorize=1",
 )
 _WORDPRESS_BRIDGE_EXCHANGE_URL = os.getenv(
     "WORDPRESS_BRIDGE_EXCHANGE_URL",

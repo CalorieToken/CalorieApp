@@ -17,7 +17,7 @@ services:
       - key: WORDPRESS_URL
         value: https://calorietoken.net
       - key: WORDPRESS_BRIDGE_AUTHORIZE_URL
-        value: https://calorietoken.net/index.php/wp-json/calorieapp/v1/authorize
+        value: https://calorietoken.net/?calorieapp_authorize=1
       - key: WORDPRESS_BRIDGE_EXCHANGE_URL
         value: https://calorietoken.net/index.php/wp-json/calorieapp/v1/exchange
       - key: CALORIEAPP_CLIENT_ID

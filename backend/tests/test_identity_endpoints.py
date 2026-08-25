@@ -303,7 +303,7 @@ class TestIdentityEndpoints:
         assert "expires_at" in data
         assert "wordpress_signin_url" in data
         assert data["wordpress_signin_url"].startswith("https://calorietoken.net/?xl-signin&redirect=")
-        assert "%2Findex.php%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize" in data["wordpress_signin_url"]
+        assert "%2F%3Fcalorieapp_authorize%3D1%26state%3D" in data["wordpress_signin_url"]
         assert "state%3D" in data["wordpress_signin_url"]
         assert len(data["state"]) >= 32
         assert response.headers["cache-control"] == "no-store"
@@ -321,7 +321,7 @@ class TestIdentityEndpoints:
         response = client.post("/api/identity/login/start")
         assert response.status_code == 200
         signin_url = response.json()["wordpress_signin_url"]
-        assert "redirect=https%3A%2F%2Fcalorietoken.net%2Findex.php%2Fwp-json%2Fcalorieapp%2Fv1%2Fauthorize%3Fstate%3D" in signin_url
+        assert "redirect=https%3A%2F%2Fcalorietoken.net%2F%3Fcalorieapp_authorize%3D1%26state%3D" in signin_url
         assert "evil.example" not in signin_url
 
     def test_me_requires_authentication(self, client: TestClient):
