@@ -25,7 +25,7 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-Version 0.1.2 adds a normal WordPress browser authorization handler for XUMM-authenticated sessions while retaining the REST exchange contract. Version 0.1.1 aligned state validation with the backend's signed v1 protocol
+Version 0.1.3 adds a narrowly scoped public-HTML compatibility layer that replaces obsolete legal footer labels left in cached Brizy output. It does not modify stored page, product, Tokenomics, payment, or authentication data. Version 0.1.2 adds a normal WordPress browser authorization handler for XUMM-authenticated sessions while retaining the REST exchange contract. Version 0.1.1 aligned state validation with the backend's signed v1 protocol
 (timestamp, nonce, and HMAC-SHA256 signature) and supports an exact allowlisted
 external callback without requiring a separate WordPress redirect-host filter.
 

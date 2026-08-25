@@ -10,6 +10,7 @@ require_once __DIR__ . '/class-calorieapp-identity-bridge-storage.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-rest.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-browser-authorize.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-admin.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-legal-footer-compatibility.php';
 
 class Plugin {
     public const OPTION_KEY = 'calorieapp_identity_bridge_options';
@@ -24,6 +25,8 @@ class Plugin {
 
     private Admin $admin;
 
+    private LegalFooterCompatibility $legal_footer_compatibility;
+
     public static function instance(): Plugin {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -37,6 +40,7 @@ class Plugin {
         $this->rest_api = new RestApi($this->storage);
         $this->browser_authorize = new BrowserAuthorize($this->rest_api);
         $this->admin = new Admin();
+        $this->legal_footer_compatibility = new LegalFooterCompatibility();
 
         register_activation_hook(CALORIEAPP_IDENTITY_BRIDGE_FILE, [$this, 'activate']);
 
@@ -48,6 +52,7 @@ class Plugin {
         $this->rest_api->register_hooks();
         $this->browser_authorize->register_hooks();
         $this->admin->register_hooks();
+        $this->legal_footer_compatibility->register_hooks();
     }
 
     public function activate(): void {
