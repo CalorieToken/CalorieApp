@@ -8,6 +8,16 @@ from pathlib import Path
 from sqlalchemy import inspect, text
 from sqlmodel import Session, SQLModel, create_engine
 
+
+def _normalize_database_url(database_url: str) -> str:
+    """Select the installed psycopg v3 driver for provider-style PostgreSQL URLs."""
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return database_url
+
+
 # Read DATABASE_URL from environment; default to local SQLite file.
 # Format: sqlite:///path/to/db.sqlite or sqlite+pysqlite:///path
 if DATABASE_URL := os.getenv("DATABASE_URL"):
@@ -16,6 +26,8 @@ else:
     # Local development default: SQLite file one directory above this file (backend/calorieapp.db).
     _DB_PATH = Path(__file__).parent.parent / "calorieapp.db"
     DATABASE_URL = f"sqlite:///{_DB_PATH}"
+
+DATABASE_URL = _normalize_database_url(DATABASE_URL)
 
 _IS_SQLITE = DATABASE_URL.startswith("sqlite:")
 _ENGINE_OPTIONS = {"connect_args": {"check_same_thread": False}} if _IS_SQLITE else {"pool_pre_ping": True}
