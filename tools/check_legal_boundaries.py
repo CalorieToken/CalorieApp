@@ -28,10 +28,6 @@ def main() -> None:
         "THIRD_PARTY_NOTICES.md",
         "ASSET_PROVENANCE.md",
         "IP_CLEARANCE.md",
-        "IP_EVIDENCE_REGISTER.md",
-        "docs/CONTRIBUTOR_RIGHTS_DECLARATION.md",
-        "docs/ASSET_CREATOR_DECLARATION.md",
-        "docs/OPEN_FOOD_FACTS_REGISTRATION_DRAFT.md",
     )
     missing = [path for path in required_files if not (ROOT / path).is_file()]
     if missing:
@@ -41,15 +37,11 @@ def main() -> None:
         "LICENSE",
         ("NO GENERAL LICENCE GRANTED", "GPL-2.0-or-later", "no permission is granted", "PATENTS AND PUBLIC DISCLOSURE"),
     )
-    require_text("COPYRIGHT.md", ("ICTHendrikse", "not conclusive", "GPL-2.0-or-later"))
+    require_text("COPYRIGHT.md", ("ICTHendrikse", "technical provenance", "GPL-2.0-or-later"))
     require_text("TRADEMARKS.md", ("Pieter Hendrikse", "019137415", "019125433", "No repository licence grants"))
-    require_text("IP_EVIDENCE_REGISTER.md", ("official EUIPO certificate", "Sensitive certificates"))
-    require_text("docs/CONTRIBUTOR_RIGHTS_DECLARATION.md", ("not a copyright assignment", "Private evidence reference"))
-    require_text("docs/ASSET_CREATOR_DECLARATION.md", ("not an assignment or licence", "AI/generation/editing tools"))
-    require_text("docs/OPEN_FOOD_FACTS_REGISTRATION_DRAFT.md", ("not yet submitted", "owner review"))
     require_text("DATA_LICENSING.md", ("Open Database License", "share-alike"))
     require_text("THIRD_PARTY_NOTICES.md", ("software bill of materials", "GPL-2.0-or-later"))
-    require_text("IP_CLEARANCE.md", ("underlying ideas such as calorie tracking", "freedom-to-operate"))
+    require_text("IP_CLEARANCE.md", ("general ideas such as calorie tracking", "freedom-to-operate"))
     require_text(
         "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         ("License: GPL-2.0-or-later",),
