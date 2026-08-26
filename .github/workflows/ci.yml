@@ -65,6 +65,23 @@ jobs:
       - name: Build and inspect release archive
         run: python tools/build_wordpress_plugin_release.py
 
+  postgres-backup-tool-tests:
+    name: PostgreSQL backup tool tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Test PostgreSQL backup tooling
+        run: python -m unittest tools.tests.test_postgres_backup
+
   backend-tests:
     name: Backend tests (Python 3.11)
     runs-on: ubuntu-latest
