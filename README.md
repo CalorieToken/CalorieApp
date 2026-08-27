@@ -102,8 +102,13 @@ Frontend environment setup:
 
 - Template file: frontend/.env.example
 - Local runtime file: frontend/.env.local
-- Required variable: NEXT_PUBLIC_BACKEND_URL
+- Preferred variable: BACKEND_URL
+- Existing deployments may continue using NEXT_PUBLIC_BACKEND_URL as a fallback
 - Local development value: http://localhost:8000
+
+The browser calls the frontend's same-origin `/api/backend` proxy. The proxy
+forwards only the supported CalorieApp endpoints to the configured backend and
+keeps mobile authentication sessions first-party.
 
 Create frontend/.env.local from the template before running the frontend.
 

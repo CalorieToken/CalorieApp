@@ -1,7 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { announceAuthState } from "@/components/authEvents";
+import {
+  backendRequest,
+  backendUnavailableMessage,
+} from "@/lib/backendRequest";
 
 type MeResponse = {
   user_id: string;
@@ -14,7 +18,7 @@ type LoginStartResponse = {
   wordpress_signin_url: string;
 };
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+const BACKEND_BASE_URL = "/api/backend";
 
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,17 +26,11 @@ export function XamanLoginPanel() {
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
 
-  const backendConfigured = useMemo(() => BACKEND_BASE_URL.length > 0, []);
-
   const refreshCurrentUser = useCallback(async () => {
-    if (!BACKEND_BASE_URL) {
-      return;
-    }
-
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/api/identity/me`, {
-        credentials: "include",
-      });
+      const response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/me`
+      );
       if (!response.ok) {
         setCurrentUser(null);
         if (response.status === 401) {
@@ -52,18 +50,12 @@ export function XamanLoginPanel() {
   }, [refreshCurrentUser]);
 
   async function handleLogin() {
-    if (!BACKEND_BASE_URL) {
-      setError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     setError(null);
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/api/identity/login/start`, {
+      const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/login/start`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (!response.ok) {
@@ -76,25 +68,24 @@ export function XamanLoginPanel() {
       }
 
       window.location.assign(data.wordpress_signin_url);
-    } catch {
-      setError("Unable to start Xaman login right now. Please try again.");
+    } catch (requestError) {
+      setError(
+        backendUnavailableMessage(
+          requestError,
+          "Unable to start Xaman login right now. Please try again."
+        )
+      );
       setIsLoading(false);
     }
   }
 
   async function handleLogout() {
-    if (!BACKEND_BASE_URL) {
-      setError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     setError(null);
     setIsLoggingOut(true);
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/api/identity/logout`, {
+      const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (response.status === 401) {
@@ -109,8 +100,13 @@ export function XamanLoginPanel() {
 
       setCurrentUser(null);
       announceAuthState(false);
-    } catch {
-      setError("Unable to logout right now. Please try again.");
+    } catch (requestError) {
+      setError(
+        backendUnavailableMessage(
+          requestError,
+          "Unable to logout right now. Please try again."
+        )
+      );
     } finally {
       setIsLoggingOut(false);
     }
@@ -118,16 +114,17 @@ export function XamanLoginPanel() {
 
   return (
     <section className="rounded-2xl border border-brand-secondary/20 bg-brand-primary/5 p-4 sm:p-5">
-      <h2 className="text-base font-semibold text-brand-primary">Xaman Sign-In</h2>
-      <p className="mt-1 text-sm text-brand-secondary/90">
-        Authenticate through WordPress + XUMM Login and return to CalorieApp.
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-secondary/70">
+        Optional account access
       </p>
-
-      {!backendConfigured && (
-        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
-          NEXT_PUBLIC_BACKEND_URL is not configured.
-        </p>
-      )}
+      <h2 className="mt-1 text-base font-semibold text-brand-primary">Sign in with Xaman</h2>
+      <p className="mt-1 text-sm text-brand-secondary/90">
+        Sign in securely to save, review, and manage your personal food log.
+      </p>
+      <p className="mt-2 text-xs leading-relaxed text-brand-secondary/75">
+        On your phone, the Xaman app opens outside this browser. After approval,
+        you return here automatically.
+      </p>
 
       {currentUser ? (
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -147,10 +144,10 @@ export function XamanLoginPanel() {
         <button
           type="button"
           onClick={handleLogin}
-          disabled={isLoading || !backendConfigured}
+          disabled={isLoading}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading ? "Redirecting..." : "Login with Xaman"}
+          {isLoading ? "Opening Xaman..." : "Continue in Xaman"}
         </button>
       )}
 

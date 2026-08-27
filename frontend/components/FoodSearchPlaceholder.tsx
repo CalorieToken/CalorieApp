@@ -13,8 +13,12 @@ import {
   AUTH_STATE_CHANGED_EVENT,
 } from "@/components/authEvents";
 import type { AuthStateChangedDetail } from "@/components/authEvents";
+import {
+  backendRequest,
+  backendUnavailableMessage,
+} from "@/lib/backendRequest";
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+const BACKEND_BASE_URL = "/api/backend";
 type PortionOption = "whole" | "half" | "quarter" | "custom";
 const SIGN_IN_REQUIRED_LOG_MESSAGE =
   "Your session has expired or you are not signed in. Please sign in again to manage food logs.";
@@ -184,16 +188,6 @@ export function FoodSearchPlaceholder() {
   const [logError, setLogError] = useState<string | null>(null);
   const [didSearch, setDidSearch] = useState(false);
 
-  async function backendFetch(input: string, init?: RequestInit) {
-    return fetch(input, {
-      ...init,
-      credentials: "include",
-      headers: {
-        ...(init?.headers ?? {}),
-      },
-    });
-  }
-
   const hasResults = useMemo(() => results.length > 0, [results]);
   const hasLogs = useMemo(() => logs.length > 0, [logs]);
   const summary = useMemo(() => {
@@ -286,14 +280,9 @@ export function FoodSearchPlaceholder() {
   const fetchLogs = useCallback(async () => {
     const requestId = ++logsRequestIdRef.current;
 
-    if (!BACKEND_BASE_URL) {
-      setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     setIsLogsLoading(true);
     try {
-      const response = await backendFetch(`${BACKEND_BASE_URL}/logs`);
+      const response = await backendRequest(`${BACKEND_BASE_URL}/logs`);
       if (requestId !== logsRequestIdRef.current) {
         return;
       }
@@ -310,9 +299,14 @@ export function FoodSearchPlaceholder() {
       }
       setLogs((data ?? []).map(normalizeFoodItem));
       setLogError(null);
-    } catch {
+    } catch (requestError) {
       if (requestId === logsRequestIdRef.current) {
-        setLogError("Unable to load logged foods right now.");
+        setLogError(
+          backendUnavailableMessage(
+            requestError,
+            "Unable to load logged foods right now."
+          )
+        );
       }
     } finally {
       if (requestId === logsRequestIdRef.current) {
@@ -354,11 +348,6 @@ export function FoodSearchPlaceholder() {
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!BACKEND_BASE_URL) {
-      setError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     const trimmedQuery = query.trim();
     if (!trimmedQuery) {
       searchAbortControllerRef.current?.abort();
@@ -378,7 +367,7 @@ export function FoodSearchPlaceholder() {
     setDidSearch(true);
 
     try {
-      const response = await backendFetch(
+      const response = await backendRequest(
         `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
         { signal: controller.signal }
       );
@@ -396,10 +385,15 @@ export function FoodSearchPlaceholder() {
         return;
       }
       setResults((data.results ?? []).map(normalizeFoodItem));
-    } catch {
+    } catch (requestError) {
       if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
         setResults([]);
-        setError("Unable to fetch foods right now. Please try again.");
+        setError(
+          backendUnavailableMessage(
+            requestError,
+            "Unable to fetch foods right now. Please try again."
+          )
+        );
       }
     } finally {
       if (requestId === searchRequestIdRef.current) {
@@ -427,11 +421,6 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
-    if (!BACKEND_BASE_URL) {
-      setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     if (!pendingLogItem || pendingLogIndex === null) {
       return;
     }
@@ -448,7 +437,7 @@ export function FoodSearchPlaceholder() {
     setLogError(null);
 
     try {
-      const response = await backendFetch(`${BACKEND_BASE_URL}/log-food`, {
+      const response = await backendRequest(`${BACKEND_BASE_URL}/log-food`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -467,8 +456,13 @@ export function FoodSearchPlaceholder() {
 
       await fetchLogs();
       cancelPortionLogging();
-    } catch {
-      setLogError("Unable to log this food right now. Please try again.");
+    } catch (requestError) {
+      setLogError(
+        backendUnavailableMessage(
+          requestError,
+          "Unable to log this food right now. Please try again."
+        )
+      );
     } finally {
       logMutationInFlightRef.current = false;
       setIsLogging(null);
@@ -480,16 +474,11 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
-    if (!BACKEND_BASE_URL) {
-      setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
-      return;
-    }
-
     deleteMutationInFlightRef.current = true;
     setDeletingLogId(logId);
     setLogError(null);
     try {
-      const response = await backendFetch(`${BACKEND_BASE_URL}/logs/${logId}`, {
+      const response = await backendRequest(`${BACKEND_BASE_URL}/logs/${logId}`, {
         method: "DELETE",
       });
       if (response.status === 401) {
@@ -506,8 +495,13 @@ export function FoodSearchPlaceholder() {
         setSelectedLogId(null);
       }
       await fetchLogs();
-    } catch {
-      setLogError("Unable to delete this logged food right now. Please try again.");
+    } catch (requestError) {
+      setLogError(
+        backendUnavailableMessage(
+          requestError,
+          "Unable to delete this logged food right now. Please try again."
+        )
+      );
     } finally {
       deleteMutationInFlightRef.current = false;
       setDeletingLogId(null);
@@ -516,11 +510,6 @@ export function FoodSearchPlaceholder() {
 
   async function onDeleteAllLogs() {
     if (deleteMutationInFlightRef.current) {
-      return;
-    }
-
-    if (!BACKEND_BASE_URL) {
-      setLogError("Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL.");
       return;
     }
 
@@ -533,7 +522,7 @@ export function FoodSearchPlaceholder() {
     setIsClearingAll(true);
     setLogError(null);
     try {
-      const response = await backendFetch(`${BACKEND_BASE_URL}/logs`, {
+      const response = await backendRequest(`${BACKEND_BASE_URL}/logs`, {
         method: "DELETE",
       });
       if (response.status === 401) {
@@ -545,8 +534,13 @@ export function FoodSearchPlaceholder() {
       }
       setSelectedLogId(null);
       await fetchLogs();
-    } catch {
-      setLogError("Unable to clear logged foods right now. Please try again.");
+    } catch (requestError) {
+      setLogError(
+        backendUnavailableMessage(
+          requestError,
+          "Unable to clear logged foods right now. Please try again."
+        )
+      );
     } finally {
       deleteMutationInFlightRef.current = false;
       setIsClearingAll(false);
@@ -559,7 +553,7 @@ export function FoodSearchPlaceholder() {
       <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
         <h2 className="text-lg font-bold text-brand-primary">Search Foods</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
-          Find nutrition info from our database
+          Explore product nutrition data provided by Open Food Facts.
         </p>
 
         <SearchBar
@@ -720,7 +714,29 @@ export function FoodSearchPlaceholder() {
       </div>
 
       {/* Logged Foods Section */}
-      {logError ? <ErrorBanner message={logError} /> : null}
+      {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
+        <div
+          role="status"
+          className="rounded-xl border border-brand-secondary/20 bg-brand-primary/5 p-4 text-sm text-brand-secondary"
+        >
+          <p className="font-semibold text-brand-primary">Sign in to manage your food log</p>
+          <p className="mt-1">
+            Food search is available to everyone. Sign in with Xaman to save and manage items.
+          </p>
+        </div>
+      ) : logError ? (
+        <div className="space-y-3">
+          <ErrorBanner message={logError} />
+          <button
+            type="button"
+            onClick={fetchLogs}
+            disabled={isLogsLoading}
+            className="rounded-full border-2 border-brand-secondary bg-white px-5 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLogsLoading ? "Connecting..." : "Retry connection"}
+          </button>
+        </div>
+      ) : null}
 
       {isLogsLoading ? <LoadingState variant="logs" /> : null}
 
