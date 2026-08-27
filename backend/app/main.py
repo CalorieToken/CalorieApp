@@ -630,7 +630,7 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
             timeout=10.0,
         )
     except httpx.HTTPError as exc:
-        logger.warning("WordPress bridge exchange failed: %s", exc)
+        logger.warning("WordPress bridge exchange failed (%s)", type(exc).__name__)
         raise HTTPException(status_code=502, detail="WordPress bridge exchange failed") from exc
 
     if response.status_code != 200:
@@ -674,11 +674,7 @@ def identity_login_start(session: DbSession) -> IdentityStartResponse:
     )
     wordpress_signin_url = _build_wordpress_signin_url(state)
 
-    logger.info(
-        "Login flow started (state=%s expires_at=%s)",
-        state[:12],
-        pending.expires_at,
-    )
+    logger.info("Login flow started (expires_at=%s)", pending.expires_at)
 
     return IdentityStartResponse(
         state=state,
@@ -788,13 +784,7 @@ def identity_callback(
         max_age=SESSION_ABSOLUTE_LIFETIME_SECONDS,
     )
 
-    logger.warning(
-        "Identity callback success (state=%s user_id=%s created=%s code_length=%s)",
-        state[:12],
-        user.id,
-        created,
-        len(code),
-    )
+    logger.info("Identity callback succeeded (created=%s)", created)
 
     return IdentityCallbackResponse(
         user_id=user.id,
@@ -843,7 +833,7 @@ def identity_logout(
         samesite=_SESSION_COOKIE_SAMESITE,
     )
 
-    logger.info("User logged out (user_id=%s)", current_user.id)
+    logger.info("User logged out")
 
     return LogoutResponse(message="Logged out successfully")
 
@@ -883,12 +873,7 @@ def log_food(
     session.add(entry)
     session.commit()
     session.refresh(entry)
-    logger.info(
-        "Logged food item: %s (id=%s, owner=%s)",
-        entry.product_name,
-        entry.id,
-        current_user.id,
-    )
+    logger.info("Food item logged")
     return FoodLog.model_validate(entry.model_dump())
 
 
@@ -912,7 +897,7 @@ def get_logs(
         .order_by(FoodLogDB.id.desc())
         .limit(limit)
     ).all()
-    logger.info("Returning %s logged food items for user=%s", len(entries), current_user.id)
+    logger.info("Returning logged food items (count=%s)", len(entries))
     return [FoodLog.model_validate(e.model_dump()) for e in entries]
 
 
@@ -935,7 +920,7 @@ def delete_log(
 
     session.delete(entry)
     session.commit()
-    logger.info("Deleted food log entry id=%s (owner=%s)", log_id, current_user.id)
+    logger.info("Food log entry deleted")
     return {"deleted_id": log_id}
 
 
@@ -955,7 +940,7 @@ def delete_all_logs(
     for entry in entries:
         session.delete(entry)
     session.commit()
-    logger.info("Deleted all food logs for user=%s (count=%s)", current_user.id, deleted_count)
+    logger.info("All food logs deleted (count=%s)", deleted_count)
     return {"deleted_count": deleted_count}
 
 
@@ -968,8 +953,8 @@ async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> Food
     try:
         results = await search_food_products(query)
     except HTTPError as exc:
-        logger.warning("Open Food Facts search failed for query=%s: %s", query, exc)
+        logger.warning("Open Food Facts search failed (%s)", type(exc).__name__)
         raise HTTPException(status_code=502, detail="Open Food Facts request failed") from exc
 
-    logger.info("Food search query=%s returned %s results", query, len(results))
+    logger.info("Food search completed (results=%s)", len(results))
     return FoodSearchResponse(query=query, results=results)
