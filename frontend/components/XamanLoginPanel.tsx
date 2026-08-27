@@ -86,7 +86,7 @@ export function XamanLoginPanel() {
       setLoginStatus(null);
       setIsLoading(false);
     }
-  }
+      setCurrentUser(data);
 
   async function handleLogout() {
     setError(null);
