@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const UPSTREAM_TIMEOUT_MS = 18_000;
+const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
+const HEALTH_UPSTREAM_TIMEOUT_MS = 70_000;
 
 const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^health$/, methods: new Set(["GET"]) },
@@ -88,7 +89,13 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+  // A sleeping Render backend can need well over the ordinary request timeout
+  // before its health endpoint answers. Keep only this readiness probe alive
+  // long enough to wake it; normal application requests retain the tighter
+  // timeout after readiness has been established.
+  const upstreamTimeoutMs =
+    path === "health" ? HEALTH_UPSTREAM_TIMEOUT_MS : DEFAULT_UPSTREAM_TIMEOUT_MS;
+  const timeoutId = setTimeout(() => controller.abort(), upstreamTimeoutMs);
 
   try {
     const body = ["GET", "HEAD"].includes(request.method)
