@@ -195,12 +195,7 @@ def create_authorization_code(
     session.add(auth_code_db)
     session.commit()
 
-    logger.info(
-        "Created authorization code for external_subject=%s, "
-        "login_session_id=%s",
-        external_subject,
-        login_session_id,
-    )
+    logger.info("Authorization code created")
 
     return code
 
@@ -234,7 +229,7 @@ def validate_and_consume_authorization_code(
     auth_code_db = session.exec(stmt).first()
 
     if not auth_code_db:
-        logger.warning("Authorization code not found (hash=%s)", code_hash[:8])
+        logger.warning("Authorization code not found")
         return False, "Invalid or expired authorization code", None
 
     # Check expiration (handle both aware and naive datetimes)
@@ -244,28 +239,22 @@ def validate_and_consume_authorization_code(
         expires_at = expires_at.replace(tzinfo=UTC)
 
     if now > expires_at:
-        logger.warning("Authorization code expired (id=%s)", auth_code_db.id)
+        logger.warning("Authorization code expired")
         return False, "Authorization code expired", None
 
     # Check state
     if auth_code_db.state != state:
-        logger.warning(
-            "State mismatch (expected=%s, received=%s)", auth_code_db.state[:8], state[:8]
-        )
+        logger.warning("State mismatch")
         return False, "State parameter mismatch", None
 
     # Check login session
     if auth_code_db.login_session_id != login_session_id:
-        logger.warning("Login session mismatch (id=%s)", auth_code_db.id)
+        logger.warning("Login session mismatch")
         return False, "Login session mismatch", None
 
     # Check if already used
     if auth_code_db.used_at is not None:
-        logger.warning(
-            "Authorization code reuse attempt (id=%s, previously used at=%s)",
-            auth_code_db.id,
-            auth_code_db.used_at,
-        )
+        logger.warning("Authorization code reuse attempt")
         return False, "Authorization code already used", None
 
     # Mark as used
@@ -283,7 +272,7 @@ def validate_and_consume_authorization_code(
         "jti": auth_code_db.id,
     }
 
-    logger.info("Authorization code consumed (id=%s)", auth_code_db.id)
+    logger.info("Authorization code consumed")
     return True, None, identity
 
 
@@ -317,19 +306,11 @@ def get_or_create_user_from_external_identity(
             external_identity_db.last_verified_at = datetime.now(UTC)
             session.add(external_identity_db)
             session.commit()
-            logger.info(
-                "Returning existing user for external_identity (provider=%s, "
-                "external_subject=%s)",
-                provider,
-                external_subject,
-            )
+            logger.info("Returning existing user for external identity (provider=%s)", provider)
             return user_db, False
         else:
             # This shouldn't happen (foreign key violation), but handle it
-            logger.error(
-                "External identity exists but user does not (id=%s)",
-                external_identity_db.calorieapp_user_id,
-            )
+            logger.error("External identity exists but linked user does not")
             raise RuntimeError(
                 "External identity corrupted: linked user not found"
             )
@@ -348,13 +329,7 @@ def get_or_create_user_from_external_identity(
     session.add(external_identity_db)
     session.commit()
 
-    logger.info(
-        "Created new user and external identity (user_id=%s, provider=%s, "
-        "external_subject=%s)",
-        user_db.id,
-        provider,
-        external_subject,
-    )
+    logger.info("Created new user and external identity (provider=%s)", provider)
 
     return user_db, True
 

@@ -118,14 +118,13 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         payload = await _fetch_primary(params)
     except (httpx.HTTPError, ValueError) as exc:
         logger.warning(
-            "Primary Open Food Facts request failed for query=%r after retries; using fallback: %s",
-            safe_query,
-            exc,
+            "Primary Open Food Facts request failed after retries; using fallback (%s)",
+            type(exc).__name__,
         )
         try:
             payload = await _fetch_fallback(params)
         except ValueError as exc:
-            logger.error("Open Food Facts fallback failed for query=%r: %s", safe_query, exc)
+            logger.error("Open Food Facts fallback failed (%s)", type(exc).__name__)
             raise httpx.HTTPError(f"Open Food Facts fallback failed: {exc}") from exc
 
     results: list[FoodSearchResult] = []
@@ -194,10 +193,11 @@ async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
             last_exc = exc
             if attempt < (_PRIMARY_MAX_ATTEMPTS - 1):
                 logger.warning(
-                    "Transient network error from Open Food Facts (attempt %d/%d): %s — retrying",
+                    "Transient network error from Open Food Facts "
+                    "(attempt %d/%d, error=%s) — retrying",
                     attempt + 1,
                     _PRIMARY_MAX_ATTEMPTS,
-                    exc,
+                    type(exc).__name__,
                 )
                 await asyncio.sleep(_PRIMARY_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
                 continue
@@ -207,10 +207,11 @@ async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
             last_exc = httpx.HTTPError(str(exc))
             if attempt < (_PRIMARY_MAX_ATTEMPTS - 1):
                 logger.warning(
-                    "Primary Open Food Facts payload decode/shape error (attempt %d/%d): %s — retrying",
+                    "Primary Open Food Facts payload decode/shape error "
+                    "(attempt %d/%d, error=%s) — retrying",
                     attempt + 1,
                     _PRIMARY_MAX_ATTEMPTS,
-                    exc,
+                    type(exc).__name__,
                 )
                 await asyncio.sleep(_PRIMARY_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
                 continue
@@ -330,7 +331,10 @@ async def _fetch_fallback(params: dict[str, Any]) -> dict[str, Any]:
         try:
             return await asyncio.to_thread(_curl_fetch, params)
         except ValueError as exc:
-            logger.warning("curl fallback failed; trying urllib fallback: %s", exc)
+            logger.warning(
+                "curl fallback failed; trying urllib fallback (%s)",
+                type(exc).__name__,
+            )
 
     last_exc: ValueError | None = None
     for attempt in range(_FALLBACK_MAX_ATTEMPTS):
@@ -340,10 +344,11 @@ async def _fetch_fallback(params: dict[str, Any]) -> dict[str, Any]:
             last_exc = exc
             if _is_retryable_urllib_error(exc) and attempt < (_FALLBACK_MAX_ATTEMPTS - 1):
                 logger.warning(
-                    "urllib fallback transient failure (attempt %d/%d): %s — retrying",
+                    "urllib fallback transient failure "
+                    "(attempt %d/%d, error=%s) — retrying",
                     attempt + 1,
                     _FALLBACK_MAX_ATTEMPTS,
-                    exc,
+                    type(exc).__name__,
                 )
                 await asyncio.sleep(_FALLBACK_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
                 continue
