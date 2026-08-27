@@ -55,7 +55,7 @@ export function XamanLoginPanel() {
     setError(null);
     setIsLoading(true);
     setLoginStatus(
-      "Connecting securely. On the first visit, the service can take up to a minute to start."
+      "Connecting securely. After inactivity, startup can take up to 90 seconds."
     );
 
     try {

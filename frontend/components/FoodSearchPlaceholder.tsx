@@ -368,7 +368,7 @@ export function FoodSearchPlaceholder() {
     setError(null);
     setDidSearch(true);
     setSearchStatus(
-      "Connecting to the food service. The first search can take up to a minute while it starts."
+      "Connecting to the food service. After inactivity, startup can take up to 90 seconds."
     );
 
     try {
