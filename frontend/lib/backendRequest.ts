@@ -96,18 +96,12 @@ export async function waitForBackendReady(
         }
       }
 
-      if (response.status >= 400 && response.status < 500) {
-        throw new Error("Backend health check rejected");
-      }
-    } catch (error) {
+      // Render's edge can temporarily return a non-ready 4xx as well as 5xx
+      // responses while a free service is fully spun down. Treat every
+      // response other than the expected health JSON as retryable until the
+      // overall warm-up deadline expires.
+    } catch {
       throwIfAborted(signal);
-
-      if (
-        error instanceof Error &&
-        error.message === "Backend health check rejected"
-      ) {
-        throw error;
-      }
     }
 
     const retryDelayMs = Math.min(
