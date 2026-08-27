@@ -16,6 +16,7 @@ import type { AuthStateChangedDetail } from "@/components/authEvents";
 import {
   backendRequest,
   backendUnavailableMessage,
+  waitForBackendReady,
 } from "@/lib/backendRequest";
 
 const BACKEND_BASE_URL = "/api/backend";
@@ -187,6 +188,7 @@ export function FoodSearchPlaceholder() {
   const [error, setError] = useState<string | null>(null);
   const [logError, setLogError] = useState<string | null>(null);
   const [didSearch, setDidSearch] = useState(false);
+  const [searchStatus, setSearchStatus] = useState<string | null>(null);
 
   const hasResults = useMemo(() => results.length > 0, [results]);
   const hasLogs = useMemo(() => logs.length > 0, [logs]);
@@ -365,8 +367,14 @@ export function FoodSearchPlaceholder() {
     setIsLoading(true);
     setError(null);
     setDidSearch(true);
+    setSearchStatus(
+      "Connecting to the food service. The first search can take up to a minute while it starts."
+    );
 
     try {
+      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      setSearchStatus("Searching foods...");
+
       const response = await backendRequest(
         `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
         { signal: controller.signal }
@@ -398,6 +406,7 @@ export function FoodSearchPlaceholder() {
     } finally {
       if (requestId === searchRequestIdRef.current) {
         setIsLoading(false);
+        setSearchStatus(null);
       }
     }
   }
@@ -574,7 +583,9 @@ export function FoodSearchPlaceholder() {
           </div>
         ) : null}
 
-        {isLoading ? <LoadingState variant="search" /> : null}
+        {isLoading ? (
+          <LoadingState variant="search" message={searchStatus ?? undefined} />
+        ) : null}
 
         {!error && !isLoading && didSearch && !hasResults ? (
           <div className="mt-4">
