@@ -1,42 +1,51 @@
 # CalorieApp Deployment Readiness Checklist (V1)
 
 This checklist is tailored to the current CalorieApp MVP architecture:
-- Frontend: Next.js 14 on Vercel
-- Backend: FastAPI on Railway
-- External API: Open Food Facts only
+- Frontend: Next.js 14, declared by the repository-owned Render blueprint
+- Backend: FastAPI, declared for Render in the repository reference configuration
+- Data: SQLite by default for local development; PostgreSQL declared in the
+  Render reference configuration when it is applied
+- External food data API: Open Food Facts
 - Scope constraints: non-financial, non-custodial food tracking
 
 ## 1. Scope and Governance Gates
 
-- [ ] Verify no blockchain, wallet, token, payment, or financial logic exists in frontend or backend.
-- [ ] Verify backend integrations are limited to Open Food Facts.
+- [ ] Verify no custody or administration of crypto-assets, private-key/seed
+      handling, transaction signing, payment, token transfer, crypto-asset
+      exchange/trading/order handling, trading-platform operation, monetary
+      reward or crypto-asset transfer-service logic, portfolio
+      management/advice, or offer, sale, or solicitation of crypto-assets
+      exists in frontend or backend.
+- [ ] Verify Open Food Facts and the project-authorized external identity bridge
+      remain within their documented V1 boundaries.
 - [ ] Verify architecture boundaries remain intact: UI state in frontend, data/API logic in backend.
 
-## 2. Backend Readiness (Railway)
+## 2. Backend Readiness (Render reference configuration)
 
 - [ ] Health endpoint is stable: `GET /health` returns 200.
 - [ ] Search endpoint is stable against transient upstream failures: `GET /search-food?q=banana` returns data or controlled 502.
 - [ ] Log endpoints are stable: `POST /log-food` and `GET /logs` work consistently.
 - [ ] Backend startup is deterministic using `backend/start-backend.ps1` locally.
-- [ ] SQLModel migrations are not required for current schema baseline.
-- [ ] Runtime Python version is pinned and matches local tested version.
+- [ ] Database initialization and any schema changes have been tested against both the intended local SQLite path and hosted PostgreSQL path.
+- [ ] Runtime Python is 3.11 or later; the Render reference pin is 3.12.10 and
+      the active runtime matches the intended tested version.
 - [ ] `backend/requirements.txt` is complete and reproducible.
 - [ ] CORS origin list includes deployed frontend domain and localhost for dev.
 
-## 3. Frontend Readiness (Vercel)
+## 3. Frontend Readiness (Render reference configuration)
 
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes.
 - [ ] Frontend reads backend URL from `NEXT_PUBLIC_BACKEND_URL`.
-- [ ] Vercel environment variable `NEXT_PUBLIC_BACKEND_URL` points to Railway backend URL.
+- [ ] Render environment variable `NEXT_PUBLIC_BACKEND_URL` points to the intended backend URL.
 - [ ] UI handles backend failures and empty states without crashing.
 
 ## 4. Data and Storage Risks
 
-- [ ] Confirm SQLite persistence requirement for MVP is acceptable for target traffic and uptime.
-- [ ] Confirm backup plan for SQLite data file (scheduled copy/export).
-- [ ] Confirm Railway filesystem behavior is understood (ephemeral vs persistent volume selection).
-- [ ] If durable shared persistence is required, plan migration path to managed Postgres for post-MVP phase.
+- [ ] Confirm local SQLite files remain local/private and are not mistaken for hosted persistence.
+- [ ] Confirm hosted `DATABASE_URL` links to the intended PostgreSQL resource.
+- [ ] Confirm the PostgreSQL expiry/upgrade/migration deadline is known for the selected plan.
+- [ ] Confirm backup verification and a disposable-target restore rehearsal are documented before relying on the database for durable records.
 
 ## 5. Security and Secrets
 
@@ -62,14 +71,19 @@ Run from repo root:
 
 This gate runs:
 - Backend pytest suite
+- Backend Python compilation
 - Frontend lint
 - Frontend production build
-- Developer health check (including restart/persistence/UTF-8 validation)
+- Git whitespace validation
+- Legal and licensing boundary validation
+- Tracked runtime/secret-artifact validation
+- Developer health check unless explicitly skipped (including
+  restart/persistence/UTF-8 validation)
 
 ## 8. Domain and Routing Validation
 
-- [ ] Vercel frontend domain resolves and serves app.
-- [ ] Frontend-to-backend requests hit Railway over HTTPS.
+- [ ] Deployed frontend domain resolves and serves the intended Render frontend service.
+- [ ] Frontend-to-backend requests hit the intended Render backend over HTTPS.
 - [ ] CORS policy allows only intended origins.
 - [ ] If using a custom domain (for example `app.calorietoken.net`), DNS records and TLS certs are valid.
 
@@ -85,4 +99,4 @@ No-Go if any are true:
 - [ ] Health-check fails.
 - [ ] Backend tests fail.
 - [ ] Frontend build fails.
-- [ ] Data durability expectation exceeds SQLite hosting guarantees.
+- [ ] Database connection, backup, restore, or durability requirements are not satisfied for the selected hosted PostgreSQL plan.

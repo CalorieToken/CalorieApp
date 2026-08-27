@@ -8,7 +8,7 @@ Current architectural model:
 
 - Frontend web client for user interaction
 - Backend API service for application behavior and data handling
-- SQLite persistence for current application records
+- SQLModel persistence with local SQLite by default and hosted PostgreSQL support through `DATABASE_URL`
 - External food data integration through Open Food Facts
 - Backend-managed identity/session flow for authenticated user actions
 
@@ -66,7 +66,10 @@ Current behavior summary:
 
 Current persistence model:
 
-- SQLite database for application state
+- SQLite database by default for local development
+- PostgreSQL support for hosted environments; the repository-owned Render
+  blueprint declares a managed PostgreSQL resource when applied, but does not
+  by itself verify live deployment state
 - Food log records
 - Identity/session-related records used by the current authentication flow
 
@@ -117,7 +120,10 @@ CalorieApp V1 scope is explicitly non-financial and non-custodial.
 Not implemented as V1 runtime capabilities:
 
 - Custodial wallet behavior
-- Token payments or balances
+- Private-key or seed handling and transaction signing
+- Payments, token transfers, balances, crypto-asset exchange/trading, or order handling
+- Monetary rewards, transfer services, portfolio management/advice, or
+  crypto-asset offer, sale, or solicitation
 - Validator operations
 - Node operations
 

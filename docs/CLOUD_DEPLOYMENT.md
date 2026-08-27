@@ -3,13 +3,16 @@
 This guide covers deploying CalorieApp to a cloud showcase environment while maintaining V1 scope and local Windows development capability.
 
 For Render, `render.yaml` is the repository-owned deployment blueprint. It
-defines both services but deliberately leaves `DATABASE_URL`, `CORS_ORIGINS`,
-`WORDPRESS_BRIDGE_SECRET`, and `NEXT_PUBLIC_BACKEND_URL` for Render's secret and
-environment configuration. Never put their production values in Git.
+declares both services and a PostgreSQL resource and is configured to link
+`DATABASE_URL` from that resource when the blueprint is applied. It leaves
+`CORS_ORIGINS`, `WORDPRESS_BRIDGE_SECRET`, and `NEXT_PUBLIC_BACKEND_URL` for
+Render's secret and environment configuration. The blueprint records intended
+configuration; it does not prove that resources are live or synchronized.
+Never put production secret values in Git.
 
 ## Architecture
-- **Frontend**: Next.js 14 (React 18, TypeScript, Tailwind) — typically Vercel or similar
-- **Backend**: FastAPI with SQLite — typically Render, Railway, or similar
+- **Frontend**: Next.js 14 (React 18, TypeScript, Tailwind) — the current repository blueprint configures Render
+- **Backend**: FastAPI with SQLModel — local development defaults to SQLite, while the current Render blueprint configures PostgreSQL through `DATABASE_URL`
 - **External API**: Open Food Facts (read-only, no auth required)
 - **Scope**: Non-financial food and nutrition tracking only
 
@@ -20,9 +23,15 @@ environment configuration. Never put their production values in Git.
 The backend reads configuration from environment variables. Create or set these on your cloud platform:
 
 #### Required for Cloud
+
+When applied, the Render blueprint is configured to supply `DATABASE_URL` from
+its declared PostgreSQL resource. On another project-authorized provider, set
+an equivalent PostgreSQL connection URL. A SQLite URL is suitable only where
+the chosen platform provides the required durability.
+
 ```
 CORS_ORIGINS=https://your-frontend-domain.com,http://localhost:3000
-DATABASE_URL=sqlite:////tmp/calorieapp.db
+DATABASE_URL=postgresql://user:password@host:5432/calorieapp
 ```
 
 #### Optional (Platform Usually Sets)
@@ -33,7 +42,9 @@ HOST=0.0.0.0               # Cloud platform typically sets this
 
 **Details**:
 - `CORS_ORIGINS`: Comma-separated list of frontend URLs. **Cloud deployment MUST include the deployed frontend domain.**
-- `DATABASE_URL`: SQLite database path. Use a persistent path if your platform supports it.
+- `DATABASE_URL`: PostgreSQL connection URL for the repository reference
+  configuration, or a SQLite database path for suitable local/persistent
+  environments. Keep credentials in the deployment secret store.
 - `PORT`: Exposed by cloud platform environment variable. Backend is started with `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
 - `HOST`: Bind to `0.0.0.0` on cloud to accept all interfaces.
 
@@ -45,17 +56,19 @@ Use this startup command on your cloud platform:
 cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-For dynamic PORT from environment (Render, Railway, etc.):
+For dynamic `PORT` from Render or another project-authorized provider:
 ```bash
 cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 ### 3. Requirements
 
-Ensure Python 3.10+ is available. Pin Python version in your deployment:
+Use Python 3.11 or later. The current Render reference configuration pins
+Python 3.12.10 in `render.yaml`; verify the active runtime matches the intended
+tested version:
 
-```
-python -3.10
+```bash
+python --version
 ```
 
 Install dependencies:
@@ -65,17 +78,22 @@ pip install -r backend/requirements.txt
 
 ### 4. Database Persistence
 
-**Current state**: SQLite in `/tmp/calorieapp.db` (ephemeral on most platforms).
+**Current repository configuration**:
 
-**Recommendation for MVP**: 
-- Use a platform-managed persistent disk or volume.
-- Or use SQLite with regular scheduled backups.
+- Local development defaults to `backend/calorieapp.db` using SQLite.
+- Hosted environments use the configured `DATABASE_URL`.
+- The repository-owned Render blueprint declares PostgreSQL and is configured
+  to link it to the backend when the blueprint is applied. This declaration is
+  not live-state or durability evidence.
 
-The Render blueprint provisions PostgreSQL for showcase durability. Render's free
-database expires after 30 days, so it is temporary and must be upgraded or migrated
-before expiry. The application uses a standard `DATABASE_URL` and remains portable to
-other PostgreSQL providers; this relational store is separate from future IPFS and
-BigchainDB research directions.
+If a different host uses SQLite, its database path must be backed by a
+persistent disk or volume and an appropriate backup plan.
+
+A Render free database expires after 30 days, so it is temporary and must be
+upgraded or migrated before expiry. The application uses a standard
+`DATABASE_URL` and remains portable to other PostgreSQL providers; this
+relational store is separate from future IPFS and BigchainDB research
+directions.
 
 ### Portable PostgreSQL backup
 
@@ -139,7 +157,8 @@ npm run build
 npm run start
 ```
 
-Or let Vercel/your platform handle the build automatically from the `frontend/` folder.
+Or let Render or another project-authorized platform handle the build
+automatically from the `frontend/` folder.
 
 ### 3. Verify Integration
 
@@ -171,7 +190,9 @@ No environment variables needed locally — the code defaults to `http://localho
 - [ ] `backend/.env.example` reviewed and `.env` (or platform env vars) configured
 - [ ] `CORS_ORIGINS` includes deployed frontend URL
 - [ ] Backend startup command set on cloud platform
-- [ ] Database persistence path configured (or backup plan in place)
+- [ ] Verify the active hosted `DATABASE_URL` is linked to the intended
+      PostgreSQL database, or a project-authorized persistent SQLite path and
+      backup plan is configured
 - [ ] Frontend repository cloned or deployed
 - [ ] `NEXT_PUBLIC_BACKEND_URL` environment variable set to deployed backend URL
 - [ ] Frontend build succeeds (`npm run build`)
@@ -212,15 +233,17 @@ origin, and the frontend page without creating accounts or food-log data.
 2. Check backend logs for Open Food Facts request status.
 3. Open Food Facts is public API — should work from any cloud region.
 
-### Database Not Persisting
-**Symptom**: Logged foods disappear after container restart
+### Database Connection or Persistence Failure
+**Symptom**: The backend cannot access existing records, or local SQLite records disappear after a container restart.
 
-**Cause**: SQLite database file on ephemeral filesystem; container restart discards it.
+**Possible causes**:
+- The hosted `DATABASE_URL` is missing or linked to the wrong PostgreSQL resource.
+- A non-reference deployment uses SQLite on an ephemeral filesystem.
 
 **Fix**:
-1. Configure persistent volume/disk on your platform.
-2. Set `DATABASE_URL` to the persistent path.
-3. Or switch to managed PostgreSQL (post-MVP).
+1. Confirm the deployment secret/configuration links `DATABASE_URL` to the intended database without printing its value.
+2. For PostgreSQL, verify connectivity and the documented backup/restore plan.
+3. For a project-authorized SQLite deployment, use a persistent volume and a private backup plan.
 
 ## Reference
 

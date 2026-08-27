@@ -1,6 +1,7 @@
 # CalorieApp Boundary Separation Manifest
 
-Status: Documentation-only preparation for public/private separation.
+Status: Documentation-only preparation for public/private separation. This is a
+target classification plan, not a record that the listed moves have happened.
 
 ## Public keep list
 
@@ -10,19 +11,30 @@ The following content is intended to remain in the public-facing repository surf
 - backend
 - tests
 - README.md
-- public
+- docs/public
+- sanitized GitHub Actions workflows required for public CI and release checks
+- sanitized deployment configuration such as render.yaml
+- reviewed release-check scripts and public-safe tooling
 - sanitized examples
-- LICENSE / SECURITY.md if later added
+- repository governance and contribution guidance such as AGENTS.md and CONTRIBUTING.md
+- public rights, licensing, security, regulatory, and provenance documents:
+  LICENSE, NOTICE, COPYRIGHT.md, TRADEMARKS.md, SECURITY.md, REGULATORY.md,
+  DATA_LICENSING.md, THIRD_PARTY_NOTICES.md, ASSET_PROVENANCE.md, and
+  IP_CLEARANCE.md
+- the sanitized public evidence index in IP_EVIDENCE_REGISTER.md; this index is
+  not the private primary evidence itself
 
 ## Private archive list
 
 The following content should be moved into the private archive and kept out of the public repository surface:
 
-- .github
+- private GitHub operational material, if any (excluding sanitized public CI workflows)
 - project-context
 - checkpoints
-- evidence
-- research
+- private primary evidence, including agreements, certificates,
+  correspondence, sensitive source material, identity records, and unredacted
+  evidence packages
+- internal research working papers
 - tickets
 - security audits
 - staging plans
@@ -42,14 +54,22 @@ The following content must remain local-only and never be published:
 
 ## Documentation classification
 
-- Public product documentation: product README, public-facing app docs, sanitized examples, release-facing guidance that does not disclose infrastructure or governance details
-- Private operational documentation: internal governance, project-context, checkpoint archives, security reviews, staging plans, evidence, tickets, research, and any deployment or internal operational notes
+- Public product documentation: product README, public-facing app docs,
+  public-safe research summaries, sanitized examples, public legal and policy
+  documents, the sanitized evidence index, and release-facing guidance that
+  does not disclose secrets or private operational details
+- Private operational documentation: internal governance, project-context,
+  checkpoint archives, security reviews, staging plans, private primary
+  evidence, tickets, research working papers, and private deployment or
+  operational notes
 
 ## Release script review
 
-- release-check.ps1: REVIEW REQUIRED
+- release-check.ps1 and release-check.sh: REVIEW REQUIRED FOR PUBLIC PACKAGING
 
-This script is not a secret file, but it is operational tooling and should be explicitly reviewed before public release or public packaging.
+These scripts are not secret files and are used by the current development
+workflow, but they should be explicitly reviewed for secrets and private
+operational detail before public release or packaging.
 
 ## Archive plan
 
@@ -64,4 +84,7 @@ The repo will be prepared for a future public/private separation by organizing t
 
 ## Rule
 
-This file is a documentation and planning artifact only. It does not change repository content, delete files, move files, or modify Git history.
+This file is a documentation and planning artifact only. It does not change
+repository content, delete files, move files, or modify Git history. In
+particular, it does not authorize removing `.github/workflows`, release tooling,
+deployment configuration, or any other current file from the public repository.

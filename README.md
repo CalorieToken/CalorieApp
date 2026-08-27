@@ -16,7 +16,8 @@ Current application stack:
 
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
-- Data: SQLite
+- Data: SQLite by default for local development; PostgreSQL is supported
+  through `DATABASE_URL` and declared by the repository-owned Render blueprint
 - External food data: Open Food Facts
 - Identity/authentication: server-side identity flow with session cookies
 
@@ -53,9 +54,14 @@ CalorieApp V1 is intentionally centralized and scope-restricted.
 
 1. Next.js frontend provides UI and user interaction flows.
 2. FastAPI backend provides API behavior and business/data logic.
-3. SQLite persists current application data.
+3. SQLModel persists current application data. Local development defaults to
+   SQLite; hosted environments can use PostgreSQL through `DATABASE_URL`.
 4. Open Food Facts is used as the external food data source.
 5. Identity/authentication is handled through backend-managed session flow.
+
+Repository deployment configuration describes intended infrastructure when it
+is applied. It is not evidence that a live service or database currently exists
+or matches that configuration.
 
 Public architecture details: docs/public/architecture.md
 
@@ -170,11 +176,10 @@ gate can additionally run the local developer health check.
 - Public release readiness checklist: docs/public/release-readiness.md
 - Public identity overview: docs/public/identity.md
 
-Research documents are preserved separately under docs/research and should be read as future-direction material, not current implementation claims.
-
-- Research context: docs/research/CALORIE_ECOSYSTEM_ARCHITECTURE_V1.md
-- Research context: docs/research/DECENTRALIZED_ARCHITECTURE_V1.md
-- Research context: docs/research/NATIVE_PLATFORM_ARCHITECTURE_V1.md
+Future-direction concepts are currently summarized in
+`docs/public/roadmap.md`. Detailed research artifacts, when intentionally
+added under `docs/research/`, must remain clearly labeled as proposals rather
+than current implementation claims.
 
 ## Rights, licensing, and trade marks
 

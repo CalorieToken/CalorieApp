@@ -5,7 +5,7 @@ This guide describes public-safe deployment concepts for CalorieApp V1.
 Scope boundary:
 
 - Current implemented product: web application for food and nutrition tracking
-- Current implemented stack: Next.js frontend, FastAPI backend, SQLite persistence, Open Food Facts integration
+- Current implemented stack: Next.js frontend, FastAPI backend, SQLModel persistence with local SQLite and hosted PostgreSQL support, Open Food Facts integration
 - Non-financial and non-custodial V1 boundary remains in effect
 
 This guide intentionally avoids internal staging topology and private operational details.
@@ -24,6 +24,7 @@ The frontend calls the backend over HTTPS in deployed environments.
 Backend runtime:
 
 - Python 3.11+
+- The repository Render reference configuration pins Python 3.12.10
 - Dependencies from backend/requirements.txt
 
 Backend service requirements:
@@ -76,13 +77,17 @@ Frontend deployment concept:
 
 ## 6. Data Persistence Considerations
 
-CalorieApp currently uses SQLite for V1 data persistence.
+CalorieApp defaults to SQLite for local V1 development and supports PostgreSQL
+for hosted environments through `DATABASE_URL`. The repository-owned Render
+blueprint declares a managed PostgreSQL resource when it is applied. Repository
+configuration is not evidence that the resource is live, synchronized, or
+durable.
 
 Deployment considerations:
 
-- Confirm persistence behavior of your hosting platform
-- Use persistent storage where required
-- Establish backup and restore procedures
+- Confirm the configured database is the intended environment-specific resource
+- Keep local SQLite files and hosted database credentials private
+- Establish and test backup and restore procedures appropriate to the selected database
 
 ## 7. Security and Operational Boundaries
 
@@ -113,9 +118,13 @@ Minimum public-safe validation expectations:
 
 This deployment guide does not claim implementation of:
 
-- XRPL financial runtime
+- Wallet custody, private-key/seed handling, or transaction signing
+- Payments, token transfers, crypto-asset exchange/trading, or order handling
+- Monetary rewards, transfer services, portfolio management/advice, or
+  crypto-asset offer, sale, or solicitation
 - CAL payment or treasury runtime
 - Validator or node runtime
 - Decentralized storage runtime in V1
 
-Future infrastructure concepts remain PROPOSED/RESEARCH and are documented separately in research materials.
+Future infrastructure concepts remain PROPOSED/RESEARCH and are summarized in
+the public roadmap. They are not current deployment capabilities.
