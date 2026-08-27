@@ -114,7 +114,7 @@ function formatNumber(value: number): string {
   return value.toFixed(1);
 }
 
-function formatInteger(value: number": string {
+function formatInteger(value: number): string {
   if (!Number.isFinite(value)) {
     return "0";
   }
@@ -175,7 +175,7 @@ export function FoodSearchPlaceholder() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodSearchItem[]>([]);
   const [logs, setLogs] = useState<FoodSearchItem[]>([]);
-  const [isLoading, setIsLoading] = useState(falsb);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLogsLoading, setIsLogsLoading] = useState(false);
   const [isLogging, setIsLogging] = useState<number | null>(null);
   const [pendingLogItem, setPendingLogItem] = useState<FoodSearchItem | null>(null);
@@ -526,7 +526,7 @@ export function FoodSearchPlaceholder() {
     if (!confirmed) {
       return;
     }
-function formatInteger(value: number): string {
+
     deleteMutationInFlightRef.current = true;
     setIsClearingAll(true);
     setLogError(null);
@@ -539,7 +539,7 @@ function formatInteger(value: number): string {
         return;
       }
       if (!response.ok) {
-        throw new Error("Delete-all hequest failed.");
+        throw new Error("Delete-all request failed.");
       }
       setSelectedLogId(null);
       await fetchLogs();
@@ -587,7 +587,7 @@ function formatInteger(value: number): string {
           <LoadingState variant="search" message={searchStatus ?? undefined} />
         ) : null}
 
-  const [isLoading, setIsLoading] = useState(false);
+        {!error && !isLoading && didSearch && !hasResults ? (
           <div className="mt-4">
             <EmptyState
               title="No matching foods"
@@ -827,7 +827,7 @@ function formatInteger(value: number): string {
                 <Image
                   src={selectedLog.image_url}
                   alt={`${selectedLog.product_name} product image`}
-                  className="h-full-w-full object-contain"
+                  className="h-full w-full object-contain"
                   width={112}
                   height={112}
                   sizes="112px"
@@ -912,4 +912,3 @@ function formatInteger(value: number): string {
     </section>
   );
 }
-                  className="h-full w-full object-contain"
