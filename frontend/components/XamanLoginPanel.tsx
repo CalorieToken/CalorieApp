@@ -5,6 +5,7 @@ import { announceAuthState } from "@/components/authEvents";
 import {
   backendRequest,
   backendUnavailableMessage,
+  waitForBackendReady,
 } from "@/lib/backendRequest";
 
 type MeResponse = {
@@ -24,6 +25,7 @@ export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
 
   const refreshCurrentUser = useCallback(async () => {
@@ -52,8 +54,14 @@ export function XamanLoginPanel() {
   async function handleLogin() {
     setError(null);
     setIsLoading(true);
+    setLoginStatus(
+      "Connecting securely. On the first visit, the service can take up to a minute to start."
+    );
 
     try {
+      await waitForBackendReady(BACKEND_BASE_URL);
+      setLoginStatus("Service ready. Opening Xaman...");
+
       const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/login/start`, {
         method: "POST",
       });
@@ -75,6 +83,7 @@ export function XamanLoginPanel() {
           "Unable to start Xaman login right now. Please try again."
         )
       );
+      setLoginStatus(null);
       setIsLoading(false);
     }
   }
@@ -147,9 +156,19 @@ export function XamanLoginPanel() {
           disabled={isLoading}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading ? "Opening Xaman..." : "Continue in Xaman"}
+          {isLoading ? "Preparing Xaman..." : "Continue in Xaman"}
         </button>
       )}
+
+      {isLoading && loginStatus ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className="mt-3 rounded-lg bg-white/70 px-3 py-2 text-xs leading-relaxed text-brand-secondary"
+        >
+          {loginStatus}
+        </p>
+      ) : null}
 
       {error && (
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
