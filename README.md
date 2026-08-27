@@ -2,7 +2,7 @@
 
 CalorieApp is a non-financial, non-custodial food and nutrition tracking project.
 
-Copyright (c) 2026 ICTHendrikse (KvK 73774693), for original portions created
+Copyright (c) 2026 ICTHendrikse, for original portions created
 by or lawfully assigned to it. All rights reserved except where an explicit
 component licence applies.
 
@@ -163,18 +163,14 @@ gate can additionally run the local developer health check.
 
 ## Documentation
 
-- Development workflow: docs/DEVELOPMENT_WORKFLOW.md
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md
 - Public release readiness checklist: docs/public/release-readiness.md
 - Public identity overview: docs/public/identity.md
 
-Research documents are preserved separately under docs/research and should be read as future-direction material, not current implementation claims.
-
-- Research context: docs/research/CALORIE_ECOSYSTEM_ARCHITECTURE_V1.md
-- Research context: docs/research/DECENTRALIZED_ARCHITECTURE_V1.md
-- Research context: docs/research/NATIVE_PLATFORM_ARCHITECTURE_V1.md
+Internal development procedures and unreleased research are maintained in
+private project governance rather than this public release repository.
 
 ## Rights, licensing, and trade marks
 
@@ -186,7 +182,6 @@ The separately packaged CalorieApp Identity Bridge declares
 GPL-2.0-or-later and remains governed by that component licence. Third-party
 dependencies, data, names, and assets retain their own rights and terms.
 
-CalorieToken is identified by the project owner as a registered trade mark of
-Pieter Hendrikse for the services specified in its European Union registration
-in Nice Class 36. The registration is a trade-mark right, not regulatory
-authorisation. No trade-mark licence is granted by this repository.
+CalorieToken is identified by the project owner as a registered trade mark for
+specified services. A trade-mark registration is not regulatory authorisation.
+No trade-mark licence is granted by this repository.
