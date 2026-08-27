@@ -526,7 +526,7 @@ export function FoodSearchPlaceholder() {
     if (!confirmed) {
       return;
     }
-
+function formatInteger(value: number): string {
     deleteMutationInFlightRef.current = true;
     setIsClearingAll(true);
     setLogError(null);
@@ -587,7 +587,7 @@ export function FoodSearchPlaceholder() {
           <LoadingState variant="search" message={searchStatus ?? undefined} />
         ) : null}
 
-        {!error && !isLoading && didSearch && !hasResults ? (
+  const [isLoading, setIsLoading] = useState(false);
           <div className="mt-4">
             <EmptyState
               title="No matching foods"
@@ -912,3 +912,4 @@ export function FoodSearchPlaceholder() {
     </section>
   );
 }
+                  className="h-full w-full object-contain"
