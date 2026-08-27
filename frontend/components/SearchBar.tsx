@@ -23,7 +23,7 @@ export function SearchBar({
         type="text"
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Search by product name"
+        placeholder="Try banana, apple, or oats"
         className="w-full rounded-full border-2 border-brand-secondary/30 bg-white px-6 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
         aria-label="Search food by product name"
       />

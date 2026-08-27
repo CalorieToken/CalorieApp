@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import {
+  backendRequest,
+  backendUnavailableMessage,
+} from "@/lib/backendRequest";
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+const BACKEND_BASE_URL = "/api/backend";
 
 type CallbackResponse = {
   redirect_to: string;
@@ -56,9 +60,8 @@ function submitCallbackOnce(
     return existingRequest;
   }
 
-  const request = fetch(`${BACKEND_BASE_URL}/api/identity/callback`, {
+  const request = backendRequest(`${BACKEND_BASE_URL}/api/identity/callback`, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -98,14 +101,6 @@ function AuthCallbackContent() {
     let cancelled = false;
 
     async function finalizeLogin() {
-      if (!BACKEND_BASE_URL) {
-        if (!cancelled) {
-          setStatus("error");
-          setMessage("Backend URL is not configured.");
-        }
-        return;
-      }
-
       if (!code || !state) {
         if (!cancelled) {
           setStatus("error");
@@ -120,10 +115,15 @@ function AuthCallbackContent() {
         if (!cancelled) {
           router.replace(safeLocalRedirect(payload.redirect_to));
         }
-      } catch {
+      } catch (requestError) {
         if (!cancelled) {
           setStatus("error");
-          setMessage("Sign-in failed. Please try logging in again.");
+          setMessage(
+            backendUnavailableMessage(
+              requestError,
+              "Sign-in could not be completed. Return to CalorieApp and try again."
+            )
+          );
         }
       }
     }
@@ -146,7 +146,7 @@ function AuthCallbackContent() {
     <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
       <section className="w-full rounded-2xl border border-brand-secondary/20 bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-semibold text-brand-primary">
-          CalorieApp Sign-In
+          Returning to CalorieApp
         </h1>
 
         <p
@@ -167,7 +167,7 @@ function AuthCallbackContent() {
             href="/"
             className="mt-6 inline-flex rounded-full bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
           >
-            Back to Home
+            Back to CalorieApp
           </Link>
         )}
       </section>
