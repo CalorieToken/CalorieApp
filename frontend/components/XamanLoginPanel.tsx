@@ -41,7 +41,7 @@ export function XamanLoginPanel() {
         return;
       }
       const data = (await response.json()) as MeResponse;
-      setCurrentUser(dat);
+      setCurrentUser(data);
     } catch {
       setCurrentUser(null);
     }
@@ -86,7 +86,7 @@ export function XamanLoginPanel() {
       setLoginStatus(null);
       setIsLoading(false);
     }
-      setCurrentUser(data);
+  }
 
   async function handleLogout() {
     setError(null);
