@@ -57,16 +57,18 @@ def _repair_common_mojibake(text: str) -> str:
     return text
 
 
-def _to_float(value: Any) -> float:
+def _to_float(value: Any) -> float | None:
     if value is None:
-        return 0.0
+        return None
     try:
         result = float(value)
         if not math.isfinite(result):
-            return 0.0
+            return None
+        if result < 0:
+            return None
         return round(result, 2)
     except (TypeError, ValueError):
-        return 0.0
+        return None
 
 
 def _to_optional_text(value: Any) -> str | None:
@@ -135,13 +137,26 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
             continue
 
         nutriments = product.get("nutriments") or {}
+        nutrition = {
+            "calories": _to_float(nutriments.get("energy-kcal_100g")),
+            "protein": _to_float(nutriments.get("proteins_100g")),
+            "fat": _to_float(nutriments.get("fat_100g")),
+            "carbohydrates": _to_float(nutriments.get("carbohydrates_100g")),
+        }
+
+        # A missing value is not the same as a measured zero. Incomplete
+        # records are excluded from the loggable search results so CalorieApp
+        # cannot silently turn unknown nutrition into a misleading 0.0 value.
+        if any(value is None for value in nutrition.values()):
+            continue
+
         results.append(
             FoodSearchResult(
                 product_name=product_name,
-                calories=_to_float(nutriments.get("energy-kcal_100g")),
-                protein=_to_float(nutriments.get("proteins_100g")),
-                fat=_to_float(nutriments.get("fat_100g")),
-                carbohydrates=_to_float(nutriments.get("carbohydrates_100g")),
+                calories=nutrition["calories"],
+                protein=nutrition["protein"],
+                fat=nutrition["fat"],
+                carbohydrates=nutrition["carbohydrates"],
                 image_url=_extract_image_url(product),
                 barcode=_to_optional_text(product.get("code")),
                 brand=_extract_brand(product),

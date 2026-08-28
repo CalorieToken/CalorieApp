@@ -24,9 +24,9 @@ type PortionOption = "whole" | "half" | "quarter" | "custom";
 const SIGN_IN_REQUIRED_LOG_MESSAGE =
   "Your session has expired or you are not signed in. Please sign in again to manage food logs.";
 
-function toNumber(value: unknown): number {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return 0;
+function toNumber(value: unknown): number | null {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return null;
   }
   return value;
 }
@@ -46,21 +46,34 @@ function toOptionalNumber(value: unknown): number | undefined {
   return value;
 }
 
-function normalizeFoodItem(value: unknown): FoodSearchItem {
+function normalizeFoodItem(value: unknown): FoodSearchItem | null {
   const raw = (value ?? {}) as Record<string, unknown>;
   const productName =
     typeof raw.product_name === "string" && raw.product_name.trim().length > 0
       ? raw.product_name
       : "Unknown food";
+  const calories = toNumber(raw.calories);
+  const protein = toNumber(raw.protein);
+  const fat = toNumber(raw.fat);
+  const carbohydrates = toNumber(raw.carbohydrates);
+
+  if (
+    calories === null ||
+    protein === null ||
+    fat === null ||
+    carbohydrates === null
+  ) {
+    return null;
+  }
 
   return {
     id: toOptionalNumber(raw.id),
     created_at: toOptionalText(raw.created_at),
     product_name: productName,
-    calories: toNumber(raw.calories),
-    protein: toNumber(raw.protein),
-    fat: toNumber(raw.fat),
-    carbohydrates: toNumber(raw.carbohydrates),
+    calories,
+    protein,
+    fat,
+    carbohydrates,
     portion_percentage: toOptionalNumber(raw.portion_percentage),
     image_url: toOptionalText(raw.image_url),
     barcode: toOptionalText(raw.barcode),
@@ -68,6 +81,12 @@ function normalizeFoodItem(value: unknown): FoodSearchItem {
     serving_size: toOptionalText(raw.serving_size),
     nutri_score: toOptionalText(raw.nutri_score)?.toUpperCase() ?? null,
   };
+}
+
+function normalizeFoodItems(values: unknown[]): FoodSearchItem[] {
+  return values
+    .map(normalizeFoodItem)
+    .filter((item): item is FoodSearchItem => item !== null);
 }
 
 function getPortionPercentage(option: PortionOption, customValue: string): number | null {
@@ -299,7 +318,7 @@ export function FoodSearchPlaceholder() {
       if (requestId !== logsRequestIdRef.current) {
         return;
       }
-      setLogs((data ?? []).map(normalizeFoodItem));
+      setLogs(normalizeFoodItems(data ?? []));
       setLogError(null);
     } catch (requestError) {
       if (requestId === logsRequestIdRef.current) {
@@ -392,7 +411,7 @@ export function FoodSearchPlaceholder() {
       if (requestId !== searchRequestIdRef.current) {
         return;
       }
-      setResults((data.results ?? []).map(normalizeFoodItem));
+      setResults(normalizeFoodItems(data.results ?? []));
     } catch (requestError) {
       if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
         setResults([]);
@@ -564,6 +583,9 @@ export function FoodSearchPlaceholder() {
         <p className="mt-1 text-sm text-brand-secondary/80">
           Explore product nutrition data provided by Open Food Facts.
         </p>
+        <p className="mt-1 text-xs text-brand-secondary/70">
+          Only records with complete calorie, protein, fat, and carbohydrate values are shown.
+        </p>
 
         <SearchBar
           query={query}
@@ -590,8 +612,8 @@ export function FoodSearchPlaceholder() {
         {!error && !isLoading && didSearch && !hasResults ? (
           <div className="mt-4">
             <EmptyState
-              title="No matching foods"
-              description="Try a broader query like banana, apple, or oats."
+              title="No complete nutrition records found"
+              description="Try a broader query like banana, apple, or oats. Records with missing nutrition values are not shown."
             />
           </div>
         ) : null}
