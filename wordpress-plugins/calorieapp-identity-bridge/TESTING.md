@@ -28,8 +28,9 @@ Covered scenarios:
 20. backend state validation uses timestamp/nonce/HMAC headers
 21. backend state validation does not transmit the shared secret
 22. canonical WordPress REST root is documented for `/index.php/wp-json/` deployments
-23. obsolete cached legal footer labels are replaced in rendered HTML
-24. unrelated rendered HTML remains unchanged
+23. known obsolete cached legal footer variants are normalized in rendered HTML
+24. the current footer remains unchanged when the filter runs repeatedly
+25. unrelated rendered HTML remains unchanged
 
 ## Files
 
