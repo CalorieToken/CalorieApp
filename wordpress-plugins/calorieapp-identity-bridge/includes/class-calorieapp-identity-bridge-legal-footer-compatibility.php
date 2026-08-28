@@ -19,7 +19,8 @@ class LegalFooterCompatibility {
     private const LEGACY_OPERATOR_PATTERNS = [
         '/Chamber' . self::FLEXIBLE_SPACE . 'of' . self::FLEXIBLE_SPACE . 'Commerce' . self::FLEXIBLE_SPACE . 'KVK' . self::FLEXIBLE_SPACE . ':' . self::FLEXIBLE_SPACE . '[0-9]{8}/iu',
         '/Calorie' . self::FLEXIBLE_SPACE . 'Token' . self::FLEXIBLE_SPACE . '(?:•|·|&bull;|&middot;)' . self::FLEXIBLE_SPACE . 'KvK' . self::FLEXIBLE_SPACE . ':?' . self::FLEXIBLE_SPACE . '[0-9]{8}/iu',
-        '/ICTHendrikse' . self::FLEXIBLE_SPACE . '(?:•|·|&bull;|&middot;)' . self::FLEXIBLE_SPACE . 'KvK' . self::FLEXIBLE_SPACE . ':?' . self::FLEXIBLE_SPACE . '73774693/iu',
+        '/Operator:' . self::FLEXIBLE_SPACE . 'ICTHendrikse' . self::FLEXIBLE_SPACE . '(?:•|·|&bull;|&middot;)' . self::FLEXIBLE_SPACE . 'KvK' . self::FLEXIBLE_SPACE . ':?' . self::FLEXIBLE_SPACE . '73774693/iu',
+        '/(?<!Operator: )ICTHendrikse' . self::FLEXIBLE_SPACE . '(?:•|·|&bull;|&middot;)' . self::FLEXIBLE_SPACE . 'KvK' . self::FLEXIBLE_SPACE . ':?' . self::FLEXIBLE_SPACE . '73774693/iu',
         '/Operator:' . self::FLEXIBLE_SPACE . 'ICTHendrikse(?!' . self::FLEXIBLE_SPACE . '(?:•|·|&bull;|&middot;)' . self::FLEXIBLE_SPACE . 'KVK)/iu',
     ];
     private const CURRENT_OPERATOR = 'Operator: ICTHendrikse · KVK 73774693';
