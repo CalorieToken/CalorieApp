@@ -54,6 +54,51 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
+      - name: Lint WordPress plugin PHP
+        run: find wordpress-plugins/calorieapp-identity-bridge -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Test legal footer compatibility
+        shell: bash
+        run: |
+          php <<'PHP'
+          <?php
+          define('ABSPATH', __DIR__);
+          require 'wordpress-plugins/calorieapp-identity-bridge/includes/class-calorieapp-identity-bridge-legal-footer-compatibility.php';
+
+          use CalorieApp\IdentityBridge\LegalFooterCompatibility;
+
+          $input = '<p>Chamber of Commerce KVK: 84216352</p>'
+              . '<p>Calorie Token • KvK 84216352</p>'
+              . '<p>ICTHendrikse &bull; KvK 73774693</p>'
+              . '<p>Operator: ICTHendrikse</p>'
+              . '<p>© 2023 Calorie Token</p>'
+              . '<p>&copy;&nbsp;2026&nbsp;CalorieToken</p>'
+              . '<p>Calorie aims to be the World&apos;s food token</p>'
+              . '<p>Unrelated content remains unchanged.</p>';
+          $output = LegalFooterCompatibility::replace_legacy_footer_html($input);
+          $operator = 'Operator: ICTHendrikse · KVK 73774693';
+          $copyright = '© 2026 ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse';
+
+          if (substr_count($output, $operator) !== 4) {
+              throw new RuntimeException('Known operator footer variants were not normalized.');
+          }
+          if (substr_count($output, $copyright) !== 2) {
+              throw new RuntimeException('Known copyright footer variants were not normalized.');
+          }
+          if (!str_contains($output, 'Calorie aims to be the world’s food token')) {
+              throw new RuntimeException('The legacy footer tagline was not normalized.');
+          }
+          if (!str_contains($output, 'Unrelated content remains unchanged.')) {
+              throw new RuntimeException('Unrelated rendered content changed.');
+          }
+
+          $current = '<footer><p>Calorie aims to be the world’s food token</p>'
+              . '<p>' . $operator . '</p><p>' . $copyright . '</p></footer>';
+          if (LegalFooterCompatibility::replace_legacy_footer_html($current) !== $current) {
+              throw new RuntimeException('The current footer is not idempotent.');
+          }
+          PHP
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
