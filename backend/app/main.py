@@ -760,7 +760,6 @@ def identity_callback(
     """
     Browser callback contract: code + state only.
 
-    Browser callback contract remains code + state only.
     Backend atomically reserves the pending state, exchanges code with the
     WordPress bridge, restores the state only for transient bridge failures,
     resolves/creates CalorieApp user identity, and issues the session cookie.
