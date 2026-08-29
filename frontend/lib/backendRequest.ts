@@ -70,7 +70,11 @@ function retryAfterDelayMs(response: Response): number | null {
   }
 
   const seconds = Number(value);
-  if (Number.isFinite(seconds) && seconds > 0) {
+  if (Number.isFinite(seconds)) {
+    if (seconds < 0) {
+      return null;
+    }
+
     return Math.min(
       seconds * 1_000,
       BACKEND_WARMUP_MAX_RETRY_AFTER_MS
