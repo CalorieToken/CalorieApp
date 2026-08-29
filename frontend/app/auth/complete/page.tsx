@@ -47,7 +47,8 @@ function LoginCompleteContent() {
         </h1>
         <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
           Xaman may have returned through your phone&apos;s configured default
-          browser. Your CalorieApp session is active here.
+          browser. Your CalorieApp session is active here, and the original tab
+          will also sign in automatically when it remains available.
         </p>
         <p className="mt-4 text-sm leading-relaxed text-brand-secondary/90">
           Continue below to use CalorieApp in this browser.
