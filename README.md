@@ -105,14 +105,11 @@ Frontend environment setup:
 - Preferred variable: BACKEND_URL
 - Existing deployments may continue using NEXT_PUBLIC_BACKEND_URL as a fallback
 - Local development value: http://localhost:8000
-- Optional browser-visible health-only variable: NEXT_PUBLIC_BACKEND_HEALTH_URL
-  (set this to the public backend origin; never include credentials or secrets)
-
 The browser calls the frontend's same-origin `/api/backend` proxy. The proxy
 forwards only the supported CalorieApp endpoints to the configured backend and
-keeps mobile authentication sessions first-party. The Xaman startup flow may
-probe the public backend `/health` endpoint directly so a Render cold start does
-not occupy the frontend proxy long enough to trigger frontend 429 responses.
+keeps mobile authentication sessions first-party. The Xaman startup flow also
+uses this same-origin proxy while Render wakes, so mobile privacy controls cannot
+block a cross-origin readiness request before Xaman opens.
 All authenticated requests continue through the same-origin proxy.
 
 Xaman sign-in starts with same-tab navigation. CalorieApp does not call

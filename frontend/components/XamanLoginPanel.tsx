@@ -33,8 +33,6 @@ type PendingLogin = {
 };
 
 const BACKEND_BASE_URL = "/api/backend";
-const RENDER_BACKEND_HEALTH_URL =
-  "https://calorieapp-backend-rvul.onrender.com";
 const LOGIN_STATUS_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
 const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
@@ -43,19 +41,6 @@ const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
-
-function backendHealthBaseUrl(): string {
-  const configuredUrl = process.env.NEXT_PUBLIC_BACKEND_HEALTH_URL?.trim();
-  if (configuredUrl) {
-    return configuredUrl.replace(/\/$/, "");
-  }
-
-  if (window.location.hostname === "calorieapp-frontend.onrender.com") {
-    return RENDER_BACKEND_HEALTH_URL;
-  }
-
-  return BACKEND_BASE_URL;
-}
 
 function isAllowedWordPressSigninUrl(value: string): boolean {
   try {
@@ -368,6 +353,7 @@ export function XamanLoginPanel() {
 
   async function handleLogin() {
     const controller = new AbortController();
+    let startupNoticeTimer: number | null = null;
     loginAbortController.current?.abort();
     loginAbortController.current = controller;
 
@@ -379,7 +365,20 @@ export function XamanLoginPanel() {
     );
 
     try {
-      await waitForBackendReady(backendHealthBaseUrl(), controller.signal);
+      startupNoticeTimer = window.setTimeout(() => {
+        if (!controller.signal.aborted) {
+          setLoginStatus(
+            "Starting the secure CalorieApp service. A first request can take about a minute and will continue automatically."
+          );
+        }
+      }, 8_000);
+
+      // Keep the mobile browser on the CalorieApp origin while Render wakes.
+      // A direct cross-origin health request can be blocked by browser privacy
+      // controls before the WordPress/Xaman navigation has even started.
+      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      window.clearTimeout(startupNoticeTimer);
+      startupNoticeTimer = null;
       setLoginStatus("Service ready. Opening Xaman...");
 
       const data = await startLoginWithRetry(controller.signal, () => {
@@ -414,6 +413,10 @@ export function XamanLoginPanel() {
       );
       setLoginStatus(null);
       setIsLoading(false);
+    } finally {
+      if (startupNoticeTimer !== null) {
+        window.clearTimeout(startupNoticeTimer);
+      }
     }
   }
 
