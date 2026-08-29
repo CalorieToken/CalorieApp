@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieApp Identity Bridge
  * Plugin URI: https://calorietoken.net
- * Description: Companion bridge plugin that maps authenticated WordPress/XUMM sessions to short-lived CalorieApp authorization codes.
+ * Description: Companion bridge plugin that maps authenticated WordPress/XUMM Login sessions to short-lived CalorieApp authorization codes.
  * Version: 0.2.3
  * Author: CalorieApp
  * License: GPL-2.0-or-later
