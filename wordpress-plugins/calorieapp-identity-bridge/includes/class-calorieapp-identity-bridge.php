@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 require_once __DIR__ . '/class-calorieapp-identity-bridge-storage.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-rest.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-browser-authorize.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-integrated-login.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-admin.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-legal-footer-compatibility.php';
 
@@ -22,6 +23,8 @@ class Plugin {
     private RestApi $rest_api;
 
     private BrowserAuthorize $browser_authorize;
+
+    private IntegratedLogin $integrated_login;
 
     private Admin $admin;
 
@@ -39,6 +42,7 @@ class Plugin {
         $this->storage = new Storage();
         $this->rest_api = new RestApi($this->storage);
         $this->browser_authorize = new BrowserAuthorize($this->rest_api);
+        $this->integrated_login = new IntegratedLogin($this->rest_api);
         $this->admin = new Admin();
         $this->legal_footer_compatibility = new LegalFooterCompatibility();
 
@@ -51,6 +55,7 @@ class Plugin {
         $this->storage->register_hooks();
         $this->rest_api->register_hooks();
         $this->browser_authorize->register_hooks();
+        $this->integrated_login->register_hooks();
         $this->admin->register_hooks();
         $this->legal_footer_compatibility->register_hooks();
     }

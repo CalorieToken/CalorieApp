@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -87,6 +87,7 @@ class IdentityStartResponse(BaseModel):
     state: str
     expires_at: datetime
     wordpress_signin_url: str
+    browser_handoff_token: str
 
     @field_validator("expires_at", mode="after")
     @classmethod
@@ -112,6 +113,20 @@ class IdentityCallbackResponse(BaseModel):
     user_id: str
     created: bool
     redirect_to: str
+
+
+class IdentityLoginStatusRequest(BaseModel):
+    """Proof presented only by the browser that started the login."""
+
+    state: str = Field(..., min_length=32, max_length=255)
+    browser_handoff_token: str = Field(..., min_length=32, max_length=255)
+
+
+class IdentityLoginStatusResponse(BaseModel):
+    """Progress or completion result for the original browser tab."""
+
+    status: Literal["pending", "failed", "authenticated"]
+    redirect_to: Optional[str] = None
 
 
 class IdentityExchangeRequest(BaseModel):

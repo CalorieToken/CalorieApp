@@ -105,10 +105,26 @@ Frontend environment setup:
 - Preferred variable: BACKEND_URL
 - Existing deployments may continue using NEXT_PUBLIC_BACKEND_URL as a fallback
 - Local development value: http://localhost:8000
-
 The browser calls the frontend's same-origin `/api/backend` proxy. The proxy
-forwards only the supported CalorieApp endpoints to the configured backend and
-keeps mobile authentication sessions first-party.
+forwards only supported CalorieApp endpoints to the configured backend and
+keeps CalorieApp cookies first-party to the frontend origin.
+
+Production Xaman sign-in is owned by the WordPress page rendered through the
+`[calorieapp_embed]` shortcode. WordPress creates a SignIn payload without an
+`app` or `web` return URL, so Xaman cannot redirect the user into the device's
+configured default browser. The original page observes the payload-specific
+WebSocket and always fetches the full payload server-side before trusting the
+result. After signing, the user returns with Xaman's Close or Back action. That
+same WordPress page then sets the WordPress cookie and sends a short-lived
+authorization code to the embedded CalorieApp, which establishes its own
+session. The Render backend wakes in parallel and no longer blocks Xaman from
+opening.
+
+This design follows Xaman's warning that mobile platforms cannot guarantee a
+return to the originating browser tab and its recommendation to use payload
+status updates instead of frequent API polling:
+[return URLs](https://docs.xaman.dev/concepts/payloads-sign-requests/payload-return-url),
+[WebSocket status](https://docs.xaman.dev/concepts/payloads-sign-requests/status-updates/websocket).
 
 Create frontend/.env.local from the template before running the frontend.
 

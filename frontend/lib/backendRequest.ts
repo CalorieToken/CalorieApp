@@ -1,8 +1,18 @@
 export const DEFAULT_BACKEND_TIMEOUT_MS = 20_000;
-export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 90_000;
+export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 180_000;
+
+// Render may not wake one free service from another free service's proxy
+// request. In production this public URL lets the browser wake the backend
+// directly with the unauthenticated health probe; all application requests
+// continue to use the same-origin proxy.
+export const BACKEND_WAKE_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_WAKE_URL?.trim() || "/api/backend";
 
 const BACKEND_WARMUP_ATTEMPT_TIMEOUT_MS = 70_000;
-const BACKEND_WARMUP_RETRY_DELAY_MS = 2_000;
+const BACKEND_WARMUP_INITIAL_RETRY_DELAY_MS = 5_000;
+const BACKEND_WARMUP_MAX_RETRY_DELAY_MS = 30_000;
+const BACKEND_WARMUP_RATE_LIMIT_DELAY_MS = 30_000;
+const BACKEND_WARMUP_MAX_RETRY_AFTER_MS = 60_000;
 
 export class BackendRequestTimeoutError extends Error {
   constructor() {
@@ -40,7 +50,7 @@ export async function backendRequest(
   try {
     return await fetch(input, {
       ...init,
-      credentials: "include",
+      credentials: init.credentials ?? "include",
       signal: controller.signal,
     });
   } catch (error) {
@@ -60,6 +70,56 @@ function throwIfAborted(signal?: AbortSignal) {
   }
 }
 
+function retryAfterDelayMs(response: Response): number | null {
+  const value = response.headers.get("retry-after")?.trim();
+  if (!value) {
+    return null;
+  }
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) {
+    if (seconds < 0) {
+      return null;
+    }
+
+    return Math.min(
+      seconds * 1_000,
+      BACKEND_WARMUP_MAX_RETRY_AFTER_MS
+    );
+  }
+
+  const retryAt = Date.parse(value);
+  if (Number.isNaN(retryAt)) {
+    return null;
+  }
+
+  const delayMs = retryAt - Date.now();
+  if (delayMs <= 0) {
+    return null;
+  }
+
+  return Math.min(delayMs, BACKEND_WARMUP_MAX_RETRY_AFTER_MS);
+}
+
+function retryDelayMs(response: Response | null, retryCount: number): number {
+  if (response?.status === 429) {
+    return retryAfterDelayMs(response) ?? BACKEND_WARMUP_RATE_LIMIT_DELAY_MS;
+  }
+
+  return Math.min(
+    BACKEND_WARMUP_INITIAL_RETRY_DELAY_MS * 2 ** retryCount,
+    BACKEND_WARMUP_MAX_RETRY_DELAY_MS
+  );
+}
+
+async function discardResponseBody(response: Response) {
+  try {
+    await response.body?.cancel();
+  } catch {
+    // The response may already be consumed or closed. Nothing else is needed.
+  }
+}
+
 /**
  * Render free services can take 50 seconds or more to wake after inactivity.
  * Probe the same-origin health route until the backend returns the expected
@@ -71,6 +131,7 @@ export async function waitForBackendReady(
   timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS
 ) {
   const deadline = Date.now() + timeoutMs;
+  let retryCount = 0;
 
   while (Date.now() < deadline) {
     throwIfAborted(signal);
@@ -81,10 +142,12 @@ export async function waitForBackendReady(
       Math.min(BACKEND_WARMUP_ATTEMPT_TIMEOUT_MS, remainingMs)
     );
 
+    let retryResponse: Response | null = null;
+
     try {
       const response = await backendRequest(
         `${backendBaseUrl}/health`,
-        { cache: "no-store", signal },
+        { cache: "no-store", credentials: "omit", signal },
         attemptTimeoutMs
       );
 
@@ -96,20 +159,25 @@ export async function waitForBackendReady(
         }
       }
 
+      retryResponse = response;
+      await discardResponseBody(response);
+
       // Render's edge can temporarily return a non-ready 4xx as well as 5xx
-      // responses while a free service is fully spun down. Treat every
-      // response other than the expected health JSON as retryable until the
-      // overall warm-up deadline expires.
+      // responses while a free service is fully spun down. Retry slowly and
+      // respect rate-limit guidance instead of polling every few seconds.
     } catch {
       throwIfAborted(signal);
     }
 
-    const retryDelayMs = Math.min(
-      BACKEND_WARMUP_RETRY_DELAY_MS,
+    const requestedDelayMs = retryDelayMs(retryResponse, retryCount);
+    retryCount += 1;
+    const boundedRetryDelayMs = Math.min(
+      requestedDelayMs,
       Math.max(0, deadline - Date.now())
     );
-    if (retryDelayMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+    if (boundedRetryDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, boundedRetryDelayMs));
+      throwIfAborted(signal);
     }
   }
 
@@ -122,7 +190,7 @@ export function backendUnavailableMessage(
   fallbackMessage: string
 ) {
   if (error instanceof BackendRequestTimeoutError) {
-    return "The CalorieApp service is taking longer than expected to start. Please wait a moment and try again.";
+    return "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.";
   }
 
   return fallbackMessage;

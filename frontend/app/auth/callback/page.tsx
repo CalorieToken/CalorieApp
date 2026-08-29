@@ -113,7 +113,14 @@ function AuthCallbackContent() {
         const payload = await submitCallbackOnce(code, state);
 
         if (!cancelled) {
-          router.replace(safeLocalRedirect(payload.redirect_to));
+          window.sessionStorage.setItem(
+            "calorieapp-login-return",
+            "default-browser"
+          );
+          const redirectTo = safeLocalRedirect(payload.redirect_to);
+          router.replace(
+            `/auth/complete?next=${encodeURIComponent(redirectTo)}`
+          );
         }
       } catch (requestError) {
         if (!cancelled) {
@@ -149,8 +156,14 @@ function AuthCallbackContent() {
           Returning to CalorieApp
         </h1>
 
+        <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+          Phone browser notice: mobile systems may return from Xaman through
+          your configured default browser instead of the tab where you started.
+          This page completes your CalorieApp session in the browser shown now.
+        </p>
+
         <p
-          className="mt-3 text-sm text-brand-secondary/90"
+          className="mt-4 text-sm text-brand-secondary/90"
           role="status"
           aria-live="polite"
         >
@@ -185,8 +198,14 @@ export default function AuthCallbackPage() {
               CalorieApp Sign-In
             </h1>
 
+            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+              Phone browser notice: mobile systems may return from Xaman
+              through your configured default browser. CalorieApp itself does
+              not open an extra tab.
+            </p>
+
             <p
-              className="mt-3 text-sm text-brand-secondary/90"
+              className="mt-4 text-sm text-brand-secondary/90"
               role="status"
               aria-live="polite"
             >

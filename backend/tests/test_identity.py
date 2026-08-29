@@ -15,20 +15,27 @@ from app.models import (
     AuthorizationCodeDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
+    OriginLoginHandoffDB,
     PendingLoginStateDB,
     SQLModel,
 )
 from app.services.identity import (
+    claim_origin_login_handoff,
     cleanup_pending_login_states,
+    complete_origin_login_handoff,
     consume_pending_login_state,
+    create_origin_login_handoff,
     create_pending_login_state,
     create_authorization_code,
+    fail_origin_login_handoff,
     hash_login_state,
+    hash_origin_handoff_token,
     generate_authorization_code,
     generate_login_state,
     generate_login_session_id,
     get_or_create_user_from_external_identity,
     get_user_by_id,
+    validate_origin_login_handoff,
     validate_pending_login_state,
     hash_authorization_code,
     validate_and_consume_authorization_code,
@@ -494,3 +501,117 @@ class TestPendingLoginState:
         assert is_valid
         assert reason == "ok"
         engine.dispose()
+
+
+class TestOriginLoginHandoff:
+    def test_handoff_proof_is_random_and_only_persisted_as_a_hash(
+        self,
+        test_session: Session,
+    ):
+        state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
+        token, row = create_origin_login_handoff(
+            test_session,
+            state,
+            lifetime_seconds=300,
+        )
+
+        assert len(token) >= 32
+        assert row.state_hash == hash_login_state(state)
+        assert row.state_hash != state
+        assert row.handoff_token_hash == hash_origin_handoff_token(token)
+        assert row.handoff_token_hash != token
+
+        valid, status, persisted = validate_origin_login_handoff(
+            test_session,
+            state,
+            token,
+        )
+        assert valid
+        assert status == "pending"
+        assert persisted is not None
+
+    def test_wrong_handoff_proof_is_rejected_without_revealing_which_value_failed(
+        self,
+        test_session: Session,
+    ):
+        state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
+        create_origin_login_handoff(test_session, state, lifetime_seconds=300)
+
+        valid, status, row = validate_origin_login_handoff(
+            test_session,
+            state,
+            "wrong-proof-value-that-is-still-long-enough-for-the-test",
+        )
+
+        assert not valid
+        assert status == "unknown"
+        assert row is None
+
+    def test_completed_handoff_can_only_be_claimed_once(self, test_session: Session):
+        state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
+        token, _ = create_origin_login_handoff(
+            test_session,
+            state,
+            lifetime_seconds=300,
+        )
+        user = CalorieAppUserDB(status="active")
+        test_session.add(user)
+        test_session.commit()
+        test_session.refresh(user)
+
+        assert complete_origin_login_handoff(test_session, state, user.id)
+
+        first_ok, first_status, first_row = claim_origin_login_handoff(
+            test_session,
+            state,
+            token,
+        )
+        second_ok, second_status, second_row = claim_origin_login_handoff(
+            test_session,
+            state,
+            token,
+        )
+
+        assert first_ok
+        assert first_status == "claimed"
+        assert first_row is not None
+        assert first_row.calorieapp_user_id == user.id
+        assert not second_ok
+        assert second_status == "claimed"
+        assert second_row is not None
+
+    def test_failed_handoff_stops_waiting_browser(self, test_session: Session):
+        state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
+        token, _ = create_origin_login_handoff(
+            test_session,
+            state,
+            lifetime_seconds=300,
+        )
+
+        fail_origin_login_handoff(test_session, state, "bridge_failed")
+        valid, status, row = validate_origin_login_handoff(
+            test_session,
+            state,
+            token,
+        )
+
+        assert valid
+        assert status == "failed"
+        assert row is not None
+        assert row.failure_code == "bridge_failed"
+
+    def test_cleanup_removes_expired_handoff(self, test_session: Session):
+        state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
+        _, row = create_origin_login_handoff(
+            test_session,
+            state,
+            lifetime_seconds=300,
+        )
+        row.expires_at = datetime.now(UTC) - timedelta(seconds=1)
+        row_id = row.id
+        test_session.add(row)
+        test_session.commit()
+
+        cleanup_pending_login_states(test_session)
+
+        assert test_session.get(OriginLoginHandoffDB, row_id) is None

@@ -14,6 +14,7 @@ import {
 } from "@/components/authEvents";
 import type { AuthStateChangedDetail } from "@/components/authEvents";
 import {
+  BACKEND_WAKE_BASE_URL,
   backendRequest,
   backendUnavailableMessage,
   waitForBackendReady,
@@ -391,7 +392,7 @@ export function FoodSearchPlaceholder() {
     );
 
     try {
-      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
       setSearchStatus("Searching foods...");
 
       const response = await backendRequest(
@@ -755,6 +756,11 @@ export function FoodSearchPlaceholder() {
           <p className="font-semibold text-brand-primary">Sign in to manage your food log</p>
           <p className="mt-1">
             Food search is available to everyone. Sign in with Xaman to save and manage items.
+          </p>
+          <p className="mt-2 text-xs leading-relaxed">
+            On the CalorieToken.net page, Xaman opens without a browser return
+            link. After signing, use Close or Back to return to that same page;
+            WordPress and CalorieApp will finish signing in together.
           </p>
         </div>
       ) : logError ? (

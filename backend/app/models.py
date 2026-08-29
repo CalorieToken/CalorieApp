@@ -96,6 +96,27 @@ class PendingLoginStateDB(SQLModel, table=True):
     post_login_redirect: Optional[str] = Field(default=None, max_length=255)
 
 
+class OriginLoginHandoffDB(SQLModel, table=True):
+    """One-time proof that lets the browser which started login claim a session."""
+
+    __tablename__ = "originloginhandoff"
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    state_hash: str = Field(max_length=64, unique=True, index=True)
+    handoff_token_hash: str = Field(max_length=64, index=True)
+    status: str = Field(default="pending", max_length=20, index=True)
+    calorieapp_user_id: Optional[str] = Field(
+        default=None,
+        foreign_key="calorieappuser.id",
+        index=True,
+    )
+    created_at: datetime = Field(default_factory=utc_now)
+    expires_at: datetime = Field(index=True)
+    completed_at: Optional[datetime] = Field(default=None)
+    claimed_at: Optional[datetime] = Field(default=None)
+    failure_code: Optional[str] = Field(default=None, max_length=40)
+
+
 class AuthSessionDB(SQLModel, table=True):
     """Opaque server-side authentication session."""
 

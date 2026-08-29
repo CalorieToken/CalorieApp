@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
-const HEALTH_UPSTREAM_TIMEOUT_MS = 70_000;
+const COLD_START_UPSTREAM_TIMEOUT_MS = 70_000;
 
 const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^health$/, methods: new Set(["GET"]) },
@@ -12,7 +12,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^logs$/, methods: new Set(["GET", "DELETE"]) },
   { pattern: /^logs\/[^/]+$/, methods: new Set(["DELETE"]) },
   {
-    pattern: /^api\/identity\/(login\/start|callback|logout)$/,
+    pattern: /^api\/identity\/(login\/(start|status)|callback|logout)$/,
     methods: new Set(["POST"]),
   },
   { pattern: /^api\/identity\/me$/, methods: new Set(["GET"]) },
@@ -93,8 +93,13 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   // before its health endpoint answers. Keep only this readiness probe alive
   // long enough to wake it; normal application requests retain the tighter
   // timeout after readiness has been established.
-  const upstreamTimeoutMs =
-    path === "health" ? HEALTH_UPSTREAM_TIMEOUT_MS : DEFAULT_UPSTREAM_TIMEOUT_MS;
+  const upstreamTimeoutMs = [
+    "health",
+    "api/identity/login/start",
+    "api/identity/callback",
+  ].includes(path)
+    ? COLD_START_UPSTREAM_TIMEOUT_MS
+    : DEFAULT_UPSTREAM_TIMEOUT_MS;
   const timeoutId = setTimeout(() => controller.abort(), upstreamTimeoutMs);
 
   try {
