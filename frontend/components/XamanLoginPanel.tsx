@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { announceAuthState } from "@/components/authEvents";
 import {
   backendRequest,
@@ -17,16 +17,114 @@ type LoginStartResponse = {
   state: string;
   expires_at: string;
   wordpress_signin_url: string;
+  browser_handoff_token: string;
+};
+
+type LoginStatusResponse = {
+  status: "pending" | "failed" | "authenticated";
+  redirect_to?: string | null;
 };
 
 const BACKEND_BASE_URL = "/api/backend";
+const LOGIN_STATUS_POLL_INTERVAL_MS = 5_000;
+const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
+const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
+const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
+
+function delay(milliseconds: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(signal.reason ?? new Error("Login cancelled"));
+      return;
+    }
+
+    const onAbort = () => {
+      window.clearTimeout(timeoutId);
+      reject(signal.reason ?? new Error("Login cancelled"));
+    };
+    const timeoutId = window.setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, milliseconds);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function waitForOriginLogin(
+  state: string,
+  browserHandoffToken: string,
+  expiresAt: string,
+  signal: AbortSignal
+) {
+  const parsedExpiry = Date.parse(expiresAt);
+  const deadline = Number.isFinite(parsedExpiry)
+    ? parsedExpiry
+    : Date.now() + LOGIN_STATUS_FALLBACK_LIFETIME_MS;
+
+  while (Date.now() < deadline) {
+    await delay(LOGIN_STATUS_POLL_INTERVAL_MS, signal);
+
+    let response: Response;
+    try {
+      response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/login/status`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            state,
+            browser_handoff_token: browserHandoffToken,
+          }),
+          signal,
+        }
+      );
+    } catch {
+      if (signal.aborted) {
+        throw signal.reason ?? new Error("Login cancelled");
+      }
+      continue;
+    }
+
+    if (response.status === 429) {
+      const retryAfterSeconds = Number(
+        response.headers.get("retry-after")?.trim()
+      );
+      const retryDelay = Number.isFinite(retryAfterSeconds)
+        ? Math.min(
+            Math.max(0, retryAfterSeconds * 1_000),
+            LOGIN_STATUS_MAX_RETRY_AFTER_MS
+          )
+        : LOGIN_STATUS_RATE_LIMIT_DELAY_MS;
+      await delay(retryDelay, signal);
+      continue;
+    }
+    if ([502, 503, 504].includes(response.status)) {
+      continue;
+    }
+    if (!response.ok) {
+      throw new Error(`Login status failed with ${response.status}`);
+    }
+
+    const payload = (await response.json()) as LoginStatusResponse;
+    if (payload.status === "authenticated") {
+      return;
+    }
+    if (payload.status === "failed") {
+      throw new Error("Xaman callback failed");
+    }
+  }
+
+  throw new Error("Login handoff expired");
+}
 
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const loginAbortController = useRef<AbortController | null>(null);
 
   const refreshCurrentUser = useCallback(async () => {
     try {
@@ -49,21 +147,42 @@ export function XamanLoginPanel() {
 
   useEffect(() => {
     refreshCurrentUser();
+
+    if (window.sessionStorage.getItem("calorieapp-login-return")) {
+      window.sessionStorage.removeItem("calorieapp-login-return");
+      setSuccessNotice(
+        "Sign-in completed in your default browser. You can continue safely in this tab."
+      );
+    }
+
+    return () => {
+      loginAbortController.current?.abort();
+    };
   }, [refreshCurrentUser]);
 
   async function handleLogin() {
+    const loginWindow = window.open(
+      "/auth/launching",
+      "calorieapp-xaman-login"
+    );
+    const controller = new AbortController();
+    loginAbortController.current?.abort();
+    loginAbortController.current = controller;
+
     setError(null);
+    setSuccessNotice(null);
     setIsLoading(true);
     setLoginStatus(
-      "Connecting securely. After inactivity, the free demo can take up to 3 minutes to start. Please keep this page open."
+      "Preparing a separate Xaman sign-in tab. Keep this CalorieApp tab open; it will finish automatically."
     );
 
     try {
-      await waitForBackendReady(BACKEND_BASE_URL);
+      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
       setLoginStatus("Service ready. Opening Xaman...");
 
       const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/login/start`, {
         method: "POST",
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -71,16 +190,57 @@ export function XamanLoginPanel() {
       }
 
       const data = (await response.json()) as LoginStartResponse;
-      if (!data.wordpress_signin_url) {
-        throw new Error("Missing signin URL");
+      if (!data.wordpress_signin_url || !data.browser_handoff_token) {
+        throw new Error("Missing signin handoff data");
       }
 
-      window.location.assign(data.wordpress_signin_url);
+      if (!loginWindow || loginWindow.closed) {
+        window.location.assign(data.wordpress_signin_url);
+        return;
+      }
+
+      loginWindow.opener = null;
+      loginWindow.location.replace(data.wordpress_signin_url);
+      setLoginStatus(
+        "Approve the request in Xaman. It may return in your default browser; this original tab will sign in automatically."
+      );
+
+      await waitForOriginLogin(
+        data.state,
+        data.browser_handoff_token,
+        data.expires_at,
+        controller.signal
+      );
+
+      try {
+        loginWindow.close();
+      } catch {
+        // A browser may keep the external Xaman tab open. The login still succeeded.
+      }
+
+      await refreshCurrentUser();
+      announceAuthState(true);
+      setSuccessNotice(
+        "Sign-in completed. You can continue in this original CalorieApp tab."
+      );
+      setLoginStatus(null);
+      setIsLoading(false);
     } catch (requestError) {
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      try {
+        if (loginWindow && !loginWindow.closed) {
+          loginWindow.close();
+        }
+      } catch {
+        // The external sign-in window may no longer be script-controllable.
+      }
       setError(
         backendUnavailableMessage(
           requestError,
-          "Unable to start Xaman login right now. Please try again."
+          "Sign-in could not be confirmed in this tab. You can continue in the browser Xaman opened, or try again."
         )
       );
       setLoginStatus(null);
@@ -131,9 +291,9 @@ export function XamanLoginPanel() {
         Sign in securely to save, review, and manage your personal food log.
       </p>
       <p className="mt-2 text-xs leading-relaxed text-brand-secondary/75">
-        On your phone, the Xaman app opens outside this browser. After approval,
-        your phone may return in its default browser; sign-in completes securely
-        in that browser.
+        A separate sign-in tab opens. Xaman may return in your phone&apos;s default
+        browser, while this original CalorieApp tab remains available and signs
+        in automatically.
       </p>
 
       {currentUser ? (
@@ -174,6 +334,16 @@ export function XamanLoginPanel() {
       {error && (
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
           {error}
+        </p>
+      )}
+
+      {successNotice && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-xs text-green-800"
+        >
+          {successNotice}
         </p>
       )}
     </section>

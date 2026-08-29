@@ -113,7 +113,14 @@ function AuthCallbackContent() {
         const payload = await submitCallbackOnce(code, state);
 
         if (!cancelled) {
-          router.replace(safeLocalRedirect(payload.redirect_to));
+          window.sessionStorage.setItem(
+            "calorieapp-login-return",
+            "default-browser"
+          );
+          const redirectTo = safeLocalRedirect(payload.redirect_to);
+          router.replace(
+            `/auth/complete?next=${encodeURIComponent(redirectTo)}`
+          );
         }
       } catch (requestError) {
         if (!cancelled) {

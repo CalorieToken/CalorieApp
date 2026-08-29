@@ -15,9 +15,17 @@ from sqlalchemy.pool import NullPool
 import app.database as db_module
 import app.main as main_module
 from app.main import app
-from app.models import AuthSessionDB, CalorieAppUserDB, ExternalIdentityDB, FoodLogDB, PendingLoginStateDB, SQLModel
+from app.models import (
+    AuthSessionDB,
+    CalorieAppUserDB,
+    ExternalIdentityDB,
+    FoodLogDB,
+    OriginLoginHandoffDB,
+    PendingLoginStateDB,
+    SQLModel,
+)
 from app.schemas import IdentityClaimsResponse
-from app.services.identity import hash_login_state
+from app.services.identity import hash_login_state, hash_origin_handoff_token
 from sqlmodel import Session, create_engine, select
 from sqlmodel.pool import StaticPool
 
@@ -302,10 +310,13 @@ class TestIdentityEndpoints:
         assert "state" in data
         assert "expires_at" in data
         assert "wordpress_signin_url" in data
+        assert "browser_handoff_token" in data
         assert data["wordpress_signin_url"].startswith("https://calorietoken.net/?xl-signin&redirect=")
         assert "%2F%3Fcalorieapp_authorize%3D1%26state%3D" in data["wordpress_signin_url"]
         assert "state%3D" in data["wordpress_signin_url"]
         assert len(data["state"]) >= 32
+        assert len(data["browser_handoff_token"]) >= 32
+        assert data["browser_handoff_token"] not in data["wordpress_signin_url"]
         assert response.headers["cache-control"] == "no-store"
         assert response.headers["pragma"] == "no-cache"
         assert data["expires_at"].endswith("Z")
@@ -724,7 +735,9 @@ class TestIdentityEndpoints:
         assert response.status_code == 500
 
     def test_login_state_is_persisted_and_not_stored_plaintext(self, client: TestClient):
-        state = client.post("/api/identity/login/start").json()["state"]
+        start = client.post("/api/identity/login/start").json()
+        state = start["state"]
+        handoff_token = start["browser_handoff_token"]
 
         with Session(db_module.engine) as session:
             row = session.exec(
@@ -734,6 +747,17 @@ class TestIdentityEndpoints:
         assert row is not None
         assert row.state_hash == hash_login_state(state)
         assert row.state_hash != state
+
+        with Session(db_module.engine) as session:
+            handoff = session.exec(
+                select(OriginLoginHandoffDB).where(
+                    OriginLoginHandoffDB.state_hash == hash_login_state(state)
+                )
+            ).first()
+
+        assert handoff is not None
+        assert handoff.handoff_token_hash == hash_origin_handoff_token(handoff_token)
+        assert handoff.handoff_token_hash != handoff_token
 
 
 class TestFoodLogAuthentication:
@@ -1115,7 +1139,9 @@ class TestIdentityCallbackFlow:
         )
 
         with TestClient(app) as starting_browser, TestClient(app) as return_browser:
-            state = starting_browser.post("/api/identity/login/start").json()["state"]
+            start = starting_browser.post("/api/identity/login/start").json()
+            state = start["state"]
+            handoff_token = start["browser_handoff_token"]
 
             callback = return_browser.post(
                 "/api/identity/callback",
@@ -1125,6 +1151,126 @@ class TestIdentityCallbackFlow:
             assert callback.status_code == 200
             assert return_browser.get("/api/identity/me").status_code == 200
             assert starting_browser.get("/api/identity/me").status_code == 401
+
+            handoff = starting_browser.post(
+                "/api/identity/login/status",
+                json={
+                    "state": state,
+                    "browser_handoff_token": handoff_token,
+                },
+            )
+            assert handoff.status_code == 200
+            assert handoff.json()["status"] == "authenticated"
+
+            starting_me = starting_browser.get("/api/identity/me")
+            return_me = return_browser.get("/api/identity/me")
+            assert starting_me.status_code == 200
+            assert return_me.status_code == 200
+            assert starting_me.json()["user_id"] == return_me.json()["user_id"]
+
+    def test_origin_handoff_is_pending_before_callback(self, client: TestClient):
+        start = client.post("/api/identity/login/start").json()
+
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+
+        assert status.status_code == 200
+        assert status.json() == {"status": "pending", "redirect_to": None}
+        assert SESSION_COOKIE_NAME not in status.cookies
+
+    def test_origin_handoff_rejects_wrong_browser_proof(self, client: TestClient):
+        start = client.post("/api/identity/login/start").json()
+
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": "wrong-proof-value-that-is-long-enough-0123456789",
+            },
+        )
+
+        assert status.status_code == 404
+        assert SESSION_COOKIE_NAME not in status.cookies
+
+    def test_origin_handoff_is_single_use_across_browsers(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        _set_session_cookie_security_config(
+            monkeypatch,
+            secure=False,
+            environment="local",
+        )
+        monkeypatch.setattr(
+            main_module,
+            "_exchange_code_for_claims",
+            lambda code, state: self._stub_claims(),
+        )
+
+        with (
+            TestClient(app) as starting_browser,
+            TestClient(app) as return_browser,
+            TestClient(app) as replay_browser,
+        ):
+            start = starting_browser.post("/api/identity/login/start").json()
+            callback = return_browser.post(
+                "/api/identity/callback",
+                json={"code": "bridge-code", "state": start["state"]},
+            )
+            assert callback.status_code == 200
+
+            proof = {
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            }
+            first_claim = starting_browser.post(
+                "/api/identity/login/status",
+                json=proof,
+            )
+            replay_claim = replay_browser.post(
+                "/api/identity/login/status",
+                json=proof,
+            )
+
+            assert first_claim.status_code == 200
+            assert first_claim.json()["status"] == "authenticated"
+            assert replay_claim.status_code == 409
+            assert replay_browser.get("/api/identity/me").status_code == 401
+
+    def test_failed_callback_marks_origin_handoff_failed(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        def _raise_exchange_failure(code: str, state: str):
+            raise main_module.HTTPException(
+                status_code=502,
+                detail="WordPress bridge exchange failed",
+            )
+
+        monkeypatch.setattr(main_module, "_exchange_code_for_claims", _raise_exchange_failure)
+        start = client.post("/api/identity/login/start").json()
+
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": start["state"]},
+        )
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+
+        assert callback.status_code == 502
+        assert status.status_code == 200
+        assert status.json()["status"] == "failed"
 
     def test_concurrent_callback_state_use_allows_only_one_success(self, monkeypatch: pytest.MonkeyPatch):
         from concurrent.futures import ThreadPoolExecutor
