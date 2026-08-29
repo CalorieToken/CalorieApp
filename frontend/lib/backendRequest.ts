@@ -43,7 +43,7 @@ export async function backendRequest(
   try {
     return await fetch(input, {
       ...init,
-      credentials: "include",
+      credentials: init.credentials ?? "include",
       signal: controller.signal,
     });
   } catch (error) {
@@ -140,7 +140,7 @@ export async function waitForBackendReady(
     try {
       const response = await backendRequest(
         `${backendBaseUrl}/health`,
-        { cache: "no-store", signal },
+        { cache: "no-store", credentials: "omit", signal },
         attemptTimeoutMs
       );
 
