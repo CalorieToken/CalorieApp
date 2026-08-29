@@ -206,7 +206,7 @@ export function FoodSearchPlaceholder() {
   const [isClearingAll, setIsClearingAll] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [logError, setLogError] = useState<string | null>(null);
+  const [logError, setLogError] = useState<string | null>(SIGN_IN_REQUIRED_LOG_MESSAGE);
   const [didSearch, setDidSearch] = useState(false);
   const [searchStatus, setSearchStatus] = useState<string | null>(null);
 
@@ -336,10 +336,6 @@ export function FoodSearchPlaceholder() {
       }
     }
   }, [clearPrivateLogState]);
-
-  useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
 
   useEffect(() => {
     return () => {
