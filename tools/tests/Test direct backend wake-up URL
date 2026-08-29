@@ -83,6 +83,7 @@ test("login start retries transport errors and transient responses", async () =>
       }
       if (specifier === "@/lib/backendRequest") {
         return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
           backendRequest,
           backendUnavailableMessage: (_error, fallback) => fallback,
           BackendRequestTimeoutError: TestBackendRequestTimeoutError,
@@ -169,14 +170,15 @@ test("embedded login wakes the backend before creating login state", async () =>
       }
       if (specifier === "@/lib/backendRequest") {
         return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
           backendRequest: async () => {
             events.push("login-start");
             return loginResponse;
           },
           backendUnavailableMessage: (_error, fallback) => fallback,
           BackendRequestTimeoutError: TestBackendRequestTimeoutError,
-          waitForBackendReady: async () => {
-            events.push("backend-ready");
+          waitForBackendReady: async (backendUrl) => {
+            events.push(`backend-ready:${backendUrl}`);
           },
         };
       }
@@ -201,7 +203,10 @@ test("embedded login wakes the backend before creating login state", async () =>
     10_000
   );
 
-  assert.deepEqual(events, ["backend-ready", "login-start"]);
+  assert.deepEqual(events, [
+    "backend-ready:https://backend.example",
+    "login-start",
+  ]);
   assert.deepEqual(phases, ["waking-up"]);
   assert.equal(result.state, "state-abcdefghijklmnopqrstuvwxyz-0123456789");
 });
@@ -244,6 +249,7 @@ test("embedded login does not report progress after cancellation", async () => {
       }
       if (specifier === "@/lib/backendRequest") {
         return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
           backendRequest: async () => {
             events.push("login-start");
           },
