@@ -12,7 +12,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^logs$/, methods: new Set(["GET", "DELETE"]) },
   { pattern: /^logs\/[^/]+$/, methods: new Set(["DELETE"]) },
   {
-    pattern: /^api\/identity\/(login\/start|callback|logout)$/,
+    pattern: /^api\/identity\/(login\/(start|status)|callback|logout)$/,
     methods: new Set(["POST"]),
   },
   { pattern: /^api\/identity\/me$/, methods: new Set(["GET"]) },

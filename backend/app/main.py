@@ -29,17 +29,24 @@ from .schemas import (
     FoodSearchResponse,
     IdentityCallbackRequest,
     IdentityClaimsResponse,
+    IdentityLoginStatusRequest,
+    IdentityLoginStatusResponse,
     IdentityStateValidationRequest,
     IdentityStateValidationResponse,
     IdentityStartResponse,
     LogoutResponse,
 )
 from .services.identity import (
+    claim_origin_login_handoff,
     cleanup_pending_login_states,
+    complete_origin_login_handoff,
     consume_pending_login_state,
+    create_origin_login_handoff,
     create_pending_login_state,
+    fail_origin_login_handoff,
     get_or_create_user_from_external_identity,
     validate_pending_login_state,
+    validate_origin_login_handoff,
 )
 from .services.open_food_facts import search_food_products
 
@@ -523,6 +530,18 @@ def _create_auth_session(
     raise RuntimeError("Unable to allocate unique session token")
 
 
+def _set_auth_session_cookie(response: Response, session_token: str) -> None:
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_token,
+        httponly=True,
+        secure=_SESSION_COOKIE_SECURE,
+        samesite=_SESSION_COOKIE_SAMESITE,
+        path="/",
+        max_age=SESSION_ABSOLUTE_LIFETIME_SECONDS,
+    )
+
+
 def _resolve_auth_session(
     session: Session,
     session_token: str,
@@ -672,6 +691,11 @@ def identity_login_start(session: DbSession) -> IdentityStartResponse:
         state_lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
         post_login_redirect=_CALORIEAPP_POST_LOGIN_REDIRECT,
     )
+    browser_handoff_token, _ = create_origin_login_handoff(
+        session=session,
+        state=state,
+        lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
+    )
     wordpress_signin_url = _build_wordpress_signin_url(state)
 
     logger.info("Login flow started (expires_at=%s)", pending.expires_at)
@@ -680,6 +704,7 @@ def identity_login_start(session: DbSession) -> IdentityStartResponse:
         state=state,
         expires_at=pending.expires_at,
         wordpress_signin_url=wordpress_signin_url,
+        browser_handoff_token=browser_handoff_token,
     )
 
 
@@ -753,14 +778,21 @@ def identity_callback(
             raise HTTPException(status_code=400, detail="Login state already consumed")
         raise HTTPException(status_code=400, detail="Unknown login state")
 
-    claims = _exchange_code_for_claims(code=code, state=state)
+    try:
+        claims = _exchange_code_for_claims(code=code, state=state)
 
-    user, created = get_or_create_user_from_external_identity(
-        session=session,
-        provider=_IDENTITY_PROVIDER,
-        external_subject=claims.external_subject,
-        xrpl_address=claims.xrpl_address,
-    )
+        user, created = get_or_create_user_from_external_identity(
+            session=session,
+            provider=_IDENTITY_PROVIDER,
+            external_subject=claims.external_subject,
+            xrpl_address=claims.xrpl_address,
+        )
+    except Exception:
+        fail_origin_login_handoff(session, state)
+        raise
+
+    if not complete_origin_login_handoff(session, state, user.id):
+        logger.warning("Origin browser handoff could not be completed")
 
     _cleanup_auth_sessions(session)
     replaced_session: Optional[AuthSessionDB] = None
@@ -774,21 +806,90 @@ def identity_callback(
         replaced_session=replaced_session,
     )
 
-    response.set_cookie(
-        key=SESSION_COOKIE_NAME,
-        value=session_token,
-        httponly=True,
-        secure=_SESSION_COOKIE_SECURE,
-        samesite=_SESSION_COOKIE_SAMESITE,
-        path="/",
-        max_age=SESSION_ABSOLUTE_LIFETIME_SECONDS,
-    )
+    _set_auth_session_cookie(response, session_token)
 
     logger.info("Identity callback succeeded (created=%s)", created)
 
     return IdentityCallbackResponse(
         user_id=user.id,
         created=created,
+        redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+    )
+
+
+@app.post("/api/identity/login/status", response_model=IdentityLoginStatusResponse)
+def identity_login_status(
+    payload: IdentityLoginStatusRequest,
+    session: DbSession,
+    request: Request,
+    response: Response,
+) -> IdentityLoginStatusResponse:
+    """Let only the browser that started login claim the completed identity."""
+    state = payload.state.strip()
+    handoff_token = payload.browser_handoff_token.strip()
+    if not _is_valid_state_format(state) or not _is_valid_state_format(handoff_token):
+        raise HTTPException(status_code=400, detail="Invalid login status proof")
+
+    cleanup_pending_login_states(session)
+    valid, status, existing = validate_origin_login_handoff(
+        session,
+        state,
+        handoff_token,
+    )
+    if not valid:
+        if status == "expired":
+            raise HTTPException(status_code=410, detail="Login handoff expired")
+        raise HTTPException(status_code=404, detail="Login handoff not found")
+
+    if status == "pending":
+        return IdentityLoginStatusResponse(status="pending")
+    if status == "failed":
+        return IdentityLoginStatusResponse(status="failed")
+
+    if status == "claimed" and existing is not None and existing.calorieapp_user_id:
+        existing_token = request.cookies.get(SESSION_COOKIE_NAME)
+        if existing_token:
+            existing_user, _, reason = _resolve_auth_session(session, existing_token)
+            if reason == "ok" and existing_user is not None and existing_user.id == existing.calorieapp_user_id:
+                return IdentityLoginStatusResponse(
+                    status="authenticated",
+                    redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+                )
+        raise HTTPException(status_code=409, detail="Login handoff already claimed")
+
+    claimed, claim_status, handoff = claim_origin_login_handoff(
+        session,
+        state,
+        handoff_token,
+    )
+    if not claimed or handoff is None or not handoff.calorieapp_user_id:
+        if claim_status == "pending":
+            return IdentityLoginStatusResponse(status="pending")
+        if claim_status == "failed":
+            return IdentityLoginStatusResponse(status="failed")
+        raise HTTPException(status_code=409, detail="Login handoff already claimed")
+
+    _cleanup_auth_sessions(session)
+    replaced_session: Optional[AuthSessionDB] = None
+    existing_token = request.cookies.get(SESSION_COOKIE_NAME)
+    if existing_token:
+        existing_user, current_session, reason = _resolve_auth_session(session, existing_token)
+        if reason == "ok" and existing_user is not None and existing_user.id == handoff.calorieapp_user_id:
+            return IdentityLoginStatusResponse(
+                status="authenticated",
+                redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+            )
+        replaced_session = current_session
+
+    session_token, _ = _create_auth_session(
+        session=session,
+        user_id=handoff.calorieapp_user_id,
+        replaced_session=replaced_session,
+    )
+    _set_auth_session_cookie(response, session_token)
+
+    return IdentityLoginStatusResponse(
+        status="authenticated",
         redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
     )
 

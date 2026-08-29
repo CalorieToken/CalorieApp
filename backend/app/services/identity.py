@@ -23,6 +23,7 @@ from app.models import (
     AuthorizationCodeDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
+    OriginLoginHandoffDB,
     PendingLoginStateDB,
     utc_now,
 )
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 AUTH_CODE_LENGTH = 32  # bytes
 AUTH_CODE_LIFETIME_SECONDS = 60  # 60 second lifetime
 LOGIN_STATE_LENGTH = 48
+ORIGIN_HANDOFF_TOKEN_LENGTH = 48
 LOGIN_STATE_LIFETIME_SECONDS = int(os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300"))
 WORDPRESS_BRIDGE_SECRET = os.getenv("WORDPRESS_BRIDGE_SECRET", "")
 
@@ -69,6 +71,16 @@ def hash_login_state(state: str) -> str:
     return hashlib.sha256(state.encode("utf-8")).hexdigest()
 
 
+def generate_origin_handoff_token() -> str:
+    """Generate the proof retained only by the browser that started login."""
+    return token_urlsafe(ORIGIN_HANDOFF_TOKEN_LENGTH)
+
+
+def hash_origin_handoff_token(token: str) -> str:
+    """Hash an origin-browser handoff token before persistent storage."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
 def create_pending_login_state(
     session: Session,
     state_lifetime_seconds: int,
@@ -100,6 +112,141 @@ def create_pending_login_state(
         return state, row
 
     raise RuntimeError("Unable to allocate unique login state")
+
+
+def create_origin_login_handoff(
+    session: Session,
+    state: str,
+    lifetime_seconds: int,
+) -> tuple[str, OriginLoginHandoffDB]:
+    """Create a browser-bound, one-time handoff for the login origin tab."""
+    created_at = utc_now()
+    expires_at = created_at + timedelta(seconds=lifetime_seconds)
+
+    for _ in range(3):
+        token = generate_origin_handoff_token()
+        token_hash = hash_origin_handoff_token(token)
+        existing = session.exec(
+            select(OriginLoginHandoffDB).where(
+                OriginLoginHandoffDB.handoff_token_hash == token_hash
+            )
+        ).first()
+        if existing:
+            continue
+
+        row = OriginLoginHandoffDB(
+            state_hash=hash_login_state(state),
+            handoff_token_hash=token_hash,
+            status="pending",
+            created_at=created_at,
+            expires_at=expires_at,
+        )
+        session.add(row)
+        session.commit()
+        session.refresh(row)
+        return token, row
+
+    raise RuntimeError("Unable to allocate unique origin login handoff")
+
+
+def validate_origin_login_handoff(
+    session: Session,
+    state: str,
+    handoff_token: str,
+) -> tuple[bool, str, Optional[OriginLoginHandoffDB]]:
+    """Validate state + origin proof without exposing which value was wrong."""
+    row = session.exec(
+        select(OriginLoginHandoffDB).where(
+            OriginLoginHandoffDB.state_hash == hash_login_state(state)
+        )
+    ).first()
+
+    if row is None:
+        return False, "unknown", None
+
+    supplied_hash = hash_origin_handoff_token(handoff_token)
+    if not compare_digest(row.handoff_token_hash, supplied_hash):
+        return False, "unknown", None
+
+    expires_at = (
+        row.expires_at.replace(tzinfo=UTC)
+        if row.expires_at.tzinfo is None
+        else row.expires_at.astimezone(UTC)
+    )
+    if expires_at < datetime.now(UTC):
+        return False, "expired", row
+
+    return True, row.status, row
+
+
+def complete_origin_login_handoff(
+    session: Session,
+    state: str,
+    calorieapp_user_id: str,
+) -> bool:
+    """Mark the origin handoff ready after the verified callback resolves a user."""
+    now = utc_now()
+    updated = session.exec(
+        update(OriginLoginHandoffDB)
+        .where(OriginLoginHandoffDB.state_hash == hash_login_state(state))
+        .where(OriginLoginHandoffDB.status == "pending")
+        .where(OriginLoginHandoffDB.expires_at >= now)
+        .values(
+            status="completed",
+            calorieapp_user_id=calorieapp_user_id,
+            completed_at=now,
+        )
+    )
+    session.commit()
+    return updated.rowcount == 1
+
+
+def fail_origin_login_handoff(
+    session: Session,
+    state: str,
+    failure_code: str = "callback_failed",
+) -> None:
+    """Let the origin tab stop waiting when callback processing cannot finish."""
+    session.exec(
+        update(OriginLoginHandoffDB)
+        .where(OriginLoginHandoffDB.state_hash == hash_login_state(state))
+        .where(OriginLoginHandoffDB.status == "pending")
+        .values(status="failed", failure_code=failure_code[:40])
+    )
+    session.commit()
+
+
+def claim_origin_login_handoff(
+    session: Session,
+    state: str,
+    handoff_token: str,
+) -> tuple[bool, str, Optional[OriginLoginHandoffDB]]:
+    """Atomically claim a completed origin handoff once."""
+    valid, status, row = validate_origin_login_handoff(session, state, handoff_token)
+    if not valid or row is None:
+        return False, status, row
+    if status != "completed":
+        return False, status, row
+    if not row.calorieapp_user_id:
+        return False, "failed", row
+
+    now = utc_now()
+    updated = session.exec(
+        update(OriginLoginHandoffDB)
+        .where(OriginLoginHandoffDB.id == row.id)
+        .where(OriginLoginHandoffDB.status == "completed")
+        .where(OriginLoginHandoffDB.claimed_at.is_(None))
+        .where(OriginLoginHandoffDB.expires_at >= now)
+        .values(status="claimed", claimed_at=now)
+    )
+    session.commit()
+
+    if updated.rowcount != 1:
+        refreshed = session.get(OriginLoginHandoffDB, row.id)
+        return False, "claimed", refreshed
+
+    session.refresh(row)
+    return True, "claimed", row
 
 
 def validate_pending_login_state(
@@ -161,6 +308,9 @@ def cleanup_pending_login_states(session: Session) -> None:
     now = utc_now()
     session.exec(
         delete(PendingLoginStateDB).where(PendingLoginStateDB.expires_at < now)
+    )
+    session.exec(
+        delete(OriginLoginHandoffDB).where(OriginLoginHandoffDB.expires_at < now)
     )
     session.commit()
 
