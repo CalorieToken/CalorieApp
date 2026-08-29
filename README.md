@@ -111,11 +111,14 @@ forwards only the supported CalorieApp endpoints to the configured backend and
 keeps mobile authentication sessions first-party.
 
 Xaman sign-in opens in a separate tab while the original CalorieApp tab waits
-for a short-lived, one-time browser handoff. If Android returns from Xaman in a
-different default browser, the callback browser receives its normal session and
-the original tab securely claims a separate session for the same user. Only
-hashes of the handoff proof are stored, the proof is never sent through
-WordPress/Xaman URLs, and it cannot be claimed by a third browser after use.
+for a short-lived, one-time browser handoff. Every CalorieApp-owned Xaman login
+surface must clearly warn phone users before and during sign-in that the return
+page normally opens in their configured default browser, possibly in a new tab,
+and that they should keep the original CalorieApp tab open. The callback browser
+receives its normal session and the original tab securely claims a separate
+session for the same user. Only hashes of the handoff proof are stored, the
+proof is never sent through WordPress/Xaman URLs, and it cannot be claimed by a
+third browser after use.
 
 Create frontend/.env.local from the template before running the frontend.
 

@@ -45,10 +45,13 @@ function LoginCompleteContent() {
         <h1 className="mt-4 text-xl font-semibold text-brand-primary">
           Sign-in completed
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-brand-secondary/90">
+        <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+          Phone browser notice: Xaman normally opens this return page in your
+          configured default browser, possibly in a new tab.
+        </p>
+        <p className="mt-4 text-sm leading-relaxed text-brand-secondary/90">
           Your original CalorieApp tab is signing in automatically. You can
-          close this tab and return there, even if Xaman opened this page in
-          your phone&apos;s default browser.
+          close this tab and return there.
         </p>
         <p className="mt-2 text-xs leading-relaxed text-brand-secondary/70">
           You are also signed in in this browser, so continuing here is safe.

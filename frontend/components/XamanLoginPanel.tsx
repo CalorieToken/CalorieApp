@@ -5,6 +5,7 @@ import { announceAuthState } from "@/components/authEvents";
 import {
   backendRequest,
   backendUnavailableMessage,
+  BackendRequestTimeoutError,
   waitForBackendReady,
 } from "@/lib/backendRequest";
 
@@ -30,6 +31,10 @@ const LOGIN_STATUS_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
 const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
 const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
+const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
+const LOGIN_START_RETRY_DELAY_MS = 15_000;
+const XAMAN_LAUNCH_MESSAGE_TYPE = "calorieapp-xaman-navigate";
+const XAMAN_LAUNCH_ERROR_TYPE = "calorieapp-xaman-error";
 
 function delay(milliseconds: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -117,6 +122,84 @@ async function waitForOriginLogin(
   throw new Error("Login handoff expired");
 }
 
+function retryAfterMilliseconds(response: Response): number {
+  const value = response.headers.get("retry-after")?.trim();
+  if (!value) {
+    return LOGIN_START_RETRY_DELAY_MS;
+  }
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds * 1_000, LOGIN_STATUS_MAX_RETRY_AFTER_MS);
+  }
+
+  const retryAt = Date.parse(value);
+  if (Number.isNaN(retryAt)) {
+    return LOGIN_START_RETRY_DELAY_MS;
+  }
+
+  return Math.min(
+    Math.max(0, retryAt - Date.now()),
+    LOGIN_STATUS_MAX_RETRY_AFTER_MS
+  );
+}
+
+async function startLoginWithRetry(
+  signal: AbortSignal,
+  onRateLimited: () => void
+): Promise<LoginStartResponse> {
+  const deadline = Date.now() + LOGIN_START_RETRY_WINDOW_MS;
+
+  while (Date.now() < deadline) {
+    const response = await backendRequest(
+      `${BACKEND_BASE_URL}/api/identity/login/start`,
+      { method: "POST", signal }
+    );
+
+    if (response.ok) {
+      return (await response.json()) as LoginStartResponse;
+    }
+
+    if (response.status === 429) {
+      onRateLimited();
+      await delay(retryAfterMilliseconds(response), signal);
+      continue;
+    }
+
+    if ([502, 503, 504].includes(response.status)) {
+      await delay(LOGIN_START_RETRY_DELAY_MS, signal);
+      continue;
+    }
+
+    throw new Error(`Unable to start login (${response.status})`);
+  }
+
+  throw new BackendRequestTimeoutError();
+}
+
+function sendXamanLocationToLaunchTab(
+  loginWindow: Window,
+  attemptId: string,
+  wordpressSigninUrl: string
+) {
+  const message = {
+    type: XAMAN_LAUNCH_MESSAGE_TYPE,
+    attemptId,
+    url: wordpressSigninUrl,
+  };
+
+  // Repeat briefly so a slow mobile browser cannot miss the message while the
+  // holding page is still attaching its listener. Once navigation starts, the
+  // target-origin check prevents delivery to the external page.
+  [0, 300, 1_000, 2_500].forEach((delayMs) => {
+    window.setTimeout(() => {
+      if (!loginWindow.closed) {
+        loginWindow.postMessage(message, window.location.origin);
+      }
+    }, delayMs);
+  });
+}
+
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -161,8 +244,9 @@ export function XamanLoginPanel() {
   }, [refreshCurrentUser]);
 
   async function handleLogin() {
+    const attemptId = window.crypto.randomUUID();
     const loginWindow = window.open(
-      "/auth/launching",
+      `/auth/launching?attempt=${encodeURIComponent(attemptId)}`,
       "calorieapp-xaman-login"
     );
     const controller = new AbortController();
@@ -173,23 +257,18 @@ export function XamanLoginPanel() {
     setSuccessNotice(null);
     setIsLoading(true);
     setLoginStatus(
-      "Preparing a separate Xaman sign-in tab. Keep this CalorieApp tab open; it will finish automatically."
+      "Preparing Xaman. On phones, expect the return page to open in your configured default browser, possibly in a new tab. Keep this original CalorieApp tab open; it will sign in automatically too."
     );
 
     try {
       await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
       setLoginStatus("Service ready. Opening Xaman...");
 
-      const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/login/start`, {
-        method: "POST",
-        signal: controller.signal,
+      const data = await startLoginWithRetry(controller.signal, () => {
+        setLoginStatus(
+          "CalorieApp is temporarily busy. Waiting safely before opening Xaman; keep both tabs open."
+        );
       });
-
-      if (!response.ok) {
-        throw new Error("Unable to start login");
-      }
-
-      const data = (await response.json()) as LoginStartResponse;
       if (!data.wordpress_signin_url || !data.browser_handoff_token) {
         throw new Error("Missing signin handoff data");
       }
@@ -199,10 +278,13 @@ export function XamanLoginPanel() {
         return;
       }
 
-      loginWindow.opener = null;
-      loginWindow.location.replace(data.wordpress_signin_url);
+      sendXamanLocationToLaunchTab(
+        loginWindow,
+        attemptId,
+        data.wordpress_signin_url
+      );
       setLoginStatus(
-        "Approve the request in Xaman. It may return in your default browser; this original tab will sign in automatically."
+        "Approve the request in Xaman. On phones, the return page normally opens in your configured default browser, possibly in a new tab. Keep this original tab open; it will sign in automatically too."
       );
 
       await waitForOriginLogin(
@@ -232,6 +314,10 @@ export function XamanLoginPanel() {
 
       try {
         if (loginWindow && !loginWindow.closed) {
+          loginWindow.postMessage(
+            { type: XAMAN_LAUNCH_ERROR_TYPE, attemptId },
+            window.location.origin
+          );
           loginWindow.close();
         }
       } catch {
@@ -290,11 +376,15 @@ export function XamanLoginPanel() {
       <p className="mt-1 text-sm text-brand-secondary/90">
         Sign in securely to save, review, and manage your personal food log.
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-brand-secondary/75">
-        A separate sign-in tab opens. Xaman may return in your phone&apos;s default
-        browser, while this original CalorieApp tab remains available and signs
-        in automatically.
-      </p>
+      <div
+        role="note"
+        className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
+      >
+        <span className="font-semibold">Phone browser notice:</span> Expect the
+        Xaman return page to open in your configured default browser, possibly
+        in a new tab. Keep this original CalorieApp tab open; it will sign in
+        automatically too.
+      </div>
 
       {currentUser ? (
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
