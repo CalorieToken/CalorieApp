@@ -1242,7 +1242,7 @@ class TestIdentityCallbackFlow:
             assert replay_claim.status_code == 409
             assert replay_browser.get("/api/identity/me").status_code == 401
 
-    def test_failed_callback_marks_origin_handoff_failed(
+    def test_transient_bridge_failure_keeps_origin_handoff_pending(
         self,
         client: TestClient,
         monkeypatch: pytest.MonkeyPatch,
@@ -1270,7 +1270,43 @@ class TestIdentityCallbackFlow:
 
         assert callback.status_code == 502
         assert status.status_code == 200
+        assert status.json()["status"] == "pending"
+
+    def test_non_retryable_bridge_failure_marks_origin_handoff_failed(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        def reject_exchange(code: str, state: str):
+            raise main_module.HTTPException(
+                status_code=400,
+                detail="Authorization code exchange rejected",
+            )
+
+        monkeypatch.setattr(main_module, "_exchange_code_for_claims", reject_exchange)
+        start = client.post("/api/identity/login/start").json()
+
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "rejected-code", "state": start["state"]},
+        )
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+        replay = client.post(
+            "/api/identity/callback",
+            json={"code": "rejected-code", "state": start["state"]},
+        )
+
+        assert callback.status_code == 400
+        assert status.status_code == 200
         assert status.json()["status"] == "failed"
+        assert replay.status_code == 400
+        assert "already consumed" in replay.json()["detail"]
 
     def test_concurrent_callback_state_use_allows_only_one_success(self, monkeypatch: pytest.MonkeyPatch):
         from concurrent.futures import ThreadPoolExecutor
@@ -1293,20 +1329,44 @@ class TestIdentityCallbackFlow:
 
         assert sorted(statuses) == [200, 400]
 
-    def test_bridge_exchange_failure_consumes_state_and_retry_fails(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
-        def _raise_exchange_failure(code: str, state: str):
-            raise main_module.HTTPException(status_code=502, detail="WordPress bridge exchange failed")
+    def test_bridge_exchange_failure_keeps_state_retryable_then_blocks_replay(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        calls = {"count": 0}
 
-        monkeypatch.setattr(main_module, "_exchange_code_for_claims", _raise_exchange_failure)
+        def flaky_exchange(code: str, state: str):
+            calls["count"] += 1
+            if calls["count"] == 1:
+                raise main_module.HTTPException(
+                    status_code=502,
+                    detail="WordPress bridge exchange failed",
+                )
+            return self._stub_claims()
+
+        monkeypatch.setattr(main_module, "_exchange_code_for_claims", flaky_exchange)
 
         state = client.post("/api/identity/login/start").json()["state"]
 
-        failed = client.post("/api/identity/callback", json={"code": "bridge-code", "state": state})
+        failed = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": state},
+        )
         assert failed.status_code == 502
 
-        retried = client.post("/api/identity/callback", json={"code": "bridge-code", "state": state})
-        assert retried.status_code == 400
-        assert "already consumed" in retried.json()["detail"]
+        retried = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": state},
+        )
+        assert retried.status_code == 200
+
+        replay = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": state},
+        )
+        assert replay.status_code == 400
+        assert "already consumed" in replay.json()["detail"]
 
     def test_state_substitution_fails(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(main_module, "_exchange_code_for_claims", lambda code, state: self._stub_claims())
