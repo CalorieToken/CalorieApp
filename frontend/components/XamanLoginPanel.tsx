@@ -328,6 +328,9 @@ export async function prepareEmbeddedLogin(
   // A GET readiness probe reliably wakes a spun-down Render Free backend.
   // Sending login/start as the first request can be rejected by Render's edge
   // with 429 responses before the Python service has started.
+  if (signal.aborted) {
+    throw signal.reason ?? new Error("Login cancelled");
+  }
   onProgress("waking-up");
   await waitForBackendReady(BACKEND_BASE_URL, signal);
   return startLoginWithRetry(signal, onProgress, retryWindowMs);
