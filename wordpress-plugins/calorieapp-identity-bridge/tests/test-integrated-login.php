@@ -55,6 +55,8 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
 
             $this->assertSame('SignIn', $body['txjson']['TransactionType']);
             $this->assertArrayNotHasKey('return_url', $body['options']);
+            $this->assertMatchesRegularExpression('/^calapp_[a-f0-9]{32}$/', $this->identifier);
+            $this->assertLessThanOrEqual(40, strlen($this->identifier));
             $headers = array_change_key_case((array) ($request['headers'] ?? []), CASE_LOWER);
             $this->assertSame('test-xaman-key', (string) ($headers['x-api-key'] ?? ''));
             $this->assertSame('test-xaman-secret', (string) ($headers['x-api-secret'] ?? ''));

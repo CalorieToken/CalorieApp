@@ -39,6 +39,7 @@ Covered scenarios:
 31. wrong flow proof cannot finish sign-in
 32. completed WordPress flow issues a CalorieApp authorization code
 33. shortcode embeds the app without exposing secrets
+34. Xaman custom identifier stays within the 40-character API limit
 
 ## Files
 

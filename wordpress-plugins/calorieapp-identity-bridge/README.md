@@ -36,7 +36,9 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-Version 0.2.1 adds the WordPress-owned embedded login and shortcode. It avoids
+Version 0.2.2 keeps the Xaman custom payload identifier within Xaman's
+40-character API limit so sign-in requests can be created successfully.
+Version 0.2.1 added the WordPress-owned embedded login and shortcode. It avoids
 mobile default-browser callbacks by intentionally omitting Xaman return URLs;
 the user returns to the original page with Xaman's Close or Back action.
 Version 0.1.4 completed the narrowly scoped public-HTML footer compatibility
