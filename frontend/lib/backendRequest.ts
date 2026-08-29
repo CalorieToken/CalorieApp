@@ -1,6 +1,13 @@
 export const DEFAULT_BACKEND_TIMEOUT_MS = 20_000;
 export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 180_000;
 
+// Render may not wake one free service from another free service's proxy
+// request. In production this public URL lets the browser wake the backend
+// directly with the unauthenticated health probe; all application requests
+// continue to use the same-origin proxy.
+export const BACKEND_WAKE_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_WAKE_URL?.trim() || "/api/backend";
+
 const BACKEND_WARMUP_ATTEMPT_TIMEOUT_MS = 70_000;
 const BACKEND_WARMUP_INITIAL_RETRY_DELAY_MS = 5_000;
 const BACKEND_WARMUP_MAX_RETRY_DELAY_MS = 30_000;
