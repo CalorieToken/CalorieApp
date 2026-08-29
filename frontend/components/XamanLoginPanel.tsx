@@ -364,6 +364,7 @@ export function XamanLoginPanel() {
       }
       const data = (await response.json()) as MeResponse;
       setCurrentUser(data);
+      announceAuthState(true);
       return data;
     } catch {
       setCurrentUser(null);
@@ -418,8 +419,6 @@ export function XamanLoginPanel() {
         if (cancelled) {
           return;
         }
-
-        announceAuthState(true);
         setSuccessNotice(
           "Sign-in completed. Your session was restored in this browser."
         );
@@ -552,7 +551,6 @@ export function XamanLoginPanel() {
         }
 
         embeddedLoginStart.current = null;
-        announceAuthState(true);
         setError(null);
         setLoginStatus(null);
         setIsLoading(false);
@@ -747,8 +745,6 @@ export function XamanLoginPanel() {
       if (!restoredUser) {
         throw new Error("Restored session was unavailable");
       }
-
-      announceAuthState(true);
       setSuccessNotice(
         "Sign-in completed. This original CalorieApp tab is signed in too."
       );
