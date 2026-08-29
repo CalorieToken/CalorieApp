@@ -40,7 +40,8 @@ const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
 const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
 const EMBEDDED_LOGIN_START_RETRY_WINDOW_MS = 5 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
-const LOGIN_START_REQUEST_TIMEOUT_MS = 70_000;
+const LOGIN_START_RATE_LIMIT_DELAY_MS = 30_000;
+const LOGIN_START_REQUEST_TIMEOUT_MS = 75_000;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
 const WORDPRESS_APP_URL =
@@ -245,7 +246,7 @@ async function waitForOriginLogin(
 function retryAfterMilliseconds(response: Response): number {
   const value = response.headers.get("retry-after")?.trim();
   if (!value) {
-    return LOGIN_START_RETRY_DELAY_MS;
+    return LOGIN_START_RATE_LIMIT_DELAY_MS;
   }
 
   const seconds = Number(value);
@@ -255,7 +256,7 @@ function retryAfterMilliseconds(response: Response): number {
 
   const retryAt = Date.parse(value);
   if (Number.isNaN(retryAt)) {
-    return LOGIN_START_RETRY_DELAY_MS;
+    return LOGIN_START_RATE_LIMIT_DELAY_MS;
   }
 
   return Math.min(
@@ -264,34 +265,50 @@ function retryAfterMilliseconds(response: Response): number {
   );
 }
 
-async function startLoginWithRetry(
+type LoginStartRetryReason = "rate-limited" | "temporarily-unavailable";
+
+export async function startLoginWithRetry(
   signal: AbortSignal,
-  onRateLimited: () => void,
+  onRetry: (reason: LoginStartRetryReason) => void,
   retryWindowMs = LOGIN_START_RETRY_WINDOW_MS
 ): Promise<LoginStartResponse> {
   const deadline = Date.now() + retryWindowMs;
 
   while (Date.now() < deadline) {
-    const response = await backendRequest(
-      `${BACKEND_BASE_URL}/api/identity/login/start`,
-      { method: "POST", signal },
-      Math.max(
-        1,
-        Math.min(LOGIN_START_REQUEST_TIMEOUT_MS, deadline - Date.now())
-      )
-    );
+    let response: Response;
+    try {
+      response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/login/start`,
+        { method: "POST", signal },
+        Math.max(
+          1,
+          Math.min(LOGIN_START_REQUEST_TIMEOUT_MS, deadline - Date.now())
+        )
+      );
+    } catch (requestError) {
+      if (signal.aborted) {
+        throw signal.reason ?? requestError;
+      }
+      onRetry("temporarily-unavailable");
+      await delay(
+        Math.min(LOGIN_START_RETRY_DELAY_MS, Math.max(0, deadline - Date.now())),
+        signal
+      );
+      continue;
+    }
 
     if (response.ok) {
       return (await response.json()) as LoginStartResponse;
     }
 
     if (response.status === 429) {
-      onRateLimited();
+      onRetry("rate-limited");
       await delay(retryAfterMilliseconds(response), signal);
       continue;
     }
 
     if ([502, 503, 504].includes(response.status)) {
+      onRetry("temporarily-unavailable");
       await delay(LOGIN_START_RETRY_DELAY_MS, signal);
       continue;
     }
@@ -570,6 +587,7 @@ export function XamanLoginPanel() {
     setIsLoading(true);
 
     if (isEmbedded && parentOrigin.current) {
+      const embeddedParentOrigin = parentOrigin.current;
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
       embeddedLoginStart.current = null;
@@ -579,15 +597,25 @@ export function XamanLoginPanel() {
 
       window.parent.postMessage(
         { type: "calorieapp:login:start", requestId },
-        parentOrigin.current
+        embeddedParentOrigin
       );
 
       try {
         const data = await startLoginWithRetry(
           controller.signal,
-          () => {
-            setLoginStatus(
-              "Xaman can continue while CalorieApp waits safely for its service."
+          (reason) => {
+            const message =
+              reason === "rate-limited"
+                ? "Xaman is ready. CalorieApp is temporarily busy and will retry automatically. Keep this page open."
+                : "Xaman is ready. CalorieApp is still starting and will retry automatically. Keep this page open.";
+            setLoginStatus(message);
+            window.parent.postMessage(
+              {
+                type: "calorieapp:login:progress",
+                requestId,
+                message,
+              },
+              embeddedParentOrigin
             );
           },
           EMBEDDED_LOGIN_START_RETRY_WINDOW_MS
@@ -608,7 +636,7 @@ export function XamanLoginPanel() {
             requestId,
             state: data.state,
           },
-          parentOrigin.current
+          embeddedParentOrigin
         );
       } catch (requestError) {
         if (controller.signal.aborted) {
@@ -627,7 +655,7 @@ export function XamanLoginPanel() {
             requestId,
             message,
           },
-          parentOrigin.current
+          embeddedParentOrigin
         );
       }
       return;

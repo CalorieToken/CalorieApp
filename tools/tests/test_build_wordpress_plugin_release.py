@@ -57,6 +57,21 @@ class WordPressPluginReleaseTests(unittest.TestCase):
         self.assertIn("connectWebsocket(xamanLaunch.websocketUrl);", gate)
         self.assertNotIn("openLink.hidden = false;", outside_gate)
 
+    def test_embed_checks_signature_only_after_xaman_was_launched(self) -> None:
+        source = (
+            release.PLUGIN_DIR / "assets" / "calorieapp-embed.js"
+        ).read_text(encoding="utf-8")
+        return_check_start = source.index("function checkAfterReturn()")
+        return_check_end = source.index(
+            'document.addEventListener("visibilitychange"', return_check_start
+        )
+        return_check = source[return_check_start:return_check_end]
+
+        self.assertIn("xamanLaunchStarted", return_check)
+        self.assertIn("!flowFailed", return_check)
+        self.assertIn("markXamanStarted();", source)
+        self.assertIn("scheduleFinishRetry(5000);", source)
+
 
 if __name__ == "__main__":
     unittest.main()
