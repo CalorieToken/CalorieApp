@@ -736,7 +736,8 @@ export function FoodSearchPlaceholder() {
           </p>
           <p className="mt-2 text-xs leading-relaxed">
             CalorieApp starts Xaman from the current tab. Your phone may return
-            through its configured default browser after signing.
+            through its configured default browser after signing; keep the
+            original tab open so it can finish signing in automatically.
           </p>
         </div>
       ) : logError ? (

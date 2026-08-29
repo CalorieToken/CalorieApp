@@ -354,6 +354,7 @@ export function XamanLoginPanel() {
   async function handleLogin() {
     const controller = new AbortController();
     let startupNoticeTimer: number | null = null;
+    let xamanNavigationStarted = false;
     loginAbortController.current?.abort();
     loginAbortController.current = controller;
 
@@ -398,7 +399,35 @@ export function XamanLoginPanel() {
 
       storePendingLogin(data);
       setLoginStatus("Opening Xaman from this tab...");
+      xamanNavigationStarted = true;
       window.location.assign(data.wordpress_signin_url);
+
+      // Some mobile browsers keep this document alive while Xaman opens and
+      // later return the callback through the configured default browser. Keep
+      // claiming the secure handoff here so this initiating tab signs in as
+      // soon as the callback finishes, without requiring a refresh.
+      setLoginStatus(
+        "Waiting for Xaman sign-in to finish. This tab will sign in automatically."
+      );
+      await waitForOriginLogin(
+        data.state,
+        data.browser_handoff_token,
+        data.expires_at,
+        controller.signal
+      );
+      clearPendingLogin();
+
+      const restoredUser = await refreshCurrentUser();
+      if (!restoredUser) {
+        throw new Error("Restored session was unavailable");
+      }
+
+      announceAuthState(true);
+      setSuccessNotice(
+        "Sign-in completed. This original CalorieApp tab is signed in too."
+      );
+      setLoginStatus(null);
+      setIsLoading(false);
     } catch (requestError) {
       if (controller.signal.aborted) {
         return;
@@ -408,7 +437,9 @@ export function XamanLoginPanel() {
       setError(
         backendUnavailableMessage(
           requestError,
-          "Xaman could not be opened from this tab. Please try again."
+          xamanNavigationStarted
+            ? "Xaman sign-in did not finish in this tab. Please try again."
+            : "Xaman could not be opened from this tab. Please try again."
         )
       );
       setLoginStatus(null);
@@ -470,7 +501,8 @@ export function XamanLoginPanel() {
         opens Xaman from this tab and does not create an extra tab. After
         signing, your phone may still return through its configured default
         browser because mobile systems do not let websites select the previous
-        browser tab.
+        browser tab. Keep this tab open; it will sign in automatically after
+        the Xaman callback finishes.
       </div>
 
       {currentUser ? (

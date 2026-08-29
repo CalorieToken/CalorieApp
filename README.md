@@ -120,8 +120,9 @@ documented by Xaman in its
 [Payload Return URL guidance](https://docs.xaman.dev/concepts/payloads-sign-requests/payload-return-url).
 The callback browser receives its normal session. A short-lived, one-time
 browser handoff is kept only in the initiating tab's session storage so that
-the session can be securely restored if the user returns to that browsing
-context. Only hashes of the handoff proof are stored server-side, the proof is
+the initiating tab can immediately poll for callback completion and securely
+restore its session while it remains open or when that browsing context is
+resumed. Only hashes of the handoff proof are stored server-side, the proof is
 never sent through WordPress/Xaman URLs, and it cannot be claimed by a third
 browser after use.
 
