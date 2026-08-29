@@ -1272,6 +1272,42 @@ class TestIdentityCallbackFlow:
         assert status.status_code == 200
         assert status.json()["status"] == "pending"
 
+    def test_non_retryable_bridge_failure_marks_origin_handoff_failed(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        def reject_exchange(code: str, state: str):
+            raise main_module.HTTPException(
+                status_code=400,
+                detail="Authorization code exchange rejected",
+            )
+
+        monkeypatch.setattr(main_module, "_exchange_code_for_claims", reject_exchange)
+        start = client.post("/api/identity/login/start").json()
+
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "rejected-code", "state": start["state"]},
+        )
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+        replay = client.post(
+            "/api/identity/callback",
+            json={"code": "rejected-code", "state": start["state"]},
+        )
+
+        assert callback.status_code == 400
+        assert status.status_code == 200
+        assert status.json()["status"] == "failed"
+        assert replay.status_code == 400
+        assert "already consumed" in replay.json()["detail"]
+
     def test_concurrent_callback_state_use_allows_only_one_success(self, monkeypatch: pytest.MonkeyPatch):
         from concurrent.futures import ThreadPoolExecutor
 
