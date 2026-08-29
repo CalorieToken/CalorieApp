@@ -156,8 +156,14 @@ function AuthCallbackContent() {
           Returning to CalorieApp
         </h1>
 
+        <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+          Phone browser notice: Xaman normally opens this return page in your
+          configured default browser, possibly in a new tab. Your original
+          CalorieApp tab can remain open and will sign in automatically too.
+        </p>
+
         <p
-          className="mt-3 text-sm text-brand-secondary/90"
+          className="mt-4 text-sm text-brand-secondary/90"
           role="status"
           aria-live="polite"
         >
@@ -192,8 +198,14 @@ export default function AuthCallbackPage() {
               CalorieApp Sign-In
             </h1>
 
+            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+              Phone browser notice: Xaman normally opens this return page in
+              your configured default browser, possibly in a new tab. Keep the
+              original CalorieApp tab open.
+            </p>
+
             <p
-              className="mt-3 text-sm text-brand-secondary/90"
+              className="mt-4 text-sm text-brand-secondary/90"
               role="status"
               aria-live="polite"
             >
