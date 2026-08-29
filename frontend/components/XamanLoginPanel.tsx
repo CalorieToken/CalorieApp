@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { announceAuthState } from "@/components/authEvents";
 import {
+  BACKEND_WAKE_BASE_URL,
   backendRequest,
   backendUnavailableMessage,
   BackendRequestTimeoutError,
@@ -332,7 +333,7 @@ export async function prepareEmbeddedLogin(
     throw signal.reason ?? new Error("Login cancelled");
   }
   onProgress("waking-up");
-  await waitForBackendReady(BACKEND_BASE_URL, signal);
+  await waitForBackendReady(BACKEND_WAKE_BASE_URL, signal);
   return startLoginWithRetry(signal, onProgress, retryWindowMs);
 }
 
@@ -699,10 +700,10 @@ export function XamanLoginPanel() {
         }
       }, 8_000);
 
-      // Keep the mobile browser on the CalorieApp origin while Render wakes.
-      // A direct cross-origin health request can be blocked by browser privacy
-      // controls before the WordPress/Xaman navigation has even started.
-      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      // Wake Render directly from the browser. Requests relayed from the
+      // frontend Render service can be rate-limited without starting the
+      // sleeping backend; the health probe is public and sends no credentials.
+      await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
       window.clearTimeout(startupNoticeTimer);
       startupNoticeTimer = null;
       setLoginStatus("Service ready. Opening Xaman...");
