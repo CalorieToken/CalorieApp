@@ -172,6 +172,9 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
+      - name: Test embedded WordPress login readiness
+        run: node --test tools/tests/calorieapp_embed_readiness.test.mjs
+
       - name: Build frontend
         working-directory: frontend
         env:

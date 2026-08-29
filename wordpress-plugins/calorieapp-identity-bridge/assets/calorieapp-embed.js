@@ -73,6 +73,8 @@
     var requestId = "";
     var flow = null;
     var backendState = "";
+    var xamanLaunch = null;
+    var xamanLaunchVisible = false;
     var wordpressAuthenticated = false;
     var websocket = null;
     var finishInFlight = false;
@@ -138,6 +140,8 @@
       authorizeRetryTimer = null;
       flow = null;
       backendState = "";
+      xamanLaunch = null;
+      xamanLaunchVisible = false;
       wordpressAuthenticated = false;
       finishInFlight = false;
       authorizeInFlight = false;
@@ -191,6 +195,31 @@
       };
     }
 
+    function revealXamanWhenReady() {
+      if (!flow || !xamanLaunch || xamanLaunchVisible) {
+        return;
+      }
+
+      if (!backendState) {
+        setStatus(
+          "Xaman is ready. Starting CalorieApp securely before opening Xaman..."
+        );
+        return;
+      }
+
+      qrImage.src = xamanLaunch.qrUrl;
+      qrImage.hidden = false;
+      openLink.href = xamanLaunch.nextUrl;
+      openLink.target = "_self";
+      openLink.hidden = false;
+      retryButton.hidden = true;
+      xamanLaunchVisible = true;
+      setStatus(
+        "Open Xaman on this phone, or scan the QR code from another device."
+      );
+      connectWebsocket(xamanLaunch.websocketUrl);
+    }
+
     function startLogin(message) {
       lastStartMessage = message;
       requestId = message.requestId;
@@ -214,15 +243,12 @@
           flowId: payload.flow_id,
           flowProof: payload.flow_proof,
         };
-        qrImage.src = payload.qr_png_url;
-        qrImage.hidden = false;
-        openLink.href = payload.next_url;
-        openLink.target = "_self";
-        openLink.hidden = false;
-        setStatus(
-          "Open Xaman on this phone, or scan the QR code from another device."
-        );
-        connectWebsocket(payload.websocket_url);
+        xamanLaunch = {
+          nextUrl: payload.next_url,
+          qrUrl: payload.qr_png_url,
+          websocketUrl: payload.websocket_url,
+        };
+        revealXamanWhenReady();
       }).catch(function (error) {
         fail(error.message || "Xaman sign-in could not be prepared.");
       });
@@ -375,6 +401,10 @@
           return;
         }
         backendState = message.state;
+        if (!flow || !xamanLaunch) {
+          setStatus("CalorieApp is ready. Preparing the secure Xaman request...");
+        }
+        revealXamanWhenReady();
         maybeAuthorizeCalorieApp();
         return;
       }

@@ -43,6 +43,20 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "plugin header declares"):
                 release.build(Path(output), "9.9.9")
 
+    def test_embed_waits_for_calorieapp_state_before_exposing_xaman(self) -> None:
+        source = (
+            release.PLUGIN_DIR / "assets" / "calorieapp-embed.js"
+        ).read_text(encoding="utf-8")
+        gate_start = source.index("function revealXamanWhenReady()")
+        gate_end = source.index("function startLogin(message)", gate_start)
+        gate = source[gate_start:gate_end]
+        outside_gate = source[:gate_start] + source[gate_end:]
+
+        self.assertIn("if (!backendState)", gate)
+        self.assertIn("openLink.hidden = false;", gate)
+        self.assertIn("connectWebsocket(xamanLaunch.websocketUrl);", gate)
+        self.assertNotIn("openLink.hidden = false;", outside_gate)
+
 
 if __name__ == "__main__":
     unittest.main()
