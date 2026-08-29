@@ -173,7 +173,10 @@ jobs:
         run: npm run lint
 
       - name: Test embedded WordPress login readiness
-        run: node --test tools/tests/calorieapp_embed_readiness.test.mjs
+        run: >-
+          node --test
+          tools/tests/calorieapp_embed_readiness.test.mjs
+          tools/tests/xaman_login_start_retry.test.mjs
 
       - name: Build frontend
         working-directory: frontend

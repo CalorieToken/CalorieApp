@@ -36,6 +36,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.2.4 only checks a Xaman signature after the user actually opens
+Xaman, keeps retrying pending signature checks after the user returns, and
+shows CalorieApp startup retry progress without disguising backend errors as a
+pending signature.
 Version 0.2.3 waits for the CalorieApp backend state before exposing the Xaman
 link or QR code. This prevents mobile browsers from being backgrounded during
 a Render cold start and makes the joint WordPress/CalorieApp sign-in ready

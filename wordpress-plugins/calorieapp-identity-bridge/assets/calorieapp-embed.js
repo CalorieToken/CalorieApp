@@ -75,9 +75,12 @@
     var backendState = "";
     var xamanLaunch = null;
     var xamanLaunchVisible = false;
+    var xamanLaunchStarted = false;
+    var flowFailed = false;
     var wordpressAuthenticated = false;
     var websocket = null;
     var finishInFlight = false;
+    var finishRetryTimer = null;
     var authorizeInFlight = false;
     var authorizeRetryTimer = null;
     var lastStartMessage = null;
@@ -134,14 +137,20 @@
 
     function resetFlow() {
       clearSocket();
+      if (finishRetryTimer !== null) {
+        window.clearTimeout(finishRetryTimer);
+      }
       if (authorizeRetryTimer !== null) {
         window.clearTimeout(authorizeRetryTimer);
       }
+      finishRetryTimer = null;
       authorizeRetryTimer = null;
       flow = null;
       backendState = "";
       xamanLaunch = null;
       xamanLaunchVisible = false;
+      xamanLaunchStarted = false;
+      flowFailed = false;
       wordpressAuthenticated = false;
       finishInFlight = false;
       authorizeInFlight = false;
@@ -153,8 +162,26 @@
     }
 
     function fail(message) {
+      flowFailed = true;
+      clearSocket();
+      if (finishRetryTimer !== null) {
+        window.clearTimeout(finishRetryTimer);
+        finishRetryTimer = null;
+      }
+      if (authorizeRetryTimer !== null) {
+        window.clearTimeout(authorizeRetryTimer);
+        authorizeRetryTimer = null;
+      }
       setStatus(message, true);
       retryButton.hidden = false;
+    }
+
+    function markXamanStarted() {
+      if (flowFailed) {
+        return;
+      }
+      xamanLaunchStarted = true;
+      retryButton.hidden = true;
     }
 
     function connectWebsocket(url) {
@@ -176,9 +203,11 @@
         }
 
         if (payload.opened === true) {
+          markXamanStarted();
           setStatus("Xaman is open. Sign the request, then return to this page.");
         }
         if (payload.pre_signed === true) {
+          markXamanStarted();
           setStatus("Signature in progress. Keep this page open.");
         }
         if (payload.expired === true) {
@@ -186,6 +215,7 @@
         }
         if (typeof payload.signed === "boolean") {
           if (payload.signed) {
+            markXamanStarted();
             setStatus("Signature received. Signing in WordPress...");
             finishWordPress();
           } else {
@@ -196,7 +226,7 @@
     }
 
     function revealXamanWhenReady() {
-      if (!flow || !xamanLaunch || xamanLaunchVisible) {
+      if (flowFailed || !flow || !xamanLaunch || xamanLaunchVisible) {
         return;
       }
 
@@ -255,7 +285,13 @@
     }
 
     function finishWordPress() {
-      if (!flow || finishInFlight || wordpressAuthenticated) {
+      if (
+        flowFailed ||
+        !flow ||
+        !xamanLaunchStarted ||
+        finishInFlight ||
+        wordpressAuthenticated
+      ) {
         return;
       }
 
@@ -267,6 +303,7 @@
         finishInFlight = false;
         if (result.response.status === 202 || result.payload.status === "pending") {
           setStatus("Waiting for the Xaman signature. Keep this page open.");
+          scheduleFinishRetry(5000);
           return;
         }
 
@@ -275,6 +312,10 @@
         }
 
         wordpressAuthenticated = true;
+        if (finishRetryTimer !== null) {
+          window.clearTimeout(finishRetryTimer);
+          finishRetryTimer = null;
+        }
         clearSocket();
         setStatus(
           backendState
@@ -286,11 +327,24 @@
         finishInFlight = false;
         if (error.status === 429 || error.status === 502 || error.status === 503) {
           setStatus("Xaman status is temporarily unavailable. Retrying safely...");
-          window.setTimeout(finishWordPress, error.status === 429 ? 15000 : 5000);
+          scheduleFinishRetry(error.status === 429 ? 15000 : 5000);
           return;
         }
         fail(error.message || "WordPress sign-in could not be completed.");
       });
+    }
+
+    function scheduleFinishRetry(delay) {
+      if (flowFailed || wordpressAuthenticated || !xamanLaunchStarted) {
+        return;
+      }
+      if (finishRetryTimer !== null) {
+        window.clearTimeout(finishRetryTimer);
+      }
+      finishRetryTimer = window.setTimeout(function () {
+        finishRetryTimer = null;
+        finishWordPress();
+      }, delay);
     }
 
     function scheduleAuthorizeRetry(delay) {
@@ -352,6 +406,7 @@
     }
 
     openLink.addEventListener("click", function () {
+      markXamanStarted();
       setStatus(
         "Opening Xaman. After signing, use Close or Back to return to this same page."
       );
@@ -409,7 +464,22 @@
         return;
       }
 
+      if (message.type === MESSAGE_PREFIX + "login:progress") {
+        if (!flowFailed && typeof message.message === "string") {
+          setStatus(message.message);
+        }
+        return;
+      }
+
       if (message.type === MESSAGE_PREFIX + "login:complete") {
+        if (finishRetryTimer !== null) {
+          window.clearTimeout(finishRetryTimer);
+          finishRetryTimer = null;
+        }
+        if (authorizeRetryTimer !== null) {
+          window.clearTimeout(authorizeRetryTimer);
+          authorizeRetryTimer = null;
+        }
         setStatus("Signed in to WordPress and CalorieApp in this browser.");
         window.setTimeout(function () {
           modal.hidden = true;
@@ -440,7 +510,13 @@
     initializeBridge();
 
     function checkAfterReturn() {
-      if (flow && !wordpressAuthenticated && !document.hidden) {
+      if (
+        flow &&
+        xamanLaunchStarted &&
+        !flowFailed &&
+        !wordpressAuthenticated &&
+        !document.hidden
+      ) {
         finishWordPress();
       }
     }

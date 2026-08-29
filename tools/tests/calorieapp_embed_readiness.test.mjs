@@ -20,6 +20,9 @@ function element(hidden = true) {
     addEventListener(type, listener) {
       listeners[type] = listener;
     },
+    dispatch(type, event = {}) {
+      listeners[type]?.(event);
+    },
     removeAttribute(name) {
       this[name] = "";
     },
@@ -74,8 +77,10 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     addEventListener(type, listener) {
       windowListeners[type] = listener;
     },
-    clearTimeout,
-    setTimeout,
+    clearTimeout() {},
+    setTimeout() {
+      return 1;
+    },
   };
   let websocketCount = 0;
   class FakeWebSocket {
@@ -84,17 +89,31 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     }
     close() {}
   }
-  const fetch = async () => ({
-    ok: true,
-    status: 201,
-    json: async () => ({
-      flow_id: "flow-id",
-      flow_proof: "flow-proof",
-      next_url: "https://xumm.app/sign/payload",
-      qr_png_url: "https://xumm.app/sign/payload.png",
-      websocket_url: "wss://xumm.app/sign/payload",
-    }),
-  });
+  const fetchCalls = [];
+  const fetch = async (url) => {
+    fetchCalls.push(url);
+    if (url === "/start") {
+      return {
+        ok: true,
+        status: 201,
+        json: async () => ({
+          flow_id: "flow-id",
+          flow_proof: "flow-proof",
+          next_url: "https://xumm.app/sign/payload",
+          qr_png_url: "https://xumm.app/sign/payload.png",
+          websocket_url: "wss://xumm.app/sign/payload",
+        }),
+      };
+    }
+    if (url === "/finish") {
+      return {
+        ok: true,
+        status: 202,
+        json: async () => ({ status: "pending" }),
+      };
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  };
 
   vm.runInNewContext(source, {
     Boolean,
@@ -121,6 +140,9 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   assert.equal(qrImage.hidden, true);
   assert.equal(websocketCount, 0);
   assert.match(status.textContent, /Starting CalorieApp securely/);
+  windowListeners.focus();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start"]);
 
   windowListeners.message({
     data: {
@@ -136,4 +158,31 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   assert.equal(qrImage.hidden, false);
   assert.equal(openLink.href, "https://xumm.app/sign/payload");
   assert.equal(websocketCount, 1);
+
+  windowListeners.focus();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start"]);
+
+  openLink.dispatch("click");
+  windowListeners.focus();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start", "/finish"]);
+  assert.match(status.textContent, /Waiting for the Xaman signature/);
+
+  windowListeners.message({
+    data: {
+      type: "calorieapp:login:backend-error",
+      requestId,
+      message: "CalorieApp startup failed",
+    },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  assert.equal(retryButton.hidden, false);
+  assert.equal(status.textContent, "CalorieApp startup failed");
+
+  windowListeners.focus();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start", "/finish"]);
+  assert.equal(status.textContent, "CalorieApp startup failed");
 });
