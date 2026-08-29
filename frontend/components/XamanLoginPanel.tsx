@@ -266,6 +266,7 @@ function retryAfterMilliseconds(response: Response): number {
 }
 
 type LoginStartRetryReason = "rate-limited" | "temporarily-unavailable";
+type EmbeddedLoginPreparationPhase = LoginStartRetryReason | "waking-up";
 
 export async function startLoginWithRetry(
   signal: AbortSignal,
@@ -317,6 +318,22 @@ export async function startLoginWithRetry(
   }
 
   throw new BackendRequestTimeoutError();
+}
+
+export async function prepareEmbeddedLogin(
+  signal: AbortSignal,
+  onProgress: (phase: EmbeddedLoginPreparationPhase) => void,
+  retryWindowMs = EMBEDDED_LOGIN_START_RETRY_WINDOW_MS
+): Promise<LoginStartResponse> {
+  // A GET readiness probe reliably wakes a spun-down Render Free backend.
+  // Sending login/start as the first request can be rejected by Render's edge
+  // with 429 responses before the Python service has started.
+  if (signal.aborted) {
+    throw signal.reason ?? new Error("Login cancelled");
+  }
+  onProgress("waking-up");
+  await waitForBackendReady(BACKEND_BASE_URL, signal);
+  return startLoginWithRetry(signal, onProgress, retryWindowMs);
 }
 
 export function XamanLoginPanel() {
@@ -601,11 +618,13 @@ export function XamanLoginPanel() {
       );
 
       try {
-        const data = await startLoginWithRetry(
+        const data = await prepareEmbeddedLogin(
           controller.signal,
           (reason) => {
             const message =
-              reason === "rate-limited"
+              reason === "waking-up"
+                ? "Xaman is ready. Starting the secure CalorieApp service. This can take about a minute. Keep this page open."
+                : reason === "rate-limited"
                 ? "Xaman is ready. CalorieApp is temporarily busy and will retry automatically. Keep this page open."
                 : "Xaman is ready. CalorieApp is still starting and will retry automatically. Keep this page open.";
             setLoginStatus(message);
