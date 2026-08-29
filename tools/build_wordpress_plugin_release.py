@@ -24,7 +24,7 @@ RELEASE_FILES = (
     "SECURITY.md",
     f"{PLUGIN_SLUG}.php",
 )
-RELEASE_GLOBS = ("includes/*.php",)
+RELEASE_GLOBS = ("includes/*.php", "assets/*.css", "assets/*.js")
 FORBIDDEN_SUFFIXES = (
     ".bak",
     ".db",

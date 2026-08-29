@@ -38,9 +38,61 @@ const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
 const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
 const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
 const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
+const EMBEDDED_LOGIN_START_RETRY_WINDOW_MS = 5 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
+const LOGIN_START_REQUEST_TIMEOUT_MS = 70_000;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
+const WORDPRESS_APP_URL =
+  process.env.NEXT_PUBLIC_WORDPRESS_APP_URL?.trim() ||
+  "https://calorietoken.net/calorieapp/";
+
+type ParentBridgeMessage = {
+  type?: unknown;
+  requestId?: unknown;
+  message?: unknown;
+  code?: unknown;
+  state?: unknown;
+};
+
+function isAllowedParentOrigin(value: string): boolean {
+  try {
+    const origin = new URL(value);
+    const isProduction =
+      origin.protocol === "https:" &&
+      ["calorietoken.net", "www.calorietoken.net"].includes(origin.hostname);
+    const isLocal =
+      ["http:", "https:"].includes(origin.protocol) &&
+      ["localhost", "127.0.0.1"].includes(origin.hostname);
+
+    return isProduction || isLocal;
+  } catch {
+    return false;
+  }
+}
+
+function trustedParentOrigin(): string | null {
+  if (window.parent === window || !document.referrer) {
+    return null;
+  }
+
+  try {
+    const origin = new URL(document.referrer);
+    return isAllowedParentOrigin(origin.origin) ? origin.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+function createBrowserRequestId(): string {
+  if (typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+  return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
+}
 
 function isAllowedWordPressSigninUrl(value: string): boolean {
   try {
@@ -214,14 +266,19 @@ function retryAfterMilliseconds(response: Response): number {
 
 async function startLoginWithRetry(
   signal: AbortSignal,
-  onRateLimited: () => void
+  onRateLimited: () => void,
+  retryWindowMs = LOGIN_START_RETRY_WINDOW_MS
 ): Promise<LoginStartResponse> {
-  const deadline = Date.now() + LOGIN_START_RETRY_WINDOW_MS;
+  const deadline = Date.now() + retryWindowMs;
 
   while (Date.now() < deadline) {
     const response = await backendRequest(
       `${BACKEND_BASE_URL}/api/identity/login/start`,
-      { method: "POST", signal }
+      { method: "POST", signal },
+      Math.max(
+        1,
+        Math.min(LOGIN_START_REQUEST_TIMEOUT_MS, deadline - Date.now())
+      )
     );
 
     if (response.ok) {
@@ -252,7 +309,11 @@ export function XamanLoginPanel() {
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const [isEmbedded, setIsEmbedded] = useState(false);
   const loginAbortController = useRef<AbortController | null>(null);
+  const parentOrigin = useRef<string | null>(null);
+  const embeddedRequestId = useRef("");
+  const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
 
   const refreshCurrentUser = useCallback(async (): Promise<MeResponse | null> => {
     try {
@@ -351,6 +412,152 @@ export function XamanLoginPanel() {
     };
   }, [refreshCurrentUser]);
 
+  useEffect(() => {
+    let origin = trustedParentOrigin();
+    parentOrigin.current = origin;
+    setIsEmbedded(origin !== null);
+
+    const postHeight = () => {
+      if (!origin) {
+        return;
+      }
+      const height = Math.max(
+        document.documentElement.scrollHeight,
+        document.body?.scrollHeight ?? 0
+      );
+      window.parent.postMessage(
+        {
+          type: "calorieapp:frame:height",
+          requestId: embeddedRequestId.current,
+          height,
+        },
+        origin
+      );
+    };
+
+    const resizeObserver =
+      typeof ResizeObserver === "function" ? new ResizeObserver(postHeight) : null;
+    resizeObserver?.observe(document.documentElement);
+    postHeight();
+
+    const handleParentMessage = async (event: MessageEvent<ParentBridgeMessage>) => {
+      if (
+        event.source === window.parent &&
+        event.data?.type === "calorieapp:bridge:init" &&
+        isAllowedParentOrigin(event.origin)
+      ) {
+        origin = event.origin;
+        parentOrigin.current = event.origin;
+        setIsEmbedded(true);
+        postHeight();
+        return;
+      }
+
+      if (
+        !origin ||
+        event.origin !== origin ||
+        event.source !== window.parent ||
+        !event.data ||
+        event.data.requestId !== embeddedRequestId.current
+      ) {
+        return;
+      }
+
+      if (event.data.type === "calorieapp:login:progress") {
+        if (typeof event.data.message === "string") {
+          setLoginStatus(event.data.message);
+        }
+        return;
+      }
+
+      if (event.data.type === "calorieapp:login:error") {
+        if (typeof event.data.message === "string") {
+          setError(event.data.message);
+          setLoginStatus(null);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      if (event.data.type !== "calorieapp:login:authorization") {
+        return;
+      }
+
+      const pending = embeddedLoginStart.current;
+      if (
+        !pending ||
+        typeof event.data.code !== "string" ||
+        typeof event.data.state !== "string" ||
+        event.data.state !== pending.state
+      ) {
+        setError("The WordPress sign-in response did not match this CalorieApp request.");
+        setLoginStatus(null);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setLoginStatus("Activating CalorieApp in this browser...");
+        const response = await backendRequest(
+          `${BACKEND_BASE_URL}/api/identity/callback`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: event.data.code, state: event.data.state }),
+          },
+          70_000
+        );
+        if (!response.ok) {
+          throw new Error(`Callback failed with ${response.status}`);
+        }
+
+        const restoredUser = await refreshCurrentUser();
+        if (!restoredUser) {
+          throw new Error("CalorieApp session was unavailable");
+        }
+
+        embeddedLoginStart.current = null;
+        announceAuthState(true);
+        setError(null);
+        setLoginStatus(null);
+        setIsLoading(false);
+        setSuccessNotice(
+          "Signed in to WordPress and CalorieApp in this browser."
+        );
+        window.parent.postMessage(
+          {
+            type: "calorieapp:login:complete",
+            requestId: embeddedRequestId.current,
+          },
+          origin
+        );
+      } catch (requestError) {
+        const message = backendUnavailableMessage(
+          requestError,
+          "WordPress is signed in, but CalorieApp could not finish. Please try again."
+        );
+        setError(message);
+        setLoginStatus(null);
+        setIsLoading(false);
+        window.parent.postMessage(
+          {
+            type: "calorieapp:login:backend-error",
+            requestId: embeddedRequestId.current,
+            message,
+          },
+          origin
+        );
+      }
+    };
+
+    window.addEventListener("message", handleParentMessage);
+    window.parent.postMessage({ type: "calorieapp:bridge:ready" }, "*");
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("message", handleParentMessage);
+    };
+  }, [refreshCurrentUser]);
+
   async function handleLogin() {
     const controller = new AbortController();
     let startupNoticeTimer: number | null = null;
@@ -361,6 +568,77 @@ export function XamanLoginPanel() {
     setError(null);
     setSuccessNotice(null);
     setIsLoading(true);
+
+    if (isEmbedded && parentOrigin.current) {
+      const requestId = createBrowserRequestId();
+      embeddedRequestId.current = requestId;
+      embeddedLoginStart.current = null;
+      setLoginStatus(
+        "Preparing Xaman and starting CalorieApp securely in the background..."
+      );
+
+      window.parent.postMessage(
+        { type: "calorieapp:login:start", requestId },
+        parentOrigin.current
+      );
+
+      try {
+        const data = await startLoginWithRetry(
+          controller.signal,
+          () => {
+            setLoginStatus(
+              "Xaman can continue while CalorieApp waits safely for its service."
+            );
+          },
+          EMBEDDED_LOGIN_START_RETRY_WINDOW_MS
+        );
+        if (
+          data.state.length < 32 ||
+          data.browser_handoff_token.length < 32 ||
+          !Number.isFinite(Date.parse(data.expires_at)) ||
+          Date.parse(data.expires_at) <= Date.now()
+        ) {
+          throw new Error("Missing CalorieApp login state");
+        }
+
+        embeddedLoginStart.current = data;
+        window.parent.postMessage(
+          {
+            type: "calorieapp:login:state",
+            requestId,
+            state: data.state,
+          },
+          parentOrigin.current
+        );
+      } catch (requestError) {
+        if (controller.signal.aborted) {
+          return;
+        }
+        const message = backendUnavailableMessage(
+          requestError,
+          "CalorieApp could not prepare its session. WordPress sign-in was not changed."
+        );
+        setError(message);
+        setLoginStatus(null);
+        setIsLoading(false);
+        window.parent.postMessage(
+          {
+            type: "calorieapp:login:backend-error",
+            requestId,
+            message,
+          },
+          parentOrigin.current
+        );
+      }
+      return;
+    }
+
+    if (!isEmbedded) {
+      setLoginStatus("Opening the secure CalorieApp page on CalorieToken.net...");
+      window.location.assign(WORDPRESS_APP_URL);
+      return;
+    }
+
     setLoginStatus(
       "Preparing Xaman in this tab. Please wait without refreshing."
     );
@@ -497,12 +775,10 @@ export function XamanLoginPanel() {
         role="note"
         className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
       >
-        <span className="font-semibold">Phone browser notice:</span> CalorieApp
-        opens Xaman from this tab and does not create an extra tab. After
-        signing, your phone may still return through its configured default
-        browser because mobile systems do not let websites select the previous
-        browser tab. Keep this tab open; it will sign in automatically after
-        the Xaman callback finishes.
+        <span className="font-semibold">Phone browser notice:</span>{" "}
+        {isEmbedded
+          ? "Xaman opens without a browser return link. After signing, use Close or Back to return to this same page; WordPress and CalorieApp will then sign in together."
+          : "Secure Xaman sign-in is completed on CalorieToken.net so WordPress and CalorieApp can sign in together in the same browser."}
       </div>
 
       {currentUser ? (
@@ -526,7 +802,11 @@ export function XamanLoginPanel() {
           disabled={isLoading}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLoading ? "Preparing Xaman..." : "Continue in Xaman"}
+          {isLoading
+            ? "Preparing Xaman..."
+            : isEmbedded
+              ? "Continue in Xaman"
+              : "Open secure sign-in"}
         </button>
       )}
 

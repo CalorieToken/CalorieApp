@@ -735,9 +735,9 @@ export function FoodSearchPlaceholder() {
             Food search is available to everyone. Sign in with Xaman to save and manage items.
           </p>
           <p className="mt-2 text-xs leading-relaxed">
-            CalorieApp starts Xaman from the current tab. Your phone may return
-            through its configured default browser after signing; keep the
-            original tab open so it can finish signing in automatically.
+            On the CalorieToken.net page, Xaman opens without a browser return
+            link. After signing, use Close or Back to return to that same page;
+            WordPress and CalorieApp will finish signing in together.
           </p>
         </div>
       ) : logError ? (

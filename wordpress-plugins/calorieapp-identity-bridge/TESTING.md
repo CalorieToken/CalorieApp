@@ -31,6 +31,14 @@ Covered scenarios:
 23. known obsolete cached legal footer variants are normalized in rendered HTML
 24. the current footer remains unchanged when the filter runs repeatedly
 25. unrelated rendered HTML remains unchanged
+26. embedded login start rejects a foreign Origin
+27. Xaman SignIn payload contains no browser return URL
+28. browser response never exposes Xaman credentials
+29. unresolved Xaman payload remains pending
+30. resolved SignIn authenticates the matching WordPress user
+31. wrong flow proof cannot finish sign-in
+32. completed WordPress flow issues a CalorieApp authorization code
+33. shortcode embeds the app without exposing secrets
 
 ## Files
 
