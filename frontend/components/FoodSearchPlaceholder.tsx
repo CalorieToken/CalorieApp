@@ -303,6 +303,7 @@ export function FoodSearchPlaceholder() {
     const requestId = ++logsRequestIdRef.current;
 
     setIsLogsLoading(true);
+    setLogError(null);
     try {
       const response = await backendRequest(`${BACKEND_BASE_URL}/logs`);
       if (requestId !== logsRequestIdRef.current) {
