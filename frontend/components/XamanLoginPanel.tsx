@@ -26,6 +26,12 @@ type LoginStatusResponse = {
   redirect_to?: string | null;
 };
 
+type PendingLogin = {
+  state: string;
+  expiresAt: string;
+  browserHandoffToken: string;
+};
+
 const BACKEND_BASE_URL = "/api/backend";
 const RENDER_BACKEND_HEALTH_URL =
   "https://calorieapp-backend-rvul.onrender.com";
@@ -35,8 +41,8 @@ const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
 const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
 const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
-const XAMAN_LAUNCH_MESSAGE_TYPE = "calorieapp-xaman-navigate";
-const XAMAN_LAUNCH_ERROR_TYPE = "calorieapp-xaman-error";
+const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
+const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
 
 function backendHealthBaseUrl(): string {
   const configuredUrl = process.env.NEXT_PUBLIC_BACKEND_HEALTH_URL?.trim();
@@ -49,6 +55,68 @@ function backendHealthBaseUrl(): string {
   }
 
   return BACKEND_BASE_URL;
+}
+
+function isAllowedWordPressSigninUrl(value: string): boolean {
+  try {
+    const target = new URL(value);
+    return (
+      target.protocol === "https:" &&
+      target.hostname === "calorietoken.net" &&
+      target.searchParams.has("xl-signin")
+    );
+  } catch {
+    return false;
+  }
+}
+
+function clearPendingLogin() {
+  window.sessionStorage.removeItem(PENDING_LOGIN_STORAGE_KEY);
+}
+
+function storePendingLogin(data: LoginStartResponse) {
+  const pendingLogin: PendingLogin = {
+    state: data.state,
+    expiresAt: data.expires_at,
+    browserHandoffToken: data.browser_handoff_token,
+  };
+
+  window.sessionStorage.setItem(
+    PENDING_LOGIN_STORAGE_KEY,
+    JSON.stringify(pendingLogin)
+  );
+}
+
+function readPendingLogin(): PendingLogin | null {
+  const stored = window.sessionStorage.getItem(PENDING_LOGIN_STORAGE_KEY);
+  if (!stored) {
+    return null;
+  }
+
+  try {
+    const value = JSON.parse(stored) as Partial<PendingLogin>;
+    const expiresAt = Date.parse(value.expiresAt ?? "");
+    if (
+      typeof value.state !== "string" ||
+      value.state.length < 32 ||
+      typeof value.browserHandoffToken !== "string" ||
+      value.browserHandoffToken.length < 32 ||
+      !Number.isFinite(expiresAt) ||
+      expiresAt <= Date.now()
+    ) {
+      clearPendingLogin();
+      return null;
+    }
+
+    return {
+      state: value.state,
+      expiresAt: value.expiresAt as string,
+      browserHandoffToken: value.browserHandoffToken,
+    };
+  } catch {
+    clearPendingLogin();
+    return null;
+  }
 }
 
 function delay(milliseconds: number, signal: AbortSignal) {
@@ -192,29 +260,6 @@ async function startLoginWithRetry(
   throw new BackendRequestTimeoutError();
 }
 
-function sendXamanLocationToLaunchTab(
-  loginWindow: Window,
-  attemptId: string,
-  wordpressSigninUrl: string
-) {
-  const message = {
-    type: XAMAN_LAUNCH_MESSAGE_TYPE,
-    attemptId,
-    url: wordpressSigninUrl,
-  };
-
-  // Repeat briefly so a slow mobile browser cannot miss the message while the
-  // holding page is still attaching its listener. Once navigation starts, the
-  // target-origin check prevents delivery to the external page.
-  [0, 300, 1_000, 2_500].forEach((delayMs) => {
-    window.setTimeout(() => {
-      if (!loginWindow.closed) {
-        loginWindow.postMessage(message, window.location.origin);
-      }
-    }, delayMs);
-  });
-}
-
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -224,7 +269,7 @@ export function XamanLoginPanel() {
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
   const loginAbortController = useRef<AbortController | null>(null);
 
-  const refreshCurrentUser = useCallback(async () => {
+  const refreshCurrentUser = useCallback(async (): Promise<MeResponse | null> => {
     try {
       const response = await backendRequest(
         `${BACKEND_BASE_URL}/api/identity/me`
@@ -234,36 +279,94 @@ export function XamanLoginPanel() {
         if (response.status === 401) {
           announceAuthState(false);
         }
-        return;
+        return null;
       }
       const data = (await response.json()) as MeResponse;
       setCurrentUser(data);
+      return data;
     } catch {
       setCurrentUser(null);
+      return null;
     }
   }, []);
 
   useEffect(() => {
-    refreshCurrentUser();
+    let cancelled = false;
+    const controller = new AbortController();
+    loginAbortController.current = controller;
 
-    if (window.sessionStorage.getItem("calorieapp-login-return")) {
-      window.sessionStorage.removeItem("calorieapp-login-return");
-      setSuccessNotice(
-        "Sign-in completed in your default browser. You can continue safely in this tab."
-      );
+    async function restoreLogin() {
+      const user = await refreshCurrentUser();
+      if (cancelled || controller.signal.aborted) {
+        return;
+      }
+
+      if (user) {
+        clearPendingLogin();
+        if (window.sessionStorage.getItem(LOGIN_RETURN_STORAGE_KEY)) {
+          window.sessionStorage.removeItem(LOGIN_RETURN_STORAGE_KEY);
+          setSuccessNotice(
+            "Sign-in completed. You can continue safely in this browser."
+          );
+        }
+        return;
+      }
+
+      const pendingLogin = readPendingLogin();
+      if (!pendingLogin) {
+        return;
+      }
+
+      setError(null);
+      setIsLoading(true);
+      setLoginStatus("Restoring the Xaman sign-in started from this tab...");
+
+      try {
+        await waitForOriginLogin(
+          pendingLogin.state,
+          pendingLogin.browserHandoffToken,
+          pendingLogin.expiresAt,
+          controller.signal
+        );
+        clearPendingLogin();
+
+        const restoredUser = await refreshCurrentUser();
+        if (!restoredUser) {
+          throw new Error("Restored session was unavailable");
+        }
+        if (cancelled) {
+          return;
+        }
+
+        announceAuthState(true);
+        setSuccessNotice(
+          "Sign-in completed. Your session was restored in this browser."
+        );
+        setLoginStatus(null);
+        setIsLoading(false);
+      } catch {
+        if (controller.signal.aborted || cancelled) {
+          return;
+        }
+
+        clearPendingLogin();
+        setError(
+          "The earlier Xaman sign-in could not be restored. Start again from this tab."
+        );
+        setLoginStatus(null);
+        setIsLoading(false);
+      }
     }
 
+    void restoreLogin();
+
     return () => {
-      loginAbortController.current?.abort();
+      cancelled = true;
+      controller.abort();
     };
   }, [refreshCurrentUser]);
 
   async function handleLogin() {
-    const attemptId = window.crypto.randomUUID();
-    const loginWindow = window.open(
-      `/auth/launching?attempt=${encodeURIComponent(attemptId)}`,
-      "calorieapp-xaman-login"
-    );
     const controller = new AbortController();
     loginAbortController.current?.abort();
     loginAbortController.current = controller;
@@ -272,7 +375,7 @@ export function XamanLoginPanel() {
     setSuccessNotice(null);
     setIsLoading(true);
     setLoginStatus(
-      "Preparing Xaman. On phones, expect the return page to open in your configured default browser, possibly in a new tab. Keep this original CalorieApp tab open; it will sign in automatically too."
+      "Preparing Xaman in this tab. Please wait without refreshing."
     );
 
     try {
@@ -281,67 +384,32 @@ export function XamanLoginPanel() {
 
       const data = await startLoginWithRetry(controller.signal, () => {
         setLoginStatus(
-          "CalorieApp is temporarily busy. Waiting safely before opening Xaman; keep both tabs open."
+          "CalorieApp is temporarily busy. Waiting safely before opening Xaman..."
         );
       });
-      if (!data.wordpress_signin_url || !data.browser_handoff_token) {
+      if (
+        data.state.length < 32 ||
+        data.browser_handoff_token.length < 32 ||
+        !Number.isFinite(Date.parse(data.expires_at)) ||
+        Date.parse(data.expires_at) <= Date.now() ||
+        !isAllowedWordPressSigninUrl(data.wordpress_signin_url)
+      ) {
         throw new Error("Missing signin handoff data");
       }
 
-      if (!loginWindow || loginWindow.closed) {
-        window.location.assign(data.wordpress_signin_url);
-        return;
-      }
-
-      sendXamanLocationToLaunchTab(
-        loginWindow,
-        attemptId,
-        data.wordpress_signin_url
-      );
-      setLoginStatus(
-        "Approve the request in Xaman. On phones, the return page normally opens in your configured default browser, possibly in a new tab. Keep this original tab open; it will sign in automatically too."
-      );
-
-      await waitForOriginLogin(
-        data.state,
-        data.browser_handoff_token,
-        data.expires_at,
-        controller.signal
-      );
-
-      try {
-        loginWindow.close();
-      } catch {
-        // A browser may keep the external Xaman tab open. The login still succeeded.
-      }
-
-      await refreshCurrentUser();
-      announceAuthState(true);
-      setSuccessNotice(
-        "Sign-in completed. You can continue in this original CalorieApp tab."
-      );
-      setLoginStatus(null);
-      setIsLoading(false);
+      storePendingLogin(data);
+      setLoginStatus("Opening Xaman from this tab...");
+      window.location.assign(data.wordpress_signin_url);
     } catch (requestError) {
       if (controller.signal.aborted) {
         return;
       }
 
-      try {
-        if (loginWindow && !loginWindow.closed) {
-          loginWindow.postMessage(
-            { type: XAMAN_LAUNCH_ERROR_TYPE, attemptId },
-            window.location.origin
-          );
-          loginWindow.close();
-        }
-      } catch {
-        // The external sign-in window may no longer be script-controllable.
-      }
+      clearPendingLogin();
       setError(
         backendUnavailableMessage(
           requestError,
-          "Sign-in could not be confirmed in this tab. You can continue in the browser Xaman opened, or try again."
+          "Xaman could not be opened from this tab. Please try again."
         )
       );
       setLoginStatus(null);
@@ -395,10 +463,11 @@ export function XamanLoginPanel() {
         role="note"
         className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
       >
-        <span className="font-semibold">Phone browser notice:</span> Expect the
-        Xaman return page to open in your configured default browser, possibly
-        in a new tab. Keep this original CalorieApp tab open; it will sign in
-        automatically too.
+        <span className="font-semibold">Phone browser notice:</span> CalorieApp
+        opens Xaman from this tab and does not create an extra tab. After
+        signing, your phone may still return through its configured default
+        browser because mobile systems do not let websites select the previous
+        browser tab.
       </div>
 
       {currentUser ? (

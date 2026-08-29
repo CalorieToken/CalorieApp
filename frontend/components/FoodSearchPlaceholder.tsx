@@ -735,8 +735,8 @@ export function FoodSearchPlaceholder() {
             Food search is available to everyone. Sign in with Xaman to save and manage items.
           </p>
           <p className="mt-2 text-xs leading-relaxed">
-            Phone browser notice: Xaman normally returns in your configured default
-            browser, possibly in a new tab. Keep the original CalorieApp tab open.
+            CalorieApp starts Xaman from the current tab. Your phone may return
+            through its configured default browser after signing.
           </p>
         </div>
       ) : logError ? (

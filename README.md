@@ -115,15 +115,18 @@ probe the public backend `/health` endpoint directly so a Render cold start does
 not occupy the frontend proxy long enough to trigger frontend 429 responses.
 All authenticated requests continue through the same-origin proxy.
 
-Xaman sign-in opens in a separate tab while the original CalorieApp tab waits
-for a short-lived, one-time browser handoff. Every CalorieApp-owned Xaman login
-surface must clearly warn phone users before and during sign-in that the return
-page normally opens in their configured default browser, possibly in a new tab,
-and that they should keep the original CalorieApp tab open. The callback browser
-receives its normal session and the original tab securely claims a separate
-session for the same user. Only hashes of the handoff proof are stored, the
-proof is never sent through WordPress/Xaman URLs, and it cannot be claimed by a
-third browser after use.
+Xaman sign-in starts with same-tab navigation. CalorieApp does not call
+`window.open` and therefore does not create a launch tab. Mobile platforms can
+still return from Xaman through the configured default browser because they do
+not let a web flow select or reuse the original browser tab; this limitation is
+documented by Xaman in its
+[Payload Return URL guidance](https://docs.xaman.dev/concepts/payloads-sign-requests/payload-return-url).
+The callback browser receives its normal session. A short-lived, one-time
+browser handoff is kept only in the initiating tab's session storage so that
+the session can be securely restored if the user returns to that browsing
+context. Only hashes of the handoff proof are stored server-side, the proof is
+never sent through WordPress/Xaman URLs, and it cannot be claimed by a third
+browser after use.
 
 Create frontend/.env.local from the template before running the frontend.
 
