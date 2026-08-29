@@ -1,3 +1,8 @@
+const frameAncestors =
+  process.env.NODE_ENV === "production"
+    ? "frame-ancestors https://calorietoken.net https://www.calorietoken.net"
+    : "frame-ancestors https://calorietoken.net https://www.calorietoken.net http://localhost:* http://127.0.0.1:*";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -9,8 +14,7 @@ const nextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           {
             key: "Content-Security-Policy",
-            value:
-              "frame-ancestors https://calorietoken.net https://www.calorietoken.net",
+            value: frameAncestors,
           },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {

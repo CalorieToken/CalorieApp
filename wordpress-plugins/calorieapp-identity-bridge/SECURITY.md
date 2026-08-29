@@ -77,3 +77,4 @@ Plugin does not log plaintext authorization codes or secrets.
 - A completed flow is bound to one CalorieApp backend state.
 - Xaman payload creation is rate-limited per source address.
 - Cross-frame messages validate both the exact origin and source window.
+- The shortcode accepts only the Render production origin and `https://app.calorietoken.net` by default. Deployments may extend this list with the `calorieapp_identity_bridge_allowed_frontend_origins` filter.

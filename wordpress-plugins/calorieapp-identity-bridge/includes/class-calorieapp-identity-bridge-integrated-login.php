@@ -77,7 +77,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.2.0';
+            : '0.2.1';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -353,7 +353,7 @@ class IntegratedLogin {
         set_transient(
             $this->flow_key($flow_id),
             $flow,
-            max(60, (int) $flow['expires_at'] - time())
+            $this->remaining_flow_ttl($flow)
         );
 
         return $this->no_store_response(
@@ -414,7 +414,7 @@ class IntegratedLogin {
         set_transient(
             $this->flow_key($flow_id),
             $flow,
-            max(60, (int) $flow['expires_at'] - time())
+            $this->remaining_flow_ttl($flow)
         );
 
         return $this->no_store_response(
@@ -526,7 +526,7 @@ class IntegratedLogin {
 
         wp_clear_auth_cookie();
         wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, true, is_ssl());
+        wp_set_auth_cookie($user_id, false, is_ssl());
         do_action('wp_login', $user->user_login, $user);
     }
 
@@ -641,7 +641,39 @@ class IntegratedLogin {
             return '';
         }
 
+        $candidate_origin = $this->url_origin($url);
+        $allowed_origins = apply_filters(
+            'calorieapp_identity_bridge_allowed_frontend_origins',
+            [
+                $this->url_origin(self::FRONTEND_DEFAULT),
+                'https://app.calorietoken.net',
+            ]
+        );
+        if (!is_array($allowed_origins)) {
+            return '';
+        }
+
+        $allowed = false;
+        foreach ($allowed_origins as $allowed_origin) {
+            $normalized_origin = $this->url_origin((string) $allowed_origin);
+            if (
+                $candidate_origin !== ''
+                && $normalized_origin !== ''
+                && hash_equals($normalized_origin, $candidate_origin)
+            ) {
+                $allowed = true;
+                break;
+            }
+        }
+        if (!$allowed) {
+            return '';
+        }
+
         return untrailingslashit($url);
+    }
+
+    private function remaining_flow_ttl(array $flow): int {
+        return max(1, (int) ($flow['expires_at'] ?? 0) - time());
     }
 
     private function url_origin(string $url): string {

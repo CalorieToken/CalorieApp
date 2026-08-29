@@ -7,6 +7,7 @@ use CalorieApp\IdentityBridge\Storage;
 class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
     private string $identifier = '';
     private bool $resolved = false;
+    private ?bool $remember_auth_cookie = null;
 
     public function setUp(): void {
         parent::setUp();
@@ -30,6 +31,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $_SERVER['REMOTE_ADDR'] = '192.0.2.' . random_int(1, 250);
 
         add_filter('pre_http_request', [$this, 'mock_http'], 10, 3);
+        add_filter('auth_cookie_expiration', [$this, 'capture_auth_cookie_mode'], 10, 3);
     }
 
     public function tearDown(): void {
@@ -37,7 +39,13 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $wpdb->query('TRUNCATE TABLE ' . $wpdb->prefix . 'calorieapp_auth_codes');
         wp_set_current_user(0);
         remove_filter('pre_http_request', [$this, 'mock_http'], 10);
+        remove_filter('auth_cookie_expiration', [$this, 'capture_auth_cookie_mode'], 10);
         parent::tearDown();
+    }
+
+    public function capture_auth_cookie_mode(int $length, int $user_id, bool $remember): int {
+        $this->remember_auth_cookie = $remember;
+        return $length;
     }
 
     public function mock_http($preempt, array $request, string $url) {
@@ -141,6 +149,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             $this->valid_xrpl(),
             get_user_meta(get_current_user_id(), 'xrpl-r-address', true)
         );
+        $this->assertFalse($this->remember_auth_cookie);
     }
 
     public function test_completed_flow_issues_calorieapp_code_for_same_user(): void {
@@ -179,6 +188,20 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertStringContainsString('data-calorieapp-embed', $html);
         $this->assertStringNotContainsString('test-xaman-key', $html);
         $this->assertStringNotContainsString('test-xaman-secret', $html);
+    }
+
+    public function test_shortcode_rejects_untrusted_frontend_origin(): void {
+        $html = do_shortcode('[calorieapp_embed src="https://evil.example/phishing"]');
+
+        $this->assertSame('<p>CalorieApp embed URL is invalid.</p>', $html);
+        $this->assertStringNotContainsString('evil.example', $html);
+    }
+
+    public function test_shortcode_accepts_same_site_frontend_origin(): void {
+        $html = do_shortcode('[calorieapp_embed src="https://app.calorietoken.net"]');
+
+        $this->assertStringContainsString('https://app.calorietoken.net?embedded=1', $html);
+        $this->assertStringContainsString('data-app-origin="https://app.calorietoken.net"', $html);
     }
 
     private function start_flow(): WP_REST_Response {
