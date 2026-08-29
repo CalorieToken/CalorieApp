@@ -14,6 +14,7 @@ import {
 } from "@/components/authEvents";
 import type { AuthStateChangedDetail } from "@/components/authEvents";
 import {
+  BACKEND_WAKE_BASE_URL,
   backendRequest,
   backendUnavailableMessage,
   waitForBackendReady,
@@ -372,7 +373,7 @@ export function FoodSearchPlaceholder() {
     );
 
     try {
-      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
       setSearchStatus("Searching foods...");
 
       const response = await backendRequest(
