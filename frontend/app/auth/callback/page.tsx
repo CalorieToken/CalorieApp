@@ -157,9 +157,9 @@ function AuthCallbackContent() {
         </h1>
 
         <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-          Phone browser notice: Xaman normally opens this return page in your
-          configured default browser, possibly in a new tab. Your original
-          CalorieApp tab can remain open and will sign in automatically too.
+          Phone browser notice: mobile systems may return from Xaman through
+          your configured default browser instead of the tab where you started.
+          This page completes your CalorieApp session in the browser shown now.
         </p>
 
         <p
@@ -199,9 +199,9 @@ export default function AuthCallbackPage() {
             </h1>
 
             <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-              Phone browser notice: Xaman normally opens this return page in
-              your configured default browser, possibly in a new tab. Keep the
-              original CalorieApp tab open.
+              Phone browser notice: mobile systems may return from Xaman
+              through your configured default browser. CalorieApp itself does
+              not open an extra tab.
             </p>
 
             <p
