@@ -40,6 +40,7 @@ Covered scenarios:
 32. completed WordPress flow issues a CalorieApp authorization code
 33. shortcode embeds the app without exposing secrets
 34. Xaman custom identifier stays within the 40-character API limit
+35. embedded Xaman controls remain hidden until CalorieApp state is ready
 
 ## Files
 

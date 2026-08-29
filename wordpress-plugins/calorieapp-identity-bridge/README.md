@@ -36,6 +36,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.2.3 waits for the CalorieApp backend state before exposing the Xaman
+link or QR code. This prevents mobile browsers from being backgrounded during
+a Render cold start and makes the joint WordPress/CalorieApp sign-in ready
+before the user leaves for Xaman.
 Version 0.2.2 keeps the Xaman custom payload identifier within Xaman's
 40-character API limit so sign-in requests can be created successfully.
 Version 0.2.1 added the WordPress-owned embedded login and shortcode. It avoids
