@@ -761,7 +761,8 @@ def identity_callback(
 
     Browser callback contract remains code + state only.
     Backend validates pending state, exchanges code with WordPress bridge,
-    resolves/creates CalorieApp user identity, and issues CalorieApp session cookie.
+    consumes state only after a successful exchange, resolves/creates CalorieApp
+    user identity, and issues the CalorieApp session cookie.
     """
     code = payload.code.strip()
     state = payload.state.strip()
@@ -770,6 +771,18 @@ def identity_callback(
         raise HTTPException(status_code=400, detail="code and state are required")
 
     cleanup_pending_login_states(session)
+    is_valid, reason, pending = validate_pending_login_state(session, state)
+    if not is_valid or pending is None:
+        if reason == "expired":
+            raise HTTPException(status_code=400, detail="Login state expired")
+        if reason == "consumed":
+            raise HTTPException(status_code=400, detail="Login state already consumed")
+        raise HTTPException(status_code=400, detail="Unknown login state")
+
+    # A transient WordPress/Xaman bridge failure must not burn the pending
+    # login state. Consume it only after a successful exchange.
+    claims = _exchange_code_for_claims(code=code, state=state)
+
     consumed, reason = consume_pending_login_state(session, state)
     if not consumed:
         if reason == "expired":
@@ -779,8 +792,6 @@ def identity_callback(
         raise HTTPException(status_code=400, detail="Unknown login state")
 
     try:
-        claims = _exchange_code_for_claims(code=code, state=state)
-
         user, created = get_or_create_user_from_external_identity(
             session=session,
             provider=_IDENTITY_PROVIDER,
