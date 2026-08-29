@@ -1101,6 +1101,31 @@ class TestIdentityCallbackFlow:
 
         assert response.status_code == 200
 
+    def test_callback_can_finish_in_a_different_browser(self, monkeypatch: pytest.MonkeyPatch):
+        """A mobile default-browser switch must not depend on the starting browser's cookies."""
+        _set_session_cookie_security_config(
+            monkeypatch,
+            secure=False,
+            environment="local",
+        )
+        monkeypatch.setattr(
+            main_module,
+            "_exchange_code_for_claims",
+            lambda code, state: self._stub_claims(),
+        )
+
+        with TestClient(app) as starting_browser, TestClient(app) as return_browser:
+            state = starting_browser.post("/api/identity/login/start").json()["state"]
+
+            callback = return_browser.post(
+                "/api/identity/callback",
+                json={"code": "bridge-code", "state": state},
+            )
+
+            assert callback.status_code == 200
+            assert return_browser.get("/api/identity/me").status_code == 200
+            assert starting_browser.get("/api/identity/me").status_code == 401
+
     def test_concurrent_callback_state_use_allows_only_one_success(self, monkeypatch: pytest.MonkeyPatch):
         from concurrent.futures import ThreadPoolExecutor
 

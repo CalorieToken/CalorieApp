@@ -55,7 +55,7 @@ export function XamanLoginPanel() {
     setError(null);
     setIsLoading(true);
     setLoginStatus(
-      "Connecting securely. After inactivity, startup can take up to 90 seconds."
+      "Connecting securely. After inactivity, the free demo can take up to 3 minutes to start. Please keep this page open."
     );
 
     try {
@@ -132,7 +132,8 @@ export function XamanLoginPanel() {
       </p>
       <p className="mt-2 text-xs leading-relaxed text-brand-secondary/75">
         On your phone, the Xaman app opens outside this browser. After approval,
-        you return here automatically.
+        your phone may return in its default browser; sign-in completes securely
+        in that browser.
       </p>
 
       {currentUser ? (
