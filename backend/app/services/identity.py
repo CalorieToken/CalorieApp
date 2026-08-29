@@ -303,6 +303,23 @@ def consume_pending_login_state(
     return False, reason
 
 
+def restore_pending_login_state_after_transient_failure(
+    session: Session,
+    state: str,
+) -> bool:
+    """Restore a consumed, unexpired state after a retryable bridge failure."""
+    now = utc_now()
+    updated = session.exec(
+        update(PendingLoginStateDB)
+        .where(PendingLoginStateDB.state_hash == hash_login_state(state))
+        .where(PendingLoginStateDB.status == "consumed")
+        .where(PendingLoginStateDB.expires_at >= now)
+        .values(status="pending", consumed_at=None)
+    )
+    session.commit()
+    return updated.rowcount == 1
+
+
 def cleanup_pending_login_states(session: Session) -> None:
     """Delete expired pending login states opportunistically."""
     now = utc_now()
