@@ -77,7 +77,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.2.1';
+            : '0.2.2';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -179,7 +179,9 @@ class IntegratedLogin {
 
         $flow_id = wp_generate_uuid4();
         $proof = $this->random_token();
-        $identifier = 'calorieapp_login_' . str_replace('-', '', $flow_id);
+        // Xaman limits custom payload identifiers to 40 characters. Keep the
+        // full 128-bit UUID while using a short, recognizable prefix.
+        $identifier = 'calapp_' . str_replace('-', '', $flow_id);
 
         $response = wp_remote_post(
             self::XAMAN_API_BASE . '/payload',
