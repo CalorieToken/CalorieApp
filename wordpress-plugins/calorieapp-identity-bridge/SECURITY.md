@@ -28,6 +28,16 @@ No arbitrary redirects are accepted.
 Authorize endpoint accepts only callback URLs from explicit allowlist.
 Default callback must also be on that allowlist.
 
+The embedded login does not send a Xaman `return_url.app` or
+`return_url.web`. Xaman therefore cannot open the device's configured default
+browser after signing. The user returns to the original page with Close or
+Back, and the page resumes the verified flow.
+
+The Xaman deep link, QR URL, and payload WebSocket URL are accepted only on the
+exact `xumm.app` host. The browser WebSocket is a completion trigger only; the
+full payload is always fetched from Xaman and verified server-side before any
+WordPress cookie is set.
+
 ## XRPL Address Handling
 
 - XRPL address is read server-side only using WordPress user meta key xrpl-r-address.
@@ -57,16 +67,13 @@ No email or extra WordPress profile data is returned.
 
 Plugin does not log plaintext authorization codes or secrets.
 
-## Unresolved Integration Item (Explicit)
+## Embedded flow controls
 
-Missing verified integration point:
-
-- Exact XUMM Login 1.3.0 hook/filter or redirect parameter contract that guarantees CalorieApp state survives through the login round-trip and returns to the bridge authorize endpoint.
-
-Safest minimal integration required if unavoidable:
-
-- A documented post-auth redirect hook in XUMM Login that can forward authenticated users to:
-  - /wp-json/calorieapp/v1/authorize?state=<backend_state>
-  - with optional callback_url from strict allowlist
-
-No plugin modification is included here because the contract is currently unknown and guessing would be unsafe.
+- POST requests must carry the canonical WordPress Origin header.
+- Each flow has a random 256-bit proof; only its HMAC hash is stored.
+- Flow proofs expire after ten minutes and are never placed in URLs.
+- The Xaman custom identifier is checked with the resolved payload.
+- The XRPL address is read only from the verified Xaman API response.
+- A completed flow is bound to one CalorieApp backend state.
+- Xaman payload creation is rate-limited per source address.
+- Cross-frame messages validate both the exact origin and source window.
