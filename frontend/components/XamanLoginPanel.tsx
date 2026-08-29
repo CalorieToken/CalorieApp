@@ -27,6 +27,8 @@ type LoginStatusResponse = {
 };
 
 const BACKEND_BASE_URL = "/api/backend";
+const RENDER_BACKEND_HEALTH_URL =
+  "https://calorieapp-backend-rvul.onrender.com";
 const LOGIN_STATUS_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
 const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
@@ -35,6 +37,19 @@ const LOGIN_START_RETRY_WINDOW_MS = 2 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
 const XAMAN_LAUNCH_MESSAGE_TYPE = "calorieapp-xaman-navigate";
 const XAMAN_LAUNCH_ERROR_TYPE = "calorieapp-xaman-error";
+
+function backendHealthBaseUrl(): string {
+  const configuredUrl = process.env.NEXT_PUBLIC_BACKEND_HEALTH_URL?.trim();
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
+  }
+
+  if (window.location.hostname === "calorieapp-frontend.onrender.com") {
+    return RENDER_BACKEND_HEALTH_URL;
+  }
+
+  return BACKEND_BASE_URL;
+}
 
 function delay(milliseconds: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -261,7 +276,7 @@ export function XamanLoginPanel() {
     );
 
     try {
-      await waitForBackendReady(BACKEND_BASE_URL, controller.signal);
+      await waitForBackendReady(backendHealthBaseUrl(), controller.signal);
       setLoginStatus("Service ready. Opening Xaman...");
 
       const data = await startLoginWithRetry(controller.signal, () => {
