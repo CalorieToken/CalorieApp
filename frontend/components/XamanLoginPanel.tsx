@@ -350,10 +350,11 @@ export function XamanLoginPanel() {
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
 
-  const refreshCurrentUser = useCallback(async (): Promise<MeResponse | null> => {
+  const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     try {
       const response = await backendRequest(
-        `${BACKEND_BASE_URL}/api/identity/me`
+        `${BACKEND_BASE_URL}/api/identity/me`,
+        { signal }
       );
       if (!response.ok) {
         setCurrentUser(null);
@@ -367,6 +368,9 @@ export function XamanLoginPanel() {
       announceAuthState(true);
       return data;
     } catch {
+      if (signal?.aborted) {
+        return null;
+      }
       setCurrentUser(null);
       return null;
     }
@@ -378,7 +382,7 @@ export function XamanLoginPanel() {
     loginAbortController.current = controller;
 
     async function restoreLogin() {
-      const user = await refreshCurrentUser();
+      const user = await refreshCurrentUser(controller.signal);
       if (cancelled || controller.signal.aborted) {
         return;
       }
@@ -412,7 +416,7 @@ export function XamanLoginPanel() {
         );
         clearPendingLogin();
 
-        const restoredUser = await refreshCurrentUser();
+        const restoredUser = await refreshCurrentUser(controller.signal);
         if (!restoredUser) {
           throw new Error("Restored session was unavailable");
         }
@@ -447,6 +451,7 @@ export function XamanLoginPanel() {
   }, [refreshCurrentUser]);
 
   useEffect(() => {
+    const bridgeController = new AbortController();
     let origin = trustedParentOrigin();
     parentOrigin.current = origin;
     setIsEmbedded(origin !== null);
@@ -545,7 +550,7 @@ export function XamanLoginPanel() {
           throw new Error(`Callback failed with ${response.status}`);
         }
 
-        const restoredUser = await refreshCurrentUser();
+        const restoredUser = await refreshCurrentUser(bridgeController.signal);
         if (!restoredUser) {
           throw new Error("CalorieApp session was unavailable");
         }
@@ -586,6 +591,7 @@ export function XamanLoginPanel() {
     window.addEventListener("message", handleParentMessage);
     window.parent.postMessage({ type: "calorieapp:bridge:ready" }, "*");
     return () => {
+      bridgeController.abort();
       resizeObserver?.disconnect();
       window.removeEventListener("message", handleParentMessage);
     };
@@ -741,7 +747,7 @@ export function XamanLoginPanel() {
       );
       clearPendingLogin();
 
-      const restoredUser = await refreshCurrentUser();
+      const restoredUser = await refreshCurrentUser(controller.signal);
       if (!restoredUser) {
         throw new Error("Restored session was unavailable");
       }
