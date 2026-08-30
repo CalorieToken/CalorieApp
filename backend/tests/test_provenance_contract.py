@@ -13,8 +13,10 @@ def _contract() -> dict:
 
 
 def test_provenance_is_future_ready_without_becoming_a_launch_feature() -> None:
-    rollout = _contract()["rollout"]
+    contract = _contract()
+    rollout = contract["rollout"]
 
+    assert contract["contract_id"] == "caloriedb.xrpl-linked-provenance"
     assert rollout["core_public_release_dependency"] is False
     assert rollout["initial_user_facing_feature"] is False
     assert rollout["initial_wallet_or_ledger_scan"] is False

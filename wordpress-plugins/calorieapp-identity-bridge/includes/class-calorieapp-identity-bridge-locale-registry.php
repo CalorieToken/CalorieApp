@@ -18,7 +18,7 @@ final class LocaleRegistry {
         $contents = is_readable($path) ? file_get_contents($path) : false;
         $decoded = is_string($contents) ? json_decode($contents, true) : null;
 
-        if (!is_array($decoded) || !isset($decoded['locales']) || !is_array($decoded['locales'])) {
+        if (!self::is_valid_registry($decoded)) {
             self::$registry = self::fallback_registry();
             return self::$registry;
         }
@@ -82,6 +82,49 @@ final class LocaleRegistry {
 
     private static function normalize_identifier(string $value): string {
         return strtolower(str_replace('_', '-', trim($value)));
+    }
+
+    private static function is_valid_registry($registry): bool {
+        if (!is_array($registry) || !isset($registry['locales']) || !is_array($registry['locales'])) {
+            return false;
+        }
+
+        $tags = [];
+        foreach ($registry['locales'] as $locale) {
+            if (!is_array($locale)) {
+                return false;
+            }
+
+            $tag = $locale['tag'] ?? null;
+            $direction = $locale['direction'] ?? null;
+            $aliases = $locale['aliases'] ?? null;
+            if (
+                !is_string($tag)
+                || trim($tag) === ''
+                || !in_array($direction, ['ltr', 'rtl'], true)
+                || !is_array($aliases)
+            ) {
+                return false;
+            }
+
+            foreach ($aliases as $alias) {
+                if (!is_string($alias) || trim($alias) === '') {
+                    return false;
+                }
+            }
+
+            if (in_array($tag, $tags, true)) {
+                return false;
+            }
+            $tags[] = $tag;
+        }
+
+        $source = $registry['source_locale'] ?? null;
+        $fallback = $registry['fallback_locale'] ?? null;
+        return is_string($source)
+            && is_string($fallback)
+            && in_array($source, $tags, true)
+            && in_array($fallback, $tags, true);
     }
 
     private static function fallback_registry(): array {

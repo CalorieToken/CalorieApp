@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://calorietoken.net/contracts/localization/v1/asset-variants.schema.json",
-  "title": "Gallery Token localized image variant manifest",
+  "title": "CalorieToken localized image variant manifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["manifest_version", "source_asset", "variants"],

@@ -7,6 +7,7 @@ use CalorieApp\IdentityBridge\Storage;
 class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
     private string $identifier = '';
     private bool $resolved = false;
+    private string $backend_locale = 'en';
     private ?bool $remember_auth_cookie = null;
 
     public function setUp(): void {
@@ -103,7 +104,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         }
 
         if (strpos($url, '/api/identity/login/state/validate') !== false) {
-            return $this->http_response(200, ['valid' => true, 'locale' => 'en']);
+            return $this->http_response(200, ['valid' => true, 'locale' => $this->backend_locale]);
         }
 
         return $preempt;
@@ -181,6 +182,39 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertSame('authorized', $response->get_data()['status']);
         $this->assertNotEmpty($response->get_data()['code']);
         $this->assertSame('en', $response->get_data()['locale']);
+    }
+
+    public function test_non_english_flow_allows_missing_locale_but_rejects_explicit_mismatch(): void {
+        $flow = $this->start_flow('nl-NL')->get_data();
+        $this->backend_locale = 'nl';
+        $this->resolved = true;
+        $this->finish_flow($flow);
+
+        $mismatch_request = $this->same_origin_request(
+            'POST',
+            '/calorieapp/v1/integrated-login/authorize'
+        );
+        $mismatch_request->set_param('flow_id', $flow['flow_id']);
+        $mismatch_request->set_param('flow_proof', $flow['flow_proof']);
+        $mismatch_request->set_param('state', $this->state());
+        $mismatch_request->set_param('locale', 'en');
+
+        $mismatch_response = rest_do_request($mismatch_request);
+        $this->assertSame(409, $mismatch_response->get_status());
+        $this->assertSame('locale_mismatch', $mismatch_response->get_data()['code']);
+
+        $request = $this->same_origin_request(
+            'POST',
+            '/calorieapp/v1/integrated-login/authorize'
+        );
+        $request->set_param('flow_id', $flow['flow_id']);
+        $request->set_param('flow_proof', $flow['flow_proof']);
+        $request->set_param('state', $this->state());
+
+        $response = rest_do_request($request);
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame('authorized', $response->get_data()['status']);
+        $this->assertSame('nl', $response->get_data()['locale']);
     }
 
     public function test_wrong_flow_proof_cannot_finish_signin(): void {

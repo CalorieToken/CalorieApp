@@ -1,7 +1,7 @@
 # CalorieApp Identity Bridge contract v1
 
 This directory is the repository source of truth for the first Identity Bridge
-contract and the shared Gallery Token locale registry. Runtime copies are
+contract and the shared CalorieApp locale registry. Runtime copies are
 generated for the backend, frontend and WordPress plugin because those three
 artifacts are deployed and packaged independently.
 
