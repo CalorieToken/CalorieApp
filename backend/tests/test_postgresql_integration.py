@@ -12,7 +12,7 @@ from sqlalchemy.engine import Engine, make_url
 from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
-from app.main import app
+from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
     CalorieAppUserDB,
@@ -25,7 +25,6 @@ from app.schema_migrations.versions.v20260830_0001 import food_log as migration_
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
-SESSION_COOKIE_NAME = "calorieapp_session"
 
 
 def _required_postgresql_test_url() -> str:

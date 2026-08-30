@@ -174,42 +174,23 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
 
 
 async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
-    """Fetch from Open Food Facts via httpx with bounded retry/backoff on transient errors."""
-    last_exc: httpx.HTTPError | None = None
-
-    for attempt in range(_PRIMARY_MAX_ATTEMPTS):
-        try:
-            async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
-                response = await client.get(
-                    OPEN_FOOD_FACTS_SEARCH_URL,
-                    params=params,
-                    headers=REQUEST_HEADERS,
-                )
-                response.raise_for_status()
-                payload = response.json()
-                if not isinstance(payload, dict):
-                    raise ValueError("Open Food Facts payload is not a JSON object")
-                products = payload.get("products")
-                if products is None:
-                    payload["products"] = []
-                elif not isinstance(products, list):
-                    raise ValueError("Open Food Facts payload 'products' field is not a list")
-                return payload
-        except httpx.HTTPStatusError:
-            raise
-        except (httpx.TimeoutException, httpx.ConnectError) as exc:
-            # Retry on timeout or connection errors.
-            last_exc = exc
-            raise
-        except ValueError as exc:
-            # Retry once when JSON payload is malformed or shape is invalid.
-            last_exc = httpx.HTTPError(str(exc))
-            raise
-
-    # Defensive guard: every retry path records an exception before continuing.
-    if last_exc is None:
-        raise RuntimeError("Open Food Facts primary retry loop ended without a result")
-    raise last_exc
+    """Make one primary Open Food Facts request; the caller owns fallback policy."""
+    async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
+        response = await client.get(
+            OPEN_FOOD_FACTS_SEARCH_URL,
+            params=params,
+            headers=REQUEST_HEADERS,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, dict):
+            raise ValueError("Open Food Facts payload is not a JSON object")
+        products = payload.get("products")
+        if products is None:
+            payload["products"] = []
+        elif not isinstance(products, list):
+            raise ValueError("Open Food Facts payload 'products' field is not a list")
+        return payload
 
 
 def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
@@ -313,15 +294,4 @@ async def _fetch_fallback(params: dict[str, Any]) -> dict[str, Any]:
     """Make one alternate-transport attempt without nested retry amplification."""
     if _resolve_curl_command():
         return await asyncio.to_thread(_curl_fetch, params)
-
-    last_exc: ValueError | None = None
-    for attempt in range(_FALLBACK_MAX_ATTEMPTS):
-        try:
-            return await asyncio.to_thread(_urllib_fetch, params)
-        except ValueError as exc:
-            last_exc = exc
-            raise
-
-    if last_exc is None:
-        raise RuntimeError("Open Food Facts fallback retry loop ended without a result")
-    raise last_exc
+    return await asyncio.to_thread(_urllib_fetch, params)
