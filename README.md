@@ -205,6 +205,7 @@ gate can additionally run the local developer health check.
 - BigchainDB decision record: docs/BIGCHAINDB_ASSESSMENT.md
 - Ecosystem continuity foundation: docs/ECOSYSTEM_CONTINUITY.md
 - Official product and separate ecosystem boundary: docs/PRODUCT_ECOSYSTEM_BOUNDARY.md
+- Identity Bridge code-provenance review: docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md
 - Voluntary XRPL transaction-linking architecture: docs/XRPL_TRANSACTION_LINKING.md
 - Public data-safety direction: docs/public/data-safety.md
 - Public XRPL reference direction: docs/public/xrpl-linking.md

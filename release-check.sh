@@ -29,6 +29,12 @@ step "Backend tests"
 step "Backend Python compilation"
 "$python_bin" -m compileall -q "$repo_root/backend/app"
 
+step "Identity Bridge contracts, provenance and release builder"
+"$python_bin" "$repo_root/tools/sync_identity_contracts.py" --check
+"$python_bin" -m unittest \
+    tools.tests.test_identity_contracts \
+    tools.tests.test_build_wordpress_plugin_release
+
 step "Schema migration smoke test"
 (
     migration_db="$(mktemp)"

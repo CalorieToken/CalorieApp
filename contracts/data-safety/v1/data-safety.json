@@ -279,6 +279,9 @@
       "separate-branding-without-official-status-claims"
     ],
     "identity_bridge_component_declared_licence": "GPL-2.0-or-later",
+    "identity_bridge_code_provenance_contract": "contracts/identity-bridge/v1/code-provenance.json",
+    "identity_bridge_public_distribution_clearance_status": "blocked-pending-source-clearance",
+    "identity_bridge_ecosystem_reuse_expansion_allowed": false,
     "identity_bridge_code_licence_grants_official_service_access": false,
     "identity_bridge_code_licence_grants_brand_or_official_status": false,
     "official_identity_bridge_release_and_service_control_remains_with_operator": true,

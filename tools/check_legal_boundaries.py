@@ -28,6 +28,9 @@ def main() -> None:
         "THIRD_PARTY_NOTICES.md",
         "ASSET_PROVENANCE.md",
         "IP_CLEARANCE.md",
+        "contracts/identity-bridge/v1/code-provenance.json",
+        "docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md",
+        "wordpress-plugins/calorieapp-identity-bridge/THIRD_PARTY_NOTICES.md",
     )
     missing = [path for path in required_files if not (ROOT / path).is_file()]
     if missing:
@@ -46,6 +49,17 @@ def main() -> None:
         "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         ("License: GPL-2.0-or-later",),
     )
+    provenance = json.loads(
+        (
+            ROOT / "contracts" / "identity-bridge" / "v1" / "code-provenance.json"
+        ).read_text(encoding="utf-8")
+    )
+    if provenance.get("distribution_clearance_status") != "blocked-pending-source-clearance":
+        raise SystemExit(
+            "Identity Bridge provenance status may change only through its reviewed clearance workflow"
+        )
+    if provenance.get("release_expansion_allowed") is not False:
+        raise SystemExit("Identity Bridge release expansion must remain blocked")
 
     package = json.loads((ROOT / "frontend/package.json").read_text(encoding="utf-8"))
     lock = json.loads((ROOT / "frontend/package-lock.json").read_text(encoding="utf-8"))

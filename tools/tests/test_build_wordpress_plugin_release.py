@@ -29,6 +29,10 @@ class WordPressPluginReleaseTests(unittest.TestCase):
                 f"{digest}  {first_archive.name}\n",
             )
             self.assertIn(f'"sha256": "{digest}"', first_manifest.read_text(encoding="utf-8"))
+            self.assertIn(
+                '"code_provenance_status": "blocked-pending-source-clearance"',
+                first_manifest.read_text(encoding="utf-8"),
+            )
 
             with zipfile.ZipFile(first_archive) as bundle:
                 names = bundle.namelist()
@@ -37,7 +41,29 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             self.assertFalse(any("tests/" in name for name in names))
             self.assertFalse(any(name.endswith(".zip") for name in names))
             self.assertIn(f"{release.PLUGIN_SLUG}/LICENSE", names)
+            self.assertIn(f"{release.PLUGIN_SLUG}/THIRD_PARTY_NOTICES.md", names)
             self.assertIn(f"{release.PLUGIN_SLUG}/config/locales.json", names)
+
+    def test_release_allowlist_has_exact_code_provenance_inventory(self) -> None:
+        files = release.release_paths()
+        contract = release.code_provenance(files)
+
+        self.assertEqual(
+            contract["distribution_clearance_status"],
+            "blocked-pending-source-clearance",
+        )
+        self.assertFalse(contract["claims"]["git_history_proves_legal_authorship"])
+        self.assertFalse(
+            contract["claims"]["current_review_is_a_legal_clearance_conclusion"]
+        )
+
+    def test_public_distribution_requires_cleared_code_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as output:
+            with self.assertRaisesRegex(ValueError, "code provenance clearance"):
+                release.build(
+                    Path(output),
+                    require_cleared_provenance=True,
+                )
 
     def test_expected_version_must_match(self) -> None:
         with tempfile.TemporaryDirectory() as output:

@@ -1,0 +1,173 @@
+{
+  "contract_id": "calorieapp.identity-bridge.code-provenance",
+  "contract_version": "1.0.0",
+  "review_date": "2026-08-30",
+  "plugin_version_reviewed": "0.3.0",
+  "distribution_clearance_status": "blocked-pending-source-clearance",
+  "release_expansion_allowed": false,
+  "local_build_and_test_allowed": true,
+  "claims": {
+    "git_history_proves_legal_authorship": false,
+    "public_repository_visibility_proves_reuse_permission": false,
+    "current_review_is_a_legal_clearance_conclusion": false,
+    "bundled_composer_npm_vendor_or_xaman_sdk_detected": false,
+    "xumm_login_source_file_detected_in_release_archive": false,
+    "absence_of_detected_source_proves_no_code_was_adapted": false
+  },
+  "known_external_interfaces": [
+    {
+      "id": "wordpress-core",
+      "relationship": "runtime-platform-api-not-bundled",
+      "recorded_licence": "GPL-2.0-or-later",
+      "source": "https://wordpress.org/about/license/",
+      "review_status": "identified"
+    },
+    {
+      "id": "xaman-platform-api",
+      "relationship": "server-side-http-api-no-sdk-bundled",
+      "source": "https://docs.xaman.dev/concepts/authorization",
+      "review_status": "technical-interface-identified-terms-review-required"
+    },
+    {
+      "id": "installed-xumm-login-plugin",
+      "relationship": "reads-xummlogin-api-key-secret-and-create-user-options",
+      "source": "exact-installed-package-not-yet-preserved-in-repository",
+      "review_status": "source-version-licence-and-similarity-review-required"
+    }
+  ],
+  "repository_contributors_observed": [
+    "xrpbanks",
+    "Codex"
+  ],
+  "release_files": [
+    {
+      "path": "CONFIGURATION.md",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "LICENSE",
+      "origin_class": "upstream-licence-text",
+      "repository_first_add_commit": "31b523d693756479153e56fd9de78bb6bff6df55",
+      "declared_distribution_licence": "GPL-2.0-only-text-applied-as-GPL-2.0-or-later-by-plugin-header",
+      "clearance_status": "identified",
+      "source": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt"
+    },
+    {
+      "path": "README.md",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "SECURITY.md",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "origin_class": "project-provenance-documentation",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "identified"
+    },
+    {
+      "path": "assets/calorieapp-embed.css",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "c2b1dac881ca03212c26c37512017d2e8caa50bb",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "assets/calorieapp-embed.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "c2b1dac881ca03212c26c37512017d2e8caa50bb",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "calorieapp-identity-bridge.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "config/locales.json",
+      "origin_class": "generated-project-contract-copy",
+      "repository_first_add_commit": "afce5b7d233dc44cb8599c50d670217c4d117391",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "source-contract-identified",
+      "source": "contracts/identity-bridge/v1/locales.json"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-admin.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-browser-authorize.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "c2b1dac881ca03212c26c37512017d2e8caa50bb",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "xumm-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-legal-footer-compatibility.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "3e4645f58e74e2c5d69f8849cec68695d0c092cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-locale-registry.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "afce5b7d233dc44cb8599c50d670217c4d117391",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-rest.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-storage.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    }
+  ],
+  "blocking_actions": [
+    "preserve-exact-installed-xumm-login-package-version-source-licence-and-notices",
+    "run-reproducible-code-similarity-scan-and-human-review-against-that-package",
+    "obtain-contributor-source-and-ai-assistance-declarations",
+    "review-xaman-api-service-terms-for-official-and-ecosystem-use",
+    "decide-and-test-bridge-owned-xaman-credential-migration",
+    "record-rights-administrator-and-where-appropriate-independent-legal-approval"
+  ]
+}

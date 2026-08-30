@@ -193,6 +193,13 @@ def test_official_products_and_separate_ecosystem_have_a_reuse_boundary() -> Non
     assert boundary["ecosystem_participation_grants_official_product_control"] is False
     assert boundary["public_source_visibility_is_reuse_permission"] is False
     assert boundary["identity_bridge_component_declared_licence"] == "GPL-2.0-or-later"
+    assert boundary["identity_bridge_code_provenance_contract"] == (
+        "contracts/identity-bridge/v1/code-provenance.json"
+    )
+    assert boundary["identity_bridge_public_distribution_clearance_status"] == (
+        "blocked-pending-source-clearance"
+    )
+    assert boundary["identity_bridge_ecosystem_reuse_expansion_allowed"] is False
     assert boundary["identity_bridge_code_licence_grants_official_service_access"] is False
     assert (
         boundary["identity_bridge_code_licence_grants_brand_or_official_status"]

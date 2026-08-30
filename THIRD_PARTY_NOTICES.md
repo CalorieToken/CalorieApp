@@ -19,5 +19,9 @@ sponsorship. No dependency establishes that the project's product concept is
 novel, exclusive, or patent-clear.
 
 The WordPress Identity Bridge is a separately licensed GPL-2.0-or-later
-component. See its `LICENSE` file. Open Food Facts data is addressed separately
-in `DATA_LICENSING.md`.
+component. Its release-file inventory, known external interfaces and unresolved
+source-clearance work are recorded in
+`contracts/identity-bridge/v1/code-provenance.json` and
+`docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md`. See its `LICENSE` and bundled
+`THIRD_PARTY_NOTICES.md` files. Open Food Facts data is addressed separately in
+`DATA_LICENSING.md`.
