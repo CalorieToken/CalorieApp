@@ -1,0 +1,24 @@
+# Durable data safety contract v1
+
+This directory defines the release-blocking data-safety boundary for CalorieApp.
+It separates durable private application data from optional decentralized
+research and records which controls are already verified, partial, planned or
+still require an explicit decision.
+
+The contract does not contain credentials, provider-specific endpoints or live
+user data. Passing its automated checks is necessary but is not by itself a
+legal, privacy or security certification.
+
+Files:
+
+- `data-safety.json`: architecture, data classes, retention boundaries and
+  prohibited storage patterns.
+- `release-test-matrix.json`: auditable status of every release-blocking gate.
+
+Status vocabulary:
+
+- `verified`: implemented and covered by the cited automated evidence.
+- `partial`: some foundations exist, but the release gate is not complete.
+- `not_started`: required implementation and verification remain outstanding.
+- `decision_required`: implementation must wait for an explicit policy choice.
+- `research_only`: not part of the current production architecture.

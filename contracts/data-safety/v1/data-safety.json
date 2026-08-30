@@ -1,0 +1,109 @@
+{
+  "contract_id": "calorieapp.durable-data-safety",
+  "contract_version": "1.0.0",
+  "release_state": "blocked",
+  "purpose": "Keep authenticated food history durable, private, portable, exportable and deletable before public user onboarding.",
+  "architecture": {
+    "primary_live_store": "postgresql",
+    "provider_selection": "pending-staging-evaluation",
+    "provider_neutral_configuration": "DATABASE_URL",
+    "sqlite_allowed_environments": ["local", "test"],
+    "sqlite_allowed_for_public_live_history": false,
+    "formal_schema_migrations_required": true,
+    "provider_driven_history_expiry_allowed": false
+  },
+  "data_classes": [
+    {
+      "id": "food_history",
+      "status": "implemented",
+      "sensitivity": "personal",
+      "examples": ["product", "nutrition values", "portion", "timestamp"],
+      "owner_binding": "calorieapp_user_id",
+      "user_export_required": true,
+      "user_delete_required": true
+    },
+    {
+      "id": "identity_link",
+      "status": "implemented",
+      "sensitivity": "personal-identifier",
+      "examples": ["internal user id", "external subject", "optional XRPL address"],
+      "data_minimization_required": true,
+      "unlink_or_account_delete_required": true
+    },
+    {
+      "id": "authentication_transient",
+      "status": "implemented",
+      "sensitivity": "security-sensitive",
+      "examples": ["hashed session token", "hashed login state", "nonce", "authorization metadata"],
+      "short_lived": true,
+      "automatic_cleanup_required": true
+    },
+    {
+      "id": "food_search_query",
+      "status": "implemented",
+      "sensitivity": "potential-free-form-personal-input",
+      "examples": ["product search text"],
+      "external_service": "Open Food Facts",
+      "persistent_storage_allowed": false,
+      "calorieapp_identity_forwarded": false
+    },
+    {
+      "id": "voluntary_profile",
+      "status": "planned",
+      "sensitivity": "personal",
+      "examples": ["display name", "voluntary profile fields"],
+      "explicit_choice_required": true,
+      "disabled_by_default": true
+    },
+    {
+      "id": "donation_contact",
+      "status": "planned",
+      "sensitivity": "personal",
+      "examples": ["email address", "optional donor details"],
+      "purpose_separation_required": true,
+      "data_minimization_required": true
+    }
+  ],
+  "retention": {
+    "food_history": "Retain for the user's active history until user deletion, account closure, or a separately approved and disclosed inactivity policy.",
+    "identity_link": "Retain only while required for the CalorieApp account and delete or unlink through the approved account-erasure flow.",
+    "authentication_transient": "Remove after the security retention window; expired records must not remain indefinitely.",
+    "backups": "Use a documented encrypted backup retention schedule and propagate erasure according to that schedule.",
+    "unresolved_release_decisions": [
+      "inactive-account retention and notice period",
+      "backup retention and deletion schedule",
+      "account export format and delivery safeguards",
+      "account erasure confirmation and recovery window"
+    ]
+  },
+  "backup_and_recovery": {
+    "encrypted_at_rest_and_in_transit_required": true,
+    "restricted_operator_access_required": true,
+    "automated_backup_required": true,
+    "documented_restore_procedure_required": true,
+    "successful_staging_restore_drill_required": true,
+    "backup_without_restore_test_counts_as_ready": false
+  },
+  "decentralized_boundary": {
+    "personal_data_on_public_blockchain_allowed": false,
+    "personal_data_on_public_ipfs_allowed": false,
+    "public_cid_treated_as_private": false,
+    "optional_encrypted_user_export": "research-only and explicit opt-in",
+    "allowed_chain_record": "non-reversible integrity commitment without personal data or stable user identifier",
+    "current_release_dependency": false
+  },
+  "release_order": [
+    "identity-baseline-review",
+    "data-policy-decisions",
+    "formal-migrations",
+    "production-database-guard",
+    "postgresql-staging",
+    "persistence-and-isolation-tests",
+    "backup-restore-drill",
+    "export-and-erasure",
+    "privacy-review",
+    "identity-feature-expansion",
+    "website-and-localization",
+    "showcase-preview-review-explicit-go-scheduled-publish"
+  ]
+}

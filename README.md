@@ -16,7 +16,7 @@ Current application stack:
 
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
-- Data: SQLite
+- Data: SQLite for local development and tests; PostgreSQL is the required live-user direction
 - External food data: Open Food Facts
 - Identity/authentication: server-side identity flow with session cookies
 
@@ -53,7 +53,8 @@ CalorieApp V1 is intentionally centralized and scope-restricted.
 
 1. Next.js frontend provides UI and user interaction flows.
 2. FastAPI backend provides API behavior and business/data logic.
-3. SQLite persists current application data.
+3. SQLite persists local development and test data. Public user onboarding is
+   blocked until the PostgreSQL durable-data release gates pass.
 4. Open Food Facts is used as the external food data source.
 5. Identity/authentication is handled through backend-managed session flow.
 
@@ -189,6 +190,8 @@ gate can additionally run the local developer health check.
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md
+- Durable data and privacy foundation: docs/DURABLE_DATA_FOUNDATION.md
+- Public data-safety direction: docs/public/data-safety.md
 - Public release readiness checklist: docs/public/release-readiness.md
 - Public identity overview: docs/public/identity.md
 

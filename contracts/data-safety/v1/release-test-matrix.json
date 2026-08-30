@@ -1,0 +1,92 @@
+{
+  "contract_id": "calorieapp.durable-data-release-gates",
+  "contract_version": "1.0.0",
+  "release_state": "blocked",
+  "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
+  "gates": [
+    {
+      "id": "provider_neutral_postgresql_configuration",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": ["backend/app/database.py", "backend/requirements.txt", "backend/tests/test_database.py"]
+    },
+    {
+      "id": "production_sqlite_fail_closed",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "formal_schema_migrations",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "owner_isolation",
+      "status": "verified",
+      "release_blocking": true,
+      "evidence": ["backend/tests/test_endpoints.py", "backend/tests/test_identity_endpoints.py"]
+    },
+    {
+      "id": "restart_persistence",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "redeploy_persistence",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "backup_restore_drill",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "user_data_export",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "user_erasure",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": ["backend/app/main.py", "backend/tests/test_endpoints.py"]
+    },
+    {
+      "id": "retention_policy",
+      "status": "decision_required",
+      "release_blocking": true,
+      "evidence": ["contracts/data-safety/v1/data-safety.json"]
+    },
+    {
+      "id": "privacy_notice_alignment",
+      "status": "not_started",
+      "release_blocking": true,
+      "evidence": []
+    },
+    {
+      "id": "no_personal_data_in_decentralized_public_storage",
+      "status": "verified",
+      "release_blocking": true,
+      "evidence": ["contracts/data-safety/v1/data-safety.json", "README.md"]
+    }
+  ],
+  "optional_research": [
+    {
+      "id": "encrypted_user_controlled_ipfs_export",
+      "status": "research_only",
+      "release_blocking": false
+    },
+    {
+      "id": "xrpl_integrity_commitment",
+      "status": "research_only",
+      "release_blocking": false
+    }
+  ]
+}
