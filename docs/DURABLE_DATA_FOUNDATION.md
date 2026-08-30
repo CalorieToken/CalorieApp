@@ -36,6 +36,28 @@ until the durable-data and privacy gates pass.
 - XRPL memos may contain only a one-time opaque challenge; comparable private
   CalorieDB records use keyed fingerprints or salted commitments, never a plain
   public hash of personal data.
+- The core Calorie ecosystem remains free to users. App/database hosting and
+  core database/Web3 capabilities may not require an additional subscription.
+- Separately reviewed value-added services may later be paid, but identity,
+  personal history access, export, correction and erasure may not be paywalled.
+- Free capacity must never be protected by silently deleting existing history.
+  New onboarding pauses before a quota or provider change threatens durability.
+- Pieter Hendrikse and CalorieToken retain management, release and brand control
+  over the official CalorieApp while a parallel open ecosystem can build on
+  documented contracts and extension interfaces.
+- Emergency continuity keeps the technical foundation preservable if the
+  current operator becomes unavailable; it is not an automatic transfer of
+  active control or official branding.
+- Future ecosystem developers may receive reviewed, revocable and scoped client
+  access, never direct Identity Bridge or session-store access. Ecosystem specs
+  expressly designated for use stay free to access under their stated rights;
+  optional managed developer services may be paid without buying broader
+  personal-data access.
+- The official website, web applications, Identity Bridge service, databases,
+  domains, releases, brands and historical visual identity remain in the
+  operator-controlled product layer. The ecosystem is a separate
+  interoperability layer; technology crosses that boundary only under an
+  explicit component licence or written permission.
 
 ## Current assessment
 
@@ -44,8 +66,10 @@ until the durable-data and privacy gates pass.
 | Identity ownership | Internal user id is bound to food logs | Preserve and test on PostgreSQL |
 | Cross-user access | Automated SQLite tests cover reads and deletion | Repeat against PostgreSQL staging |
 | PostgreSQL support | Driver and URL normalization exist | Partial, not production-ready |
-| Schema changes | `create_all` plus ad-hoc optional-column changes | Replace with formal migrations |
-| Production SQLite guard | Missing | Add a startup fail-closed check |
+| Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
+| Production SQLite guard | SQLite rejected outside local/test | Verified locally |
+| Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
+| Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Missing | Automate restart and redeploy probes |
 | Back-up and restore | Missing | Select mechanism and prove restoration |
 | User export | Missing | Add authenticated portable export |
@@ -54,14 +78,14 @@ until the durable-data and privacy gates pass.
 
 ## DS-2 implementation order
 
-1. Introduce a formal migration baseline for the exact current schema.
-2. Add environment validation and reject SQLite in staging/production.
-3. Add a database readiness probe that performs a safe query.
-4. Run the complete identity and ownership suite against PostgreSQL.
-5. Add restart and redeploy persistence tests using synthetic records.
-6. Implement authenticated data export.
-7. Complete account erasure, including identity links and active sessions.
-8. Select an encrypted backup method and perform a documented staging restore.
+1. Run the complete migration, identity and ownership suite against PostgreSQL.
+2. Select a zero-additional-subscription provider and define quota alerts.
+3. Prove the no-additional-cost exit path with a synthetic database copy.
+4. Add restart and redeploy persistence tests using synthetic records.
+5. Implement authenticated data export and versioned import.
+6. Complete account erasure, including identity links and active sessions.
+7. Select an encrypted backup method and perform a documented staging restore.
+8. Test the confidential operator-succession runbook without exposing secrets.
 9. Approve retention, backup deletion and privacy-notice wording.
 10. Only after the core gates pass, implement the disabled XRPL reference tables
     and verification flow described in `XRPL_TRANSACTION_LINKING.md`.
@@ -107,3 +131,28 @@ can store the future provenance graph. A new provider requires a short
 architecture record explaining why an existing role cannot safely provide the
 capability. Independent backup storage is the only expected exception, and only
 when a documented recovery design requires it.
+
+## Free core and sustainable optional services
+
+The user-facing core remains free. The app runtime, primary database and core
+database/Web3 feature set must not add a recurring subscription beyond the
+already accepted WordPress and development-tool costs. The implementation uses
+standard PostgreSQL, open application code and provider-neutral exports. It may
+not depend on a paid graph, blockchain-database, identity or Web3 add-on.
+
+Value-added work with independent value—such as a business bulk API, custom
+integration, advanced business analysis or professional support—may be priced
+later after a separate product, privacy and legal review. Such services cannot
+paywall identity, basic food logging, personal history access or a user's rights
+to export, correct and erase their data.
+
+No external provider can credibly promise an unchanged free tier forever.
+Therefore the release gate is operational rather than promotional: monitor
+capacity, prohibit automatic paid upgrades, keep a tested export/import and
+restore path, and pause new onboarding before a quota can endanger existing
+records. Existing history may never be deleted merely to remain under a limit.
+
+BigchainDB is not selected. Its server combines MongoDB and Tendermint and a
+meaningfully decentralized deployment requires multiple independently operated
+nodes. That adds duplicated infrastructure beside XRPL and makes private-data
+erasure harder without removing the underlying hosting cost.

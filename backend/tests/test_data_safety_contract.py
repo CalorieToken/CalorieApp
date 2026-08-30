@@ -119,6 +119,130 @@ def test_platform_budget_prevents_duplicate_core_services() -> None:
     assert platforms["roles"]["optional_ledger_reference"] == "XRPL only"
 
 
+def test_core_stays_free_while_separate_value_added_services_remain_possible() -> None:
+    contract = _load_json("data-safety.json")
+    cost = contract["cost_sustainability"]
+    access = contract["free_core_and_optional_services"]
+    web3 = contract["web3_cost_boundary"]
+
+    assert cost["core_ecosystem_end_user_price"] == "free"
+    assert cost["additional_recurring_app_hosting_subscription_allowed"] is False
+    assert cost["additional_recurring_database_hosting_subscription_allowed"] is False
+    assert cost["automatic_infrastructure_paid_upgrade_allowed"] is False
+    assert cost["paid_database_capability_required_for_core"] is False
+    assert cost["paid_web3_capability_required_for_core"] is False
+    assert cost["third_party_free_tier_permanence_claim_allowed"] is False
+    assert cost["new_onboarding_must_pause_before_data_safety_or_quota_failure"] is True
+    assert cost["existing_user_history_may_be_deleted_to_stay_free"] is False
+    assert cost["no_additional_cost_exit_plan_required_before_public_onboarding"] is True
+    assert access["optional_value_added_services_may_be_paid"] is True
+    assert access["core_data_rights_may_be_paywalled"] is False
+    assert access["identity_access_may_be_paywalled"] is False
+    assert access["premium_feature_may_enable_automatic_financial_action"] is False
+    assert web3["bigchaindb_selected"] is False
+    assert web3["automatic_fee_bearing_action_allowed"] is False
+
+
+def test_external_developer_access_is_brokered_scoped_and_disabled() -> None:
+    access = _load_json("data-safety.json")["ecosystem_developer_access"]
+
+    assert access["status"] == "future-candidate-disabled-by-default"
+    assert access["official_identity_bridge_operator"] == (
+        "Pieter Hendrikse and CalorieToken"
+    )
+    assert (
+        access["identity_bridge_foundation_control_remains_with_current_operator"]
+        is True
+    )
+    assert access["reviewed_ecosystem_linking_interface_allowed"] is True
+    assert (
+        access["ecosystem_participant_may_administer_identity_bridge_foundation"]
+        is False
+    )
+    assert (
+        access["open_specs_contracts_and_local_conformance_tools_must_remain_free"]
+        is True
+    )
+    assert access["registered_and_reviewed_client_required"] is True
+    assert access["explicit_user_consent_required_per_purpose"] is True
+    assert access["least_privilege_scopes_required"] is True
+    assert access["pairwise_pseudonymous_subject_required"] is True
+    assert access["short_lived_audience_restricted_tokens_required"] is True
+    assert access["direct_identity_database_access_allowed"] is False
+    assert access["direct_session_store_access_allowed"] is False
+    assert access["password_or_identity_bridge_session_disclosure_allowed"] is False
+    assert access["donation_or_food_history_scope_enabled_by_default"] is False
+    assert access["payment_may_grant_broader_personal_data_scope"] is False
+
+
+def test_official_products_and_separate_ecosystem_have_a_reuse_boundary() -> None:
+    boundary = _load_json("data-safety.json")["product_ecosystem_boundary"]
+
+    assert boundary["official_product_operator"] == (
+        "Pieter Hendrikse with the designated Gallery Token development team"
+    )
+    assert "gallery-token-website-and-official-wordpress-presentation" in boundary[
+        "official_product_layer"
+    ]
+    assert (
+        "official-calorieapp-identity-bridge-service-and-production-configuration"
+        in boundary["official_product_layer"]
+    )
+    assert "approved-extension-interfaces" in boundary["separate_ecosystem_layer"]
+    assert boundary["ecosystem_is_part_of_official_product_layer"] is False
+    assert boundary["ecosystem_participation_grants_official_product_control"] is False
+    assert boundary["public_source_visibility_is_reuse_permission"] is False
+    assert boundary["identity_bridge_component_declared_licence"] == "GPL-2.0-or-later"
+    assert boundary["identity_bridge_code_licence_grants_official_service_access"] is False
+    assert (
+        boundary["identity_bridge_code_licence_grants_brand_or_official_status"]
+        is False
+    )
+    assert (
+        boundary["official_identity_bridge_release_and_service_control_remains_with_operator"]
+        is True
+    )
+    assert boundary["legal_ownership_or_third_party_rights_adjudicated_by_this_contract"] is False
+
+
+def test_official_app_control_and_parallel_ecosystem_are_separate() -> None:
+    continuity = _load_json("data-safety.json")["ecosystem_continuity"]
+
+    assert continuity["official_calorieapp_active_operator"] == (
+        "Pieter Hendrikse and CalorieToken"
+    )
+    assert continuity["official_app_management_remains_with_current_operator"] is True
+    assert continuity["official_brand_and_release_authority_open_by_default"] is False
+    assert continuity["parallel_open_ecosystem_layer_required"] is True
+    assert continuity["open_ecosystem_scope"] == [
+        "schemas",
+        "contracts",
+        "data-formats",
+        "verification-specifications",
+        "extension-interfaces",
+    ]
+    assert continuity["external_contribution_auto_accepted_into_official_app"] is False
+    assert continuity["official_integration_requires_operator_review"] is True
+    assert continuity["emergency_continuity_is_active_control_transfer"] is False
+    assert continuity["fork_may_claim_official_calorieapp_or_calorietoken_brand"] is False
+    assert (
+        continuity[
+            "open_or_published_ecosystem_layer_overrides_component_licensing"
+        ]
+        is False
+    )
+    assert continuity["single_person_operational_dependency_allowed_for_public_release"] is False
+    assert continuity["open_schema_and_contracts_required"] is True
+    assert continuity["reproducible_build_and_provider_neutral_deployment_required"] is True
+    assert continuity["versioned_export_and_import_required"] is True
+    assert continuity["user_controlled_encrypted_backup_required_before_continuity_claim"] is True
+    assert continuity["public_xrpl_anchors_remain_independently_verifiable"] is True
+    assert continuity["confidential_operator_succession_runbook_required"] is True
+    assert continuity["secrets_or_personal_data_in_public_runbook_allowed"] is False
+    assert continuity["automatic_dead_man_switch_allowed"] is False
+    assert continuity["automatic_credential_or_asset_transfer_allowed"] is False
+
+
 def test_responsible_automation_keeps_human_release_and_privacy_gates() -> None:
     automation = _load_json("data-safety.json")["responsible_automation"]
 
@@ -141,6 +265,8 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "provider_neutral_postgresql_configuration",
         "production_sqlite_fail_closed",
         "formal_schema_migrations",
+        "zero_additional_cost_capacity_and_exit_plan",
+        "ecosystem_operator_succession_and_handover",
         "owner_isolation",
         "restart_persistence",
         "redeploy_persistence",
@@ -156,7 +282,10 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
     assert gates["owner_isolation"]["status"] == "verified"
-    assert gates["production_sqlite_fail_closed"]["status"] == "not_started"
+    assert gates["production_sqlite_fail_closed"]["status"] == "verified"
+    assert gates["formal_schema_migrations"]["status"] == "verified"
+    assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
+    assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert gates["retention_policy"]["status"] == "decision_required"
     assert matrix["release_state"] == "blocked"
 

@@ -18,7 +18,17 @@
     "separate_graph_database_required": false,
     "additional_blockchain_required": false,
     "ipfs_required": false,
+    "bigchaindb_required": false,
     "xrpl_role": "optional validated transaction anchor only"
+  },
+  "cost_boundary": {
+    "paid_database_feature_required_for_core": false,
+    "paid_web3_feature_required_for_core": false,
+    "hashing_and_graph_storage": "application code and primary PostgreSQL",
+    "existing_transaction_verification_creates_new_ledger_fee": false,
+    "new_fee_bearing_transaction_requires_explicit_user_authorization": true,
+    "automatic_fee_bearing_action_allowed": false,
+    "optional_separately_reviewed_value_added_services_may_be_paid": true
   },
   "automation_boundary": {
     "feature_flag_default": "disabled",

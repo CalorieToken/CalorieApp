@@ -27,6 +27,15 @@ def test_provenance_is_future_ready_without_becoming_a_launch_feature() -> None:
     assert platform["separate_graph_database_required"] is False
     assert platform["additional_blockchain_required"] is False
     assert platform["ipfs_required"] is False
+    assert platform["bigchaindb_required"] is False
+
+    cost = _contract()["cost_boundary"]
+    assert cost["paid_database_feature_required_for_core"] is False
+    assert cost["paid_web3_feature_required_for_core"] is False
+    assert cost["existing_transaction_verification_creates_new_ledger_fee"] is False
+    assert cost["new_fee_bearing_transaction_requires_explicit_user_authorization"] is True
+    assert cost["automatic_fee_bearing_action_allowed"] is False
+    assert cost["optional_separately_reviewed_value_added_services_may_be_paid"] is True
 
 
 def test_provenance_automation_is_scoped_idempotent_and_disabled_by_default() -> None:

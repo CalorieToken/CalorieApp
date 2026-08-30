@@ -29,6 +29,17 @@ step "Backend tests"
 step "Backend Python compilation"
 "$python_bin" -m compileall -q "$repo_root/backend/app"
 
+step "Schema migration smoke test"
+(
+    migration_db="$(mktemp)"
+    trap 'rm -f -- "$migration_db"' EXIT
+    cd "$repo_root/backend"
+    CALORIEAPP_ENV=test DATABASE_URL="sqlite:///$migration_db" \
+        "$python_bin" -m app.schema_cli upgrade
+    CALORIEAPP_ENV=test DATABASE_URL="sqlite:///$migration_db" \
+        "$python_bin" -m app.schema_cli check
+)
+
 step "Frontend lint"
 (
     cd "$repo_root/frontend"

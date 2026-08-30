@@ -12,15 +12,37 @@
     },
     {
       "id": "production_sqlite_fail_closed",
-      "status": "not_started",
+      "status": "verified",
       "release_blocking": true,
-      "evidence": []
+      "evidence": ["backend/app/database.py", "backend/tests/test_database.py"]
     },
     {
       "id": "formal_schema_migrations",
-      "status": "not_started",
+      "status": "verified",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "backend/app/schema_migrations/runner.py",
+        "backend/app/schema_migrations/versions/v20260830_0001.py",
+        "backend/tests/test_database.py"
+      ]
+    },
+    {
+      "id": "zero_additional_cost_capacity_and_exit_plan",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": [
+        "contracts/data-safety/v1/data-safety.json",
+        "docs/DURABLE_DATA_FOUNDATION.md"
+      ]
+    },
+    {
+      "id": "ecosystem_operator_succession_and_handover",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": [
+        "contracts/data-safety/v1/data-safety.json",
+        "docs/ECOSYSTEM_CONTINUITY.md"
+      ]
     },
     {
       "id": "owner_isolation",

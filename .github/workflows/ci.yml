@@ -153,6 +153,15 @@ jobs:
       - name: Compile backend Python
         run: python -m compileall -q backend/app
 
+      - name: Verify forward-only schema migration and readiness
+        working-directory: backend
+        env:
+          CALORIEAPP_ENV: test
+          DATABASE_URL: sqlite:///${{ runner.temp }}/calorie-schema-smoke.sqlite
+        run: |
+          python -m app.schema_cli upgrade
+          python -m app.schema_cli check
+
   frontend-checks:
     name: Frontend lint and build (Node.js 20)
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 """
 SQLModel table definitions for CalorieApp backend.
-FoodLogDB maps to the food_log table in calorieapp.db.
+FoodLogDB maps to the provider-neutral food_log table.
 Also includes identity tables: CalorieAppUser, ExternalIdentity, AuthorizationCode.
 """
 from datetime import UTC, datetime
@@ -17,7 +17,7 @@ def utc_now() -> datetime:
 
 
 class FoodLogDB(SQLModel, table=True):
-    """Persistent food log entry stored in SQLite."""
+    """Persistent food log entry owned by one internal CalorieApp user."""
 
     __tablename__ = "food_log"
 
