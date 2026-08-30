@@ -1,5 +1,5 @@
 {
-  "contract_id": "gallery-token.identity-bridge-login-test-matrix",
+  "contract_id": "calorieapp.identity-bridge-login-test-matrix",
   "contract_version": "1.0.0",
   "source_locale": "en",
   "fallback_locale": "en",

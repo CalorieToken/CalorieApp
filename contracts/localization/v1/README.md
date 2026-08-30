@@ -1,4 +1,4 @@
-# Gallery Token localized image contract v1
+# CalorieToken localized image contract v1
 
 Imported website images that contain English text require localized derived
 variants for the same eleven locales as the website and Identity Bridge.

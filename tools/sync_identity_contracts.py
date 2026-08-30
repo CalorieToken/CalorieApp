@@ -50,7 +50,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def validate_locale_registry(registry: dict[str, Any]) -> None:
-    if registry.get("contract_id") != "gallery-token.locale-registry":
+    if registry.get("contract_id") != "calorieapp.locale-registry":
         raise ValueError("Unexpected locale contract_id")
     if registry.get("source_locale") != "en" or registry.get("fallback_locale") != "en":
         raise ValueError("English must remain the source and fallback locale")

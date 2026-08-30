@@ -63,6 +63,10 @@ class IdentityContractTests(unittest.TestCase):
         locales = json.loads(contracts.CANONICAL_LOCALES.read_text(encoding="utf-8"))
         expected_tags = [locale["tag"] for locale in locales["locales"]]
 
+        self.assertEqual(
+            matrix["contract_id"],
+            "calorieapp.identity-bridge-login-test-matrix",
+        )
         self.assertEqual(matrix["locales"], expected_tags)
         self.assertEqual(matrix["source_locale"], locales["source_locale"])
         self.assertEqual(matrix["fallback_locale"], locales["fallback_locale"])
