@@ -108,9 +108,14 @@
     },
     {
       "id": "user_data_export",
-      "status": "not_started",
+      "status": "partial",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "backend/app/main.py",
+        "backend/app/schemas.py",
+        "backend/tests/test_account_data_export.py",
+        "docs/ACCOUNT_DATA_EXPORT.md"
+      ]
     },
     {
       "id": "user_erasure",

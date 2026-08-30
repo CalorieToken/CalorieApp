@@ -194,6 +194,120 @@ class CurrentUserResponse(BaseModel):
         return _ensure_utc(value)
 
 
+class AccountExportAccount(BaseModel):
+    """Portable non-secret account fields owned by the authenticated user."""
+
+    user_id: str
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    @field_validator("created_at", "updated_at", mode="after")
+    @classmethod
+    def normalize_account_timestamps(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
+
+class AccountExportExternalIdentity(BaseModel):
+    """External identity link included in the user's private export."""
+
+    provider: str
+    external_subject: str
+    xrpl_address: Optional[str]
+    created_at: datetime
+    last_verified_at: datetime
+
+    @field_validator("created_at", "last_verified_at", mode="after")
+    @classmethod
+    def normalize_identity_timestamps(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
+
+class AccountExportAuthSession(BaseModel):
+    """Session activity metadata without token hashes or internal identifiers."""
+
+    created_at: datetime
+    last_seen_at: datetime
+    expires_at: datetime
+    revoked_at: Optional[datetime]
+
+    @field_validator(
+        "created_at",
+        "last_seen_at",
+        "expires_at",
+        "revoked_at",
+        mode="after",
+    )
+    @classmethod
+    def normalize_session_timestamps(
+        cls,
+        value: Optional[datetime],
+    ) -> Optional[datetime]:
+        return _ensure_utc(value) if value is not None else None
+
+
+class AccountExportAuthorizationEvent(BaseModel):
+    """Identity authorization activity without codes, state or login secrets."""
+
+    external_subject: str
+    created_at: datetime
+    expires_at: datetime
+    used_at: Optional[datetime]
+    used_by_ip: Optional[str]
+
+    @field_validator("created_at", "expires_at", "used_at", mode="after")
+    @classmethod
+    def normalize_authorization_timestamps(
+        cls,
+        value: Optional[datetime],
+    ) -> Optional[datetime]:
+        return _ensure_utc(value) if value is not None else None
+
+
+class AccountExportLoginHandoff(BaseModel):
+    """Browser handoff activity without state or handoff-token hashes."""
+
+    status: str
+    created_at: datetime
+    expires_at: datetime
+    completed_at: Optional[datetime]
+    claimed_at: Optional[datetime]
+    failure_code: Optional[str]
+
+    @field_validator(
+        "created_at",
+        "expires_at",
+        "completed_at",
+        "claimed_at",
+        mode="after",
+    )
+    @classmethod
+    def normalize_handoff_timestamps(
+        cls,
+        value: Optional[datetime],
+    ) -> Optional[datetime]:
+        return _ensure_utc(value) if value is not None else None
+
+
+class AccountDataExportResponse(BaseModel):
+    """Versioned authenticated CalorieApp account-data export."""
+
+    export_version: Literal["calorieapp-account-data-v1"]
+    exported_at: datetime
+    account: AccountExportAccount
+    external_identities: list[AccountExportExternalIdentity]
+    food_logs: list[FoodLog]
+    authentication_sessions: list[AccountExportAuthSession]
+    authorization_events: list[AccountExportAuthorizationEvent]
+    login_handoffs: list[AccountExportLoginHandoff]
+    excluded_security_fields: list[str]
+
+    @field_validator("exported_at", mode="after")
+    @classmethod
+    def normalize_export_timestamp(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
+
 class LogoutResponse(BaseModel):
     """Response after logout."""
 
