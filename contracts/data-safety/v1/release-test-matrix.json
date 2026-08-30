@@ -87,6 +87,11 @@
       "id": "xrpl_integrity_commitment",
       "status": "research_only",
       "release_blocking": false
+    },
+    {
+      "id": "xrpl_transaction_reference_link",
+      "status": "research_only",
+      "release_blocking": false
     }
   ]
 }

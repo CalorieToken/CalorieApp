@@ -72,6 +72,15 @@ CalorieApp V1 is not:
 
 The V1 scope is food and nutrition tracking only.
 
+Infrastructure follows a one-provider-per-role policy. Optional provenance is
+designed for the same PostgreSQL primary store and does not add a graph database,
+blockchain database or IPFS dependency to the core release.
+
+Repeatable tests, schema checks, staging restore drills and future scoped ledger
+verification are automation-ready. Production schema changes, privacy-purpose
+expansion, XRPL enablement, deployment and publication retain explicit approval
+gates.
+
 No wallet custody or financial transaction layer is claimed in V1. See
 [REGULATORY.md](REGULATORY.md) for the MiCA and financial-services boundary.
 
@@ -186,12 +195,15 @@ gate can additionally run the local developer health check.
 ## Documentation
 
 - Versioned Identity Bridge contracts: contracts/identity-bridge/v1/
+- XRPL-linked provenance contract: contracts/provenance/v1/
 - Historical image localization contract: contracts/localization/v1/
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md
 - Durable data and privacy foundation: docs/DURABLE_DATA_FOUNDATION.md
+- Voluntary XRPL transaction-linking architecture: docs/XRPL_TRANSACTION_LINKING.md
 - Public data-safety direction: docs/public/data-safety.md
+- Public XRPL reference direction: docs/public/xrpl-linking.md
 - Public release readiness checklist: docs/public/release-readiness.md
 - Public identity overview: docs/public/identity.md
 

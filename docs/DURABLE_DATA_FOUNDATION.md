@@ -19,8 +19,10 @@ until the durable-data and privacy gates pass.
 - PostgreSQL is the primary live data architecture.
 - `DATABASE_URL` remains the provider-neutral connection boundary.
 - A production deployment must fail closed when configured with SQLite.
-- Formal, reversible schema migrations replace startup-time ad-hoc alteration.
+- Formal, versioned schema migrations replace startup-time ad-hoc alteration.
 - A backup is not accepted until a staging restore drill succeeds.
+- Production rollback uses a verified database restore or a separately tested
+  corrective migration, never an untested destructive automatic downgrade.
 - Food history must support authenticated export and erasure.
 - Infrastructure expiry must never silently define the user's retention period.
 - Food search text is forwarded to Open Food Facts without a CalorieApp identity
@@ -28,6 +30,12 @@ until the durable-data and privacy gates pass.
 - Personal data is not written to public blockchain or public IPFS storage.
 - Optional encrypted user-controlled exports and non-reversible integrity
   commitments remain separate research and are not launch dependencies.
+- A future voluntary XRPL reference starts with a strict one-to-one pair between
+  `(network, validated transaction hash)` and a unique CalorieDB anchor hash,
+  while every lower user/record/event association remains off-chain.
+- XRPL memos may contain only a one-time opaque challenge; comparable private
+  CalorieDB records use keyed fingerprints or salted commitments, never a plain
+  public hash of personal data.
 
 ## Current assessment
 
@@ -55,13 +63,47 @@ until the durable-data and privacy gates pass.
 7. Complete account erasure, including identity links and active sessions.
 8. Select an encrypted backup method and perform a documented staging restore.
 9. Approve retention, backup deletion and privacy-notice wording.
+10. Only after the core gates pass, implement the disabled XRPL reference tables
+    and verification flow described in `XRPL_TRANSACTION_LINKING.md`.
+
+The initial CalorieApp UI and first-user workflow do not depend on those tables.
+They begin empty and disabled, then scale only when real CalorieToken settlement
+or supply-chain adoption justifies a reviewed pilot.
 
 ## Automation boundary
 
-The automated release gate must cover schema version, owner isolation, restart
-persistence, redeploy persistence, export completeness and erasure scope. Only
-the final human review of disclosures, visual presentation and explicit
-publication approval should remain manual.
+Automation is a foundation step before formal migrations, not a later add-on.
+The release pipeline must cover contract and schema drift, tests, build,
+readiness, owner isolation, restart and redeploy persistence, export
+completeness, erasure scope and localization completeness. Backups should run
+automatically, while scheduled restore drills use staging and synthetic data.
+
+Every job must be idempotent or retry-safe, observable and auditable without
+logging secrets or unnecessary personal data. A production operation may run
+through an automated pipeline only after its explicit approval gate passes.
+Human approval remains required for production schema changes, retention or
+erasure policy changes, new Identity Bridge purposes, XRPL enablement,
+production deployment and public publication. Financial execution or routing
+must never be started automatically by this architecture.
+
+This boundary deliberately prepares the continuation: DS-2 supplies the formal
+migrations and production database guard; later Identity Bridge and eleven-
+language work reuse the same contract checks, feature flags, audit pattern and
+approval gate. Showcase preview, review and scheduled publication stay last.
 
 Provider credentials, live connection strings, real user records and private
 operational recovery details must not be committed.
+
+## Platform budget
+
+Use one provider per necessary role: the existing WordPress environment for the
+site and Identity Bridge, GitHub for source/CI, one app runtime, one
+provider-neutral PostgreSQL service and Open Food Facts as the food-data source.
+XRPL remains an optional future reference layer already native to the project.
+
+Do not add a second identity service, primary database, graph database,
+blockchain database or IPFS/Filecoin dependency to the core release. PostgreSQL
+can store the future provenance graph. A new provider requires a short
+architecture record explaining why an existing role cannot safely provide the
+capability. Independent backup storage is the only expected exception, and only
+when a documented recovery design requires it.
