@@ -58,6 +58,16 @@ def test_health_response_schema(client: TestClient) -> None:
     assert data["service"] == "calorieapp-backend"
 
 
+def test_readiness_checks_database_revision(client: TestClient) -> None:
+    response = client.get("/ready")
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ready",
+        "database_revision": "20260830_0001",
+        "service": "calorieapp-backend",
+    }
+
+
 def test_health_is_not_marked_as_private_session_data(client: TestClient) -> None:
     response = client.get("/health")
     assert response.headers.get("cache-control") != "no-store"

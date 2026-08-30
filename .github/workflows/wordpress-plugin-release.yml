@@ -53,7 +53,8 @@ jobs:
       - name: Build deterministic archive and checksum
         run: |
           python tools/build_wordpress_plugin_release.py \
-            --expected-version "${{ steps.version.outputs.value }}"
+            --expected-version "${{ steps.version.outputs.value }}" \
+            --require-cleared-provenance
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6

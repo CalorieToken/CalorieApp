@@ -19,7 +19,7 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
-from .database import get_session, init_db
+from .database import database_readiness, get_session, init_db
 from .locales import resolve_locale
 from .models import AuthSessionDB, BridgeAuthNonceDB, CalorieAppUserDB, FoodLogDB
 from .schemas import (
@@ -675,6 +675,15 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "calorieapp-backend"}
+
+
+@app.get("/ready")
+def ready() -> dict[str, str]:
+    """Confirm that the database is reachable and exactly at schema head."""
+    return {
+        **database_readiness(),
+        "service": "calorieapp-backend",
+    }
 
 
 # =========================================================================

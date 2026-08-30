@@ -96,6 +96,12 @@ the same provider-neutral PostgreSQL database as the rest of CalorieApp. XRPL is
 only the optional ledger anchor; IPFS, Filecoin and another blockchain database
 are not dependencies of this design.
 
+The hash relation, provenance graph and verification state use open application
+code and ordinary PostgreSQL features. Reading and validating an existing XRPL
+transaction hash does not create a new ledger transaction. Any future action
+that writes a transaction or memo carries the XRPL network fee and therefore
+requires separate, explicit user authorization; it can never run automatically.
+
 When this feature is eventually approved, a worker may automatically verify and
 ingest the one transaction the user or authorized business has requested. The
 network and transaction hash form its idempotency key, so retries cannot create

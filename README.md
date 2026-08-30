@@ -151,6 +151,7 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 Backend health endpoint: http://127.0.0.1:8000/health
+Backend database readiness endpoint: http://127.0.0.1:8000/ready
 
 Optional backend startup helper (PowerShell):
 
@@ -201,6 +202,10 @@ gate can additionally run the local developer health check.
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md
 - Durable data and privacy foundation: docs/DURABLE_DATA_FOUNDATION.md
+- BigchainDB decision record: docs/BIGCHAINDB_ASSESSMENT.md
+- Ecosystem continuity foundation: docs/ECOSYSTEM_CONTINUITY.md
+- Official product and separate ecosystem boundary: docs/PRODUCT_ECOSYSTEM_BOUNDARY.md
+- Identity Bridge code-provenance review: docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md
 - Voluntary XRPL transaction-linking architecture: docs/XRPL_TRANSACTION_LINKING.md
 - Public data-safety direction: docs/public/data-safety.md
 - Public XRPL reference direction: docs/public/xrpl-linking.md

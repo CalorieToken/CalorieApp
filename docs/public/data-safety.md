@@ -34,5 +34,13 @@ changes, new identity or ledger purposes, financial actions and public
 publication retain explicit approval gates. Automated work must be retry-safe,
 observable and avoid secrets or unnecessary personal data in logs.
 
+The Calorie ecosystem core is intended to remain free for users and independent
+of paid database or Web3 add-ons. Free-provider capacity is monitored;
+automatic paid upgrades are forbidden. If capacity becomes unsafe, new
+onboarding pauses while existing history remains protected and portable.
+Separately reviewed business services may be offered later, but identity and
+personal-data access, export, correction and deletion remain part of the free
+core.
+
 Passing technical checks does not by itself constitute legal, privacy or
 security certification.
