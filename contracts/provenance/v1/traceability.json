@@ -1,0 +1,205 @@
+{
+  "contract_id": "caloriedb.xrpl-linked-provenance",
+  "contract_version": "1.0.0",
+  "status": "architecture-only-disabled-by-default",
+  "rollout": {
+    "core_public_release_dependency": false,
+    "initial_user_facing_feature": false,
+    "initial_wallet_or_ledger_scan": false,
+    "initial_transaction_or_memo_ui": false,
+    "phase_0": "freeze identifiers, boundaries and migration-ready schema contract",
+    "phase_1": "after durable PostgreSQL and formal migrations, add empty tables behind a disabled feature flag",
+    "phase_2": "run an explicitly approved testnet or synthetic-data pilot",
+    "phase_3": "enable purpose-scoped production pilots only after privacy, jurisdiction and operational review",
+    "phase_4": "scale the provenance graph only when real supply-chain adoption requires it"
+  },
+  "platform_boundary": {
+    "stored_in_primary_postgresql": true,
+    "separate_graph_database_required": false,
+    "additional_blockchain_required": false,
+    "ipfs_required": false,
+    "xrpl_role": "optional validated transaction anchor only"
+  },
+  "automation_boundary": {
+    "feature_flag_default": "disabled",
+    "explicit_purpose_scoped_link_request_required": true,
+    "automatic_complete_wallet_scan_allowed": false,
+    "automatic_cross_purpose_linking_allowed": false,
+    "single_requested_transaction_verification_may_be_automated": true,
+    "idempotent_ingestion_key": ["network", "transaction_hash"],
+    "retry_safe_processing_required": true,
+    "rule_version_and_verification_evidence_recorded": true,
+    "production_enablement_requires_human_approval": true,
+    "jurisdiction_gate_enforced_before_processing": true
+  },
+  "top_anchor": {
+    "xrpl_key": ["network", "transaction_hash"],
+    "xrpl_transaction_hash_format": "64 uppercase hexadecimal characters",
+    "xrpl_state_required": "validated",
+    "caloriedb_key": "calorie_anchor_hash",
+    "caloriedb_anchor_hash_format": "64 uppercase hexadecimal characters",
+    "cardinality": "one-to-one",
+    "unique_constraints": [
+      ["network", "transaction_hash"],
+      ["calorie_anchor_hash"]
+    ],
+    "calorie_anchor_derivation": "HMAC-SHA-256 over a domain separator, network and validated XRPL transaction hash using a versioned server-side key",
+    "hashes_are_equal": false
+  },
+  "calorie_asset_scope": {
+    "exact_asset_registry_required": true,
+    "registry_key": ["network", "issuer", "currency_code"],
+    "symbol_or_memo_only_match_allowed": false,
+    "validated_transaction_and_metadata_required": true,
+    "anchor_requires_calorie_relevance_evidence": true,
+    "initial_pilot_transaction_types": ["Payment"],
+    "future_review_transaction_types": [
+      "OfferCreate",
+      "OfferCancel",
+      "AMMDeposit",
+      "AMMWithdraw",
+      "AMMBid",
+      "TrustSet"
+    ],
+    "rule_version_stored_per_anchor": true
+  },
+  "layers_top_down": [
+    {
+      "level": 0,
+      "entity": "validated_xrpl_transaction",
+      "key": ["network", "transaction_hash"]
+    },
+    {
+      "level": 1,
+      "entity": "calorie_transaction_anchor",
+      "key": ["calorie_anchor_hash"],
+      "relation_to_parent": "exactly-one"
+    },
+    {
+      "level": 2,
+      "entity": "provenance_event",
+      "key": ["event_hash"],
+      "relation_to_parent": "zero-or-more-explicit-links"
+    },
+    {
+      "level": 3,
+      "entity": "product_lot_or_batch",
+      "key": ["lot_hash"],
+      "relation_to_parent": "event-input-or-output"
+    },
+    {
+      "level": 4,
+      "entity": "trace_view",
+      "key": ["trace_scope"],
+      "relation_to_parent": "visibility-filtered-projection"
+    }
+  ],
+  "entities": {
+    "calorie_transaction_anchor": {
+      "required_fields": [
+        "network",
+        "transaction_hash",
+        "calorie_anchor_hash",
+        "key_version",
+        "asset_registry_entry_id",
+        "calorie_relevance_rule_version",
+        "validated_ledger_index",
+        "verified_at"
+      ],
+      "raw_transaction_json_stored": false
+    },
+    "provenance_event": {
+      "required_fields": [
+        "event_hash",
+        "event_type",
+        "canonicalization_version",
+        "actor_role",
+        "occurred_at",
+        "verification_level",
+        "visibility"
+      ],
+      "event_types": [
+        "production",
+        "harvest",
+        "processing",
+        "transformation",
+        "transfer",
+        "shipment",
+        "receipt",
+        "retail",
+        "consumption"
+      ],
+      "actor_roles": [
+        "producer",
+        "processor",
+        "distributor",
+        "retailer",
+        "consumer",
+        "auditor"
+      ]
+    },
+    "provenance_edge": {
+      "required_fields": [
+        "from_event_hash",
+        "to_event_hash",
+        "relation_type",
+        "created_at"
+      ],
+      "relation_types": [
+        "custody_transfer",
+        "input_to_transformation",
+        "output_from_transformation",
+        "split_from",
+        "merged_into",
+        "evidence_for"
+      ]
+    },
+    "product_lot_or_batch": {
+      "required_fields": [
+        "lot_hash",
+        "lot_type",
+        "canonicalization_version",
+        "visibility"
+      ]
+    }
+  },
+  "graph_rules": {
+    "shape": "directed-acyclic-graph",
+    "simple_linear_chain_assumed": false,
+    "splits_supported": true,
+    "merges_supported": true,
+    "cycles_allowed": false,
+    "missing_edges_reported_as_gaps": true,
+    "missing_edges_inferred_or_fabricated": false,
+    "each_edge_requires_authorized_evidence": true
+  },
+  "verification_levels": [
+    "ledger-validated",
+    "actor-declared",
+    "wallet-control-verified",
+    "document-evidence-verified",
+    "independent-auditor-verified"
+  ],
+  "truth_boundary": {
+    "transaction_proves": "existence, contents and validated ledger result of the XRPL transaction",
+    "transaction_does_not_prove": "that a physical food product existed, moved, was safe, or matched an off-chain claim",
+    "physical_claim_requires_separate_evidence": true
+  },
+  "privacy_and_visibility": {
+    "consumer_events_private_by_default": true,
+    "personal_food_history_public_by_default": false,
+    "public_provenance_requires_field_allowlist": true,
+    "public_transaction_lookup_may_return_private_record": false,
+    "cross_purpose_auto_linking_allowed": false,
+    "user_or_business_controls_optional_disclosure": true
+  },
+  "trace_lookup": {
+    "accepted_entry_points": [
+      ["network", "transaction_hash"],
+      ["calorie_anchor_hash"],
+      ["event_hash"],
+      ["lot_hash"]
+    ],
+    "result": "visibility-filtered verified path with explicit confidence levels and gaps"
+  }
+}

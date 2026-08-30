@@ -56,5 +56,7 @@ If you see inconsistent API responses:
 
 ## Notes
 
-- Data storage uses local SQLite via SQLModel for MVP persistence.
+- Data storage uses local SQLite via SQLModel for development and tests only.
+- Public user onboarding remains blocked until the durable PostgreSQL,
+  migration, persistence, export, erasure and recovery gates pass.
 - Open Food Facts is consumed only by backend service endpoints.
