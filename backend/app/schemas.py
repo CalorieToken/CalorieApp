@@ -308,6 +308,21 @@ class AccountDataExportResponse(BaseModel):
         return _ensure_utc(value)
 
 
+class AccountErasureRequest(BaseModel):
+    """Explicit confirmation bound to the authenticated internal account."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    confirm_user_id: str = Field(..., min_length=1, max_length=64)
+    acknowledgement: Literal["delete-my-calorieapp-account"]
+
+
+class AccountErasureResponse(BaseModel):
+    """Minimal response after irreversible primary-store erasure."""
+
+    status: Literal["erased"]
+
+
 class LogoutResponse(BaseModel):
     """Response after logout."""
 

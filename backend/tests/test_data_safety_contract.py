@@ -118,6 +118,37 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["account_erasure_or_retention_policy_changed"] is False
 
 
+def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
+    erasure = _load_json("data-safety.json")["account_erasure"]
+
+    assert erasure["status"] == (
+        "v2-backend-implemented-disabled-pending-policy-ui-and-notice"
+    )
+    assert erasure["enabled_by_default"] is False
+    assert erasure["authenticated_user_only"] is True
+    assert erasure["explicit_internal_user_id_confirmation_required"] is True
+    assert erasure["fixed_machine_acknowledgement_required"] is True
+    assert erasure["cross_user_deletion_allowed"] is False
+    assert erasure["ambiguous_legacy_identity_fails_closed"] is True
+    assert erasure["unowned_legacy_authorization_fails_closed"] is True
+    assert erasure["legacy_authorization_events_deleted_without_direct_ownership"] is False
+    assert erasure[
+        "direct_ownership_migration_required_before_legacy_authorization_erasure"
+    ] is True
+    assert erasure["all_primary_authentication_sessions_removed"] is True
+    assert erasure["inbound_session_replacement_references_cleared"] is True
+    assert erasure[
+        "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed"
+    ] is True
+    assert erasure["browser_session_cookie_cleared"] is True
+    assert erasure["backup_erasure_claimed_complete"] is False
+    assert erasure["recovery_window_selected"] is False
+    assert erasure["eleven_language_identity_bridge_ui_required"] is True
+    assert erasure["privacy_notice_alignment_required"] is True
+    assert erasure["human_release_approval_required_to_enable"] is True
+    assert erasure["production_enabled_or_data_mutation_performed"] is False
+
+
 def test_xrpl_linking_is_optional_off_chain_and_privacy_preserving() -> None:
     contract = _load_json("data-safety.json")
     linking = contract["xrpl_transaction_linking"]
@@ -444,6 +475,10 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["restart_persistence"]["status"] == "partial"
     assert gates["user_data_export"]["status"] == "partial"
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
+        "evidence"
+    ]
+    assert gates["user_erasure"]["status"] == "partial"
+    assert "backend/tests/test_account_erasure.py" in gates["user_erasure"][
         "evidence"
     ]
     assert gates["retention_policy"]["status"] == "decision_required"

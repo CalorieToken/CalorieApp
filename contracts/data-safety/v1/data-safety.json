@@ -121,6 +121,28 @@
     "privacy_notice_alignment_required": true,
     "account_erasure_or_retention_policy_changed": false
   },
+  "account_erasure": {
+    "status": "v2-backend-implemented-disabled-pending-policy-ui-and-notice",
+    "enabled_by_default": false,
+    "authenticated_user_only": true,
+    "explicit_internal_user_id_confirmation_required": true,
+    "fixed_machine_acknowledgement_required": true,
+    "cross_user_deletion_allowed": false,
+    "ambiguous_legacy_identity_fails_closed": true,
+    "unowned_legacy_authorization_fails_closed": true,
+    "legacy_authorization_events_deleted_without_direct_ownership": false,
+    "direct_ownership_migration_required_before_legacy_authorization_erasure": true,
+    "all_primary_authentication_sessions_removed": true,
+    "inbound_session_replacement_references_cleared": true,
+    "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed": true,
+    "browser_session_cookie_cleared": true,
+    "backup_erasure_claimed_complete": false,
+    "recovery_window_selected": false,
+    "eleven_language_identity_bridge_ui_required": true,
+    "privacy_notice_alignment_required": true,
+    "human_release_approval_required_to_enable": true,
+    "production_enabled_or_data_mutation_performed": false
+  },
   "backup_and_recovery": {
     "encrypted_at_rest_and_in_transit_required": true,
     "restricted_operator_access_required": true,
