@@ -24,7 +24,7 @@ def test_provenance_is_future_ready_without_becoming_a_launch_feature() -> None:
     assert "disabled feature flag" in rollout["phase_1"]
     assert "testnet or synthetic-data" in rollout["phase_2"]
 
-    platform = _contract()["platform_boundary"]
+    platform = contract["platform_boundary"]
     assert platform["stored_in_primary_postgresql"] is True
     assert platform["separate_graph_database_required"] is False
     assert platform["additional_blockchain_required"] is False

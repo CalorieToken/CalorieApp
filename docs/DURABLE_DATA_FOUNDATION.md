@@ -47,7 +47,7 @@ until the durable-data and privacy gates pass.
 | Schema changes | `create_all` plus ad-hoc optional-column changes | Replace with formal migrations |
 | Production SQLite guard | Missing | Add a startup fail-closed check |
 | Durable-host tests | Missing | Automate restart and redeploy probes |
-| Back-up and restore | Missing | Select mechanism and prove restoration |
+| Backup and restore | Missing | Select mechanism and prove restoration |
 | User export | Missing | Add authenticated portable export |
 | User erasure | Food-log deletion exists; complete account erasure does not | Complete scoped erasure workflow |
 | Retention | No infrastructure expiry desired; exact policy unresolved | Explicit decision and notice required |

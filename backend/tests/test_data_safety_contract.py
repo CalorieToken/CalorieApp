@@ -164,7 +164,8 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
 
 
 def test_contract_release_order_ends_with_review_and_explicit_publication_go() -> None:
-    release_order = _load_json("data-safety.json")["release_order"]
+    contract = _load_json("data-safety.json")
+    release_order = contract["release_order"]
 
     assert release_order[-1] == "showcase-preview-review-explicit-go-scheduled-publish"
     assert release_order.index("automation-and-observability-foundation") < release_order.index(
@@ -173,6 +174,6 @@ def test_contract_release_order_ends_with_review_and_explicit_publication_go() -
     assert release_order.index("privacy-review") < release_order.index(
         "identity-feature-expansion"
     )
-    optional_order = _load_json("data-safety.json")["optional_future_order"]
+    optional_order = contract["optional_future_order"]
     assert optional_order[0] == "xrpl-schema-compatibility-review"
     assert optional_order[-1] == "adoption-led-scaling"
