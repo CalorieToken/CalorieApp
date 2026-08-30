@@ -104,7 +104,14 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["external_delivery_or_publication_performed"] is False
     assert export["security_token_hashes_codes_and_login_state_included"] is False
     assert export[
-        "identity_food_history_and_linked_authentication_activity_included"
+        "identity_food_history_and_directly_owned_authentication_activity_included"
+    ] is True
+    assert export[
+        "legacy_authorization_events_without_direct_ownership_included"
+    ] is False
+    assert export["authorization_events_field_reserved_as_empty_list"] is True
+    assert export[
+        "direct_ownership_migration_required_before_authorization_event_inclusion"
     ] is True
     assert export["eleven_language_identity_bridge_ui_required"] is True
     assert export["privacy_notice_alignment_required"] is True

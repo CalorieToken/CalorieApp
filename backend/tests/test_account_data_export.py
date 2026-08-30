@@ -32,9 +32,6 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     now = datetime.now(UTC)
     own_subject = "wp:calorietoken.net:export-owner"
     other_subject = "wp:calorietoken.net:other-user"
-    own_code_hash = "a" * 64
-    own_state = "private-export-state-value"
-    own_login_session_id = "private-login-session-id"
     own_handoff_state_hash = "b" * 64
     own_handoff_token_hash = "c" * 64
 
@@ -60,25 +57,6 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
                     external_subject=other_subject,
                     created_at=now - timedelta(days=2),
                     last_verified_at=now - timedelta(days=1),
-                ),
-                AuthorizationCodeDB(
-                    code_hash=own_code_hash,
-                    external_subject=own_subject,
-                    state=own_state,
-                    login_session_id=own_login_session_id,
-                    created_at=now - timedelta(minutes=3),
-                    expires_at=now + timedelta(minutes=2),
-                    used_at=now - timedelta(minutes=1),
-                    used_by_ip="203.0.113.10",
-                ),
-                AuthorizationCodeDB(
-                    code_hash="d" * 64,
-                    external_subject=other_subject,
-                    state="other-private-state",
-                    login_session_id="other-login-session",
-                    created_at=now - timedelta(minutes=3),
-                    expires_at=now + timedelta(minutes=2),
-                    used_by_ip="203.0.113.11",
                 ),
                 OriginLoginHandoffDB(
                     state_hash=own_handoff_state_hash,
@@ -133,17 +111,12 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
         "Exported apple"
     ]
     assert len(data["authentication_sessions"]) == 1
-    assert len(data["authorization_events"]) == 1
-    assert data["authorization_events"][0]["external_subject"] == own_subject
-    assert data["authorization_events"][0]["used_by_ip"] == "203.0.113.10"
+    assert data["authorization_events"] == []
     assert len(data["login_handoffs"]) == 1
     assert data["login_handoffs"][0]["status"] == "claimed"
 
     exported_text = response.text
     for secret in (
-        own_code_hash,
-        own_state,
-        own_login_session_id,
         own_handoff_state_hash,
         own_handoff_token_hash,
         "other-user",
@@ -154,6 +127,47 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert "session_token_hash" not in data["authentication_sessions"][0]
     assert "authorization_code_hash" in data["excluded_security_fields"]
     assert "handoff_token_hash" in data["excluded_security_fields"]
+
+
+def test_account_data_export_withholds_unowned_legacy_authorization_events(
+    authenticated_client: TestClient,
+) -> None:
+    user_id = authenticated_client.get("/api/identity/me").json()["user_id"]
+    now = datetime.now(UTC)
+    subject = "wp:calorietoken.net:legacy-authorization-subject"
+    code_hash = "a" * 64
+    state = "unowned-private-state"
+    login_session_id = "unowned-private-login-session"
+    used_by_ip = "203.0.113.10"
+
+    with Session(db_module.engine) as session:
+        session.add_all(
+            [
+                ExternalIdentityDB(
+                    calorieapp_user_id=user_id,
+                    provider="wordpress_xumm",
+                    external_subject=subject,
+                ),
+                AuthorizationCodeDB(
+                    code_hash=code_hash,
+                    external_subject=subject,
+                    state=state,
+                    login_session_id=login_session_id,
+                    created_at=now - timedelta(minutes=3),
+                    expires_at=now + timedelta(minutes=2),
+                    used_at=now - timedelta(minutes=1),
+                    used_by_ip=used_by_ip,
+                ),
+            ]
+        )
+        session.commit()
+
+    response = authenticated_client.get("/api/identity/export")
+
+    assert response.status_code == 200
+    assert response.json()["authorization_events"] == []
+    for private_value in (code_hash, state, login_session_id, used_by_ip):
+        assert private_value not in response.text
 
 
 def test_account_data_export_fails_closed_for_ambiguous_external_subject(
