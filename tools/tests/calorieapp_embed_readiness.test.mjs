@@ -32,10 +32,11 @@ function element(hidden = true) {
   };
 }
 
-test("Xaman remains hidden until the CalorieApp state is ready", async () => {
+test("Xaman waits for CalorieApp readiness and completion closes the dialog", async () => {
   const source = await readFile(SCRIPT_PATH, "utf8");
   const appOrigin = "https://calorieapp-frontend.onrender.com";
   const windowListeners = {};
+  const scheduledTimeouts = [];
   const iframeWindow = { postMessage() {} };
   const iframe = element(false);
   iframe.contentWindow = iframeWindow;
@@ -79,8 +80,9 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
       windowListeners[type] = listener;
     },
     clearTimeout() {},
-    setTimeout() {
-      return 1;
+    setTimeout(callback, delay) {
+      scheduledTimeouts.push({ callback, delay });
+      return scheduledTimeouts.length;
     },
   };
   let websocketCount = 0;
@@ -159,6 +161,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   });
   await new Promise((resolve) => setImmediate(resolve));
 
+  assert.equal(modal.hidden, false);
   assert.equal(openLink.hidden, true);
   assert.equal(qrImage.hidden, true);
   assert.equal(websocketCount, 0);
@@ -204,6 +207,23 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
     locale: "nl",
   });
+
+  windowListeners.message({
+    data: {
+      type: "calorieapp:login:complete",
+      requestId,
+      locale: "nl",
+    },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  assert.equal(modal.hidden, false);
+  assert.match(status.textContent, /Signed in to WordPress and CalorieApp/);
+
+  const closeDialog = scheduledTimeouts.find(({ delay }) => delay === 1400);
+  assert.ok(closeDialog, "successful joint sign-in schedules the dialog close");
+  closeDialog.callback();
+  assert.equal(modal.hidden, true);
 
   windowListeners.message({
     data: {

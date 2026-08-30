@@ -160,6 +160,15 @@ def verify_archive(archive: Path, expected_files: list[Path]) -> None:
             raise ValueError(f"Corrupt archive member: {bad_member}")
 
 
+def display_path(artifact: Path) -> Path:
+    """Return a stable CLI path for artifacts inside or outside the repository."""
+    resolved = artifact.resolve()
+    try:
+        return resolved.relative_to(ROOT)
+    except ValueError:
+        return resolved
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "dist")
@@ -171,7 +180,7 @@ def main() -> int:
         print(f"release build failed: {exc}", file=sys.stderr)
         return 1
     for artifact in artifacts:
-        print(artifact.relative_to(ROOT))
+        print(display_path(artifact))
     return 0
 
 

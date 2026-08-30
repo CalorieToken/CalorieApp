@@ -17,3 +17,16 @@ def test_frontend_uses_canonical_wordpress_calorieapp_route():
     for source in (panel_source, env_example):
         assert CANONICAL_WORDPRESS_APP_URL in source
         assert NON_CANONICAL_WORDPRESS_APP_URL not in source
+
+
+def test_frontend_exposes_a_non_secret_build_identifier():
+    layout_source = (REPO_ROOT / "frontend" / "app" / "layout.tsx").read_text(
+        encoding="utf-8"
+    )
+    env_example = (REPO_ROOT / "frontend" / ".env.example").read_text(
+        encoding="utf-8"
+    )
+
+    assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID" in layout_source
+    assert "data-calorieapp-build-id" in layout_source
+    assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID=development" in env_example

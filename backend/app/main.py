@@ -83,6 +83,7 @@ _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {
 _SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").strip().lower()
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
 _CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
+_CALORIEAPP_BUILD_ID = os.getenv("CALORIEAPP_BUILD_ID", "development").strip()
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
 _BRIDGE_AUTH_MAX_FUTURE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_FUTURE_SECONDS", "30"))
 _BRIDGE_NONCE_RETENTION_SECONDS = int(
@@ -92,6 +93,11 @@ _BRIDGE_NONCE_RETENTION_SECONDS = int(
     )
 )
 _IDENTITY_PROVIDER = "wordpress_xumm"
+
+if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", _CALORIEAPP_BUILD_ID):
+    raise RuntimeError(
+        "CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, underscores or hyphens"
+    )
 
 if not _WORDPRESS_BRIDGE_SECRET:
     logger.warning(
@@ -674,7 +680,11 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "calorieapp-backend"}
+    return {
+        "status": "ok",
+        "service": "calorieapp-backend",
+        "build_id": _CALORIEAPP_BUILD_ID,
+    }
 
 
 # =========================================================================
