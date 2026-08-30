@@ -101,7 +101,14 @@ def _schema_signature(target_engine) -> dict[str, dict[str, object]]:
             if item.get("unique") and item.get("column_names")
         )
         signature[table_name] = {
-            "columns": tuple(column["name"] for column in inspector.get_columns(table_name)),
+            "columns": tuple(
+                (
+                    column["name"],
+                    str(column["type"]),
+                    bool(column["nullable"]),
+                )
+                for column in inspector.get_columns(table_name)
+            ),
             "foreign_keys": {
                 (
                     tuple(item["constrained_columns"]),
@@ -186,6 +193,53 @@ def test_legacy_food_log_is_preserved_and_receives_owner_foreign_key() -> None:
         ]
         assert len(owner_foreign_keys) == 1
         assert owner_foreign_keys[0]["referred_table"] == "calorieappuser"
+    finally:
+        test_engine.dispose()
+
+
+def test_legacy_food_log_with_unknown_column_fails_closed_without_data_loss() -> None:
+    test_engine = _memory_engine()
+    try:
+        with test_engine.begin() as connection:
+            connection.exec_driver_sql(
+                """
+                CREATE TABLE food_log (
+                    id INTEGER PRIMARY KEY,
+                    product_name VARCHAR(120) NOT NULL,
+                    calories FLOAT NOT NULL,
+                    protein FLOAT NOT NULL,
+                    fat FLOAT NOT NULL,
+                    carbohydrates FLOAT NOT NULL,
+                    created_at DATETIME NOT NULL,
+                    legacy_note TEXT
+                )
+                """
+            )
+            connection.exec_driver_sql(
+                """
+                INSERT INTO food_log
+                    (id, product_name, calories, protein, fat, carbohydrates,
+                     created_at, legacy_note)
+                VALUES
+                    (1, 'Legacy Preserved', 123, 4, 5, 6,
+                     '2026-01-01 00:00:00', 'must-not-disappear')
+                """
+            )
+
+        with pytest.raises(RuntimeError, match="unsupported columns.*legacy_note"):
+            upgrade_database(test_engine)
+
+        with test_engine.connect() as connection:
+            columns = {
+                str(column["name"])
+                for column in inspect(connection).get_columns("food_log")
+            }
+            row = connection.exec_driver_sql(
+                "SELECT id, product_name, legacy_note FROM food_log WHERE id = 1"
+            ).one()
+        assert "legacy_note" in columns
+        assert tuple(row) == (1, "Legacy Preserved", "must-not-disappear")
+        assert current_revision(test_engine) is None
     finally:
         test_engine.dispose()
 
