@@ -154,3 +154,54 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert "session_token_hash" not in data["authentication_sessions"][0]
     assert "authorization_code_hash" in data["excluded_security_fields"]
     assert "handoff_token_hash" in data["excluded_security_fields"]
+
+
+def test_account_data_export_fails_closed_for_ambiguous_external_subject(
+    authenticated_client: TestClient,
+) -> None:
+    user_id = authenticated_client.get("/api/identity/me").json()["user_id"]
+    now = datetime.now(UTC)
+    shared_subject = "shared-subject-across-providers"
+    other_users_ip = "198.51.100.77"
+
+    with Session(db_module.engine) as session:
+        other_user = CalorieAppUserDB(status="active")
+        session.add(other_user)
+        session.commit()
+        session.refresh(other_user)
+
+        session.add_all(
+            [
+                ExternalIdentityDB(
+                    calorieapp_user_id=user_id,
+                    provider="wordpress_xumm",
+                    external_subject=shared_subject,
+                ),
+                ExternalIdentityDB(
+                    calorieapp_user_id=other_user.id,
+                    provider="legacy_partner",
+                    external_subject=shared_subject,
+                ),
+                AuthorizationCodeDB(
+                    code_hash="f" * 64,
+                    external_subject=shared_subject,
+                    state="other-users-private-state",
+                    login_session_id="other-users-private-login",
+                    created_at=now - timedelta(minutes=3),
+                    expires_at=now + timedelta(minutes=2),
+                    used_at=now - timedelta(minutes=1),
+                    used_by_ip=other_users_ip,
+                ),
+            ]
+        )
+        session.commit()
+
+    response = authenticated_client.get("/api/identity/export")
+
+    assert response.status_code == 409
+    assert response.json() == {
+        "detail": "Account identity requires operator review before export"
+    }
+    assert "content-disposition" not in response.headers
+    assert "authorization_events" not in response.text
+    assert other_users_ip not in response.text

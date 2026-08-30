@@ -985,6 +985,22 @@ def identity_export(
     ).all()
     external_subjects = [identity.external_subject for identity in identities]
 
+    # Authorization activity predates a direct internal-user foreign key. Refuse
+    # export rather than returning another user's activity when a legacy subject is
+    # ambiguously linked across providers or accounts.
+    if external_subjects:
+        ambiguous_identity = session.exec(
+            select(ExternalIdentityDB).where(
+                ExternalIdentityDB.external_subject.in_(external_subjects),
+                ExternalIdentityDB.calorieapp_user_id != current_user.id,
+            )
+        ).first()
+        if ambiguous_identity is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Account identity requires operator review before export",
+            )
+
     food_logs = session.exec(
         select(FoodLogDB)
         .where(FoodLogDB.owner_id == current_user.id)
