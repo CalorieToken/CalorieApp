@@ -99,6 +99,7 @@ class IntegratedLogin {
             [
                 'src' => self::FRONTEND_DEFAULT,
                 'height' => '1200',
+                'locale' => '',
             ],
             is_array($attributes) ? $attributes : [],
             'calorieapp_embed'
@@ -110,7 +111,18 @@ class IntegratedLogin {
         }
 
         $height = max(700, min(4000, (int) $attributes['height']));
-        $iframe_src = add_query_arg('embedded', '1', $src);
+        $requested_locale = trim((string) $attributes['locale']);
+        if ($requested_locale === '') {
+            $requested_locale = determine_locale();
+        }
+        $locale = LocaleRegistry::resolve($requested_locale);
+        $iframe_src = add_query_arg(
+            [
+                'embedded' => '1',
+                'locale' => $locale,
+            ],
+            $src
+        );
         $instance_id = 'calorieapp-embed-' . wp_generate_uuid4();
 
         if (!wp_script_is('calorieapp-identity-bridge-embed', 'registered')) {
@@ -133,6 +145,7 @@ class IntegratedLogin {
             data-start-url="<?php echo esc_url($start_url); ?>"
             data-finish-url="<?php echo esc_url($finish_url); ?>"
             data-authorize-url="<?php echo esc_url($authorize_url); ?>"
+            data-locale="<?php echo esc_attr($locale); ?>"
         >
             <iframe
                 class="calorieapp-embed-frame"
@@ -171,6 +184,8 @@ class IntegratedLogin {
         if ($rate_limit instanceof WP_Error) {
             return $rate_limit;
         }
+
+        $locale = LocaleRegistry::resolve((string) $request->get_param('locale'));
 
         $credentials = $this->xaman_credentials();
         if ($credentials instanceof WP_Error) {
@@ -256,6 +271,7 @@ class IntegratedLogin {
             'status' => 'pending',
             'wp_user_id' => 0,
             'backend_state_hash' => '',
+            'locale' => $locale,
             'expires_at' => $expires_at,
         ];
         if (!set_transient($this->flow_key($flow_id), $flow, self::FLOW_TTL_SECONDS)) {
@@ -274,6 +290,7 @@ class IntegratedLogin {
                 'next_url' => $next_url,
                 'qr_png_url' => $qr_url,
                 'websocket_url' => $websocket_url,
+                'locale' => $locale,
             ],
             201
         );
@@ -395,6 +412,19 @@ class IntegratedLogin {
             );
         }
 
+        $flow_locale = LocaleRegistry::resolve((string) ($flow['locale'] ?? 'en'));
+        $requested_locale = trim((string) $request->get_param('locale'));
+        if (
+            $requested_locale !== ''
+            && !hash_equals($flow_locale, LocaleRegistry::resolve($requested_locale))
+        ) {
+            return new WP_Error(
+                'locale_mismatch',
+                'This sign-in flow is bound to another language context.',
+                ['status' => 409]
+            );
+        }
+
         $state_hash = hash('sha256', $state);
         $existing_state_hash = (string) ($flow['backend_state_hash'] ?? '');
         if ($existing_state_hash !== '' && !hash_equals($existing_state_hash, $state_hash)) {
@@ -407,7 +437,7 @@ class IntegratedLogin {
 
         $user_id = (int) $flow['wp_user_id'];
         $this->authenticate_wordpress_user($user_id);
-        $result = $this->rest_api->authorize_current_user($user_id, $state);
+        $result = $this->rest_api->authorize_current_user($user_id, $state, '', $flow_locale);
         if ($result instanceof WP_Error) {
             return $result;
         }
@@ -425,6 +455,7 @@ class IntegratedLogin {
                 'code' => (string) $result['code'],
                 'state' => (string) $result['state'],
                 'expires_at' => (string) $result['expires_at'],
+                'locale' => (string) $result['locale'],
             ]
         );
     }

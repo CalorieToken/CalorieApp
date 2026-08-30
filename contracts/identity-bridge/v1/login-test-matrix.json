@@ -1,0 +1,42 @@
+{
+  "contract_id": "calorieapp.identity-bridge-login-test-matrix",
+  "contract_version": "1.0.0",
+  "source_locale": "en",
+  "fallback_locale": "en",
+  "locales": ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur", "nl"],
+  "required_context_fields": ["locale", "state", "request_id"],
+  "scenarios": [
+    {
+      "id": "happy_path",
+      "expected": "The canonical locale remains identical from embed start through callback and status."
+    },
+    {
+      "id": "backend_cold_retry",
+      "expected": "Retries reuse the same canonical locale and create one accepted login state."
+    },
+    {
+      "id": "xaman_rejected",
+      "expected": "The flow fails without authorizing WordPress or CalorieApp."
+    },
+    {
+      "id": "flow_expired",
+      "expected": "Expired WordPress or backend state cannot be reused."
+    },
+    {
+      "id": "wordpress_authenticated_backend_retry",
+      "expected": "Backend retries retain the state-bound locale without repeating Xaman identity proof."
+    },
+    {
+      "id": "state_or_locale_mismatch",
+      "expected": "A mismatched state or locale is rejected before an authorization code is issued."
+    },
+    {
+      "id": "origin_browser_restore",
+      "expected": "The initiating browser can claim the session once and receives the same locale."
+    },
+    {
+      "id": "unsupported_locale_fallback",
+      "expected": "Unsupported locale input resolves to English before state creation."
+    }
+  ]
+}

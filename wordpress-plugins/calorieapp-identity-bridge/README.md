@@ -22,6 +22,8 @@ code for CalorieApp backend exchange.
   payload server-side
 - Authenticates WordPress and CalorieApp in the browser that started the flow
 - Provides the `[calorieapp_embed]` shortcode for the WordPress page
+- Binds the resolved locale to each short-lived integrated login flow and
+  rejects state/locale mixing before issuing a CalorieApp code
 
 ## Endpoints
 
@@ -73,6 +75,10 @@ During custom-domain rollout, the iframe source can be overridden explicitly:
 ```text
 [calorieapp_embed src="https://app.calorietoken.net"]
 ```
+
+The shortcode resolves the current WordPress locale automatically. A canonical
+locale or supported alias can also be supplied explicitly for controlled
+previews, for example `[calorieapp_embed locale="nl-NL"]`.
 
 The CalorieApp frontend must permit `calorietoken.net` through its
 `frame-ancestors` Content Security Policy. A same-site custom domain is strongly

@@ -25,6 +25,13 @@ artifacts are deployed and packaged independently.
 English is the source and fallback locale. The registry contains the fixed set
 of ten selected world languages plus Dutch. Arabic and Urdu are right-to-left.
 All products must resolve unsupported or malformed locale input to English.
+The canonical locale is bound to the hashed, short-lived login state and must
+remain identical across the WordPress flow, iframe messages, backend callback
+and origin-browser status claim. Locale is request context, not identity proof
+or a persisted user preference.
+
+`login-test-matrix.json` freezes the eleven-locale login and failure-path
+coverage used to prevent repetitive manual testing.
 
 Run `python tools/sync_identity_contracts.py` after changing the canonical
 registry. CI uses `--check` and rejects drift between the source and the three

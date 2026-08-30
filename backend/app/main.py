@@ -20,6 +20,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from .database import get_session, init_db
+from .locales import resolve_locale
 from .models import AuthSessionDB, BridgeAuthNonceDB, CalorieAppUserDB, FoodLogDB
 from .schemas import (
     CurrentUserResponse,
@@ -31,6 +32,7 @@ from .schemas import (
     IdentityClaimsResponse,
     IdentityLoginStatusRequest,
     IdentityLoginStatusResponse,
+    IdentityStartRequest,
     IdentityStateValidationRequest,
     IdentityStateValidationResponse,
     IdentityStartResponse,
@@ -44,6 +46,7 @@ from .services.identity import (
     create_origin_login_handoff,
     create_pending_login_state,
     fail_origin_login_handoff,
+    get_pending_login_locale,
     get_or_create_user_from_external_identity,
     restore_pending_login_state_after_transient_failure,
     validate_pending_login_state,
@@ -619,10 +622,11 @@ def _is_valid_state_format(state: str) -> bool:
     return all(ch.isalnum() or ch in "-_.~" for ch in state)
 
 
-def _build_wordpress_signin_url(state: str) -> str:
+def _build_wordpress_signin_url(state: str, locale: str) -> str:
     parsed = urlsplit(_WORDPRESS_BRIDGE_AUTHORIZE_URL)
     query_items = parse_qsl(parsed.query, keep_blank_values=True)
     query_items.append(("state", state))
+    query_items.append(("locale", locale))
     bridge_authorize_url = urlunsplit(
         (
             parsed.scheme,
@@ -679,25 +683,36 @@ def health() -> dict[str, str]:
 
 
 @app.post("/api/identity/login/start", response_model=IdentityStartResponse)
-def identity_login_start(session: DbSession) -> IdentityStartResponse:
+def identity_login_start(
+    request: Request,
+    session: DbSession,
+    payload: Optional[IdentityStartRequest] = None,
+) -> IdentityStartResponse:
     """
     Start the login flow.
 
     Creates a high-entropy state, stores a pending login transaction,
     and returns the fixed WordPress XUMM signin URL that targets the bridge.
     """
+    requested_locale = (
+        payload.locale
+        if payload is not None and payload.locale
+        else request.headers.get("accept-language")
+    )
+    locale = resolve_locale(requested_locale)
     cleanup_pending_login_states(session)
     state, pending = create_pending_login_state(
         session=session,
         state_lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
         post_login_redirect=_CALORIEAPP_POST_LOGIN_REDIRECT,
+        locale=locale,
     )
     browser_handoff_token, _ = create_origin_login_handoff(
         session=session,
         state=state,
         lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
     )
-    wordpress_signin_url = _build_wordpress_signin_url(state)
+    wordpress_signin_url = _build_wordpress_signin_url(state, locale)
 
     logger.info("Login flow started (expires_at=%s)", pending.expires_at)
 
@@ -706,6 +721,7 @@ def identity_login_start(session: DbSession) -> IdentityStartResponse:
         expires_at=pending.expires_at,
         wordpress_signin_url=wordpress_signin_url,
         browser_handoff_token=browser_handoff_token,
+        locale=locale,
     )
 
 
@@ -747,7 +763,11 @@ def identity_validate_pending_state(
             raise HTTPException(status_code=400, detail="Login state already consumed")
         raise HTTPException(status_code=400, detail="Unknown login state")
 
-    return IdentityStateValidationResponse(valid=True, expires_at=pending.expires_at)
+    return IdentityStateValidationResponse(
+        valid=True,
+        expires_at=pending.expires_at,
+        locale=get_pending_login_locale(session, payload.state),
+    )
 
 
 @app.post("/api/identity/callback", response_model=IdentityCallbackResponse)
@@ -771,6 +791,7 @@ def identity_callback(
         raise HTTPException(status_code=400, detail="code and state are required")
 
     cleanup_pending_login_states(session)
+    locale = get_pending_login_locale(session, state)
     consumed, reason = consume_pending_login_state(session, state)
     if not consumed:
         if reason == "expired":
@@ -827,6 +848,7 @@ def identity_callback(
         user_id=user.id,
         created=created,
         redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+        locale=locale,
     )
 
 
@@ -844,6 +866,7 @@ def identity_login_status(
         raise HTTPException(status_code=400, detail="Invalid login status proof")
 
     cleanup_pending_login_states(session)
+    locale = get_pending_login_locale(session, state)
     valid, status, existing = validate_origin_login_handoff(
         session,
         state,
@@ -855,9 +878,9 @@ def identity_login_status(
         raise HTTPException(status_code=404, detail="Login handoff not found")
 
     if status == "pending":
-        return IdentityLoginStatusResponse(status="pending")
+        return IdentityLoginStatusResponse(status="pending", locale=locale)
     if status == "failed":
-        return IdentityLoginStatusResponse(status="failed")
+        return IdentityLoginStatusResponse(status="failed", locale=locale)
 
     if status == "claimed" and existing is not None and existing.calorieapp_user_id:
         existing_token = request.cookies.get(SESSION_COOKIE_NAME)
@@ -867,6 +890,7 @@ def identity_login_status(
                 return IdentityLoginStatusResponse(
                     status="authenticated",
                     redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+                    locale=locale,
                 )
         raise HTTPException(status_code=409, detail="Login handoff already claimed")
 
@@ -877,9 +901,9 @@ def identity_login_status(
     )
     if not claimed or handoff is None or not handoff.calorieapp_user_id:
         if claim_status == "pending":
-            return IdentityLoginStatusResponse(status="pending")
+            return IdentityLoginStatusResponse(status="pending", locale=locale)
         if claim_status == "failed":
-            return IdentityLoginStatusResponse(status="failed")
+            return IdentityLoginStatusResponse(status="failed", locale=locale)
         raise HTTPException(status_code=409, detail="Login handoff already claimed")
 
     _cleanup_auth_sessions(session)
@@ -891,6 +915,7 @@ def identity_login_status(
             return IdentityLoginStatusResponse(
                 status="authenticated",
                 redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+                locale=locale,
             )
         replaced_session = current_session
 
@@ -904,6 +929,7 @@ def identity_login_status(
     return IdentityLoginStatusResponse(
         status="authenticated",
         redirect_to=_CALORIEAPP_POST_LOGIN_REDIRECT,
+        locale=locale,
     )
 
 

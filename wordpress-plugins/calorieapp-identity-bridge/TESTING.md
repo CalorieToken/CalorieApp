@@ -41,6 +41,9 @@ Covered scenarios:
 33. shortcode embeds the app without exposing secrets
 34. Xaman custom identifier stays within the 40-character API limit
 35. embedded Xaman controls remain hidden until CalorieApp state is ready
+36. all eleven canonical locales can start a backend login flow
+37. iframe, WordPress flow, backend state, callback and status retain one locale
+38. mixed state/locale authorization is rejected
 
 ## Files
 

@@ -311,15 +311,52 @@ class TestIdentityEndpoints:
         assert "expires_at" in data
         assert "wordpress_signin_url" in data
         assert "browser_handoff_token" in data
+        assert data["locale"] == "en"
         assert data["wordpress_signin_url"].startswith("https://calorietoken.net/?xl-signin&redirect=")
         assert "%2F%3Fcalorieapp_authorize%3D1%26state%3D" in data["wordpress_signin_url"]
         assert "state%3D" in data["wordpress_signin_url"]
+        assert "%26locale%3Den" in data["wordpress_signin_url"]
         assert len(data["state"]) >= 32
         assert len(data["browser_handoff_token"]) >= 32
         assert data["browser_handoff_token"] not in data["wordpress_signin_url"]
         assert response.headers["cache-control"] == "no-store"
         assert response.headers["pragma"] == "no-cache"
         assert data["expires_at"].endswith("Z")
+
+    @pytest.mark.parametrize(
+        "locale",
+        ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur", "nl"],
+    )
+    def test_login_start_accepts_every_contract_locale(
+        self,
+        client: TestClient,
+        locale: str,
+    ):
+        response = client.post("/api/identity/login/start", json={"locale": locale})
+
+        assert response.status_code == 200
+        assert response.json()["locale"] == locale
+
+    def test_login_start_resolves_alias_and_accept_language(self, client: TestClient):
+        explicit = client.post("/api/identity/login/start", json={"locale": "nl-NL"})
+        negotiated = client.post(
+            "/api/identity/login/start",
+            headers={"accept-language": "fr-CA,fr;q=0.9,en;q=0.8"},
+        )
+
+        assert explicit.json()["locale"] == "nl"
+        assert negotiated.json()["locale"] == "fr"
+
+    @pytest.mark.parametrize("requested", ["unknown", "zh-Hant"])
+    def test_login_start_falls_back_to_english_for_unsupported_locale(
+        self,
+        client: TestClient,
+        requested: str,
+    ):
+        response = client.post("/api/identity/login/start", json={"locale": requested})
+
+        assert response.status_code == 200
+        assert response.json()["locale"] == "en"
 
     def test_login_start_generates_unique_high_entropy_states(self, client: TestClient):
         first = client.post("/api/identity/login/start").json()["state"]
@@ -483,6 +520,7 @@ class TestIdentityEndpoints:
 
         assert response.status_code == 200
         assert response.json()["valid"] is True
+        assert response.json()["locale"] == "en"
 
     def test_bridge_canonicalization_distinguishes_logically_different_values(self):
         p1 = _canonical_bridge_payload_for_test(
@@ -517,6 +555,51 @@ class TestIdentityEndpoints:
         )
         assert response.status_code == 200
         assert response.json()["valid"] is True
+        assert response.json()["locale"] == "en"
+
+    def test_locale_remains_state_bound_through_callback_and_status(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "supersecret")
+        monkeypatch.setattr(main_module, "_CALORIEAPP_CLIENT_ID", "calorieapp-backend")
+        now = datetime.now(UTC)
+        claims = IdentityClaimsResponse(
+            external_subject="wp:calorietoken.net:locale-test",
+            xrpl_address="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+            issued_at=now,
+            expires_at=now + timedelta(seconds=60),
+            jti="jti-locale-test",
+        )
+        monkeypatch.setattr(main_module, "_exchange_code_for_claims", lambda code, state: claims)
+
+        start = client.post("/api/identity/login/start", json={"locale": "nl-NL"}).json()
+        headers = _build_bridge_headers(state=start["state"], secret="supersecret")
+        validation = client.post(
+            "/api/identity/login/state/validate",
+            json={"state": start["state"]},
+            headers=headers,
+        )
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": start["state"]},
+        )
+        status = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+
+        assert start["locale"] == "nl"
+        assert validation.status_code == 200
+        assert validation.json()["locale"] == "nl"
+        assert callback.status_code == 200
+        assert callback.json()["locale"] == "nl"
+        assert status.status_code == 200
+        assert status.json()["locale"] == "nl"
 
     def test_bridge_state_validate_rejects_invalid_signature(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "supersecret")
@@ -1180,7 +1263,7 @@ class TestIdentityCallbackFlow:
         )
 
         assert status.status_code == 200
-        assert status.json() == {"status": "pending", "redirect_to": None}
+        assert status.json() == {"status": "pending", "redirect_to": None, "locale": "en"}
         assert SESSION_COOKIE_NAME not in status.cookies
 
     def test_origin_handoff_rejects_wrong_browser_proof(self, client: TestClient):
