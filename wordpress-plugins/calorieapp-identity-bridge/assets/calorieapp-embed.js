@@ -53,6 +53,7 @@
     var startUrl = root.dataset.startUrl || "";
     var finishUrl = root.dataset.finishUrl || "";
     var authorizeUrl = root.dataset.authorizeUrl || "";
+    var configuredLocale = root.dataset.locale || "en";
 
     if (
       !iframe ||
@@ -95,6 +96,7 @@
           {
             type: MESSAGE_PREFIX + type,
             requestId: requestId,
+            locale: configuredLocale,
           },
           detail || {}
         ),
@@ -107,7 +109,7 @@
         return;
       }
       iframe.contentWindow.postMessage(
-        { type: MESSAGE_PREFIX + "bridge:init" },
+        { type: MESSAGE_PREFIX + "bridge:init", locale: configuredLocale },
         appOrigin
       );
     }
@@ -255,16 +257,21 @@
       requestId = message.requestId;
       resetFlow();
       modal.hidden = false;
+      if (message.locale !== configuredLocale) {
+        fail("CalorieApp returned a different language context.");
+        return;
+      }
       setStatus("Preparing a secure Xaman sign-in request...");
 
-      apiRequest(startUrl, {}).then(function (result) {
+      apiRequest(startUrl, { locale: configuredLocale }).then(function (result) {
         var payload = result.payload;
         if (
           typeof payload.flow_id !== "string" ||
           typeof payload.flow_proof !== "string" ||
           typeof payload.next_url !== "string" ||
           typeof payload.qr_png_url !== "string" ||
-          typeof payload.websocket_url !== "string"
+          typeof payload.websocket_url !== "string" ||
+          payload.locale !== configuredLocale
         ) {
           throw new Error("WordPress returned incomplete Xaman data.");
         }
@@ -272,6 +279,7 @@
         flow = {
           flowId: payload.flow_id,
           flowProof: payload.flow_proof,
+          locale: payload.locale,
         };
         xamanLaunch = {
           nextUrl: payload.next_url,
@@ -372,12 +380,14 @@
         flow_id: flow.flowId,
         flow_proof: flow.flowProof,
         state: backendState,
+        locale: configuredLocale,
       }).then(function (result) {
         authorizeInFlight = false;
         if (
           result.payload.status !== "authorized" ||
           typeof result.payload.code !== "string" ||
-          result.payload.state !== backendState
+          result.payload.state !== backendState ||
+          result.payload.locale !== configuredLocale
         ) {
           throw new Error("CalorieApp authorization was incomplete.");
         }
@@ -386,6 +396,7 @@
         postToApp("login:authorization", {
           code: result.payload.code,
           state: result.payload.state,
+          locale: result.payload.locale,
         });
       }).catch(function (error) {
         authorizeInFlight = false;
@@ -450,8 +461,22 @@
         return;
       }
 
+      if (
+        message.type.indexOf(MESSAGE_PREFIX + "login:") === 0 &&
+        message.locale !== configuredLocale
+      ) {
+        fail("CalorieApp returned a different language context.");
+        return;
+      }
+
       if (message.type === MESSAGE_PREFIX + "login:state") {
-        if (typeof message.state !== "string" || message.state.length < 32) {
+        if (
+          typeof message.state !== "string" ||
+          message.state.length < 32 ||
+          message.locale !== configuredLocale ||
+          !flow ||
+          flow.locale !== configuredLocale
+        ) {
           fail("CalorieApp returned an invalid login state.");
           return;
         }

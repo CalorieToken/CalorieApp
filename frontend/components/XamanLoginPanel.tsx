@@ -9,6 +9,7 @@ import {
   BackendRequestTimeoutError,
   waitForBackendReady,
 } from "@/lib/backendRequest";
+import { resolveLocale } from "@/lib/locales";
 
 type MeResponse = {
   user_id: string;
@@ -20,17 +21,27 @@ type LoginStartResponse = {
   expires_at: string;
   wordpress_signin_url: string;
   browser_handoff_token: string;
+  locale: string;
 };
 
 type LoginStatusResponse = {
   status: "pending" | "failed" | "authenticated";
   redirect_to?: string | null;
+  locale: string;
+};
+
+type LoginCallbackResponse = {
+  user_id: string;
+  created: boolean;
+  redirect_to: string;
+  locale: string;
 };
 
 type PendingLogin = {
   state: string;
   expiresAt: string;
   browserHandoffToken: string;
+  locale: string;
 };
 
 const BACKEND_BASE_URL = "/api/backend";
@@ -55,7 +66,19 @@ type ParentBridgeMessage = {
   message?: unknown;
   code?: unknown;
   state?: unknown;
+  locale?: unknown;
 };
+
+function initialLocale(): string {
+  if (typeof window === "undefined") {
+    return "en";
+  }
+
+  const queryLocale = new URLSearchParams(window.location.search).get("locale");
+  const documentLocale = document.documentElement.lang;
+  const browserLocale = navigator.languages?.join(",") || navigator.language;
+  return resolveLocale(queryLocale || documentLocale || browserLocale);
+}
 
 function isAllowedParentOrigin(value: string): boolean {
   try {
@@ -118,6 +141,7 @@ function storePendingLogin(data: LoginStartResponse) {
     state: data.state,
     expiresAt: data.expires_at,
     browserHandoffToken: data.browser_handoff_token,
+    locale: data.locale,
   };
 
   window.sessionStorage.setItem(
@@ -151,6 +175,7 @@ function readPendingLogin(): PendingLogin | null {
       state: value.state,
       expiresAt: value.expiresAt as string,
       browserHandoffToken: value.browserHandoffToken,
+      locale: resolveLocale(typeof value.locale === "string" ? value.locale : "en"),
     };
   } catch {
     clearPendingLogin();
@@ -181,7 +206,8 @@ async function waitForOriginLogin(
   state: string,
   browserHandoffToken: string,
   expiresAt: string,
-  signal: AbortSignal
+  signal: AbortSignal,
+  expectedLocale = "en"
 ) {
   const parsedExpiry = Date.parse(expiresAt);
   const deadline = Number.isFinite(parsedExpiry)
@@ -233,6 +259,9 @@ async function waitForOriginLogin(
     }
 
     const payload = (await response.json()) as LoginStatusResponse;
+    if (resolveLocale(payload.locale) !== expectedLocale) {
+      throw new Error("Login status language context did not match");
+    }
     if (payload.status === "authenticated") {
       return;
     }
@@ -272,7 +301,8 @@ type EmbeddedLoginPreparationPhase = LoginStartRetryReason | "waking-up";
 export async function startLoginWithRetry(
   signal: AbortSignal,
   onRetry: (reason: LoginStartRetryReason) => void,
-  retryWindowMs = LOGIN_START_RETRY_WINDOW_MS
+  retryWindowMs = LOGIN_START_RETRY_WINDOW_MS,
+  locale = "en"
 ): Promise<LoginStartResponse> {
   const deadline = Date.now() + retryWindowMs;
 
@@ -281,7 +311,12 @@ export async function startLoginWithRetry(
     try {
       response = await backendRequest(
         `${BACKEND_BASE_URL}/api/identity/login/start`,
-        { method: "POST", signal },
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locale: resolveLocale(locale) }),
+          signal,
+        },
         Math.max(
           1,
           Math.min(LOGIN_START_REQUEST_TIMEOUT_MS, deadline - Date.now())
@@ -324,7 +359,8 @@ export async function startLoginWithRetry(
 export async function prepareEmbeddedLogin(
   signal: AbortSignal,
   onProgress: (phase: EmbeddedLoginPreparationPhase) => void,
-  retryWindowMs = EMBEDDED_LOGIN_START_RETRY_WINDOW_MS
+  retryWindowMs = EMBEDDED_LOGIN_START_RETRY_WINDOW_MS,
+  locale = "en"
 ): Promise<LoginStartResponse> {
   // A GET readiness probe reliably wakes a spun-down Render Free backend.
   // Sending login/start as the first request can be rejected by Render's edge
@@ -334,7 +370,7 @@ export async function prepareEmbeddedLogin(
   }
   onProgress("waking-up");
   await waitForBackendReady(BACKEND_WAKE_BASE_URL, signal);
-  return startLoginWithRetry(signal, onProgress, retryWindowMs);
+  return startLoginWithRetry(signal, onProgress, retryWindowMs, locale);
 }
 
 export function XamanLoginPanel() {
@@ -349,6 +385,7 @@ export function XamanLoginPanel() {
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
+  const activeLocale = useRef(initialLocale());
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     try {
@@ -412,7 +449,8 @@ export function XamanLoginPanel() {
           pendingLogin.state,
           pendingLogin.browserHandoffToken,
           pendingLogin.expiresAt,
-          controller.signal
+          controller.signal,
+          pendingLogin.locale
         );
         clearPendingLogin();
 
@@ -469,6 +507,7 @@ export function XamanLoginPanel() {
           type: "calorieapp:frame:height",
           requestId: embeddedRequestId.current,
           height,
+          locale: activeLocale.current,
         },
         origin
       );
@@ -487,6 +526,9 @@ export function XamanLoginPanel() {
       ) {
         origin = event.origin;
         parentOrigin.current = event.origin;
+        activeLocale.current = resolveLocale(
+          typeof event.data.locale === "string" ? event.data.locale : activeLocale.current
+        );
         setIsEmbedded(true);
         postHeight();
         return;
@@ -499,6 +541,17 @@ export function XamanLoginPanel() {
         !event.data ||
         event.data.requestId !== embeddedRequestId.current
       ) {
+        return;
+      }
+
+      if (
+        typeof event.data.type === "string" &&
+        event.data.type.startsWith("calorieapp:login:") &&
+        event.data.locale !== activeLocale.current
+      ) {
+        setError("The WordPress sign-in language context did not match this page.");
+        setLoginStatus(null);
+        setIsLoading(false);
         return;
       }
 
@@ -527,7 +580,8 @@ export function XamanLoginPanel() {
         !pending ||
         typeof event.data.code !== "string" ||
         typeof event.data.state !== "string" ||
-        event.data.state !== pending.state
+        event.data.state !== pending.state ||
+        event.data.locale !== pending.locale
       ) {
         setError("The WordPress sign-in response did not match this CalorieApp request.");
         setLoginStatus(null);
@@ -549,6 +603,10 @@ export function XamanLoginPanel() {
         if (!response.ok) {
           throw new Error(`Callback failed with ${response.status}`);
         }
+        const callback = (await response.json()) as LoginCallbackResponse;
+        if (callback.locale !== pending.locale) {
+          throw new Error("Callback language context did not match");
+        }
 
         const restoredUser = await refreshCurrentUser(bridgeController.signal);
         if (!restoredUser) {
@@ -566,6 +624,7 @@ export function XamanLoginPanel() {
           {
             type: "calorieapp:login:complete",
             requestId: embeddedRequestId.current,
+            locale: pending.locale,
           },
           origin
         );
@@ -582,6 +641,7 @@ export function XamanLoginPanel() {
             type: "calorieapp:login:backend-error",
             requestId: embeddedRequestId.current,
             message,
+            locale: pending.locale,
           },
           origin
         );
@@ -589,7 +649,10 @@ export function XamanLoginPanel() {
     };
 
     window.addEventListener("message", handleParentMessage);
-    window.parent.postMessage({ type: "calorieapp:bridge:ready" }, "*");
+    window.parent.postMessage(
+      { type: "calorieapp:bridge:ready", locale: activeLocale.current },
+      "*"
+    );
     return () => {
       bridgeController.abort();
       resizeObserver?.disconnect();
@@ -618,7 +681,11 @@ export function XamanLoginPanel() {
       );
 
       window.parent.postMessage(
-        { type: "calorieapp:login:start", requestId },
+        {
+          type: "calorieapp:login:start",
+          requestId,
+          locale: activeLocale.current,
+        },
         embeddedParentOrigin
       );
 
@@ -638,17 +705,20 @@ export function XamanLoginPanel() {
                 type: "calorieapp:login:progress",
                 requestId,
                 message,
+                locale: activeLocale.current,
               },
               embeddedParentOrigin
             );
           },
-          EMBEDDED_LOGIN_START_RETRY_WINDOW_MS
+          EMBEDDED_LOGIN_START_RETRY_WINDOW_MS,
+          activeLocale.current
         );
         if (
           data.state.length < 32 ||
           data.browser_handoff_token.length < 32 ||
           !Number.isFinite(Date.parse(data.expires_at)) ||
-          Date.parse(data.expires_at) <= Date.now()
+          Date.parse(data.expires_at) <= Date.now() ||
+          data.locale !== activeLocale.current
         ) {
           throw new Error("Missing CalorieApp login state");
         }
@@ -659,6 +729,7 @@ export function XamanLoginPanel() {
             type: "calorieapp:login:state",
             requestId,
             state: data.state,
+            locale: data.locale,
           },
           embeddedParentOrigin
         );
@@ -678,6 +749,7 @@ export function XamanLoginPanel() {
             type: "calorieapp:login:backend-error",
             requestId,
             message,
+            locale: activeLocale.current,
           },
           embeddedParentOrigin
         );
@@ -712,16 +784,22 @@ export function XamanLoginPanel() {
       startupNoticeTimer = null;
       setLoginStatus("Service ready. Opening Xaman...");
 
-      const data = await startLoginWithRetry(controller.signal, () => {
-        setLoginStatus(
-          "CalorieApp is temporarily busy. Waiting safely before opening Xaman..."
-        );
-      });
+      const data = await startLoginWithRetry(
+        controller.signal,
+        () => {
+          setLoginStatus(
+            "CalorieApp is temporarily busy. Waiting safely before opening Xaman..."
+          );
+        },
+        LOGIN_START_RETRY_WINDOW_MS,
+        activeLocale.current
+      );
       if (
         data.state.length < 32 ||
         data.browser_handoff_token.length < 32 ||
         !Number.isFinite(Date.parse(data.expires_at)) ||
         Date.parse(data.expires_at) <= Date.now() ||
+        data.locale !== activeLocale.current ||
         !isAllowedWordPressSigninUrl(data.wordpress_signin_url)
       ) {
         throw new Error("Missing signin handoff data");
@@ -743,7 +821,8 @@ export function XamanLoginPanel() {
         data.state,
         data.browser_handoff_token,
         data.expires_at,
-        controller.signal
+        controller.signal,
+        data.locale
       );
       clearPendingLogin();
 

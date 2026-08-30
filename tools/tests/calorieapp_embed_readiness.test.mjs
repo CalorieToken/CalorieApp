@@ -60,6 +60,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
       startUrl: "/start",
       finishUrl: "/finish",
       authorizeUrl: "/authorize",
+      locale: "nl",
     },
     querySelector(selector) {
       return selectors.get(selector) ?? null;
@@ -86,12 +87,17 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   class FakeWebSocket {
     constructor() {
       websocketCount += 1;
+      lastSocket = this;
     }
     close() {}
   }
+  let lastSocket = null;
   const fetchCalls = [];
-  const fetch = async (url) => {
+  const fetchBodies = [];
+  let finishCount = 0;
+  const fetch = async (url, options = {}) => {
     fetchCalls.push(url);
+    fetchBodies.push(JSON.parse(options.body));
     if (url === "/start") {
       return {
         ok: true,
@@ -102,14 +108,31 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
           next_url: "https://xumm.app/sign/payload",
           qr_png_url: "https://xumm.app/sign/payload.png",
           websocket_url: "wss://xumm.app/sign/payload",
+          locale: "nl",
         }),
       };
     }
     if (url === "/finish") {
+      finishCount += 1;
       return {
         ok: true,
-        status: 202,
-        json: async () => ({ status: "pending" }),
+        status: finishCount === 1 ? 202 : 200,
+        json: async () => ({
+          status: finishCount === 1 ? "pending" : "wordpress_authenticated",
+        }),
+      };
+    }
+    if (url === "/authorize") {
+      const body = JSON.parse(options.body);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          status: "authorized",
+          code: "authorization-code",
+          state: body.state,
+          locale: "nl",
+        }),
       };
     }
     throw new Error(`Unexpected fetch: ${url}`);
@@ -130,7 +153,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
 
   const requestId = "request-12345678";
   windowListeners.message({
-    data: { type: "calorieapp:login:start", requestId },
+    data: { type: "calorieapp:login:start", requestId, locale: "nl" },
     origin: appOrigin,
     source: iframeWindow,
   });
@@ -149,6 +172,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
       type: "calorieapp:login:state",
       requestId,
       state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "nl",
     },
     origin: appOrigin,
     source: iframeWindow,
@@ -169,11 +193,24 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   assert.deepEqual(fetchCalls, ["/start", "/finish"]);
   assert.match(status.textContent, /Waiting for the Xaman signature/);
 
+  lastSocket.onmessage({ data: JSON.stringify({ signed: true }) });
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start", "/finish", "/finish", "/authorize"]);
+  assert.deepEqual(fetchBodies[0], { locale: "nl" });
+  assert.deepEqual(fetchBodies[3], {
+    flow_id: "flow-id",
+    flow_proof: "flow-proof",
+    state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    locale: "nl",
+  });
+
   windowListeners.message({
     data: {
       type: "calorieapp:login:backend-error",
       requestId,
       message: "CalorieApp startup failed",
+      locale: "nl",
     },
     origin: appOrigin,
     source: iframeWindow,
@@ -183,6 +220,6 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
 
   windowListeners.focus();
   await new Promise((resolve) => setImmediate(resolve));
-  assert.deepEqual(fetchCalls, ["/start", "/finish"]);
+  assert.deepEqual(fetchCalls, ["/start", "/finish", "/finish", "/authorize"]);
   assert.equal(status.textContent, "CalorieApp startup failed");
 });

@@ -96,6 +96,18 @@ class PendingLoginStateDB(SQLModel, table=True):
     post_login_redirect: Optional[str] = Field(default=None, max_length=255)
 
 
+class PendingLoginLocaleDB(SQLModel, table=True):
+    """Ephemeral locale context bound to a hashed login state."""
+
+    __tablename__ = "pendingloginlocale"
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    state_hash: str = Field(max_length=64, unique=True, index=True)
+    locale: str = Field(default="en", max_length=16)
+    created_at: datetime = Field(default_factory=utc_now)
+    expires_at: datetime = Field(index=True)
+
+
 class OriginLoginHandoffDB(SQLModel, table=True):
     """One-time proof that lets the browser which started login claim a session."""
 

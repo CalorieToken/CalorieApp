@@ -44,11 +44,14 @@ test("login start retries transport errors and transient responses", async () =>
         expires_at: "2099-01-01T00:00:00Z",
         wordpress_signin_url: "https://calorietoken.net/?xl-signin=1",
         browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+        locale: "nl",
       }),
     },
   ];
   let requestCount = 0;
-  const backendRequest = async () => {
+  const requestBodies = [];
+  const backendRequest = async (_url, options) => {
+    requestBodies.push(JSON.parse(options.body));
     const response = responses[requestCount];
     requestCount += 1;
     if (response instanceof Error) {
@@ -90,6 +93,9 @@ test("login start retries transport errors and transient responses", async () =>
           waitForBackendReady: async () => {},
         };
       }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
+      }
       throw new Error(`Unexpected require: ${specifier}`);
     },
     setImmediate,
@@ -108,7 +114,8 @@ test("login start retries transport errors and transient responses", async () =>
   const result = await module.exports.startLoginWithRetry(
     new AbortController().signal,
     (reason) => retryReasons.push(reason),
-    10_000
+    10_000,
+    "nl"
   );
 
   assert.equal(requestCount, 4);
@@ -118,6 +125,12 @@ test("login start retries transport errors and transient responses", async () =>
     "temporarily-unavailable",
   ]);
   assert.equal(result.state, "state-abcdefghijklmnopqrstuvwxyz-0123456789");
+  assert.deepEqual(requestBodies, [
+    { locale: "nl" },
+    { locale: "nl" },
+    { locale: "nl" },
+    { locale: "nl" },
+  ]);
 });
 
 test("embedded login wakes the backend before creating login state", async () => {
@@ -141,6 +154,7 @@ test("embedded login wakes the backend before creating login state", async () =>
       expires_at: "2099-01-01T00:00:00Z",
       wordpress_signin_url: "https://calorietoken.net/?xl-signin=1",
       browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "en",
     }),
   };
 
@@ -181,6 +195,9 @@ test("embedded login wakes the backend before creating login state", async () =>
             events.push(`backend-ready:${backendUrl}`);
           },
         };
+      }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },
@@ -259,6 +276,9 @@ test("embedded login does not report progress after cancellation", async () => {
             events.push("backend-ready");
           },
         };
+      }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },

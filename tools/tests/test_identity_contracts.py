@@ -50,6 +50,40 @@ class IdentityContractTests(unittest.TestCase):
         self.assertIn("'code_ttl_seconds' => 60", plugin_root)
         self.assertEqual(security["authorization_code"]["default_ttl_seconds"], 60)
 
+    def test_login_matrix_covers_all_locales_and_failure_paths(self) -> None:
+        matrix = json.loads(
+            (
+                contracts.ROOT
+                / "contracts"
+                / "identity-bridge"
+                / "v1"
+                / "login-test-matrix.json"
+            ).read_text(encoding="utf-8")
+        )
+        locales = json.loads(contracts.CANONICAL_LOCALES.read_text(encoding="utf-8"))
+        expected_tags = [locale["tag"] for locale in locales["locales"]]
+
+        self.assertEqual(matrix["locales"], expected_tags)
+        self.assertEqual(matrix["source_locale"], locales["source_locale"])
+        self.assertEqual(matrix["fallback_locale"], locales["fallback_locale"])
+        self.assertEqual(
+            set(matrix["required_context_fields"]),
+            {"locale", "state", "request_id"},
+        )
+        self.assertEqual(
+            {scenario["id"] for scenario in matrix["scenarios"]},
+            {
+                "happy_path",
+                "backend_cold_retry",
+                "xaman_rejected",
+                "flow_expired",
+                "wordpress_authenticated_backend_retry",
+                "state_or_locale_mismatch",
+                "origin_browser_restore",
+                "unsupported_locale_fallback",
+            },
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

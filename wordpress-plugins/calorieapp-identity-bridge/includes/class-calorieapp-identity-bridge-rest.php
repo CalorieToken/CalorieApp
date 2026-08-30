@@ -46,6 +46,10 @@ class RestApi {
                             'type' => 'boolean',
                             'default' => true,
                         ],
+                        'locale' => [
+                            'required' => false,
+                            'type' => 'string',
+                        ],
                     ],
                 ],
             ]
@@ -87,7 +91,8 @@ class RestApi {
         $result = $this->authorize_current_user(
             $user_id,
             trim((string) $request->get_param('state')),
-            trim((string) $request->get_param('callback_url'))
+            trim((string) $request->get_param('callback_url')),
+            trim((string) $request->get_param('locale'))
         );
 
         if ($result instanceof WP_Error) {
@@ -102,7 +107,12 @@ class RestApi {
         return new WP_REST_Response($result, 200);
     }
 
-    public function authorize_current_user(int $user_id, string $state, string $callback_url = '') {
+    public function authorize_current_user(
+        int $user_id,
+        string $state,
+        string $callback_url = '',
+        string $expected_locale = ''
+    ) {
         $this->storage->cleanup_records();
 
         if ($user_id <= 0) {
@@ -116,6 +126,17 @@ class RestApi {
         $state_validation = $this->validate_state_with_backend($state);
         if ($state_validation instanceof WP_Error) {
             return $state_validation;
+        }
+        $state_locale = (string) $state_validation;
+        if (
+            $expected_locale !== ''
+            && !hash_equals(LocaleRegistry::resolve($expected_locale), $state_locale)
+        ) {
+            return new WP_Error(
+                'locale_mismatch',
+                'The login state belongs to another language context.',
+                ['status' => 409]
+            );
         }
 
         $callback_url = $this->resolve_callback_url($callback_url);
@@ -156,6 +177,7 @@ class RestApi {
             'redirect_url' => $redirect,
             'expires_at' => $issued['expires_at'],
             'jti' => $issued['jti'],
+            'locale' => $state_locale,
         ];
     }
 
@@ -322,7 +344,12 @@ class RestApi {
             return new WP_Error('state_validation_failed', 'Backend returned an invalid state-validation response', ['status' => 502]);
         }
 
-        return true;
+        $locale = isset($body['locale']) ? trim((string) $body['locale']) : 'en';
+        if (!in_array($locale, LocaleRegistry::tags(), true)) {
+            return new WP_Error('state_validation_failed', 'Backend returned an invalid locale context', ['status' => 502]);
+        }
+
+        return $locale;
     }
 
     private function build_state_validation_signature_payload(

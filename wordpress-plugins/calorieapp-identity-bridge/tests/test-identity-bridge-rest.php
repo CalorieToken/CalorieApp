@@ -87,7 +87,7 @@ class Test_CalorieApp_Identity_Bridge_REST extends WP_UnitTestCase {
 
         return [
             'headers' => [],
-            'body' => wp_json_encode(['valid' => true]),
+            'body' => wp_json_encode(['valid' => true, 'locale' => 'en']),
             'response' => ['code' => 200, 'message' => 'OK'],
             'cookies' => [],
             'filename' => null,
@@ -114,6 +114,22 @@ class Test_CalorieApp_Identity_Bridge_REST extends WP_UnitTestCase {
 
         $response = rest_do_request($request);
         $this->assertSame(200, $response->get_status());
+        $this->assertSame('en', $response->get_data()['locale']);
+    }
+
+    public function test_expected_locale_mismatch_is_rejected(): void {
+        $user_id = $this->factory()->user->create();
+        wp_set_current_user($user_id);
+        update_user_meta($user_id, 'xrpl-r-address', $this->valid_xrpl());
+
+        $request = new WP_REST_Request('GET', '/calorieapp/v1/authorize');
+        $request->set_param('state', $this->state());
+        $request->set_param('redirect', false);
+        $request->set_param('locale', 'nl');
+
+        $response = rest_do_request($request);
+        $this->assertSame(409, $response->get_status());
+        $this->assertSame('locale_mismatch', $response->get_data()['code']);
     }
 
     public function test_state_validation_uses_signed_headers_without_transmitting_secret(): void {

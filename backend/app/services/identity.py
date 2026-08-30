@@ -24,6 +24,7 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     OriginLoginHandoffDB,
+    PendingLoginLocaleDB,
     PendingLoginStateDB,
     utc_now,
 )
@@ -85,6 +86,7 @@ def create_pending_login_state(
     session: Session,
     state_lifetime_seconds: int,
     post_login_redirect: Optional[str] = None,
+    locale: str = "en",
 ) -> tuple[str, PendingLoginStateDB]:
     """Create a persistent pending login state transaction and return plaintext state."""
     created_at = utc_now()
@@ -106,12 +108,30 @@ def create_pending_login_state(
             expires_at=expires_at,
             post_login_redirect=post_login_redirect,
         )
-        session.add(row)
+        locale_row = PendingLoginLocaleDB(
+            state_hash=state_hash,
+            locale=locale,
+            created_at=created_at,
+            expires_at=expires_at,
+        )
+        session.add_all([row, locale_row])
         session.commit()
         session.refresh(row)
         return state, row
 
     raise RuntimeError("Unable to allocate unique login state")
+
+
+def get_pending_login_locale(session: Session, state: str) -> str:
+    """Return state-bound locale context with compatibility fallback to English."""
+    row = session.exec(
+        select(PendingLoginLocaleDB).where(
+            PendingLoginLocaleDB.state_hash == hash_login_state(state)
+        )
+    ).first()
+    if row is None:
+        return "en"
+    return row.locale
 
 
 def create_origin_login_handoff(
@@ -328,6 +348,9 @@ def cleanup_pending_login_states(session: Session) -> None:
     )
     session.exec(
         delete(OriginLoginHandoffDB).where(OriginLoginHandoffDB.expires_at < now)
+    )
+    session.exec(
+        delete(PendingLoginLocaleDB).where(PendingLoginLocaleDB.expires_at < now)
     )
     session.commit()
 

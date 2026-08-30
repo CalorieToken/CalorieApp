@@ -16,6 +16,7 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     OriginLoginHandoffDB,
+    PendingLoginLocaleDB,
     PendingLoginStateDB,
     SQLModel,
 )
@@ -34,6 +35,7 @@ from app.services.identity import (
     generate_login_state,
     generate_login_session_id,
     get_or_create_user_from_external_identity,
+    get_pending_login_locale,
     get_user_by_id,
     validate_origin_login_handoff,
     validate_pending_login_state,
@@ -402,6 +404,24 @@ class TestPendingLoginState:
         assert row.state_hash == hash_login_state(state)
         assert row.state_hash != state
 
+    def test_locale_context_is_bound_to_hashed_state(self, test_session: Session):
+        state, _ = create_pending_login_state(
+            test_session,
+            state_lifetime_seconds=300,
+            locale="nl",
+        )
+
+        locale_row = test_session.exec(
+            select(PendingLoginLocaleDB).where(
+                PendingLoginLocaleDB.state_hash == hash_login_state(state)
+            )
+        ).first()
+
+        assert locale_row is not None
+        assert locale_row.state_hash != state
+        assert locale_row.locale == "nl"
+        assert get_pending_login_locale(test_session, state) == "nl"
+
     def test_state_validation_accepts_valid_pending_state(self, test_session: Session):
         state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
         is_valid, reason, _ = validate_pending_login_state(test_session, state)
@@ -469,7 +489,14 @@ class TestPendingLoginState:
         valid_state, _ = create_pending_login_state(test_session, state_lifetime_seconds=300)
         expired_state, expired_row = create_pending_login_state(test_session, state_lifetime_seconds=300)
         expired_row.expires_at = datetime.now(UTC) - timedelta(seconds=1)
+        expired_locale = test_session.exec(
+            select(PendingLoginLocaleDB).where(
+                PendingLoginLocaleDB.state_hash == hash_login_state(expired_state)
+            )
+        ).one()
+        expired_locale.expires_at = datetime.now(UTC) - timedelta(seconds=1)
         test_session.add(expired_row)
+        test_session.add(expired_locale)
         test_session.commit()
 
         cleanup_pending_login_states(test_session)
@@ -483,6 +510,8 @@ class TestPendingLoginState:
 
         assert valid_exists is not None
         assert expired_exists is None
+        assert get_pending_login_locale(test_session, valid_state) == "en"
+        assert get_pending_login_locale(test_session, expired_state) == "en"
 
     def test_state_persists_across_sessions(self):
         engine = create_engine(

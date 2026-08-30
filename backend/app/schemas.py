@@ -81,6 +81,14 @@ class FoodSearchResponse(BaseModel):
 # =========================================================================
 
 
+class IdentityStartRequest(BaseModel):
+    """Optional browser locale context for a new login transaction."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    locale: Optional[str] = Field(default=None, max_length=64)
+
+
 class IdentityStartResponse(BaseModel):
     """Response when starting the login flow."""
 
@@ -88,6 +96,7 @@ class IdentityStartResponse(BaseModel):
     expires_at: datetime
     wordpress_signin_url: str
     browser_handoff_token: str
+    locale: str
 
     @field_validator("expires_at", mode="after")
     @classmethod
@@ -113,6 +122,7 @@ class IdentityCallbackResponse(BaseModel):
     user_id: str
     created: bool
     redirect_to: str
+    locale: str
 
 
 class IdentityLoginStatusRequest(BaseModel):
@@ -127,6 +137,7 @@ class IdentityLoginStatusResponse(BaseModel):
 
     status: Literal["pending", "failed", "authenticated"]
     redirect_to: Optional[str] = None
+    locale: str
 
 
 class IdentityExchangeRequest(BaseModel):
@@ -148,6 +159,7 @@ class IdentityStateValidationResponse(BaseModel):
 
     valid: bool
     expires_at: datetime
+    locale: str
 
     @field_validator("expires_at", mode="after")
     @classmethod

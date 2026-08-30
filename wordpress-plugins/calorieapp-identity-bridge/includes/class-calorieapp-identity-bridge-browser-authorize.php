@@ -53,8 +53,11 @@ class BrowserAuthorize {
         $callback_url = isset($_GET['callback_url'])
             ? trim(esc_url_raw(wp_unslash((string) $_GET['callback_url'])))
             : '';
+        $locale = isset($_GET['locale'])
+            ? trim(sanitize_text_field(wp_unslash((string) $_GET['locale'])))
+            : '';
 
-        $result = $this->rest_api->authorize_current_user($user_id, $state, $callback_url);
+        $result = $this->rest_api->authorize_current_user($user_id, $state, $callback_url, $locale);
         if ($result instanceof WP_Error) {
             $this->render_error($result);
         }
