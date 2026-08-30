@@ -72,13 +72,13 @@ until the durable-data and privacy gates pass.
 |---|---|---|
 | Identity ownership | Internal user id is bound to food logs | Preserve and test on PostgreSQL |
 | Cross-user access | Automated SQLite tests cover reads and deletion | Repeat against PostgreSQL staging |
-| PostgreSQL support | Ephemeral PostgreSQL 16 CI gate added; first workflow result pending | Verify migration, identity isolation and restart tests in GitHub Actions |
+| PostgreSQL support | Ephemeral PostgreSQL 16 CI gate configured | Require successful migration, identity isolation and restart checks for every merge candidate |
 | Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
 | Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Application-engine restart test added for ephemeral PostgreSQL | Still prove provider restart and redeploy persistence |
-| Back-up and restore | Missing | Select mechanism and prove restoration |
+| Backup and restore | Missing | Select mechanism and prove restoration |
 | User export | Missing | Add authenticated portable export |
 | User erasure | Food-log deletion exists; complete account erasure does not | Complete scoped erasure workflow |
 | Retention | No infrastructure expiry desired; exact policy unresolved | Explicit decision and notice required |

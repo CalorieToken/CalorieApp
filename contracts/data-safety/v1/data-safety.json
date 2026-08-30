@@ -113,7 +113,7 @@
     "backup_without_restore_test_counts_as_ready": false
   },
   "postgresql_ci_proof": {
-    "status": "automated-pending-first-successful-workflow-run",
+    "status": "automated-gate-configured-success-required-per-merge-candidate",
     "database_version": "PostgreSQL 16",
     "execution_environment": "ephemeral service container in the existing GitHub Actions CI role",
     "new_provider_or_account_required": false,
@@ -366,11 +366,11 @@
   },
   "product_ecosystem_boundary": {
     "status": "governance-baseline-reuse-not-generally-granted",
-    "official_product_operator": "Pieter Hendrikse with the designated Gallery Token development team",
+    "official_product_operator": "Pieter Hendrikse with the designated CalorieToken development team",
     "repository_rights_administration": "ICTHendrikse subject to the repository rights notices and third-party rights",
     "official_product_layer": [
-      "gallery-token-website-and-official-wordpress-presentation",
-      "official-gallery-token-and-calorieapp-web-applications",
+      "calorietoken-website-and-official-wordpress-presentation",
+      "official-calorietoken-and-calorieapp-web-applications",
       "official-calorieapp-identity-bridge-service-and-production-configuration",
       "official-application-databases-and-private-user-records",
       "official-domains-releases-brands-and-historical-visual-identity"

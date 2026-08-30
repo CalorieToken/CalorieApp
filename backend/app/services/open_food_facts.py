@@ -123,9 +123,9 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         # transport. That would multiply load precisely when the source asks us
         # to stop or is unavailable.
         raise
-    except (httpx.TimeoutException, httpx.ConnectError, ValueError) as exc:
+    except (httpx.RequestError, ValueError) as exc:
         logger.warning(
-            "Primary Open Food Facts request failed after retries; using fallback (%s)",
+            "Primary Open Food Facts request failed; using fallback (%s)",
             type(exc).__name__,
         )
         try:
