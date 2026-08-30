@@ -1,5 +1,5 @@
 {
-  "contract_id": "gallery-token.asset-localization",
+  "contract_id": "calorietoken.asset-localization",
   "contract_version": "1.0.0",
   "original_asset_policy": {
     "retain_unchanged_original": true,

@@ -15,6 +15,7 @@ def _load_json(name: str) -> dict:
 def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
+    assert contract["contract_id"] == "calorieapp.durable-data-safety"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -36,7 +37,9 @@ def test_data_safety_contract_forbids_public_personal_data_replication() -> None
 def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> None:
     proof = _load_json("data-safety.json")["postgresql_ci_proof"]
 
-    assert proof["status"] == "automated-pending-first-successful-workflow-run"
+    assert proof["status"] == (
+        "automated-gate-configured-success-required-per-merge-candidate"
+    )
     assert proof["database_version"] == "PostgreSQL 16"
     assert proof["new_provider_or_account_required"] is False
     assert proof["additional_recurring_subscription_required"] is False
@@ -261,9 +264,9 @@ def test_official_products_and_separate_ecosystem_have_a_reuse_boundary() -> Non
     boundary = _load_json("data-safety.json")["product_ecosystem_boundary"]
 
     assert boundary["official_product_operator"] == (
-        "Pieter Hendrikse with the designated Gallery Token development team"
+        "Pieter Hendrikse with the designated CalorieToken development team"
     )
-    assert "gallery-token-website-and-official-wordpress-presentation" in boundary[
+    assert "calorietoken-website-and-official-wordpress-presentation" in boundary[
         "official_product_layer"
     ]
     assert (
@@ -419,6 +422,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "no_personal_data_in_decentralized_public_storage",
     }
 
+    assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -440,7 +444,8 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
 
 
 def test_contract_release_order_ends_with_review_and_explicit_publication_go() -> None:
-    release_order = _load_json("data-safety.json")["release_order"]
+    contract = _load_json("data-safety.json")
+    release_order = contract["release_order"]
 
     assert release_order[-1] == "showcase-preview-review-explicit-go-scheduled-publish"
     assert release_order.index("automation-and-observability-foundation") < release_order.index(
@@ -452,6 +457,6 @@ def test_contract_release_order_ends_with_review_and_explicit_publication_go() -
     assert release_order.index("privacy-review") < release_order.index(
         "identity-feature-expansion"
     )
-    optional_order = _load_json("data-safety.json")["optional_future_order"]
+    optional_order = contract["optional_future_order"]
     assert optional_order[0] == "xrpl-schema-compatibility-review"
     assert optional_order[-1] == "adoption-led-scaling"

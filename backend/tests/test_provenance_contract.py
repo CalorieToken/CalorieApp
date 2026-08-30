@@ -13,8 +13,10 @@ def _contract() -> dict:
 
 
 def test_provenance_is_future_ready_without_becoming_a_launch_feature() -> None:
-    rollout = _contract()["rollout"]
+    contract = _contract()
+    rollout = contract["rollout"]
 
+    assert contract["contract_id"] == "caloriedb.xrpl-linked-provenance"
     assert rollout["core_public_release_dependency"] is False
     assert rollout["initial_user_facing_feature"] is False
     assert rollout["initial_wallet_or_ledger_scan"] is False
@@ -22,7 +24,7 @@ def test_provenance_is_future_ready_without_becoming_a_launch_feature() -> None:
     assert "disabled feature flag" in rollout["phase_1"]
     assert "testnet or synthetic-data" in rollout["phase_2"]
 
-    platform = _contract()["platform_boundary"]
+    platform = contract["platform_boundary"]
     assert platform["stored_in_primary_postgresql"] is True
     assert platform["separate_graph_database_required"] is False
     assert platform["additional_blockchain_required"] is False

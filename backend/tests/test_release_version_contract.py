@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from app.main import app
+from app.services.open_food_facts import REQUEST_HEADERS
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -83,6 +84,9 @@ def test_runtime_versions_are_aligned_to_v2() -> None:
     )
 
     assert app.version == versioning["backend_api_version"] == "0.2.0"
+    assert REQUEST_HEADERS["User-Agent"].split(" ", 1)[0] == (
+        f"CalorieApp/{app.version}"
+    )
     assert frontend_package["version"] == versioning["frontend_package_version"]
     assert frontend_lock["version"] == versioning["frontend_package_version"]
     assert frontend_lock["packages"][""]["version"] == (

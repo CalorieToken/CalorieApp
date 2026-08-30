@@ -120,3 +120,19 @@ def test_upstream_http_status_does_not_bypass_limit_through_fallback(
         asyncio.run(search_food_products("banana"))
 
     fallback.assert_not_awaited()
+
+
+@patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_primary_transport_error_uses_single_fallback_attempt(
+    primary: AsyncMock,
+    fallback: AsyncMock,
+) -> None:
+    request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
+    primary.side_effect = httpx.ReadError("connection interrupted", request=request)
+    fallback.return_value = {"products": []}
+
+    assert asyncio.run(search_food_products("banana")) == []
+
+    primary.assert_awaited_once()
+    fallback.assert_awaited_once()

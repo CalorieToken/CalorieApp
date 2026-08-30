@@ -1,6 +1,6 @@
 {
   "$schema": "./locales.schema.json",
-  "contract_id": "gallery-token.locale-registry",
+  "contract_id": "calorieapp.locale-registry",
   "contract_version": "1.0.0",
   "source_locale": "en",
   "fallback_locale": "en",

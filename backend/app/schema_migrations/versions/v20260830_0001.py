@@ -259,6 +259,14 @@ def _upgrade_existing_food_log(connection: Connection) -> None:
         raise RuntimeError(f"Legacy food_log is missing required columns: {missing}")
 
     expected_columns = {column.name for column in food_log.columns}
+    unexpected_columns = existing_columns - expected_columns
+    if unexpected_columns:
+        unexpected = ", ".join(sorted(unexpected_columns))
+        raise RuntimeError(
+            "Legacy food_log has unsupported columns; migration stopped to "
+            f"prevent data loss: {unexpected}"
+        )
+
     needs_upgrade = existing_columns != expected_columns or not _food_log_has_owner_foreign_key(connection)
     if not needs_upgrade:
         return
