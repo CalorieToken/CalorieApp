@@ -1,0 +1,228 @@
+from __future__ import annotations
+
+import hashlib
+import os
+from datetime import timedelta
+from secrets import token_urlsafe
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import inspect
+from sqlalchemy.engine import Engine, make_url
+from sqlmodel import Session, create_engine, select
+
+import app.database as db_module
+from app.main import app
+from app.models import (
+    AuthSessionDB,
+    CalorieAppUserDB,
+    ExternalIdentityDB,
+    FoodLogDB,
+    utc_now,
+)
+from app.schema_migrations import SCHEMA_HEAD, current_revision, upgrade_database
+
+
+POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
+SESSION_COOKIE_NAME = "calorieapp_session"
+
+
+def _required_postgresql_test_url() -> str:
+    raw_url = os.getenv(POSTGRES_TEST_URL_ENV, "").strip()
+    if not raw_url:
+        pytest.skip(f"{POSTGRES_TEST_URL_ENV} is not configured")
+
+    parsed = make_url(raw_url)
+    if parsed.get_backend_name() != "postgresql":
+        pytest.fail(f"{POSTGRES_TEST_URL_ENV} must use PostgreSQL")
+    if parsed.host not in {"127.0.0.1", "localhost", "::1"}:
+        pytest.fail(f"{POSTGRES_TEST_URL_ENV} must target a loopback-only test server")
+    if parsed.database != "calorieapp_ci_test":
+        pytest.fail(f"{POSTGRES_TEST_URL_ENV} must target calorieapp_ci_test")
+    return raw_url
+
+
+def _reset_synthetic_database(engine: Engine) -> None:
+    """Reset only the hard-coded loopback CI database guarded above."""
+    with engine.begin() as connection:
+        connection.exec_driver_sql("DROP SCHEMA IF EXISTS public CASCADE")
+        connection.exec_driver_sql("CREATE SCHEMA public")
+
+
+@pytest.fixture()
+def postgres_engine() -> Engine:
+    raw_url = _required_postgresql_test_url()
+    engine = create_engine(raw_url, pool_pre_ping=True)
+    _reset_synthetic_database(engine)
+    try:
+        yield engine
+    finally:
+        engine.dispose()
+        cleanup_engine = create_engine(raw_url, pool_pre_ping=True)
+        try:
+            _reset_synthetic_database(cleanup_engine)
+        finally:
+            cleanup_engine.dispose()
+
+
+def _create_user_session(engine: Engine, subject: str) -> tuple[str, str]:
+    now = utc_now()
+    token = token_urlsafe(48)
+    user = CalorieAppUserDB(status="active")
+    with Session(engine) as session:
+        session.add(user)
+        session.flush()
+        session.add(
+            ExternalIdentityDB(
+                calorieapp_user_id=user.id,
+                provider="synthetic_ci",
+                external_subject=subject,
+                created_at=now,
+                last_verified_at=now,
+            )
+        )
+        session.add(
+            AuthSessionDB(
+                session_token_hash=hashlib.sha256(token.encode("utf-8")).hexdigest(),
+                calorieapp_user_id=user.id,
+                created_at=now,
+                last_seen_at=now,
+                expires_at=now + timedelta(hours=8),
+            )
+        )
+        session.commit()
+        return user.id, token
+
+
+def _client(engine: Engine, token: str) -> TestClient:
+    db_module.engine = engine
+    client = TestClient(app)
+    client.cookies.set(SESSION_COOKIE_NAME, token)
+    return client
+
+
+def test_postgresql_empty_database_migrates_and_is_ready(
+    postgres_engine: Engine,
+) -> None:
+    assert (
+        upgrade_database(
+            postgres_engine,
+            approval_reference="CI-POSTGRES-EMPTY-DATABASE",
+        )
+        == SCHEMA_HEAD
+    )
+    assert current_revision(postgres_engine) == SCHEMA_HEAD
+    assert db_module.database_readiness(postgres_engine) == {
+        "status": "ready",
+        "database_revision": SCHEMA_HEAD,
+    }
+    assert "food_log" in inspect(postgres_engine).get_table_names()
+
+
+def test_postgresql_legacy_food_log_is_preserved(
+    postgres_engine: Engine,
+) -> None:
+    with postgres_engine.begin() as connection:
+        connection.exec_driver_sql(
+            """
+            CREATE TABLE food_log (
+                id INTEGER PRIMARY KEY,
+                product_name VARCHAR(120) NOT NULL,
+                calories DOUBLE PRECISION NOT NULL,
+                protein DOUBLE PRECISION NOT NULL,
+                fat DOUBLE PRECISION NOT NULL,
+                carbohydrates DOUBLE PRECISION NOT NULL,
+                created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+            )
+            """
+        )
+        connection.exec_driver_sql(
+            """
+            INSERT INTO food_log
+                (id, product_name, calories, protein, fat, carbohydrates, created_at)
+            VALUES
+                (1, 'Synthetic Legacy Record', 123, 4, 5, 6, '2026-01-01 00:00:00')
+            """
+        )
+
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-LEGACY-DATABASE",
+    )
+
+    with postgres_engine.connect() as connection:
+        row = connection.exec_driver_sql(
+            "SELECT id, product_name, owner_id FROM food_log WHERE id = 1"
+        ).one()
+    assert tuple(row) == (1, "Synthetic Legacy Record", None)
+    assert any(
+        foreign_key["constrained_columns"] == ["owner_id"]
+        and foreign_key["referred_table"] == "calorieappuser"
+        for foreign_key in inspect(postgres_engine).get_foreign_keys("food_log")
+    )
+
+
+def test_postgresql_identity_history_survives_application_engine_restart(
+    postgres_engine: Engine,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_url = _required_postgresql_test_url()
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-IDENTITY-PERSISTENCE",
+    )
+    user_a_id, token_a = _create_user_session(postgres_engine, "synthetic-user-a")
+    user_b_id, token_b = _create_user_session(postgres_engine, "synthetic-user-b")
+
+    original_engine = db_module.engine
+    monkeypatch.setenv("CALORIEAPP_ENV", "staging")
+    try:
+        with _client(postgres_engine, token_a) as client_a:
+            response_a = client_a.post(
+                "/log-food",
+                json={"product_name": "Synthetic Apple", "calories": 52},
+            )
+            assert response_a.status_code == 200
+            log_a_id = response_a.json()["id"]
+
+        with _client(postgres_engine, token_b) as client_b:
+            response_b = client_b.post(
+                "/log-food",
+                json={"product_name": "Synthetic Oats", "calories": 389},
+            )
+            assert response_b.status_code == 200
+            log_b_id = response_b.json()["id"]
+
+        postgres_engine.dispose()
+        restarted_engine = create_engine(raw_url, pool_pre_ping=True)
+        try:
+            with _client(restarted_engine, token_a) as restarted_a:
+                assert restarted_a.get("/ready").json()["database_revision"] == SCHEMA_HEAD
+                logs_a = restarted_a.get("/logs")
+                assert logs_a.status_code == 200
+                assert [item["product_name"] for item in logs_a.json()] == [
+                    "Synthetic Apple"
+                ]
+                assert restarted_a.delete(f"/logs/{log_b_id}").status_code == 403
+
+            with _client(restarted_engine, token_b) as restarted_b:
+                logs_b = restarted_b.get("/logs")
+                assert logs_b.status_code == 200
+                assert [item["product_name"] for item in logs_b.json()] == [
+                    "Synthetic Oats"
+                ]
+        finally:
+            restarted_engine.dispose()
+
+        verification_engine = create_engine(raw_url, pool_pre_ping=True)
+        try:
+            with Session(verification_engine) as session:
+                persisted = session.exec(select(FoodLogDB).order_by(FoodLogDB.id)).all()
+                assert [(entry.id, entry.owner_id) for entry in persisted] == [
+                    (log_a_id, user_a_id),
+                    (log_b_id, user_b_id),
+                ]
+        finally:
+            verification_engine.dispose()
+    finally:
+        db_module.engine = original_engine

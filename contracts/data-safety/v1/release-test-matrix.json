@@ -5,10 +5,45 @@
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
     {
+      "id": "v2_deployment_provenance",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": [
+        "contracts/release/v2/baseline-evidence.json",
+        "docs/V2_BASELINE_EVIDENCE.md"
+      ]
+    },
+    {
+      "id": "abuse_capacity_and_mutation_controls",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": [
+        "contracts/operations/v2/abuse-capacity-mutation.json",
+        "docs/ABUSE_CAPACITY_MUTATION_SAFETY.md",
+        "backend/tests/test_open_food_facts_normalization.py"
+      ]
+    },
+    {
+      "id": "component_rights_and_contributor_provenance",
+      "status": "partial",
+      "release_blocking": true,
+      "evidence": [
+        "contracts/governance/v2/component-rights-registry.json",
+        "docs/PRODUCT_ECOSYSTEM_BOUNDARY.md",
+        "contracts/identity-bridge/v1/code-provenance.json"
+      ]
+    },
+    {
       "id": "provider_neutral_postgresql_configuration",
       "status": "partial",
       "release_blocking": true,
-      "evidence": ["backend/app/database.py", "backend/requirements.txt", "backend/tests/test_database.py"]
+      "evidence": [
+        "backend/app/database.py",
+        "backend/requirements.txt",
+        "backend/tests/test_database.py",
+        "backend/tests/test_postgresql_integration.py",
+        ".github/workflows/ci.yml"
+      ]
     },
     {
       "id": "production_sqlite_fail_closed",
@@ -52,9 +87,12 @@
     },
     {
       "id": "restart_persistence",
-      "status": "not_started",
+      "status": "partial",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "backend/tests/test_postgresql_integration.py",
+        "docs/POSTGRESQL_CI_PROOF.md"
+      ]
     },
     {
       "id": "redeploy_persistence",

@@ -6,7 +6,17 @@ Copyright (c) 2026 ICTHendrikse, for original portions created
 by or lawfully assigned to it. All rights reserved except where an explicit
 component licence applies.
 
-The current implementation is a real V1 web application. The broader Calorie ecosystem direction is also being researched and documented, but those future capabilities are not represented as already implemented.
+The Render-hosted food and nutrition application forms the functionally proven
+V2 baseline. It was deployed and manually tested during development. V2 remains
+the active product version while its durable data, source-independent food-data,
+complete Identity Bridge, eleven-language and historically faithful website
+integration are finished. That ongoing work is not represented as a production-
+readiness, privacy or regulatory certification before its gates pass.
+
+V3 is reserved for a later, genuinely new generation such as a complete Web3
+application and ecosystem. Its architecture is not yet selected. BigchainDB is
+not a committed V3 dependency and would require a fresh cost, decentralization,
+privacy, operations and regulatory assessment after V2.
 
 ## Project
 
@@ -17,12 +27,12 @@ Current application stack:
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
 - Data: SQLite for local development and tests; PostgreSQL is the required live-user direction
-- External food data: Open Food Facts
+- External food data: source-independent adapters; Open Food Facts is the current adapter
 - Identity/authentication: server-side identity flow with session cookies
 
 ## Current Status
 
-### IMPLEMENTED (V1 web application)
+### IMPLEMENTED (V2 proven baseline; completion in progress)
 
 - Food search via backend integration with Open Food Facts
 - Nutrition result display in the web UI
@@ -49,20 +59,24 @@ Current application stack:
 
 ## Current Architecture
 
-CalorieApp V1 is intentionally centralized and scope-restricted.
+The V2 functional baseline is intentionally non-financial and scope-restricted.
+The active V2 completion replaces temporary data foundations without changing
+that boundary.
 
 1. Next.js frontend provides UI and user interaction flows.
 2. FastAPI backend provides API behavior and business/data logic.
 3. SQLite persists local development and test data. Public user onboarding is
    blocked until the PostgreSQL durable-data release gates pass.
-4. Open Food Facts is used as the external food data source.
+4. Open Food Facts is the current external food-data adapter, not the canonical
+   or exclusive data model. Additional reviewed sources can be added without
+   replacing private food history or silently overwriting source assertions.
 5. Identity/authentication is handled through backend-managed session flow.
 
 Public architecture details: docs/public/architecture.md
 
 ## Current Scope and Boundaries
 
-CalorieApp V1 is not:
+CalorieApp V2 is not:
 
 - a custodial wallet
 - a financial application
@@ -70,18 +84,33 @@ CalorieApp V1 is not:
 - a validator runtime
 - a node runtime
 
-The V1 scope is food and nutrition tracking only.
+The implemented scope is food and nutrition tracking only.
 
 Infrastructure follows a one-provider-per-role policy. Optional provenance is
 designed for the same PostgreSQL primary store and does not add a graph database,
 blockchain database or IPFS dependency to the core release.
+
+The staged multi-source food-data contract keeps source identity, licence,
+version, retrieval time and verification status with every imported assertion.
+See [docs/FOOD_DATA_SOURCE_ARCHITECTURE.md](docs/FOOD_DATA_SOURCE_ARCHITECTURE.md).
 
 Repeatable tests, schema checks, staging restore drills and future scoped ledger
 verification are automation-ready. Production schema changes, privacy-purpose
 expansion, XRPL enablement, deployment and publication retain explicit approval
 gates.
 
-No wallet custody or financial transaction layer is claimed in V1. See
+V2 also treats overload and unwanted ecosystem mutation as release-blocking.
+Requests, retries, concurrency, payloads and stored data receive explicit
+budgets. External integrations are read-only by default; reviewed contributions
+arrive as new source assertions and cannot silently rewrite catalog, identity or
+personal-history records.
+
+This protection does not prohibit independent ecosystem evolution. Community
+implementations may create their own namespaced adapters, datasets and clients.
+They cannot mutate official state or claim official status; adoption into the
+official compatibility layer follows a versioned proposal and conformance review.
+
+No wallet custody or financial transaction layer is claimed in V2. See
 [REGULATORY.md](REGULATORY.md) for the MiCA and financial-services boundary.
 
 ## Long-Term Vision
@@ -90,7 +119,9 @@ CalorieApp is intended to evolve toward a broader ecosystem over time. Current r
 
 Important boundary:
 
-- Current V1 implementation: active web application features only
+- V2 active completion: proven baseline plus durable data, multi-source readiness,
+  complete Identity Bridge, localization and historically faithful integration
+- V3 reserved future generation: complete Web3 direction, not yet designed or selected
 - Future ecosystem architecture: proposed/research direction only
 
 ## Local Development
@@ -198,10 +229,17 @@ gate can additionally run the local developer health check.
 - Versioned Identity Bridge contracts: contracts/identity-bridge/v1/
 - XRPL-linked provenance contract: contracts/provenance/v1/
 - Historical image localization contract: contracts/localization/v1/
+- V2 completion boundary: docs/V2_COMPLETION_BOUNDARY.md
+- V2 baseline and live evidence: docs/V2_BASELINE_EVIDENCE.md
+- Abuse, capacity and mutation safety: docs/ABUSE_CAPACITY_MUTATION_SAFETY.md
+- Free ecosystem evolution guardrails: docs/ECOSYSTEM_EVOLUTION_GUARDRAILS.md
+- Product-version boundary contract: contracts/release/v2/completion-boundary.json
+- Food-data source architecture: docs/FOOD_DATA_SOURCE_ARCHITECTURE.md
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md
 - Durable data and privacy foundation: docs/DURABLE_DATA_FOUNDATION.md
+- Ephemeral PostgreSQL compatibility proof: docs/POSTGRESQL_CI_PROOF.md
 - BigchainDB decision record: docs/BIGCHAINDB_ASSESSMENT.md
 - Ecosystem continuity foundation: docs/ECOSYSTEM_CONTINUITY.md
 - Official product and separate ecosystem boundary: docs/PRODUCT_ECOSYSTEM_BOUNDARY.md

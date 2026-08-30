@@ -13,12 +13,12 @@ reporting path.
 
 ## Scope
 
-Current V1 scope is the non-financial, non-custodial CalorieApp food and
-nutrition application, including its backend, frontend, and separately
-licensed WordPress identity bridge.
+Current V2 scope is the non-financial, non-custodial CalorieApp food and
+nutrition application, including its backend, frontend, and
+separately licensed WordPress identity bridge.
 
 Reports involving wallet custody, private keys, payments, token transfers,
-trading, or other financial execution are outside the implemented V1 product
+trading, or other financial execution are outside the implemented product
 unless they demonstrate that such functionality is unexpectedly present.
 
 ## Sensitive material
@@ -36,4 +36,3 @@ or Render without their authorization.
 
 No bug-bounty payment or reward is promised unless separately agreed in
 writing.
-

@@ -1,0 +1,86 @@
+{
+  "contract_id": "calorieapp.v2-component-rights-and-contributor-provenance",
+  "contract_version": "1.0.0",
+  "status": "registry-schema-only-claims-require-evidence",
+  "purpose": "Keep official developer-created components, reusable ecosystem interfaces, independent implementations, third-party material and data rights distinct while preserving evidence-based contributor claims.",
+  "does_not_do": [
+    "adjudicate-legal-authorship-ownership-or-assignment",
+    "treat-git-history-alone-as-proof-of-legal-rights",
+    "grant-a-repository-wide-reuse-licence",
+    "turn-contribution-credit-into-control-of-the-official-product",
+    "turn-ecosystem-participation-into-ownership-of-user-or-source-data"
+  ],
+  "layer_values": [
+    "official-product-component",
+    "ecosystem-interface-or-specification",
+    "independent-ecosystem-implementation",
+    "third-party-dependency-or-material",
+    "external-data-or-asset"
+  ],
+  "component_record_required_fields": [
+    "component_id",
+    "path_package_or_namespace",
+    "layer",
+    "official_status",
+    "version_or_commit_range",
+    "contributors_or_claimants",
+    "claim_basis",
+    "evidence_references",
+    "inbound_terms_or_assignment_status",
+    "outbound_licence_or_permission",
+    "third_party_materials",
+    "maintainer",
+    "review_status"
+  ],
+  "claim_basis_values": [
+    "original-authorship-claimed",
+    "documented-assignment",
+    "employment-or-contractor-agreement-reference",
+    "explicit-licence-from-rightsholder",
+    "third-party-licence",
+    "public-domain-or-other-reviewed-basis",
+    "unknown-requires-review",
+    "disputed"
+  ],
+  "separation_rules": {
+    "credit_is_legal_ownership": false,
+    "authorship_is_assignment": false,
+    "copyright_is_maintenance_authority": false,
+    "component_licence_grants_official_service_access": false,
+    "component_licence_grants_brand_or_official_status": false,
+    "ecosystem_contribution_grants_control_of_official_product": false,
+    "official_adoption_transfers_all_contributor_rights_automatically": false,
+    "developer_may_claim_entire_product_or_ecosystem_from_partial_contribution": false,
+    "developer_may_record_evidence_based_claim_to_own_original_component_or_contribution": true
+  },
+  "special_rights_boundaries": {
+    "private_user_identity_session_or_food_history_is_developer_ip": false,
+    "public_food_fact_is_owned_by_importing_developer": false,
+    "external_source_data_keeps_source_specific_licence": true,
+    "historical_brand_and_visual_assets_keep_recorded_rights_status": true,
+    "mixed_component_requires_per_part_rights_and_licence_mapping": true,
+    "unknown_or_disputed_status_may_be_silently_changed_to_owned": false
+  },
+  "contribution_intake": {
+    "provenance_declaration_required": true,
+    "inbound_rights_or_assignment_must_be_explicit": true,
+    "third_party_dependency_and_generated_code_disclosure_required": true,
+    "public_credit_name_requires_contributor_choice": true,
+    "pseudonymous_credit_allowed": true,
+    "official_maintainer_review_required": true,
+    "acceptance_may_override_incompatible_third_party_rights": false
+  },
+  "dao_boundary": {
+    "dao_may_set_direction_for_ecosystem_interfaces_within_its_future_scope": true,
+    "dao_may_claim_developer_authorship": false,
+    "dao_may_reassign_existing_component_rights_without_rightsholder_authority": false,
+    "dao_may_relicense_component_or_third_party_material_without_authority": false,
+    "dao_may_vote_private_user_data_into_public_or_collective_ownership": false,
+    "licence_or_assignment_change_requires_documented_authority_outside_vote_result": true
+  },
+  "implementation": {
+    "registry_entries_complete": false,
+    "identity_bridge_has_separate_code_provenance_contract": true,
+    "release_blocking_unknowns_must_be_resolved_or_excluded": true
+  }
+}

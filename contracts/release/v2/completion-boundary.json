@@ -1,0 +1,67 @@
+{
+  "contract_id": "calorieapp.product-v2-completion-boundary",
+  "contract_version": "1.0.0",
+  "decision_date": "2026-08-30",
+  "baseline_evidence_contract": "contracts/release/v2/baseline-evidence.json",
+  "v2": {
+    "status": "active-completion-from-functionally-proven-baseline",
+    "baseline_description": "Render-hosted CalorieApp food and nutrition experience deployed and manually tested during development.",
+    "baseline_scope": [
+      "food-search-through-open-food-facts",
+      "nutrition-result-display",
+      "authenticated-food-logging-and-retrieval",
+      "user-scoped-log-deletion",
+      "server-side-identity-and-session-flow",
+      "wordpress-embed-and-identity-bridge-integration-proven-during-development"
+    ],
+    "production_readiness_certified": false,
+    "privacy_or_regulatory_certification_claimed": false,
+    "ordered_completion_workstreams": [
+      "preserve-exact-working-baseline-and-redacted-deployment-evidence",
+      "secure-integrated-calorieapp-route-embed-and-regression-baseline",
+      "enforce-abuse-capacity-retry-and-unwanted-mutation-guardrails",
+      "publish-free-ecosystem-evolution-and-official-adoption-guardrails",
+      "complete-durable-postgresql-migrations-recovery-export-erasure-and-retention",
+      "implement-source-independent-food-data-schema-with-open-food-facts-as-first-adapter",
+      "complete-identity-bridge-functionality-privacy-content-layout-profile-and-donation-purposes",
+      "complete-eleven-language-app-bridge-website-platform-and-historical-image-support",
+      "polish-shared-website-layout-content-and-behavior-with-historical-design-preserved",
+      "run-automated-regression-before-one-integrated-manual-acceptance-round",
+      "showcase-preview-review-explicit-go-and-scheduled-publication"
+    ],
+    "source_independent_schema_required": true,
+    "second_food_data_source_required_for_completion": false,
+    "optional_non_blocking_scope": [
+      "inventory-existing-project-dao-voting-tool",
+      "isolated-non-binding-voting-tool-preview-with-synthetic-test-data"
+    ],
+    "real_holder_voting_or_governance_authority_allowed_in_v2": false,
+    "automatic_publication_allowed": false,
+    "public_user_onboarding_blocked_until_release_gates_pass": true,
+    "non_financial_non_custodial_boundary_retained": true
+  },
+  "v3": {
+    "status": "reserved-future-web3-generation-not-designed",
+    "possible_definition": "A later complete Web3 application and ecosystem generation after V2 is complete.",
+    "architecture_selected": false,
+    "bigchaindb_selected": false,
+    "bigchaindb_may_be_reassessed_later": true,
+    "full_dao_implementation_and_real_voting_reserved_for_v3": true,
+    "dao_activation_is_automatic_in_v3": false,
+    "reassessment_requires": [
+      "clear-v3-user-value-and-scope",
+      "comparison-with-postgresql-plus-xrpl",
+      "credible-free-and-sustainable-operations",
+      "privacy-and-erasure-design",
+      "security-and-recovery-design",
+      "jurisdiction-specific-regulatory-review"
+    ],
+    "v2_may_claim_v3_web3_completion": false
+  },
+  "versioning": {
+    "backend_api_version": "0.2.0",
+    "frontend_package_version": "0.2.0",
+    "ds_3_means_data_safety_step_3_not_product_v3": true,
+    "contract_directory_v1_means_contract_schema_version_not_product_v1": true
+  }
+}

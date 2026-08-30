@@ -1,6 +1,7 @@
 # Backend (FastAPI)
 
-This service is the CalorieApp V1 data layer only.
+This service contains the CalorieApp V2 proven baseline and its active durable-
+data and Identity Bridge completion work.
 
 ## Scope
 
@@ -82,4 +83,5 @@ migration or verified restore.
   rely on open application code and standard PostgreSQL capabilities, not paid
   add-ons. Separately reviewed value-added developer services may be offered
   later without paywalling identity or personal-data rights.
-- Open Food Facts is consumed only by backend service endpoints.
+- Open Food Facts is consumed only by backend service endpoints and is the
+  current adapter, not the canonical or exclusive food-data model.

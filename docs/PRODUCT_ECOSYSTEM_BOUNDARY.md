@@ -87,3 +87,33 @@ support. Payment cannot purchase broader personal-data scopes, official product
 control, branding rights or exemption from security and consent requirements.
 
 No external ecosystem client or premium tier is enabled by this document.
+
+## 6. Developer components, credit and rights claims
+
+The developer/product layer is recorded per component, not as one undivided
+claim over the ecosystem. A component registry records its path or namespace,
+layer, version range, contributors or claimants, claimed rights basis, evidence,
+inbound terms or assignment, outbound licence, third-party material, maintainer
+and review status.
+
+A developer may record an evidence-based claim to their own original component
+or contribution. A partial contribution does not create a claim over the whole
+CalorieApp, Gallery Token product layer, ecosystem, brand, source datasets or
+other developers' work. Credit, authorship, copyright, licence, maintenance
+authority and official release control are different facts and stay separate.
+
+Repository history helps technical provenance but is not by itself proof of
+legal authorship or assignment. Unknown or disputed rights stay marked unknown
+or disputed until evidence or agreement resolves them; the registry does not
+adjudicate the legal result.
+
+Private identities, sessions and food histories are user-related records, not
+developer intellectual property. External food data retains its source licence.
+Mixed components map rights and licences per part, including third-party and
+generated material.
+
+An ecosystem DAO may later set direction within its approved scope, but cannot
+vote itself into authorship, reassign or relicense existing rights without the
+rightsholder's authority, or turn private user data into collective property.
+The registry schema is
+`contracts/governance/v2/component-rights-registry.json`.
