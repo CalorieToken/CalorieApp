@@ -212,7 +212,9 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
             applied_at, reference = connection.exec_driver_sql(
                 "SELECT applied_at, approval_reference FROM calorie_schema_revision"
             ).one()
-        assert datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC).year == 2026
+        applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
+        age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()
+        assert 0 <= age_seconds < 5
         assert reference == "CHANGE-2026-001"
     finally:
         test_engine.dispose()

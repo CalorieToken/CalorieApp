@@ -4,21 +4,21 @@ Status: governance baseline. This document separates operational control and
 technology reuse; it does not adjudicate authorship, contributor rights,
 third-party rights or legal ownership.
 
-## 1. Official Gallery Token product layer
+## 1. Official CalorieToken product layer
 
-Pieter Hendrikse and the designated Gallery Token development team operate the
+Pieter Hendrikse and the designated CalorieToken development team operate the
 official product layer. ICTHendrikse administers repository rights subject to
 the repository notices and every applicable third-party or contributor right.
 
 The official product layer includes:
 
-- the Gallery Token website and its official WordPress presentation;
-- official Gallery Token and CalorieApp web applications;
+- the CalorieToken website and its official WordPress presentation;
+- official CalorieToken and CalorieApp web applications;
 - the official CalorieApp Identity Bridge service, production configuration,
   client registry and security policy;
 - official application databases and private user records;
 - official domains, deployments, release decisions and support channels; and
-- Gallery Token and CalorieToken names, marks, historical imagery, trade dress
+- CalorieToken and CalorieApp names, marks, historical imagery, trade dress
   and other official visual identity, subject to the recorded rights position.
 
 These components do not become ecosystem-governed merely because an interface
@@ -49,7 +49,7 @@ of the following that apply:
 3. A connection to an official service passes security, privacy and conformance
    review and can be revoked.
 4. The external implementation uses separate branding and does not claim to be
-   an official Gallery Token or CalorieToken product.
+   an official CalorieToken or CalorieApp product.
 
 The repository-level notice grants no general licence. Public visibility,
 documentation and the word “open” do not override that position.

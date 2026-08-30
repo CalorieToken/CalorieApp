@@ -180,9 +180,9 @@ def test_official_products_and_separate_ecosystem_have_a_reuse_boundary() -> Non
     boundary = _load_json("data-safety.json")["product_ecosystem_boundary"]
 
     assert boundary["official_product_operator"] == (
-        "Pieter Hendrikse with the designated Gallery Token development team"
+        "Pieter Hendrikse with the designated CalorieToken development team"
     )
-    assert "gallery-token-website-and-official-wordpress-presentation" in boundary[
+    assert "calorietoken-website-and-official-wordpress-presentation" in boundary[
         "official_product_layer"
     ]
     assert (
