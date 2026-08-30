@@ -49,6 +49,7 @@ jobs:
         run: |
           python tools/sync_identity_contracts.py --check
           python -m unittest tools.tests.test_identity_contracts
+          python -m unittest tools.tests.test_localization_contracts
 
   wordpress-plugin-release-check:
     name: WordPress plugin release check
