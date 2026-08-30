@@ -39,9 +39,9 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 Details are in SECURITY.md and CONFIGURATION.md.
 
 Version 0.3.0 adds the deployable copy and pure resolver for the shared,
-versioned eleven-locale Gallery Token registry. It does not yet alter public
-copy or automatically publish translations; unsupported input fails safely to
-English and Arabic and Urdu are marked right-to-left.
+versioned eleven-locale CalorieApp registry. It does not yet alter public
+copy or automatically publish translations. Unsupported input falls back
+safely to English. Arabic and Urdu are the right-to-left locales.
 Version 0.2.4 only checks a Xaman signature after the user actually opens
 Xaman, keeps retrying pending signature checks after the user returns, and
 shows CalorieApp startup retry progress without disguising backend errors as a

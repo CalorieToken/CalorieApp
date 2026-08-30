@@ -23,7 +23,6 @@ from .database import database_readiness, get_session, init_db
 from .locales import resolve_locale
 from .models import (
     AuthSessionDB,
-    AuthorizationCodeDB,
     BridgeAuthNonceDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -36,7 +35,6 @@ from .schemas import (
     AccountDataExportResponse,
     AccountExportAccount,
     AccountExportAuthSession,
-    AccountExportAuthorizationEvent,
     AccountExportExternalIdentity,
     AccountExportLoginHandoff,
     CurrentUserResponse,
@@ -1024,16 +1022,6 @@ def identity_export(
         .order_by(OriginLoginHandoffDB.created_at, OriginLoginHandoffDB.id)
     ).all()
 
-    authorization_events: list[AuthorizationCodeDB] = []
-    if external_subjects:
-        authorization_events = list(
-            session.exec(
-                select(AuthorizationCodeDB)
-                .where(AuthorizationCodeDB.external_subject.in_(external_subjects))
-                .order_by(AuthorizationCodeDB.created_at, AuthorizationCodeDB.id)
-            ).all()
-        )
-
     response.headers["Content-Disposition"] = (
         'attachment; filename="calorieapp-account-data-v1.json"'
     )
@@ -1067,16 +1055,10 @@ def identity_export(
             )
             for auth_session in auth_sessions
         ],
-        authorization_events=[
-            AccountExportAuthorizationEvent(
-                external_subject=event.external_subject,
-                created_at=event.created_at,
-                expires_at=event.expires_at,
-                used_at=event.used_at,
-                used_by_ip=event.used_by_ip,
-            )
-            for event in authorization_events
-        ],
+        # Legacy authorization rows have only a subject, not direct internal-user
+        # and provider ownership. Preserve the v1 field while withholding rows
+        # until a migration can prove ownership without inference.
+        authorization_events=[],
         login_handoffs=[
             AccountExportLoginHandoff(
                 status=handoff.status,

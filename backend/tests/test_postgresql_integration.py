@@ -12,7 +12,7 @@ from sqlalchemy.engine import Engine, make_url
 from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
-from app.main import app
+from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
     CalorieAppUserDB,
@@ -21,10 +21,10 @@ from app.models import (
     utc_now,
 )
 from app.schema_migrations import SCHEMA_HEAD, current_revision, upgrade_database
+from app.schema_migrations.versions.v20260830_0001 import food_log as migration_food_log
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
-SESSION_COOKIE_NAME = "calorieapp_session"
 
 
 def _required_postgresql_test_url() -> str:
@@ -150,6 +150,13 @@ def test_postgresql_legacy_food_log_is_preserved(
         approval_reference="CI-POSTGRES-LEGACY-DATABASE",
     )
 
+    inspector = inspect(postgres_engine)
+    actual_columns = {
+        str(column["name"]) for column in inspector.get_columns("food_log")
+    }
+    expected_columns = {column.name for column in migration_food_log.columns}
+    assert actual_columns == expected_columns
+
     with postgres_engine.connect() as connection:
         row = connection.exec_driver_sql(
             "SELECT id, product_name, owner_id FROM food_log WHERE id = 1"
@@ -158,7 +165,7 @@ def test_postgresql_legacy_food_log_is_preserved(
     assert any(
         foreign_key["constrained_columns"] == ["owner_id"]
         and foreign_key["referred_table"] == "calorieappuser"
-        for foreign_key in inspect(postgres_engine).get_foreign_keys("food_log")
+        for foreign_key in inspector.get_foreign_keys("food_log")
     )
 
 

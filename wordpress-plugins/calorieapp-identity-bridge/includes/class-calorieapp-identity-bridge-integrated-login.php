@@ -413,8 +413,11 @@ class IntegratedLogin {
         }
 
         $flow_locale = LocaleRegistry::resolve((string) ($flow['locale'] ?? 'en'));
-        $requested_locale = LocaleRegistry::resolve((string) $request->get_param('locale'));
-        if (!hash_equals($flow_locale, $requested_locale)) {
+        $requested_locale = trim((string) $request->get_param('locale'));
+        if (
+            $requested_locale !== ''
+            && !hash_equals($flow_locale, LocaleRegistry::resolve($requested_locale))
+        ) {
             return new WP_Error(
                 'locale_mismatch',
                 'This sign-in flow is bound to another language context.',

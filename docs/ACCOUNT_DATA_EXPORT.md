@@ -16,11 +16,17 @@ The export contains only records belonging to the authenticated internal user:
 - linked external identities and optional XRPL address;
 - every owned private food-log snapshot;
 - session activity timestamps;
-- authorization activity, including a stored request IP when present;
 - completed or failed browser-login handoff activity.
 
 Cross-user records are excluded. Legacy food logs whose owner is unknown remain
 quarantined and are not silently claimed by any account.
+
+The version-one `authorization_events` field is retained as an empty list for
+format compatibility. Legacy authorization rows contain an external subject but
+no direct internal-user or provider ownership, so their timestamps and stored
+request IP cannot be safely attributed and are withheld. They may be included
+only after a migration records direct ownership without inferring it from the
+subject.
 
 ## Deliberately excluded secrets
 

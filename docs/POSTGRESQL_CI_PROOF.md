@@ -1,6 +1,7 @@
 # Ephemeral PostgreSQL compatibility proof
 
-Status: automated gate prepared; first successful GitHub Actions run required.
+Status: automated gate configured; a successful GitHub Actions check is required
+for every merge candidate.
 Public onboarding and production deployment remain blocked.
 
 ## Purpose

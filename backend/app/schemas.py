@@ -247,7 +247,7 @@ class AccountExportAuthSession(BaseModel):
 
 
 class AccountExportAuthorizationEvent(BaseModel):
-    """Identity authorization activity without codes, state or login secrets."""
+    """Reserved v1 shape for authorization activity with proven ownership."""
 
     external_subject: str
     created_at: datetime

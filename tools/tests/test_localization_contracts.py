@@ -13,6 +13,7 @@ LOCALES_PATH = ROOT / "contracts" / "identity-bridge" / "v1" / "locales.json"
 class LocalizationContractTests(unittest.TestCase):
     def test_historical_original_and_identity_are_immutable(self) -> None:
         policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(policy["contract_id"], "calorietoken.asset-localization")
         self.assertTrue(policy["original_asset_policy"]["retain_unchanged_original"])
         self.assertTrue(policy["original_asset_policy"]["original_is_historical_source"])
         self.assertIn("historical_brand_identity", policy["visual_invariants"])
@@ -24,6 +25,7 @@ class LocalizationContractTests(unittest.TestCase):
 
     def test_image_workflow_uses_the_shared_locale_source(self) -> None:
         registry = json.loads(LOCALES_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(registry["contract_id"], "calorieapp.locale-registry")
         self.assertEqual(len(registry["locales"]), 11)
         self.assertEqual(registry["source_locale"], "en")
         self.assertEqual(registry["fallback_locale"], "en")
