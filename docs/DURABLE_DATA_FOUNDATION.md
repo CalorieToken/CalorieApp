@@ -25,8 +25,15 @@ until the durable-data and privacy gates pass.
   corrective migration, never an untested destructive automatic downgrade.
 - Food history must support authenticated export and erasure.
 - Infrastructure expiry must never silently define the user's retention period.
-- Food search text is forwarded to Open Food Facts without a CalorieApp identity
-  and is not retained as CalorieApp history unless the user explicitly logs a result.
+- Food search text is currently forwarded to the Open Food Facts adapter without
+  a CalorieApp identity and is not retained as CalorieApp history unless the user
+  explicitly logs a result.
+- Open Food Facts is one adapter, not the canonical or exclusive food-data model.
+  Future sources retain separate assertions, provenance, licence and verification
+  state; conflicts may not be resolved by silently overwriting a source.
+- A food-history entry is a private point-in-time snapshot. Later source changes
+  do not rewrite it, and private history never becomes public catalog data without
+  a separate explicit contribution flow.
 - Personal data is not written to public blockchain or public IPFS storage.
 - Optional encrypted user-controlled exports and non-reversible integrity
   commitments remain separate research and are not launch dependencies.
@@ -65,12 +72,12 @@ until the durable-data and privacy gates pass.
 |---|---|---|
 | Identity ownership | Internal user id is bound to food logs | Preserve and test on PostgreSQL |
 | Cross-user access | Automated SQLite tests cover reads and deletion | Repeat against PostgreSQL staging |
-| PostgreSQL support | Driver and URL normalization exist | Partial, not production-ready |
+| PostgreSQL support | Ephemeral PostgreSQL 16 CI gate configured | Require successful migration, identity isolation and restart checks for every merge candidate |
 | Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
 | Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
-| Durable-host tests | Missing | Automate restart and redeploy probes |
+| Durable-host tests | Application-engine restart test added for ephemeral PostgreSQL | Still prove provider restart and redeploy persistence |
 | Backup and restore | Missing | Select mechanism and prove restoration |
 | User export | Missing | Add authenticated portable export |
 | User erasure | Food-log deletion exists; complete account erasure does not | Complete scoped erasure workflow |
@@ -110,6 +117,14 @@ erasure policy changes, new Identity Bridge purposes, XRPL enablement,
 production deployment and public publication. Financial execution or routing
 must never be started automatically by this architecture.
 
+Full autonomy is permanently outside the design. People retain responsibility
+for values and direction, automation/DAO scope, high-impact releases and data
+changes, privacy/licence/legal accountability, incident command, emergency
+pause and recovery, and appeals or false positives. Automation provides bounded
+tests, evidence, advice and pre-approved execution; it cannot make itself more
+powerful or rewrite its own approval rules. A future DAO does not remove this
+human-managed safety and accountability layer.
+
 This boundary deliberately prepares the continuation: DS-2 supplies the formal
 migrations and production database guard; later Identity Bridge and eleven-
 language work reuse the same contract checks, feature flags, audit pattern and
@@ -118,11 +133,28 @@ approval gate. Showcase preview, review and scheduled publication stay last.
 Provider credentials, live connection strings, real user records and private
 operational recovery details must not be committed.
 
+## Ephemeral PostgreSQL proof
+
+The existing GitHub Actions role now starts a temporary PostgreSQL 16 service
+containing synthetic data only. It verifies the real PostgreSQL dialect, the
+approved staging migration command, legacy-row preservation, Identity Bridge
+user/session records, cross-user food-history isolation and persistence across
+replacement application database engines. A hard guard permits destructive
+test reset only for the loopback database named `calorieapp_ci_test`.
+
+This is a compatibility and application-restart proof, not a hosting decision.
+It does not prove that a free provider will remain free, survive redeployment,
+provide adequate capacity, restore backups or support the no-additional-cost
+exit path. Those release gates remain blocked. See
+`docs/POSTGRESQL_CI_PROOF.md`.
+
 ## Platform budget
 
-Use one provider per necessary role: the existing WordPress environment for the
-site and Identity Bridge, GitHub for source/CI, one app runtime, one
-provider-neutral PostgreSQL service and Open Food Facts as the food-data source.
+Use one provider per necessary infrastructure role: the existing WordPress
+environment for the site and Identity Bridge, GitHub for source/CI, one app
+runtime and one provider-neutral PostgreSQL service. Food-data sources are not
+infrastructure providers: Open Food Facts is the current adapter and additional
+reviewed sources can be connected through the same source-independent contract.
 XRPL remains an optional future reference layer already native to the project.
 
 Do not add a second identity service, primary database, graph database,
@@ -156,3 +188,21 @@ BigchainDB is not selected. Its server combines MongoDB and Tendermint and a
 meaningfully decentralized deployment requires multiple independently operated
 nodes. That adds duplicated infrastructure beside XRPL and makes private-data
 erasure harder without removing the underlying hosting cost.
+
+## Source-independent food catalog
+
+The future catalog is normalized around internal food products and separate
+source assertions, not around an Open Food Facts response shape. A versioned,
+idempotent adapter records each provider's external record identifier, source
+version or digest, retrieval time, licence, attribution and verification state.
+Conflicting claims coexist and a deterministic display policy selects a value
+without destroying provenance.
+
+The catalog, contribution flow and private history remain separate. Identity
+Bridge may later attest a consenting contributor's role through a pseudonymous
+reference, but its private identity fields do not enter the catalog. Future XRPL
+references attach to reviewed provenance events, never automatically to personal
+food logs. DS-3 fixes this contract first; the source-independent tables require
+a later V2 forward migration after the PostgreSQL compatibility proof. Enabling
+a second source is not itself required to complete V2. See
+`docs/FOOD_DATA_SOURCE_ARCHITECTURE.md`.

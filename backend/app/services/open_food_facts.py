@@ -19,17 +19,17 @@ logger = logging.getLogger(__name__)
 
 OPEN_FOOD_FACTS_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
 REQUEST_HEADERS = {
-    "User-Agent": "CalorieApp/0.1 (https://calorietoken.net; info@calorietoken.net)",
+    "User-Agent": "CalorieApp/0.2.0 (https://calorietoken.net; info@calorietoken.net)",
     "Accept": "application/json",
 }
 
-# HTTP status codes considered transient/retryable upstream failures.
-_RETRYABLE_STATUS_CODES = {502, 503, 504}
 _PRIMARY_TIMEOUT_SECONDS = 10.0
-_PRIMARY_MAX_ATTEMPTS = 3
-_PRIMARY_RETRY_BASE_DELAY_SECONDS = 0.35
-_FALLBACK_MAX_ATTEMPTS = 2
-_FALLBACK_RETRY_BASE_DELAY_SECONDS = 0.5
+# One normal request plus at most one alternate-transport request. Nested
+# transport retries would amplify one user search into enough upstream traffic
+# to exhaust Open Food Facts' public per-IP search allowance.
+_PRIMARY_MAX_ATTEMPTS = 1
+_FALLBACK_MAX_ATTEMPTS = 1
+_MAX_UPSTREAM_ATTEMPTS_PER_SEARCH = _PRIMARY_MAX_ATTEMPTS + _FALLBACK_MAX_ATTEMPTS
 _OPEN_FOOD_FACTS_FIELDS = (
     "product_name,code,image_front_url,image_url,image_small_url,image_front_small_url,"
     "brands,serving_size,nutriscore_grade,nutriments"
@@ -118,9 +118,14 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
     payload: dict[str, Any]
     try:
         payload = await _fetch_primary(params)
-    except (httpx.HTTPError, ValueError) as exc:
+    except httpx.HTTPStatusError:
+        # Do not bypass an upstream status (especially 429/503) through another
+        # transport. That would multiply load precisely when the source asks us
+        # to stop or is unavailable.
+        raise
+    except (httpx.RequestError, ValueError) as exc:
         logger.warning(
-            "Primary Open Food Facts request failed after retries; using fallback (%s)",
+            "Primary Open Food Facts request failed; using fallback (%s)",
             type(exc).__name__,
         )
         try:
@@ -169,73 +174,23 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
 
 
 async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
-    """Fetch from Open Food Facts via httpx with bounded retry/backoff on transient errors."""
-    last_exc: httpx.HTTPError | None = None
-
-    for attempt in range(_PRIMARY_MAX_ATTEMPTS):
-        try:
-            async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
-                response = await client.get(
-                    OPEN_FOOD_FACTS_SEARCH_URL,
-                    params=params,
-                    headers=REQUEST_HEADERS,
-                )
-                response.raise_for_status()
-                payload = response.json()
-                if not isinstance(payload, dict):
-                    raise ValueError("Open Food Facts payload is not a JSON object")
-                products = payload.get("products")
-                if products is None:
-                    payload["products"] = []
-                elif not isinstance(products, list):
-                    raise ValueError("Open Food Facts payload 'products' field is not a list")
-                return payload
-        except httpx.HTTPStatusError as exc:
-            # Only retry on transient server-side status codes.
-            if exc.response.status_code in _RETRYABLE_STATUS_CODES and attempt < (_PRIMARY_MAX_ATTEMPTS - 1):
-                last_exc = exc
-                logger.warning(
-                    "Transient HTTP %s from Open Food Facts (attempt %d/%d) — retrying",
-                    exc.response.status_code,
-                    attempt + 1,
-                    _PRIMARY_MAX_ATTEMPTS,
-                )
-                await asyncio.sleep(_PRIMARY_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
-                continue
-            raise
-        except (httpx.TimeoutException, httpx.ConnectError) as exc:
-            # Retry on timeout or connection errors.
-            last_exc = exc
-            if attempt < (_PRIMARY_MAX_ATTEMPTS - 1):
-                logger.warning(
-                    "Transient network error from Open Food Facts "
-                    "(attempt %d/%d, error=%s) — retrying",
-                    attempt + 1,
-                    _PRIMARY_MAX_ATTEMPTS,
-                    type(exc).__name__,
-                )
-                await asyncio.sleep(_PRIMARY_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
-                continue
-            raise
-        except ValueError as exc:
-            # Retry once when JSON payload is malformed or shape is invalid.
-            last_exc = httpx.HTTPError(str(exc))
-            if attempt < (_PRIMARY_MAX_ATTEMPTS - 1):
-                logger.warning(
-                    "Primary Open Food Facts payload decode/shape error "
-                    "(attempt %d/%d, error=%s) — retrying",
-                    attempt + 1,
-                    _PRIMARY_MAX_ATTEMPTS,
-                    type(exc).__name__,
-                )
-                await asyncio.sleep(_PRIMARY_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
-                continue
-            raise
-
-    # Defensive guard: every retry path records an exception before continuing.
-    if last_exc is None:
-        raise RuntimeError("Open Food Facts primary retry loop ended without a result")
-    raise last_exc
+    """Make one primary Open Food Facts request; the caller owns fallback policy."""
+    async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
+        response = await client.get(
+            OPEN_FOOD_FACTS_SEARCH_URL,
+            params=params,
+            headers=REQUEST_HEADERS,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, dict):
+            raise ValueError("Open Food Facts payload is not a JSON object")
+        products = payload.get("products")
+        if products is None:
+            payload["products"] = []
+        elif not isinstance(products, list):
+            raise ValueError("Open Food Facts payload 'products' field is not a list")
+        return payload
 
 
 def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
@@ -258,11 +213,6 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
                 "5",
                 "--max-time",
                 "15",
-                "--retry",
-                "1",
-                "--retry-delay",
-                "1",
-                "--retry-connrefused",
                 "-H",
                 f"User-Agent: {REQUEST_HEADERS['User-Agent']}",
                 "-H",
@@ -341,42 +291,7 @@ def _urllib_fetch(params: dict[str, Any]) -> dict[str, Any]:
 
 
 async def _fetch_fallback(params: dict[str, Any]) -> dict[str, Any]:
-    """Use curl when available; otherwise use a portable Python fallback."""
+    """Make one alternate-transport attempt without nested retry amplification."""
     if _resolve_curl_command():
-        try:
-            return await asyncio.to_thread(_curl_fetch, params)
-        except ValueError as exc:
-            logger.warning(
-                "curl fallback failed; trying urllib fallback (%s)",
-                type(exc).__name__,
-            )
-
-    last_exc: ValueError | None = None
-    for attempt in range(_FALLBACK_MAX_ATTEMPTS):
-        try:
-            return await asyncio.to_thread(_urllib_fetch, params)
-        except ValueError as exc:
-            last_exc = exc
-            if _is_retryable_urllib_error(exc) and attempt < (_FALLBACK_MAX_ATTEMPTS - 1):
-                logger.warning(
-                    "urllib fallback transient failure "
-                    "(attempt %d/%d, error=%s) — retrying",
-                    attempt + 1,
-                    _FALLBACK_MAX_ATTEMPTS,
-                    type(exc).__name__,
-                )
-                await asyncio.sleep(_FALLBACK_RETRY_BASE_DELAY_SECONDS * (2 ** attempt))
-                continue
-            raise
-
-    if last_exc is None:
-        raise RuntimeError("Open Food Facts fallback retry loop ended without a result")
-    raise last_exc
-
-
-def _is_retryable_urllib_error(exc: ValueError) -> bool:
-    msg = str(exc)
-    if any(f"HTTP {status}" in msg for status in _RETRYABLE_STATUS_CODES):
-        return True
-    lowered = msg.lower()
-    return "timed out" in lowered or "temporarily unavailable" in lowered or "urlopen error" in lowered
+        return await asyncio.to_thread(_curl_fetch, params)
+    return await asyncio.to_thread(_urllib_fetch, params)

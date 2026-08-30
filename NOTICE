@@ -11,8 +11,8 @@ Trade mark:
   trade-mark licence is granted.
 
 Regulatory boundary:
-  Current CalorieApp V1 is non-financial and non-custodial. No wallet custody
-  or financial transaction layer is claimed in V1. See REGULATORY.md.
+  The current CalorieApp V2 is non-financial and non-custodial. No wallet
+  custody or financial transaction layer is claimed. See REGULATORY.md.
 
 Explicitly licensed component:
   wordpress-plugins/calorieapp-identity-bridge/

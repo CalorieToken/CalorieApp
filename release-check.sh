@@ -46,6 +46,17 @@ step "Schema migration smoke test"
         "$python_bin" -m app.schema_cli check
 )
 
+step "Optional PostgreSQL integration"
+if [[ -n "${CALORIEAPP_POSTGRES_TEST_DATABASE_URL:-}" ]]; then
+    (
+        cd "$repo_root/backend"
+        CALORIEAPP_POSTGRES_TEST_DATABASE_URL="$CALORIEAPP_POSTGRES_TEST_DATABASE_URL" \
+            "$python_bin" -m pytest tests/test_postgresql_integration.py -q
+    )
+else
+    printf '[SKIP] CALORIEAPP_POSTGRES_TEST_DATABASE_URL is not configured\n'
+fi
+
 step "Frontend lint"
 (
     cd "$repo_root/frontend"

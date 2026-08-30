@@ -34,6 +34,29 @@ def test_data_safety_contract_forbids_public_personal_data_replication() -> None
     assert "non-reversible" in boundary["allowed_chain_record"]
 
 
+def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> None:
+    proof = _load_json("data-safety.json")["postgresql_ci_proof"]
+
+    assert proof["status"] == (
+        "automated-gate-configured-success-required-per-merge-candidate"
+    )
+    assert proof["database_version"] == "PostgreSQL 16"
+    assert proof["new_provider_or_account_required"] is False
+    assert proof["additional_recurring_subscription_required"] is False
+    assert proof["synthetic_data_only"] is True
+    assert proof["destructive_reset_guard"]["loopback_host_required"] is True
+    assert (
+        proof["destructive_reset_guard"]["exact_database_name_required"]
+        == "calorieapp_ci_test"
+    )
+    assert proof["destructive_reset_guard"]["real_user_or_production_database_allowed"] is False
+    assert "cross-user-food-history-isolation" in proof["automated_evidence"]
+    assert "application-engine-restart-persistence" in proof["automated_evidence"]
+    assert "provider-redeploy-persistence" in proof["does_not_prove"]
+    assert "backup-restoration" in proof["does_not_prove"]
+    assert proof["provider_selection_status"] == "pending-separate-evaluation"
+
+
 def test_data_classes_cover_current_and_planned_personal_flows() -> None:
     data_classes = {
         item["id"]: item for item in _load_json("data-safety.json")["data_classes"]
@@ -51,6 +74,10 @@ def test_data_classes_cover_current_and_planned_personal_flows() -> None:
     }
     assert data_classes["food_search_query"]["persistent_storage_allowed"] is False
     assert data_classes["food_search_query"]["calorieapp_identity_forwarded"] is False
+    assert data_classes["food_search_query"]["current_external_adapter"] == (
+        "open_food_facts"
+    )
+    assert data_classes["food_search_query"]["source_architecture_is_exclusive"] is False
     assert data_classes["voluntary_profile"]["explicit_choice_required"] is True
     assert data_classes["donation_contact"]["purpose_separation_required"] is True
     assert data_classes["xrpl_transaction_reference"]["primary_key"] == [
@@ -118,6 +145,44 @@ def test_platform_budget_prevents_duplicate_core_services() -> None:
     assert platforms["ipfs_or_filecoin_required_for_core_release"] is False
     assert platforms["new_provider_requires_architecture_record"] is True
     assert platforms["roles"]["optional_ledger_reference"] == "XRPL only"
+
+
+def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
+    sources = _load_json("data-safety.json")["food_data_sources"]
+
+    assert sources["current_adapter"] == "open_food_facts"
+    assert sources["current_adapter_is_canonical_model"] is False
+    assert sources["current_adapter_is_exclusive_authority"] is False
+    assert sources["additional_sources_require_core_schema_rewrite"] is False
+    assert sources["separate_source_assertions_required"] is True
+    assert sources["silent_cross_source_overwrite_allowed"] is False
+    assert sources["source_licence_and_attribution_preservation_required"] is True
+    assert sources["private_history_is_point_in_time_snapshot"] is True
+    assert sources["later_source_change_may_rewrite_private_history"] is False
+    assert sources["private_history_auto_published_as_catalog_source"] is False
+    assert sources["identity_bridge_private_fields_allowed_in_public_catalog"] is False
+    assert sources["source_independent_schema_compatibility_required_for_v2"] is True
+    assert sources["additional_source_activation_required_for_v2"] is False
+    assert sources["current_release_dependency"] is True
+    assert sources["v2_forward_migration_required"] is True
+
+
+def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
+    safety = _load_json("data-safety.json")["abuse_capacity_and_mutation_safety"]
+
+    assert safety["status"] == "partial-release-blocking"
+    assert safety["route_specific_rate_limits_required"] is True
+    assert safety["bounded_end_to_end_retry_budget_required"] is True
+    assert safety["nested_retry_amplification_allowed"] is False
+    assert safety["bounded_concurrency_and_queue_required"] is True
+    assert safety["raw_ip_or_search_text_in_long_term_abuse_profile_allowed"] is False
+    assert safety["external_integration_default_access"] == "read-only"
+    assert safety["direct_ecosystem_database_write_allowed"] is False
+    assert safety["silent_catalog_assertion_overwrite_allowed"] is False
+    assert safety["unmoderated_public_contribution_activation_allowed"] is False
+    assert safety["production_schema_mutation_requires_separate_approval"] is True
+    assert safety["automatic_xrpl_transaction_creation_allowed"] is False
+    assert safety["current_release_dependency"] is True
 
 
 def test_core_stays_free_while_separate_value_added_services_remain_possible() -> None:
@@ -197,6 +262,17 @@ def test_official_products_and_separate_ecosystem_have_a_reuse_boundary() -> Non
     assert boundary["identity_bridge_code_provenance_contract"] == (
         "contracts/identity-bridge/v1/code-provenance.json"
     )
+    assert boundary["component_rights_registry_contract"] == (
+        "contracts/governance/v2/component-rights-registry.json"
+    )
+    assert boundary["developer_claim_must_be_component_specific_and_evidence_based"] is True
+    assert boundary["developer_contribution_grants_claim_over_entire_product_or_ecosystem"] is False
+    assert boundary[
+        "credit_authorship_copyright_licence_maintenance_and_official_control_are_separate"
+    ] is True
+    assert boundary["unknown_or_disputed_rights_must_remain_unknown_or_disputed"] is True
+    assert boundary["user_data_or_identity_records_may_be_claimed_as_developer_ip"] is False
+    assert boundary["dao_may_reassign_or_relicense_existing_component_rights_without_authority"] is False
     assert boundary["identity_bridge_public_distribution_clearance_status"] == (
         "blocked-pending-source-clearance"
     )
@@ -258,18 +334,59 @@ def test_responsible_automation_keeps_human_release_and_privacy_gates() -> None:
     assert "scheduled-staging-restore-drills" in automation["automated_by_default"]
     assert "localization-completeness-checks" in automation["automated_by_default"]
     assert "identity-purpose-expansion" in automation["approval_required"]
+    assert "automation-authority-or-policy-expansion" in automation["approval_required"]
+    assert "dao-activation-or-governance-scope-handover" in automation[
+        "approval_required"
+    ]
     assert "xrpl-feature-enablement" in automation["approval_required"]
     assert "public-content-publication" in automation["approval_required"]
     assert automation["production_automation_runs_only_after_approval"] is True
     assert automation["idempotent_and_retry_safe_required"] is True
+    assert automation["fully_autonomous_product_or_ecosystem_operation_allowed"] is False
+    assert automation["self_modifying_governance_or_approval_rules_allowed"] is False
+    assert automation["ai_or_automation_may_be_final_accountable_authority"] is False
+    assert automation[
+        "permanent_human_direction_safety_incident_appeal_and_accountability_layer_required"
+    ] is True
+    assert automation["human_emergency_pause_and_recovery_capability_required"] is True
+    assert automation[
+        "human_override_may_bypass_law_consent_privacy_or_security_invariants"
+    ] is False
     assert automation["automatic_publication_allowed"] is False
     assert automation["automatic_financial_action_allowed"] is False
+
+
+def test_permanent_human_governance_forbids_full_autonomy() -> None:
+    human = _load_json("data-safety.json")["permanent_human_governance"]
+
+    assert human["status"] == "non-removable-safety-and-accountability-boundary"
+    assert human["fully_autonomous_operation_allowed"] is False
+    assert "purpose-values-and-strategic-direction" in human["human_managed_functions"]
+    assert "security-incident-command-emergency-pause-and-recovery" in human[
+        "human_managed_functions"
+    ]
+    assert human["automation_role"] == (
+        "bounded-test-evidence-advice-and-preapproved-execution"
+    )
+    assert human["self_modifying_code_policy_scope_or_governance_allowed"] is False
+    assert human[
+        "irreversible_privacy_financial_publication_or_production_action_without_fresh_human_approval_allowed"
+    ] is False
+    assert human["future_dao_may_remove_human_accountability_or_emergency_controls"] is False
+    assert human["high_impact_multi_person_approval_required_before_future_distributed_governance"] is True
+    assert human["emergency_pause_must_be_time_bounded_audited_and_reviewed"] is True
+    assert human[
+        "human_override_may_violate_law_consent_data_rights_or_recorded_component_rights"
+    ] is False
 
 
 def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> None:
     matrix = _load_json("release-test-matrix.json")
     gates = {gate["id"]: gate for gate in matrix["gates"]}
     expected = {
+        "abuse_capacity_and_mutation_controls",
+        "component_rights_and_contributor_provenance",
+        "v2_deployment_provenance",
         "provider_neutral_postgresql_configuration",
         "production_sqlite_fail_closed",
         "formal_schema_migrations",
@@ -293,8 +410,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["owner_isolation"]["status"] == "verified"
     assert gates["production_sqlite_fail_closed"]["status"] == "verified"
     assert gates["formal_schema_migrations"]["status"] == "verified"
+    assert gates["v2_deployment_provenance"]["status"] == "partial"
+    assert gates["abuse_capacity_and_mutation_controls"]["status"] == "partial"
+    assert gates["component_rights_and_contributor_provenance"]["status"] == "partial"
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
+    assert gates["restart_persistence"]["status"] == "partial"
     assert gates["retention_policy"]["status"] == "decision_required"
     assert matrix["release_state"] == "blocked"
 
@@ -306,6 +427,9 @@ def test_contract_release_order_ends_with_review_and_explicit_publication_go() -
     assert release_order[-1] == "showcase-preview-review-explicit-go-scheduled-publish"
     assert release_order.index("automation-and-observability-foundation") < release_order.index(
         "formal-migrations"
+    )
+    assert release_order.index("abuse-capacity-and-mutation-guardrails") < (
+        release_order.index("formal-migrations")
     )
     assert release_order.index("privacy-review") < release_order.index(
         "identity-feature-expansion"

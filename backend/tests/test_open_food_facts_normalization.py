@@ -6,10 +6,19 @@ import httpx
 import pytest
 
 from app.services.open_food_facts import (
+    _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH,
+    _PRIMARY_MAX_ATTEMPTS,
+    _FALLBACK_MAX_ATTEMPTS,
     _extract_nutri_score,
     _to_float,
     search_food_products,
 )
+
+
+def test_one_search_has_a_two_request_end_to_end_upstream_budget() -> None:
+    assert _PRIMARY_MAX_ATTEMPTS == 1
+    assert _FALLBACK_MAX_ATTEMPTS == 1
+    assert _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH == 2
 
 
 @pytest.mark.parametrize(
@@ -91,3 +100,39 @@ def test_unexpected_fallback_programming_error_is_not_hidden(
 
     with pytest.raises(RuntimeError, match="unexpected implementation failure"):
         asyncio.run(search_food_products("banana"))
+
+
+@patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_upstream_http_status_does_not_bypass_limit_through_fallback(
+    primary: AsyncMock,
+    fallback: AsyncMock,
+) -> None:
+    request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
+    response = httpx.Response(429, request=request)
+    primary.side_effect = httpx.HTTPStatusError(
+        "rate limited",
+        request=request,
+        response=response,
+    )
+
+    with pytest.raises(httpx.HTTPStatusError):
+        asyncio.run(search_food_products("banana"))
+
+    fallback.assert_not_awaited()
+
+
+@patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_primary_transport_error_uses_single_fallback_attempt(
+    primary: AsyncMock,
+    fallback: AsyncMock,
+) -> None:
+    request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
+    primary.side_effect = httpx.ReadError("connection interrupted", request=request)
+    fallback.return_value = {"products": []}
+
+    assert asyncio.run(search_food_products("banana")) == []
+
+    primary.assert_awaited_once()
+    fallback.assert_awaited_once()

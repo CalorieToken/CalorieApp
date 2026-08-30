@@ -1,0 +1,255 @@
+{
+  "contract_id": "calorieapp.v2-ecosystem-evolution-guardrails",
+  "contract_version": "1.0.0",
+  "status": "direction-contract-official-adoption-controlled-independent-evolution-free",
+  "purpose": "Give the Calorie ecosystem a stable safety direction while allowing independent namespaced evolution without unauthorized mutation of official products or state.",
+  "constitutional_invariants": [
+    "voluntary-participation-and-purpose-specific-consent",
+    "privacy-and-data-minimization",
+    "source-provenance-and-no-silent-overwrite",
+    "source-specific-licence-and-attribution-respect",
+    "identity-bridge-and-private-history-separation",
+    "non-custodial-and-non-financial-v2-boundary",
+    "no-automatic-fee-bearing-or-ledger-mutation",
+    "portable-versioned-interfaces-and-user-data-rights",
+    "historical-record-corrections-preserve-superseded-state"
+  ],
+  "independent_evolution": {
+    "allowed": true,
+    "allowed_examples": [
+      "namespaced-source-adapter",
+      "independent-dataset",
+      "independent-client-or-application",
+      "new-analysis-or-visualization",
+      "compatible-schema-extension",
+      "alternative-governance-experiment",
+      "lawful-fork-where-the-component-licence-permits"
+    ],
+    "official_preapproval_required": false,
+    "official_service_credentials_required": false,
+    "must_use_own_namespace_and_non_official_branding": true,
+    "official_rejection_may_delete_or_technically_block_independent_work": false,
+    "applicable_licences_privacy_law_and_third_party_rights_still_apply": true
+  },
+  "official_state_boundary": {
+    "official_namespace": "calorieapp-official",
+    "official_registry_and_service_operator_controlled": true,
+    "direct_external_database_mutation_allowed": false,
+    "direct_external_identity_or_session_store_access_allowed": false,
+    "community_claim_may_overwrite_official_or_source_assertion": false,
+    "community_project_may_claim_official_status_or_brand_authority": false,
+    "independent_extension_auto_installed_or_federated": false,
+    "official_service_access_is_revocable_and_scoped": true,
+    "revoking_official_service_access_revokes_right_to_independent_development": false
+  },
+  "official_adoption_process": {
+    "versioned_proposal_required": true,
+    "problem_user_value_and_scope_required": true,
+    "threat_privacy_and_abuse_analysis_required": true,
+    "licence_and_code_provenance_review_required": true,
+    "schema_migration_and_rollback_or_correction_plan_required": true,
+    "conformance_tests_and_test_vectors_required": true,
+    "backward_compatibility_or_major_version_required": true,
+    "deprecation_and_data_portability_plan_required": true,
+    "public_or_recorded_review_window_required": true,
+    "explicit_operator_approval_required_for_official_release": true,
+    "approval_may_bypass_release_privacy_or_security_gates": false
+  },
+  "extension_lifecycle": {
+    "states": [
+      "independent-experimental",
+      "community-reviewed",
+      "conformant",
+      "official-pilot",
+      "official-supported",
+      "deprecated",
+      "revoked-from-official-service"
+    ],
+    "conformant_means_official_product": false,
+    "official_pilot_may_access_production_personal_data_by_default": false,
+    "promotion_requires_recorded_evidence": true,
+    "demotion_or_revocation_requires_reason_and_audit_event": true,
+    "false_positive_or_dispute_review_path_required": true,
+    "emergency_disable_allowed_to_protect_users_or_service": true,
+    "emergency_disable_requires_later_review": true
+  },
+  "safe_mutation_model": {
+    "new_contribution_is_namespaced_append": true,
+    "correction_uses_supersedes_relation": true,
+    "destructive_rewrite_of_provenance_allowed": false,
+    "immutable_external_event_may_be_locally_unlinked_but_not_claimed_deleted": true,
+    "idempotency_expected_version_validation_and_audit_required": true,
+    "public_resolution_may_expose_private_identity_or_history": false
+  },
+  "governance_boundary": {
+    "official_v2_release_control_remains_with_current_operator": true,
+    "ecosystem_input_and_proposals_allowed": true,
+    "external_proposal_auto_accepted": false,
+    "token_ownership_grants_automatic_vote_or_mutation_rights": false,
+    "wealth_weighted_governance_required": false,
+    "governance_may_override_privacy_consent_or_data_rights": false,
+    "future_shared_governance_requires_separate_versioned_design": true,
+    "operator_continuity_and_succession_controls_still_required": true
+  },
+  "future_dao_candidate": {
+    "status": "v2-limited-tool-preparation-v3-full-dao-only",
+    "design_detail_status": "v2-inventory-and-isolated-non-binding-preview-v3-governance-design",
+    "current_v2_dependency": false,
+    "v2_allowed_scope": [
+      "inventory-existing-tool-source-version-licence-and-deployment",
+      "isolated-preview-or-simulation-with-synthetic-test-data",
+      "interface-localization-and-accessibility-review",
+      "code-provenance-security-and-threat-model-review",
+      "non-binding-decision-artifact-format-exploration"
+    ],
+    "v2_forbidden_scope": [
+      "real-holder-eligibility-balance-snapshots-or-wallet-profiling",
+      "real-or-live-votes-or-binding-governance",
+      "production-dao-tables-api-smart-contract-or-governance-executor",
+      "identity-bridge-session-or-personal-data-access-for-voting",
+      "treasury-payment-or-xrpl-transaction-execution"
+    ],
+    "earliest_real_governance_mode": "v3-advisory-proposals-and-non-binding-signalling",
+    "full_dao_implementation_and_real_voting_earliest_product_version": "v3",
+    "v3_activation_is_automatic": false,
+    "intended_final_mode": "distributed-ecosystem-governance-through-project-dao-voting-tool",
+    "intended_voter_constituency": "calorie-token-holders",
+    "holder_eligibility_snapshot_and_vote_weight_mechanics": "undecided-future-design",
+    "dao_tables_endpoints_smart_contracts_or_live_voting_implemented_in_v2": false,
+    "pre_activation_control": {
+      "ecosystem_foundation_designed_and_developed_to_completed_point_by_current_developer_and_team_required": true,
+      "objective_completion_gates_and_tests_required": true,
+      "recorded_completion_declaration_by_current_operator_required": true,
+      "versioned_dao_scope_handover_manifest_required": true,
+      "handover_manifest_requires_current_operator_approval": true,
+      "dao_vote_or_follow_on_implementation_before_completion_and_handover_allowed": false,
+      "implicit_or_retroactive_scope_handover_allowed": false,
+      "dao_may_expand_its_own_authority_by_vote_alone": false
+    },
+    "dao_voting_tool": {
+      "project_tool_selected_as_future_governance_interface": true,
+      "repository_location": "unknown-not-found-in-current-repository",
+      "deployed_platform_or_contract_address": "unknown-not-documented",
+      "version_and_source_commit": "unknown-not-documented",
+      "licence_and_code_provenance_status": "review-required",
+      "current_security_audit_status": "unknown-review-required",
+      "current_voting_and_eligibility_model": "unknown-must-not-be-invented",
+      "production_authority_enabled": false,
+      "inventory_required_before_integration_design": true,
+      "v2_partial_integration_limited_to_isolated_non_binding_preview": true,
+      "v2_preview_uses_synthetic_or_explicit_test_data_only": true,
+      "v2_preview_may_claim_live_dao_or_holder_vote": false,
+      "v3_full_integration_requires_separate_human_approved_design_audit_and_activation": true
+    },
+    "activation_prerequisites": [
+      "v2-complete-and-operationally-stable",
+      "clear-charter-scope-and-constitutional-invariants",
+      "governance-capture-sybil-and-vote-buying-threat-model",
+      "privacy-preserving-participation-design",
+      "quorum-delegation-conflict-of-interest-and-appeal-rules",
+      "timelock-emergency-pause-and-transparent-post-incident-review",
+      "independent-smart-contract-and-governance-security-audit",
+      "treasury-tax-financial-and-jurisdiction-specific-legal-review",
+      "testnet-or-simulation-pilot-with-exit-and-rollback-plan"
+    ],
+    "one_token_one_vote_assumed": false,
+    "token_ownership_grants_automatic_governance_right": false,
+    "governance_model_options_require_comparison": [
+      "credentialed-or-one-person-participation",
+      "delegated-representation",
+      "reputation-with-anti-capture-controls",
+      "stake-or-token-weighting-with-concentration-limits",
+      "hybrid-multichamber-model"
+    ],
+    "may_directly_mutate_production_database": false,
+    "may_administer_identity_bridge_or_session_store": false,
+    "may_vote_to_expose_or_repurpose_personal_data": false,
+    "may_override_user_consent_or_data_rights": false,
+    "may_block_required_security_or_legal_response": false,
+    "automatic_treasury_payment_or_xrpl_transaction_allowed": false,
+    "official_product_change_still_requires_tested_release_process": true,
+    "scope_expansion_requires_new_versioned_review": true
+  },
+  "dao_authority_growth": {
+    "status": "direction-only-not-an-implementation-plan",
+    "stages": [
+      "inventory-source-version-licence-and-existing-deployment",
+      "read-only-proposal-and-vote-observation",
+      "advisory-non-binding-ecosystem-signalling",
+      "allowlisted-ecosystem-registry-and-parameter-decisions",
+      "broader-distributed-ecosystem-management-after-separate-approval"
+    ],
+    "stage_may_be_skipped": false,
+    "v2_tool_inventory_and_isolated_preview_may_precede_governance_handover": true,
+    "all_real_governance_stages_begin_in_v3_after_developer_completion_and_scope_handover": true,
+    "voting_tool_may_execute_arbitrary_code_or_sql": false,
+    "voting_tool_may_hold_identity_bridge_or_database_credentials": false,
+    "separate_governance_executor_required_for_binding_actions": true,
+    "executor_accepts_allowlisted_versioned_action_types_only": true,
+    "executor_verifies_proposal_vote_quorum_deadline_and_finality": true,
+    "executor_requires_replay_protection_and_idempotency": true,
+    "executor_enforces_timelock_and_public_audit_record": true,
+    "executor_may_bypass_privacy_security_licence_or_legal_policy": false,
+    "binding_action_dry_run_and_bounded_rollback_or_correction_required": true,
+    "distributed_management_goal_applies_to": "ecosystem-layer-not-unreviewed-direct-control-of-official-private-product-state"
+  },
+  "dao_architecture_awareness_for_v2": {
+    "purpose": "Allow bounded voting-tool preparation and avoid choices that would block later holder governance without implementing real DAO voting in V2.",
+    "stable_versioned_entity_ids_required": true,
+    "namespaced_extension_and_capability_boundaries_required": true,
+    "append_only_proposal_decision_and_supersedes_references_supported_by_future_formats": true,
+    "verifiable_external_decision_reference_may_be_added_later": true,
+    "dao_specific_database_tables_required_in_v2": false,
+    "dao_api_endpoint_required_in_v2": false,
+    "dao_smart_contract_required_in_v2": false,
+    "holder_balance_snapshot_or_wallet_profiling_required_in_v2": false,
+    "live_vote_or_governance_executor_required_in_v2": false,
+    "existing_voting_tool_inventory_allowed_in_v2": true,
+    "isolated_non_binding_preview_with_synthetic_test_data_allowed_in_v2": true,
+    "real_holder_vote_or_governance_authority_allowed_in_v2": false,
+    "full_dao_implementation_and_real_voting_reserved_for_v3": true
+  },
+  "future_dao_scope_handover_manifest": {
+    "status": "future-format-requirement-no-manifest-created",
+    "required_fields": [
+      "foundation_version_and_source_commit",
+      "objective_completion_evidence",
+      "developer_or_operator_completion_declaration",
+      "included_ecosystem_namespaces-capabilities-and-parameters",
+      "excluded-official-product-identity-data-brand-and-rights-boundaries",
+      "dao-voting-tool-version-and-security-audit",
+      "voting-eligibility-and-weight-model",
+      "decision-finality-executor-and-timelock-rules",
+      "emergency-pause-review-and-appeal-rules",
+      "effective-date-and-approval-record"
+    ],
+    "empty_or_ambiguous_scope_means_no_dao_authority": true,
+    "official_product_or_developer_component_rights_transfer_by_implication": false,
+    "scope_change_requires_new_manifest_and_same_approval_gates": true
+  },
+  "permanent_human_governance_boundary": {
+    "fully_autonomous_ecosystem_governance_allowed": false,
+    "human_managed_layer_required_after_dao_activation": true,
+    "human_responsibilities": [
+      "values-purpose-and-constitutional-direction",
+      "scope-handover-and-authority-expansion-approval",
+      "privacy-licence-legal-and-developer-rights-accountability",
+      "security-incident-command-emergency-pause-and-recovery",
+      "production-release-and-high-impact-mutation-approval",
+      "appeal-dispute-and-false-positive-review"
+    ],
+    "dao_or_automation_may_self_modify_its_code_scope_policy_or_approval_rules": false,
+    "dao_may_vote_to_remove_human_safety_accountability_or_emergency_controls": false,
+    "binding_executor_requires_human_managed_allowlist_and_pause": true,
+    "irreversible_high_impact_action_requires_fresh_human_approval": true,
+    "emergency_pause_time_bounded_audited_and_post_reviewed": true,
+    "human_override_may_bypass_law_consent_privacy_security_or_rights_invariants": false
+  },
+  "direction_not_control": {
+    "official_conformance_label_protects_interoperability_and_user_safety": true,
+    "nonconformant_independent_work_is_automatically_illegal_or_forbidden": false,
+    "official_system_may_refuse_unsafe_or_incompatible_federation": true,
+    "refusal_to_federate_may_rewrite_or_destroy_remote_state": false,
+    "goal": "Allow broad experimentation while keeping official trust, personal data and canonical provenance deliberately protected."
+  }
+}

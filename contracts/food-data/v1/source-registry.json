@@ -1,0 +1,159 @@
+{
+  "contract_id": "calorieapp.food-data-source-registry",
+  "contract_version": "1.0.0",
+  "status": "architecture-only-no-new-source-enabled",
+  "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
+  "principles": {
+    "open_food_facts_is_one_adapter_not_canonical_model": true,
+    "single_source_database_design_allowed": false,
+    "new_source_requires_core_schema_rewrite": false,
+    "source_assertions_preserved_separately": true,
+    "silent_cross_source_overwrite_allowed": false,
+    "private_food_history_is_point_in_time_snapshot": true,
+    "later_source_change_may_rewrite_private_history": false,
+    "private_history_auto_published_as_catalog_source": false
+  },
+  "source_categories": [
+    "open-dataset",
+    "producer-or-farm",
+    "processor-or-manufacturer",
+    "supplier-or-distributor",
+    "retailer-or-restaurant",
+    "laboratory-or-certifier",
+    "government-or-public-authority",
+    "community-contribution",
+    "explicit-user-import",
+    "ecosystem-adapter"
+  ],
+  "entities": {
+    "food_source": {
+      "purpose": "Register the operator, source category, jurisdiction, trust state and reuse terms.",
+      "required_fields": [
+        "source_id",
+        "source_key",
+        "source_category",
+        "operator_name",
+        "status",
+        "licence_id",
+        "attribution_text"
+      ]
+    },
+    "food_source_record": {
+      "purpose": "Represent an immutable retrieved or submitted source record without treating it as the normalized product.",
+      "required_fields": [
+        "source_record_id",
+        "source_id",
+        "external_record_id",
+        "source_version_or_content_digest",
+        "retrieved_or_submitted_at",
+        "verification_status"
+      ]
+    },
+    "food_product": {
+      "purpose": "Provide an internal source-neutral identity for a food or product.",
+      "required_fields": ["food_product_id", "created_at", "status"]
+    },
+    "food_product_source_link": {
+      "purpose": "Map source records to an internal product with reviewable matching evidence.",
+      "required_fields": [
+        "food_product_id",
+        "source_record_id",
+        "match_method",
+        "match_confidence",
+        "review_status"
+      ]
+    },
+    "food_attribute_assertion": {
+      "purpose": "Keep source-specific facts separate so disagreement remains traceable.",
+      "required_fields": [
+        "assertion_id",
+        "food_product_id",
+        "source_record_id",
+        "attribute_key",
+        "value",
+        "unit_or_value_type",
+        "observed_or_effective_at",
+        "verification_status"
+      ]
+    },
+    "food_log_snapshot": {
+      "purpose": "Preserve what a user chose and saw at logging time without later catalog mutation.",
+      "required_fields": [
+        "food_log_id",
+        "calorieapp_user_id",
+        "snapshot_values",
+        "logged_at"
+      ],
+      "optional_fields": ["food_product_id", "source_record_ids"]
+    }
+  },
+  "adapter_contract": {
+    "versioned": true,
+    "normalized_output_required": true,
+    "idempotency_key": [
+      "source_id",
+      "external_record_id",
+      "source_version_or_content_digest"
+    ],
+    "raw_payload_storage_required": false,
+    "raw_payload_digest_allowed": true,
+    "provider_limit_registry_required": true,
+    "max_upstream_attempts_per_user_action": 2,
+    "nested_retry_layers_allowed": false,
+    "bounded_concurrency_and_queue_required": true,
+    "bounded_retry_and_rate_limit_compliance_required": true,
+    "source_specific_schema_may_define_core_schema": false,
+    "upstream_write_enabled_by_default": false
+  },
+  "conflict_policy": {
+    "retain_each_source_assertion": true,
+    "deterministic_presentation_policy_required": true,
+    "presentation_value_must_expose_provenance": true,
+    "automatic_claim_of_truth_allowed": false,
+    "silent_overwrite_or_destructive_merge_allowed": false
+  },
+  "mutation_policy": {
+    "external_client_default_access": "read-only",
+    "direct_catalog_table_write_allowed": false,
+    "contribution_creates_new_assertion": true,
+    "contribution_quarantined_until_validation_and_moderation": true,
+    "schema_validation_required": true,
+    "idempotency_key_required": true,
+    "optimistic_concurrency_or_expected_version_required": true,
+    "append_only_audit_event_required": true,
+    "silent_history_or_source_record_rewrite_allowed": false,
+    "correction_preserves_superseded_assertion": true
+  },
+  "licensing": {
+    "licence_review_required_before_source_enablement": true,
+    "licence_identifier_and_terms_reference_required": true,
+    "attribution_preserved_per_source": true,
+    "share_alike_obligations_preserved": true,
+    "incompatible_sources_may_be_flattened_into_one_export": false,
+    "source_specific_export_controls_required": true
+  },
+  "privacy_and_identity": {
+    "catalog_and_private_history_separated": true,
+    "community_submission_requires_explicit_action": true,
+    "community_submission_requires_moderation": true,
+    "identity_bridge_may_attest_contributor_role": true,
+    "public_contributor_reference_must_be_pseudonymous": true,
+    "private_identity_fields_allowed_in_catalog": false,
+    "food_history_auto_contribution_allowed": false
+  },
+  "future_provenance": {
+    "xrpl_link_may_attach_to_reviewed_source_or_supply_chain_event": true,
+    "xrpl_link_auto_attaches_to_private_food_log": false,
+    "public_transaction_hash_may_resolve_private_identity_or_history": false,
+    "postgresql_remains_primary_graph_and_catalog_store": true
+  },
+  "implementation": {
+    "current_adapter": "open_food_facts",
+    "current_catalog_tables_created": false,
+    "source_independent_schema_compatibility_required_for_v2": true,
+    "additional_source_activation_required_for_v2": false,
+    "v2_forward_migration_required": true,
+    "current_release_dependency": true,
+    "public_source_onboarding_enabled": false
+  }
+}

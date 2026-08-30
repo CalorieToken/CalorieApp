@@ -1,0 +1,63 @@
+{
+  "contract_id": "calorieapp.v2-baseline-evidence",
+  "contract_version": "1.0.0",
+  "observation_time_utc": "2026-08-30T05:58:26Z",
+  "observation_kind": "read-only-and-non-authenticated-live-smoke",
+  "repository_references": {
+    "known_working_checkpoint": {
+      "commit": "c6cdf49e23e93d227667ef179c8832e9e2b23e20",
+      "date": "2026-08-27T21:03:47+02:00",
+      "description": "Merge pull request #8: keep Render backend wakeup alive long enough for Xaman login"
+    },
+    "latest_integrated_v2_main_at_observation": {
+      "commit": "58dd4b828cd49459890af9fc904621f24421773d",
+      "date": "2026-08-30T05:16:26+02:00",
+      "description": "Merge pull request #26: fix canonical WordPress CalorieApp route"
+    },
+    "known_working_checkpoint_is_ancestor_of_latest_main": true,
+    "exact_commit_currently_deployed": "unknown-not-exposed-by-runtime",
+    "latest_main_may_be_claimed_as_exact_deployment": false
+  },
+  "live_observations": [
+    {
+      "target": "https://calorieapp-frontend.onrender.com/",
+      "result": "loaded-after-render-cold-start",
+      "title": "CalorieApp",
+      "observed_features": [
+        "food-and-nutrition-showcase",
+        "xaman-sign-in-entry",
+        "public-food-search",
+        "open-food-facts-attribution"
+      ]
+    },
+    {
+      "target": "https://calorietoken.net/index.php/calorieapp/",
+      "result": "canonical-wordpress-route-loaded-with-one-calorieapp-iframe",
+      "iframe_source": "https://calorieapp-frontend.onrender.com?embedded=1"
+    },
+    {
+      "target": "embedded-public-food-search",
+      "input": "apple",
+      "result": "multiple-complete-nutrition-results-returned-after-backend-cold-start",
+      "personal_data_or_login_used": false,
+      "food_log_mutation_attempted": false
+    }
+  ],
+  "not_proven_by_this_observation": [
+    "xaman-login-completion",
+    "wordpress-and-calorieapp-joint-session-restoration",
+    "authenticated-food-log-write-read-delete",
+    "history-persistence-after-provider-redeploy-or-free-tier-expiry",
+    "exact-deployed-source-commit-or-build-artifact",
+    "production-backup-and-restore",
+    "privacy-security-or-regulatory-certification"
+  ],
+  "closeout_requirements": [
+    "expose-a-non-secret-build-identifier-in-frontend-and-backend",
+    "record-source-commit-lockfile-digests-plugin-artifact-digest-and-deployment-time",
+    "archive-redacted-deployment-shape-and-dated-smoke-output",
+    "run-the-prepared-integrated-identity-and-personal-history-acceptance-test",
+    "approve-release-notes-and-version-tag-without-automatic-publication"
+  ],
+  "release_gate_status": "partial"
+}
