@@ -45,6 +45,11 @@ jobs:
       - name: Enforce legal and licensing boundaries
         run: python tools/check_legal_boundaries.py
 
+      - name: Validate Identity Bridge contracts
+        run: |
+          python tools/sync_identity_contracts.py --check
+          python -m unittest tools.tests.test_identity_contracts
+
   wordpress-plugin-release-check:
     name: WordPress plugin release check
     runs-on: ubuntu-latest
@@ -98,6 +103,9 @@ jobs:
               throw new RuntimeException('The current footer is not idempotent.');
           }
           PHP
+
+      - name: Test WordPress locale registry
+        run: php tools/tests/wordpress_locale_registry.test.php
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -176,6 +184,7 @@ jobs:
         run: >-
           node --test
           tools/tests/calorieapp_embed_readiness.test.mjs
+          tools/tests/identity_locales.test.mjs
           tools/tests/xaman_login_start_retry.test.mjs
 
       - name: Build frontend

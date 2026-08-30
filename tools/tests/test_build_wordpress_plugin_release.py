@@ -37,6 +37,7 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             self.assertFalse(any("tests/" in name for name in names))
             self.assertFalse(any(name.endswith(".zip") for name in names))
             self.assertIn(f"{release.PLUGIN_SLUG}/LICENSE", names)
+            self.assertIn(f"{release.PLUGIN_SLUG}/config/locales.json", names)
 
     def test_expected_version_must_match(self) -> None:
         with tempfile.TemporaryDirectory() as output:

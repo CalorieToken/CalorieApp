@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/class-calorieapp-identity-bridge-storage.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-locale-registry.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-rest.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-browser-authorize.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-integrated-login.php';

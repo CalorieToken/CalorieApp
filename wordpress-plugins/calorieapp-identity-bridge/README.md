@@ -36,6 +36,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.0 adds the deployable copy and pure resolver for the shared,
+versioned eleven-locale Gallery Token registry. It does not yet alter public
+copy or automatically publish translations; unsupported input fails safely to
+English and Arabic and Urdu are marked right-to-left.
 Version 0.2.4 only checks a Xaman signature after the user actually opens
 Xaman, keeps retrying pending signature checks after the user returns, and
 shows CalorieApp startup retry progress without disguising backend errors as a
@@ -78,6 +82,7 @@ recommended for production browser-cookie reliability.
 
 - calorieapp-identity-bridge.php
 - includes/class-calorieapp-identity-bridge.php
+- includes/class-calorieapp-identity-bridge-locale-registry.php
 - includes/class-calorieapp-identity-bridge-storage.php
 - includes/class-calorieapp-identity-bridge-rest.php
 - includes/class-calorieapp-identity-bridge-browser-authorize.php
@@ -85,6 +90,7 @@ recommended for production browser-cookie reliability.
 - includes/class-calorieapp-identity-bridge-admin.php
 - assets/calorieapp-embed.js
 - assets/calorieapp-embed.css
+- config/locales.json
 - tests/bootstrap.php
 - tests/test-identity-bridge-rest.php
 - phpunit.xml.dist

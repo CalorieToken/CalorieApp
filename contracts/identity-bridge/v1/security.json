@@ -1,0 +1,53 @@
+{
+  "contract_id": "calorieapp.identity-bridge.security",
+  "contract_version": "1.0.0",
+  "protocol_version": "v1",
+  "identity_authority": {
+    "wordpress_session_required": true,
+    "xaman_signature_verified_server_side": true,
+    "calorieapp_backend_issues_application_session": true,
+    "browser_supplied_identity_claims_authoritative": false
+  },
+  "origin_policy": {
+    "explicit_allowlists": true,
+    "wildcards_allowed": false,
+    "https_required": true,
+    "http_exception": "loopback-only when CALORIEAPP_ENV=local"
+  },
+  "login_state": {
+    "minimum_length": 32,
+    "maximum_length": 255,
+    "ttl_seconds": 300,
+    "single_use": true,
+    "replay_protected": true
+  },
+  "authorization_code": {
+    "minimum_ttl_seconds": 10,
+    "default_ttl_seconds": 60,
+    "maximum_ttl_seconds": 300,
+    "single_use": true
+  },
+  "integrated_login_flow": {
+    "ttl_seconds": 600,
+    "same_origin_start_and_finish": true
+  },
+  "application_session": {
+    "absolute_ttl_seconds": 28800,
+    "idle_ttl_seconds": 1800,
+    "opaque_server_side_token": true,
+    "cookie_http_only": true,
+    "cookie_secure_outside_local": true,
+    "cookie_same_site_default": "lax"
+  },
+  "identity_claims": {
+    "allowed": ["external_subject", "xrpl_address", "issued_at", "expires_at", "jti"],
+    "optional": ["xrpl_address"],
+    "personal_profile_fields_enabled_by_default": []
+  },
+  "localization": {
+    "registry": "locales.json",
+    "source_locale": "en",
+    "fallback_locale": "en",
+    "rtl_locales": ["ar", "ur"]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://calorietoken.net/contracts/identity-bridge/v1/locales.schema.json",
+  "title": "Gallery Token locale registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "contract_version",
+    "source_locale",
+    "fallback_locale",
+    "selection_policy",
+    "locales"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "contract_id": { "const": "gallery-token.locale-registry" },
+    "contract_version": { "type": "string", "pattern": "^[1-9][0-9]*\\.[0-9]+\\.[0-9]+$" },
+    "source_locale": { "type": "string" },
+    "fallback_locale": { "type": "string" },
+    "selection_policy": { "type": "string", "minLength": 1 },
+    "locales": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tag",
+          "english_name",
+          "native_name",
+          "direction",
+          "source",
+          "aliases"
+        ],
+        "properties": {
+          "tag": { "type": "string", "pattern": "^[A-Za-z]{2,3}(?:-[A-Za-z]{4})?$" },
+          "english_name": { "type": "string", "minLength": 1 },
+          "native_name": { "type": "string", "minLength": 1 },
+          "direction": { "enum": ["ltr", "rtl"] },
+          "source": { "type": "boolean" },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 2 },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

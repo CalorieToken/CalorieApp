@@ -1,0 +1,98 @@
+{
+  "$schema": "./locales.schema.json",
+  "contract_id": "gallery-token.locale-registry",
+  "contract_version": "1.0.0",
+  "source_locale": "en",
+  "fallback_locale": "en",
+  "selection_policy": "Top ten individual languages by total L1 plus L2 speakers, with Dutch as an additional fully supported locale.",
+  "locales": [
+    {
+      "tag": "en",
+      "english_name": "English",
+      "native_name": "English",
+      "direction": "ltr",
+      "source": true,
+      "aliases": ["en-US", "en-GB"]
+    },
+    {
+      "tag": "zh-Hans",
+      "english_name": "Mandarin Chinese (Simplified)",
+      "native_name": "简体中文",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["zh", "zh-CN", "zh-SG"]
+    },
+    {
+      "tag": "hi",
+      "english_name": "Hindi",
+      "native_name": "हिन्दी",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["hi-IN"]
+    },
+    {
+      "tag": "es",
+      "english_name": "Spanish",
+      "native_name": "Español",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["es-ES", "es-MX"]
+    },
+    {
+      "tag": "ar",
+      "english_name": "Modern Standard Arabic",
+      "native_name": "العربية",
+      "direction": "rtl",
+      "source": false,
+      "aliases": ["ar-EG", "ar-SA"]
+    },
+    {
+      "tag": "fr",
+      "english_name": "French",
+      "native_name": "Français",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["fr-FR", "fr-CA"]
+    },
+    {
+      "tag": "bn",
+      "english_name": "Bengali",
+      "native_name": "বাংলা",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["bn-BD", "bn-IN"]
+    },
+    {
+      "tag": "pt",
+      "english_name": "Portuguese",
+      "native_name": "Português",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["pt-BR", "pt-PT"]
+    },
+    {
+      "tag": "id",
+      "english_name": "Indonesian",
+      "native_name": "Bahasa Indonesia",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["id-ID"]
+    },
+    {
+      "tag": "ur",
+      "english_name": "Urdu",
+      "native_name": "اردو",
+      "direction": "rtl",
+      "source": false,
+      "aliases": ["ur-PK", "ur-IN"]
+    },
+    {
+      "tag": "nl",
+      "english_name": "Dutch",
+      "native_name": "Nederlands",
+      "direction": "ltr",
+      "source": false,
+      "aliases": ["nl-NL", "nl-BE"]
+    }
+  ]
+}
