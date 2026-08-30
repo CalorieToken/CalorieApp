@@ -39,5 +39,6 @@ is transparent.
 - obtain a human decision on account erasure, recovery window, inactive-account
   retention and backup-erasure timing.
 
-This change does not enable account erasure, choose a retention period, send an
-export to a third party or publish private history.
+The export endpoint does not choose a retention period, send an export to a
+third party or publish private history. The separately implemented account-
+erasure endpoint remains disabled by default; see `ACCOUNT_ERASURE.md`.

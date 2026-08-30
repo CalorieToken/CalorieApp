@@ -31,6 +31,8 @@ from .models import (
     OriginLoginHandoffDB,
 )
 from .schemas import (
+    AccountErasureRequest,
+    AccountErasureResponse,
     AccountDataExportResponse,
     AccountExportAccount,
     AccountExportAuthSession,
@@ -105,6 +107,11 @@ _BRIDGE_NONCE_RETENTION_SECONDS = int(
         str(max(_BRIDGE_AUTH_MAX_AGE_SECONDS + _BRIDGE_AUTH_MAX_FUTURE_SECONDS, 330)),
     )
 )
+_ACCOUNT_ERASURE_ENABLED = os.getenv("ACCOUNT_ERASURE_ENABLED", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 _IDENTITY_PROVIDER = "wordpress_xumm"
 
 if not _WORDPRESS_BRIDGE_SECRET:
@@ -1090,6 +1097,104 @@ def identity_export(
             "handoff_token_hash",
         ],
     )
+
+
+@app.delete("/api/identity/account", response_model=AccountErasureResponse)
+def identity_erase_account(
+    payload: AccountErasureRequest,
+    response: Response,
+    session: DbSession,
+    current_user: CurrentUser,
+) -> AccountErasureResponse:
+    """Erase one authenticated account from the primary store when explicitly enabled.
+
+    The endpoint is disabled by default. Enabling it remains a human release decision
+    after the recovery window, backup-erasure schedule, privacy notice and translated
+    confirmation UI have been approved.
+    """
+    if not _ACCOUNT_ERASURE_ENABLED:
+        raise HTTPException(status_code=503, detail="Account erasure is not enabled")
+
+    if payload.confirm_user_id != current_user.id:
+        raise HTTPException(status_code=409, detail="Account confirmation did not match")
+
+    identities = session.exec(
+        select(ExternalIdentityDB).where(
+            ExternalIdentityDB.calorieapp_user_id == current_user.id
+        )
+    ).all()
+    external_subjects = sorted({identity.external_subject for identity in identities})
+
+    # Authorization activity predates a direct internal-user foreign key. Refuse
+    # erasure rather than deleting another user's activity when a legacy subject is
+    # ambiguously linked across providers or accounts.
+    if external_subjects:
+        ambiguous_identity = session.exec(
+            select(ExternalIdentityDB).where(
+                ExternalIdentityDB.external_subject.in_(external_subjects),
+                ExternalIdentityDB.calorieapp_user_id != current_user.id,
+            )
+        ).first()
+        if ambiguous_identity is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Account identity requires operator review before erasure",
+            )
+
+    try:
+        if external_subjects:
+            session.exec(
+                delete(AuthorizationCodeDB).where(
+                    AuthorizationCodeDB.external_subject.in_(external_subjects)
+                )
+            )
+
+        session.exec(delete(FoodLogDB).where(FoodLogDB.owner_id == current_user.id))
+        session.exec(
+            delete(OriginLoginHandoffDB).where(
+                OriginLoginHandoffDB.calorieapp_user_id == current_user.id
+            )
+        )
+
+        # Break the self-reference before removing every session for the account.
+        auth_sessions = session.exec(
+            select(AuthSessionDB).where(
+                AuthSessionDB.calorieapp_user_id == current_user.id
+            )
+        ).all()
+        for auth_session in auth_sessions:
+            auth_session.replaced_by_session_id = None
+            session.add(auth_session)
+        session.flush()
+        session.exec(
+            delete(AuthSessionDB).where(
+                AuthSessionDB.calorieapp_user_id == current_user.id
+            )
+        )
+
+        session.exec(
+            delete(ExternalIdentityDB).where(
+                ExternalIdentityDB.calorieapp_user_id == current_user.id
+            )
+        )
+        session.exec(
+            delete(CalorieAppUserDB).where(CalorieAppUserDB.id == current_user.id)
+        )
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+
+    response.delete_cookie(
+        key=SESSION_COOKIE_NAME,
+        path="/",
+        domain=None,
+        secure=_SESSION_COOKIE_SECURE,
+        httponly=True,
+        samesite=_SESSION_COOKIE_SAMESITE,
+    )
+    logger.info("Authenticated account erased from primary store")
+    return AccountErasureResponse(status="erased")
 
 
 @app.post("/api/identity/logout", response_model=LogoutResponse)

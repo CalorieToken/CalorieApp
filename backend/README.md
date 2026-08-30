@@ -16,6 +16,8 @@ data and Identity Bridge completion work.
 - GET /search-food?q=
 - POST /log-food
 - GET /logs
+- GET /api/identity/export
+- DELETE /api/identity/account (disabled by default pending human release approval)
 
 ## Local Run
 

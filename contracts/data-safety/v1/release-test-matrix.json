@@ -121,7 +121,12 @@
       "id": "user_erasure",
       "status": "partial",
       "release_blocking": true,
-      "evidence": ["backend/app/main.py", "backend/tests/test_endpoints.py"]
+      "evidence": [
+        "backend/app/main.py",
+        "backend/app/schemas.py",
+        "backend/tests/test_account_erasure.py",
+        "docs/ACCOUNT_ERASURE.md"
+      ]
     },
     {
       "id": "retention_policy",
