@@ -21,8 +21,20 @@ from sqlmodel import Session, select
 
 from .database import database_readiness, get_session, init_db
 from .locales import resolve_locale
-from .models import AuthSessionDB, BridgeAuthNonceDB, CalorieAppUserDB, FoodLogDB
+from .models import (
+    AuthSessionDB,
+    BridgeAuthNonceDB,
+    CalorieAppUserDB,
+    ExternalIdentityDB,
+    FoodLogDB,
+    OriginLoginHandoffDB,
+)
 from .schemas import (
+    AccountDataExportResponse,
+    AccountExportAccount,
+    AccountExportAuthSession,
+    AccountExportExternalIdentity,
+    AccountExportLoginHandoff,
     CurrentUserResponse,
     FoodLog,
     FoodLogCreate,
@@ -954,6 +966,111 @@ def identity_me(
     return CurrentUserResponse(
         user_id=current_user.id,
         created_at=current_user.created_at,
+    )
+
+
+@app.get("/api/identity/export", response_model=AccountDataExportResponse)
+def identity_export(
+    response: Response,
+    session: DbSession,
+    current_user: CurrentUser,
+) -> AccountDataExportResponse:
+    """Return a versioned private export of linked data without authentication secrets."""
+    identities = session.exec(
+        select(ExternalIdentityDB)
+        .where(ExternalIdentityDB.calorieapp_user_id == current_user.id)
+        .order_by(ExternalIdentityDB.created_at, ExternalIdentityDB.id)
+    ).all()
+    external_subjects = [identity.external_subject for identity in identities]
+
+    # Authorization activity predates a direct internal-user foreign key. Refuse
+    # export rather than returning another user's activity when a legacy subject is
+    # ambiguously linked across providers or accounts.
+    if external_subjects:
+        ambiguous_identity = session.exec(
+            select(ExternalIdentityDB).where(
+                ExternalIdentityDB.external_subject.in_(external_subjects),
+                ExternalIdentityDB.calorieapp_user_id != current_user.id,
+            )
+        ).first()
+        if ambiguous_identity is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Account identity requires operator review before export",
+            )
+
+    food_logs = session.exec(
+        select(FoodLogDB)
+        .where(FoodLogDB.owner_id == current_user.id)
+        .order_by(FoodLogDB.created_at, FoodLogDB.id)
+    ).all()
+    auth_sessions = session.exec(
+        select(AuthSessionDB)
+        .where(AuthSessionDB.calorieapp_user_id == current_user.id)
+        .order_by(AuthSessionDB.created_at, AuthSessionDB.id)
+    ).all()
+    handoffs = session.exec(
+        select(OriginLoginHandoffDB)
+        .where(OriginLoginHandoffDB.calorieapp_user_id == current_user.id)
+        .order_by(OriginLoginHandoffDB.created_at, OriginLoginHandoffDB.id)
+    ).all()
+
+    response.headers["Content-Disposition"] = (
+        'attachment; filename="calorieapp-account-data-v1.json"'
+    )
+
+    return AccountDataExportResponse(
+        export_version="calorieapp-account-data-v1",
+        exported_at=datetime.now(UTC),
+        account=AccountExportAccount(
+            user_id=current_user.id,
+            status=current_user.status,
+            created_at=current_user.created_at,
+            updated_at=current_user.updated_at,
+        ),
+        external_identities=[
+            AccountExportExternalIdentity(
+                provider=identity.provider,
+                external_subject=identity.external_subject,
+                xrpl_address=identity.xrpl_address,
+                created_at=identity.created_at,
+                last_verified_at=identity.last_verified_at,
+            )
+            for identity in identities
+        ],
+        food_logs=[FoodLog.model_validate(entry.model_dump()) for entry in food_logs],
+        authentication_sessions=[
+            AccountExportAuthSession(
+                created_at=auth_session.created_at,
+                last_seen_at=auth_session.last_seen_at,
+                expires_at=auth_session.expires_at,
+                revoked_at=auth_session.revoked_at,
+            )
+            for auth_session in auth_sessions
+        ],
+        # Legacy authorization rows have only a subject, not direct internal-user
+        # and provider ownership. Preserve the v1 field while withholding rows
+        # until a migration can prove ownership without inference.
+        authorization_events=[],
+        login_handoffs=[
+            AccountExportLoginHandoff(
+                status=handoff.status,
+                created_at=handoff.created_at,
+                expires_at=handoff.expires_at,
+                completed_at=handoff.completed_at,
+                claimed_at=handoff.claimed_at,
+                failure_code=handoff.failure_code,
+            )
+            for handoff in handoffs
+        ],
+        excluded_security_fields=[
+            "authorization_code_hash",
+            "authorization_state",
+            "login_session_id",
+            "session_token_hash",
+            "handoff_state_hash",
+            "handoff_token_hash",
+        ],
     )
 
 

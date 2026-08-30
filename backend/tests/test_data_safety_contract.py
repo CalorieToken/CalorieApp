@@ -92,6 +92,32 @@ def test_data_classes_cover_current_and_planned_personal_flows() -> None:
     )
 
 
+def test_account_export_is_private_versioned_and_secret_free() -> None:
+    export = _load_json("data-safety.json")["account_data_export"]
+
+    assert export["status"] == "v2-backend-implemented-ui-and-notice-pending"
+    assert export["format"] == "versioned-json"
+    assert export["format_version"] == "calorieapp-account-data-v1"
+    assert export["authenticated_user_only"] is True
+    assert export["cross_user_records_allowed"] is False
+    assert export["private_http_caching_allowed"] is False
+    assert export["external_delivery_or_publication_performed"] is False
+    assert export["security_token_hashes_codes_and_login_state_included"] is False
+    assert export[
+        "identity_food_history_and_directly_owned_authentication_activity_included"
+    ] is True
+    assert export[
+        "legacy_authorization_events_without_direct_ownership_included"
+    ] is False
+    assert export["authorization_events_field_reserved_as_empty_list"] is True
+    assert export[
+        "direct_ownership_migration_required_before_authorization_event_inclusion"
+    ] is True
+    assert export["eleven_language_identity_bridge_ui_required"] is True
+    assert export["privacy_notice_alignment_required"] is True
+    assert export["account_erasure_or_retention_policy_changed"] is False
+
+
 def test_xrpl_linking_is_optional_off_chain_and_privacy_preserving() -> None:
     contract = _load_json("data-safety.json")
     linking = contract["xrpl_transaction_linking"]
@@ -416,6 +442,10 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert gates["restart_persistence"]["status"] == "partial"
+    assert gates["user_data_export"]["status"] == "partial"
+    assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
+        "evidence"
+    ]
     assert gates["retention_policy"]["status"] == "decision_required"
     assert matrix["release_state"] == "blocked"
 

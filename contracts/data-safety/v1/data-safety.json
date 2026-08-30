@@ -104,6 +104,23 @@
       "account erasure confirmation and recovery window"
     ]
   },
+  "account_data_export": {
+    "status": "v2-backend-implemented-ui-and-notice-pending",
+    "format": "versioned-json",
+    "format_version": "calorieapp-account-data-v1",
+    "authenticated_user_only": true,
+    "cross_user_records_allowed": false,
+    "private_http_caching_allowed": false,
+    "external_delivery_or_publication_performed": false,
+    "security_token_hashes_codes_and_login_state_included": false,
+    "identity_food_history_and_directly_owned_authentication_activity_included": true,
+    "legacy_authorization_events_without_direct_ownership_included": false,
+    "authorization_events_field_reserved_as_empty_list": true,
+    "direct_ownership_migration_required_before_authorization_event_inclusion": true,
+    "eleven_language_identity_bridge_ui_required": true,
+    "privacy_notice_alignment_required": true,
+    "account_erasure_or_retention_policy_changed": false
+  },
   "backup_and_recovery": {
     "encrypted_at_rest_and_in_transit_required": true,
     "restricted_operator_access_required": true,
