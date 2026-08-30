@@ -184,6 +184,8 @@ gate can additionally run the local developer health check.
 
 ## Documentation
 
+- Versioned Identity Bridge contracts: contracts/identity-bridge/v1/
+- Historical image localization contract: contracts/localization/v1/
 - Public architecture: docs/public/architecture.md
 - Public roadmap: docs/public/roadmap.md
 - Public deployment guide: docs/public/deployment.md

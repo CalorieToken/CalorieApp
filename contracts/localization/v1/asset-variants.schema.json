@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://calorietoken.net/contracts/localization/v1/asset-variants.schema.json",
+  "title": "CalorieToken localized image variant manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "source_asset", "variants"],
+  "properties": {
+    "manifest_version": { "const": "1.0.0" },
+    "source_asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "historical_original_retained"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "layered_source_path": { "type": ["string", "null"] },
+        "historical_original_retained": { "const": true }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "locale",
+          "path",
+          "translated_text",
+          "approved_adjustments",
+          "status"
+        ],
+        "properties": {
+          "locale": { "type": "string", "minLength": 2 },
+          "path": { "type": "string", "minLength": 1 },
+          "translated_text": { "type": "array", "items": { "type": "string" } },
+          "approved_adjustments": { "type": "array", "items": { "type": "string" } },
+          "review_notes": { "type": "string" },
+          "status": {
+            "enum": ["draft", "translation-reviewed", "design-reviewed", "approved"]
+          }
+        }
+      }
+    }
+  }
+}

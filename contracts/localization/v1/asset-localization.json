@@ -1,0 +1,50 @@
+{
+  "contract_id": "calorietoken.asset-localization",
+  "contract_version": "1.0.0",
+  "original_asset_policy": {
+    "retain_unchanged_original": true,
+    "original_is_historical_source": true,
+    "localized_files_are_derived_variants": true
+  },
+  "visual_invariants": [
+    "historical_brand_identity",
+    "composition",
+    "color_palette",
+    "typography_character",
+    "button_and_shape_language",
+    "backgrounds",
+    "illustrations_and_photography",
+    "decorative_elements",
+    "visual_hierarchy"
+  ],
+  "allowed_variant_changes": [
+    "translated_text",
+    "locale_appropriate_characters",
+    "line_breaks",
+    "text_fit",
+    "minor_spacing_or_layout_adjustments_required_by_text_length_or_writing_direction",
+    "explicitly_reviewed factual detail updates"
+  ],
+  "forbidden_changes": [
+    "generic_visual_redesign",
+    "replacement_of_historical_style",
+    "unapproved_color_or_font_substitution",
+    "lossy_overwrite_of_the_original",
+    "untracked_text_or_fact_changes"
+  ],
+  "source_policy": {
+    "prefer_layered_source_files": true,
+    "raster_edit_allowed_when_layered_source_is_unavailable": true,
+    "source_and_variant_must_be_traceable": true,
+    "source_checksum_required_in_variant_manifest": true
+  },
+  "quality_gate": [
+    "text_extraction",
+    "translation_review",
+    "historical_design_comparison",
+    "rtl_and_text_fit_check",
+    "preview",
+    "review",
+    "explicit_go"
+  ]
+}
