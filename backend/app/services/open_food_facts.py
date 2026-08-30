@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 OPEN_FOOD_FACTS_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
 REQUEST_HEADERS = {
-    "User-Agent": "CalorieApp/0.1 (https://calorietoken.net; info@calorietoken.net)",
+    "User-Agent": "CalorieApp/0.2.0 (https://calorietoken.net; info@calorietoken.net)",
     "Accept": "application/json",
 }
 
