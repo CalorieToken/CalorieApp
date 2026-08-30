@@ -47,7 +47,7 @@ const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
 const WORDPRESS_APP_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_APP_URL?.trim() ||
-  "https://calorietoken.net/calorieapp/";
+  "https://calorietoken.net/index.php/calorieapp/";
 
 type ParentBridgeMessage = {
   type?: unknown;
