@@ -71,7 +71,7 @@ until the durable-data and privacy gates pass.
 | Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Missing | Automate restart and redeploy probes |
-| Back-up and restore | Missing | Select mechanism and prove restoration |
+| Backup and restore | Missing | Select mechanism and prove restoration |
 | User export | Missing | Add authenticated portable export |
 | User erasure | Food-log deletion exists; complete account erasure does not | Complete scoped erasure workflow |
 | Retention | No infrastructure expiry desired; exact policy unresolved | Explicit decision and notice required |

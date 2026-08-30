@@ -16,7 +16,7 @@ Current application stack:
 
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
-- Data: SQLite for local development and tests; PostgreSQL is the required live-user direction
+- Data: SQLite for local development and tests; PostgreSQL is required for live user data
 - External food data: Open Food Facts
 - Identity/authentication: server-side identity flow with session cookies
 
