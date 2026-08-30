@@ -47,4 +47,5 @@ is transparent.
 
 The export endpoint does not choose a retention period, send an export to a
 third party or publish private history. The separately implemented account-
-erasure endpoint remains disabled by default; see `ACCOUNT_ERASURE.md`.
+erasure endpoint remains disabled by default and fails closed on matching
+legacy authorization rows without direct ownership; see `ACCOUNT_ERASURE.md`.

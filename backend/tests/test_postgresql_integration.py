@@ -12,6 +12,7 @@ from sqlalchemy.engine import Engine, make_url
 from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
+import app.main as main_module
 from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
@@ -231,5 +232,62 @@ def test_postgresql_identity_history_survives_application_engine_restart(
                 ]
         finally:
             verification_engine.dispose()
+    finally:
+        db_module.engine = original_engine
+
+
+def test_postgresql_account_erasure_clears_cross_account_session_reference(
+    postgres_engine: Engine,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-ACCOUNT-ERASURE-REFERENCES",
+    )
+    other_user_id, _ = _create_user_session(
+        postgres_engine,
+        "synthetic-erasure-reference-owner",
+    )
+    target_user_id, target_token = _create_user_session(
+        postgres_engine,
+        "synthetic-erasure-target",
+    )
+
+    with Session(postgres_engine) as session:
+        target_session = session.exec(
+            select(AuthSessionDB).where(
+                AuthSessionDB.calorieapp_user_id == target_user_id
+            )
+        ).one()
+        other_session = session.exec(
+            select(AuthSessionDB).where(
+                AuthSessionDB.calorieapp_user_id == other_user_id
+            )
+        ).one()
+        other_session.replaced_by_session_id = target_session.id
+        session.add(other_session)
+        session.commit()
+        other_session_id = other_session.id
+
+    original_engine = db_module.engine
+    monkeypatch.setattr(main_module, "_ACCOUNT_ERASURE_ENABLED", True)
+    try:
+        with _client(postgres_engine, target_token) as client:
+            response = client.request(
+                "DELETE",
+                "/api/identity/account",
+                json={
+                    "confirm_user_id": target_user_id,
+                    "acknowledgement": "delete-my-calorieapp-account",
+                },
+            )
+            assert response.status_code == 200
+
+        with Session(postgres_engine) as session:
+            assert session.get(CalorieAppUserDB, target_user_id) is None
+            assert session.get(CalorieAppUserDB, other_user_id) is not None
+            preserved_session = session.get(AuthSessionDB, other_session_id)
+            assert preserved_session is not None
+            assert preserved_session.replaced_by_session_id is None
     finally:
         db_module.engine = original_engine

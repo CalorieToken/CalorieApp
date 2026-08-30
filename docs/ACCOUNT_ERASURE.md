@@ -12,16 +12,21 @@ cookie plus two explicit JSON confirmations:
 - the fixed machine acknowledgement `delete-my-calorieapp-account`.
 
 When `ACCOUNT_ERASURE_ENABLED=true`, one successful transaction removes the
-authenticated user's primary-store food history, Identity Bridge links,
-authorization activity, browser handoffs, all authentication sessions and the
-internal account. It then clears the browser session cookie. It does not touch
-another user's records, external WordPress/Xaman accounts, public ledgers,
-third-party source data or unrelated ecosystem data.
+authenticated user's directly owned primary-store food history, Identity Bridge
+links, browser handoffs, all authentication sessions and the internal account.
+Before session deletion it clears incoming replacement references, including a
+reference from an older session belonging to another account, while preserving
+that other account and session. It then clears the browser session cookie. It
+does not touch another user's records, external WordPress/Xaman accounts,
+public ledgers, third-party source data or unrelated ecosystem data.
 
 Legacy authorization activity is keyed by external subject rather than by the
-internal user identifier. If that subject is linked ambiguously across accounts
-or providers, the endpoint fails before mutation and requires operator review.
-This prevents an attempted erasure from deleting another user's activity.
+internal user identifier or provider. A matching subject therefore does not
+prove ownership. If a current identity is ambiguous, or if any matching legacy
+authorization row exists without direct ownership, the endpoint fails with
+`409` before mutation and requires operator review. It never deletes such a row
+on subject alone. A separate migration must record direct ownership before a
+future erasure flow may include legacy authorization activity.
 
 ## Permanent safety boundary
 

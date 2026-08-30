@@ -130,9 +130,15 @@ def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     assert erasure["fixed_machine_acknowledgement_required"] is True
     assert erasure["cross_user_deletion_allowed"] is False
     assert erasure["ambiguous_legacy_identity_fails_closed"] is True
-    assert erasure["all_primary_authentication_sessions_removed"] is True
+    assert erasure["unowned_legacy_authorization_fails_closed"] is True
+    assert erasure["legacy_authorization_events_deleted_without_direct_ownership"] is False
     assert erasure[
-        "primary_food_history_identity_links_and_authentication_activity_removed"
+        "direct_ownership_migration_required_before_legacy_authorization_erasure"
+    ] is True
+    assert erasure["all_primary_authentication_sessions_removed"] is True
+    assert erasure["inbound_session_replacement_references_cleared"] is True
+    assert erasure[
+        "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed"
     ] is True
     assert erasure["browser_session_cookie_cleared"] is True
     assert erasure["backup_erasure_claimed_complete"] is False

@@ -23,6 +23,7 @@ from .database import database_readiness, get_session, init_db
 from .locales import resolve_locale
 from .models import (
     AuthSessionDB,
+    AuthorizationCodeDB,
     BridgeAuthNonceDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -1107,9 +1108,8 @@ def identity_erase_account(
     ).all()
     external_subjects = sorted({identity.external_subject for identity in identities})
 
-    # Authorization activity predates a direct internal-user foreign key. Refuse
-    # erasure rather than deleting another user's activity when a legacy subject is
-    # ambiguously linked across providers or accounts.
+    # Authorization activity predates direct internal-user and provider ownership.
+    # Refuse erasure rather than assigning or deleting another user's legacy activity.
     if external_subjects:
         ambiguous_identity = session.exec(
             select(ExternalIdentityDB).where(
@@ -1123,14 +1123,21 @@ def identity_erase_account(
                 detail="Account identity requires operator review before erasure",
             )
 
-    try:
-        if external_subjects:
-            session.exec(
-                delete(AuthorizationCodeDB).where(
-                    AuthorizationCodeDB.external_subject.in_(external_subjects)
-                )
+        legacy_authorization = session.exec(
+            select(AuthorizationCodeDB).where(
+                AuthorizationCodeDB.external_subject.in_(external_subjects)
+            )
+        ).first()
+        if legacy_authorization is not None:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Account authorization history requires operator review "
+                    "before erasure"
+                ),
             )
 
+    try:
         session.exec(delete(FoodLogDB).where(FoodLogDB.owner_id == current_user.id))
         session.exec(
             delete(OriginLoginHandoffDB).where(
@@ -1138,12 +1145,31 @@ def identity_erase_account(
             )
         )
 
-        # Break the self-reference before removing every session for the account.
+        # Break both outgoing and incoming self-references before removing every
+        # session for the account. An older session cookie can belong to another
+        # account while pointing at the replacement session created after login.
         auth_sessions = session.exec(
             select(AuthSessionDB).where(
                 AuthSessionDB.calorieapp_user_id == current_user.id
             )
         ).all()
+        auth_session_ids = [
+            auth_session.id
+            for auth_session in auth_sessions
+            if auth_session.id is not None
+        ]
+        inbound_references = (
+            session.exec(
+                select(AuthSessionDB).where(
+                    AuthSessionDB.replaced_by_session_id.in_(auth_session_ids)
+                )
+            ).all()
+            if auth_session_ids
+            else []
+        )
+        for inbound_reference in inbound_references:
+            inbound_reference.replaced_by_session_id = None
+            session.add(inbound_reference)
         for auth_session in auth_sessions:
             auth_session.replaced_by_session_id = None
             session.add(auth_session)

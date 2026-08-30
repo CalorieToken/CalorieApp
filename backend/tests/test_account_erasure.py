@@ -118,13 +118,6 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
                     external_subject=other_subject,
                 ),
                 AuthorizationCodeDB(
-                    code_hash="2" * 64,
-                    external_subject=own_subject,
-                    state="own-state",
-                    login_session_id="own-login",
-                    expires_at=now + timedelta(minutes=5),
-                ),
-                AuthorizationCodeDB(
                     code_hash="3" * 64,
                     external_subject=other_subject,
                     state="other-state",
@@ -195,11 +188,6 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
         ).all() == []
         assert session.exec(
             select(AuthorizationCodeDB).where(
-                AuthorizationCodeDB.external_subject == own_subject
-            )
-        ).all() == []
-        assert session.exec(
-            select(AuthorizationCodeDB).where(
                 AuthorizationCodeDB.external_subject == other_subject
             )
         ).one().external_subject == other_subject
@@ -251,3 +239,100 @@ def test_account_erasure_stops_on_ambiguous_legacy_identity_without_mutation(
         assert session.exec(
             select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
         ).one().product_name == "Must remain after rejected erasure"
+
+
+def test_account_erasure_stops_on_unowned_legacy_authorization_without_mutation(
+    authenticated_client: TestClient,
+    monkeypatch,
+) -> None:
+    user_id = authenticated_client.get("/api/identity/me").json()["user_id"]
+    monkeypatch.setattr(main_module, "_ACCOUNT_ERASURE_ENABLED", True)
+    legacy_subject = "wp:calorietoken.net:unowned-legacy-authorization"
+
+    with Session(db_module.engine) as session:
+        session.add_all(
+            [
+                ExternalIdentityDB(
+                    calorieapp_user_id=user_id,
+                    provider="wordpress_xumm",
+                    external_subject=legacy_subject,
+                ),
+                AuthorizationCodeDB(
+                    code_hash="8" * 64,
+                    external_subject=legacy_subject,
+                    state="unowned-legacy-state",
+                    login_session_id="unowned-legacy-login",
+                    expires_at=datetime.now(UTC) + timedelta(minutes=5),
+                ),
+                FoodLogDB(
+                    product_name="Must remain with unowned authorization",
+                    calories=11,
+                    owner_id=user_id,
+                ),
+            ]
+        )
+        session.commit()
+
+    response = authenticated_client.request(
+        "DELETE",
+        "/api/identity/account",
+        json=_confirmation(user_id),
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == (
+        "Account authorization history requires operator review before erasure"
+    )
+    with Session(db_module.engine) as session:
+        assert session.get(CalorieAppUserDB, user_id) is not None
+        assert session.exec(
+            select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
+        ).one().product_name == "Must remain with unowned authorization"
+        assert session.exec(
+            select(AuthorizationCodeDB).where(
+                AuthorizationCodeDB.external_subject == legacy_subject
+            )
+        ).one().used_at is None
+
+
+def test_account_erasure_clears_other_users_inbound_session_replacement_reference(
+    authenticated_client: TestClient,
+    monkeypatch,
+) -> None:
+    user_id = authenticated_client.get("/api/identity/me").json()["user_id"]
+    monkeypatch.setattr(main_module, "_ACCOUNT_ERASURE_ENABLED", True)
+    now = datetime.now(UTC)
+
+    with Session(db_module.engine) as session:
+        target_session = session.exec(
+            select(AuthSessionDB).where(AuthSessionDB.calorieapp_user_id == user_id)
+        ).one()
+        other_user = CalorieAppUserDB(status="active")
+        session.add(other_user)
+        session.flush()
+        other_session = AuthSessionDB(
+            session_token_hash="9" * 64,
+            calorieapp_user_id=other_user.id,
+            created_at=now,
+            last_seen_at=now,
+            expires_at=now + timedelta(hours=1),
+            replaced_by_session_id=target_session.id,
+        )
+        session.add(other_session)
+        session.commit()
+        other_user_id = other_user.id
+        other_session_id = other_session.id
+
+    response = authenticated_client.request(
+        "DELETE",
+        "/api/identity/account",
+        json=_confirmation(user_id),
+    )
+
+    assert response.status_code == 200
+    with Session(db_module.engine) as session:
+        assert session.get(CalorieAppUserDB, user_id) is None
+        assert session.get(CalorieAppUserDB, other_user_id) is not None
+        preserved_session = session.get(AuthSessionDB, other_session_id)
+        assert preserved_session is not None
+        assert preserved_session.replaced_by_session_id is None
