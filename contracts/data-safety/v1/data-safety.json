@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.2.0",
+  "contract_version": "1.3.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -299,18 +299,25 @@
     "backup_separation_exception": "allowed only when required for recoverability and documented before use"
   },
   "food_data_sources": {
-    "status": "source-record-moderation-foundation-implemented-no-new-source-enabled",
+    "status": "source-neutral-catalog-foundation-implemented-no-new-source-enabled",
     "contract": "contracts/food-data/v1/source-registry.json",
     "current_adapter": "open_food_facts",
     "current_adapter_catalog_persistence_enabled": false,
     "implemented_catalog_tables": [
       "food_source",
       "food_source_record",
-      "food_source_moderation_audit"
+      "food_source_moderation_audit",
+      "food_product",
+      "food_product_source_link",
+      "food_attribute_assertion"
     ],
     "internal_source_record_ingest_service_implemented": true,
     "internal_source_record_terminal_moderation_service_implemented": true,
     "source_record_expected_version_and_audit_implemented": true,
+    "source_neutral_catalog_entity_foundation_implemented": true,
+    "catalog_conflict_retention_and_licence_evidence_verified": true,
+    "catalog_assertion_write_service_implemented": false,
+    "public_catalog_read_endpoint_enabled": false,
     "complete_source_assertion_mutation_flow_implemented": false,
     "public_source_record_moderation_endpoint_enabled": false,
     "public_source_onboarding_enabled": false,
@@ -327,7 +334,7 @@
     "source_independent_schema_compatibility_required_for_v2": true,
     "additional_source_activation_required_for_v2": false,
     "current_release_dependency": true,
-    "v2_forward_migration_required": true
+    "v2_forward_migration_required": false
   },
   "abuse_capacity_and_mutation_safety": {
     "status": "partial-release-blocking",

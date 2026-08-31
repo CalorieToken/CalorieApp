@@ -208,7 +208,8 @@ The catalog, contribution flow and private history remain separate. Identity
 Bridge may later attest a consenting contributor's role through a pseudonymous
 reference, but its private identity fields do not enter the catalog. Future XRPL
 references attach to reviewed provenance events, never automatically to personal
-food logs. DS-3 fixes this contract first; the source-independent tables require
-a later V2 forward migration after the PostgreSQL compatibility proof. Enabling
-a second source is not itself required to complete V2. See
-`docs/FOOD_DATA_SOURCE_ARCHITECTURE.md`.
+food logs. DS-3 fixed this contract first; migrations `20260831_0006` through
+`20260831_0008` now provide the source, record, moderation, product, link and
+assertion schema after the PostgreSQL compatibility proof. Their public write
+paths remain disabled. Enabling a second source is not itself required to
+complete V2. See `docs/FOOD_DATA_SOURCE_ARCHITECTURE.md`.

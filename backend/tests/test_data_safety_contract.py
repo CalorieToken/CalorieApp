@@ -239,12 +239,21 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
         "food_source",
         "food_source_record",
         "food_source_moderation_audit",
+        "food_product",
+        "food_product_source_link",
+        "food_attribute_assertion",
     ]
     assert sources["internal_source_record_ingest_service_implemented"] is True
     assert sources[
         "internal_source_record_terminal_moderation_service_implemented"
     ] is True
     assert sources["source_record_expected_version_and_audit_implemented"] is True
+    assert sources["source_neutral_catalog_entity_foundation_implemented"] is True
+    assert sources[
+        "catalog_conflict_retention_and_licence_evidence_verified"
+    ] is True
+    assert sources["catalog_assertion_write_service_implemented"] is False
+    assert sources["public_catalog_read_endpoint_enabled"] is False
     assert sources["complete_source_assertion_mutation_flow_implemented"] is False
     assert sources["public_source_record_moderation_endpoint_enabled"] is False
     assert sources["public_source_onboarding_enabled"] is False
@@ -261,7 +270,7 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
     assert sources["source_independent_schema_compatibility_required_for_v2"] is True
     assert sources["additional_source_activation_required_for_v2"] is False
     assert sources["current_release_dependency"] is True
-    assert sources["v2_forward_migration_required"] is True
+    assert sources["v2_forward_migration_required"] is False
 
 
 def test_abuse_capacity_and_mutation_are_release_blocking() -> None:

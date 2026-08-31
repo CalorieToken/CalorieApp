@@ -7,7 +7,14 @@ from datetime import UTC, datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import CheckConstraint, Column, DateTime, Index, UniqueConstraint
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    DateTime,
+    ForeignKeyConstraint,
+    Index,
+    UniqueConstraint,
+)
 from sqlmodel import Field, SQLModel
 
 
@@ -132,6 +139,121 @@ class FoodSourceModerationAuditDB(SQLModel, table=True):
     moderator_reference: str = Field(max_length=120)
     authorization_scope: str = Field(max_length=80)
     reason_code: str = Field(max_length=80)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodProductDB(SQLModel, table=True):
+    """Source-neutral catalog identity without a provider-owned display value."""
+
+    __tablename__ = "food_product"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('staged', 'active', 'deprecated')",
+            name="ck_food_product_status",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    status: str = Field(default="staged", max_length=20)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodProductSourceLinkDB(SQLModel, table=True):
+    """Reviewable match between one source record and a neutral product."""
+
+    __tablename__ = "food_product_source_link"
+    __table_args__ = (
+        UniqueConstraint(
+            "food_product_id",
+            "source_record_id",
+            name="uq_food_product_source_link_pair",
+        ),
+        CheckConstraint(
+            "match_confidence >= 0 AND match_confidence <= 1",
+            name="ck_food_product_source_link_confidence",
+        ),
+        CheckConstraint(
+            "review_status IN ('quarantined', 'validated', 'rejected')",
+            name="ck_food_product_source_link_review_status",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    food_product_id: str = Field(foreign_key="food_product.id", index=True)
+    source_record_id: str = Field(foreign_key="food_source_record.id", index=True)
+    match_method: str = Field(max_length=80)
+    match_confidence: float = Field(ge=0, le=1)
+    review_status: str = Field(default="quarantined", max_length=20)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodAttributeAssertionDB(SQLModel, table=True):
+    """Immutable source-specific fact with optional correction provenance."""
+
+    __tablename__ = "food_attribute_assertion"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ("food_product_id", "source_record_id"),
+            (
+                "food_product_source_link.food_product_id",
+                "food_product_source_link.source_record_id",
+            ),
+            name="fk_food_attribute_assertion_product_source_link",
+        ),
+        UniqueConstraint(
+            "source_record_id",
+            "attribute_key",
+            "value",
+            "unit_or_value_type",
+            "observed_or_effective_at",
+            name="uq_food_attribute_assertion_evidence",
+        ),
+        UniqueConstraint(
+            "id",
+            "food_product_id",
+            "source_record_id",
+            name="uq_food_attribute_assertion_lineage_target",
+        ),
+        ForeignKeyConstraint(
+            (
+                "supersedes_assertion_id",
+                "food_product_id",
+                "source_record_id",
+            ),
+            (
+                "food_attribute_assertion.id",
+                "food_attribute_assertion.food_product_id",
+                "food_attribute_assertion.source_record_id",
+            ),
+            name="fk_food_attribute_assertion_supersedes_same_lineage",
+        ),
+        CheckConstraint(
+            "verification_status IN ('quarantined', 'validated', 'rejected')",
+            name="ck_food_attribute_assertion_verification_status",
+        ),
+        CheckConstraint(
+            "verification_version > 0",
+            name="ck_food_attribute_assertion_verification_version",
+        ),
+        CheckConstraint(
+            "supersedes_assertion_id IS NULL OR supersedes_assertion_id <> id",
+            name="ck_food_attribute_assertion_not_self_superseding",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    food_product_id: str = Field(index=True)
+    source_record_id: str = Field(index=True)
+    attribute_key: str = Field(max_length=120)
+    value: str = Field(max_length=255)
+    unit_or_value_type: str = Field(max_length=80)
+    observed_or_effective_at: datetime
+    verification_status: str = Field(default="quarantined", max_length=20)
+    verification_version: int = Field(default=1, gt=0)
+    supersedes_assertion_id: Optional[str] = Field(
+        default=None,
+        index=True,
+    )
     created_at: datetime = Field(default_factory=utc_now)
 
 

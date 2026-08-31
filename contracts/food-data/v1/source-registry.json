@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.food-data-source-registry",
-  "contract_version": "1.2.0",
-  "status": "source-record-moderation-foundation-implemented-no-public-source-enabled",
+  "contract_version": "1.3.0",
+  "status": "source-neutral-catalog-foundation-implemented-no-public-source-enabled",
   "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
   "principles": {
     "open_food_facts_is_one_adapter_not_canonical_model": true,
@@ -74,11 +74,13 @@
     "food_product_source_link": {
       "purpose": "Map source records to an internal product with reviewable matching evidence.",
       "required_fields": [
+        "link_id",
         "food_product_id",
         "source_record_id",
         "match_method",
         "match_confidence",
-        "review_status"
+        "review_status",
+        "created_at"
       ]
     },
     "food_attribute_assertion": {
@@ -91,7 +93,12 @@
         "value",
         "unit_or_value_type",
         "observed_or_effective_at",
-        "verification_status"
+        "verification_status",
+        "verification_version",
+        "created_at"
+      ],
+      "optional_fields": [
+        "supersedes_assertion_id"
       ]
     },
     "food_log_snapshot": {
@@ -130,7 +137,10 @@
     "deterministic_presentation_policy_required": true,
     "presentation_value_must_expose_provenance": true,
     "automatic_claim_of_truth_allowed": false,
-    "silent_overwrite_or_destructive_merge_allowed": false
+    "silent_overwrite_or_destructive_merge_allowed": false,
+    "assertion_must_reference_reviewable_product_source_pair": true,
+    "correction_keeps_prior_assertion_row": true,
+    "correction_must_keep_product_and_source_record_lineage": true
   },
   "mutation_policy": {
     "external_client_default_access": "read-only",
@@ -146,6 +156,9 @@
     "source_record_moderation_requires_idempotency_key": true,
     "source_record_moderation_audit_is_insert_only_in_service": true,
     "source_record_moderation_audit_allows_free_text_or_payload": false,
+    "catalog_entity_tables_implemented": true,
+    "catalog_assertion_write_service_implemented": false,
+    "read_only_licensed_assertion_evidence_export_implemented": true,
     "complete_source_assertion_mutation_flow_implemented": false,
     "silent_history_or_source_record_rewrite_allowed": false,
     "correction_preserves_superseded_assertion": true
@@ -156,7 +169,8 @@
     "attribution_preserved_per_source": true,
     "share_alike_obligations_preserved": true,
     "incompatible_sources_may_be_flattened_into_one_export": false,
-    "source_specific_export_controls_required": true
+    "source_specific_export_controls_required": true,
+    "assertion_evidence_export_preserves_source_licence_and_attribution": true
   },
   "privacy_and_identity": {
     "catalog_and_private_history_separated": true,
@@ -179,22 +193,25 @@
     "implemented_catalog_tables": [
       "food_source",
       "food_source_record",
-      "food_source_moderation_audit"
-    ],
-    "remaining_catalog_tables": [
+      "food_source_moderation_audit",
       "food_product",
       "food_product_source_link",
       "food_attribute_assertion"
     ],
+    "remaining_catalog_tables": [],
     "internal_source_record_ingest_service_implemented": true,
     "internal_source_record_terminal_moderation_service_implemented": true,
+    "source_neutral_catalog_entity_foundation_implemented": true,
+    "read_only_licensed_assertion_evidence_export_implemented": true,
+    "catalog_assertion_write_service_implemented": false,
+    "public_catalog_read_endpoint_enabled": false,
     "general_source_record_update_or_delete_service_implemented": false,
     "public_source_record_moderation_endpoint_enabled": false,
     "ingest_defaults_to_quarantine": true,
     "raw_source_payload_column_created": false,
     "source_independent_schema_compatibility_required_for_v2": true,
     "additional_source_activation_required_for_v2": false,
-    "v2_forward_migration_required": true,
+    "v2_forward_migration_required": false,
     "current_release_dependency": true,
     "public_source_onboarding_enabled": false
   }

@@ -51,9 +51,10 @@ equivalent for development and unit tests only and is not multi-instance proof.
 
 Migration `20260831_0006` creates the reviewed `food_source` and
 `food_source_record` foundation. Migration `20260831_0007` adds only terminal
-record moderation versioning and minimal audit evidence. Product identity,
-source links, factual assertions and correction/supersession remain future
-forward migrations and release gates.
+record moderation versioning and minimal audit evidence. Migration
+`20260831_0008` adds the product, source-link and factual-assertion schema plus a
+read-only licence-aware evidence query. Assertion ingestion, moderation and
+correction remain future release gates.
 
 Open Food Facts remains the enabled read-only search adapter. Search results are
 not automatically retained as catalog records, and no second source is

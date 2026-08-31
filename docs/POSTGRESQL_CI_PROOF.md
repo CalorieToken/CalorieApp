@@ -14,7 +14,7 @@ provider account, recurring subscription, live database or user data.
 ## Automated scenarios
 
 1. Start an empty PostgreSQL database and apply the forward-only migration.
-2. Verify schema head and database readiness.
+2. Verify schema head, database readiness and the source-neutral catalog tables.
 3. Run the staging migration command with an explicit approval reference.
 4. Read PostgreSQL's database-size signal and prove an exact configured budget
    activates the 95-percent onboarding-pause classification and deterministic
