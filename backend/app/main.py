@@ -19,6 +19,7 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
+from . import database as db_module
 from .capacity import (
     OnboardingCapacityPaused,
     enforce_new_user_onboarding_capacity,
@@ -36,6 +37,10 @@ from .models import (
     OriginLoginHandoffDB,
 )
 from .request_limits import RequestBodyLimitMiddleware
+from .route_rate_limiter import (
+    DatabaseBackedRouteRateLimiter,
+    RouteRateLimitMiddleware,
+)
 from .source_admission import AdapterAdmissionRejected
 from .schemas import (
     AccountErasureRequest,
@@ -288,6 +293,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+_ROUTE_RATE_LIMITER = DatabaseBackedRouteRateLimiter(lambda: db_module.engine)
+
 
 @app.middleware("http")
 async def apply_response_security_headers(request: Request, call_next):
@@ -309,8 +316,10 @@ async def apply_response_security_headers(request: Request, call_next):
         response.headers["Pragma"] = "no-cache"
     return response
 
-# Enforce body limits before FastAPI parses JSON. CORS is added last so it can
-# still wrap safe 400/413 responses for approved browser origins.
+# Shared route admission runs before endpoint work. Body limits are added after
+# it so malformed/oversize mutations are rejected without consuming shared
+# route capacity. CORS remains outermost for approved browser origins.
+app.add_middleware(RouteRateLimitMiddleware, limiter=_ROUTE_RATE_LIMITER)
 app.add_middleware(RequestBodyLimitMiddleware)
 
 # Enable credentials for session-based authentication

@@ -59,6 +59,42 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert request["shared_multi_instance_adapter_admission_implemented"] is False
     assert request["queue_overflow_response_implemented"] is True
     assert request["adapter_retry_after_max_seconds"] == 60
+    assert request["shared_route_rate_limiter_implemented"] is True
+    assert request["shared_route_rate_limiter_algorithm"] == "strict-sliding-window"
+    assert request["shared_route_rate_limiter_scope"] == (
+        "global-across-backend-processes-sharing-primary-database"
+    )
+    assert request["shared_route_rate_limiter_state"] == "primary-postgresql"
+    assert request["shared_route_rate_limiter_lock"] == (
+        "route-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert request["shared_route_rate_limiter_window_seconds"] == 60
+    assert request["shared_route_limits_per_window"] == {
+        "GET /openapi.json|/docs|/docs/oauth2-redirect|/redoc combined": 120,
+        "POST /api/identity/login/start": 30,
+        "POST /api/identity/login/state/validate": 120,
+        "POST /api/identity/callback": 30,
+        "POST /api/identity/login/status": 240,
+        "GET /api/identity/me": 240,
+        "GET /api/identity/export": 30,
+        "DELETE /api/identity/account": 10,
+        "POST /api/identity/logout": 120,
+        "POST /log-food": 120,
+        "GET /logs": 240,
+        "DELETE /logs": 30,
+        "DELETE /logs/{log_id}": 120,
+        "GET /search-food": 60,
+        "unmatched request": 120,
+    }
+    assert request["health_and_readiness_rate_exempt"] is True
+    assert request["route_event_stores_raw_path_query_user_session_or_ip"] is False
+    assert request["route_limiter_database_failure_fails_closed"] is True
+    assert request["route_limiter_unavailable_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert request["body_rejection_precedes_route_admission"] is True
+    assert request["sqlite_route_limiter_is_live_multi_instance_proof"] is False
+    assert request["postgresql_route_limiter_multi_process_ci_proof_implemented"] is True
     assert retry["single_end_to_end_budget_per_user_action"] is True
     assert retry["max_open_food_facts_attempts_per_search"] == 2
     assert retry["nested_transport_retries_allowed"] is False
@@ -96,7 +132,7 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert "per-subject-and-source-data-growth-quotas" in missing
     assert "bounded-adapter-concurrency-queue-and-circuit-breaker" not in missing
     assert "shared-route-and-egress-rate-governor" not in missing
-    assert "shared-route-rate-limiter" in missing
+    assert "shared-route-rate-limiter" not in missing
     assert "shared-multi-instance-admission-and-proxy-topology-test" in missing
 
 

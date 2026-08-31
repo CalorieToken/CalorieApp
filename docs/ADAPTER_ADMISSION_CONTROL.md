@@ -54,6 +54,6 @@ single backend process but do not claim aggregate queue or circuit state across
 multiple instances. The shared PostgreSQL egress governor is separately proven
 with concurrent processes in PostgreSQL CI. SQLite uses an equivalent in-memory
 gate for local development and is not live multi-instance proof. V2 therefore
-remains blocked on the shared route limiter and the broader multi-instance
-admission and proxy-topology proof listed in
+now has a separate shared route limiter, but remains blocked on the broader
+multi-instance adapter admission and proxy-topology proof listed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.

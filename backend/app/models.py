@@ -178,3 +178,23 @@ class ProviderRateEventDB(SQLModel, table=True):
         default_factory=lambda: datetime.now(UTC),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
+
+
+class RouteRateEventDB(SQLModel, table=True):
+    """Low-cardinality shared route admission without request identity data."""
+
+    __tablename__ = "route_rate_event"
+    __table_args__ = (
+        Index(
+            "ix_route_rate_event_route_admitted",
+            "route_key",
+            "admitted_at",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, max_length=36)
+    route_key: str = Field(max_length=100)
+    admitted_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )

@@ -28,6 +28,11 @@ from app.models import (
     utc_now,
 )
 from app.provider_rate_governor import PostgreSQLSlidingWindowRateGovernor
+from app.route_rate_limiter import (
+    PostgreSQLRouteRateLimiter,
+    RouteRateLimitRejected,
+    RouteRatePolicy,
+)
 from app.schema_migrations import SCHEMA_HEAD, current_revision, upgrade_database
 from app.schema_migrations.versions.v20260830_0001 import food_log as migration_food_log
 from app.source_admission import AdapterAdmissionRejected
@@ -50,6 +55,22 @@ def _shared_rate_governor_process_attempt(
     try:
         asyncio.run(governor.acquire())
     except AdapterAdmissionRejected as exc:
+        return ("rejected", exc.status_code, exc.retry_after_seconds)
+    finally:
+        worker_engine.dispose()
+    return ("admitted", None, None)
+
+
+def _shared_route_limiter_process_attempt(
+    args: tuple[str, str, int],
+) -> tuple[str, int | None, int | None]:
+    raw_url, route_key, limit = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    limiter = PostgreSQLRouteRateLimiter(worker_engine)
+    policy = RouteRatePolicy(route_key, limit)
+    try:
+        asyncio.run(limiter.acquire(policy))
+    except RouteRateLimitRejected as exc:
         return ("rejected", exc.status_code, exc.retry_after_seconds)
     finally:
         worker_engine.dispose()
@@ -147,6 +168,7 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     }
     assert "food_log" in inspect(postgres_engine).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
+    assert "route_rate_event" in inspect(postgres_engine).get_table_names()
 
 
 def test_postgresql_shared_rate_window_is_atomic_across_processes(
@@ -197,6 +219,55 @@ def test_postgresql_missing_governor_table_fails_closed(
     with pytest.raises(AdapterAdmissionRejected) as rejected:
         asyncio.run(governor.acquire())
     assert rejected.value.reason == "shared_rate_governor_unavailable"
+    assert rejected.value.status_code == 503
+    assert rejected.value.retry_after_seconds == 5
+
+
+def test_postgresql_shared_route_window_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SHARED-ROUTE-LIMITER",
+    )
+    raw_url = _required_postgresql_test_url()
+    route_key = f"synthetic_route_{uuid4().hex}"
+    arguments = [(raw_url, route_key, 8)] * 12
+
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(executor.map(_shared_route_limiter_process_attempt, arguments))
+
+    assert [result[0] for result in results].count("admitted") == 8
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == 4
+    assert all(status_code == 429 for _, status_code, _ in rejected)
+    assert all(1 <= retry_after <= 60 for _, _, retry_after in rejected)
+
+    with postgres_engine.connect() as connection:
+        count = connection.exec_driver_sql(
+            "SELECT COUNT(*) FROM route_rate_event WHERE route_key = %s",
+            (route_key,),
+        ).scalar_one()
+    assert count == 8
+
+
+def test_postgresql_missing_route_rate_table_fails_closed(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SHARED-ROUTE-FAIL-CLOSED",
+    )
+    with postgres_engine.begin() as connection:
+        connection.exec_driver_sql("DROP TABLE route_rate_event")
+
+    limiter = PostgreSQLRouteRateLimiter(postgres_engine)
+    with pytest.raises(RouteRateLimitRejected) as rejected:
+        asyncio.run(
+            limiter.acquire(RouteRatePolicy(f"synthetic_route_{uuid4().hex}", 8))
+        )
+    assert rejected.value.reason == "shared_route_limiter_unavailable"
     assert rejected.value.status_code == 503
     assert rejected.value.retry_after_seconds == 5
 

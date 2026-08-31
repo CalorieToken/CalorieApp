@@ -24,10 +24,14 @@ bodies return `413` without `Retry-After`; malformed or ambiguous
 `Content-Length` returns `400`. The body content is not logged. The exact current
 limits and extension rule are documented in `REQUEST_BODY_LIMITS.md`.
 
-Every public route still requires explicit field, pagination, rate, concurrency
-and queue bounds. Rate-limit requests return `429` with bounded `Retry-After`;
-temporary queue or circuit exhaustion returns `503`. Health checks remain cheap
-and must not trigger source calls.
+Every current public route now has a shared global rate budget before endpoint
+work. PostgreSQL coordinates a strict sliding window across backend processes
+using fixed low-cardinality route keys. Dynamic IDs and arbitrary paths are not
+stored; unmatched traffic shares one fixed key. No query, body, user, session or
+IP is recorded. A full route window returns `429`; database/governor failure
+fails closed with `503`. Both include bounded `Retry-After`. Health and readiness
+remain exempt for cold-start and monitoring, and health must not trigger source
+calls. Exact route budgets and proof are in `SHARED_ROUTE_RATE_LIMITER.md`.
 
 The Open Food Facts adapter now admits at most two active upstream attempts per
 backend process, queues at most four for no longer than two seconds and merges
@@ -98,8 +102,8 @@ utilization and request/user content. The response process is fixed in
 `CAPACITY_ALERT_INCIDENT_RUNBOOK.md`; choosing and proving an external alert
 destination remains a live, human-approved release gate.
 
-V2 remains blocked until the shared route limiter, complete shared
-multi-instance admission and proxy-topology proof, per-subject and per-source storage-growth
+V2 remains blocked until the complete shared multi-instance adapter admission
+and proxy-topology proof, per-subject and per-source storage-growth
 quotas, Identity Bridge limits, mutation quarantine/audit, chosen-provider alert
 delivery, chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants

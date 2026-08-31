@@ -25,10 +25,12 @@
         "backend/app/capacity.py",
         "backend/app/capacity_probe.py",
         "backend/app/request_limits.py",
+        "backend/app/route_rate_limiter.py",
         "backend/app/source_admission.py",
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
         "backend/tests/test_request_limits.py",
+        "backend/tests/test_route_rate_limiter.py",
         "backend/tests/test_source_admission.py",
         "backend/tests/test_frontend_configuration.py",
         "backend/tests/test_endpoints.py",
@@ -38,7 +40,9 @@
         "frontend/app/api/backend/[...path]/route.ts",
         "backend/tests/test_open_food_facts_normalization.py",
         "docs/REQUEST_BODY_LIMITS.md",
-        "docs/ADAPTER_ADMISSION_CONTROL.md"
+        "docs/ADAPTER_ADMISSION_CONTROL.md",
+        "docs/SHARED_PROVIDER_RATE_GOVERNOR.md",
+        "docs/SHARED_ROUTE_RATE_LIMITER.md"
       ]
     },
     {
@@ -76,6 +80,8 @@
       "evidence": [
         "backend/app/schema_migrations/runner.py",
         "backend/app/schema_migrations/versions/v20260830_0001.py",
+        "backend/app/schema_migrations/versions/v20260831_0002.py",
+        "backend/app/schema_migrations/versions/v20260831_0003.py",
         "backend/tests/test_database.py"
       ]
     },
