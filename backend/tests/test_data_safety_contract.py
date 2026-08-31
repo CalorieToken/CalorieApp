@@ -53,7 +53,10 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
     assert "cross-user-food-history-isolation" in proof["automated_evidence"]
     assert "application-engine-restart-persistence" in proof["automated_evidence"]
     assert "provider-redeploy-persistence" in proof["does_not_prove"]
-    assert "backup-restoration" in proof["does_not_prove"]
+    assert "synthetic-custom-format-backup-and-distinct-database-restore" in proof[
+        "automated_evidence"
+    ]
+    assert "encrypted-provider-staging-backup-restoration" in proof["does_not_prove"]
     assert proof["provider_selection_status"] == "pending-separate-evaluation"
 
 
