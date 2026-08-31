@@ -41,7 +41,7 @@ Direct ASGI tests prove declared, chunked, misleading-header, exact-boundary and
 invalid-header behavior. The endpoint integration test proves an oversize food
 log cannot create a database row.
 
-This closes only the request-body part of the wider growth-control gate. V2
-remains blocked on per-subject storage budgets, per-source ingest budgets and the
-other missing controls listed in
+This closes only the request-body part of the wider growth-control gate. The
+private food-log subject budget is now implemented separately; V2 remains
+blocked on the per-source catalog-ingest budget and the other missing controls listed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.

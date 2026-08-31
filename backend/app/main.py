@@ -26,6 +26,10 @@ from .capacity import (
     validate_capacity_configuration,
 )
 from .database import database_readiness, get_session, init_db
+from .data_growth import (
+    DataGrowthAdmissionRejected,
+    create_food_log_with_subject_budget,
+)
 from .locales import resolve_locale
 from .models import (
     AuthSessionDB,
@@ -1329,9 +1333,22 @@ def log_food(
         created_at=datetime.now(UTC),
         owner_id=current_user.id,
     )
-    session.add(entry)
-    session.commit()
-    session.refresh(entry)
+    try:
+        create_food_log_with_subject_budget(session, entry)
+    except DataGrowthAdmissionRejected as exc:
+        logger.warning("Food log growth admission rejected (reason=%s)", exc.reason)
+        headers = None
+        if exc.retry_after_seconds is not None:
+            headers = {"Retry-After": str(exc.retry_after_seconds)}
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail=(
+                "Food log storage budget reached"
+                if exc.status_code == 409
+                else "Food log storage admission temporarily unavailable"
+            ),
+            headers=headers,
+        ) from exc
     logger.info("Food item logged")
     return FoodLog.model_validate(entry.model_dump())
 

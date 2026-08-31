@@ -129,7 +129,8 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert off["circuit_breaker_implemented"] is True
     missing = contract["release_blocking_missing_controls"]
     assert "request-body-and-data-growth-quotas" not in missing
-    assert "per-subject-and-source-data-growth-quotas" in missing
+    assert "per-subject-and-source-data-growth-quotas" not in missing
+    assert "per-source-data-growth-quota" in missing
     assert "bounded-adapter-concurrency-queue-and-circuit-breaker" not in missing
     assert "shared-route-and-egress-rate-governor" not in missing
     assert "shared-route-rate-limiter" not in missing
@@ -226,6 +227,29 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert keys["shared-mobile-or-household-network_fairness_required"] is True
     assert keys["ip_signal_may_be_sole_long_term_identity"] is False
     assert growth["capacity_alert_threshold_percent"] == [70, 85, 95]
+    assert growth["per_subject_storage_budget_implemented"] is True
+    assert growth["per_subject_storage_budget_scope"] == (
+        "retained-private-food-log-entries-per-internal-user"
+    )
+    assert growth["per_subject_food_log_entry_limit"] == 10_000
+    assert growth["per_subject_budget_counts_legacy_unowned_rows"] is False
+    assert growth["per_subject_budget_delete_frees_space"] is True
+    assert growth["per_subject_budget_lock"] == (
+        "internal-user-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert growth["per_subject_budget_limit_response"] == (
+        "409-without-retry-after"
+    )
+    assert growth["per_subject_budget_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert growth["per_subject_budget_database_failure_fails_closed"] is True
+    assert growth["sqlite_subject_budget_is_live_multi_instance_proof"] is False
+    assert growth[
+        "postgresql_subject_budget_multi_process_ci_proof_implemented"
+    ] is True
+    assert growth["per_source_ingest_budget_implemented"] is False
+    assert growth["current_open_food_facts_catalog_persistence_enabled"] is False
     assert growth["provider_neutral_database_size_signal_implemented"] is True
     assert growth["exact_capacity_limit_requires_operator_configuration"] is True
     assert growth["new_identity_onboarding_pause_at_percent_implemented"] == 95
@@ -243,4 +267,6 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert "capacity-alert-destination-and-live-delivery-proof" in missing
     assert "capacity-alert-delivery-and-incident-runbook" not in missing
     assert "chosen-provider-exact-quota-configuration-and-live-pause-exercise" in missing
+    assert "per-subject-and-source-data-growth-quotas" not in missing
+    assert "per-source-data-growth-quota" in missing
     assert contract["release_blocking_missing_controls"]

@@ -476,6 +476,13 @@ export function FoodSearchPlaceholder() {
         return;
       }
 
+      if (response.status === 409) {
+        setLogError(
+          "Your private food log has reached its storage limit. Export or delete existing entries before adding more."
+        );
+        return;
+      }
+
       if (!response.ok) {
         throw new Error("Log request failed.");
       }
