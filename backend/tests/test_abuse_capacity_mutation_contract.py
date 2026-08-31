@@ -79,7 +79,15 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert keys["shared-mobile-or-household-network_fairness_required"] is True
     assert keys["ip_signal_may_be_sole_long_term_identity"] is False
     assert growth["capacity_alert_threshold_percent"] == [70, 85, 95]
+    assert growth["provider_neutral_database_size_signal_implemented"] is True
+    assert growth["exact_capacity_limit_requires_operator_configuration"] is True
+    assert growth["new_identity_onboarding_pause_at_percent_implemented"] == 95
+    assert growth["configured_measurement_failure_pauses_new_onboarding"] is True
+    assert growth["existing_identity_login_bypasses_onboarding_pause"] is True
     assert growth["automatic_paid_upgrade_allowed"] is False
     assert growth["automatic_existing_history_deletion_allowed"] is False
     assert growth["new_onboarding_pauses_before_safety_capacity_failure"] is True
+    missing = contract["release_blocking_missing_controls"]
+    assert "capacity-alert-delivery-and-incident-runbook" in missing
+    assert "chosen-provider-exact-quota-configuration-and-live-pause-exercise" in missing
     assert contract["release_blocking_missing_controls"]

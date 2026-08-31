@@ -19,6 +19,11 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
+from .capacity import (
+    OnboardingCapacityPaused,
+    enforce_new_user_onboarding_capacity,
+    validate_capacity_configuration,
+)
 from .database import database_readiness, get_session, init_db
 from .locales import resolve_locale
 from .models import (
@@ -266,6 +271,7 @@ async def lifespan(application: FastAPI):
     _validate_session_cookie_security_configuration()
     _validate_cors_security_configuration()
     _validate_identity_url_configuration()
+    validate_capacity_configuration()
     init_db()
     logger.info("Database initialized")
     logger.info("CORS origins: %s", _CORS_ORIGINS)
@@ -849,7 +855,15 @@ def identity_callback(
             provider=_IDENTITY_PROVIDER,
             external_subject=claims.external_subject,
             xrpl_address=claims.xrpl_address,
+            new_user_guard=enforce_new_user_onboarding_capacity,
         )
+    except OnboardingCapacityPaused as exc:
+        fail_origin_login_handoff(session, state)
+        raise HTTPException(
+            status_code=503,
+            detail="New account onboarding is temporarily paused",
+            headers={"Retry-After": "3600"},
+        ) from exc
     except Exception:
         fail_origin_login_handoff(session, state)
         raise

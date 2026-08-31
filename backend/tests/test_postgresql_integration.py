@@ -13,6 +13,7 @@ from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
 import app.main as main_module
+from app.capacity import database_capacity_snapshot, database_used_bytes
 from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
@@ -118,6 +119,28 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "database_revision": SCHEMA_HEAD,
     }
     assert "food_log" in inspect(postgres_engine).get_table_names()
+
+
+def test_postgresql_capacity_signal_enforces_exact_configured_budget(
+    postgres_engine: Engine,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-CAPACITY-SIGNAL",
+    )
+    with Session(postgres_engine) as session:
+        used_bytes = database_used_bytes(session)
+        assert used_bytes > 0
+        monkeypatch.setenv(
+            "CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES",
+            str(used_bytes),
+        )
+        snapshot = database_capacity_snapshot(session)
+
+    assert snapshot is not None
+    assert snapshot.used_bytes >= used_bytes
+    assert snapshot.onboarding_paused is True
 
 
 def test_postgresql_legacy_food_log_is_preserved(

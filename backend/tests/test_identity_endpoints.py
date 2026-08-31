@@ -1106,6 +1106,68 @@ class TestIdentityCallbackFlow:
             ).first()
             assert auth_session is not None
 
+    def test_callback_pauses_only_new_account_at_configured_capacity(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr(
+            main_module,
+            "_exchange_code_for_claims",
+            lambda code, state: self._stub_claims(subject="capacity-paused-new-user"),
+        )
+        monkeypatch.setenv("CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES", "1")
+
+        state = client.post("/api/identity/login/start").json()["state"]
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": state},
+        )
+
+        assert callback.status_code == 503
+        assert callback.json()["detail"] == "New account onboarding is temporarily paused"
+        assert callback.headers["retry-after"] == "3600"
+        with Session(db_module.engine) as session:
+            assert session.exec(
+                select(ExternalIdentityDB).where(
+                    ExternalIdentityDB.external_subject == "capacity-paused-new-user"
+                )
+            ).first() is None
+
+    def test_callback_preserves_existing_account_during_capacity_pause(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", False)
+        with Session(db_module.engine) as session:
+            user = CalorieAppUserDB(status="active")
+            session.add(user)
+            session.flush()
+            session.add(
+                ExternalIdentityDB(
+                    calorieapp_user_id=user.id,
+                    provider="wordpress_xumm",
+                    external_subject="capacity-existing-user",
+                )
+            )
+            session.commit()
+            user_id = user.id
+
+        monkeypatch.setattr(
+            main_module,
+            "_exchange_code_for_claims",
+            lambda code, state: self._stub_claims(subject="capacity-existing-user"),
+        )
+        monkeypatch.setenv("CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES", "1")
+
+        state = client.post("/api/identity/login/start").json()["state"]
+        callback = client.post(
+            "/api/identity/callback",
+            json={"code": "bridge-code", "state": state},
+        )
+
+        assert callback.status_code == 200
+        assert callback.json()["created"] is False
+        assert callback.json()["user_id"] == user_id
+        assert client.get("/api/identity/me").status_code == 200
+
     def test_callback_cookie_sets_secure_when_configured(self, client: TestClient, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", True)
         monkeypatch.setattr(main_module, "_SESSION_COOKIE_SAMESITE", "none")

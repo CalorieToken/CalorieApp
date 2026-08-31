@@ -52,9 +52,11 @@ overages. If a provider requires automatic billing or cannot prevent it, the
 experiment stops.
 
 Provider dashboards alone do not complete the monitoring gate. CalorieApp still
-needs a machine-readable capacity signal, an alert route and a tested onboarding
-pause. Exact byte and compute thresholds are set only after the chosen plan's
-live account limits match the current official terms.
+has a provider-neutral, machine-readable database-size signal and tested
+onboarding guard. It still needs an alert route, a chosen-provider live pause
+exercise and any additional compute or egress signal required by that plan.
+Exact byte and compute thresholds are set only after the chosen plan's live
+account limits match the current official terms.
 
 ## Human gate before any account action
 

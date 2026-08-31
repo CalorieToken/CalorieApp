@@ -56,12 +56,24 @@ an XRPL transaction.
 Metrics use low-cardinality counters and never contain request contents, secrets
 or tokens. Alerts fire at 70, 85 and 95 percent of the approved capacity budget.
 There is no automatic paid upgrade and no automatic deletion of existing
-history. New onboarding pauses before capacity can compromise durability.
+history. The backend now classifies its database-size signal at those fixed
+thresholds and pauses only new identity onboarding at 95 percent. If an exact
+limit is configured but database usage cannot be measured, new onboarding fails
+closed. Existing identities bypass this onboarding-only guard, so login and
+existing read, export and erasure routes remain available.
+
+The byte limit is intentionally unset until a human verifies the selected
+provider's exact live quota. `CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES` accepts
+only a positive integer and malformed values fail startup. PostgreSQL uses the
+read-only `pg_database_size(current_database())` signal; SQLite uses page count
+and page size only for local and unit-test equivalence. The full design and
+operator boundary are in `DATABASE_CAPACITY_ONBOARDING_GUARD.md`.
 
 V2 remains blocked until the shared limiter, adapter queue/circuit breaker,
 payload and storage quotas, Identity Bridge limits, mutation quarantine/audit,
-capacity alerts and multi-instance topology tests exist. Exact tunable values
-belong in reviewed configuration, while the safety invariants remain fixed in
+capacity alert delivery, the incident runbook, chosen-provider quota proof and
+multi-instance topology tests exist. Exact tunable values belong in reviewed
+configuration, while the safety invariants remain fixed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.
 
 Primary references:
