@@ -72,9 +72,16 @@ across backend processes with a user-keyed transaction advisory lock. A full
 budget returns `409` without time-based retry guidance; user-directed deletion
 makes space, while existing history is never removed automatically. Database or
 lock failure returns a bounded `503` and creates no row. The current Open Food
-Facts search remains read-only, so the per-source catalog-ingest budget is still
-an explicit release gate. Exact behavior and proof are documented in
+Facts search remains read-only. Exact behavior and proof are documented in
 `PER_SUBJECT_STORAGE_BUDGET.md`.
+
+Internal catalog ingestion now requires an enabled registered source with a
+positive retained-record limit. PostgreSQL serializes duplicate lookup, source
+count and insertion across processes. The immutable source/version key is
+idempotent and duplicates do not consume budget; every new record enters
+quarantine and no raw source payload is stored. A full source returns persistent
+`409`, while storage failure returns bounded `503`. There is no public source
+onboarding or catalog-write endpoint. See `PER_SOURCE_INGEST_BUDGET.md`.
 
 ## One retry budget
 
@@ -130,8 +137,8 @@ utilization and request/user content. The response process is fixed in
 destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
-and proxy-topology proof, the per-source catalog-ingest quota, the Identity
-Bridge short-lived network-signal control, mutation
+and proxy-topology proof, the Identity Bridge short-lived network-signal
+control, mutation
 quarantine/audit, chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants

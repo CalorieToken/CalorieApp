@@ -16,7 +16,7 @@ def test_food_data_model_is_source_independent_and_extensible() -> None:
     contract = _load_contract()
     principles = contract["principles"]
 
-    assert contract["contract_version"] == "1.0.0"
+    assert contract["contract_version"] == "1.1.0"
     assert principles["open_food_facts_is_one_adapter_not_canonical_model"] is True
     assert principles["single_source_database_design_allowed"] is False
     assert principles["new_source_requires_core_schema_rewrite"] is False
@@ -61,6 +61,12 @@ def test_every_source_record_and_assertion_remains_traceable() -> None:
     assert contract["adapter_contract"]["max_upstream_attempts_per_user_action"] == 2
     assert contract["adapter_contract"]["nested_retry_layers_allowed"] is False
     assert contract["adapter_contract"]["upstream_write_enabled_by_default"] is False
+    assert contract["adapter_contract"][
+        "per_source_persisted_record_budget_implemented"
+    ] is True
+    assert contract["adapter_contract"][
+        "duplicate_idempotency_key_consumes_budget"
+    ] is False
     assert contract["conflict_policy"]["retain_each_source_assertion"] is True
     assert (
         contract["conflict_policy"]["silent_overwrite_or_destructive_merge_allowed"]
@@ -98,7 +104,20 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
     implementation = _load_contract()["implementation"]
 
     assert implementation["current_adapter"] == "open_food_facts"
-    assert implementation["current_catalog_tables_created"] is False
+    assert implementation["current_adapter_catalog_persistence_enabled"] is False
+    assert implementation["implemented_catalog_tables"] == [
+        "food_source",
+        "food_source_record",
+    ]
+    assert implementation["remaining_catalog_tables"] == [
+        "food_product",
+        "food_product_source_link",
+        "food_attribute_assertion",
+    ]
+    assert implementation["internal_source_record_ingest_service_implemented"] is True
+    assert implementation["source_record_update_or_delete_service_implemented"] is False
+    assert implementation["ingest_defaults_to_quarantine"] is True
+    assert implementation["raw_source_payload_column_created"] is False
     assert implementation["source_independent_schema_compatibility_required_for_v2"] is True
     assert implementation["additional_source_activation_required_for_v2"] is False
     assert implementation["v2_forward_migration_required"] is True

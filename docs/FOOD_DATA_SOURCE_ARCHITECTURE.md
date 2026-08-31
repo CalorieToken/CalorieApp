@@ -1,7 +1,8 @@
 # Food-data source architecture
 
-Status: V2 staged architecture contract. Open Food Facts remains the only
-enabled search adapter; no public source-onboarding flow is enabled.
+Status: the source registration and immutable source-record foundation is
+implemented. Open Food Facts remains the only enabled read-only search adapter;
+no public source-onboarding or catalog-write flow is enabled.
 
 ## Decision
 
@@ -25,6 +26,13 @@ schema for each one.
 | `food_product_source_link` | Reviewable match between a provider record and internal product |
 | `food_attribute_assertion` | A source-specific value, unit, observation time and verification state |
 | `food_log_snapshot` | Private point-in-time values selected by the user |
+
+Migration `20260831_0006` currently implements `food_source` and
+`food_source_record`. Each registered source has a positive retained-record
+limit, and the internal ingest service serializes its idempotency check, count
+and insert across PostgreSQL processes. Every new record starts in quarantine.
+See `PER_SOURCE_INGEST_BUDGET.md`. The product, link and assertion tables remain
+staged and are not claimed by this migration.
 
 An adapter emits normalized source records and assertions. Its idempotency key
 is `(source_id, external_record_id, source_version_or_content_digest)`. A new
@@ -61,9 +69,12 @@ ODbL, contents and image-licence boundary documented in `DATA_LICENSING.md`.
 ## Implementation order
 
 1. Complete the DS-3 ephemeral PostgreSQL compatibility proof.
-2. Add these entities through a reviewed forward migration.
-3. Put the current Open Food Facts integration behind adapter version 1.
-4. Verify idempotent ingest, conflict retention, licence-aware export and log
+2. Add source registration and immutable source records through a reviewed
+   forward migration. Completed by `20260831_0006`.
+3. Put any future catalog persistence behind the budgeted internal ingest
+   service. Open Food Facts search remains read-only.
+4. Add product/link/assertion entities, then verify conflict retention,
+   licence-aware export and log
    snapshot immutability with synthetic data.
 5. Pilot one additional low-risk source only after privacy, licence and data
    quality review.

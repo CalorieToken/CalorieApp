@@ -130,7 +130,7 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     missing = contract["release_blocking_missing_controls"]
     assert "request-body-and-data-growth-quotas" not in missing
     assert "per-subject-and-source-data-growth-quotas" not in missing
-    assert "per-source-data-growth-quota" in missing
+    assert "per-source-data-growth-quota" not in missing
     assert "bounded-adapter-concurrency-queue-and-circuit-breaker" not in missing
     assert "shared-route-and-egress-rate-governor" not in missing
     assert "shared-route-rate-limiter" not in missing
@@ -248,7 +248,31 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert growth[
         "postgresql_subject_budget_multi_process_ci_proof_implemented"
     ] is True
-    assert growth["per_source_ingest_budget_implemented"] is False
+    assert growth["per_source_ingest_budget_implemented"] is True
+    assert growth["per_source_ingest_budget_scope"] == (
+        "retained-immutable-records-per-registered-source"
+    )
+    assert growth["per_source_ingest_limit_source"] == (
+        "reviewed-positive-food-source-record-limit"
+    )
+    assert growth["per_source_ingest_budget_lock"] == (
+        "source-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert growth["per_source_ingest_budget_limit_response"] == (
+        "409-without-retry-after"
+    )
+    assert growth["per_source_ingest_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert growth["per_source_ingest_database_failure_fails_closed"] is True
+    assert growth["per_source_duplicate_idempotency_key_consumes_budget"] is False
+    assert growth["per_source_ingest_default_verification_status"] == "quarantined"
+    assert growth["per_source_raw_payload_stored"] is False
+    assert growth["public_source_onboarding_enabled"] is False
+    assert growth["sqlite_source_budget_is_live_multi_instance_proof"] is False
+    assert growth[
+        "postgresql_source_budget_multi_process_ci_proof_implemented"
+    ] is True
     assert growth["current_open_food_facts_catalog_persistence_enabled"] is False
     assert growth["provider_neutral_database_size_signal_implemented"] is True
     assert growth["exact_capacity_limit_requires_operator_configuration"] is True
@@ -268,5 +292,5 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert "capacity-alert-delivery-and-incident-runbook" not in missing
     assert "chosen-provider-exact-quota-configuration-and-live-pause-exercise" in missing
     assert "per-subject-and-source-data-growth-quotas" not in missing
-    assert "per-source-data-growth-quota" in missing
+    assert "per-source-data-growth-quota" not in missing
     assert contract["release_blocking_missing_controls"]
