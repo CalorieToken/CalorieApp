@@ -25,15 +25,20 @@
         "backend/app/capacity.py",
         "backend/app/capacity_probe.py",
         "backend/app/request_limits.py",
+        "backend/app/source_admission.py",
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
         "backend/tests/test_request_limits.py",
+        "backend/tests/test_source_admission.py",
+        "backend/tests/test_frontend_configuration.py",
         "backend/tests/test_endpoints.py",
         "backend/tests/test_identity_endpoints.py",
         "backend/tests/test_postgresql_integration.py",
         ".github/workflows/ci.yml",
+        "frontend/app/api/backend/[...path]/route.ts",
         "backend/tests/test_open_food_facts_normalization.py",
-        "docs/REQUEST_BODY_LIMITS.md"
+        "docs/REQUEST_BODY_LIMITS.md",
+        "docs/ADAPTER_ADMISSION_CONTROL.md"
       ]
     },
     {

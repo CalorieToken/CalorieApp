@@ -121,6 +121,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       "cache-control",
       "content-type",
       "pragma",
+      "retry-after",
       "set-cookie",
     ]) {
       let value = upstream.headers.get(name);

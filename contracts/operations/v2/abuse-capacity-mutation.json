@@ -63,9 +63,16 @@
     "pagination_has_hard_maximum": true,
     "search_as_you_type_external_requests_allowed": false,
     "duplicate_in_flight_read_coalescing_required": true,
+    "duplicate_in_flight_read_coalescing_implemented": true,
     "bounded_per_adapter_concurrency_required": true,
+    "bounded_per_adapter_concurrency_implemented": true,
     "bounded_queue_with_backpressure_required": true,
+    "bounded_queue_with_backpressure_implemented": true,
+    "adapter_admission_scope": "per-backend-process",
+    "shared_multi_instance_adapter_admission_implemented": false,
     "queue_overflow_response": "503-with-bounded-retry-after",
+    "queue_overflow_response_implemented": true,
+    "adapter_retry_after_max_seconds": 60,
     "rate_limit_response": "429-with-bounded-retry-after"
   },
   "retry_controls": {
@@ -78,6 +85,10 @@
     "provider_retry_after_respected": true,
     "retry_after_has_client_side_maximum": true,
     "circuit_breaker_required_per_external_source": true,
+    "circuit_breaker_implemented_per_external_source": true,
+    "circuit_breaker_failure_threshold": 3,
+    "circuit_breaker_open_seconds": 30,
+    "circuit_breaker_half_open_parallel_probes": 1,
     "retry_storm_after_recovery_allowed": false
   },
   "provider_registry": {
@@ -98,6 +109,11 @@
       "search_as_you_type_forbidden_by_provider_guidance": true,
       "calorieapp_target_budget": "at-most-8-search-requests-per-minute-per-egress-ip",
       "current_end_to_end_attempt_budget_implemented": 2,
+      "max_concurrent_attempts_per_backend_process": 2,
+      "max_queued_attempts_per_backend_process": 4,
+      "max_queue_wait_seconds": 2,
+      "identical_in_flight_search_coalescing_implemented": true,
+      "circuit_breaker_implemented": true,
       "shared_egress_rate_governor_implemented": false
     }
   },
@@ -175,17 +191,19 @@
     "deterministic-capacity-alert-json-and-exit-code-interface",
     "postgresql-capacity-alert-adapter-ci-proof",
     "capacity-incident-response-runbook",
-    "declared-and-actual-mutation-body-byte-limits"
+    "declared-and-actual-mutation-body-byte-limits",
+    "bounded-open-food-facts-concurrency-and-queue",
+    "open-food-facts-circuit-breaker-with-single-recovery-probe",
+    "identical-in-flight-food-search-coalescing"
   ],
   "release_blocking_missing_controls": [
     "shared-route-and-egress-rate-governor",
-    "bounded-adapter-concurrency-queue-and-circuit-breaker",
     "per-subject-and-source-data-growth-quotas",
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
     "capacity-alert-destination-and-live-delivery-proof",
     "chosen-provider-exact-quota-configuration-and-live-pause-exercise",
-    "multi-instance-and-proxy-topology-test"
+    "shared-multi-instance-admission-and-proxy-topology-test"
   ]
 }
