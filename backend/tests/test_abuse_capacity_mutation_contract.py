@@ -169,9 +169,30 @@ def test_identity_start_admission_is_shared_bounded_and_privacy_minimal() -> Non
     assert identity[
         "postgresql_identity_start_multi_process_ci_proof_implemented"
     ] is True
+    assert identity["status_poll_adaptive_slowdown_implemented"] is True
+    assert identity["status_poll_elapsed_schedule_seconds"] == {
+        "first_30_seconds": 5,
+        "30_through_89_seconds": 10,
+        "90_seconds_and_later": 20,
+    }
+    assert identity["status_poll_consecutive_transient_failure_delays_seconds"] == [
+        10,
+        20,
+        30,
+    ]
+    assert identity["status_poll_transient_failure_max_delay_seconds"] == 30
+    assert identity["status_poll_retry_after_max_seconds"] == 60
+    assert identity["status_poll_focus_or_pageshow_bypasses_scheduled_delay"] is False
+    assert identity["status_poll_layers"] == [
+        "calorieapp-origin-handoff",
+        "wordpress-xaman-finish",
+    ]
+    assert identity[
+        "event_driven_signed_message_may_trigger_immediate_completion_check"
+    ] is True
     assert "identity-start-and-outstanding-state-limits" not in missing
     assert "identity-start-short-lived-network-signal-limit" in missing
-    assert "adaptive-status-poll-slowdown" in missing
+    assert "adaptive-status-poll-slowdown" not in missing
 
 
 def test_mutation_is_scoped_moderated_and_never_direct() -> None:

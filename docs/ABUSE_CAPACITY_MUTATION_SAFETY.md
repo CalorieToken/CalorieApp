@@ -42,6 +42,14 @@ fails closed with `503`, both with bounded `Retry-After`. The key is fixed serve
 configuration and the admission rows store no IP or network fingerprint. See
 `IDENTITY_START_ADMISSION_CONTROL.md` for limits, proof and non-claims.
 
+Identity status checks now preserve five-second responsiveness for the first 30
+seconds, then slow to ten seconds and finally twenty seconds after 90 seconds.
+Consecutive transient failures back off to 10, 20 and 30 seconds, while bounded
+`Retry-After` guidance is respected up to 60 seconds. The CalorieApp handoff and
+WordPress/Xaman finish layers share this policy. Focus and page-show events
+cannot bypass an existing timer. Exact behavior and deterministic proof are in
+`ADAPTIVE_IDENTITY_STATUS_POLLING.md`.
+
 The Open Food Facts adapter now admits at most two active upstream attempts per
 backend process, queues at most four for no longer than two seconds and merges
 identical in-flight searches. Three consecutive failed search actions open its
@@ -113,8 +121,8 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, per-subject and per-source storage-growth
-quotas, the Identity Bridge short-lived network-signal and adaptive polling
-controls, mutation quarantine/audit, chosen-provider alert delivery,
+quotas, the Identity Bridge short-lived network-signal control, mutation
+quarantine/audit, chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants
 remain fixed in

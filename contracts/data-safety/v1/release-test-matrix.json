@@ -44,7 +44,12 @@
         "docs/ADAPTER_ADMISSION_CONTROL.md",
         "docs/SHARED_PROVIDER_RATE_GOVERNOR.md",
         "docs/SHARED_ROUTE_RATE_LIMITER.md",
-        "docs/IDENTITY_START_ADMISSION_CONTROL.md"
+        "docs/IDENTITY_START_ADMISSION_CONTROL.md",
+        "docs/ADAPTIVE_IDENTITY_STATUS_POLLING.md",
+        "frontend/components/XamanLoginPanel.tsx",
+        "wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.js",
+        "tools/tests/calorieapp_embed_readiness.test.mjs",
+        "tools/tests/xaman_login_start_retry.test.mjs"
       ]
     },
     {

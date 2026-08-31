@@ -97,7 +97,10 @@ class WordPressPluginReleaseTests(unittest.TestCase):
         self.assertIn("xamanLaunchStarted", return_check)
         self.assertIn("!flowFailed", return_check)
         self.assertIn("markXamanStarted();", source)
-        self.assertIn("scheduleFinishRetry(5000);", source)
+        self.assertIn("scheduleFinishRetry(finishPollDelay());", source)
+        self.assertIn("finishRetryTimer !== null", source)
+        self.assertIn("STATUS_POLL_MIDDLE_PHASE_AFTER = 30000", source)
+        self.assertIn("STATUS_POLL_LONG_PHASE_AFTER = 90000", source)
 
 
 if __name__ == "__main__":

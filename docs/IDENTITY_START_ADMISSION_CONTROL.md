@@ -2,7 +2,8 @@
 
 Status: implemented and PostgreSQL multi-process verified for the registered-
 client start budget and retained unexpired transaction cap. A short-lived
-network-signal layer and adaptive status-poll slowdown remain release gates.
+network-signal layer remains a release gate; adaptive status polling is
+documented separately.
 
 ## Purpose
 
@@ -58,9 +59,10 @@ instance, paid provider, external call, workflow or separate CI job.
 
 This change does not claim a short-lived network-signal limit. CalorieApp has
 not yet proved its deployed proxy chain and therefore must not treat proxy
-egress as an end-user address or trust arbitrary forwarding headers. It also
-does not implement adaptive status-poll slowdown. Both remain explicit release
-gates in `contracts/operations/v2/abuse-capacity-mutation.json`.
+egress as an end-user address or trust arbitrary forwarding headers. Adaptive
+status polling is now implemented as described in
+`ADAPTIVE_IDENTITY_STATUS_POLLING.md`; it does not replace the missing network
+and deployed-proxy controls.
 
 ## Deployment and rollback boundary
 

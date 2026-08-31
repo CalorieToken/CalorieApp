@@ -27,6 +27,11 @@ The shortcode owns the Xaman modal, QR/deep link, payload WebSocket, and secure
 message exchange with the embedded CalorieApp. Do not paste a second iframe or
 the old XUMM return URL beside it.
 
+Pending status checks begin at five-second intervals, slow to ten seconds after
+30 seconds and to twenty seconds after 90 seconds. Transient failures back off
+to at most 30 seconds and bounded `Retry-After` guidance is respected. Focus and
+page-show events cannot bypass an already scheduled retry.
+
 ## Security requirements
 
 - Require HTTPS for non-loopback URLs.
