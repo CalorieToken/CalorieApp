@@ -158,6 +158,7 @@ def _seed_source(url: URL) -> tuple[list[str], list[str]]:
                 start=1,
             ):
                 session.add(CalorieAppUserDB(id=user_id, status="active"))
+                session.flush()
                 session.add(
                     ExternalIdentityDB(
                         calorieapp_user_id=user_id,
