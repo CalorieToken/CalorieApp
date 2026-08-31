@@ -59,6 +59,10 @@ class FoodSourceDB(SQLModel, table=True):
             name="ck_food_source_status",
         ),
         CheckConstraint("record_limit > 0", name="ck_food_source_record_limit"),
+        CheckConstraint(
+            "assertion_limit > 0",
+            name="ck_food_source_assertion_limit",
+        ),
     )
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
@@ -71,6 +75,7 @@ class FoodSourceDB(SQLModel, table=True):
     attribution_text: str = Field(max_length=500)
     record_limit: int = Field(gt=0)
     created_at: datetime = Field(default_factory=utc_now)
+    assertion_limit: int = Field(default=1000, gt=0)
 
 
 class FoodSourceRecordDB(SQLModel, table=True):
@@ -255,6 +260,51 @@ class FoodAttributeAssertionDB(SQLModel, table=True):
         default=None,
         index=True,
     )
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodAttributeAssertionIngestAuditDB(SQLModel, table=True):
+    """Minimal append-only receipt for one internal assertion ingest."""
+
+    __tablename__ = "food_attribute_assertion_ingest_audit"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ("assertion_id", "food_product_id", "source_record_id"),
+            (
+                "food_attribute_assertion.id",
+                "food_attribute_assertion.food_product_id",
+                "food_attribute_assertion.source_record_id",
+            ),
+            name="fk_food_assertion_ingest_audit_assertion_lineage",
+        ),
+        UniqueConstraint(
+            "assertion_id",
+            name="uq_food_assertion_ingest_audit_assertion",
+        ),
+        UniqueConstraint(
+            "idempotency_key",
+            name="uq_food_assertion_ingest_audit_idempotency",
+        ),
+        CheckConstraint(
+            "expected_source_record_version > 0 "
+            "AND resulting_assertion_version = 1",
+            name="ck_food_assertion_ingest_audit_versions",
+        ),
+        CheckConstraint(
+            "authorization_scope = 'catalog:source-assertion:ingest'",
+            name="ck_food_assertion_ingest_audit_scope",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    assertion_id: str = Field(index=True)
+    food_product_id: str = Field(index=True)
+    source_record_id: str = Field(index=True)
+    idempotency_key: str = Field(max_length=128)
+    expected_source_record_version: int = Field(gt=0)
+    resulting_assertion_version: int = Field(default=1, ge=1, le=1)
+    submitter_reference: str = Field(max_length=120)
+    authorization_scope: str = Field(max_length=80)
     created_at: datetime = Field(default_factory=utc_now)
 
 

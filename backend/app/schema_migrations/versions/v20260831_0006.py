@@ -79,6 +79,8 @@ def validate(connection: Connection) -> None:
         }
         expected_columns = {column.name for column in table.columns}
         allowed_columns = set(expected_columns)
+        if table.name == food_source.name:
+            allowed_columns.add("assertion_limit")
         if table.name == food_source_record.name:
             allowed_columns.add("verification_version")
         if frozenset(actual_columns) not in {

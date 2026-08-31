@@ -16,7 +16,7 @@ def test_food_data_model_is_source_independent_and_extensible() -> None:
     contract = _load_contract()
     principles = contract["principles"]
 
-    assert contract["contract_version"] == "1.3.0"
+    assert contract["contract_version"] == "1.4.0"
     assert principles["open_food_facts_is_one_adapter_not_canonical_model"] is True
     assert principles["single_source_database_design_allowed"] is False
     assert principles["new_source_requires_core_schema_rewrite"] is False
@@ -84,6 +84,20 @@ def test_every_source_record_and_assertion_remains_traceable() -> None:
     assert entities["food_attribute_assertion"]["optional_fields"] == [
         "supersedes_assertion_id"
     ]
+    assert "assertion_limit" in entities["food_source"]["required_fields"]
+    assert {
+        "assertion_id",
+        "food_product_id",
+        "source_record_id",
+        "idempotency_key",
+        "expected_source_record_version",
+        "resulting_assertion_version",
+        "submitter_reference",
+        "authorization_scope",
+        "created_at",
+    } <= set(
+        entities["food_attribute_assertion_ingest_audit"]["required_fields"]
+    )
     assert contract["adapter_contract"]["idempotency_key"] == [
         "source_id",
         "external_record_id",
@@ -97,6 +111,12 @@ def test_every_source_record_and_assertion_remains_traceable() -> None:
     ] is True
     assert contract["adapter_contract"][
         "duplicate_idempotency_key_consumes_budget"
+    ] is False
+    assert contract["adapter_contract"][
+        "per_source_persisted_assertion_budget_implemented"
+    ] is True
+    assert contract["adapter_contract"][
+        "duplicate_assertion_idempotency_key_consumes_budget"
     ] is False
     assert contract["conflict_policy"]["retain_each_source_assertion"] is True
     assert (
@@ -143,7 +163,25 @@ def test_source_expansion_preserves_licensing_privacy_and_history() -> None:
     assert mutation["source_record_moderation_audit_is_insert_only_in_service"] is True
     assert mutation["source_record_moderation_audit_allows_free_text_or_payload"] is False
     assert mutation["catalog_entity_tables_implemented"] is True
-    assert mutation["catalog_assertion_write_service_implemented"] is False
+    assert mutation["catalog_assertion_write_service_implemented"] is True
+    assert mutation["source_assertion_ingest_implemented"] is True
+    assert mutation["source_assertion_ingest_authorization_scope"] == (
+        "catalog:source-assertion:ingest"
+    )
+    assert mutation[
+        "source_assertion_ingest_requires_validated_record_and_link"
+    ] is True
+    assert mutation["source_assertion_ingest_requires_expected_record_version"] is True
+    assert mutation["source_assertion_ingest_requires_idempotency_key"] is True
+    assert mutation["source_assertion_ingest_defaults_to_quarantine"] is True
+    assert mutation["source_assertion_ingest_audit_inserted_atomically"] is True
+    assert mutation["source_assertion_ingest_audit_is_insert_only_in_service"] is True
+    assert mutation[
+        "source_assertion_ingest_audit_allows_free_text_payload_email_or_ip"
+    ] is False
+    assert mutation["source_assertion_correction_service_implemented"] is False
+    assert mutation["source_assertion_moderation_service_implemented"] is False
+    assert mutation["public_source_assertion_ingest_endpoint_enabled"] is False
     assert mutation[
         "read_only_licensed_assertion_evidence_export_implemented"
     ] is True
@@ -164,6 +202,7 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
         "food_product",
         "food_product_source_link",
         "food_attribute_assertion",
+        "food_attribute_assertion_ingest_audit",
     ]
     assert implementation["remaining_catalog_tables"] == []
     assert implementation["internal_source_record_ingest_service_implemented"] is True
@@ -176,7 +215,14 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
     assert implementation[
         "read_only_licensed_assertion_evidence_export_implemented"
     ] is True
-    assert implementation["catalog_assertion_write_service_implemented"] is False
+    assert implementation["catalog_assertion_write_service_implemented"] is True
+    assert implementation[
+        "internal_source_assertion_ingest_service_implemented"
+    ] is True
+    assert implementation["source_assertion_ingest_defaults_to_quarantine"] is True
+    assert implementation["source_assertion_correction_service_implemented"] is False
+    assert implementation["source_assertion_moderation_service_implemented"] is False
+    assert implementation["public_source_assertion_ingest_endpoint_enabled"] is False
     assert implementation["public_catalog_read_endpoint_enabled"] is False
     assert implementation[
         "general_source_record_update_or_delete_service_implemented"

@@ -1,8 +1,8 @@
 # Source-neutral assertion catalog
 
-Status: schema foundation implemented and read-only evidence export verified with
-synthetic data. No catalog write API, public catalog read API or additional food
-source is enabled.
+Status: schema foundation, read-only evidence export and bounded internal
+assertion ingest are implemented with synthetic proof. No public catalog write
+or read API, assertion moderation or additional food source is enabled.
 
 ## Neutral identities and reviewable links
 
@@ -26,10 +26,11 @@ and attribute without overwriting one another.
 
 A correction is a new assertion row that may reference an earlier assertion for
 the same product and source record. The database rejects cross-product or
-cross-record correction lineage, and the prior row remains present. This
-migration does not add the future write, correction or assertion-moderation
-service; direct catalog-table writes remain forbidden outside reviewed
-migration and test fixtures.
+cross-record correction lineage, and the prior row remains present. Migration
+`20260831_0009` adds only a bounded internal write service for new quarantined
+version-1 assertions with validated lineage. Correction and assertion-moderation
+services remain absent; direct catalog-table writes remain forbidden outside
+reviewed migrations and test fixtures. See `SOURCE_ASSERTION_INGEST.md`.
 
 ## Licence-aware evidence
 
@@ -46,10 +47,11 @@ private `food_log` snapshot.
 
 ## Deliberate non-claims
 
-This foundation does not implement assertion ingestion, public contributions,
-assertion moderation/audit, a public catalog endpoint, source activation or
-licence approval. The combined contribution-mutation release gate remains open.
-Open Food Facts search stays read-only and is not persisted automatically.
+This foundation does not implement public contributions, assertion correction
+or moderation, a public catalog endpoint, source activation or licence approval.
+The ingest audit covers admission only and is not a moderation decision. The
+combined contribution-mutation release gate remains open. Open Food Facts search
+stays read-only and is not persisted automatically.
 
 The change adds no provider, paid service, recurring request, extra CI job,
 production migration or deployment.

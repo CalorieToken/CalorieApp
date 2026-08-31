@@ -5,7 +5,7 @@ import hashlib
 import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
-from datetime import timedelta
+from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from uuid import uuid4
 
@@ -28,7 +28,11 @@ from app.models import (
     AuthSessionDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
+    FoodAttributeAssertionDB,
+    FoodAttributeAssertionIngestAuditDB,
     FoodLogDB,
+    FoodProductDB,
+    FoodProductSourceLinkDB,
     FoodSourceDB,
     FoodSourceModerationAuditDB,
     FoodSourceRecordDB,
@@ -50,6 +54,11 @@ from app.services.identity import (
     IdentityStartAdmissionRejected,
     create_limited_login_transaction,
 )
+from app.services.source_assertion_ingest import (
+    SOURCE_ASSERTION_INGEST_SCOPE,
+    SourceAssertionIngestRejected,
+    ingest_source_assertion,
+)
 from app.services.source_catalog import ingest_source_record
 from app.services.source_moderation import (
     SOURCE_MODERATION_SCOPE,
@@ -59,6 +68,7 @@ from app.services.source_moderation import (
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
+ASSERTION_OBSERVED_AT = datetime(2026, 8, 31, 12, 0, 0)
 
 
 def _shared_rate_governor_process_attempt(
@@ -190,6 +200,33 @@ def _source_moderation_process_attempt(
     return ("moderated" if result.created else "duplicate", None, None)
 
 
+def _source_assertion_ingest_process_attempt(
+    args: tuple[str, str, str, int],
+) -> tuple[str, int | None, str | None]:
+    raw_url, food_product_id, source_record_id, index = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            result = ingest_source_assertion(
+                session,
+                food_product_id=food_product_id,
+                source_record_id=source_record_id,
+                expected_source_record_version=2,
+                idempotency_key=f"concurrent-assertion-{index}",
+                submitter_reference="adapter-synthetic-ci",
+                authorization_scope=SOURCE_ASSERTION_INGEST_SCOPE,
+                attribute_key="nutrition.energy",
+                value="100",
+                unit_or_value_type="kcal-per-100g",
+                observed_or_effective_at=ASSERTION_OBSERVED_AT,
+            )
+    except SourceAssertionIngestRejected as exc:
+        return ("rejected", exc.status_code, exc.reason)
+    finally:
+        worker_engine.dispose()
+    return ("created" if result.created else "duplicate", None, None)
+
+
 def _required_postgresql_test_url() -> str:
     raw_url = os.getenv(POSTGRES_TEST_URL_ENV, "").strip()
     if not raw_url:
@@ -288,6 +325,9 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_product" in inspect(postgres_engine).get_table_names()
     assert "food_product_source_link" in inspect(postgres_engine).get_table_names()
     assert "food_attribute_assertion" in inspect(postgres_engine).get_table_names()
+    assert "food_attribute_assertion_ingest_audit" in inspect(
+        postgres_engine
+    ).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
     food_log_indexes = {
@@ -300,6 +340,11 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         for column in inspect(postgres_engine).get_columns("food_source_record")
     }
     assert "verification_version" in source_record_columns
+    source_columns = {
+        column["name"]
+        for column in inspect(postgres_engine).get_columns("food_source")
+    }
+    assert "assertion_limit" in source_columns
     pending_columns = {
         column["name"]
         for column in inspect(postgres_engine).get_columns("pendingloginstate")
@@ -577,6 +622,112 @@ def test_postgresql_source_moderation_is_atomic_across_processes(
     assert record.verification_status == expected_status
     assert record.verification_version == 2
     assert len(audits) == 1
+
+
+def test_postgresql_source_assertion_budget_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SOURCE-ASSERTION-INGEST",
+    )
+    raw_url = _required_postgresql_test_url()
+    source_key = f"assertions-{uuid4().hex}"
+    source = FoodSourceDB(
+        source_key=source_key,
+        source_category="open-dataset",
+        operator_name="Synthetic CI Assertion Source",
+        status="enabled",
+        licence_id="synthetic-test-only",
+        terms_reference="https://example.test/terms",
+        attribution_text="Synthetic CI data",
+        record_limit=12,
+        assertion_limit=8,
+    )
+    product = FoodProductDB(status="active")
+    records = [
+        FoodSourceRecordDB(
+            source_id=source.id,
+            external_record_id=f"assertion-record-{index}",
+            source_version_or_content_digest="version-1",
+            verification_status="validated",
+            verification_version=2,
+        )
+        for index in range(12)
+    ]
+    with Session(postgres_engine) as session:
+        session.add_all([source, product])
+        session.commit()
+        session.add_all(records)
+        session.commit()
+        session.add_all(
+            [
+                FoodProductSourceLinkDB(
+                    food_product_id=product.id,
+                    source_record_id=record.id,
+                    match_method="synthetic-reviewed-match",
+                    match_confidence=1,
+                    review_status="validated",
+                )
+                for record in records
+            ]
+        )
+        session.commit()
+        product_id = product.id
+        record_ids = [record.id for record in records]
+
+    arguments = [
+        (raw_url, product_id, record_id, index)
+        for index, record_id in enumerate(record_ids)
+    ]
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(
+            executor.map(_source_assertion_ingest_process_attempt, arguments)
+        )
+
+    assert [result[0] for result in results].count("created") == 8
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == 4
+    assert {result[1] for result in rejected} == {409}
+    assert {result[2] for result in rejected} == {
+        "source_assertion_budget_reached"
+    }
+
+    admitted_index = next(
+        index for index, result in enumerate(results) if result[0] == "created"
+    )
+    with Session(postgres_engine) as session:
+        duplicate = ingest_source_assertion(
+            session,
+            food_product_id=product_id,
+            source_record_id=record_ids[admitted_index],
+            expected_source_record_version=2,
+            idempotency_key=f"concurrent-assertion-{admitted_index}",
+            submitter_reference="adapter-synthetic-ci",
+            authorization_scope=SOURCE_ASSERTION_INGEST_SCOPE,
+            attribute_key="nutrition.energy",
+            value="100",
+            unit_or_value_type="kcal-per-100g",
+            observed_or_effective_at=ASSERTION_OBSERVED_AT,
+        )
+        assertions = session.exec(
+            select(FoodAttributeAssertionDB).where(
+                FoodAttributeAssertionDB.food_product_id == product_id
+            )
+        ).all()
+        audits = session.exec(
+            select(FoodAttributeAssertionIngestAuditDB).where(
+                FoodAttributeAssertionIngestAuditDB.food_product_id == product_id
+            )
+        ).all()
+    assert duplicate.created is False
+    assert len(assertions) == 8
+    assert len(audits) == 8
+    assert {assertion.verification_status for assertion in assertions} == {
+        "quarantined"
+    }
+    assert {assertion.verification_version for assertion in assertions} == {1}
 
 
 def test_postgresql_identity_start_limits_are_atomic_across_processes(

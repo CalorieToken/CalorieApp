@@ -1,15 +1,16 @@
 # Per-source catalog ingest budget
 
-Status: implemented and PostgreSQL multi-process verified for the internal
-immutable source-record persistence service. No public source-onboarding or
-catalog-write endpoint is enabled.
+Status: implemented and PostgreSQL multi-process verified for internal immutable
+source-record persistence and bounded quarantined assertion ingest. No public
+source-onboarding or catalog-write endpoint is enabled.
 
 ## Registered source boundary
 
 Every persisted catalog source must first have a `food_source` row containing a
 fixed source key, category, operator, licence, terms reference, attribution,
-status and positive retained-record limit. Only a source with status `enabled`
-may ingest. Unknown, staged, paused and disabled sources fail closed.
+status, positive retained-record limit and positive retained-assertion limit.
+Only a source with status `enabled` may ingest. Unknown, staged, paused and
+disabled sources fail closed.
 
 The database enforces positive limits and unique source keys. There is no
 request-supplied limit and no unlimited fallback. Registering or enabling a
@@ -53,8 +54,11 @@ Migration `20260831_0006` creates the reviewed `food_source` and
 `food_source_record` foundation. Migration `20260831_0007` adds only terminal
 record moderation versioning and minimal audit evidence. Migration
 `20260831_0008` adds the product, source-link and factual-assertion schema plus a
-read-only licence-aware evidence query. Assertion ingestion, moderation and
-correction remain future release gates.
+read-only licence-aware evidence query. Migration `20260831_0009` adds the
+separate positive assertion limit and an atomic minimal ingest audit. Its
+internal service admits only version-checked validated record/link lineage and
+creates quarantined assertions; see `SOURCE_ASSERTION_INGEST.md`. Assertion
+correction, moderation and public mutation remain future release gates.
 
 Open Food Facts remains the enabled read-only search adapter. Search results are
 not automatically retained as catalog records, and no second source is

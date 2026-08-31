@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.food-data-source-registry",
-  "contract_version": "1.3.0",
-  "status": "source-neutral-catalog-foundation-implemented-no-public-source-enabled",
+  "contract_version": "1.4.0",
+  "status": "bounded-source-assertion-ingest-implemented-no-public-source-enabled",
   "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
   "principles": {
     "open_food_facts_is_one_adapter_not_canonical_model": true,
@@ -37,7 +37,8 @@
         "licence_id",
         "terms_reference",
         "attribution_text",
-        "record_limit"
+        "record_limit",
+        "assertion_limit"
       ]
     },
     "food_source_record": {
@@ -101,6 +102,20 @@
         "supersedes_assertion_id"
       ]
     },
+    "food_attribute_assertion_ingest_audit": {
+      "purpose": "Preserve a minimal append-only receipt for one bounded internal source-assertion ingest.",
+      "required_fields": [
+        "assertion_id",
+        "food_product_id",
+        "source_record_id",
+        "idempotency_key",
+        "expected_source_record_version",
+        "resulting_assertion_version",
+        "submitter_reference",
+        "authorization_scope",
+        "created_at"
+      ]
+    },
     "food_log_snapshot": {
       "purpose": "Preserve what a user chose and saw at logging time without later catalog mutation.",
       "required_fields": [
@@ -125,6 +140,8 @@
     "provider_limit_registry_required": true,
     "per_source_persisted_record_budget_implemented": true,
     "duplicate_idempotency_key_consumes_budget": false,
+    "per_source_persisted_assertion_budget_implemented": true,
+    "duplicate_assertion_idempotency_key_consumes_budget": false,
     "max_upstream_attempts_per_user_action": 2,
     "nested_retry_layers_allowed": false,
     "bounded_concurrency_and_queue_required": true,
@@ -157,7 +174,20 @@
     "source_record_moderation_audit_is_insert_only_in_service": true,
     "source_record_moderation_audit_allows_free_text_or_payload": false,
     "catalog_entity_tables_implemented": true,
-    "catalog_assertion_write_service_implemented": false,
+    "catalog_assertion_write_service_implemented": true,
+    "source_assertion_ingest_implemented": true,
+    "source_assertion_ingest_authorization_scope": "catalog:source-assertion:ingest",
+    "source_assertion_ingest_requires_validated_record_and_link": true,
+    "source_assertion_ingest_requires_active_product_and_enabled_source": true,
+    "source_assertion_ingest_requires_expected_record_version": true,
+    "source_assertion_ingest_requires_idempotency_key": true,
+    "source_assertion_ingest_defaults_to_quarantine": true,
+    "source_assertion_ingest_audit_inserted_atomically": true,
+    "source_assertion_ingest_audit_is_insert_only_in_service": true,
+    "source_assertion_ingest_audit_allows_free_text_payload_email_or_ip": false,
+    "source_assertion_correction_service_implemented": false,
+    "source_assertion_moderation_service_implemented": false,
+    "public_source_assertion_ingest_endpoint_enabled": false,
     "read_only_licensed_assertion_evidence_export_implemented": true,
     "complete_source_assertion_mutation_flow_implemented": false,
     "silent_history_or_source_record_rewrite_allowed": false,
@@ -196,14 +226,20 @@
       "food_source_moderation_audit",
       "food_product",
       "food_product_source_link",
-      "food_attribute_assertion"
+      "food_attribute_assertion",
+      "food_attribute_assertion_ingest_audit"
     ],
     "remaining_catalog_tables": [],
     "internal_source_record_ingest_service_implemented": true,
     "internal_source_record_terminal_moderation_service_implemented": true,
     "source_neutral_catalog_entity_foundation_implemented": true,
     "read_only_licensed_assertion_evidence_export_implemented": true,
-    "catalog_assertion_write_service_implemented": false,
+    "catalog_assertion_write_service_implemented": true,
+    "internal_source_assertion_ingest_service_implemented": true,
+    "source_assertion_ingest_defaults_to_quarantine": true,
+    "source_assertion_correction_service_implemented": false,
+    "source_assertion_moderation_service_implemented": false,
+    "public_source_assertion_ingest_endpoint_enabled": false,
     "public_catalog_read_endpoint_enabled": false,
     "general_source_record_update_or_delete_service_implemented": false,
     "public_source_record_moderation_endpoint_enabled": false,
