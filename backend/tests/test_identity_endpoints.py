@@ -1135,6 +1135,7 @@ class TestIdentityCallbackFlow:
     def test_callback_preserves_existing_account_during_capacity_pause(
         self, client: TestClient, monkeypatch: pytest.MonkeyPatch
     ):
+        monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", False)
         with Session(db_module.engine) as session:
             user = CalorieAppUserDB(status="active")
             session.add(user)

@@ -66,6 +66,10 @@ def test_capacity_threshold_boundaries(
 def test_sqlite_capacity_measurement_is_read_only_and_positive() -> None:
     engine = create_engine("sqlite://")
     try:
+        with engine.begin() as connection:
+            connection.exec_driver_sql(
+                "CREATE TABLE capacity_probe (id INTEGER PRIMARY KEY)"
+            )
         with Session(engine) as session:
             assert database_used_bytes(session) > 0
     finally:
