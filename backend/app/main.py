@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from httpx import HTTPError
 from pydantic import ValidationError
 from sqlalchemy import delete
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from . import database as db_module
@@ -66,17 +66,18 @@ from .schemas import (
     LogoutResponse,
 )
 from .services.identity import (
+    IdentityStartAdmissionRejected,
     claim_origin_login_handoff,
     cleanup_pending_login_states,
     complete_origin_login_handoff,
     consume_pending_login_state,
-    create_origin_login_handoff,
-    create_pending_login_state,
+    create_limited_login_transaction,
     fail_origin_login_handoff,
     get_pending_login_locale,
     get_or_create_user_from_external_identity,
     restore_pending_login_state_after_transient_failure,
     validate_pending_login_state,
+    validate_identity_start_admission_configuration,
     validate_origin_login_handoff,
 )
 from .services.open_food_facts import search_food_products
@@ -210,6 +211,14 @@ def _parse_secure_bridge_url(name: str, value: str):
 
 
 def _validate_identity_url_configuration() -> None:
+    try:
+        validate_identity_start_admission_configuration(
+            _CALORIEAPP_CLIENT_ID,
+            _LOGIN_STATE_LIFETIME_SECONDS,
+        )
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from exc
+
     wordpress, wordpress_port = _parse_secure_bridge_url("WORDPRESS_URL", _WORDPRESS_URL)
     if wordpress.path not in {"", "/"} or wordpress.query:
         raise RuntimeError("WORDPRESS_URL must contain only the site origin")
@@ -750,18 +759,42 @@ def identity_login_start(
         else request.headers.get("accept-language")
     )
     locale = resolve_locale(requested_locale)
-    cleanup_pending_login_states(session)
-    state, pending = create_pending_login_state(
-        session=session,
-        state_lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
-        post_login_redirect=_CALORIEAPP_POST_LOGIN_REDIRECT,
-        locale=locale,
-    )
-    browser_handoff_token, _ = create_origin_login_handoff(
-        session=session,
-        state=state,
-        lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
-    )
+    try:
+        cleanup_pending_login_states(session)
+        state, pending, browser_handoff_token = create_limited_login_transaction(
+            session=session,
+            client_id=_CALORIEAPP_CLIENT_ID,
+            state_lifetime_seconds=_LOGIN_STATE_LIFETIME_SECONDS,
+            post_login_redirect=_CALORIEAPP_POST_LOGIN_REDIRECT,
+            locale=locale,
+        )
+    except IdentityStartAdmissionRejected as exc:
+        logger.warning("Login start admission rejected (reason=%s)", exc.reason)
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail=(
+                "Too many login attempts"
+                if exc.status_code == 429
+                else "Login admission temporarily unavailable"
+            ),
+            headers={
+                "Retry-After": str(exc.retry_after_seconds),
+                "Cache-Control": "no-store",
+                "Pragma": "no-cache",
+            },
+        ) from exc
+    except SQLAlchemyError as exc:
+        session.rollback()
+        logger.warning("Login start cleanup unavailable")
+        raise HTTPException(
+            status_code=503,
+            detail="Login admission temporarily unavailable",
+            headers={
+                "Retry-After": "5",
+                "Cache-Control": "no-store",
+                "Pragma": "no-cache",
+            },
+        ) from exc
     wordpress_signin_url = _build_wordpress_signin_url(state, locale)
 
     logger.info("Login flow started (expires_at=%s)", pending.expires_at)

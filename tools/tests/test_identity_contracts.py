@@ -45,6 +45,24 @@ class IdentityContractTests(unittest.TestCase):
         self.assertEqual(security["application_session"]["idle_ttl_seconds"], 1800)
         self.assertIn('os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300")', backend)
         self.assertEqual(security["login_state"]["ttl_seconds"], 300)
+        admission = security["login_start_admission"]
+        self.assertEqual(
+            admission["registered_client_id_source"],
+            "fixed-server-configuration",
+        )
+        self.assertEqual(admission["start_limit"], 20)
+        self.assertEqual(admission["start_window_seconds"], 60)
+        self.assertEqual(
+            admission["outstanding_unexpired_transaction_limit"],
+            50,
+        )
+        self.assertTrue(admission["outstanding_limit_counts_all_retained_statuses"])
+        self.assertTrue(admission["state_locale_and_origin_handoff_atomic"])
+        self.assertFalse(admission["raw_ip_or_network_signal_stored"])
+        self.assertFalse(
+            admission["short_lived_network_signal_limit_implemented"]
+        )
+        self.assertFalse(admission["adaptive_status_poll_slowdown_implemented"])
         self.assertIn("FLOW_TTL_SECONDS = 10 * MINUTE_IN_SECONDS", plugin)
         self.assertEqual(security["integrated_login_flow"]["ttl_seconds"], 600)
         self.assertIn("'code_ttl_seconds' => 60", plugin_root)
@@ -85,6 +103,9 @@ class IdentityContractTests(unittest.TestCase):
                 "state_or_locale_mismatch",
                 "origin_browser_restore",
                 "unsupported_locale_fallback",
+                "registered_client_start_limited",
+                "outstanding_state_limit",
+                "admission_store_unavailable",
             },
         )
 

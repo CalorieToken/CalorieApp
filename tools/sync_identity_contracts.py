@@ -100,6 +100,15 @@ def validate_security_contract(contract: dict[str, Any]) -> None:
         raise ValueError("IB-1 freezes protocol_version at v1")
     if contract.get("login_state", {}).get("ttl_seconds") != 300:
         raise ValueError("Login-state TTL must remain 300 seconds in v1")
+    admission = contract.get("login_start_admission", {})
+    if admission.get("registered_client_id_source") != "fixed-server-configuration":
+        raise ValueError("Login-start admission must use fixed server configuration")
+    if admission.get("start_limit") != 20 or admission.get("start_window_seconds") != 60:
+        raise ValueError("Login-start admission must remain 20 per 60 seconds in v1")
+    if admission.get("outstanding_unexpired_transaction_limit") != 50:
+        raise ValueError("Outstanding login transaction limit must remain 50 in v1")
+    if admission.get("raw_ip_or_network_signal_stored") is not False:
+        raise ValueError("Login-start admission must not store a raw network signal")
     if contract.get("authorization_code", {}).get("default_ttl_seconds") != 60:
         raise ValueError("Authorization-code default TTL must remain 60 seconds in v1")
     if contract.get("integrated_login_flow", {}).get("ttl_seconds") != 600:

@@ -11,6 +11,7 @@ from secrets import token_urlsafe
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import NullPool
+from sqlalchemy.exc import SQLAlchemyError
 
 import app.database as db_module
 import app.main as main_module
@@ -21,6 +22,7 @@ from app.models import (
     ExternalIdentityDB,
     FoodLogDB,
     OriginLoginHandoffDB,
+    PendingLoginLocaleDB,
     PendingLoginStateDB,
     SQLModel,
 )
@@ -251,6 +253,24 @@ class TestIdentityEndpoints:
         monkeypatch.setattr(main_module, "_CALORIEAPP_POST_LOGIN_REDIRECT", redirect)
         main_module._validate_identity_url_configuration()
 
+    @pytest.mark.parametrize("client_id", ["", "x" * 121])
+    def test_identity_configuration_rejects_invalid_registered_client_id(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        client_id: str,
+    ):
+        monkeypatch.setattr(main_module, "_CALORIEAPP_CLIENT_ID", client_id)
+        with pytest.raises(RuntimeError, match="CALORIEAPP_CLIENT_ID"):
+            main_module._validate_identity_url_configuration()
+
+    def test_identity_configuration_requires_state_retention_for_start_window(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        monkeypatch.setattr(main_module, "_LOGIN_STATE_LIFETIME_SECONDS", 59)
+        with pytest.raises(RuntimeError, match="LOGIN_STATE_LIFETIME_SECONDS"):
+            main_module._validate_identity_url_configuration()
+
     @pytest.mark.parametrize(
         ("field", "value"),
         [
@@ -322,6 +342,52 @@ class TestIdentityEndpoints:
         assert response.headers["cache-control"] == "no-store"
         assert response.headers["pragma"] == "no-cache"
         assert data["expires_at"].endswith("Z")
+
+        with Session(db_module.engine) as session:
+            pending = session.exec(
+                select(PendingLoginStateDB).where(
+                    PendingLoginStateDB.state_hash == hash_login_state(data["state"])
+                )
+            ).one()
+        assert pending.client_id == main_module._CALORIEAPP_CLIENT_ID
+
+    def test_login_start_enforces_registered_client_budget(self, client: TestClient):
+        responses = [client.post("/api/identity/login/start") for _ in range(21)]
+
+        assert [response.status_code for response in responses[:20]] == [200] * 20
+        rejected = responses[20]
+        assert rejected.status_code == 429
+        assert rejected.json()["detail"] == "Too many login attempts"
+        assert 1 <= int(rejected.headers["retry-after"]) <= 60
+        assert rejected.headers["cache-control"] == "no-store"
+
+        with Session(db_module.engine) as session:
+            pending = session.exec(
+                select(PendingLoginStateDB).where(
+                    PendingLoginStateDB.client_id == main_module._CALORIEAPP_CLIENT_ID
+                )
+            ).all()
+            locales = session.exec(select(PendingLoginLocaleDB)).all()
+            handoffs = session.exec(select(OriginLoginHandoffDB)).all()
+        assert len(pending) == 20
+        assert len(locales) == 20
+        assert len(handoffs) == 20
+
+    def test_login_start_cleanup_database_failure_returns_bounded_503(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        def fail_cleanup(_session: Session) -> None:
+            raise SQLAlchemyError("synthetic cleanup failure")
+
+        monkeypatch.setattr(main_module, "cleanup_pending_login_states", fail_cleanup)
+        response = client.post("/api/identity/login/start")
+
+        assert response.status_code == 503
+        assert response.json()["detail"] == "Login admission temporarily unavailable"
+        assert response.headers["retry-after"] == "5"
+        assert response.headers["cache-control"] == "no-store"
 
     @pytest.mark.parametrize(
         "locale",

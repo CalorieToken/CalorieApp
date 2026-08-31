@@ -25,6 +25,9 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     FoodLogDB,
+    OriginLoginHandoffDB,
+    PendingLoginLocaleDB,
+    PendingLoginStateDB,
     utc_now,
 )
 from app.provider_rate_governor import PostgreSQLSlidingWindowRateGovernor
@@ -36,6 +39,10 @@ from app.route_rate_limiter import (
 from app.schema_migrations import SCHEMA_HEAD, current_revision, upgrade_database
 from app.schema_migrations.versions.v20260830_0001 import food_log as migration_food_log
 from app.source_admission import AdapterAdmissionRejected
+from app.services.identity import (
+    IdentityStartAdmissionRejected,
+    create_limited_login_transaction,
+)
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
@@ -75,6 +82,32 @@ def _shared_route_limiter_process_attempt(
     finally:
         worker_engine.dispose()
     return ("admitted", None, None)
+
+
+def _identity_start_process_attempt(
+    args: tuple[str, str, int, int],
+) -> tuple[str, int | None, int | None, str | None]:
+    raw_url, client_id, start_limit, outstanding_limit = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            create_limited_login_transaction(
+                session,
+                client_id=client_id,
+                state_lifetime_seconds=300,
+                start_limit=start_limit,
+                outstanding_limit=outstanding_limit,
+            )
+    except IdentityStartAdmissionRejected as exc:
+        return (
+            "rejected",
+            exc.status_code,
+            exc.retry_after_seconds,
+            exc.reason,
+        )
+    finally:
+        worker_engine.dispose()
+    return ("admitted", None, None, None)
 
 
 def _required_postgresql_test_url() -> str:
@@ -169,6 +202,23 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_log" in inspect(postgres_engine).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
+    pending_columns = {
+        column["name"]
+        for column in inspect(postgres_engine).get_columns("pendingloginstate")
+    }
+    pending_indexes = {
+        index["name"]: tuple(index["column_names"])
+        for index in inspect(postgres_engine).get_indexes("pendingloginstate")
+    }
+    assert "client_id" in pending_columns
+    assert pending_indexes["ix_pendingloginstate_client_created"] == (
+        "client_id",
+        "created_at",
+    )
+    assert pending_indexes["ix_pendingloginstate_client_expires"] == (
+        "client_id",
+        "expires_at",
+    )
 
 
 def test_postgresql_shared_rate_window_is_atomic_across_processes(
@@ -268,6 +318,89 @@ def test_postgresql_missing_route_rate_table_fails_closed(
             limiter.acquire(RouteRatePolicy(f"synthetic_route_{uuid4().hex}", 8))
         )
     assert rejected.value.reason == "shared_route_limiter_unavailable"
+    assert rejected.value.status_code == 503
+    assert rejected.value.retry_after_seconds == 5
+
+
+def test_postgresql_identity_start_limits_are_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-IDENTITY-START-ADMISSION",
+    )
+    raw_url = _required_postgresql_test_url()
+    rate_client = f"synthetic_rate_{uuid4().hex}"
+    outstanding_client = f"synthetic_outstanding_{uuid4().hex}"
+    arguments = (
+        [(raw_url, rate_client, 8, 50)] * 12
+        + [(raw_url, outstanding_client, 50, 8)] * 12
+    )
+
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(executor.map(_identity_start_process_attempt, arguments))
+
+    rate_results = results[:12]
+    outstanding_results = results[12:]
+    assert [result[0] for result in rate_results].count("admitted") == 8
+    assert [result[0] for result in outstanding_results].count("admitted") == 8
+
+    rate_rejections = [result for result in rate_results if result[0] == "rejected"]
+    outstanding_rejections = [
+        result for result in outstanding_results if result[0] == "rejected"
+    ]
+    assert len(rate_rejections) == 4
+    assert len(outstanding_rejections) == 4
+    assert all(result[1] == 429 for result in rate_rejections + outstanding_rejections)
+    assert all(1 <= result[2] <= 60 for result in rate_rejections + outstanding_rejections)
+    assert {result[3] for result in rate_rejections} == {"login_start_rate_limit"}
+    assert {result[3] for result in outstanding_rejections} == {
+        "outstanding_login_limit"
+    }
+
+    with Session(postgres_engine) as session:
+        for client_id in (rate_client, outstanding_client):
+            state_hashes = session.exec(
+                select(PendingLoginStateDB.state_hash).where(
+                    PendingLoginStateDB.client_id == client_id
+                )
+            ).all()
+            assert len(state_hashes) == 8
+            assert len(
+                session.exec(
+                    select(PendingLoginLocaleDB).where(
+                        PendingLoginLocaleDB.state_hash.in_(state_hashes)
+                    )
+                ).all()
+            ) == 8
+            assert len(
+                session.exec(
+                    select(OriginLoginHandoffDB).where(
+                        OriginLoginHandoffDB.state_hash.in_(state_hashes)
+                    )
+                ).all()
+            ) == 8
+
+
+def test_postgresql_missing_identity_state_table_fails_closed(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-IDENTITY-START-FAIL-CLOSED",
+    )
+    with postgres_engine.begin() as connection:
+        connection.exec_driver_sql("DROP TABLE pendingloginstate")
+
+    with Session(postgres_engine) as session:
+        with pytest.raises(IdentityStartAdmissionRejected) as rejected:
+            create_limited_login_transaction(
+                session,
+                client_id=f"synthetic_missing_{uuid4().hex}",
+                state_lifetime_seconds=300,
+            )
+    assert rejected.value.reason == "login_admission_unavailable"
     assert rejected.value.status_code == 503
     assert rejected.value.retry_after_seconds == 5
 

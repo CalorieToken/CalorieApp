@@ -33,6 +33,15 @@ fails closed with `503`. Both include bounded `Retry-After`. Health and readines
 remain exempt for cold-start and monitoring, and health must not trigger source
 calls. Exact route budgets and proof are in `SHARED_ROUTE_RATE_LIMITER.md`.
 
+Identity login starts additionally receive a strict registered-client budget of
+20 starts per rolling minute and a cap of 50 retained unexpired transactions.
+PostgreSQL serializes both decisions across backend processes. State, locale and
+the hashed origin-browser handoff are committed atomically, so a partial login
+transaction cannot be left behind. Full budgets return `429`; database failure
+fails closed with `503`, both with bounded `Retry-After`. The key is fixed server
+configuration and the admission rows store no IP or network fingerprint. See
+`IDENTITY_START_ADMISSION_CONTROL.md` for limits, proof and non-claims.
+
 The Open Food Facts adapter now admits at most two active upstream attempts per
 backend process, queues at most four for no longer than two seconds and merges
 identical in-flight searches. Three consecutive failed search actions open its
@@ -104,8 +113,9 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, per-subject and per-source storage-growth
-quotas, Identity Bridge limits, mutation quarantine/audit, chosen-provider alert
-delivery, chosen-provider quota proof and proxy topology tests exist. Exact
+quotas, the Identity Bridge short-lived network-signal and adaptive polling
+controls, mutation quarantine/audit, chosen-provider alert delivery,
+chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants
 remain fixed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.

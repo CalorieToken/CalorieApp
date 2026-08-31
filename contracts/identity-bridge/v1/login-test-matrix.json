@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.identity-bridge-login-test-matrix",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "source_locale": "en",
   "fallback_locale": "en",
   "locales": ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur", "nl"],
@@ -37,6 +37,18 @@
     {
       "id": "unsupported_locale_fallback",
       "expected": "Unsupported locale input resolves to English before state creation."
+    },
+    {
+      "id": "registered_client_start_limited",
+      "expected": "The twenty-first start inside sixty seconds is rejected with bounded retry guidance and creates no transaction."
+    },
+    {
+      "id": "outstanding_state_limit",
+      "expected": "A registered client with fifty retained unexpired transactions cannot allocate another transaction."
+    },
+    {
+      "id": "admission_store_unavailable",
+      "expected": "Database admission failure returns a retryable unavailable response and creates no partial transaction."
     }
   ]
 }
