@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from decimal import Decimal
+from types import MappingProxyType
+
 import pytest
 
+import app.source_assertion_policy as source_assertion_policy
 from app.source_assertion_policy import (
     SOURCE_ASSERTION_CONTENT_POLICY_VERSION,
+    NumericAssertionPolicy,
     normalize_source_assertion_value,
     source_assertion_policy_snapshot,
 )
@@ -72,6 +77,40 @@ def test_policy_normalizes_reviewed_numeric_values(
         )
         == expected
     )
+
+
+def test_policy_enforces_attribute_specific_fractional_digit_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        source_assertion_policy,
+        "SOURCE_ASSERTION_NUMERIC_POLICIES",
+        MappingProxyType(
+            {
+                "nutrition.energy": NumericAssertionPolicy(
+                    unit="kcal-per-100g",
+                    minimum=Decimal("0"),
+                    maximum=Decimal("1000"),
+                    max_fractional_digits=2,
+                )
+            }
+        ),
+    )
+
+    assert (
+        normalize_source_assertion_value(
+            attribute_key="nutrition.energy",
+            value="12.30",
+            unit_or_value_type="kcal-per-100g",
+        )
+        == "12.3"
+    )
+    with pytest.raises(ValueError, match="at most 2 fractional digits"):
+        normalize_source_assertion_value(
+            attribute_key="nutrition.energy",
+            value="12.345",
+            unit_or_value_type="kcal-per-100g",
+        )
 
 
 @pytest.mark.parametrize(

@@ -9,8 +9,8 @@ from types import MappingProxyType
 
 
 SOURCE_ASSERTION_CONTENT_POLICY_VERSION = "1.0.0"
-_CANONICAL_DECIMAL_PATTERN = re.compile(
-    r"(?:0|[1-9][0-9]{0,5})(?:\.[0-9]{1,6})?"
+_PLAIN_NON_NEGATIVE_DECIMAL_PATTERN = re.compile(
+    r"(?:0|[1-9][0-9]*)(?:\.(?P<fractional_digits>[0-9]+))?"
 )
 
 
@@ -93,9 +93,18 @@ def normalize_source_assertion_value(
         raise ValueError("attribute_key is not in the reviewed assertion policy")
     if unit_or_value_type != policy.unit:
         raise ValueError("unit_or_value_type does not match the attribute policy")
-    if not isinstance(value, str) or not _CANONICAL_DECIMAL_PATTERN.fullmatch(value):
+    value_match = (
+        _PLAIN_NON_NEGATIVE_DECIMAL_PATTERN.fullmatch(value)
+        if isinstance(value, str)
+        else None
+    )
+    fractional_digits = (
+        value_match.group("fractional_digits") if value_match is not None else None
+    )
+    if value_match is None or len(fractional_digits or "") > policy.max_fractional_digits:
         raise ValueError(
-            "value must be a non-negative decimal with at most 6 fractional digits"
+            "value must be a non-negative decimal with at most "
+            f"{policy.max_fractional_digits} fractional digits"
         )
     try:
         numeric_value = Decimal(value)
