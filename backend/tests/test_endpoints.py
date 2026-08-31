@@ -14,9 +14,10 @@ from sqlmodel.pool import StaticPool
 
 import app.database as db_module
 from app.database import init_db
-from app.main import app
+from app.main import _ROUTE_RATE_LIMITER, app
 from app.models import AuthSessionDB, CalorieAppUserDB, FoodLogDB
 from app.schemas import FoodSearchResult
+from app.route_rate_limiter import RouteRateLimitRejected
 from app.source_admission import AdapterAdmissionRejected
 
 
@@ -64,7 +65,7 @@ def test_readiness_checks_database_revision(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ready",
-        "database_revision": "20260831_0002",
+        "database_revision": "20260831_0003",
         "service": "calorieapp-backend",
     }
 
@@ -240,6 +241,31 @@ def test_search_food_shared_rate_rejection_returns_bounded_429(
     assert response.json() == {"detail": "Food search rate limit reached"}
     assert response.headers["retry-after"] == "7"
     assert response.headers["cache-control"] == "no-store"
+
+
+@patch("app.main.search_food_products", new_callable=AsyncMock)
+def test_shared_route_rejection_happens_before_search_endpoint_execution(
+    mock_search: AsyncMock,
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def reject_route(policy) -> None:
+        raise RouteRateLimitRejected(
+            "shared_route_rate_limit",
+            9,
+            status_code=429,
+        )
+
+    monkeypatch.setattr(_ROUTE_RATE_LIMITER, "acquire", reject_route)
+
+    response = client.get("/search-food?q=banana")
+
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Request rate limit reached"}
+    assert response.headers["retry-after"] == "9"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    mock_search.assert_not_awaited()
 
 
 # ---------------------------------------------------------------------------

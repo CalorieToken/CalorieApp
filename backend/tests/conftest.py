@@ -13,12 +13,20 @@ from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
 
 import app.database as db_module
-from app.main import app
+from app.main import _ROUTE_RATE_LIMITER, app
 from app.models import AuthSessionDB, CalorieAppUserDB
 
 SESSION_COOKIE_NAME = "calorieapp_session"
 SESSION_TOKEN_BYTES = 48
 SESSION_ABSOLUTE_LIFETIME_SECONDS = 8 * 60 * 60
+
+
+@pytest.fixture(autouse=True)
+def reset_local_route_rate_limiter():
+    """Keep the process-local test equivalent isolated between test cases."""
+    _ROUTE_RATE_LIMITER.reset_for_tests()
+    yield
+    _ROUTE_RATE_LIMITER.reset_for_tests()
 
 
 @pytest.fixture()

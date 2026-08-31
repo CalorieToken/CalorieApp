@@ -48,8 +48,9 @@ response mapping.
 SQLite uses an equivalent locked in-memory window for local development and
 unit tests. It is deliberately not presented as live multi-process proof. The
 existing adapter semaphore, queue, request coalescer and circuit breaker remain
-per backend process. This change also does not prove a shared public-route limit
-or the deployed frontend-proxy topology; those remain explicit V2 gates.
+per backend process. The companion `SHARED_ROUTE_RATE_LIMITER.md` now proves the
+shared public-route window. Neither control proves shared adapter queue/circuit
+state or the deployed frontend-proxy topology; those remain explicit V2 gates.
 
 ## Rollout
 

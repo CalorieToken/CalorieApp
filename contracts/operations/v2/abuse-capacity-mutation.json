@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -73,7 +73,37 @@
     "queue_overflow_response": "503-with-bounded-retry-after",
     "queue_overflow_response_implemented": true,
     "adapter_retry_after_max_seconds": 60,
-    "rate_limit_response": "429-with-bounded-retry-after"
+    "rate_limit_response": "429-with-bounded-retry-after",
+    "shared_route_rate_limiter_implemented": true,
+    "shared_route_rate_limiter_algorithm": "strict-sliding-window",
+    "shared_route_rate_limiter_scope": "global-across-backend-processes-sharing-primary-database",
+    "shared_route_rate_limiter_state": "primary-postgresql",
+    "shared_route_rate_limiter_lock": "route-keyed-postgresql-transaction-advisory-lock",
+    "shared_route_rate_limiter_window_seconds": 60,
+    "shared_route_limits_per_window": {
+      "GET /openapi.json|/docs|/docs/oauth2-redirect|/redoc combined": 120,
+      "POST /api/identity/login/start": 30,
+      "POST /api/identity/login/state/validate": 120,
+      "POST /api/identity/callback": 30,
+      "POST /api/identity/login/status": 240,
+      "GET /api/identity/me": 240,
+      "GET /api/identity/export": 30,
+      "DELETE /api/identity/account": 10,
+      "POST /api/identity/logout": 120,
+      "POST /log-food": 120,
+      "GET /logs": 240,
+      "DELETE /logs": 30,
+      "DELETE /logs/{log_id}": 120,
+      "GET /search-food": 60,
+      "unmatched request": 120
+    },
+    "health_and_readiness_rate_exempt": true,
+    "route_event_stores_raw_path_query_user_session_or_ip": false,
+    "route_limiter_database_failure_fails_closed": true,
+    "route_limiter_unavailable_response": "503-with-bounded-retry-after",
+    "body_rejection_precedes_route_admission": true,
+    "sqlite_route_limiter_is_live_multi_instance_proof": false,
+    "postgresql_route_limiter_multi_process_ci_proof_implemented": true
   },
   "retry_controls": {
     "single_end_to_end_budget_per_user_action": true,
@@ -210,10 +240,14 @@
     "postgresql-shared-open-food-facts-strict-sliding-window-governor",
     "every-primary-and-fallback-provider-attempt-requires-shared-admission",
     "postgresql-multi-process-eight-per-minute-rate-governor-proof",
-    "shared-rate-governor-fails-closed-before-upstream-access"
+    "shared-rate-governor-fails-closed-before-upstream-access",
+    "postgresql-shared-public-route-strict-sliding-window-limiter",
+    "route-limits-before-endpoint-and-provider-work",
+    "fixed-low-cardinality-route-keys-without-request-identity-data",
+    "postgresql-multi-process-route-rate-limit-proof",
+    "shared-route-limiter-fails-closed-before-endpoint-execution"
   ],
   "release_blocking_missing_controls": [
-    "shared-route-rate-limiter",
     "per-subject-and-source-data-growth-quotas",
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",

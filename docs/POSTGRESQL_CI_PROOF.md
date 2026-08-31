@@ -30,6 +30,12 @@ provider account, recurring subscription, live database or user data.
 12. Start a separate Uvicorn backend process, write through its authenticated
     HTTP API, stop it fully, start a replacement process against the same
     PostgreSQL database and read the persisted record through HTTP.
+13. Start independent processes and prove the shared provider-attempt window
+    admits exactly eight of twelve simultaneous attempts.
+14. Start independent processes and prove a synthetic shared route window
+    admits exactly its configured aggregate limit across all processes.
+15. Remove each operational rate table in an isolated test and prove provider
+    and route admission fail closed before protected work.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes

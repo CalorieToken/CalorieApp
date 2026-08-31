@@ -10,6 +10,9 @@ also counts the actual ASGI body chunks. An absent or falsely small
 `Content-Length` therefore cannot bypass the limit. Malformed, negative or
 duplicate `Content-Length` headers fail closed with `400`.
 
+The body middleware wraps shared route admission. A malformed or oversize body
+therefore does not consume a valid route slot that other users may need.
+
 Oversize bodies return `413 Request Entity Too Large`, include private-response
 security headers and do not include `Retry-After`. Request content is never
 written to logs by this control.

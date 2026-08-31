@@ -240,6 +240,7 @@ gate can additionally run the local developer health check.
 - Mutation request-body limits: docs/REQUEST_BODY_LIMITS.md
 - External adapter admission control: docs/ADAPTER_ADMISSION_CONTROL.md
 - Shared provider rate governor: docs/SHARED_PROVIDER_RATE_GOVERNOR.md
+- Shared public-route rate limiter: docs/SHARED_ROUTE_RATE_LIMITER.md
 - Database capacity onboarding guard: docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md
 - Capacity alert incident runbook: docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md
 - Free ecosystem evolution guardrails: docs/ECOSYSTEM_EVOLUTION_GUARDRAILS.md
