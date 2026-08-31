@@ -42,6 +42,11 @@ fails closed with `503`, both with bounded `Retry-After`. The key is fixed serve
 configuration and the admission rows store no IP or network fingerprint. See
 `IDENTITY_START_ADMISSION_CONTROL.md` for limits, proof and non-claims.
 
+Every PostgreSQL advisory-lock path sets a transaction-local one-second
+`lock_timeout` before acquisition. A contended wait ends with PostgreSQL
+SQLSTATE `55P03`; the caller rolls back and returns its documented fail-closed
+`503` with `Retry-After: 5`. CI holds a real advisory lock to prove that bound.
+
 Identity status checks now preserve five-second responsiveness for the first 30
 seconds, then slow to ten seconds and finally twenty seconds after 90 seconds.
 Consecutive transient failures back off to 10, 20 and 30 seconds, while bounded
@@ -160,8 +165,7 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, the Identity Bridge short-lived network-signal
-control, mutation
-quarantine/audit, chosen-provider alert delivery,
+control, mutation quarantine/audit, chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants
 remain fixed in

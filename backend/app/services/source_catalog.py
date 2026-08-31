@@ -17,6 +17,7 @@ from ..data_growth import (
     DataGrowthAdmissionRejected,
 )
 from ..models import FoodSourceDB, FoodSourceRecordDB, utc_now
+from ..postgresql_locking import acquire_bounded_transaction_advisory_locks
 
 
 SOURCE_KEY_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9._-]{0,98}[a-z0-9])?")
@@ -152,9 +153,9 @@ def ingest_source_record(
     try:
         backend = session.get_bind().dialect.name
         if backend == "postgresql":
-            session.exec(
-                sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                params={"lock_key": _postgresql_lock_key(source_key)},
+            acquire_bounded_transaction_advisory_locks(
+                session,
+                [_postgresql_lock_key(source_key)],
             )
             return _ingest_locked(
                 session,

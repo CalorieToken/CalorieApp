@@ -41,7 +41,8 @@ PostgreSQL serializes idempotency lookup, retained-record count and insertion
 with a transaction advisory lock derived from the fixed source key. CI starts
 separate processes and proves that an eight-record synthetic source admits
 exactly eight of twelve simultaneous distinct records. A duplicate remains
-idempotent even after that source is full.
+idempotent even after that source is full. A transaction-local one-second
+`lock_timeout` bounds every advisory-lock wait.
 
 A full retained-record budget returns an internal persistent `409` without
 `Retry-After`; waiting does not create capacity. Database or lock failure returns

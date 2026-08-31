@@ -26,7 +26,8 @@ accepted from the browser request. PostgreSQL takes a transaction advisory lock
 derived from that low-cardinality registered-client value. While holding the
 lock, the backend uses the database clock, checks both budgets and commits the
 pending state, locale context and hashed origin-handoff proof in one
-transaction.
+transaction. A transaction-local one-second `lock_timeout` bounds the advisory
+lock wait before any state is created.
 
 This makes the decision strict across all backend processes that share the
 primary database. A concurrent-process CI scenario proves that only the allowed

@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from .models import FoodLogDB
+from .postgresql_locking import acquire_bounded_transaction_advisory_locks
 
 
 FOOD_LOG_SUBJECT_ENTRY_LIMIT = 10_000
@@ -101,9 +102,9 @@ def create_food_log_with_subject_budget(
     try:
         backend = session.get_bind().dialect.name
         if backend == "postgresql":
-            session.exec(
-                sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                params={"lock_key": _postgresql_lock_key(entry.owner_id)},
+            acquire_bounded_transaction_advisory_locks(
+                session,
+                [_postgresql_lock_key(entry.owner_id)],
             )
             return _insert_if_within_budget(
                 session,

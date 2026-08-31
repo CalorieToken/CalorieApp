@@ -34,6 +34,7 @@ transaction advisory locks for the record, idempotency key and source while it
 checks lineage, counts retained assertions and inserts. Independent-process CI
 proves that a limit of eight admits exactly eight of twelve simultaneous writes,
 and that an admitted duplicate remains idempotent after the budget is full.
+Each advisory-lock wait has a transaction-local one-second `lock_timeout`.
 SQLite uses a process-local lock for local development and tests only; it is not
 multi-instance evidence.
 

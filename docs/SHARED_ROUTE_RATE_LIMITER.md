@@ -54,7 +54,8 @@ limits reject invalid or oversize mutations before a route slot is consumed.
 The PostgreSQL decision uses `clock_timestamp()` and a route-keyed transaction
 advisory lock. Expired events are removed during admission. A slot is not
 refunded after endpoint failure because the protected work may already have
-started.
+started. A transaction-local one-second `lock_timeout` bounds each advisory-lock
+wait; timeout is rolled back and mapped to the documented fail-closed `503`.
 
 ## Cost, privacy and proof
 

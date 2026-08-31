@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.8.0",
+  "contract_version": "1.9.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -40,6 +40,24 @@
     "rotating-keyed-network_fingerprint_required_when_network_signal_is_stored": true,
     "shared-mobile-or-household-network_fairness_required": true,
     "ip_signal_may_be_sole_long_term_identity": false
+  },
+  "postgresql_advisory_lock_controls": {
+    "bounded_wait_implemented": true,
+    "timeout_scope": "transaction-local",
+    "per_lock_wait_timeout_milliseconds": 1000,
+    "timeout_sqlstate": "55P03-lock-not-available",
+    "timeout_rolls_back_transaction": true,
+    "timeout_response": "503-with-retry-after-5",
+    "applies_to": [
+      "provider-rate-governor",
+      "route-rate-limiter",
+      "identity-start-admission",
+      "private-food-log-subject-budget",
+      "source-record-ingest-budget",
+      "source-record-moderation",
+      "source-assertion-ingest-budget"
+    ],
+    "real_contention_ci_proof_implemented": true
   },
   "request_controls": {
     "route_specific_limits_required": true,
@@ -380,7 +398,8 @@
     "atomic-minimal-source-assertion-ingest-audit",
     "reviewed-positive-assertion-limit-per-registered-source",
     "postgresql-multi-process-source-assertion-budget-proof",
-    "source-assertion-ingest-fails-closed-on-database-error"
+    "source-assertion-ingest-fails-closed-on-database-error",
+    "postgresql-advisory-lock-waits-bounded-and-contention-tested"
   ],
   "release_blocking_missing_controls": [
     "identity-start-short-lived-network-signal-limit",

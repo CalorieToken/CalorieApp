@@ -24,6 +24,7 @@ from ..models import (
     FoodSourceRecordDB,
     utc_now,
 )
+from ..postgresql_locking import acquire_bounded_transaction_advisory_locks
 
 
 SOURCE_ASSERTION_INGEST_SCOPE = "catalog:source-assertion:ingest"
@@ -236,14 +237,14 @@ def _ingest_locked(
             status_code=409,
         )
     if session.get_bind().dialect.name == "postgresql":
-        session.exec(
-            sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-            params={
-                "lock_key": _advisory_lock_key(
+        acquire_bounded_transaction_advisory_locks(
+            session,
+            [
+                _advisory_lock_key(
                     "source-assertion-ingest-source",
                     source.id,
                 )
-            },
+            ],
         )
     product = session.get(FoodProductDB, food_product_id)
     if product is None:
@@ -363,7 +364,8 @@ def ingest_source_assertion(
     try:
         backend = session.get_bind().dialect.name
         if backend == "postgresql":
-            lock_keys = sorted(
+            acquire_bounded_transaction_advisory_locks(
+                session,
                 {
                     _advisory_lock_key(
                         "source-assertion-ingest-record",
@@ -373,13 +375,8 @@ def ingest_source_assertion(
                         "source-assertion-ingest-idempotency",
                         idempotency_key,
                     ),
-                }
+                },
             )
-            for lock_key in lock_keys:
-                session.exec(
-                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                    params={"lock_key": lock_key},
-                )
             local_lock = nullcontext()
         elif backend == "sqlite":
             local_lock = _sqlite_assertion_ingest_lock

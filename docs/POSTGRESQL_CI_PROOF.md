@@ -46,6 +46,9 @@ provider account, recurring subscription, live database or user data.
     an admitted duplicate remains idempotent after the budget is full.
 19. Remove each operational rate table in an isolated test and prove provider
     and route admission fail closed before protected work.
+20. Hold a real transaction advisory lock and prove a competing acquisition is
+    cancelled after the configured one-second wait with PostgreSQL SQLSTATE
+    `55P03`.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes

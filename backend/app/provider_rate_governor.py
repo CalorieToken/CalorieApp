@@ -17,6 +17,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 
 from .models import ProviderRateEventDB
+from .postgresql_locking import acquire_bounded_transaction_advisory_locks
 from .source_admission import AdapterAdmissionRejected
 
 
@@ -121,9 +122,9 @@ class PostgreSQLSlidingWindowRateGovernor:
         retry_after_seconds: int | None = None
         try:
             with self.engine.begin() as connection:
-                connection.execute(
-                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                    {"lock_key": self._lock_key},
+                acquire_bounded_transaction_advisory_locks(
+                    connection,
+                    [self._lock_key],
                 )
                 now = connection.execute(
                     sa.text("SELECT clock_timestamp()")
