@@ -163,9 +163,9 @@ def assess(
         Check(
             "device.play_store",
             "pass" if has_play_store else "fail",
-            "official Play Store package present"
+            "Google Play package ID present"
             if has_play_store
-            else "Google Play-enabled device required",
+            else "Google Play package ID not present",
         )
     )
 
@@ -174,9 +174,9 @@ def assess(
         Check(
             "device.xaman",
             "pass" if has_xaman else ("fail" if require_xaman else "warn"),
-            "official Xaman package present"
+            "Xaman package ID present"
             if has_xaman
-            else "official Xaman package not installed yet",
+            else "Xaman package ID not present yet",
         )
     )
 
@@ -202,7 +202,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--require-xaman",
         action="store_true",
-        help="Fail instead of warn when the official Xaman package is absent",
+        help="Fail instead of warn when the Xaman package ID is absent",
     )
     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     return parser

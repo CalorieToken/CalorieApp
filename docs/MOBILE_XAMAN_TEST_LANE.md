@@ -60,7 +60,8 @@ Before installing Xaman:
 python tools/mobile_xaman_preflight.py --target emulator
 ```
 
-After installing the official Google Play package `com.xrpllabs.xumm`:
+After installing Xaman from its Google Play listing (package ID
+`com.xrpllabs.xumm`):
 
 ```powershell
 python tools/mobile_xaman_preflight.py --target emulator --require-xaman
@@ -71,8 +72,10 @@ physical-device fallback, replace `--target emulator` with
 `--target physical`.
 
 The host is ready only when one authorized target is selected, its Android API
-level can be read, Google Play is present and—when required—the official Xaman
-package is installed.
+level can be read, the Google Play package ID is present and—when required—the
+Xaman package ID is present. Package presence does not verify the installer,
+APK signature or publication source; confirming installation from the linked
+Google Play listing remains a manual gate.
 
 ## Emulator go/no-go gate
 
@@ -99,7 +102,8 @@ device.
 ## Automation progression
 
 1. Read-only host/device preflight.
-2. Human installs official Xaman and manually provisions one Testnet identity.
+2. Human installs Xaman from the linked Google Play listing and manually
+   provisions one Testnet identity.
 3. Human performs the go/no-go matrix and records a sanitized result.
 4. Automate only repeatable post-provisioning UI actions with a local mobile
    testing framework. Keep signing approval human-gated until the threat model

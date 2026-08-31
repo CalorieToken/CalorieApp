@@ -60,6 +60,7 @@ class MobileXamanPreflightTests(unittest.TestCase):
 
         self.assertFalse([check for check in checks if check.status == "fail"])
         self.assertIn("wallet.secrets", {check.name for check in checks})
+        self.assertNotIn("official", " ".join(check.detail for check in checks).lower())
         self.assertEqual(
             "pass",
             next(check.status for check in checks if check.name == "device.xaman"),
