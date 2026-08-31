@@ -243,6 +243,7 @@ gate can additionally run the local developer health check.
 - Shared public-route rate limiter: docs/SHARED_ROUTE_RATE_LIMITER.md
 - Identity-start admission control: docs/IDENTITY_START_ADMISSION_CONTROL.md
 - Adaptive Identity Bridge status polling: docs/ADAPTIVE_IDENTITY_STATUS_POLLING.md
+- Per-subject private food-log storage budget: docs/PER_SUBJECT_STORAGE_BUDGET.md
 - Database capacity onboarding guard: docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md
 - Capacity alert incident runbook: docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md
 - Free ecosystem evolution guardrails: docs/ECOSYSTEM_EVOLUTION_GUARDRAILS.md

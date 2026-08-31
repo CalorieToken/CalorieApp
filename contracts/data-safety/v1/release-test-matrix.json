@@ -49,7 +49,11 @@
         "frontend/components/XamanLoginPanel.tsx",
         "wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.js",
         "tools/tests/calorieapp_embed_readiness.test.mjs",
-        "tools/tests/xaman_login_start_retry.test.mjs"
+        "tools/tests/xaman_login_start_retry.test.mjs",
+        "backend/app/data_growth.py",
+        "backend/app/schema_migrations/versions/v20260831_0005.py",
+        "backend/tests/test_data_growth.py",
+        "docs/PER_SUBJECT_STORAGE_BUDGET.md"
       ]
     },
     {
@@ -90,6 +94,7 @@
         "backend/app/schema_migrations/versions/v20260831_0002.py",
         "backend/app/schema_migrations/versions/v20260831_0003.py",
         "backend/app/schema_migrations/versions/v20260831_0004.py",
+        "backend/app/schema_migrations/versions/v20260831_0005.py",
         "backend/tests/test_database.py"
       ]
     },

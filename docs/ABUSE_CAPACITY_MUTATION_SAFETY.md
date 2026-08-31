@@ -66,6 +66,16 @@ or database failure fails closed with `503`. Both include bounded
 `Retry-After`. Concurrent-process PostgreSQL CI proves the aggregate eight-slot
 boundary; SQLite's in-memory equivalent is only for local development.
 
+Authenticated private food logging now admits at most 10,000 retained rows per
+internal CalorieApp user. PostgreSQL serializes the count-and-insert decision
+across backend processes with a user-keyed transaction advisory lock. A full
+budget returns `409` without time-based retry guidance; user-directed deletion
+makes space, while existing history is never removed automatically. Database or
+lock failure returns a bounded `503` and creates no row. The current Open Food
+Facts search remains read-only, so the per-source catalog-ingest budget is still
+an explicit release gate. Exact behavior and proof are documented in
+`PER_SUBJECT_STORAGE_BUDGET.md`.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
@@ -120,8 +130,8 @@ utilization and request/user content. The response process is fixed in
 destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
-and proxy-topology proof, per-subject and per-source storage-growth
-quotas, the Identity Bridge short-lived network-signal control, mutation
+and proxy-topology proof, the per-source catalog-ingest quota, the Identity
+Bridge short-lived network-signal control, mutation
 quarantine/audit, chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants

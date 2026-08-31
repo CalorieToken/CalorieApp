@@ -34,7 +34,11 @@ class FoodLogDB(SQLModel, table=True):
     serving_size: Optional[str] = Field(default=None, max_length=80)
     nutri_score: Optional[str] = Field(default=None, max_length=2)
     created_at: datetime = Field(default_factory=utc_now)
-    owner_id: Optional[str] = Field(default=None, foreign_key="calorieappuser.id")
+    owner_id: Optional[str] = Field(
+        default=None,
+        foreign_key="calorieappuser.id",
+        index=True,
+    )
 
 
 class CalorieAppUserDB(SQLModel, table=True):

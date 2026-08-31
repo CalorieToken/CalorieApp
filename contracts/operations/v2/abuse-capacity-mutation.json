@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.4.0",
+  "contract_version": "1.5.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -222,7 +222,20 @@
   },
   "data_growth_controls": {
     "per_subject_storage_budget_required": true,
+    "per_subject_storage_budget_implemented": true,
+    "per_subject_storage_budget_scope": "retained-private-food-log-entries-per-internal-user",
+    "per_subject_food_log_entry_limit": 10000,
+    "per_subject_budget_counts_legacy_unowned_rows": false,
+    "per_subject_budget_delete_frees_space": true,
+    "per_subject_budget_lock": "internal-user-keyed-postgresql-transaction-advisory-lock",
+    "per_subject_budget_limit_response": "409-without-retry-after",
+    "per_subject_budget_database_failure_response": "503-with-bounded-retry-after",
+    "per_subject_budget_database_failure_fails_closed": true,
+    "sqlite_subject_budget_is_live_multi_instance_proof": false,
+    "postgresql_subject_budget_multi_process_ci_proof_implemented": true,
     "per_source_ingest_budget_required": true,
+    "per_source_ingest_budget_implemented": false,
+    "current_open_food_facts_catalog_persistence_enabled": false,
     "duplicate_record_idempotency_required": true,
     "unbounded_blob_or_image_ingest_allowed": false,
     "capacity_alert_threshold_percent": [70, 85, 95],
@@ -287,10 +300,14 @@
     "adaptive-five-ten-twenty-second-identity-status-polling",
     "ten-twenty-thirty-second-transient-status-backoff",
     "bounded-status-retry-after-respected",
-    "focus-and-pageshow-cannot-bypass-scheduled-status-delay"
+    "focus-and-pageshow-cannot-bypass-scheduled-status-delay",
+    "ten-thousand-retained-food-logs-per-internal-user",
+    "postgresql-multi-process-subject-growth-budget-proof",
+    "subject-growth-admission-fails-closed-on-database-error",
+    "user-deletion-frees-subject-budget-without-automatic-history-deletion"
   ],
   "release_blocking_missing_controls": [
-    "per-subject-and-source-data-growth-quotas",
+    "per-source-data-growth-quota",
     "identity-start-short-lived-network-signal-limit",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
     "capacity-alert-destination-and-live-delivery-proof",

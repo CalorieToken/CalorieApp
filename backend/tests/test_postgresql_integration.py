@@ -19,6 +19,10 @@ import app.database as db_module
 import app.main as main_module
 from app.capacity import database_capacity_snapshot, database_used_bytes
 from app.capacity_probe import EXIT_PAUSE, capacity_probe_from_session
+from app.data_growth import (
+    DataGrowthAdmissionRejected,
+    create_food_log_with_subject_budget,
+)
 from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
@@ -108,6 +112,29 @@ def _identity_start_process_attempt(
     finally:
         worker_engine.dispose()
     return ("admitted", None, None, None)
+
+
+def _food_log_growth_process_attempt(
+    args: tuple[str, str, int, int],
+) -> tuple[str, int | None, str | None]:
+    raw_url, owner_id, limit, index = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            create_food_log_with_subject_budget(
+                session,
+                FoodLogDB(
+                    product_name=f"concurrent-{index}",
+                    calories=1,
+                    owner_id=owner_id,
+                ),
+                limit=limit,
+            )
+    except DataGrowthAdmissionRejected as exc:
+        return ("rejected", exc.status_code, exc.reason)
+    finally:
+        worker_engine.dispose()
+    return ("admitted", None, None)
 
 
 def _required_postgresql_test_url() -> str:
@@ -202,6 +229,11 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_log" in inspect(postgres_engine).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
+    food_log_indexes = {
+        index["name"]: tuple(index["column_names"])
+        for index in inspect(postgres_engine).get_indexes("food_log")
+    }
+    assert food_log_indexes["ix_food_log_owner_id"] == ("owner_id",)
     pending_columns = {
         column["name"]
         for column in inspect(postgres_engine).get_columns("pendingloginstate")
@@ -320,6 +352,40 @@ def test_postgresql_missing_route_rate_table_fails_closed(
     assert rejected.value.reason == "shared_route_limiter_unavailable"
     assert rejected.value.status_code == 503
     assert rejected.value.retry_after_seconds == 5
+
+
+def test_postgresql_food_log_subject_budget_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-FOOD-LOG-GROWTH",
+    )
+    raw_url = _required_postgresql_test_url()
+    with Session(postgres_engine) as session:
+        user = CalorieAppUserDB(status="active")
+        session.add(user)
+        session.commit()
+        owner_id = user.id
+
+    arguments = [(raw_url, owner_id, 8, index) for index in range(12)]
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(executor.map(_food_log_growth_process_attempt, arguments))
+
+    assert [result[0] for result in results].count("admitted") == 8
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == 4
+    assert {result[1] for result in rejected} == {409}
+    assert {result[2] for result in rejected} == {
+        "food_log_subject_budget_reached"
+    }
+
+    with Session(postgres_engine) as session:
+        entries = session.exec(
+            select(FoodLogDB).where(FoodLogDB.owner_id == owner_id)
+        ).all()
+    assert len(entries) == 8
 
 
 def test_postgresql_identity_start_limits_are_atomic_across_processes(
