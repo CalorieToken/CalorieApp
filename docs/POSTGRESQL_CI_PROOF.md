@@ -22,6 +22,8 @@ provider account, recurring subscription, live database or user data.
 7. Dispose the application database engine and create a replacement engine.
 8. Confirm both histories survive and remain isolated by owner.
 9. Confirm one synthetic user cannot delete the other user's record.
+10. Create a custom-format logical backup, restore it into a distinct disposable
+    database and verify schema head plus identity/history ownership links.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes
@@ -32,10 +34,13 @@ the test unusable against a remote, staging or production database.
 - persistence across a chosen provider's service restart or redeployment;
 - permanence or capacity of any free tier;
 - quota monitoring and onboarding pause behavior;
-- encrypted backup creation or successful restoration;
+- encrypted provider backup creation or a staging restoration;
 - export/import into another provider;
 - production security, privacy or operational readiness.
 
-Those remain separate release-blocking tests. Passing this CI gate permits the
+The synthetic logical restore is documented separately in
+`POSTGRESQL_BACKUP_RESTORE_DRILL.md`; it is partial evidence and does not select
+storage, encryption, retention or recovery policy. Those remain separate
+release-blocking tests. Passing this CI gate permits the
 project to evaluate zero-additional-subscription PostgreSQL hosting with much
 less provider-specific manual testing; it does not select or endorse a host.

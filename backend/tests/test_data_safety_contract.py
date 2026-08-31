@@ -473,6 +473,10 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert gates["restart_persistence"]["status"] == "partial"
+    assert gates["backup_restore_drill"]["status"] == "partial"
+    assert "backend/app/backup_restore_drill.py" in gates["backup_restore_drill"][
+        "evidence"
+    ]
     assert gates["user_data_export"]["status"] == "partial"
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
@@ -483,6 +487,27 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]
     assert gates["retention_policy"]["status"] == "decision_required"
     assert matrix["release_state"] == "blocked"
+
+
+def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
+    backup = _load_json("data-safety.json")["backup_and_recovery"]
+    drill = backup["synthetic_ci_logical_restore"]
+
+    assert backup["status"] == (
+        "synthetic-logical-restore-proof-configured-production-design-pending"
+    )
+    assert drill["automated_per_merge_candidate"] is True
+    assert drill["loopback_only"] is True
+    assert drill["source_database"] == "calorieapp_ci_test"
+    assert drill["restore_database"] == "calorieapp_ci_restore"
+    assert drill["distinct_restore_database_required"] is True
+    assert drill["synthetic_data_only"] is True
+    assert drill["schema_head_and_owner_links_verified"] is True
+    assert drill["archive_persisted_or_uploaded"] is False
+    assert drill["production_or_staging_data_allowed"] is False
+    assert backup["encrypted_production_backup_selected"] is False
+    assert backup["provider_staging_restore_completed"] is False
+    assert backup["retention_and_backup_erasure_schedule_approved"] is False
 
 
 def test_contract_release_order_ends_with_review_and_explicit_publication_go() -> None:
