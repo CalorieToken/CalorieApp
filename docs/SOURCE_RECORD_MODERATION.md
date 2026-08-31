@@ -25,7 +25,8 @@ The record update and audit insert occur in one transaction. PostgreSQL takes
 transaction advisory locks derived separately from the source-record id and
 the idempotency key, in deterministic order. This serializes competing
 decisions for one record and also prevents one idempotency key from being used
-concurrently for different records.
+concurrently for different records. Each wait has a transaction-local
+one-second `lock_timeout`.
 
 A stale expected version returns persistent `409` and changes nothing. Reusing
 an idempotency key with exactly the same decision returns the original audit

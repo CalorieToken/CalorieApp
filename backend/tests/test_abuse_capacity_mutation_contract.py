@@ -27,6 +27,32 @@ def test_automation_cannot_remove_permanent_human_control() -> None:
     ] is False
 
 
+def test_postgresql_advisory_lock_waits_are_bounded_and_fail_closed() -> None:
+    contract = _load_contract()
+    locking = contract["postgresql_advisory_lock_controls"]
+
+    assert locking["bounded_wait_implemented"] is True
+    assert locking["timeout_scope"] == "transaction-local"
+    assert locking["per_lock_wait_timeout_milliseconds"] == 1_000
+    assert locking["timeout_sqlstate"] == "55P03-lock-not-available"
+    assert locking["timeout_rolls_back_transaction"] is True
+    assert locking["timeout_response"] == "503-with-retry-after-5"
+    assert locking["applies_to"] == [
+        "provider-rate-governor",
+        "route-rate-limiter",
+        "identity-start-admission",
+        "private-food-log-subject-budget",
+        "source-record-ingest-budget",
+        "source-record-moderation",
+        "source-assertion-ingest-budget",
+    ]
+    assert locking["real_contention_ci_proof_implemented"] is True
+    assert (
+        "postgresql-advisory-lock-waits-bounded-and-contention-tested"
+        in contract["current_implemented_evidence"]
+    )
+
+
 def test_request_and_retry_budgets_prevent_amplification() -> None:
     contract = _load_contract()
     request = contract["request_controls"]

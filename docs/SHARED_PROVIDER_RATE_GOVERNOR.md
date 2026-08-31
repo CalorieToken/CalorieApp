@@ -14,6 +14,8 @@ provider-keyed `pg_advisory_xact_lock` serializes each decision while expired
 events are removed, the current window is counted and at most one new event is
 inserted. PostgreSQL's clock is authoritative, avoiding backend-host clock
 skew. The table remains bounded to roughly the active window per provider.
+Before lock acquisition, the transaction sets a one-second `lock_timeout`, so
+a contended advisory-lock wait cannot remain open indefinitely.
 
 | Condition | Response | Provider request started |
 | --- | ---: | --- |
@@ -42,8 +44,9 @@ in the separately approved migration path.
 PostgreSQL integration tests start independent processes against one database
 and prove that twelve simultaneous attempts yield exactly eight admissions and
 four bounded `429` rejections. They also prove fail-closed behavior when the
-operational table is absent. Unit tests cover expiry boundaries, concurrency and
-response mapping.
+operational table is absent. A real contention test holds an advisory lock and
+proves PostgreSQL cancels the competing wait with SQLSTATE `55P03`. Unit tests
+cover expiry boundaries, concurrency and response mapping.
 
 SQLite uses an equivalent locked in-memory window for local development and
 unit tests. It is deliberately not presented as live multi-process proof. The

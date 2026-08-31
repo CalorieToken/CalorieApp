@@ -33,6 +33,7 @@ from app.models import (
     PendingLoginStateDB,
     utc_now,
 )
+from app.postgresql_locking import acquire_bounded_transaction_advisory_locks
 from app.schemas import IdentityClaimsResponse
 
 logger = logging.getLogger(__name__)
@@ -192,9 +193,9 @@ def create_limited_login_transaction(
     with local_lock:
         try:
             if dialect == "postgresql":
-                session.execute(
-                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                    {"lock_key": _identity_advisory_lock_key(client_id)},
+                acquire_bounded_transaction_advisory_locks(
+                    session,
+                    [_identity_advisory_lock_key(client_id)],
                 )
                 now = session.execute(
                     sa.text("SELECT timezone('UTC', clock_timestamp())")

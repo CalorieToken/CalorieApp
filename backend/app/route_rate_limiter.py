@@ -21,6 +21,7 @@ from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .models import RouteRateEventDB
+from .postgresql_locking import acquire_bounded_transaction_advisory_locks
 
 
 ROUTE_RATE_WINDOW_SECONDS = 60
@@ -193,9 +194,9 @@ class PostgreSQLRouteRateLimiter:
         retry_after_seconds: int | None = None
         try:
             with self.engine.begin() as connection:
-                connection.execute(
-                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                    {"lock_key": _postgresql_lock_key(policy.route_key)},
+                acquire_bounded_transaction_advisory_locks(
+                    connection,
+                    [_postgresql_lock_key(policy.route_key)],
                 )
                 now = connection.execute(
                     sa.text("SELECT clock_timestamp()")

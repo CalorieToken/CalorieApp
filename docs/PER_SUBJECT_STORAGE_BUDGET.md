@@ -23,7 +23,8 @@ existing history automatically to satisfy this control.
 PostgreSQL uses a transaction advisory lock derived from the internal user ID,
 so concurrent backend processes cannot all observe the same final free slot.
 The owner index added by migration `20260831_0005` keeps the count scoped and
-efficient. The lock key is computed at request time and is not stored.
+efficient. The lock key is computed at request time and is not stored. A
+transaction-local one-second `lock_timeout` prevents indefinite lock waits.
 
 SQLite uses a process-local lock for development and unit tests only. It is not
 production or multi-instance proof. CI exercises the PostgreSQL path from

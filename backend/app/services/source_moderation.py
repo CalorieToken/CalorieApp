@@ -18,6 +18,7 @@ from ..models import (
     FoodSourceRecordDB,
     utc_now,
 )
+from ..postgresql_locking import acquire_bounded_transaction_advisory_locks
 
 
 SOURCE_MODERATION_SCOPE = "catalog:source-record:moderate"
@@ -233,17 +234,13 @@ def moderate_source_record(
     try:
         backend = session.get_bind().dialect.name
         if backend == "postgresql":
-            lock_keys = sorted(
+            acquire_bounded_transaction_advisory_locks(
+                session,
                 {
                     _advisory_lock_key("source-moderation-record", source_record_id),
                     _advisory_lock_key("source-moderation-idempotency", idempotency_key),
-                }
+                },
             )
-            for lock_key in lock_keys:
-                session.exec(
-                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
-                    params={"lock_key": lock_key},
-                )
             local_lock = nullcontext()
         elif backend == "sqlite":
             local_lock = _sqlite_moderation_lock

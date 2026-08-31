@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import multiprocessing
 import os
+import time
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
@@ -13,6 +14,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 from sqlalchemy.engine import Engine, make_url
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
@@ -42,6 +44,10 @@ from app.models import (
     utc_now,
 )
 from app.provider_rate_governor import PostgreSQLSlidingWindowRateGovernor
+from app.postgresql_locking import (
+    POSTGRESQL_ADVISORY_LOCK_TIMEOUT_MILLISECONDS,
+    acquire_bounded_transaction_advisory_locks,
+)
 from app.route_rate_limiter import (
     PostgreSQLRouteRateLimiter,
     RouteRateLimitRejected,
@@ -361,6 +367,36 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert pending_indexes["ix_pendingloginstate_client_expires"] == (
         "client_id",
         "expires_at",
+    )
+
+
+def test_postgresql_transaction_advisory_lock_wait_is_bounded(
+    postgres_engine: Engine,
+) -> None:
+    lock_key = 6_104_202_608_31
+    with postgres_engine.connect() as holder, postgres_engine.connect() as contender:
+        holder_transaction = holder.begin()
+        contender_transaction = contender.begin()
+        try:
+            holder.exec_driver_sql(
+                "SELECT pg_advisory_xact_lock(%s)",
+                (lock_key,),
+            )
+            started = time.monotonic()
+            with pytest.raises(SQLAlchemyError) as rejected:
+                acquire_bounded_transaction_advisory_locks(
+                    contender,
+                    [lock_key],
+                )
+            elapsed = time.monotonic() - started
+        finally:
+            contender_transaction.rollback()
+            holder_transaction.rollback()
+
+    assert getattr(rejected.value.orig, "sqlstate", None) == "55P03"
+    assert elapsed < max(
+        5.0,
+        POSTGRESQL_ADVISORY_LOCK_TIMEOUT_MILLISECONDS / 1000 * 5,
     )
 
 
