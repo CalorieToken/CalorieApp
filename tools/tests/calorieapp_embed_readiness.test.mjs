@@ -124,6 +124,9 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     }
     if (url === "/finish") {
       finishCount += 1;
+      if (finishCount === 2) {
+        throw new Error("synthetic transport failure");
+      }
       return {
         ok: true,
         status: finishCanComplete ? 200 : 202,
@@ -227,11 +230,11 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   }
   assert.deepEqual(scheduledDelays.slice(0, 7), [
     5000,
+    10000,
     5000,
     5000,
     5000,
-    5000,
-    5000,
+    10000,
     10000,
   ]);
   assert.equal(finishCount, 7);

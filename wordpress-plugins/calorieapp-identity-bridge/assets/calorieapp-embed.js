@@ -44,23 +44,33 @@
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-    }).then(function (response) {
-      return parseJsonResponse(response).then(function (payload) {
-        if (!response.ok && response.status !== 202) {
-          var error = new Error(
-            typeof payload.message === "string"
-              ? payload.message
-              : "The secure sign-in request failed."
-          );
-          error.status = response.status;
-          error.code = typeof payload.code === "string" ? payload.code : "";
-          error.retryAfterMs = retryAfterMilliseconds(response);
-          throw error;
-        }
+    }).then(
+      function (response) {
+        return parseJsonResponse(response).then(function (payload) {
+          if (!response.ok && response.status !== 202) {
+            var error = new Error(
+              typeof payload.message === "string"
+                ? payload.message
+                : "The secure sign-in request failed."
+            );
+            error.status = response.status;
+            error.code = typeof payload.code === "string" ? payload.code : "";
+            error.retryAfterMs = retryAfterMilliseconds(response);
+            throw error;
+          }
 
-        return { response: response, payload: payload };
-      });
-    });
+          return { response: response, payload: payload };
+        });
+      },
+      function (error) {
+        var transportError =
+          error instanceof Error
+            ? error
+            : new Error("The secure sign-in request could not be reached.");
+        transportError.isTransportFailure = true;
+        throw transportError;
+      }
+    );
   }
 
   function init(root) {
@@ -374,7 +384,13 @@
         maybeAuthorizeCalorieApp();
       }).catch(function (error) {
         finishInFlight = false;
-        if (error.status === 429 || error.status === 502 || error.status === 503) {
+        if (
+          error.isTransportFailure === true ||
+          error.status === 429 ||
+          error.status === 502 ||
+          error.status === 503 ||
+          error.status === 504
+        ) {
           finishTransientFailures += 1;
           setStatus("Xaman status is temporarily unavailable. Retrying safely...");
           scheduleFinishRetry(

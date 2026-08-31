@@ -289,9 +289,12 @@ export async function waitForOriginLogin(
     }
     if ([502, 503, 504].includes(response.status)) {
       consecutiveTransientFailures += 1;
-      nextPollDelayMs = loginStatusPollDelayMs(
-        Date.now() - pollingStartedAt,
-        consecutiveTransientFailures
+      nextPollDelayMs = Math.max(
+        loginStatusPollDelayMs(
+          Date.now() - pollingStartedAt,
+          consecutiveTransientFailures
+        ),
+        retryAfterMilliseconds(response, 0)
       );
       continue;
     }

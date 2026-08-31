@@ -327,7 +327,7 @@ test("login status polling slows down by age, failures, and Retry-After", async 
     {
       ok: false,
       status: 503,
-      headers: { get: () => null },
+      headers: { get: () => "25" },
     },
     {
       ok: false,
@@ -431,5 +431,5 @@ test("login status polling slows down by age, failures, and Retry-After", async 
   );
 
   assert.equal(requestCount, 5);
-  assert.deepEqual(scheduledDelays, [5000, 10000, 20000, 30000, 10000]);
+  assert.deepEqual(scheduledDelays, [5000, 10000, 25000, 30000, 10000]);
 });
