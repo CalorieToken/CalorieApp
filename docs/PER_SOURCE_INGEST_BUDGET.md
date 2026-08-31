@@ -19,13 +19,13 @@ HTTP route for it.
 ## Immutable and idempotent records
 
 `food_source_record` stores only the source link, external record identifier,
-source version or content digest, timestamp and verification status. It has no
+source version or content digest, timestamp, verification status and version. It has no
 raw-payload, private-user, session, email, wallet or IP column.
 
-The internal service exposes insert-or-return-existing behavior only; it has no
-record update or delete operation. Database-level moderation audit,
-expected-version enforcement and reviewed correction/supersession remain the
-separate mutation-control gate and are not claimed here.
+The ingest service exposes insert-or-return-existing behavior only. A separate
+internal service now permits only terminal, version-checked moderation with an
+atomic audit event; see `SOURCE_RECORD_MODERATION.md`. General record update,
+delete and reviewed correction/supersession remain disabled.
 
 The unique idempotency key is `(source_id, external_record_id,
 source_version_or_content_digest)`. Repeating the same key returns the existing
@@ -48,9 +48,10 @@ equivalent for development and unit tests only and is not multi-instance proof.
 
 ## Scope and non-claims
 
-Migration `20260831_0006` creates only the reviewed `food_source` and
-`food_source_record` foundation. Product identity, source links, factual
-assertions, moderation audit and expected-version enforcement remain future
+Migration `20260831_0006` creates the reviewed `food_source` and
+`food_source_record` foundation. Migration `20260831_0007` adds only terminal
+record moderation versioning and minimal audit evidence. Product identity,
+source links, factual assertions and correction/supersession remain future
 forward migrations and release gates.
 
 Open Food Facts remains the enabled read-only search adapter. Search results are

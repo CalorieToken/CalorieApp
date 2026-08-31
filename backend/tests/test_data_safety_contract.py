@@ -238,8 +238,15 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
     assert sources["implemented_catalog_tables"] == [
         "food_source",
         "food_source_record",
+        "food_source_moderation_audit",
     ]
     assert sources["internal_source_record_ingest_service_implemented"] is True
+    assert sources[
+        "internal_source_record_terminal_moderation_service_implemented"
+    ] is True
+    assert sources["source_record_expected_version_and_audit_implemented"] is True
+    assert sources["complete_source_assertion_mutation_flow_implemented"] is False
+    assert sources["public_source_record_moderation_endpoint_enabled"] is False
     assert sources["public_source_onboarding_enabled"] is False
     assert sources["current_adapter_is_canonical_model"] is False
     assert sources["current_adapter_is_exclusive_authority"] is False
@@ -271,6 +278,8 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety["mutation_request_body_size_limit_implemented"] is True
     assert safety["declared_and_actual_body_bytes_enforced"] is True
     assert safety["per_subject_and_source_data_growth_quotas_implemented"] is True
+    assert safety["source_record_terminal_moderation_and_audit_implemented"] is True
+    assert safety["complete_contribution_mutation_flow_implemented"] is False
     assert safety["raw_ip_or_search_text_in_long_term_abuse_profile_allowed"] is False
     assert safety["external_integration_default_access"] == "read-only"
     assert safety["direct_ecosystem_database_write_allowed"] is False

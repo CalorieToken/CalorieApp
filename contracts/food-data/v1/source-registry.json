@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.food-data-source-registry",
-  "contract_version": "1.1.0",
-  "status": "source-record-foundation-implemented-no-public-source-enabled",
+  "contract_version": "1.2.0",
+  "status": "source-record-moderation-foundation-implemented-no-public-source-enabled",
   "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
   "principles": {
     "open_food_facts_is_one_adapter_not_canonical_model": true,
@@ -48,7 +48,23 @@
         "external_record_id",
         "source_version_or_content_digest",
         "retrieved_or_submitted_at",
-        "verification_status"
+        "verification_status",
+        "verification_version"
+      ]
+    },
+    "food_source_moderation_audit": {
+      "purpose": "Preserve minimal append-only evidence for one terminal source-record moderation decision.",
+      "required_fields": [
+        "source_record_id",
+        "idempotency_key",
+        "expected_version",
+        "resulting_version",
+        "previous_status",
+        "new_status",
+        "moderator_reference",
+        "authorization_scope",
+        "reason_code",
+        "created_at"
       ]
     },
     "food_product": {
@@ -125,6 +141,12 @@
     "idempotency_key_required": true,
     "optimistic_concurrency_or_expected_version_required": true,
     "append_only_audit_event_required": true,
+    "source_record_terminal_moderation_implemented": true,
+    "source_record_moderation_requires_expected_version": true,
+    "source_record_moderation_requires_idempotency_key": true,
+    "source_record_moderation_audit_is_insert_only_in_service": true,
+    "source_record_moderation_audit_allows_free_text_or_payload": false,
+    "complete_source_assertion_mutation_flow_implemented": false,
     "silent_history_or_source_record_rewrite_allowed": false,
     "correction_preserves_superseded_assertion": true
   },
@@ -154,14 +176,20 @@
   "implementation": {
     "current_adapter": "open_food_facts",
     "current_adapter_catalog_persistence_enabled": false,
-    "implemented_catalog_tables": ["food_source", "food_source_record"],
+    "implemented_catalog_tables": [
+      "food_source",
+      "food_source_record",
+      "food_source_moderation_audit"
+    ],
     "remaining_catalog_tables": [
       "food_product",
       "food_product_source_link",
       "food_attribute_assertion"
     ],
     "internal_source_record_ingest_service_implemented": true,
-    "source_record_update_or_delete_service_implemented": false,
+    "internal_source_record_terminal_moderation_service_implemented": true,
+    "general_source_record_update_or_delete_service_implemented": false,
+    "public_source_record_moderation_endpoint_enabled": false,
     "ingest_defaults_to_quarantine": true,
     "raw_source_payload_column_created": false,
     "source_independent_schema_compatibility_required_for_v2": true,

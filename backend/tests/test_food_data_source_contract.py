@@ -16,7 +16,7 @@ def test_food_data_model_is_source_independent_and_extensible() -> None:
     contract = _load_contract()
     principles = contract["principles"]
 
-    assert contract["contract_version"] == "1.1.0"
+    assert contract["contract_version"] == "1.2.0"
     assert principles["open_food_facts_is_one_adapter_not_canonical_model"] is True
     assert principles["single_source_database_design_allowed"] is False
     assert principles["new_source_requires_core_schema_rewrite"] is False
@@ -49,7 +49,20 @@ def test_every_source_record_and_assertion_remains_traceable() -> None:
         "source_version_or_content_digest",
         "retrieved_or_submitted_at",
         "verification_status",
+        "verification_version",
     } <= source_record_fields
+    assert {
+        "source_record_id",
+        "idempotency_key",
+        "expected_version",
+        "resulting_version",
+        "previous_status",
+        "new_status",
+        "moderator_reference",
+        "authorization_scope",
+        "reason_code",
+        "created_at",
+    } <= set(entities["food_source_moderation_audit"]["required_fields"])
     assert {"source_record_id", "attribute_key", "value", "verification_status"} <= (
         assertion_fields
     )
@@ -96,6 +109,12 @@ def test_source_expansion_preserves_licensing_privacy_and_history() -> None:
     assert mutation["direct_catalog_table_write_allowed"] is False
     assert mutation["contribution_creates_new_assertion"] is True
     assert mutation["contribution_quarantined_until_validation_and_moderation"] is True
+    assert mutation["source_record_terminal_moderation_implemented"] is True
+    assert mutation["source_record_moderation_requires_expected_version"] is True
+    assert mutation["source_record_moderation_requires_idempotency_key"] is True
+    assert mutation["source_record_moderation_audit_is_insert_only_in_service"] is True
+    assert mutation["source_record_moderation_audit_allows_free_text_or_payload"] is False
+    assert mutation["complete_source_assertion_mutation_flow_implemented"] is False
     assert mutation["silent_history_or_source_record_rewrite_allowed"] is False
     assert mutation["correction_preserves_superseded_assertion"] is True
 
@@ -108,6 +127,7 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
     assert implementation["implemented_catalog_tables"] == [
         "food_source",
         "food_source_record",
+        "food_source_moderation_audit",
     ]
     assert implementation["remaining_catalog_tables"] == [
         "food_product",
@@ -115,7 +135,13 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
         "food_attribute_assertion",
     ]
     assert implementation["internal_source_record_ingest_service_implemented"] is True
-    assert implementation["source_record_update_or_delete_service_implemented"] is False
+    assert implementation[
+        "internal_source_record_terminal_moderation_service_implemented"
+    ] is True
+    assert implementation[
+        "general_source_record_update_or_delete_service_implemented"
+    ] is False
+    assert implementation["public_source_record_moderation_endpoint_enabled"] is False
     assert implementation["ingest_defaults_to_quarantine"] is True
     assert implementation["raw_source_payload_column_created"] is False
     assert implementation["source_independent_schema_compatibility_required_for_v2"] is True

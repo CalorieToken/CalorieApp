@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -299,12 +299,20 @@
     "backup_separation_exception": "allowed only when required for recoverability and documented before use"
   },
   "food_data_sources": {
-    "status": "source-record-foundation-implemented-no-new-source-enabled",
+    "status": "source-record-moderation-foundation-implemented-no-new-source-enabled",
     "contract": "contracts/food-data/v1/source-registry.json",
     "current_adapter": "open_food_facts",
     "current_adapter_catalog_persistence_enabled": false,
-    "implemented_catalog_tables": ["food_source", "food_source_record"],
+    "implemented_catalog_tables": [
+      "food_source",
+      "food_source_record",
+      "food_source_moderation_audit"
+    ],
     "internal_source_record_ingest_service_implemented": true,
+    "internal_source_record_terminal_moderation_service_implemented": true,
+    "source_record_expected_version_and_audit_implemented": true,
+    "complete_source_assertion_mutation_flow_implemented": false,
+    "public_source_record_moderation_endpoint_enabled": false,
     "public_source_onboarding_enabled": false,
     "current_adapter_is_canonical_model": false,
     "current_adapter_is_exclusive_authority": false,
@@ -335,6 +343,8 @@
     "mutation_request_body_size_limit_implemented": true,
     "declared_and_actual_body_bytes_enforced": true,
     "per_subject_and_source_data_growth_quotas_implemented": true,
+    "source_record_terminal_moderation_and_audit_implemented": true,
+    "complete_contribution_mutation_flow_implemented": false,
     "capacity_alerts_and_onboarding_pause_required": true,
     "provider_neutral_capacity_signal_implemented": true,
     "new_identity_onboarding_pause_implemented": true,

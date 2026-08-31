@@ -81,6 +81,10 @@ class FoodSourceRecordDB(SQLModel, table=True):
             "verification_status IN ('quarantined', 'validated', 'rejected')",
             name="ck_food_source_record_verification_status",
         ),
+        CheckConstraint(
+            "verification_version > 0",
+            name="ck_food_source_record_verification_version",
+        ),
     )
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
@@ -89,6 +93,46 @@ class FoodSourceRecordDB(SQLModel, table=True):
     source_version_or_content_digest: str = Field(max_length=128)
     retrieved_or_submitted_at: datetime = Field(default_factory=utc_now)
     verification_status: str = Field(default="quarantined", max_length=20)
+    verification_version: int = Field(default=1, gt=0)
+
+
+class FoodSourceModerationAuditDB(SQLModel, table=True):
+    """Minimal append-only evidence for one terminal source-record decision."""
+
+    __tablename__ = "food_source_moderation_audit"
+    __table_args__ = (
+        UniqueConstraint(
+            "idempotency_key",
+            name="uq_food_source_moderation_audit_idempotency",
+        ),
+        CheckConstraint(
+            "previous_status = 'quarantined'",
+            name="ck_food_source_moderation_audit_previous_status",
+        ),
+        CheckConstraint(
+            "new_status IN ('validated', 'rejected')",
+            name="ck_food_source_moderation_audit_new_status",
+        ),
+        CheckConstraint(
+            "expected_version > 0 AND resulting_version = expected_version + 1",
+            name="ck_food_source_moderation_audit_versions",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    source_record_id: str = Field(
+        foreign_key="food_source_record.id",
+        index=True,
+    )
+    idempotency_key: str = Field(max_length=128)
+    expected_version: int = Field(gt=0)
+    resulting_version: int = Field(gt=1)
+    previous_status: str = Field(max_length=20)
+    new_status: str = Field(max_length=20)
+    moderator_reference: str = Field(max_length=120)
+    authorization_scope: str = Field(max_length=80)
+    reason_code: str = Field(max_length=80)
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 class CalorieAppUserDB(SQLModel, table=True):

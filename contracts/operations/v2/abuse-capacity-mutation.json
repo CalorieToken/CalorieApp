@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.6.0",
+  "contract_version": "1.7.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -211,6 +211,25 @@
     "optimistic_concurrency_or_expected_version_required": true,
     "append_only_audit_event_required": true,
     "audit_event_may_contain_secret_or_excess_personal_data": false,
+    "source_record_terminal_moderation_implemented": true,
+    "source_record_moderation_authorization_scope": "catalog:source-record:moderate",
+    "source_record_moderation_requires_expected_version": true,
+    "source_record_moderation_requires_idempotency_key": true,
+    "source_record_moderation_transitions": [
+      "quarantined-to-validated",
+      "quarantined-to-rejected"
+    ],
+    "source_record_moderation_terminal_status_rewrite_allowed": false,
+    "source_record_moderation_audit_table": "food_source_moderation_audit",
+    "source_record_moderation_audit_inserted_atomically": true,
+    "source_record_moderation_audit_service_is_append_only": true,
+    "source_record_moderation_audit_stores_free_text_payload_email_or_ip": false,
+    "source_record_moderation_lock": "record-and-idempotency-keyed-postgresql-transaction-advisory-locks",
+    "source_record_moderation_conflict_response": "409-without-retry-after",
+    "source_record_moderation_database_failure_response": "503-with-bounded-retry-after",
+    "source_record_moderation_public_endpoint_enabled": false,
+    "postgresql_source_record_moderation_multi_process_ci_proof_implemented": true,
+    "complete_source_assertion_mutation_flow_implemented": false,
     "community_or_ecosystem_contribution_enters_quarantine": true,
     "moderation_required_before_public_activation": true,
     "contribution_creates_source_assertion_instead_of_overwrite": true,
@@ -321,7 +340,12 @@
     "idempotent-immutable-source-record-ingest-without-duplicate-budget-use",
     "postgresql-multi-process-source-growth-budget-proof",
     "source-ingest-fails-closed-and-defaults-to-quarantine",
-    "source-record-schema-stores-no-raw-payload"
+    "source-record-schema-stores-no-raw-payload",
+    "terminal-source-record-moderation-requires-purpose-scope-and-expected-version",
+    "idempotent-source-record-moderation-without-terminal-rewrite",
+    "atomic-minimal-append-only-source-moderation-audit",
+    "postgresql-multi-process-source-moderation-proof",
+    "source-moderation-fails-closed-on-database-error"
   ],
   "release_blocking_missing_controls": [
     "identity-start-short-lived-network-signal-limit",

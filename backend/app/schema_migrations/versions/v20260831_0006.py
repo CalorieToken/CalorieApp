@@ -78,7 +78,13 @@ def validate(connection: Connection) -> None:
             for column in inspector.get_columns(table.name)
         }
         expected_columns = {column.name for column in table.columns}
-        if actual_columns != expected_columns:
+        allowed_columns = set(expected_columns)
+        if table.name == food_source_record.name:
+            allowed_columns.add("verification_version")
+        if frozenset(actual_columns) not in {
+            frozenset(expected_columns),
+            frozenset(allowed_columns),
+        }:
             raise RuntimeError(f"Schema column drift detected for {table.name}")
 
     source_unique_sets = {
