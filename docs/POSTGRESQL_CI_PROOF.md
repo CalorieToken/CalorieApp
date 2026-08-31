@@ -41,7 +41,10 @@ provider account, recurring subscription, live database or user data.
     idempotent after the budget is full.
 17. Start independent source-record moderators and prove exactly one of twelve
     competing decisions at the same expected version commits with one audit.
-18. Remove each operational rate table in an isolated test and prove provider
+18. Start independent source-assertion writers and prove a per-source assertion
+    budget admits exactly eight of twelve validated-lineage writes, then prove
+    an admitted duplicate remains idempotent after the budget is full.
+19. Remove each operational rate table in an isolated test and prove provider
     and route admission fail closed before protected work.
 
 The integration test refuses to reset a database unless the host is loopback

@@ -235,6 +235,34 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation[
         "postgresql_source_record_moderation_multi_process_ci_proof_implemented"
     ] is True
+    assert mutation["source_assertion_ingest_implemented"] is True
+    assert mutation["source_assertion_ingest_authorization_scope"] == (
+        "catalog:source-assertion:ingest"
+    )
+    assert mutation[
+        "source_assertion_ingest_requires_validated_record_and_link"
+    ] is True
+    assert mutation["source_assertion_ingest_requires_expected_record_version"] is True
+    assert mutation["source_assertion_ingest_requires_idempotency_key"] is True
+    assert mutation["source_assertion_ingest_default_status"] == "quarantined"
+    assert mutation["source_assertion_ingest_resulting_version"] == 1
+    assert mutation["source_assertion_ingest_audit_inserted_atomically"] is True
+    assert mutation["source_assertion_ingest_audit_service_is_append_only"] is True
+    assert mutation[
+        "source_assertion_ingest_audit_stores_free_text_payload_email_or_ip"
+    ] is False
+    assert mutation["source_assertion_ingest_conflict_response"] == (
+        "409-without-retry-after"
+    )
+    assert mutation["source_assertion_ingest_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert mutation["source_assertion_ingest_public_endpoint_enabled"] is False
+    assert mutation["source_assertion_correction_service_implemented"] is False
+    assert mutation["source_assertion_moderation_service_implemented"] is False
+    assert mutation[
+        "postgresql_source_assertion_ingest_multi_process_ci_proof_implemented"
+    ] is True
     assert mutation["complete_source_assertion_mutation_flow_implemented"] is False
     assert mutation["community_or_ecosystem_contribution_enters_quarantine"] is True
     assert mutation["moderation_required_before_public_activation"] is True
@@ -304,6 +332,32 @@ def test_capacity_protects_existing_history_without_forcing_payment() -> None:
     assert growth["sqlite_source_budget_is_live_multi_instance_proof"] is False
     assert growth[
         "postgresql_source_budget_multi_process_ci_proof_implemented"
+    ] is True
+    assert growth["per_source_assertion_budget_implemented"] is True
+    assert growth["per_source_assertion_budget_scope"] == (
+        "retained-source-assertions-per-registered-source"
+    )
+    assert growth["per_source_assertion_limit_source"] == (
+        "reviewed-positive-food-source-assertion-limit"
+    )
+    assert growth["per_source_assertion_budget_lock"] == (
+        "source-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert growth["per_source_assertion_budget_limit_response"] == (
+        "409-without-retry-after"
+    )
+    assert growth["per_source_assertion_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert growth["per_source_assertion_database_failure_fails_closed"] is True
+    assert growth[
+        "per_source_assertion_duplicate_idempotency_key_consumes_budget"
+    ] is False
+    assert growth[
+        "sqlite_source_assertion_budget_is_live_multi_instance_proof"
+    ] is False
+    assert growth[
+        "postgresql_source_assertion_budget_multi_process_ci_proof_implemented"
     ] is True
     assert growth["current_open_food_facts_catalog_persistence_enabled"] is False
     assert growth["provider_neutral_database_size_signal_implemented"] is True

@@ -57,6 +57,9 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
     assert "synthetic-custom-format-backup-and-distinct-database-restore" in proof[
         "automated_evidence"
     ]
+    assert "bounded-source-assertion-ingest-and-multi-process-budget" in proof[
+        "automated_evidence"
+    ]
     assert "encrypted-provider-staging-backup-restoration" in proof["does_not_prove"]
     assert proof["provider_selection_status"] == "pending-separate-evaluation"
 
@@ -242,6 +245,7 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
         "food_product",
         "food_product_source_link",
         "food_attribute_assertion",
+        "food_attribute_assertion_ingest_audit",
     ]
     assert sources["internal_source_record_ingest_service_implemented"] is True
     assert sources[
@@ -252,7 +256,22 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
     assert sources[
         "catalog_conflict_retention_and_licence_evidence_verified"
     ] is True
-    assert sources["catalog_assertion_write_service_implemented"] is False
+    assert sources["catalog_assertion_write_service_implemented"] is True
+    assert sources["internal_source_assertion_ingest_service_implemented"] is True
+    assert sources[
+        "source_assertion_ingest_requires_validated_record_and_link"
+    ] is True
+    assert sources[
+        "source_assertion_ingest_requires_expected_record_version_and_idempotency"
+    ] is True
+    assert sources["source_assertion_ingest_defaults_to_quarantine"] is True
+    assert sources[
+        "source_assertion_ingest_atomic_minimal_audit_implemented"
+    ] is True
+    assert sources["source_assertion_ingest_per_source_budget_implemented"] is True
+    assert sources["source_assertion_correction_service_implemented"] is False
+    assert sources["source_assertion_moderation_service_implemented"] is False
+    assert sources["public_source_assertion_ingest_endpoint_enabled"] is False
     assert sources["public_catalog_read_endpoint_enabled"] is False
     assert sources["complete_source_assertion_mutation_flow_implemented"] is False
     assert sources["public_source_record_moderation_endpoint_enabled"] is False
@@ -288,6 +307,8 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety["declared_and_actual_body_bytes_enforced"] is True
     assert safety["per_subject_and_source_data_growth_quotas_implemented"] is True
     assert safety["source_record_terminal_moderation_and_audit_implemented"] is True
+    assert safety["source_assertion_ingest_and_audit_implemented"] is True
+    assert safety["source_assertion_ingest_per_source_budget_implemented"] is True
     assert safety["complete_contribution_mutation_flow_implemented"] is False
     assert safety["raw_ip_or_search_text_in_long_term_abuse_profile_allowed"] is False
     assert safety["external_integration_default_access"] == "read-only"

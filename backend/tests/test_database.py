@@ -148,7 +148,7 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 8
+        assert count == 9
     finally:
         test_engine.dispose()
 
@@ -267,7 +267,7 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
                 "SELECT applied_at, approval_reference "
                 "FROM calorie_schema_revision ORDER BY revision"
             ).all()
-        assert len(history) == 8
+        assert len(history) == 9
         for applied_at, reference in history:
             applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
             age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()

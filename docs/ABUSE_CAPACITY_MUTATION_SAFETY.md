@@ -83,6 +83,15 @@ quarantine and no raw source payload is stored. A full source returns persistent
 `409`, while storage failure returns bounded `503`. There is no public source
 onboarding or catalog-write endpoint. See `PER_SOURCE_INGEST_BUDGET.md`.
 
+Internal assertion ingest now has its own positive retained-assertion budget per
+registered source. It requires an enabled source, active product, validated
+record and validated product/record link at the expected record version. Every
+new assertion is quarantined, an exact duplicate is idempotent, and the minimal
+audit receipt commits atomically. PostgreSQL serializes record, idempotency and
+source-budget decisions across processes. A full budget returns `409`; database
+failure returns bounded `503`. No public endpoint exists. See
+`SOURCE_ASSERTION_INGEST.md`.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
@@ -118,11 +127,12 @@ requires an idempotency key and expected version, permits only quarantine to
 validated/rejected transitions, and appends one minimal audit event in the same
 transaction. PostgreSQL serializes both record and idempotency conflicts across
 processes. No public route exists. The source-neutral product/link/assertion
-schema and read-only licensed evidence query now exist, but their contribution,
-moderation and correction write services plus production audit-table privilege
-proof remain open. The combined mutation release gate is therefore not yet
-claimed complete. Exact boundaries are in `SOURCE_RECORD_MODERATION.md` and
-`SOURCE_ASSERTION_CATALOG.md`.
+schema, read-only licensed evidence query and bounded internal assertion-ingest
+service now exist. Public contribution, assertion moderation, correction and
+production audit-table privilege proof remain open. The combined mutation
+release gate is therefore not yet claimed complete. Exact boundaries are in
+`SOURCE_RECORD_MODERATION.md`, `SOURCE_ASSERTION_CATALOG.md` and
+`SOURCE_ASSERTION_INGEST.md`.
 
 ## Capacity and incident boundary
 
