@@ -45,14 +45,24 @@ def _validate_ingest_fields(
 ) -> None:
     if not SOURCE_KEY_PATTERN.fullmatch(source_key):
         raise ValueError("source_key must use the reviewed lowercase key format")
-    if not external_record_id.strip() or len(external_record_id) > 255:
-        raise ValueError("external_record_id must contain 1 to 255 characters")
+    if (
+        not external_record_id.strip()
+        or external_record_id != external_record_id.strip()
+        or len(external_record_id) > 255
+    ):
+        raise ValueError(
+            "external_record_id must contain 1 to 255 characters without "
+            "surrounding whitespace"
+        )
     if (
         not source_version_or_content_digest.strip()
+        or source_version_or_content_digest
+        != source_version_or_content_digest.strip()
         or len(source_version_or_content_digest) > 128
     ):
         raise ValueError(
-            "source_version_or_content_digest must contain 1 to 128 characters"
+            "source_version_or_content_digest must contain 1 to 128 characters "
+            "without surrounding whitespace"
         )
 
 
@@ -132,6 +142,11 @@ def ingest_source_record(
         external_record_id,
         source_version_or_content_digest,
     )
+    if (
+        retrieved_or_submitted_at is not None
+        and retrieved_or_submitted_at.tzinfo is not None
+    ):
+        raise ValueError("retrieved_or_submitted_at must be a naive UTC datetime")
     timestamp = retrieved_or_submitted_at or utc_now()
 
     try:

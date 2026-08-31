@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
 
 import pytest
 from sqlalchemy import inspect
@@ -151,6 +152,10 @@ def test_unregistered_or_paused_source_fails_closed(tmp_path, source_key: str) -
         ("valid-key", "   ", "v1"),
         ("valid-key", "record", ""),
         ("valid-key", "record", "   "),
+        ("valid-key", " record", "v1"),
+        ("valid-key", "record ", "v1"),
+        ("valid-key", "record", " v1"),
+        ("valid-key", "record", "v1 "),
         ("x" * 101, "record", "v1"),
         ("valid-key", "x" * 256, "v1"),
         ("valid-key", "record", "x" * 129),
@@ -171,6 +176,21 @@ def test_invalid_source_ingest_identity_is_rejected_before_database_work(
             source_key=source_key,
             external_record_id=external_id,
             source_version_or_content_digest=version,
+        )
+
+
+def test_timezone_aware_source_timestamp_is_rejected_before_database_work() -> None:
+    class UnusedSession:
+        def get_bind(self):
+            raise AssertionError("database must not be touched")
+
+    with pytest.raises(ValueError, match="naive UTC"):
+        ingest_source_record(  # type: ignore[arg-type]
+            UnusedSession(),
+            source_key="synthetic-source",
+            external_record_id="record-1",
+            source_version_or_content_digest="version-1",
+            retrieved_or_submitted_at=datetime.now(UTC),
         )
 
 
