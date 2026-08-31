@@ -532,14 +532,21 @@ def test_postgresql_source_moderation_is_atomic_across_processes(
             source_version_or_content_digest="version-1",
         ).record.id
 
-    arguments = [(raw_url, record_id, index) for index in range(12)]
+    decision_count = 12
+    worker_count = 4
+    arguments = [
+        (raw_url, record_id, index) for index in range(decision_count)
+    ]
     context = multiprocessing.get_context("spawn")
-    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+    with ProcessPoolExecutor(
+        max_workers=worker_count,
+        mp_context=context,
+    ) as executor:
         results = list(executor.map(_source_moderation_process_attempt, arguments))
 
     assert [result[0] for result in results].count("moderated") == 1
     rejected = [result for result in results if result[0] == "rejected"]
-    assert len(rejected) == 11
+    assert len(rejected) == decision_count - 1
     assert {result[1] for result in rejected} == {409}
     assert {result[2] for result in rejected} == {
         "source_record_version_conflict"

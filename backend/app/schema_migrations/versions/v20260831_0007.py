@@ -75,6 +75,7 @@ def upgrade(connection: Connection) -> None:
             sa.text(
                 "ALTER TABLE food_source_record ADD COLUMN "
                 "verification_version INTEGER NOT NULL DEFAULT 1 "
+                "CONSTRAINT ck_food_source_record_verification_version "
                 "CHECK (verification_version > 0)"
             )
         )
@@ -95,11 +96,9 @@ def validate(connection: Connection) -> None:
     if version_column is None or bool(version_column["nullable"]):
         raise RuntimeError("Source-record verification version is missing or nullable")
     record_checks = inspector.get_check_constraints(food_source_record.name)
-    if not any(
-        "verification_version" in str(item.get("sqltext", ""))
-        and "> 0" in str(item.get("sqltext", ""))
-        for item in record_checks
-    ):
+    if "ck_food_source_record_verification_version" not in {
+        item["name"] for item in record_checks
+    }:
         raise RuntimeError("Source-record verification version constraint is missing")
 
     if not inspector.has_table(food_source_moderation_audit.name):

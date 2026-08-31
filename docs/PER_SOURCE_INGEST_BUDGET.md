@@ -19,8 +19,9 @@ HTTP route for it.
 ## Immutable and idempotent records
 
 `food_source_record` stores only the source link, external record identifier,
-source version or content digest, timestamp, verification status and version. It has no
-raw-payload, private-user, session, email, wallet or IP column.
+source version or content digest, timestamp, verification status and
+verification version. It has no raw-payload, private-user, session, email,
+wallet or IP column.
 
 The ingest service exposes insert-or-return-existing behavior only. A separate
 internal service now permits only terminal, version-checked moderation with an

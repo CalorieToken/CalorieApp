@@ -22,7 +22,7 @@ schema for each one.
 | Entity | Role |
 |---|---|
 | `food_source` | Operator, category, jurisdiction, trust state, licence and attribution |
-| `food_source_record` | Immutable provider record, external id, version/digest and retrieval time |
+| `food_source_record` | Immutable provider identity/content reference plus terminal verification status/version |
 | `food_source_moderation_audit` | Minimal append-only evidence for a terminal record decision |
 | `food_product` | Internal source-neutral food or product identity |
 | `food_product_source_link` | Reviewable match between a provider record and internal product |

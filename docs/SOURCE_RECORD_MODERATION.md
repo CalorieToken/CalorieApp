@@ -35,9 +35,10 @@ failure rolls back and returns bounded `503` semantics with a five-second
 retry value.
 
 SQLite uses one process-local lock for development and unit-test equivalence.
-It is not live or multi-process evidence. CI starts independent PostgreSQL
-processes and proves that exactly one of twelve decisions at expected version
-`1` commits, producing record version `2` and exactly one audit event.
+It is not live or multi-process evidence. CI uses four independent PostgreSQL
+worker processes to execute twelve competing decisions and proves that exactly
+one decision at expected version `1` commits, producing record version `2` and
+exactly one audit event.
 
 ## Minimal audit evidence
 
