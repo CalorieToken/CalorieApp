@@ -75,7 +75,7 @@ until the durable-data and privacy gates pass.
 | PostgreSQL support | Ephemeral PostgreSQL 16 CI gate configured | Require successful migration, identity isolation and restart checks for every merge candidate |
 | Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
-| Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
+| Zero-additional-cost operation | Time-bounded shortlist recorded; no provider selected | Human-approve a synthetic Neon staging experiment, then prove alerts, backup and exit |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
@@ -86,7 +86,7 @@ until the durable-data and privacy gates pass.
 ## DS-2 implementation order
 
 1. Run the complete migration, identity and ownership suite against PostgreSQL.
-2. Select a zero-additional-subscription provider and define quota alerts.
+2. Human-review the zero-additional-subscription shortlist and approve one synthetic staging experiment.
 3. Prove the no-additional-cost exit path with a synthetic database copy.
 4. Repeat the synthetic restart and process-replacement persistence proofs on the chosen provider.
 5. Implement authenticated data export and versioned import.
@@ -186,6 +186,9 @@ Therefore the release gate is operational rather than promotional: monitor
 capacity, prohibit automatic paid upgrades, keep a tested export/import and
 restore path, and pause new onboarding before a quota can endanger existing
 records. Existing history may never be deleted merely to remain under a limit.
+The time-bounded official-source shortlist and its human/live gates are recorded
+in `contracts/data-safety/v1/provider-evaluation.json` and
+`docs/ZERO_COST_PROVIDER_EVALUATION.md`.
 
 BigchainDB is not selected. Its server combines MongoDB and Tendermint and a
 meaningfully decentralized deployment requires multiple independently operated

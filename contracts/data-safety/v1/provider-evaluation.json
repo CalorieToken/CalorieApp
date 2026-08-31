@@ -1,0 +1,147 @@
+{
+  "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
+  "contract_version": "1.0.0",
+  "evidence_reviewed_on": "2026-08-31",
+  "evidence_revalidate_by": "2026-11-29",
+  "decision_state": "shortlist-ready-human-selection-and-live-proof-required",
+  "provider_selected": false,
+  "provider_account_created": false,
+  "payment_method_added": false,
+  "deployment_or_live_data_mutation_performed": false,
+  "third_party_terms_may_change": true,
+  "unchanged_free_tier_forever_claim_allowed": false,
+  "non_negotiable_requirements": {
+    "zero_additional_recurring_subscription_at_initial_release": true,
+    "standard_postgresql_connection_and_portable_schema": true,
+    "provider_expiry_may_define_user_history_retention": false,
+    "automatic_paid_upgrade_allowed": false,
+    "automatic_existing_history_deletion_allowed": false,
+    "new_onboarding_pauses_before_capacity_failure": true,
+    "encrypted_off_provider_backup_required": true,
+    "provider_exit_restore_proof_required": true,
+    "eu_data_region_and_data_processing_terms_review_required": true,
+    "synthetic_staging_proof_before_real_user_data": true
+  },
+  "capacity_policy": {
+    "alert_threshold_percent": [70, 85, 95],
+    "new_onboarding_pause_at_or_before_percent": 95,
+    "existing_user_read_export_and_erasure_access_preserved_while_paused": true,
+    "provider_quota_values_must_be_confirmed_at_account_creation": true,
+    "provider_dashboard_only_monitoring_counts_as_complete": false
+  },
+  "database_candidates": [
+    {
+      "id": "neon_free",
+      "evaluation": "recommended-for-synthetic-staging-evaluation-only",
+      "selected": false,
+      "reviewed_plan": "Free",
+      "reported_monthly_price_usd": 0,
+      "reported_storage_gb_per_project": 0.5,
+      "reported_compute_cu_hours_per_month": 100,
+      "reported_egress_gb_per_month": 5,
+      "reported_restore_window_hours": 6,
+      "scale_to_zero": true,
+      "fixed_database_expiry_evidence_status": "not-listed-in-reviewed-plan-page-reconfirm-at-live-review",
+      "risks": [
+        "finite compute storage and egress quotas",
+        "cold start after scale to zero",
+        "short provider restore window is not an independent backup",
+        "free-plan terms can change",
+        "EU region DPA quota exhaustion behavior and account controls still require live review"
+      ],
+      "official_sources": [
+        "https://neon.com/pricing",
+        "https://neon.com/docs/introduction/plans",
+        "https://neon.com/docs/introduction/scale-to-zero",
+        "https://neon.com/docs/introduction/regions"
+      ]
+    },
+    {
+      "id": "supabase_free",
+      "evaluation": "conditional-alternative",
+      "selected": false,
+      "reviewed_plan": "Free",
+      "reported_monthly_price_usd": 0,
+      "reported_database_size_mb_per_project": 500,
+      "reported_egress_gb_per_month": 5,
+      "automatic_pause_after_low_activity_days": 7,
+      "paused_project_restore_window_days": 365,
+      "automatic_backups_in_free_plan": false,
+      "risks": [
+        "low-activity projects can pause even when still needed",
+        "automatic backups are not included in the free plan",
+        "finite database and egress quotas",
+        "free-plan terms can change",
+        "EU region DPA quota exhaustion behavior and account controls still require live review"
+      ],
+      "official_sources": [
+        "https://supabase.com/pricing",
+        "https://supabase.com/docs/guides/platform/free-project-pausing",
+        "https://supabase.com/docs/guides/platform/compute-and-disk",
+        "https://supabase.com/docs/guides/platform/billing-on-supabase"
+      ]
+    },
+    {
+      "id": "render_free_postgresql",
+      "evaluation": "rejected-as-durable-primary-history-store",
+      "selected": false,
+      "reviewed_plan": "Free",
+      "reported_monthly_price_usd": 0,
+      "reported_storage_gb": 1,
+      "fixed_expiry_days": 30,
+      "post_expiry_upgrade_grace_days": 14,
+      "data_deleted_after_grace_without_upgrade": true,
+      "managed_backups_supported": false,
+      "rejection_reasons": [
+        "fixed expiry conflicts with durable user history",
+        "continued access requires a paid upgrade",
+        "free databases do not support backups"
+      ],
+      "official_sources": [
+        "https://render.com/docs/free"
+      ]
+    }
+  ],
+  "runtime_candidate": {
+    "id": "existing_render_free_web_service",
+    "evaluation": "conditional-existing-showcase-runtime",
+    "selected_for_public_release": false,
+    "reported_monthly_workspace_instance_hours": 750,
+    "idle_spin_down_minutes": 15,
+    "local_filesystem_is_ephemeral": true,
+    "external_database_required_for_durable_history": true,
+    "risks": [
+      "cold starts",
+      "workspace-wide instance-hour and bandwidth limits",
+      "suspension can occur after unusually high service-initiated external traffic",
+      "free services are not represented by Render as production hosting"
+    ],
+    "official_sources": [
+      "https://render.com/docs/free"
+    ]
+  },
+  "recommended_next_experiment": {
+    "database_candidate": "neon_free",
+    "runtime_candidate": "existing_render_free_web_service",
+    "scope": "isolated-synthetic-staging-only",
+    "human_approval_required_before_account_or_provider_configuration": true,
+    "real_user_or_production_data_allowed": false,
+    "production_deployment_allowed": false
+  },
+  "release_blocking_before_provider_selection": [
+    "fresh official terms recheck",
+    "EU data region and data processing terms review",
+    "confirm no automatic billing or paid upgrade path",
+    "confirm quota exhaustion behavior and machine-readable monitoring path",
+    "approve encrypted off-provider backup design",
+    "approve provider-exit import target and runbook"
+  ],
+  "release_blocking_after_provider_selection": [
+    "synthetic forward migration and readiness proof",
+    "synthetic restart and real redeploy persistence proof",
+    "synthetic encrypted backup restoration",
+    "synthetic provider-exit restoration",
+    "capacity alerts and onboarding-pause exercise",
+    "human review before any real user data"
+  ]
+}

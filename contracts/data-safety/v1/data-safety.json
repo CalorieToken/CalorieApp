@@ -386,7 +386,12 @@
     "new_onboarding_must_pause_before_data_safety_or_quota_failure": true,
     "existing_user_history_may_be_deleted_to_stay_free": false,
     "free_tier_expiry_may_define_retention": false,
-    "no_additional_cost_exit_plan_required_before_public_onboarding": true
+    "no_additional_cost_exit_plan_required_before_public_onboarding": true,
+    "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
+    "provider_shortlist_status": "time-bounded-evidence-recorded-human-selection-required",
+    "provider_evidence_reviewed_on": "2026-08-31",
+    "provider_evidence_revalidate_by": "2026-11-29",
+    "provider_selected": false
   },
   "free_core_and_optional_services": {
     "free_core": [

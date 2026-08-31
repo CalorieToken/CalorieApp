@@ -284,6 +284,10 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
     assert cost["new_onboarding_must_pause_before_data_safety_or_quota_failure"] is True
     assert cost["existing_user_history_may_be_deleted_to_stay_free"] is False
     assert cost["no_additional_cost_exit_plan_required_before_public_onboarding"] is True
+    assert cost["provider_evaluation_contract"] == (
+        "contracts/data-safety/v1/provider-evaluation.json"
+    )
+    assert cost["provider_selected"] is False
     assert access["optional_value_added_services_may_be_paid"] is True
     assert access["core_data_rights_may_be_paywalled"] is False
     assert access["identity_access_may_be_paywalled"] is False
