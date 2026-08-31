@@ -167,6 +167,11 @@ status updates instead of frequent API polling:
 [return URLs](https://docs.xaman.dev/concepts/payloads-sign-requests/payload-return-url),
 [WebSocket status](https://docs.xaman.dev/concepts/payloads-sign-requests/status-updates/websocket).
 
+A dedicated Android Xaman acceptance lane is specified in
+[docs/MOBILE_XAMAN_TEST_LANE.md](docs/MOBILE_XAMAN_TEST_LANE.md). Its preflight
+is read-only and accepts no wallet credentials. Emulator use remains behind a
+go/no-go gate, with a dedicated physical Android device as the fallback.
+
 Create frontend/.env.local from the template before running the frontend.
 
 Frontend default local URL: http://localhost:3000

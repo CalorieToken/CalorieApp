@@ -51,6 +51,9 @@ jobs:
           python -m unittest tools.tests.test_identity_contracts
           python -m unittest tools.tests.test_localization_contracts
 
+      - name: Test mobile Xaman preflight logic
+        run: python -m unittest tools.tests.test_mobile_xaman_preflight
+
   wordpress-plugin-release-check:
     name: WordPress plugin release check
     runs-on: ubuntu-latest
