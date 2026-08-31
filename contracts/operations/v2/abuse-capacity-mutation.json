@@ -120,6 +120,11 @@
     "duplicate_record_idempotency_required": true,
     "unbounded_blob_or_image_ingest_allowed": false,
     "capacity_alert_threshold_percent": [70, 85, 95],
+    "provider_neutral_database_size_signal_implemented": true,
+    "exact_capacity_limit_requires_operator_configuration": true,
+    "new_identity_onboarding_pause_at_percent_implemented": 95,
+    "configured_measurement_failure_pauses_new_onboarding": true,
+    "existing_identity_login_bypasses_onboarding_pause": true,
     "automatic_paid_upgrade_allowed": false,
     "automatic_existing_history_deletion_allowed": false,
     "new_onboarding_pauses_before_safety_capacity_failure": true
@@ -141,7 +146,12 @@
     "no-fallback-bypass-after-upstream-http-status",
     "frontend-retry-after-bounds",
     "five-second-identity-status-poll-interval",
-    "identity-state-expiry-cleanup-and-callback-replay-protection"
+    "identity-state-expiry-cleanup-and-callback-replay-protection",
+    "provider-neutral-database-capacity-classification-at-70-85-95-percent",
+    "new-identity-onboarding-pause-at-95-percent",
+    "configured-capacity-measurement-failure-pauses-new-onboarding",
+    "existing-identity-login-bypasses-onboarding-only-capacity-guard",
+    "postgresql-database-size-signal-ci-proof"
   ],
   "release_blocking_missing_controls": [
     "shared-route-and-egress-rate-governor",
@@ -150,7 +160,8 @@
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
-    "capacity-alerts-onboarding-pause-and-incident-runbook",
+    "capacity-alert-delivery-and-incident-runbook",
+    "chosen-provider-exact-quota-configuration-and-live-pause-exercise",
     "multi-instance-and-proxy-topology-test"
   ]
 }

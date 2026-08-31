@@ -20,6 +20,11 @@
       "evidence": [
         "contracts/operations/v2/abuse-capacity-mutation.json",
         "docs/ABUSE_CAPACITY_MUTATION_SAFETY.md",
+        "docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md",
+        "backend/app/capacity.py",
+        "backend/tests/test_capacity.py",
+        "backend/tests/test_identity_endpoints.py",
+        "backend/tests/test_postgresql_integration.py",
         "backend/tests/test_open_food_facts_normalization.py"
       ]
     },
@@ -69,8 +74,11 @@
         "contracts/data-safety/v1/data-safety.json",
         "contracts/data-safety/v1/provider-evaluation.json",
         "backend/tests/test_provider_evaluation_contract.py",
+        "backend/app/capacity.py",
+        "backend/tests/test_capacity.py",
         "docs/DURABLE_DATA_FOUNDATION.md",
-        "docs/ZERO_COST_PROVIDER_EVALUATION.md"
+        "docs/ZERO_COST_PROVIDER_EVALUATION.md",
+        "docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md"
       ]
     },
     {

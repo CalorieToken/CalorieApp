@@ -13,7 +13,7 @@ import os
 from datetime import UTC, datetime, timedelta
 from secrets import compare_digest
 from secrets import token_urlsafe
-from typing import Optional
+from typing import Callable, Optional
 from uuid import uuid4
 
 from sqlalchemy import delete, update
@@ -471,6 +471,7 @@ def get_or_create_user_from_external_identity(
     provider: str,
     external_subject: str,
     xrpl_address: Optional[str],
+    new_user_guard: Optional[Callable[[Session], None]] = None,
 ) -> tuple[CalorieAppUserDB, bool]:
     """
     Get or create CalorieAppUser from external identity.
@@ -504,6 +505,10 @@ def get_or_create_user_from_external_identity(
             raise RuntimeError(
                 "External identity corrupted: linked user not found"
             )
+
+    # Existing identities deliberately bypass onboarding-only safety guards.
+    if new_user_guard is not None:
+        new_user_guard(session)
 
     # New user: create
     user_db = CalorieAppUserDB()

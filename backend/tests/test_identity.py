@@ -259,6 +259,26 @@ class TestUserIdentity:
         assert user.id  # Should have generated an ID
         assert user.status == "active"
 
+    def test_new_user_guard_runs_before_identity_is_created(
+        self, test_session: Session
+    ):
+        """A denied onboarding attempt must leave no partial user or identity."""
+
+        def deny_new_user(session: Session) -> None:
+            raise RuntimeError("synthetic onboarding pause")
+
+        with pytest.raises(RuntimeError, match="synthetic onboarding pause"):
+            get_or_create_user_from_external_identity(
+                test_session,
+                "wordpress_xumm",
+                "guarded-new-user",
+                None,
+                new_user_guard=deny_new_user,
+            )
+
+        assert test_session.exec(select(CalorieAppUserDB)).all() == []
+        assert test_session.exec(select(ExternalIdentityDB)).all() == []
+
     def test_get_existing_user_by_identity(self, test_session: Session):
         """Getting an existing identity should return the same user."""
         provider = "wordpress_xumm"
@@ -285,6 +305,31 @@ class TestUserIdentity:
 
         assert not created2  # Should be existing user
         assert user2.id == user1_id
+
+    def test_existing_identity_bypasses_new_user_guard(
+        self, test_session: Session
+    ):
+        """Capacity pauses must not lock out an already-onboarded identity."""
+        user, created = get_or_create_user_from_external_identity(
+            test_session,
+            "wordpress_xumm",
+            "existing-guard-bypass",
+            None,
+        )
+        assert created is True
+
+        def deny_if_called(session: Session) -> None:
+            raise AssertionError("existing identity must bypass new-user guard")
+
+        same_user, created_again = get_or_create_user_from_external_identity(
+            test_session,
+            "wordpress_xumm",
+            "existing-guard-bypass",
+            None,
+            new_user_guard=deny_if_called,
+        )
+        assert created_again is False
+        assert same_user.id == user.id
 
     def test_different_external_subjects_create_different_users(
         self, test_session: Session

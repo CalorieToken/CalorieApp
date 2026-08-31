@@ -16,15 +16,17 @@ provider account, recurring subscription, live database or user data.
 1. Start an empty PostgreSQL database and apply the forward-only migration.
 2. Verify schema head and database readiness.
 3. Run the staging migration command with an explicit approval reference.
-4. Upgrade a supported legacy `food_log` table without losing its row.
-5. Create two synthetic Identity Bridge users and opaque application sessions.
-6. Log separate food records through the real FastAPI endpoints.
-7. Dispose the application database engine and create a replacement engine.
-8. Confirm both histories survive and remain isolated by owner.
-9. Confirm one synthetic user cannot delete the other user's record.
-10. Create a custom-format logical backup, restore it into a distinct disposable
+4. Read PostgreSQL's database-size signal and prove an exact configured budget
+   activates the 95-percent onboarding-pause classification.
+5. Upgrade a supported legacy `food_log` table without losing its row.
+6. Create two synthetic Identity Bridge users and opaque application sessions.
+7. Log separate food records through the real FastAPI endpoints.
+8. Dispose the application database engine and create a replacement engine.
+9. Confirm both histories survive and remain isolated by owner.
+10. Confirm one synthetic user cannot delete the other user's record.
+11. Create a custom-format logical backup, restore it into a distinct disposable
     database and verify schema head plus identity/history ownership links.
-11. Start a separate Uvicorn backend process, write through its authenticated
+12. Start a separate Uvicorn backend process, write through its authenticated
     HTTP API, stop it fully, start a replacement process against the same
     PostgreSQL database and read the persisted record through HTTP.
 
@@ -35,8 +37,8 @@ the test unusable against a remote, staging or production database.
 ## What it does not prove
 
 - persistence across a chosen provider's service restart or real redeployment;
-- permanence or capacity of any free tier;
-- quota monitoring and onboarding pause behavior;
+- permanence or exact quota of any free tier;
+- provider alert delivery or a live chosen-provider onboarding-pause exercise;
 - encrypted provider backup creation or a staging restoration;
 - export/import into another provider;
 - production security, privacy or operational readiness.
