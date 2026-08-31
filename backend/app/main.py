@@ -36,6 +36,7 @@ from .models import (
     OriginLoginHandoffDB,
 )
 from .request_limits import RequestBodyLimitMiddleware
+from .source_admission import AdapterAdmissionRejected
 from .schemas import (
     AccountErasureRequest,
     AccountErasureResponse,
@@ -1368,6 +1369,20 @@ async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> Food
 
     try:
         results = await search_food_products(query)
+    except AdapterAdmissionRejected as exc:
+        logger.warning(
+            "Open Food Facts admission rejected (reason=%s)",
+            exc.reason,
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="Food search temporarily unavailable",
+            headers={
+                "Retry-After": str(exc.retry_after_seconds),
+                "Cache-Control": "no-store",
+                "Pragma": "no-cache",
+            },
+        ) from exc
     except HTTPError as exc:
         logger.warning("Open Food Facts search failed (%s)", type(exc).__name__)
         raise HTTPException(status_code=502, detail="Open Food Facts request failed") from exc

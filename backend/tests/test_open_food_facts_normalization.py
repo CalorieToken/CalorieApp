@@ -1,5 +1,6 @@
 import asyncio
 import math
+from collections.abc import Iterator
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -7,6 +8,7 @@ import pytest
 
 from app.services.open_food_facts import (
     _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH,
+    _OPEN_FOOD_FACTS_ADMISSION,
     _PRIMARY_MAX_ATTEMPTS,
     _FALLBACK_MAX_ATTEMPTS,
     _extract_nutri_score,
@@ -15,10 +17,25 @@ from app.services.open_food_facts import (
 )
 
 
+@pytest.fixture(autouse=True)
+def reset_open_food_facts_admission() -> Iterator[None]:
+    _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+    yield
+    _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+
+
 def test_one_search_has_a_two_request_end_to_end_upstream_budget() -> None:
     assert _PRIMARY_MAX_ATTEMPTS == 1
     assert _FALLBACK_MAX_ATTEMPTS == 1
     assert _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH == 2
+
+
+def test_open_food_facts_admission_configuration_is_bounded() -> None:
+    assert _OPEN_FOOD_FACTS_ADMISSION.max_concurrency == 2
+    assert _OPEN_FOOD_FACTS_ADMISSION.max_queue == 4
+    assert _OPEN_FOOD_FACTS_ADMISSION.queue_timeout_seconds == 2.0
+    assert _OPEN_FOOD_FACTS_ADMISSION.failure_threshold == 3
+    assert _OPEN_FOOD_FACTS_ADMISSION.recovery_timeout_seconds == 30.0
 
 
 @pytest.mark.parametrize(
@@ -136,3 +153,29 @@ def test_primary_transport_error_uses_single_fallback_attempt(
 
     primary.assert_awaited_once()
     fallback.assert_awaited_once()
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_identical_concurrent_searches_make_one_upstream_attempt(
+    primary: AsyncMock,
+) -> None:
+    async def scenario() -> None:
+        started = asyncio.Event()
+        release = asyncio.Event()
+
+        async def fetch_once(params: dict) -> dict:
+            started.set()
+            await release.wait()
+            return {"products": []}
+
+        primary.side_effect = fetch_once
+        first = asyncio.create_task(search_food_products("banana"))
+        await started.wait()
+        second = asyncio.create_task(search_food_products("banana"))
+        await asyncio.sleep(0)
+        release.set()
+
+        assert await asyncio.gather(first, second) == [[], []]
+
+    asyncio.run(scenario())
+    primary.assert_awaited_once()

@@ -50,20 +50,38 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     }
     assert request["request_body_content_logged"] is False
     assert request["search_as_you_type_external_requests_allowed"] is False
+    assert request["duplicate_in_flight_read_coalescing_implemented"] is True
     assert request["bounded_per_adapter_concurrency_required"] is True
+    assert request["bounded_per_adapter_concurrency_implemented"] is True
     assert request["bounded_queue_with_backpressure_required"] is True
+    assert request["bounded_queue_with_backpressure_implemented"] is True
+    assert request["adapter_admission_scope"] == "per-backend-process"
+    assert request["shared_multi_instance_adapter_admission_implemented"] is False
+    assert request["queue_overflow_response_implemented"] is True
+    assert request["adapter_retry_after_max_seconds"] == 60
     assert retry["single_end_to_end_budget_per_user_action"] is True
     assert retry["max_open_food_facts_attempts_per_search"] == 2
     assert retry["nested_transport_retries_allowed"] is False
     assert retry["unsafe_mutation_automatic_retry_allowed"] is False
+    assert retry["circuit_breaker_implemented_per_external_source"] is True
+    assert retry["circuit_breaker_failure_threshold"] == 3
+    assert retry["circuit_breaker_open_seconds"] == 30
+    assert retry["circuit_breaker_half_open_parallel_probes"] == 1
     assert off["published_limit"] == "10-search-requests-per-minute-per-ip"
     assert off["calorieapp_target_budget"] == (
         "at-most-8-search-requests-per-minute-per-egress-ip"
     )
     assert off["shared_egress_rate_governor_implemented"] is False
+    assert off["max_concurrent_attempts_per_backend_process"] == 2
+    assert off["max_queued_attempts_per_backend_process"] == 4
+    assert off["max_queue_wait_seconds"] == 2
+    assert off["identical_in_flight_search_coalescing_implemented"] is True
+    assert off["circuit_breaker_implemented"] is True
     missing = contract["release_blocking_missing_controls"]
     assert "request-body-and-data-growth-quotas" not in missing
     assert "per-subject-and-source-data-growth-quotas" in missing
+    assert "bounded-adapter-concurrency-queue-and-circuit-breaker" not in missing
+    assert "shared-multi-instance-admission-and-proxy-topology-test" in missing
 
 
 def test_mutation_is_scoped_moderated_and_never_direct() -> None:

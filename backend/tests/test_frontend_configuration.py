@@ -17,3 +17,11 @@ def test_frontend_uses_canonical_wordpress_calorieapp_route():
     for source in (panel_source, env_example):
         assert CANONICAL_WORDPRESS_APP_URL in source
         assert NON_CANONICAL_WORDPRESS_APP_URL not in source
+
+
+def test_backend_proxy_preserves_bounded_retry_after_header():
+    proxy_source = (
+        REPO_ROOT / "frontend" / "app" / "api" / "backend" / "[...path]" / "route.ts"
+    ).read_text(encoding="utf-8")
+
+    assert '"retry-after"' in proxy_source

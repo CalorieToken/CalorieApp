@@ -29,6 +29,14 @@ and queue bounds. Rate-limit requests return `429` with bounded `Retry-After`;
 temporary queue or circuit exhaustion returns `503`. Health checks remain cheap
 and must not trigger source calls.
 
+The Open Food Facts adapter now admits at most two active upstream attempts per
+backend process, queues at most four for no longer than two seconds and merges
+identical in-flight searches. Three consecutive failed search actions open its
+circuit for thirty seconds; recovery permits exactly one probe. Local admission
+rejections return `503` with a bounded `Retry-After` and never trigger another
+transport attempt. These controls are intentionally process-local until the
+shared multi-instance topology is implemented and tested.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
@@ -40,8 +48,8 @@ retries have been removed.
 The official Open Food Facts API documentation currently states a limit of ten
 search requests per minute per IP and warns against search-as-you-type. V2 must
 use a shared egress governor with a safety margin of at most eight per minute,
-bounded concurrency, in-flight duplicate coalescing, jittered backoff and a
-per-source circuit breaker before release.
+plus jittered backoff, before release. The current per-process admission layer
+does not replace that shared egress governor.
 
 ## Unwanted mutation
 
@@ -82,11 +90,12 @@ utilization and request/user content. The response process is fixed in
 `CAPACITY_ALERT_INCIDENT_RUNBOOK.md`; choosing and proving an external alert
 destination remains a live, human-approved release gate.
 
-V2 remains blocked until the shared limiter, adapter queue/circuit breaker,
-per-subject and per-source storage-growth quotas, Identity Bridge limits,
-mutation quarantine/audit, chosen-provider alert delivery, chosen-provider quota
-proof and multi-instance topology tests exist. Exact tunable values belong in
-reviewed configuration, while the safety invariants remain fixed in
+V2 remains blocked until the shared route and egress limiter, shared
+multi-instance admission proof, per-subject and per-source storage-growth
+quotas, Identity Bridge limits, mutation quarantine/audit, chosen-provider alert
+delivery, chosen-provider quota proof and proxy topology tests exist. Exact
+tunable values belong in reviewed configuration, while the safety invariants
+remain fixed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.
 
 Primary references:

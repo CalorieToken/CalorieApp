@@ -258,6 +258,9 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety["bounded_end_to_end_retry_budget_required"] is True
     assert safety["nested_retry_amplification_allowed"] is False
     assert safety["bounded_concurrency_and_queue_required"] is True
+    assert safety["per_process_adapter_admission_implemented"] is True
+    assert safety["duplicate_in_flight_read_coalescing_implemented"] is True
+    assert safety["shared_multi_instance_adapter_admission_implemented"] is False
     assert safety["mutation_request_body_size_limit_implemented"] is True
     assert safety["declared_and_actual_body_bytes_enforced"] is True
     assert safety["per_subject_and_source_data_growth_quotas_implemented"] is False

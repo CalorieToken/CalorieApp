@@ -14,6 +14,11 @@ from urllib.error import HTTPError as UrllibHTTPError, URLError
 import httpx
 
 from app.schemas import FoodSearchResult
+from app.source_admission import (
+    AdapterAdmissionController,
+    AdapterAdmissionRejected,
+    DuplicateRequestCoalescer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +38,17 @@ _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH = _PRIMARY_MAX_ATTEMPTS + _FALLBACK_MAX_ATTEMP
 _OPEN_FOOD_FACTS_FIELDS = (
     "product_name,code,image_front_url,image_url,image_small_url,image_front_small_url,"
     "brands,serving_size,nutriscore_grade,nutriments"
+)
+
+_OPEN_FOOD_FACTS_ADMISSION = AdapterAdmissionController(
+    max_concurrency=2,
+    max_queue=4,
+    queue_timeout_seconds=2.0,
+    failure_threshold=3,
+    recovery_timeout_seconds=30.0,
+)
+_OPEN_FOOD_FACTS_COALESCER: DuplicateRequestCoalescer[list[FoodSearchResult]] = (
+    DuplicateRequestCoalescer()
 )
 
 
@@ -106,6 +122,17 @@ def _extract_nutri_score(product: dict[str, Any]) -> str | None:
 
 async def search_food_products(query: str, page_size: int = 10) -> list[FoodSearchResult]:
     safe_query = query.strip()
+    return await _OPEN_FOOD_FACTS_COALESCER.run(
+        (safe_query, page_size),
+        lambda: _search_food_products_once(safe_query, page_size),
+    )
+
+
+async def _search_food_products_once(
+    safe_query: str,
+    page_size: int,
+) -> list[FoodSearchResult]:
+    permit = _OPEN_FOOD_FACTS_ADMISSION.begin_action()
     params = {
         "search_terms": safe_query,
         "search_simple": 1,
@@ -115,25 +142,52 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         "fields": _OPEN_FOOD_FACTS_FIELDS,
     }
 
-    payload: dict[str, Any]
     try:
-        payload = await _fetch_primary(params)
-    except httpx.HTTPStatusError:
-        # Do not bypass an upstream status (especially 429/503) through another
-        # transport. That would multiply load precisely when the source asks us
-        # to stop or is unavailable.
-        raise
-    except (httpx.RequestError, ValueError) as exc:
-        logger.warning(
-            "Primary Open Food Facts request failed; using fallback (%s)",
-            type(exc).__name__,
-        )
         try:
-            payload = await _fetch_fallback(params)
-        except ValueError as exc:
-            logger.error("Open Food Facts fallback failed (%s)", type(exc).__name__)
-            raise httpx.HTTPError(f"Open Food Facts fallback failed: {exc}") from exc
+            payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
+                lambda: _fetch_primary(params)
+            )
+        except httpx.HTTPStatusError:
+            # Do not bypass an upstream status (especially 429/503) through
+            # another transport. That would multiply load precisely when the
+            # source asks us to stop or is unavailable.
+            raise
+        except (httpx.RequestError, ValueError) as exc:
+            logger.warning(
+                "Primary Open Food Facts request failed; using fallback (%s)",
+                type(exc).__name__,
+            )
+            try:
+                payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
+                    lambda: _fetch_fallback(params)
+                )
+            except ValueError as fallback_exc:
+                logger.error(
+                    "Open Food Facts fallback failed (%s)",
+                    type(fallback_exc).__name__,
+                )
+                raise httpx.HTTPError(
+                    f"Open Food Facts fallback failed: {fallback_exc}"
+                ) from fallback_exc
 
+        results = _normalize_products(payload)
+    except AdapterAdmissionRejected:
+        if permit.half_open_probe:
+            _OPEN_FOOD_FACTS_ADMISSION.record_failure(permit)
+        raise
+    except asyncio.CancelledError:
+        if permit.half_open_probe:
+            _OPEN_FOOD_FACTS_ADMISSION.record_failure(permit)
+        raise
+    except Exception:
+        _OPEN_FOOD_FACTS_ADMISSION.record_failure(permit)
+        raise
+    else:
+        _OPEN_FOOD_FACTS_ADMISSION.record_success(permit)
+        return results
+
+
+def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
     results: list[FoodSearchResult] = []
     for product in payload.get("products", []):
         raw_product_name = (product.get("product_name") or "").strip()
@@ -150,8 +204,8 @@ async def search_food_products(query: str, page_size: int = 10) -> list[FoodSear
         }
 
         # A missing value is not the same as a measured zero. Incomplete
-        # records are excluded from the loggable search results so CalorieApp
-        # cannot silently turn unknown nutrition into a misleading 0.0 value.
+        # records are excluded from loggable search results so CalorieApp cannot
+        # silently turn unknown nutrition into a misleading 0.0 value.
         if any(value is None for value in nutrition.values()):
             continue
 

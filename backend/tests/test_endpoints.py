@@ -17,6 +17,7 @@ from app.database import init_db
 from app.main import app
 from app.models import AuthSessionDB, CalorieAppUserDB, FoodLogDB
 from app.schemas import FoodSearchResult
+from app.source_admission import AdapterAdmissionRejected
 
 
 SESSION_COOKIE_NAME = "calorieapp_session"
@@ -204,6 +205,22 @@ def test_search_food_upstream_failure_returns_502(mock_search: AsyncMock, client
     mock_search.side_effect = httpx.HTTPError("upstream down")
     response = client.get("/search-food?q=banana")
     assert response.status_code == 502
+
+
+@patch("app.main.search_food_products", new_callable=AsyncMock)
+def test_search_food_admission_rejection_returns_bounded_503(
+    mock_search: AsyncMock,
+    client: TestClient,
+) -> None:
+    mock_search.side_effect = AdapterAdmissionRejected("adapter_queue_full", 2)
+
+    response = client.get("/search-food?q=banana")
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Food search temporarily unavailable"}
+    assert response.headers["retry-after"] == "2"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-content-type-options"] == "nosniff"
 
 
 # ---------------------------------------------------------------------------
