@@ -24,12 +24,16 @@
         "docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md",
         "backend/app/capacity.py",
         "backend/app/capacity_probe.py",
+        "backend/app/request_limits.py",
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
+        "backend/tests/test_request_limits.py",
+        "backend/tests/test_endpoints.py",
         "backend/tests/test_identity_endpoints.py",
         "backend/tests/test_postgresql_integration.py",
         ".github/workflows/ci.yml",
-        "backend/tests/test_open_food_facts_normalization.py"
+        "backend/tests/test_open_food_facts_normalization.py",
+        "docs/REQUEST_BODY_LIMITS.md"
       ]
     },
     {

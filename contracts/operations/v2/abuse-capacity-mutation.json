@@ -44,6 +44,21 @@
   "request_controls": {
     "route_specific_limits_required": true,
     "request_body_size_limit_required": true,
+    "request_body_size_limit_implemented": true,
+    "declared_and_actual_body_bytes_enforced": true,
+    "invalid_content_length_response": 400,
+    "oversize_body_response": 413,
+    "default_mutation_body_limit_bytes": 16384,
+    "explicit_route_body_limit_bytes": {
+      "POST /api/identity/login/start": 2048,
+      "POST /api/identity/login/state/validate": 2048,
+      "POST /api/identity/callback": 4096,
+      "POST /api/identity/login/status": 4096,
+      "DELETE /api/identity/account": 4096,
+      "POST /api/identity/logout": 1024,
+      "POST /log-food": 16384
+    },
+    "request_body_content_logged": false,
     "field_count_and_string_length_limits_required": true,
     "pagination_has_hard_maximum": true,
     "search_as_you_type_external_requests_allowed": false,
@@ -159,12 +174,13 @@
     "postgresql-database-size-signal-ci-proof",
     "deterministic-capacity-alert-json-and-exit-code-interface",
     "postgresql-capacity-alert-adapter-ci-proof",
-    "capacity-incident-response-runbook"
+    "capacity-incident-response-runbook",
+    "declared-and-actual-mutation-body-byte-limits"
   ],
   "release_blocking_missing_controls": [
     "shared-route-and-egress-rate-governor",
     "bounded-adapter-concurrency-queue-and-circuit-breaker",
-    "request-body-and-data-growth-quotas",
+    "per-subject-and-source-data-growth-quotas",
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
