@@ -270,6 +270,19 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     ] is True
     assert mutation["source_assertion_ingest_requires_expected_record_version"] is True
     assert mutation["source_assertion_ingest_requires_idempotency_key"] is True
+    assert mutation["source_assertion_ingest_content_policy_version"] == "1.0.0"
+    assert mutation["source_assertion_ingest_content_policy_scope"] == (
+        "source-neutral-nutrition-per-100g"
+    )
+    assert mutation["source_assertion_ingest_unknown_attribute_allowed"] is False
+    assert mutation["source_assertion_ingest_arbitrary_text_value_allowed"] is False
+    assert mutation["source_assertion_ingest_unit_must_match_attribute_policy"] is True
+    assert mutation[
+        "source_assertion_ingest_equivalent_decimal_forms_canonicalized"
+    ] is True
+    assert mutation[
+        "source_assertion_content_policy_extension_requires_human_review"
+    ] is True
     assert mutation["source_assertion_ingest_default_status"] == "quarantined"
     assert mutation["source_assertion_ingest_resulting_version"] == 1
     assert mutation["source_assertion_ingest_audit_inserted_atomically"] is True
@@ -300,6 +313,10 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert (
         "mutation-quarantine-moderation-audit-and-expected-version-enforcement"
         in missing
+    )
+    assert (
+        "versioned-source-assertion-content-policy-rejects-arbitrary-text"
+        in contract["current_implemented_evidence"]
     )
 
 

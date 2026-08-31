@@ -3,6 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from app.source_assertion_policy import (
+    SOURCE_ASSERTION_CONTENT_POLICY_VERSION,
+    source_assertion_policy_snapshot,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "contracts" / "food-data" / "v1" / "source-registry.json"
@@ -16,7 +21,7 @@ def test_food_data_model_is_source_independent_and_extensible() -> None:
     contract = _load_contract()
     principles = contract["principles"]
 
-    assert contract["contract_version"] == "1.4.0"
+    assert contract["contract_version"] == "1.5.0"
     assert principles["open_food_facts_is_one_adapter_not_canonical_model"] is True
     assert principles["single_source_database_design_allowed"] is False
     assert principles["new_source_requires_core_schema_rewrite"] is False
@@ -173,6 +178,16 @@ def test_source_expansion_preserves_licensing_privacy_and_history() -> None:
     ] is True
     assert mutation["source_assertion_ingest_requires_expected_record_version"] is True
     assert mutation["source_assertion_ingest_requires_idempotency_key"] is True
+    assert mutation["source_assertion_ingest_content_policy_version"] == "1.0.0"
+    assert mutation["source_assertion_ingest_unknown_attribute_allowed"] is False
+    assert mutation["source_assertion_ingest_arbitrary_text_value_allowed"] is False
+    assert mutation["source_assertion_ingest_unit_must_match_attribute_policy"] is True
+    assert mutation[
+        "source_assertion_ingest_equivalent_decimal_forms_canonicalized"
+    ] is True
+    assert mutation[
+        "source_assertion_content_policy_extension_requires_human_review"
+    ] is True
     assert mutation["source_assertion_ingest_defaults_to_quarantine"] is True
     assert mutation["source_assertion_ingest_audit_inserted_atomically"] is True
     assert mutation["source_assertion_ingest_audit_is_insert_only_in_service"] is True
@@ -188,6 +203,25 @@ def test_source_expansion_preserves_licensing_privacy_and_history() -> None:
     assert mutation["complete_source_assertion_mutation_flow_implemented"] is False
     assert mutation["silent_history_or_source_record_rewrite_allowed"] is False
     assert mutation["correction_preserves_superseded_assertion"] is True
+
+
+def test_assertion_content_policy_contract_matches_runtime() -> None:
+    policy = _load_contract()["assertion_content_policy"]
+
+    assert policy["policy_version"] == SOURCE_ASSERTION_CONTENT_POLICY_VERSION
+    assert policy["applied_before_database_work"] is True
+    assert policy["initial_scope"] == "source-neutral-nutrition-per-100g"
+    assert policy["unknown_attribute_allowed"] is False
+    assert policy["arbitrary_text_value_allowed"] is False
+    assert policy["unit_must_match_attribute_policy"] is True
+    assert policy["numeric_format"] == (
+        "finite-non-negative-decimal-with-at-most-6-fractional-digits"
+    )
+    assert policy[
+        "equivalent_decimal_forms_canonicalized_before_idempotency_check"
+    ] is True
+    assert policy["policy_extension_requires_human_review"] is True
+    assert policy["allowed_numeric_attributes"] == source_assertion_policy_snapshot()
 
 
 def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> None:
@@ -219,6 +253,7 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
     assert implementation[
         "internal_source_assertion_ingest_service_implemented"
     ] is True
+    assert implementation["source_assertion_content_policy_implemented"] is True
     assert implementation["source_assertion_ingest_defaults_to_quarantine"] is True
     assert implementation["source_assertion_correction_service_implemented"] is False
     assert implementation["source_assertion_moderation_service_implemented"] is False

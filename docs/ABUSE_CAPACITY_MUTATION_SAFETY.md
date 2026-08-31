@@ -97,6 +97,14 @@ source-budget decisions across processes. A full budget returns `409`; database
 failure returns bounded `503`. No public endpoint exists. See
 `SOURCE_ASSERTION_INGEST.md`.
 
+That ingest path now also applies versioned content policy `1.0.0` before any
+database work. The initial allowlist contains only bounded, source-neutral
+numeric nutrition values per 100g. Unknown attributes, mismatched units and
+arbitrary text are rejected, closing the previously unrestricted text path into
+the generic assertion value. Numeric assertions still require quarantine and
+human moderation. Policy expansion always requires human review; it cannot
+activate a provider or public write route.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
