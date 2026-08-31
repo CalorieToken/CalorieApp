@@ -77,7 +77,7 @@ until the durable-data and privacy gates pass.
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
 | Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
-| Durable-host tests | Application-engine restart test added for ephemeral PostgreSQL | Still prove provider restart and redeploy persistence |
+| Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
 | User export | Authenticated versioned backend export exists | Add the eleven-language UI and aligned notice |
 | User erasure | Human-gated backend erasure exists and defaults off | Approve recovery, backup-erasure, UI and notice policy before activation |
@@ -88,7 +88,7 @@ until the durable-data and privacy gates pass.
 1. Run the complete migration, identity and ownership suite against PostgreSQL.
 2. Select a zero-additional-subscription provider and define quota alerts.
 3. Prove the no-additional-cost exit path with a synthetic database copy.
-4. Add restart and redeploy persistence tests using synthetic records.
+4. Repeat the synthetic restart and process-replacement persistence proofs on the chosen provider.
 5. Implement authenticated data export and versioned import.
 6. Complete account erasure, including identity links and active sessions.
 7. Select an encrypted backup method and perform a documented staging restore.
@@ -138,15 +138,18 @@ operational recovery details must not be committed.
 The existing GitHub Actions role now starts a temporary PostgreSQL 16 service
 containing synthetic data only. It verifies the real PostgreSQL dialect, the
 approved staging migration command, legacy-row preservation, Identity Bridge
-user/session records, cross-user food-history isolation and persistence across
-replacement application database engines. A hard guard permits destructive
-test reset only for the loopback database named `calorieapp_ci_test`.
+user/session records, cross-user food-history isolation, persistence across
+replacement application database engines and persistence after one complete
+backend process is stopped and a fresh process starts. A hard guard permits
+destructive test reset only for the loopback database named
+`calorieapp_ci_test`.
 
 This is a compatibility and application-restart proof, not a hosting decision.
-It does not prove that a free provider will remain free, survive redeployment,
-provide adequate capacity, restore backups or support the no-additional-cost
-exit path. Those release gates remain blocked. See
-`docs/POSTGRESQL_CI_PROOF.md`.
+It does not prove that a free provider will remain free, survive a real provider
+redeployment, provide adequate capacity, restore encrypted backups or support
+the no-additional-cost exit path. Those release gates remain blocked. See
+`docs/POSTGRESQL_CI_PROOF.md` and
+`docs/POSTGRESQL_REDEPLOY_PERSISTENCE.md`.
 
 ## Platform budget
 

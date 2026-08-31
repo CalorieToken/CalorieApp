@@ -24,6 +24,9 @@ provider account, recurring subscription, live database or user data.
 9. Confirm one synthetic user cannot delete the other user's record.
 10. Create a custom-format logical backup, restore it into a distinct disposable
     database and verify schema head plus identity/history ownership links.
+11. Start a separate Uvicorn backend process, write through its authenticated
+    HTTP API, stop it fully, start a replacement process against the same
+    PostgreSQL database and read the persisted record through HTTP.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes
@@ -31,7 +34,7 @@ the test unusable against a remote, staging or production database.
 
 ## What it does not prove
 
-- persistence across a chosen provider's service restart or redeployment;
+- persistence across a chosen provider's service restart or real redeployment;
 - permanence or capacity of any free tier;
 - quota monitoring and onboarding pause behavior;
 - encrypted provider backup creation or a staging restoration;
@@ -41,6 +44,8 @@ the test unusable against a remote, staging or production database.
 The synthetic logical restore is documented separately in
 `POSTGRESQL_BACKUP_RESTORE_DRILL.md`; it is partial evidence and does not select
 storage, encryption, retention or recovery policy. Those remain separate
-release-blocking tests. Passing this CI gate permits the
+release-blocking tests. The separate-process proof is documented in
+`POSTGRESQL_REDEPLOY_PERSISTENCE.md`; it proves application process replacement,
+not provider redeployment. Passing this CI gate permits the
 project to evaluate zero-additional-subscription PostgreSQL hosting with much
 less provider-specific manual testing; it does not select or endorse a host.

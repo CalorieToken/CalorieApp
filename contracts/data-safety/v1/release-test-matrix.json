@@ -96,9 +96,14 @@
     },
     {
       "id": "redeploy_persistence",
-      "status": "not_started",
+      "status": "partial",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "backend/app/redeploy_persistence_drill.py",
+        "backend/tests/test_redeploy_persistence_drill.py",
+        ".github/workflows/ci.yml",
+        "docs/POSTGRESQL_REDEPLOY_PERSISTENCE.md"
+      ]
     },
     {
       "id": "backup_restore_drill",

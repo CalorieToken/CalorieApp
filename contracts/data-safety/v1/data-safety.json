@@ -186,17 +186,35 @@
       "identity-and-auth-session-persistence",
       "cross-user-food-history-isolation",
       "application-engine-restart-persistence",
+      "two-separate-backend-process-persistence",
       "synthetic-custom-format-backup-and-distinct-database-restore"
     ],
     "does_not_prove": [
       "free-provider-tier-permanence",
-      "provider-redeploy-persistence",
+      "chosen-provider-redeploy-persistence",
       "capacity-alerting",
       "encrypted-provider-staging-backup-restoration",
       "provider-exit-import",
       "production-readiness"
     ],
     "provider_selection_status": "pending-separate-evaluation"
+  },
+  "postgresql_redeploy_ci_proof": {
+    "status": "synthetic-two-process-proof-configured-provider-proof-pending",
+    "automated_per_merge_candidate": true,
+    "separate_backend_os_process_lifecycles_required": 2,
+    "same_external_postgresql_database": true,
+    "loopback_only": true,
+    "exact_database_name": "calorieapp_ci_test",
+    "synthetic_data_only": true,
+    "first_process_writes_via_authenticated_http": true,
+    "first_process_stopped_before_second_starts": true,
+    "second_process_reads_via_authenticated_http": true,
+    "schema_head_and_owner_links_verified": true,
+    "provider_selected": false,
+    "real_provider_redeploy_proven": false,
+    "production_or_staging_data_allowed": false,
+    "deployment_or_live_mutation_performed": false
   },
   "decentralized_boundary": {
     "personal_data_on_public_blockchain_allowed": false,

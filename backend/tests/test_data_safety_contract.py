@@ -52,12 +52,35 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
     assert proof["destructive_reset_guard"]["real_user_or_production_database_allowed"] is False
     assert "cross-user-food-history-isolation" in proof["automated_evidence"]
     assert "application-engine-restart-persistence" in proof["automated_evidence"]
-    assert "provider-redeploy-persistence" in proof["does_not_prove"]
+    assert "two-separate-backend-process-persistence" in proof["automated_evidence"]
+    assert "chosen-provider-redeploy-persistence" in proof["does_not_prove"]
     assert "synthetic-custom-format-backup-and-distinct-database-restore" in proof[
         "automated_evidence"
     ]
     assert "encrypted-provider-staging-backup-restoration" in proof["does_not_prove"]
     assert proof["provider_selection_status"] == "pending-separate-evaluation"
+
+
+def test_redeploy_ci_proof_is_two_process_synthetic_and_still_partial() -> None:
+    proof = _load_json("data-safety.json")["postgresql_redeploy_ci_proof"]
+
+    assert proof["status"] == (
+        "synthetic-two-process-proof-configured-provider-proof-pending"
+    )
+    assert proof["automated_per_merge_candidate"] is True
+    assert proof["separate_backend_os_process_lifecycles_required"] == 2
+    assert proof["same_external_postgresql_database"] is True
+    assert proof["loopback_only"] is True
+    assert proof["exact_database_name"] == "calorieapp_ci_test"
+    assert proof["synthetic_data_only"] is True
+    assert proof["first_process_writes_via_authenticated_http"] is True
+    assert proof["first_process_stopped_before_second_starts"] is True
+    assert proof["second_process_reads_via_authenticated_http"] is True
+    assert proof["schema_head_and_owner_links_verified"] is True
+    assert proof["provider_selected"] is False
+    assert proof["real_provider_redeploy_proven"] is False
+    assert proof["production_or_staging_data_allowed"] is False
+    assert proof["deployment_or_live_mutation_performed"] is False
 
 
 def test_data_classes_cover_current_and_planned_personal_flows() -> None:
@@ -476,6 +499,10 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert gates["restart_persistence"]["status"] == "partial"
+    assert gates["redeploy_persistence"]["status"] == "partial"
+    assert "backend/app/redeploy_persistence_drill.py" in gates[
+        "redeploy_persistence"
+    ]["evidence"]
     assert gates["backup_restore_drill"]["status"] == "partial"
     assert "backend/app/backup_restore_drill.py" in gates["backup_restore_drill"][
         "evidence"
