@@ -57,11 +57,12 @@ free-text note, email address, session, wallet address or IP address.
 
 ## Deliberate non-claims
 
-This foundation does not implement product matching, attribute assertions,
-public contributions, correction/supersession history or a public moderator
-authentication endpoint. It also does not prove production database privileges
-that independently forbid audit updates. The combined contribution-mutation
-release gate therefore remains open until those paths exist and are tested.
+The later `20260831_0008` migration supplies product, link and assertion tables,
+but this moderation service still does not implement their write, moderation or
+public contribution paths. It also does not implement a public moderator
+authentication endpoint or prove production database privileges that
+independently forbid audit updates. The combined contribution-mutation release
+gate therefore remains open until those paths exist and are tested.
 
 Open Food Facts catalog persistence remains off. This change adds no provider,
 paid service, separate CI job, production migration or deployment.

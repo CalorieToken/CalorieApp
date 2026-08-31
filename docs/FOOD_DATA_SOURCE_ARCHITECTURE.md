@@ -1,9 +1,9 @@
 # Food-data source architecture
 
-Status: source registration, immutable source records and internal terminal
-moderation evidence are implemented. Open Food Facts remains the only enabled
-read-only search adapter; no public source-onboarding, contribution or
-catalog-write flow is enabled.
+Status: the source-neutral catalog schema, immutable source records and internal
+terminal record-moderation evidence are implemented. Open Food Facts remains
+the only enabled read-only search adapter; no public source-onboarding,
+contribution or catalog-write flow is enabled.
 
 ## Decision
 
@@ -33,14 +33,21 @@ Migration `20260831_0006` currently implements `food_source` and
 `food_source_record`. Each registered source has a positive retained-record
 limit, and the internal ingest service serializes its idempotency check, count
 and insert across PostgreSQL processes. Every new record starts in quarantine.
-See `PER_SOURCE_INGEST_BUDGET.md`. The product, link and assertion tables remain
-staged and are not claimed by this migration.
+See `PER_SOURCE_INGEST_BUDGET.md`.
 
 Migration `20260831_0007` adds a positive verification version and minimal
 moderation audit. The internal service allows only version-checked,
 idempotent transitions from quarantine to validated or rejected and is proven
 across PostgreSQL processes. See `SOURCE_RECORD_MODERATION.md`. It does not add
 product matching, assertions, corrections or any public mutation route.
+
+Migration `20260831_0008` adds the source-neutral product, reviewable
+product/source-record link and separate attribute-assertion tables. A composite
+foreign key prevents assertions from bypassing their reviewed link. The
+read-only evidence query keeps each assertion with its source licence and
+attribution; synthetic tests retain conflicts and corrections without changing
+private food-log snapshots. See `SOURCE_ASSERTION_CATALOG.md`. Assertion writes,
+moderation and public catalog routes remain disabled.
 
 An adapter emits normalized source records and assertions. Its idempotency key
 is `(source_id, external_record_id, source_version_or_content_digest)`. A new
@@ -84,8 +91,9 @@ ODbL, contents and image-licence boundary documented in `DATA_LICENSING.md`.
 4. Add terminal source-record moderation with expected-version and audit
    evidence. Completed by `20260831_0007` for the internal service only.
 5. Add product/link/assertion entities, then verify conflict retention,
-   licence-aware export and log
-   snapshot immutability with synthetic data.
+   licence-aware evidence export and log snapshot immutability with synthetic
+   data. Completed by `20260831_0008` for the schema and read-only evidence
+   path; contribution and assertion-moderation writes remain blocked.
 6. Pilot one additional low-risk source only after privacy, licence and data
    quality review.
 

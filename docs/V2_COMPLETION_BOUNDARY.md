@@ -45,6 +45,11 @@ production recovery, privacy readiness or worldwide regulatory compliance.
 11. Finish with showcase preview, review, explicit approval and scheduled
    publication.
 
+The source-neutral table portion of step 6 is implemented through migration
+`20260831_0008`, including read-only provenance/licence evidence. Open Food
+Facts catalog persistence, assertion mutation and any second-source activation
+remain disabled pending their separate gates.
+
 Market/How-to-Buy and optional XRPL provenance stay read-only or disabled unless
 their separate privacy, MiCA and jurisdiction reviews permit the exact feature.
 

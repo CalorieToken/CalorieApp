@@ -285,6 +285,9 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_source_moderation_audit" in inspect(
         postgres_engine
     ).get_table_names()
+    assert "food_product" in inspect(postgres_engine).get_table_names()
+    assert "food_product_source_link" in inspect(postgres_engine).get_table_names()
+    assert "food_attribute_assertion" in inspect(postgres_engine).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
     food_log_indexes = {

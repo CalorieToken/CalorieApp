@@ -61,7 +61,11 @@
         "backend/app/services/source_moderation.py",
         "backend/app/schema_migrations/versions/v20260831_0007.py",
         "backend/tests/test_source_moderation.py",
-        "docs/SOURCE_RECORD_MODERATION.md"
+        "docs/SOURCE_RECORD_MODERATION.md",
+        "backend/app/services/source_assertion_catalog.py",
+        "backend/app/schema_migrations/versions/v20260831_0008.py",
+        "backend/tests/test_source_assertion_catalog.py",
+        "docs/SOURCE_ASSERTION_CATALOG.md"
       ]
     },
     {
@@ -105,6 +109,7 @@
         "backend/app/schema_migrations/versions/v20260831_0005.py",
         "backend/app/schema_migrations/versions/v20260831_0006.py",
         "backend/app/schema_migrations/versions/v20260831_0007.py",
+        "backend/app/schema_migrations/versions/v20260831_0008.py",
         "backend/tests/test_database.py"
       ]
     },

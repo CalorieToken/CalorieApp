@@ -117,10 +117,12 @@ accepts only a fixed moderation scope and controlled pseudonymous references,
 requires an idempotency key and expected version, permits only quarantine to
 validated/rejected transitions, and appends one minimal audit event in the same
 transaction. PostgreSQL serializes both record and idempotency conflicts across
-processes. No public route exists. Product/assertion contributions, correction
-history and production audit-table privilege proof remain open, so the combined
-mutation release gate is not yet claimed complete. Exact behavior is in
-`SOURCE_RECORD_MODERATION.md`.
+processes. No public route exists. The source-neutral product/link/assertion
+schema and read-only licensed evidence query now exist, but their contribution,
+moderation and correction write services plus production audit-table privilege
+proof remain open. The combined mutation release gate is therefore not yet
+claimed complete. Exact boundaries are in `SOURCE_RECORD_MODERATION.md` and
+`SOURCE_ASSERTION_CATALOG.md`.
 
 ## Capacity and incident boundary
 
