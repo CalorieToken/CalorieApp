@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.3.0",
+  "contract_version": "1.4.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -182,6 +182,21 @@
     "postgresql_identity_start_multi_process_ci_proof_implemented": true,
     "status_poll_minimum_interval_seconds": 5,
     "status_poll_adaptive_slowdown_required": true,
+    "status_poll_adaptive_slowdown_implemented": true,
+    "status_poll_elapsed_schedule_seconds": {
+      "first_30_seconds": 5,
+      "30_through_89_seconds": 10,
+      "90_seconds_and_later": 20
+    },
+    "status_poll_consecutive_transient_failure_delays_seconds": [10, 20, 30],
+    "status_poll_transient_failure_max_delay_seconds": 30,
+    "status_poll_retry_after_max_seconds": 60,
+    "status_poll_focus_or_pageshow_bypasses_scheduled_delay": false,
+    "status_poll_layers": [
+      "calorieapp-origin-handoff",
+      "wordpress-xaman-finish"
+    ],
+    "event_driven_signed_message_may_trigger_immediate_completion_check": true,
     "state_and_handoff_expiry_required": true,
     "expired_transient_cleanup_required": true,
     "callback_replay_block_required": true,
@@ -241,7 +256,7 @@
     "two-attempt-open-food-facts-end-to-end-budget",
     "no-fallback-bypass-after-upstream-http-status",
     "frontend-retry-after-bounds",
-    "five-second-identity-status-poll-interval",
+    "five-second-initial-identity-status-poll-interval",
     "identity-state-expiry-cleanup-and-callback-replay-protection",
     "provider-neutral-database-capacity-classification-at-70-85-95-percent",
     "new-identity-onboarding-pause-at-95-percent",
@@ -268,12 +283,15 @@
     "postgresql-fifty-unexpired-login-transactions-per-registered-client",
     "atomic-login-state-locale-and-origin-handoff-creation",
     "postgresql-multi-process-identity-start-and-outstanding-state-proof",
-    "identity-start-admission-fails-closed-on-database-error"
+    "identity-start-admission-fails-closed-on-database-error",
+    "adaptive-five-ten-twenty-second-identity-status-polling",
+    "ten-twenty-thirty-second-transient-status-backoff",
+    "bounded-status-retry-after-respected",
+    "focus-and-pageshow-cannot-bypass-scheduled-status-delay"
   ],
   "release_blocking_missing_controls": [
     "per-subject-and-source-data-growth-quotas",
     "identity-start-short-lived-network-signal-limit",
-    "adaptive-status-poll-slowdown",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
     "capacity-alert-destination-and-live-delivery-proof",
     "chosen-provider-exact-quota-configuration-and-live-pause-exercise",

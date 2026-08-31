@@ -4,6 +4,32 @@
   var MESSAGE_PREFIX = "calorieapp:";
   var MAX_FRAME_HEIGHT = 4000;
   var MIN_FRAME_HEIGHT = 700;
+  var STATUS_POLL_INITIAL_DELAY = 5000;
+  var STATUS_POLL_MIDDLE_DELAY = 10000;
+  var STATUS_POLL_LONG_DELAY = 20000;
+  var STATUS_POLL_TRANSIENT_MAX_DELAY = 30000;
+  var STATUS_POLL_MIDDLE_PHASE_AFTER = 30000;
+  var STATUS_POLL_LONG_PHASE_AFTER = 90000;
+  var STATUS_POLL_MAX_RETRY_AFTER = 60000;
+
+  function retryAfterMilliseconds(response) {
+    var value = response.headers && response.headers.get("retry-after");
+    if (!value) {
+      return null;
+    }
+    var seconds = Number(value.trim());
+    if (Number.isFinite(seconds) && seconds >= 0) {
+      return Math.min(seconds * 1000, STATUS_POLL_MAX_RETRY_AFTER);
+    }
+    var retryAt = Date.parse(value);
+    if (Number.isNaN(retryAt)) {
+      return null;
+    }
+    return Math.min(
+      Math.max(0, retryAt - Date.now()),
+      STATUS_POLL_MAX_RETRY_AFTER
+    );
+  }
 
   function parseJsonResponse(response) {
     return response.json().catch(function () {
@@ -18,22 +44,33 @@
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-    }).then(function (response) {
-      return parseJsonResponse(response).then(function (payload) {
-        if (!response.ok && response.status !== 202) {
-          var error = new Error(
-            typeof payload.message === "string"
-              ? payload.message
-              : "The secure sign-in request failed."
-          );
-          error.status = response.status;
-          error.code = typeof payload.code === "string" ? payload.code : "";
-          throw error;
-        }
+    }).then(
+      function (response) {
+        return parseJsonResponse(response).then(function (payload) {
+          if (!response.ok && response.status !== 202) {
+            var error = new Error(
+              typeof payload.message === "string"
+                ? payload.message
+                : "The secure sign-in request failed."
+            );
+            error.status = response.status;
+            error.code = typeof payload.code === "string" ? payload.code : "";
+            error.retryAfterMs = retryAfterMilliseconds(response);
+            throw error;
+          }
 
-        return { response: response, payload: payload };
-      });
-    });
+          return { response: response, payload: payload };
+        });
+      },
+      function (error) {
+        var transportError =
+          error instanceof Error
+            ? error
+            : new Error("The secure sign-in request could not be reached.");
+        transportError.isTransportFailure = true;
+        throw transportError;
+      }
+    );
   }
 
   function init(root) {
@@ -82,6 +119,8 @@
     var websocket = null;
     var finishInFlight = false;
     var finishRetryTimer = null;
+    var finishPollStartedAt = null;
+    var finishTransientFailures = 0;
     var authorizeInFlight = false;
     var authorizeRetryTimer = null;
     var lastStartMessage = null;
@@ -146,6 +185,8 @@
         window.clearTimeout(authorizeRetryTimer);
       }
       finishRetryTimer = null;
+      finishPollStartedAt = null;
+      finishTransientFailures = 0;
       authorizeRetryTimer = null;
       flow = null;
       backendState = "";
@@ -219,6 +260,11 @@
           if (payload.signed) {
             markXamanStarted();
             setStatus("Signature received. Signing in WordPress...");
+            if (finishRetryTimer !== null) {
+              window.clearTimeout(finishRetryTimer);
+              finishRetryTimer = null;
+            }
+            finishTransientFailures = 0;
             finishWordPress();
           } else {
             fail("The Xaman sign-in request was rejected.");
@@ -298,11 +344,15 @@
         !flow ||
         !xamanLaunchStarted ||
         finishInFlight ||
+        finishRetryTimer !== null ||
         wordpressAuthenticated
       ) {
         return;
       }
 
+      if (finishPollStartedAt === null) {
+        finishPollStartedAt = Date.now();
+      }
       finishInFlight = true;
       apiRequest(finishUrl, {
         flow_id: flow.flowId,
@@ -310,8 +360,9 @@
       }).then(function (result) {
         finishInFlight = false;
         if (result.response.status === 202 || result.payload.status === "pending") {
+          finishTransientFailures = 0;
           setStatus("Waiting for the Xaman signature. Keep this page open.");
-          scheduleFinishRetry(5000);
+          scheduleFinishRetry(finishPollDelay());
           return;
         }
 
@@ -333,13 +384,47 @@
         maybeAuthorizeCalorieApp();
       }).catch(function (error) {
         finishInFlight = false;
-        if (error.status === 429 || error.status === 502 || error.status === 503) {
+        if (
+          error.isTransportFailure === true ||
+          error.status === 429 ||
+          error.status === 502 ||
+          error.status === 503 ||
+          error.status === 504
+        ) {
+          finishTransientFailures += 1;
           setStatus("Xaman status is temporarily unavailable. Retrying safely...");
-          scheduleFinishRetry(error.status === 429 ? 15000 : 5000);
+          scheduleFinishRetry(
+            Math.max(
+              finishPollDelay(),
+              typeof error.retryAfterMs === "number"
+                ? error.retryAfterMs
+                : error.status === 429
+                ? 15000
+                : 0
+            )
+          );
           return;
         }
         fail(error.message || "WordPress sign-in could not be completed.");
       });
+    }
+
+    function finishPollDelay() {
+      var elapsed =
+        finishPollStartedAt === null
+          ? 0
+          : Math.max(0, Date.now() - finishPollStartedAt);
+      var baseDelay =
+        elapsed >= STATUS_POLL_LONG_PHASE_AFTER
+          ? STATUS_POLL_LONG_DELAY
+          : elapsed >= STATUS_POLL_MIDDLE_PHASE_AFTER
+          ? STATUS_POLL_MIDDLE_DELAY
+          : STATUS_POLL_INITIAL_DELAY;
+      var failureDelay = Math.min(
+        STATUS_POLL_TRANSIENT_MAX_DELAY,
+        STATUS_POLL_INITIAL_DELAY * Math.pow(2, finishTransientFailures)
+      );
+      return Math.max(baseDelay, failureDelay);
     }
 
     function scheduleFinishRetry(delay) {

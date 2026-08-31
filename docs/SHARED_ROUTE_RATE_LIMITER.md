@@ -68,11 +68,11 @@ fail-closed behavior when the route event table is absent. SQLite uses a locked
 in-memory equivalent for local development and unit tests; that is not live
 multi-process evidence.
 
-This is deliberately a route-global capacity layer. It does not yet provide
-per-client login-start limits, outstanding-state quotas, adaptive status-poll
-slowdown, shared adapter queue/circuit state, or a deployed frontend/backend
-topology exercise. Those remain separate V2 gates so a global safety control is
-not misrepresented as actor-level abuse attribution or complete topology proof.
+This is deliberately a route-global capacity layer. It does not provide shared
+adapter queue/circuit state or a deployed frontend/backend topology exercise.
+Per-client login-start, outstanding-state and adaptive polling controls are
+documented separately. The remaining topology gate prevents this global control
+from being misrepresented as complete abuse attribution.
 
 ## Rollout
 

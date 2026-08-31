@@ -45,7 +45,12 @@ type PendingLogin = {
 };
 
 const BACKEND_BASE_URL = "/api/backend";
-const LOGIN_STATUS_POLL_INTERVAL_MS = 5_000;
+const LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS = 5_000;
+const LOGIN_STATUS_MIDDLE_POLL_INTERVAL_MS = 10_000;
+const LOGIN_STATUS_LONG_POLL_INTERVAL_MS = 20_000;
+const LOGIN_STATUS_TRANSIENT_MAX_DELAY_MS = 30_000;
+const LOGIN_STATUS_MIDDLE_PHASE_AFTER_MS = 30_000;
+const LOGIN_STATUS_LONG_PHASE_AFTER_MS = 90_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
 const LOGIN_STATUS_RATE_LIMIT_DELAY_MS = 15_000;
 const LOGIN_STATUS_MAX_RETRY_AFTER_MS = 60_000;
@@ -202,7 +207,26 @@ function delay(milliseconds: number, signal: AbortSignal) {
   });
 }
 
-async function waitForOriginLogin(
+export function loginStatusPollDelayMs(
+  elapsedMs: number,
+  consecutiveTransientFailures = 0
+): number {
+  const safeElapsedMs = Math.max(0, elapsedMs);
+  const baseDelay =
+    safeElapsedMs >= LOGIN_STATUS_LONG_PHASE_AFTER_MS
+      ? LOGIN_STATUS_LONG_POLL_INTERVAL_MS
+      : safeElapsedMs >= LOGIN_STATUS_MIDDLE_PHASE_AFTER_MS
+      ? LOGIN_STATUS_MIDDLE_POLL_INTERVAL_MS
+      : LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS;
+  const failureDelay = Math.min(
+    LOGIN_STATUS_TRANSIENT_MAX_DELAY_MS,
+    LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS *
+      2 ** Math.max(0, consecutiveTransientFailures)
+  );
+  return Math.max(baseDelay, failureDelay);
+}
+
+export async function waitForOriginLogin(
   state: string,
   browserHandoffToken: string,
   expiresAt: string,
@@ -213,9 +237,18 @@ async function waitForOriginLogin(
   const deadline = Number.isFinite(parsedExpiry)
     ? parsedExpiry
     : Date.now() + LOGIN_STATUS_FALLBACK_LIFETIME_MS;
+  const pollingStartedAt = Date.now();
+  let consecutiveTransientFailures = 0;
+  let nextPollDelayMs = loginStatusPollDelayMs(0);
 
   while (Date.now() < deadline) {
-    await delay(LOGIN_STATUS_POLL_INTERVAL_MS, signal);
+    await delay(
+      Math.min(nextPollDelayMs, Math.max(0, deadline - Date.now())),
+      signal
+    );
+    if (Date.now() >= deadline) {
+      break;
+    }
 
     let response: Response;
     try {
@@ -235,23 +268,34 @@ async function waitForOriginLogin(
       if (signal.aborted) {
         throw signal.reason ?? new Error("Login cancelled");
       }
+      consecutiveTransientFailures += 1;
+      nextPollDelayMs = loginStatusPollDelayMs(
+        Date.now() - pollingStartedAt,
+        consecutiveTransientFailures
+      );
       continue;
     }
 
     if (response.status === 429) {
-      const retryAfterSeconds = Number(
-        response.headers.get("retry-after")?.trim()
+      consecutiveTransientFailures += 1;
+      nextPollDelayMs = Math.max(
+        loginStatusPollDelayMs(
+          Date.now() - pollingStartedAt,
+          consecutiveTransientFailures
+        ),
+        retryAfterMilliseconds(response, LOGIN_STATUS_RATE_LIMIT_DELAY_MS)
       );
-      const retryDelay = Number.isFinite(retryAfterSeconds)
-        ? Math.min(
-            Math.max(0, retryAfterSeconds * 1_000),
-            LOGIN_STATUS_MAX_RETRY_AFTER_MS
-          )
-        : LOGIN_STATUS_RATE_LIMIT_DELAY_MS;
-      await delay(retryDelay, signal);
       continue;
     }
     if ([502, 503, 504].includes(response.status)) {
+      consecutiveTransientFailures += 1;
+      nextPollDelayMs = Math.max(
+        loginStatusPollDelayMs(
+          Date.now() - pollingStartedAt,
+          consecutiveTransientFailures
+        ),
+        retryAfterMilliseconds(response, 0)
+      );
       continue;
     }
     if (!response.ok) {
@@ -268,15 +312,20 @@ async function waitForOriginLogin(
     if (payload.status === "failed") {
       throw new Error("Xaman callback failed");
     }
+    consecutiveTransientFailures = 0;
+    nextPollDelayMs = loginStatusPollDelayMs(Date.now() - pollingStartedAt);
   }
 
   throw new Error("Login handoff expired");
 }
 
-function retryAfterMilliseconds(response: Response): number {
+function retryAfterMilliseconds(
+  response: Response,
+  fallbackMs = LOGIN_START_RATE_LIMIT_DELAY_MS
+): number {
   const value = response.headers.get("retry-after")?.trim();
   if (!value) {
-    return LOGIN_START_RATE_LIMIT_DELAY_MS;
+    return fallbackMs;
   }
 
   const seconds = Number(value);
@@ -286,7 +335,7 @@ function retryAfterMilliseconds(response: Response): number {
 
   const retryAt = Date.parse(value);
   if (Number.isNaN(retryAt)) {
-    return LOGIN_START_RATE_LIMIT_DELAY_MS;
+    return fallbackMs;
   }
 
   return Math.min(

@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.identity-bridge-login-test-matrix",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "source_locale": "en",
   "fallback_locale": "en",
   "locales": ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur", "nl"],
@@ -49,6 +49,10 @@
     {
       "id": "admission_store_unavailable",
       "expected": "Database admission failure returns a retryable unavailable response and creates no partial transaction."
+    },
+    {
+      "id": "adaptive_status_polling",
+      "expected": "Pending status checks slow from five to ten to twenty seconds, transient failures back off to thirty seconds, and focus events cannot bypass a scheduled delay."
     }
   ]
 }

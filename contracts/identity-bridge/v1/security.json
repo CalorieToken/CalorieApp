@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.identity-bridge.security",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "protocol_version": "v1",
   "identity_authority": {
     "wordpress_session_required": true,
@@ -31,7 +31,12 @@
     "shared_production_state": "primary-postgresql",
     "raw_ip_or_network_signal_stored": false,
     "short_lived_network_signal_limit_implemented": false,
-    "adaptive_status_poll_slowdown_implemented": false
+    "adaptive_status_poll_slowdown_implemented": true,
+    "status_poll_elapsed_schedule_seconds": [5, 10, 20],
+    "status_poll_phase_boundaries_seconds": [30, 90],
+    "status_poll_transient_failure_delays_seconds": [10, 20, 30],
+    "status_poll_retry_after_max_seconds": 60,
+    "focus_or_pageshow_may_bypass_scheduled_poll_delay": false
   },
   "authorization_code": {
     "minimum_ttl_seconds": 10,

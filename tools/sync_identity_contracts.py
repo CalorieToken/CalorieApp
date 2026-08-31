@@ -109,6 +109,18 @@ def validate_security_contract(contract: dict[str, Any]) -> None:
         raise ValueError("Outstanding login transaction limit must remain 50 in v1")
     if admission.get("raw_ip_or_network_signal_stored") is not False:
         raise ValueError("Login-start admission must not store a raw network signal")
+    if admission.get("adaptive_status_poll_slowdown_implemented") is not True:
+        raise ValueError("Identity status polling must slow down adaptively")
+    if admission.get("status_poll_elapsed_schedule_seconds") != [5, 10, 20]:
+        raise ValueError("Identity status polling must retain the reviewed schedule")
+    if admission.get("status_poll_phase_boundaries_seconds") != [30, 90]:
+        raise ValueError("Identity status polling phase boundaries changed")
+    if admission.get("status_poll_transient_failure_delays_seconds") != [10, 20, 30]:
+        raise ValueError("Identity status transient backoff changed")
+    if admission.get("status_poll_retry_after_max_seconds") != 60:
+        raise ValueError("Identity status Retry-After bound changed")
+    if admission.get("focus_or_pageshow_may_bypass_scheduled_poll_delay") is not False:
+        raise ValueError("Browser lifecycle events must not bypass status delay")
     if contract.get("authorization_code", {}).get("default_ttl_seconds") != 60:
         raise ValueError("Authorization-code default TTL must remain 60 seconds in v1")
     if contract.get("integrated_login_flow", {}).get("ttl_seconds") != 600:

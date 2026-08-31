@@ -62,7 +62,21 @@ class IdentityContractTests(unittest.TestCase):
         self.assertFalse(
             admission["short_lived_network_signal_limit_implemented"]
         )
-        self.assertFalse(admission["adaptive_status_poll_slowdown_implemented"])
+        self.assertTrue(admission["adaptive_status_poll_slowdown_implemented"])
+        self.assertEqual(
+            admission["status_poll_elapsed_schedule_seconds"], [5, 10, 20]
+        )
+        self.assertEqual(
+            admission["status_poll_phase_boundaries_seconds"], [30, 90]
+        )
+        self.assertEqual(
+            admission["status_poll_transient_failure_delays_seconds"],
+            [10, 20, 30],
+        )
+        self.assertEqual(admission["status_poll_retry_after_max_seconds"], 60)
+        self.assertFalse(
+            admission["focus_or_pageshow_may_bypass_scheduled_poll_delay"]
+        )
         self.assertIn("FLOW_TTL_SECONDS = 10 * MINUTE_IN_SECONDS", plugin)
         self.assertEqual(security["integrated_login_flow"]["ttl_seconds"], 600)
         self.assertIn("'code_ttl_seconds' => 60", plugin_root)
@@ -106,6 +120,7 @@ class IdentityContractTests(unittest.TestCase):
                 "registered_client_start_limited",
                 "outstanding_state_limit",
                 "admission_store_unavailable",
+                "adaptive_status_polling",
             },
         )
 

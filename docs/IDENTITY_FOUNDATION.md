@@ -9,3 +9,6 @@ Operational endpoints, credentials and deployment-specific configuration are int
 The registered-client login-start budget, outstanding unexpired transaction cap,
 atomic state/locale/handoff creation and remaining non-claims are documented in
 `IDENTITY_START_ADMISSION_CONTROL.md`.
+
+Elapsed-time slowdown, transient backoff and browser lifecycle protections for
+status checks are documented in `ADAPTIVE_IDENTITY_STATUS_POLLING.md`.

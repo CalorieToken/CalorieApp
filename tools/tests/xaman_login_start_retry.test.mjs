@@ -308,3 +308,128 @@ test("embedded login does not report progress after cancellation", async () => {
   );
   assert.deepEqual(events, []);
 });
+
+test("login status polling slows down by age, failures, and Retry-After", async () => {
+  const typescript = requireFromFrontend("typescript");
+  const source = await readFile(COMPONENT_PATH, "utf8");
+  const compiled = typescript.transpileModule(source, {
+    compilerOptions: {
+      jsx: typescript.JsxEmit.ReactJSX,
+      module: typescript.ModuleKind.CommonJS,
+      target: typescript.ScriptTarget.ES2022,
+    },
+  }).outputText;
+
+  let now = 0;
+  const scheduledDelays = [];
+  const responses = [
+    new Error("synthetic transport failure"),
+    {
+      ok: false,
+      status: 503,
+      headers: { get: () => "25" },
+    },
+    {
+      ok: false,
+      status: 429,
+      headers: { get: () => "25" },
+    },
+    {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => ({ status: "pending", locale: "en" }),
+    },
+    {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => ({ status: "authenticated", locale: "en" }),
+    },
+  ];
+  let requestCount = 0;
+  const backendRequest = async () => {
+    const response = responses[requestCount];
+    requestCount += 1;
+    if (response instanceof Error) {
+      throw response;
+    }
+    return response;
+  };
+
+  class TestBackendRequestTimeoutError extends Error {}
+  const module = { exports: {} };
+  const context = vm.createContext({
+    AbortController,
+    Date: {
+      now: () => now,
+      parse: Date.parse,
+    },
+    Error,
+    Math,
+    Number,
+    Promise,
+    URL,
+    clearImmediate,
+    console,
+    module,
+    exports: module.exports,
+    process: { env: {} },
+    require(specifier) {
+      if (specifier === "react") {
+        return {};
+      }
+      if (specifier === "react/jsx-runtime") {
+        return { Fragment: Symbol("Fragment"), jsx() {}, jsxs() {} };
+      }
+      if (specifier === "@/components/authEvents") {
+        return { announceAuthState() {} };
+      }
+      if (specifier === "@/lib/backendRequest") {
+        return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
+          backendRequest,
+          backendUnavailableMessage: (_error, fallback) => fallback,
+          BackendRequestTimeoutError: TestBackendRequestTimeoutError,
+          waitForBackendReady: async () => {},
+        };
+      }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
+      }
+      throw new Error(`Unexpected require: ${specifier}`);
+    },
+    setImmediate,
+    window: {
+      clearTimeout(timer) {
+        clearImmediate(timer);
+      },
+      setTimeout(callback, delay) {
+        scheduledDelays.push(delay);
+        return setImmediate(() => {
+          now += delay;
+          callback();
+        });
+      },
+    },
+  });
+
+  vm.runInContext(compiled, context);
+  assert.equal(module.exports.loginStatusPollDelayMs(0), 5000);
+  assert.equal(module.exports.loginStatusPollDelayMs(30000), 10000);
+  assert.equal(module.exports.loginStatusPollDelayMs(90000), 20000);
+  assert.equal(module.exports.loginStatusPollDelayMs(0, 1), 10000);
+  assert.equal(module.exports.loginStatusPollDelayMs(0, 2), 20000);
+  assert.equal(module.exports.loginStatusPollDelayMs(0, 3), 30000);
+
+  await module.exports.waitForOriginLogin(
+    "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+    "2099-01-01T00:00:00Z",
+    new AbortController().signal,
+    "en"
+  );
+
+  assert.equal(requestCount, 5);
+  assert.deepEqual(scheduledDelays, [5000, 10000, 25000, 30000, 10000]);
+});

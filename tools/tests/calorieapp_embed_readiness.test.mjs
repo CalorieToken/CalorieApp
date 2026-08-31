@@ -74,13 +74,22 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
       return [root];
     },
   };
+  let now = 0;
+  let timerId = 0;
+  const timers = new Map();
+  const scheduledDelays = [];
   const window = {
     addEventListener(type, listener) {
       windowListeners[type] = listener;
     },
-    clearTimeout() {},
-    setTimeout() {
-      return 1;
+    clearTimeout(id) {
+      timers.delete(id);
+    },
+    setTimeout(callback, delay) {
+      timerId += 1;
+      timers.set(timerId, { callback, delay });
+      scheduledDelays.push(delay);
+      return timerId;
     },
   };
   let websocketCount = 0;
@@ -95,6 +104,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   const fetchCalls = [];
   const fetchBodies = [];
   let finishCount = 0;
+  let finishCanComplete = false;
   const fetch = async (url, options = {}) => {
     fetchCalls.push(url);
     fetchBodies.push(JSON.parse(options.body));
@@ -114,11 +124,14 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     }
     if (url === "/finish") {
       finishCount += 1;
+      if (finishCount === 2) {
+        throw new Error("synthetic transport failure");
+      }
       return {
         ok: true,
-        status: finishCount === 1 ? 202 : 200,
+        status: finishCanComplete ? 200 : 202,
         json: async () => ({
-          status: finishCount === 1 ? "pending" : "wordpress_authenticated",
+          status: finishCanComplete ? "wordpress_authenticated" : "pending",
         }),
       };
     }
@@ -145,6 +158,10 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
     Number,
     Object,
     Promise,
+    Date: {
+      now: () => now,
+      parse: Date.parse,
+    },
     WebSocket: FakeWebSocket,
     document,
     fetch,
@@ -192,13 +209,44 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(fetchCalls, ["/start", "/finish"]);
   assert.match(status.textContent, /Waiting for the Xaman signature/);
+  windowListeners.focus();
+  windowListeners.pageshow();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(finishCount, 1);
 
+  async function runNextTimer() {
+    const next = timers.entries().next().value;
+    assert.ok(next, "expected a scheduled status retry");
+    const [id, timer] = next;
+    timers.delete(id);
+    now += timer.delay;
+    timer.callback();
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+
+  for (let index = 0; index < 6; index += 1) {
+    await runNextTimer();
+  }
+  assert.deepEqual(scheduledDelays.slice(0, 7), [
+    5000,
+    10000,
+    5000,
+    5000,
+    5000,
+    10000,
+    10000,
+  ]);
+  assert.equal(finishCount, 7);
+
+  finishCanComplete = true;
   lastSocket.onmessage({ data: JSON.stringify({ signed: true }) });
   await new Promise((resolve) => setImmediate(resolve));
   await new Promise((resolve) => setImmediate(resolve));
-  assert.deepEqual(fetchCalls, ["/start", "/finish", "/finish", "/authorize"]);
+  assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
+  assert.equal(fetchCalls.at(-1), "/authorize");
   assert.deepEqual(fetchBodies[0], { locale: "nl" });
-  assert.deepEqual(fetchBodies[3], {
+  assert.deepEqual(fetchBodies.at(-1), {
     flow_id: "flow-id",
     flow_proof: "flow-proof",
     state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
@@ -220,6 +268,7 @@ test("Xaman remains hidden until the CalorieApp state is ready", async () => {
 
   windowListeners.focus();
   await new Promise((resolve) => setImmediate(resolve));
-  assert.deepEqual(fetchCalls, ["/start", "/finish", "/finish", "/authorize"]);
+  assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
+  assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
 });
