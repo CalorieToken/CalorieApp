@@ -1,8 +1,8 @@
 # Database capacity onboarding guard
 
-Status: provider-neutral implementation and synthetic proof complete; provider
-selection, exact quota configuration, alert delivery and live exercise remain
-release-blocking.
+Status: provider-neutral guard, alert-adapter interface and synthetic proof
+complete; provider selection, exact quota configuration, external alert
+destination and live exercise remain release-blocking.
 
 ## Safety outcome
 
@@ -50,9 +50,15 @@ before a new user is written and that existing identities bypass it. Endpoint
 tests prove the HTTP response, lack of a partial identity and continued existing
 login. PostgreSQL CI reads the real PostgreSQL database-size signal.
 
+`python -m app.capacity_probe` now converts that signal into deterministic,
+low-cardinality JSON and stable monitoring exit codes. It exposes only the
+policy level, crossed threshold, onboarding state and required action—not exact
+bytes, utilization or user/request content. Operational response is defined in
+`CAPACITY_ALERT_INCIDENT_RUNBOOK.md`.
+
 This does not claim that any shortlisted free plan is durable or sufficient.
 Before activation, a human must recheck provider terms, select the synthetic
-staging candidate, set the exact verified quota, configure low-cardinality alert
-delivery at 70/85/95 percent, approve the incident runbook and run the pause
-exercise against that isolated provider project. No real user data is allowed
-until that evidence is reviewed.
+staging candidate, set the exact verified quota, connect the probe to an
+approved alert destination and prove delivery plus the pause exercise against
+that isolated provider project. No real user data is allowed until that evidence
+is reviewed.

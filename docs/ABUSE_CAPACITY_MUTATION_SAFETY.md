@@ -69,11 +69,17 @@ read-only `pg_database_size(current_database())` signal; SQLite uses page count
 and page size only for local and unit-test equivalence. The full design and
 operator boundary are in `DATABASE_CAPACITY_ONBOARDING_GUARD.md`.
 
+The provider-neutral `python -m app.capacity_probe` command supplies stable JSON
+and exit codes for later monitoring integration. It omits exact byte counts,
+utilization and request/user content. The response process is fixed in
+`CAPACITY_ALERT_INCIDENT_RUNBOOK.md`; choosing and proving an external alert
+destination remains a live, human-approved release gate.
+
 V2 remains blocked until the shared limiter, adapter queue/circuit breaker,
 payload and storage quotas, Identity Bridge limits, mutation quarantine/audit,
-capacity alert delivery, the incident runbook, chosen-provider quota proof and
-multi-instance topology tests exist. Exact tunable values belong in reviewed
-configuration, while the safety invariants remain fixed in
+chosen-provider alert delivery, chosen-provider quota proof and multi-instance
+topology tests exist. Exact tunable values belong in reviewed configuration,
+while the safety invariants remain fixed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.
 
 Primary references:

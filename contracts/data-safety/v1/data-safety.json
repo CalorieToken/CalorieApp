@@ -187,12 +187,13 @@
       "cross-user-food-history-isolation",
       "application-engine-restart-persistence",
       "two-separate-backend-process-persistence",
-      "synthetic-custom-format-backup-and-distinct-database-restore"
+      "synthetic-custom-format-backup-and-distinct-database-restore",
+      "provider-neutral-low-cardinality-capacity-alert-interface"
     ],
     "does_not_prove": [
       "free-provider-tier-permanence",
       "chosen-provider-redeploy-persistence",
-      "capacity-alerting",
+      "chosen-provider-alert-destination-and-live-delivery",
       "encrypted-provider-staging-backup-restoration",
       "provider-exit-import",
       "production-readiness"
@@ -327,6 +328,8 @@
     "capacity_alerts_and_onboarding_pause_required": true,
     "provider_neutral_capacity_signal_implemented": true,
     "new_identity_onboarding_pause_implemented": true,
+    "provider_neutral_capacity_alert_adapter_implemented": true,
+    "capacity_incident_runbook_implemented": true,
     "exact_provider_capacity_and_alert_delivery_configured": false,
     "existing_identity_access_preserved_during_onboarding_pause": true,
     "raw_ip_or_search_text_in_long_term_abuse_profile_allowed": false,

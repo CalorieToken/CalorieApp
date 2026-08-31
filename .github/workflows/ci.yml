@@ -182,6 +182,39 @@ jobs:
           CALORIEAPP_POSTGRES_TEST_DATABASE_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_test
         run: python -m pytest tests/test_postgresql_integration.py -q -W error::DeprecationWarning
 
+      - name: Verify PostgreSQL capacity alert adapter
+        working-directory: backend
+        env:
+          CALORIEAPP_ENV: test
+          DATABASE_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_test
+          CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES: "1"
+        shell: bash
+        run: |
+          output_file="${RUNNER_TEMP}/capacity-probe.json"
+          set +e
+          python -m app.capacity_probe > "${output_file}"
+          probe_status=$?
+          set -e
+          test "${probe_status}" -eq 30
+          python - "${output_file}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = {
+              "schema_version": "calorieapp.capacity-probe.v1",
+              "status": "measured",
+              "configured": True,
+              "level": "pause",
+              "threshold_percent": 95,
+              "onboarding_paused": True,
+              "action": "keep-existing-access-pause-new-onboarding",
+          }
+          if payload != expected:
+              raise SystemExit("capacity probe payload did not match the safe contract")
+          PY
+
       - name: Verify synthetic PostgreSQL backup and restore
         working-directory: backend
         env:

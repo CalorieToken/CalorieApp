@@ -14,6 +14,7 @@ from sqlmodel import Session, create_engine, select
 import app.database as db_module
 import app.main as main_module
 from app.capacity import database_capacity_snapshot, database_used_bytes
+from app.capacity_probe import EXIT_PAUSE, capacity_probe_from_session
 from app.main import SESSION_COOKIE_NAME, app
 from app.models import (
     AuthSessionDB,
@@ -137,10 +138,19 @@ def test_postgresql_capacity_signal_enforces_exact_configured_budget(
             str(used_bytes),
         )
         snapshot = database_capacity_snapshot(session)
+        probe = capacity_probe_from_session(
+            session,
+            {"CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES": str(used_bytes)},
+        )
 
     assert snapshot is not None
     assert snapshot.used_bytes >= used_bytes
     assert snapshot.onboarding_paused is True
+    assert probe.exit_code == EXIT_PAUSE
+    assert probe.payload["level"] == "pause"
+    assert probe.payload["threshold_percent"] == 95
+    assert "used_bytes" not in probe.payload
+    assert "limit_bytes" not in probe.payload
 
 
 def test_postgresql_legacy_food_log_is_preserved(

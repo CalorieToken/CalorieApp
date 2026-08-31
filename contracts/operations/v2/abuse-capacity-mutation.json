@@ -125,6 +125,11 @@
     "new_identity_onboarding_pause_at_percent_implemented": 95,
     "configured_measurement_failure_pauses_new_onboarding": true,
     "existing_identity_login_bypasses_onboarding_pause": true,
+    "provider_neutral_alert_adapter_interface_implemented": true,
+    "alert_adapter_schema_version": "calorieapp.capacity-probe.v1",
+    "alert_adapter_exposes_exact_bytes_or_user_content": false,
+    "capacity_incident_runbook_implemented": true,
+    "external_alert_destination_configured": false,
     "automatic_paid_upgrade_allowed": false,
     "automatic_existing_history_deletion_allowed": false,
     "new_onboarding_pauses_before_safety_capacity_failure": true
@@ -151,7 +156,10 @@
     "new-identity-onboarding-pause-at-95-percent",
     "configured-capacity-measurement-failure-pauses-new-onboarding",
     "existing-identity-login-bypasses-onboarding-only-capacity-guard",
-    "postgresql-database-size-signal-ci-proof"
+    "postgresql-database-size-signal-ci-proof",
+    "deterministic-capacity-alert-json-and-exit-code-interface",
+    "postgresql-capacity-alert-adapter-ci-proof",
+    "capacity-incident-response-runbook"
   ],
   "release_blocking_missing_controls": [
     "shared-route-and-egress-rate-governor",
@@ -160,7 +168,7 @@
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",
     "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
-    "capacity-alert-delivery-and-incident-runbook",
+    "capacity-alert-destination-and-live-delivery-proof",
     "chosen-provider-exact-quota-configuration-and-live-pause-exercise",
     "multi-instance-and-proxy-topology-test"
   ]
