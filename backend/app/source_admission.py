@@ -18,11 +18,20 @@ MAX_ADAPTER_RETRY_AFTER_SECONDS = 60
 
 
 class AdapterAdmissionRejected(Exception):
-    """A safe local rejection that must become a bounded 503 response."""
+    """A safe local rejection with a bounded HTTP response contract."""
 
-    def __init__(self, reason: str, retry_after_seconds: int) -> None:
+    def __init__(
+        self,
+        reason: str,
+        retry_after_seconds: int,
+        *,
+        status_code: int = 503,
+    ) -> None:
+        if status_code not in {429, 503}:
+            raise ValueError("admission status_code must be 429 or 503")
         super().__init__(reason)
         self.reason = reason
+        self.status_code = status_code
         self.retry_after_seconds = min(
             MAX_ADAPTER_RETRY_AFTER_SECONDS,
             max(1, retry_after_seconds),

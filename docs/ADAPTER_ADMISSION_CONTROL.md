@@ -1,6 +1,7 @@
 # External adapter admission control
 
-Status: implemented per backend process for Open Food Facts search.
+Status: shared egress rate governance implemented; queue and circuit admission
+remain per backend process for Open Food Facts search.
 
 ## Active boundary
 
@@ -17,6 +18,15 @@ attempt passes through the same bounded adapter admission controller.
 | Open-circuit interval | 30 seconds |
 | Parallel half-open probes | 1 |
 | Maximum emitted `Retry-After` | 60 seconds |
+
+Before either the primary or alternate transport starts, it must also reserve
+one of eight provider-attempt slots in the shared sixty-second sliding window.
+PostgreSQL stores these low-cardinality admission timestamps and serializes the
+decision with a provider-keyed transaction advisory lock. This bounds the total
+across backend processes that share the production database, rather than eight
+per process. No query, user identifier or IP address is stored. A full window
+returns `429`; database or governor failure returns `503`. Both responses carry
+a bounded `Retry-After` and occur before provider network access.
 
 Identical concurrent searches use the normalized query and page size as their
 short-lived in-memory key and share one task. The key and result disappear when
@@ -40,7 +50,10 @@ Late results from older in-flight requests cannot close a newer open circuit.
 ## Remaining shared gate
 
 The semaphore, queue, coalescer and circuit state are process-local. They bound a
-single backend process but do not claim an aggregate limit across multiple
-instances. V2 therefore remains blocked on a shared route and egress governor,
-shared multi-instance admission and the proxy topology proof listed in
+single backend process but do not claim aggregate queue or circuit state across
+multiple instances. The shared PostgreSQL egress governor is separately proven
+with concurrent processes in PostgreSQL CI. SQLite uses an equivalent in-memory
+gate for local development and is not live multi-instance proof. V2 therefore
+remains blocked on the shared route limiter and the broader multi-instance
+admission and proxy-topology proof listed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.

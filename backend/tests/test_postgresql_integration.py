@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
+import multiprocessing
 import os
+from concurrent.futures import ProcessPoolExecutor
 from datetime import timedelta
 from secrets import token_urlsafe
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -23,11 +27,33 @@ from app.models import (
     FoodLogDB,
     utc_now,
 )
+from app.provider_rate_governor import PostgreSQLSlidingWindowRateGovernor
 from app.schema_migrations import SCHEMA_HEAD, current_revision, upgrade_database
 from app.schema_migrations.versions.v20260830_0001 import food_log as migration_food_log
+from app.source_admission import AdapterAdmissionRejected
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
+
+
+def _shared_rate_governor_process_attempt(
+    args: tuple[str, str, int],
+) -> tuple[str, int | None, int | None]:
+    raw_url, provider_key, limit = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    governor = PostgreSQLSlidingWindowRateGovernor(
+        worker_engine,
+        provider_key=provider_key,
+        limit=limit,
+        window_seconds=60,
+    )
+    try:
+        asyncio.run(governor.acquire())
+    except AdapterAdmissionRejected as exc:
+        return ("rejected", exc.status_code, exc.retry_after_seconds)
+    finally:
+        worker_engine.dispose()
+    return ("admitted", None, None)
 
 
 def _required_postgresql_test_url() -> str:
@@ -120,6 +146,59 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "database_revision": SCHEMA_HEAD,
     }
     assert "food_log" in inspect(postgres_engine).get_table_names()
+    assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
+
+
+def test_postgresql_shared_rate_window_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SHARED-RATE-GOVERNOR",
+    )
+    raw_url = _required_postgresql_test_url()
+    provider_key = f"synthetic_ci_{uuid4().hex}"
+    arguments = [(raw_url, provider_key, 8)] * 12
+
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(executor.map(_shared_rate_governor_process_attempt, arguments))
+
+    assert [result[0] for result in results].count("admitted") == 8
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == 4
+    assert all(status_code == 429 for _, status_code, _ in rejected)
+    assert all(1 <= retry_after <= 60 for _, _, retry_after in rejected)
+
+    with postgres_engine.connect() as connection:
+        count = connection.exec_driver_sql(
+            "SELECT COUNT(*) FROM provider_rate_event WHERE provider_key = %s",
+            (provider_key,),
+        ).scalar_one()
+    assert count == 8
+
+
+def test_postgresql_missing_governor_table_fails_closed(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SHARED-RATE-FAIL-CLOSED",
+    )
+    with postgres_engine.begin() as connection:
+        connection.exec_driver_sql("DROP TABLE provider_rate_event")
+
+    governor = PostgreSQLSlidingWindowRateGovernor(
+        postgres_engine,
+        provider_key=f"synthetic_ci_{uuid4().hex}",
+        limit=8,
+        window_seconds=60,
+    )
+    with pytest.raises(AdapterAdmissionRejected) as rejected:
+        asyncio.run(governor.acquire())
+    assert rejected.value.reason == "shared_rate_governor_unavailable"
+    assert rejected.value.status_code == 503
+    assert rejected.value.retry_after_seconds == 5
 
 
 def test_postgresql_capacity_signal_enforces_exact_configured_budget(

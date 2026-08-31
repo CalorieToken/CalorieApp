@@ -9,7 +9,7 @@ from typing import Callable
 import sqlalchemy as sa
 from sqlalchemy.engine import Connection, Engine
 
-from .versions import v20260830_0001
+from .versions import v20260830_0001, v20260831_0002
 
 
 class MigrationError(RuntimeError):
@@ -30,6 +30,12 @@ MIGRATIONS = (
         down_revision=v20260830_0001.down_revision,
         upgrade=v20260830_0001.upgrade,
         validate=v20260830_0001.validate,
+    ),
+    Migration(
+        revision=v20260831_0002.revision,
+        down_revision=v20260831_0002.down_revision,
+        upgrade=v20260831_0002.upgrade,
+        validate=v20260831_0002.validate,
     ),
 )
 SCHEMA_HEAD = MIGRATIONS[-1].revision

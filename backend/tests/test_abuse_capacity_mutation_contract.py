@@ -71,7 +71,21 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert off["calorieapp_target_budget"] == (
         "at-most-8-search-requests-per-minute-per-egress-ip"
     )
-    assert off["shared_egress_rate_governor_implemented"] is False
+    assert off["shared_egress_rate_governor_implemented"] is True
+    assert off["shared_egress_rate_governor_algorithm"] == "strict-sliding-window"
+    assert off["shared_egress_rate_governor_state"] == "primary-postgresql"
+    assert off["shared_egress_rate_governor_lock"] == (
+        "provider-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert off["shared_egress_rate_governor_limit"] == 8
+    assert off["shared_egress_rate_governor_window_seconds"] == 60
+    assert off["every_actual_upstream_attempt_requires_admission"] is True
+    assert off["rate_event_stores_query_user_or_ip"] is False
+    assert off["rate_limit_response"] == "429-with-bounded-retry-after"
+    assert off["governor_unavailable_response"] == "503-with-bounded-retry-after"
+    assert off["governor_database_failure_fails_closed"] is True
+    assert off["sqlite_equivalent_is_live_multi_instance_proof"] is False
+    assert off["postgresql_multi_process_ci_proof_implemented"] is True
     assert off["max_concurrent_attempts_per_backend_process"] == 2
     assert off["max_queued_attempts_per_backend_process"] == 4
     assert off["max_queue_wait_seconds"] == 2
@@ -81,6 +95,8 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert "request-body-and-data-growth-quotas" not in missing
     assert "per-subject-and-source-data-growth-quotas" in missing
     assert "bounded-adapter-concurrency-queue-and-circuit-breaker" not in missing
+    assert "shared-route-and-egress-rate-governor" not in missing
+    assert "shared-route-rate-limiter" in missing
     assert "shared-multi-instance-admission-and-proxy-topology-test" in missing
 
 
