@@ -200,6 +200,7 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     contract = _load_contract()
     principles = contract["principles"]
     mutation = contract["mutation_controls"]
+    missing = contract["release_blocking_missing_controls"]
 
     assert principles["external_integration_default_access"] == "read-only"
     assert principles["direct_ecosystem_database_or_identity_store_access_allowed"] is False
@@ -208,6 +209,33 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation["purpose_and_scope_authorization_required"] is True
     assert mutation["idempotency_key_required_for_retryable_mutation"] is True
     assert mutation["optimistic_concurrency_or_expected_version_required"] is True
+    assert mutation["source_record_terminal_moderation_implemented"] is True
+    assert mutation["source_record_moderation_authorization_scope"] == (
+        "catalog:source-record:moderate"
+    )
+    assert mutation["source_record_moderation_requires_expected_version"] is True
+    assert mutation["source_record_moderation_requires_idempotency_key"] is True
+    assert mutation["source_record_moderation_transitions"] == [
+        "quarantined-to-validated",
+        "quarantined-to-rejected",
+    ]
+    assert mutation["source_record_moderation_terminal_status_rewrite_allowed"] is False
+    assert mutation["source_record_moderation_audit_inserted_atomically"] is True
+    assert mutation["source_record_moderation_audit_service_is_append_only"] is True
+    assert mutation[
+        "source_record_moderation_audit_stores_free_text_payload_email_or_ip"
+    ] is False
+    assert mutation["source_record_moderation_conflict_response"] == (
+        "409-without-retry-after"
+    )
+    assert mutation["source_record_moderation_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert mutation["source_record_moderation_public_endpoint_enabled"] is False
+    assert mutation[
+        "postgresql_source_record_moderation_multi_process_ci_proof_implemented"
+    ] is True
+    assert mutation["complete_source_assertion_mutation_flow_implemented"] is False
     assert mutation["community_or_ecosystem_contribution_enters_quarantine"] is True
     assert mutation["moderation_required_before_public_activation"] is True
     assert mutation["contribution_creates_source_assertion_instead_of_overwrite"] is True
@@ -215,6 +243,10 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation["production_application_role_may_execute_ddl"] is False
     assert mutation["production_migration_uses_separate_approved_role"] is True
     assert mutation["xrpl_transaction_creation_or_signing_automatic"] is False
+    assert (
+        "mutation-quarantine-moderation-audit-and-expected-version-enforcement"
+        in missing
+    )
 
 
 def test_capacity_protects_existing_history_without_forcing_payment() -> None:

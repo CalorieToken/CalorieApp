@@ -112,6 +112,16 @@ Migrations use a separate approved role. Mass changes require dry-run scope
 preview and explicit approval. No automated component creates, signs or pays for
 an XRPL transaction.
 
+The first internal source-record moderation path now enforces this pattern. It
+accepts only a fixed moderation scope and controlled pseudonymous references,
+requires an idempotency key and expected version, permits only quarantine to
+validated/rejected transitions, and appends one minimal audit event in the same
+transaction. PostgreSQL serializes both record and idempotency conflicts across
+processes. No public route exists. Product/assertion contributions, correction
+history and production audit-table privilege proof remain open, so the combined
+mutation release gate is not yet claimed complete. Exact behavior is in
+`SOURCE_RECORD_MODERATION.md`.
+
 ## Capacity and incident boundary
 
 Metrics use low-cardinality counters and never contain request contents, secrets

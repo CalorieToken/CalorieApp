@@ -1,8 +1,9 @@
 # Food-data source architecture
 
-Status: the source registration and immutable source-record foundation is
-implemented. Open Food Facts remains the only enabled read-only search adapter;
-no public source-onboarding or catalog-write flow is enabled.
+Status: source registration, immutable source records and internal terminal
+moderation evidence are implemented. Open Food Facts remains the only enabled
+read-only search adapter; no public source-onboarding, contribution or
+catalog-write flow is enabled.
 
 ## Decision
 
@@ -21,7 +22,8 @@ schema for each one.
 | Entity | Role |
 |---|---|
 | `food_source` | Operator, category, jurisdiction, trust state, licence and attribution |
-| `food_source_record` | Immutable provider record, external id, version/digest and retrieval time |
+| `food_source_record` | Immutable provider identity/content reference plus terminal verification status/version |
+| `food_source_moderation_audit` | Minimal append-only evidence for a terminal record decision |
 | `food_product` | Internal source-neutral food or product identity |
 | `food_product_source_link` | Reviewable match between a provider record and internal product |
 | `food_attribute_assertion` | A source-specific value, unit, observation time and verification state |
@@ -33,6 +35,12 @@ limit, and the internal ingest service serializes its idempotency check, count
 and insert across PostgreSQL processes. Every new record starts in quarantine.
 See `PER_SOURCE_INGEST_BUDGET.md`. The product, link and assertion tables remain
 staged and are not claimed by this migration.
+
+Migration `20260831_0007` adds a positive verification version and minimal
+moderation audit. The internal service allows only version-checked,
+idempotent transitions from quarantine to validated or rejected and is proven
+across PostgreSQL processes. See `SOURCE_RECORD_MODERATION.md`. It does not add
+product matching, assertions, corrections or any public mutation route.
 
 An adapter emits normalized source records and assertions. Its idempotency key
 is `(source_id, external_record_id, source_version_or_content_digest)`. A new
@@ -73,10 +81,12 @@ ODbL, contents and image-licence boundary documented in `DATA_LICENSING.md`.
    forward migration. Completed by `20260831_0006`.
 3. Put any future catalog persistence behind the budgeted internal ingest
    service. Open Food Facts search remains read-only.
-4. Add product/link/assertion entities, then verify conflict retention,
+4. Add terminal source-record moderation with expected-version and audit
+   evidence. Completed by `20260831_0007` for the internal service only.
+5. Add product/link/assertion entities, then verify conflict retention,
    licence-aware export and log
    snapshot immutability with synthetic data.
-5. Pilot one additional low-risk source only after privacy, licence and data
+6. Pilot one additional low-risk source only after privacy, licence and data
    quality review.
 
 The source-independent schema compatibility is a V2 completion requirement;

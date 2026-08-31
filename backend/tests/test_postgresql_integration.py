@@ -30,6 +30,7 @@ from app.models import (
     ExternalIdentityDB,
     FoodLogDB,
     FoodSourceDB,
+    FoodSourceModerationAuditDB,
     FoodSourceRecordDB,
     OriginLoginHandoffDB,
     PendingLoginLocaleDB,
@@ -50,6 +51,11 @@ from app.services.identity import (
     create_limited_login_transaction,
 )
 from app.services.source_catalog import ingest_source_record
+from app.services.source_moderation import (
+    SOURCE_MODERATION_SCOPE,
+    SourceModerationRejected,
+    moderate_source_record,
+)
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
@@ -160,6 +166,30 @@ def _source_ingest_process_attempt(
     return ("created" if result.created else "duplicate", None, None)
 
 
+def _source_moderation_process_attempt(
+    args: tuple[str, str, int],
+) -> tuple[str, int | None, str | None]:
+    raw_url, source_record_id, index = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            result = moderate_source_record(
+                session,
+                source_record_id=source_record_id,
+                target_status="validated" if index % 2 == 0 else "rejected",
+                expected_version=1,
+                idempotency_key=f"concurrent-moderation-{index}",
+                moderator_reference="moderator-ci",
+                authorization_scope=SOURCE_MODERATION_SCOPE,
+                reason_code="synthetic-quality-reviewed",
+            )
+    except SourceModerationRejected as exc:
+        return ("rejected", exc.status_code, exc.reason)
+    finally:
+        worker_engine.dispose()
+    return ("moderated" if result.created else "duplicate", None, None)
+
+
 def _required_postgresql_test_url() -> str:
     raw_url = os.getenv(POSTGRES_TEST_URL_ENV, "").strip()
     if not raw_url:
@@ -252,6 +282,9 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_log" in inspect(postgres_engine).get_table_names()
     assert "food_source" in inspect(postgres_engine).get_table_names()
     assert "food_source_record" in inspect(postgres_engine).get_table_names()
+    assert "food_source_moderation_audit" in inspect(
+        postgres_engine
+    ).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
     food_log_indexes = {
@@ -259,6 +292,11 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         for index in inspect(postgres_engine).get_indexes("food_log")
     }
     assert food_log_indexes["ix_food_log_owner_id"] == ("owner_id",)
+    source_record_columns = {
+        column["name"]
+        for column in inspect(postgres_engine).get_columns("food_source_record")
+    }
+    assert "verification_version" in source_record_columns
     pending_columns = {
         column["name"]
         for column in inspect(postgres_engine).get_columns("pendingloginstate")
@@ -462,6 +500,80 @@ def test_postgresql_source_ingest_budget_is_atomic_across_processes(
     assert duplicate.created is False
     assert len(records) == 8
     assert {record.verification_status for record in records} == {"quarantined"}
+
+
+def test_postgresql_source_moderation_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SOURCE-MODERATION",
+    )
+    raw_url = _required_postgresql_test_url()
+    source_key = f"moderation-{uuid4().hex}"
+    with Session(postgres_engine) as session:
+        session.add(
+            FoodSourceDB(
+                source_key=source_key,
+                source_category="open-dataset",
+                operator_name="Synthetic CI Source",
+                status="enabled",
+                licence_id="synthetic-test-only",
+                terms_reference="https://example.test/terms",
+                attribution_text="Synthetic CI data",
+                record_limit=2,
+            )
+        )
+        session.commit()
+        record_id = ingest_source_record(
+            session,
+            source_key=source_key,
+            external_record_id="moderated-record",
+            source_version_or_content_digest="version-1",
+        ).record.id
+
+    decision_count = 12
+    worker_count = 4
+    arguments = [
+        (raw_url, record_id, index) for index in range(decision_count)
+    ]
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(
+        max_workers=worker_count,
+        mp_context=context,
+    ) as executor:
+        results = list(executor.map(_source_moderation_process_attempt, arguments))
+
+    assert [result[0] for result in results].count("moderated") == 1
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == decision_count - 1
+    assert {result[1] for result in rejected} == {409}
+    assert {result[2] for result in rejected} == {
+        "source_record_version_conflict"
+    }
+
+    admitted_index = next(
+        index for index, result in enumerate(results) if result[0] == "moderated"
+    )
+    expected_status = "validated" if admitted_index % 2 == 0 else "rejected"
+    with Session(postgres_engine) as session:
+        duplicate = moderate_source_record(
+            session,
+            source_record_id=record_id,
+            target_status=expected_status,
+            expected_version=1,
+            idempotency_key=f"concurrent-moderation-{admitted_index}",
+            moderator_reference="moderator-ci",
+            authorization_scope=SOURCE_MODERATION_SCOPE,
+            reason_code="synthetic-quality-reviewed",
+        )
+        record = session.get(FoodSourceRecordDB, record_id)
+        audits = session.exec(select(FoodSourceModerationAuditDB)).all()
+    assert duplicate.created is False
+    assert record is not None
+    assert record.verification_status == expected_status
+    assert record.verification_version == 2
+    assert len(audits) == 1
 
 
 def test_postgresql_identity_start_limits_are_atomic_across_processes(
