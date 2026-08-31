@@ -67,7 +67,10 @@
       "release_blocking": true,
       "evidence": [
         "contracts/data-safety/v1/data-safety.json",
-        "docs/DURABLE_DATA_FOUNDATION.md"
+        "contracts/data-safety/v1/provider-evaluation.json",
+        "backend/tests/test_provider_evaluation_contract.py",
+        "docs/DURABLE_DATA_FOUNDATION.md",
+        "docs/ZERO_COST_PROVIDER_EVALUATION.md"
       ]
     },
     {
