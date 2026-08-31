@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, Index, UniqueConstraint
+from sqlalchemy import CheckConstraint, Column, DateTime, Index, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
@@ -39,6 +39,56 @@ class FoodLogDB(SQLModel, table=True):
         foreign_key="calorieappuser.id",
         index=True,
     )
+
+
+class FoodSourceDB(SQLModel, table=True):
+    """Reviewed source registration; no public onboarding route exists."""
+
+    __tablename__ = "food_source"
+    __table_args__ = (
+        UniqueConstraint("source_key", name="uq_food_source_key"),
+        CheckConstraint(
+            "status IN ('staged', 'enabled', 'paused', 'disabled')",
+            name="ck_food_source_status",
+        ),
+        CheckConstraint("record_limit > 0", name="ck_food_source_record_limit"),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    source_key: str = Field(max_length=100)
+    source_category: str = Field(max_length=80)
+    operator_name: str = Field(max_length=160)
+    status: str = Field(default="staged", max_length=20)
+    licence_id: str = Field(max_length=120)
+    terms_reference: str = Field(max_length=500)
+    attribution_text: str = Field(max_length=500)
+    record_limit: int = Field(gt=0)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodSourceRecordDB(SQLModel, table=True):
+    """Immutable, source-specific record identity without a raw payload."""
+
+    __tablename__ = "food_source_record"
+    __table_args__ = (
+        UniqueConstraint(
+            "source_id",
+            "external_record_id",
+            "source_version_or_content_digest",
+            name="uq_food_source_record_idempotency",
+        ),
+        CheckConstraint(
+            "verification_status IN ('quarantined', 'validated', 'rejected')",
+            name="ck_food_source_record_verification_status",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    source_id: str = Field(foreign_key="food_source.id", index=True)
+    external_record_id: str = Field(max_length=255)
+    source_version_or_content_digest: str = Field(max_length=128)
+    retrieved_or_submitted_at: datetime = Field(default_factory=utc_now)
+    verification_status: str = Field(default="quarantined", max_length=20)
 
 
 class CalorieAppUserDB(SQLModel, table=True):

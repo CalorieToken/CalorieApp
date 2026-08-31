@@ -42,6 +42,7 @@ invalid-header behavior. The endpoint integration test proves an oversize food
 log cannot create a database row.
 
 This closes only the request-body part of the wider growth-control gate. The
-private food-log subject budget is now implemented separately; V2 remains
-blocked on the per-source catalog-ingest budget and the other missing controls listed in
+private food-log subject budget and internal per-source catalog-ingest budget
+are now implemented separately. The catalog service has no HTTP write route, so
+it does not add another request-body policy. Other missing controls remain in
 `contracts/operations/v2/abuse-capacity-mutation.json`.

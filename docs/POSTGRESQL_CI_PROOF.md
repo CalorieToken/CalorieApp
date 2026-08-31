@@ -36,7 +36,10 @@ provider account, recurring subscription, live database or user data.
     admits exactly its configured aggregate limit across all processes.
 15. Start independent food-log writers and prove a per-user retained-row budget
     admits exactly eight of twelve simultaneous writes.
-16. Remove each operational rate table in an isolated test and prove provider
+16. Start independent source-record writers and prove a per-source retained-row
+    budget admits exactly eight of twelve distinct writes while duplicates stay
+    idempotent after the budget is full.
+17. Remove each operational rate table in an isolated test and prove provider
     and route admission fail closed before protected work.
 
 The integration test refuses to reset a database unless the host is loopback

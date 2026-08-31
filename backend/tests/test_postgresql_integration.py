@@ -29,6 +29,8 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     FoodLogDB,
+    FoodSourceDB,
+    FoodSourceRecordDB,
     OriginLoginHandoffDB,
     PendingLoginLocaleDB,
     PendingLoginStateDB,
@@ -47,6 +49,7 @@ from app.services.identity import (
     IdentityStartAdmissionRejected,
     create_limited_login_transaction,
 )
+from app.services.source_catalog import ingest_source_record
 
 
 POSTGRES_TEST_URL_ENV = "CALORIEAPP_POSTGRES_TEST_DATABASE_URL"
@@ -135,6 +138,26 @@ def _food_log_growth_process_attempt(
     finally:
         worker_engine.dispose()
     return ("admitted", None, None)
+
+
+def _source_ingest_process_attempt(
+    args: tuple[str, str, int],
+) -> tuple[str, int | None, str | None]:
+    raw_url, source_key, index = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            result = ingest_source_record(
+                session,
+                source_key=source_key,
+                external_record_id=f"concurrent-{index}",
+                source_version_or_content_digest="version-1",
+            )
+    except DataGrowthAdmissionRejected as exc:
+        return ("rejected", exc.status_code, exc.reason)
+    finally:
+        worker_engine.dispose()
+    return ("created" if result.created else "duplicate", None, None)
 
 
 def _required_postgresql_test_url() -> str:
@@ -227,6 +250,8 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "database_revision": SCHEMA_HEAD,
     }
     assert "food_log" in inspect(postgres_engine).get_table_names()
+    assert "food_source" in inspect(postgres_engine).get_table_names()
+    assert "food_source_record" in inspect(postgres_engine).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
     food_log_indexes = {
@@ -386,6 +411,57 @@ def test_postgresql_food_log_subject_budget_is_atomic_across_processes(
             select(FoodLogDB).where(FoodLogDB.owner_id == owner_id)
         ).all()
     assert len(entries) == 8
+
+
+def test_postgresql_source_ingest_budget_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SOURCE-INGEST-GROWTH",
+    )
+    raw_url = _required_postgresql_test_url()
+    source_key = f"synthetic-{uuid4().hex}"
+    with Session(postgres_engine) as session:
+        session.add(
+            FoodSourceDB(
+                source_key=source_key,
+                source_category="open-dataset",
+                operator_name="Synthetic CI Source",
+                status="enabled",
+                licence_id="synthetic-test-only",
+                terms_reference="https://example.test/terms",
+                attribution_text="Synthetic CI data",
+                record_limit=8,
+            )
+        )
+        session.commit()
+
+    arguments = [(raw_url, source_key, index) for index in range(12)]
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(executor.map(_source_ingest_process_attempt, arguments))
+
+    assert [result[0] for result in results].count("created") == 8
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == 4
+    assert {result[1] for result in rejected} == {409}
+    assert {result[2] for result in rejected} == {"source_record_budget_reached"}
+
+    admitted_index = next(
+        index for index, result in enumerate(results) if result[0] == "created"
+    )
+    with Session(postgres_engine) as session:
+        duplicate = ingest_source_record(
+            session,
+            source_key=source_key,
+            external_record_id=f"concurrent-{admitted_index}",
+            source_version_or_content_digest="version-1",
+        )
+        records = session.exec(select(FoodSourceRecordDB)).all()
+    assert duplicate.created is False
+    assert len(records) == 8
+    assert {record.verification_status for record in records} == {"quarantined"}
 
 
 def test_postgresql_identity_start_limits_are_atomic_across_processes(

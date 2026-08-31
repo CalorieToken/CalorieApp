@@ -36,11 +36,10 @@ only the fixed rejection reason, not the food payload or user identifier.
 
 ## Scope and remaining gate
 
-Open Food Facts search results are currently read-only and are not persisted as
-catalog records. This change therefore does not claim a per-source ingest
-budget. That control must be integrated atomically with the future
-source-neutral catalog persistence route; adding a disconnected counter now
-would not prevent a future writer from bypassing it.
+Open Food Facts search results remain read-only and are not automatically
+persisted as catalog records. The separate per-source retained-record budget is
+now implemented in `PER_SOURCE_INGEST_BUDGET.md`; public source onboarding and
+the remaining product/assertion mutation controls are still disabled.
 
 This implementation adds one index but no provider, external service, paid
 capacity, recurring request or extra CI job. It is a repository change only and
