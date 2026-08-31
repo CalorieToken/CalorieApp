@@ -220,6 +220,41 @@ def test_assertion_requires_the_reviewable_product_source_pair(tmp_path) -> None
         engine.dispose()
 
 
+def test_identical_evidence_can_exist_for_distinct_valid_product_links(
+    tmp_path,
+) -> None:
+    engine = _engine(tmp_path, "multi-product-evidence.db")
+    try:
+        with Session(engine) as session:
+            source = _source("synthetic-multi-product", "licence-multi-product")
+            session.add(source)
+            session.commit()
+            record = _record(source, "record-multi-product")
+            product_a = FoodProductDB(status="active")
+            product_b = FoodProductDB(status="active")
+            session.add_all([record, product_a, product_b])
+            session.commit()
+            session.add_all([_link(product_a, record), _link(product_b, record)])
+            session.commit()
+
+            session.add_all(
+                [
+                    _assertion(product_a, record, value="100"),
+                    _assertion(product_b, record, value="100"),
+                ]
+            )
+            session.commit()
+
+            assertions = session.exec(select(FoodAttributeAssertionDB)).all()
+            assert len(assertions) == 2
+            assert {item.food_product_id for item in assertions} == {
+                product_a.id,
+                product_b.id,
+            }
+    finally:
+        engine.dispose()
+
+
 def test_correction_must_stay_with_the_same_product_and_source_record(
     tmp_path,
 ) -> None:

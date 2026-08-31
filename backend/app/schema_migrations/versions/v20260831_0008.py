@@ -106,6 +106,7 @@ food_attribute_assertion = sa.Table(
         name="fk_food_attribute_assertion_product_source_link",
     ),
     sa.UniqueConstraint(
+        "food_product_id",
         "source_record_id",
         "attribute_key",
         "value",
@@ -260,6 +261,7 @@ def validate(connection: Connection) -> None:
         for item in inspector.get_unique_constraints(food_attribute_assertion.name)
     }
     if (
+        "food_product_id",
         "source_record_id",
         "attribute_key",
         "value",

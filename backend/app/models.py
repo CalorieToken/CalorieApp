@@ -201,6 +201,7 @@ class FoodAttributeAssertionDB(SQLModel, table=True):
             name="fk_food_attribute_assertion_product_source_link",
         ),
         UniqueConstraint(
+            "food_product_id",
             "source_record_id",
             "attribute_key",
             "value",
