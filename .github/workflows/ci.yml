@@ -182,6 +182,16 @@ jobs:
           CALORIEAPP_POSTGRES_TEST_DATABASE_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_test
         run: python -m pytest tests/test_postgresql_integration.py -q -W error::DeprecationWarning
 
+      - name: Verify synthetic PostgreSQL backup and restore
+        working-directory: backend
+        env:
+          CALORIEAPP_POSTGRES_BACKUP_SOURCE_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_test
+          CALORIEAPP_POSTGRES_BACKUP_RESTORE_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_restore
+        run: |
+          command -v pg_dump
+          command -v pg_restore
+          python -m app.backup_restore_drill
+
       - name: Verify approved PostgreSQL staging migration command
         working-directory: backend
         env:

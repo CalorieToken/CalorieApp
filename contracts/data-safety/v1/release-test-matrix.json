@@ -102,9 +102,14 @@
     },
     {
       "id": "backup_restore_drill",
-      "status": "not_started",
+      "status": "partial",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "backend/app/backup_restore_drill.py",
+        "backend/tests/test_backup_restore_drill.py",
+        ".github/workflows/ci.yml",
+        "docs/POSTGRESQL_BACKUP_RESTORE_DRILL.md"
+      ]
     },
     {
       "id": "user_data_export",

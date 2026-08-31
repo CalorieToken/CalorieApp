@@ -144,12 +144,28 @@
     "production_enabled_or_data_mutation_performed": false
   },
   "backup_and_recovery": {
+    "status": "synthetic-logical-restore-proof-configured-production-design-pending",
     "encrypted_at_rest_and_in_transit_required": true,
     "restricted_operator_access_required": true,
     "automated_backup_required": true,
     "documented_restore_procedure_required": true,
     "successful_staging_restore_drill_required": true,
-    "backup_without_restore_test_counts_as_ready": false
+    "backup_without_restore_test_counts_as_ready": false,
+    "synthetic_ci_logical_restore": {
+      "automated_per_merge_candidate": true,
+      "loopback_only": true,
+      "source_database": "calorieapp_ci_test",
+      "restore_database": "calorieapp_ci_restore",
+      "distinct_restore_database_required": true,
+      "synthetic_data_only": true,
+      "custom_format_pg_dump_and_pg_restore": true,
+      "schema_head_and_owner_links_verified": true,
+      "archive_persisted_or_uploaded": false,
+      "production_or_staging_data_allowed": false
+    },
+    "encrypted_production_backup_selected": false,
+    "provider_staging_restore_completed": false,
+    "retention_and_backup_erasure_schedule_approved": false
   },
   "postgresql_ci_proof": {
     "status": "automated-gate-configured-success-required-per-merge-candidate",
@@ -169,13 +185,14 @@
       "legacy-food-log-preservation",
       "identity-and-auth-session-persistence",
       "cross-user-food-history-isolation",
-      "application-engine-restart-persistence"
+      "application-engine-restart-persistence",
+      "synthetic-custom-format-backup-and-distinct-database-restore"
     ],
     "does_not_prove": [
       "free-provider-tier-permanence",
       "provider-redeploy-persistence",
       "capacity-alerting",
-      "backup-restoration",
+      "encrypted-provider-staging-backup-restoration",
       "provider-exit-import",
       "production-readiness"
     ],

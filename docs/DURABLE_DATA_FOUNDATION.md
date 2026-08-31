@@ -78,9 +78,9 @@ until the durable-data and privacy gates pass.
 | Zero-additional-cost operation | Hard requirement; provider not selected | Verify capacity alerts, backup and exit plan |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Application-engine restart test added for ephemeral PostgreSQL | Still prove provider restart and redeploy persistence |
-| Backup and restore | Missing | Select mechanism and prove restoration |
-| User export | Missing | Add authenticated portable export |
-| User erasure | Food-log deletion exists; complete account erasure does not | Complete scoped erasure workflow |
+| Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
+| User export | Authenticated versioned backend export exists | Add the eleven-language UI and aligned notice |
+| User erasure | Human-gated backend erasure exists and defaults off | Approve recovery, backup-erasure, UI and notice policy before activation |
 | Retention | No infrastructure expiry desired; exact policy unresolved | Explicit decision and notice required |
 
 ## DS-2 implementation order
