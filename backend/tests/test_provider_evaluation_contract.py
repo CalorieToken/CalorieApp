@@ -62,6 +62,11 @@ def test_non_negotiable_cost_durability_and_privacy_boundaries_remain() -> None:
     assert capacity["new_onboarding_pause_at_or_before_percent"] == 95
     assert capacity["provider_neutral_database_size_signal_implemented"] is True
     assert capacity["provider_neutral_onboarding_guard_implemented"] is True
+    assert capacity["provider_neutral_alert_adapter_interface_implemented"] is True
+    assert capacity["alert_adapter_schema_version"] == "calorieapp.capacity-probe.v1"
+    assert capacity["capacity_incident_runbook"] == (
+        "docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md"
+    )
     assert capacity["configured_measurement_failure_pauses_new_onboarding"] is True
     assert capacity["exact_provider_quota_configured"] is False
     assert capacity["alert_delivery_configured"] is False

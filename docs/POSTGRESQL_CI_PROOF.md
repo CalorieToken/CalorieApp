@@ -17,7 +17,8 @@ provider account, recurring subscription, live database or user data.
 2. Verify schema head and database readiness.
 3. Run the staging migration command with an explicit approval reference.
 4. Read PostgreSQL's database-size signal and prove an exact configured budget
-   activates the 95-percent onboarding-pause classification.
+   activates the 95-percent onboarding-pause classification and deterministic
+   low-cardinality alert-adapter output.
 5. Upgrade a supported legacy `food_log` table without losing its row.
 6. Create two synthetic Identity Bridge users and opaque application sessions.
 7. Log separate food records through the real FastAPI endpoints.
@@ -38,7 +39,7 @@ the test unusable against a remote, staging or production database.
 
 - persistence across a chosen provider's service restart or real redeployment;
 - permanence or exact quota of any free tier;
-- provider alert delivery or a live chosen-provider onboarding-pause exercise;
+- chosen-provider alert destination/delivery or a live onboarding-pause exercise;
 - encrypted provider backup creation or a staging restoration;
 - export/import into another provider;
 - production security, privacy or operational readiness.

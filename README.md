@@ -233,6 +233,7 @@ gate can additionally run the local developer health check.
 - V2 baseline and live evidence: docs/V2_BASELINE_EVIDENCE.md
 - Abuse, capacity and mutation safety: docs/ABUSE_CAPACITY_MUTATION_SAFETY.md
 - Database capacity onboarding guard: docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md
+- Capacity alert incident runbook: docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md
 - Free ecosystem evolution guardrails: docs/ECOSYSTEM_EVOLUTION_GUARDRAILS.md
 - Product-version boundary contract: contracts/release/v2/completion-boundary.json
 - Food-data source architecture: docs/FOOD_DATA_SOURCE_ARCHITECTURE.md
