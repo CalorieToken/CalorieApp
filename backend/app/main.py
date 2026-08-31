@@ -1375,8 +1375,12 @@ async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> Food
             exc.reason,
         )
         raise HTTPException(
-            status_code=503,
-            detail="Food search temporarily unavailable",
+            status_code=exc.status_code,
+            detail=(
+                "Food search rate limit reached"
+                if exc.status_code == 429
+                else "Food search temporarily unavailable"
+            ),
             headers={
                 "Retry-After": str(exc.retry_after_seconds),
                 "Cache-Control": "no-store",

@@ -5,7 +5,8 @@ import logging
 import math
 import shutil
 import subprocess
-from typing import Any
+from collections.abc import Awaitable, Callable
+from typing import Any, TypeVar
 
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -13,6 +14,8 @@ from urllib.error import HTTPError as UrllibHTTPError, URLError
 
 import httpx
 
+from app.database import engine
+from app.provider_rate_governor import build_provider_rate_governor
 from app.schemas import FoodSearchResult
 from app.source_admission import (
     AdapterAdmissionController,
@@ -21,6 +24,7 @@ from app.source_admission import (
 )
 
 logger = logging.getLogger(__name__)
+T = TypeVar("T")
 
 OPEN_FOOD_FACTS_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
 REQUEST_HEADERS = {
@@ -50,6 +54,13 @@ _OPEN_FOOD_FACTS_ADMISSION = AdapterAdmissionController(
 _OPEN_FOOD_FACTS_COALESCER: DuplicateRequestCoalescer[list[FoodSearchResult]] = (
     DuplicateRequestCoalescer()
 )
+_OPEN_FOOD_FACTS_RATE_GOVERNOR = build_provider_rate_governor(engine)
+
+
+async def _governed_attempt(operation: Callable[[], Awaitable[T]]) -> T:
+    """Reserve shared egress capacity immediately before an upstream attempt."""
+    await _OPEN_FOOD_FACTS_RATE_GOVERNOR.acquire()
+    return await operation()
 
 
 def _repair_common_mojibake(text: str) -> str:
@@ -145,7 +156,7 @@ async def _search_food_products_once(
     try:
         try:
             payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
-                lambda: _fetch_primary(params)
+                lambda: _governed_attempt(lambda: _fetch_primary(params))
             )
         except httpx.HTTPStatusError:
             # Do not bypass an upstream status (especially 429/503) through
@@ -159,7 +170,7 @@ async def _search_food_products_once(
             )
             try:
                 payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
-                    lambda: _fetch_fallback(params)
+                    lambda: _governed_attempt(lambda: _fetch_fallback(params))
                 )
             except ValueError as fallback_exc:
                 logger.error(

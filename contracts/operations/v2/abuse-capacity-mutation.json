@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -114,7 +114,19 @@
       "max_queue_wait_seconds": 2,
       "identical_in_flight_search_coalescing_implemented": true,
       "circuit_breaker_implemented": true,
-      "shared_egress_rate_governor_implemented": false
+      "shared_egress_rate_governor_implemented": true,
+      "shared_egress_rate_governor_algorithm": "strict-sliding-window",
+      "shared_egress_rate_governor_state": "primary-postgresql",
+      "shared_egress_rate_governor_lock": "provider-keyed-postgresql-transaction-advisory-lock",
+      "shared_egress_rate_governor_limit": 8,
+      "shared_egress_rate_governor_window_seconds": 60,
+      "every_actual_upstream_attempt_requires_admission": true,
+      "rate_event_stores_query_user_or_ip": false,
+      "rate_limit_response": "429-with-bounded-retry-after",
+      "governor_unavailable_response": "503-with-bounded-retry-after",
+      "governor_database_failure_fails_closed": true,
+      "sqlite_equivalent_is_live_multi_instance_proof": false,
+      "postgresql_multi_process_ci_proof_implemented": true
     }
   },
   "identity_bridge_controls": {
@@ -194,10 +206,14 @@
     "declared-and-actual-mutation-body-byte-limits",
     "bounded-open-food-facts-concurrency-and-queue",
     "open-food-facts-circuit-breaker-with-single-recovery-probe",
-    "identical-in-flight-food-search-coalescing"
+    "identical-in-flight-food-search-coalescing",
+    "postgresql-shared-open-food-facts-strict-sliding-window-governor",
+    "every-primary-and-fallback-provider-attempt-requires-shared-admission",
+    "postgresql-multi-process-eight-per-minute-rate-governor-proof",
+    "shared-rate-governor-fails-closed-before-upstream-access"
   ],
   "release_blocking_missing_controls": [
-    "shared-route-and-egress-rate-governor",
+    "shared-route-rate-limiter",
     "per-subject-and-source-data-growth-quotas",
     "identity-start-and-outstanding-state-limits",
     "adaptive-status-poll-slowdown",

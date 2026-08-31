@@ -6,9 +6,11 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
+from app.source_admission import AdapterAdmissionRejected
 from app.services.open_food_facts import (
     _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH,
     _OPEN_FOOD_FACTS_ADMISSION,
+    _OPEN_FOOD_FACTS_RATE_GOVERNOR,
     _PRIMARY_MAX_ATTEMPTS,
     _FALLBACK_MAX_ATTEMPTS,
     _extract_nutri_score,
@@ -20,8 +22,13 @@ from app.services.open_food_facts import (
 @pytest.fixture(autouse=True)
 def reset_open_food_facts_admission() -> Iterator[None]:
     _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+    reset_governor = getattr(_OPEN_FOOD_FACTS_RATE_GOVERNOR, "_reset_for_tests", None)
+    if reset_governor is not None:
+        reset_governor()
     yield
     _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+    if reset_governor is not None:
+        reset_governor()
 
 
 def test_one_search_has_a_two_request_end_to_end_upstream_budget() -> None:
@@ -36,6 +43,8 @@ def test_open_food_facts_admission_configuration_is_bounded() -> None:
     assert _OPEN_FOOD_FACTS_ADMISSION.queue_timeout_seconds == 2.0
     assert _OPEN_FOOD_FACTS_ADMISSION.failure_threshold == 3
     assert _OPEN_FOOD_FACTS_ADMISSION.recovery_timeout_seconds == 30.0
+    assert _OPEN_FOOD_FACTS_RATE_GOVERNOR.limit == 8
+    assert _OPEN_FOOD_FACTS_RATE_GOVERNOR.window_seconds == 60
 
 
 @pytest.mark.parametrize(
@@ -144,7 +153,23 @@ def test_upstream_http_status_does_not_bypass_limit_through_fallback(
 def test_primary_transport_error_uses_single_fallback_attempt(
     primary: AsyncMock,
     fallback: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    class CountingGovernor:
+        limit = 8
+        window_seconds = 60
+
+        def __init__(self) -> None:
+            self.acquire_count = 0
+
+        async def acquire(self) -> None:
+            self.acquire_count += 1
+
+    governor = CountingGovernor()
+    monkeypatch.setattr(
+        "app.services.open_food_facts._OPEN_FOOD_FACTS_RATE_GOVERNOR",
+        governor,
+    )
     request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
     primary.side_effect = httpx.ReadError("connection interrupted", request=request)
     fallback.return_value = {"products": []}
@@ -153,6 +178,35 @@ def test_primary_transport_error_uses_single_fallback_attempt(
 
     primary.assert_awaited_once()
     fallback.assert_awaited_once()
+    assert governor.acquire_count == 2
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_shared_rate_rejection_happens_before_upstream_network_access(
+    primary: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class RejectingGovernor:
+        limit = 8
+        window_seconds = 60
+
+        async def acquire(self) -> None:
+            raise AdapterAdmissionRejected(
+                "shared_provider_rate_limit",
+                7,
+                status_code=429,
+            )
+
+    monkeypatch.setattr(
+        "app.services.open_food_facts._OPEN_FOOD_FACTS_RATE_GOVERNOR",
+        RejectingGovernor(),
+    )
+
+    with pytest.raises(AdapterAdmissionRejected) as rejected:
+        asyncio.run(search_food_products("banana"))
+    assert rejected.value.status_code == 429
+    assert rejected.value.retry_after_seconds == 7
+    primary.assert_not_awaited()
 
 
 @patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)

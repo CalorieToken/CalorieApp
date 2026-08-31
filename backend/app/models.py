@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Column, DateTime, Index, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
@@ -158,3 +158,23 @@ class BridgeAuthNonceDB(SQLModel, table=True):
     context: str = Field(max_length=60, index=True)
     created_at: datetime = Field(default_factory=utc_now)
     expires_at: datetime = Field(index=True)
+
+
+class ProviderRateEventDB(SQLModel, table=True):
+    """Low-cardinality shared admission event without request or user data."""
+
+    __tablename__ = "provider_rate_event"
+    __table_args__ = (
+        Index(
+            "ix_provider_rate_event_provider_admitted",
+            "provider_key",
+            "admitted_at",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, max_length=36)
+    provider_key: str = Field(max_length=100)
+    admitted_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )

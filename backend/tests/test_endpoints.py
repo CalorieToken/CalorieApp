@@ -64,7 +64,7 @@ def test_readiness_checks_database_revision(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ready",
-        "database_revision": "20260830_0001",
+        "database_revision": "20260831_0002",
         "service": "calorieapp-backend",
     }
 
@@ -221,6 +221,25 @@ def test_search_food_admission_rejection_returns_bounded_503(
     assert response.headers["retry-after"] == "2"
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["x-content-type-options"] == "nosniff"
+
+
+@patch("app.main.search_food_products", new_callable=AsyncMock)
+def test_search_food_shared_rate_rejection_returns_bounded_429(
+    mock_search: AsyncMock,
+    client: TestClient,
+) -> None:
+    mock_search.side_effect = AdapterAdmissionRejected(
+        "shared_provider_rate_limit",
+        7,
+        status_code=429,
+    )
+
+    response = client.get("/search-food?q=banana")
+
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Food search rate limit reached"}
+    assert response.headers["retry-after"] == "7"
+    assert response.headers["cache-control"] == "no-store"
 
 
 # ---------------------------------------------------------------------------

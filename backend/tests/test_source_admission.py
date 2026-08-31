@@ -58,6 +58,15 @@ def test_retry_after_is_always_bounded() -> None:
     )
 
 
+def test_admission_status_is_restricted_to_safe_operational_responses() -> None:
+    assert AdapterAdmissionRejected("queue", 1).status_code == 503
+    assert (
+        AdapterAdmissionRejected("rate", 1, status_code=429).status_code == 429
+    )
+    with pytest.raises(ValueError, match="status_code"):
+        AdapterAdmissionRejected("unsafe", 1, status_code=200)
+
+
 def test_concurrency_and_queue_are_bounded() -> None:
     async def scenario() -> None:
         controller = _controller()

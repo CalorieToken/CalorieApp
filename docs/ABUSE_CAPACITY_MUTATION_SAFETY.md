@@ -34,8 +34,16 @@ backend process, queues at most four for no longer than two seconds and merges
 identical in-flight searches. Three consecutive failed search actions open its
 circuit for thirty seconds; recovery permits exactly one probe. Local admission
 rejections return `503` with a bounded `Retry-After` and never trigger another
-transport attempt. These controls are intentionally process-local until the
-shared multi-instance topology is implemented and tested.
+transport attempt. These queue and circuit controls remain process-local.
+
+Separately, every actual primary or fallback attempt must reserve one of eight
+slots in a shared sixty-second strict sliding window before network access.
+PostgreSQL serializes admission across backend processes with a provider-keyed
+transaction advisory lock. It stores only the provider key and short-lived
+admission time—not the query, user or IP. A full window returns `429`; governor
+or database failure fails closed with `503`. Both include bounded
+`Retry-After`. Concurrent-process PostgreSQL CI proves the aggregate eight-slot
+boundary; SQLite's in-memory equivalent is only for local development.
 
 ## One retry budget
 
@@ -46,10 +54,10 @@ including `429` or `503`, is not bypassed through fallback. Nested curl or urlli
 retries have been removed.
 
 The official Open Food Facts API documentation currently states a limit of ten
-search requests per minute per IP and warns against search-as-you-type. V2 must
-use a shared egress governor with a safety margin of at most eight per minute,
-plus jittered backoff, before release. The current per-process admission layer
-does not replace that shared egress governor.
+search requests per minute per IP and warns against search-as-you-type. The
+shared egress governor enforces the reviewed safety margin of at most eight
+actual attempts per minute. The still-process-local queue and circuit layer does
+not replace the remaining shared route and complete topology controls.
 
 ## Unwanted mutation
 
@@ -90,8 +98,8 @@ utilization and request/user content. The response process is fixed in
 `CAPACITY_ALERT_INCIDENT_RUNBOOK.md`; choosing and proving an external alert
 destination remains a live, human-approved release gate.
 
-V2 remains blocked until the shared route and egress limiter, shared
-multi-instance admission proof, per-subject and per-source storage-growth
+V2 remains blocked until the shared route limiter, complete shared
+multi-instance admission and proxy-topology proof, per-subject and per-source storage-growth
 quotas, Identity Bridge limits, mutation quarantine/audit, chosen-provider alert
 delivery, chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants

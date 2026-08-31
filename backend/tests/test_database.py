@@ -148,7 +148,7 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 1
+        assert count == 2
     finally:
         test_engine.dispose()
 
@@ -263,12 +263,15 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
     try:
         upgrade_database(test_engine, approval_reference="CHANGE-2026-001")
         with test_engine.connect() as connection:
-            applied_at, reference = connection.exec_driver_sql(
-                "SELECT applied_at, approval_reference FROM calorie_schema_revision"
-            ).one()
-        applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
-        age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()
-        assert 0 <= age_seconds < 5
-        assert reference == "CHANGE-2026-001"
+            history = connection.exec_driver_sql(
+                "SELECT applied_at, approval_reference "
+                "FROM calorie_schema_revision ORDER BY revision"
+            ).all()
+        assert len(history) == 2
+        for applied_at, reference in history:
+            applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
+            age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()
+            assert 0 <= age_seconds < 5
+            assert reference == "CHANGE-2026-001"
     finally:
         test_engine.dispose()
