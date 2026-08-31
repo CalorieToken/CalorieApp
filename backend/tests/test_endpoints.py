@@ -230,6 +230,26 @@ def test_log_food_valid_full_schema(authenticated_client: TestClient) -> None:
     assert data["created_at"].endswith("Z")
 
 
+def test_log_food_rejects_oversize_body_before_mutation(
+    authenticated_client: TestClient,
+) -> None:
+    payload = b'{"product_name":"' + (b"x" * (16 * 1024)) + b'","calories":1}'
+
+    response = authenticated_client.post(
+        "/log-food",
+        content=payload,
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 413
+    assert response.json() == {"detail": "Request body too large"}
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert "retry-after" not in response.headers
+    with Session(db_module.engine) as session:
+        assert session.exec(select(FoodLogDB)).all() == []
+
+
 def test_log_food_valid_minimal_schema(authenticated_client: TestClient) -> None:
     """Only required fields; macro defaults must be 0."""
     response = authenticated_client.post("/log-food", json={"product_name": "Rice", "calories": 130.0})

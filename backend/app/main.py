@@ -35,6 +35,7 @@ from .models import (
     FoodLogDB,
     OriginLoginHandoffDB,
 )
+from .request_limits import RequestBodyLimitMiddleware
 from .schemas import (
     AccountErasureRequest,
     AccountErasureResponse,
@@ -306,6 +307,10 @@ async def apply_response_security_headers(request: Request, call_next):
         response.headers["Cache-Control"] = "no-store"
         response.headers["Pragma"] = "no-cache"
     return response
+
+# Enforce body limits before FastAPI parses JSON. CORS is added last so it can
+# still wrap safe 400/413 responses for approved browser origins.
+app.add_middleware(RequestBodyLimitMiddleware)
 
 # Enable credentials for session-based authentication
 app.add_middleware(

@@ -34,6 +34,21 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     off = contract["provider_registry"]["open_food_facts_search"]
 
     assert request["route_specific_limits_required"] is True
+    assert request["request_body_size_limit_implemented"] is True
+    assert request["declared_and_actual_body_bytes_enforced"] is True
+    assert request["invalid_content_length_response"] == 400
+    assert request["oversize_body_response"] == 413
+    assert request["default_mutation_body_limit_bytes"] == 16 * 1024
+    assert request["explicit_route_body_limit_bytes"] == {
+        "POST /api/identity/login/start": 2 * 1024,
+        "POST /api/identity/login/state/validate": 2 * 1024,
+        "POST /api/identity/callback": 4 * 1024,
+        "POST /api/identity/login/status": 4 * 1024,
+        "DELETE /api/identity/account": 4 * 1024,
+        "POST /api/identity/logout": 1024,
+        "POST /log-food": 16 * 1024,
+    }
+    assert request["request_body_content_logged"] is False
     assert request["search_as_you_type_external_requests_allowed"] is False
     assert request["bounded_per_adapter_concurrency_required"] is True
     assert request["bounded_queue_with_backpressure_required"] is True
@@ -46,6 +61,9 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
         "at-most-8-search-requests-per-minute-per-egress-ip"
     )
     assert off["shared_egress_rate_governor_implemented"] is False
+    missing = contract["release_blocking_missing_controls"]
+    assert "request-body-and-data-growth-quotas" not in missing
+    assert "per-subject-and-source-data-growth-quotas" in missing
 
 
 def test_mutation_is_scoped_moderated_and_never_direct() -> None:

@@ -17,8 +17,15 @@ signal. Raw IP addresses and search text may not become long-term abuse profiles
 An IP signal is never the only durable identity because mobile carriers,
 workplaces and households share addresses.
 
-Every public route receives explicit body, field, pagination, concurrency and
-queue bounds. Over-limit requests return `429` with bounded `Retry-After`;
+Mutation routes now receive fail-closed body-byte bounds before FastAPI parses
+JSON. Both the declared `Content-Length` and the body bytes actually received are
+enforced, so absent or misleading headers do not bypass the boundary. Oversize
+bodies return `413` without `Retry-After`; malformed or ambiguous
+`Content-Length` returns `400`. The body content is not logged. The exact current
+limits and extension rule are documented in `REQUEST_BODY_LIMITS.md`.
+
+Every public route still requires explicit field, pagination, rate, concurrency
+and queue bounds. Rate-limit requests return `429` with bounded `Retry-After`;
 temporary queue or circuit exhaustion returns `503`. Health checks remain cheap
 and must not trigger source calls.
 
@@ -76,10 +83,10 @@ utilization and request/user content. The response process is fixed in
 destination remains a live, human-approved release gate.
 
 V2 remains blocked until the shared limiter, adapter queue/circuit breaker,
-payload and storage quotas, Identity Bridge limits, mutation quarantine/audit,
-chosen-provider alert delivery, chosen-provider quota proof and multi-instance
-topology tests exist. Exact tunable values belong in reviewed configuration,
-while the safety invariants remain fixed in
+per-subject and per-source storage-growth quotas, Identity Bridge limits,
+mutation quarantine/audit, chosen-provider alert delivery, chosen-provider quota
+proof and multi-instance topology tests exist. Exact tunable values belong in
+reviewed configuration, while the safety invariants remain fixed in
 `contracts/operations/v2/abuse-capacity-mutation.json`.
 
 Primary references:
