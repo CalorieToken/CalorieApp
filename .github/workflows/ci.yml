@@ -192,6 +192,12 @@ jobs:
           command -v pg_restore
           python -m app.backup_restore_drill
 
+      - name: Verify persistence across separate backend processes
+        working-directory: backend
+        env:
+          CALORIEAPP_POSTGRES_REDEPLOY_URL: postgresql+psycopg://calorieapp_ci:synthetic_ci_only@127.0.0.1:5432/calorieapp_ci_test
+        run: python -m app.redeploy_persistence_drill
+
       - name: Verify approved PostgreSQL staging migration command
         working-directory: backend
         env:
