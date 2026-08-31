@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.identity-bridge.security",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "protocol_version": "v1",
   "identity_authority": {
     "wordpress_session_required": true,
@@ -20,6 +20,18 @@
     "ttl_seconds": 300,
     "single_use": true,
     "replay_protected": true
+  },
+  "login_start_admission": {
+    "registered_client_id_source": "fixed-server-configuration",
+    "start_limit": 20,
+    "start_window_seconds": 60,
+    "outstanding_unexpired_transaction_limit": 50,
+    "outstanding_limit_counts_all_retained_statuses": true,
+    "state_locale_and_origin_handoff_atomic": true,
+    "shared_production_state": "primary-postgresql",
+    "raw_ip_or_network_signal_stored": false,
+    "short_lived_network_signal_limit_implemented": false,
+    "adaptive_status_poll_slowdown_implemented": false
   },
   "authorization_code": {
     "minimum_ttl_seconds": 10,

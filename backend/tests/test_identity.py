@@ -10,6 +10,7 @@ from sqlalchemy.pool import NullPool
 from sqlmodel import Session, create_engine, select
 from sqlmodel.pool import StaticPool
 
+import app.services.identity as identity_module
 from app.database import init_db
 from app.models import (
     AuthorizationCodeDB,
@@ -21,12 +22,14 @@ from app.models import (
     SQLModel,
 )
 from app.services.identity import (
+    IdentityStartAdmissionRejected,
     claim_origin_login_handoff,
     cleanup_pending_login_states,
     complete_origin_login_handoff,
     consume_pending_login_state,
     create_origin_login_handoff,
     create_pending_login_state,
+    create_limited_login_transaction,
     create_authorization_code,
     fail_origin_login_handoff,
     hash_login_state,
@@ -442,6 +445,142 @@ class TestUserIdentity:
 
 
 class TestPendingLoginState:
+    def test_limited_transaction_persists_state_locale_and_handoff_atomically(
+        self,
+        test_session: Session,
+    ):
+        state, pending, handoff_token = create_limited_login_transaction(
+            test_session,
+            client_id="registered-test-client",
+            state_lifetime_seconds=300,
+            locale="nl",
+        )
+
+        state_hash = hash_login_state(state)
+        locale = test_session.exec(
+            select(PendingLoginLocaleDB).where(
+                PendingLoginLocaleDB.state_hash == state_hash
+            )
+        ).one()
+        handoff = test_session.exec(
+            select(OriginLoginHandoffDB).where(
+                OriginLoginHandoffDB.state_hash == state_hash
+            )
+        ).one()
+
+        assert pending.client_id == "registered-test-client"
+        assert locale.locale == "nl"
+        assert handoff.handoff_token_hash == hash_origin_handoff_token(handoff_token)
+        assert pending.created_at == locale.created_at == handoff.created_at
+        assert pending.expires_at == locale.expires_at == handoff.expires_at
+
+    def test_limited_transaction_enforces_per_client_start_window(
+        self,
+        test_session: Session,
+    ):
+        for _ in range(2):
+            create_limited_login_transaction(
+                test_session,
+                client_id="rate-limited-client",
+                state_lifetime_seconds=300,
+                start_limit=2,
+                outstanding_limit=10,
+            )
+
+        with pytest.raises(IdentityStartAdmissionRejected) as rejected:
+            create_limited_login_transaction(
+                test_session,
+                client_id="rate-limited-client",
+                state_lifetime_seconds=300,
+                start_limit=2,
+                outstanding_limit=10,
+            )
+
+        assert rejected.value.reason == "login_start_rate_limit"
+        assert rejected.value.status_code == 429
+        assert 1 <= rejected.value.retry_after_seconds <= 60
+
+        other_state, _, _ = create_limited_login_transaction(
+            test_session,
+            client_id="different-registered-client",
+            state_lifetime_seconds=300,
+            start_limit=2,
+            outstanding_limit=10,
+        )
+        assert other_state
+
+    def test_outstanding_limit_counts_every_unexpired_retained_state(
+        self,
+        test_session: Session,
+    ):
+        _, first, _ = create_limited_login_transaction(
+            test_session,
+            client_id="outstanding-client",
+            state_lifetime_seconds=300,
+            start_limit=10,
+            outstanding_limit=2,
+        )
+        _, second, _ = create_limited_login_transaction(
+            test_session,
+            client_id="outstanding-client",
+            state_lifetime_seconds=300,
+            start_limit=10,
+            outstanding_limit=2,
+        )
+        first.status = "consumed"
+        second.status = "completed"
+        test_session.add_all([first, second])
+        test_session.commit()
+
+        with pytest.raises(IdentityStartAdmissionRejected) as rejected:
+            create_limited_login_transaction(
+                test_session,
+                client_id="outstanding-client",
+                state_lifetime_seconds=300,
+                start_limit=10,
+                outstanding_limit=2,
+            )
+
+        assert rejected.value.reason == "outstanding_login_limit"
+        assert rejected.value.status_code == 429
+        assert 1 <= rejected.value.retry_after_seconds <= 60
+
+    def test_handoff_allocation_failure_leaves_no_orphan_state(
+        self,
+        test_session: Session,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        existing_token = "existing-handoff-token"
+        test_session.add(
+            OriginLoginHandoffDB(
+                state_hash="a" * 64,
+                handoff_token_hash=hash_origin_handoff_token(existing_token),
+                status="pending",
+                created_at=datetime.now(UTC),
+                expires_at=datetime.now(UTC) + timedelta(minutes=5),
+            )
+        )
+        test_session.commit()
+        monkeypatch.setattr(
+            identity_module,
+            "generate_origin_handoff_token",
+            lambda: existing_token,
+        )
+
+        with pytest.raises(IdentityStartAdmissionRejected) as rejected:
+            create_limited_login_transaction(
+                test_session,
+                client_id="atomic-client",
+                state_lifetime_seconds=300,
+            )
+
+        assert rejected.value.status_code == 503
+        assert test_session.exec(
+            select(PendingLoginStateDB).where(
+                PendingLoginStateDB.client_id == "atomic-client"
+            )
+        ).all() == []
+
     def test_state_is_persisted_and_hashed(self, test_session: Session):
         state, row = create_pending_login_state(test_session, state_lifetime_seconds=300)
 

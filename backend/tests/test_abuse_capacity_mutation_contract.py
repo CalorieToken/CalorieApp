@@ -136,6 +136,44 @@ def test_request_and_retry_budgets_prevent_amplification() -> None:
     assert "shared-multi-instance-admission-and-proxy-topology-test" in missing
 
 
+def test_identity_start_admission_is_shared_bounded_and_privacy_minimal() -> None:
+    contract = _load_contract()
+    identity = contract["identity_bridge_controls"]
+    missing = contract["release_blocking_missing_controls"]
+
+    assert identity["registered_client_login_start_limit_implemented"] is True
+    assert identity["registered_client_login_start_limit"] == 20
+    assert identity["registered_client_login_start_window_seconds"] == 60
+    assert identity["registered_client_id_is_fixed_server_configuration"] is True
+    assert identity["request_supplied_client_id_controls_admission_key"] is False
+    assert identity["short_lived_network_signal_limit_implemented"] is False
+    assert identity["raw_ip_or_network_signal_stored_for_login_admission"] is False
+    assert identity["outstanding_unexpired_state_limit_implemented"] is True
+    assert identity["outstanding_unexpired_state_limit_per_registered_client"] == 50
+    assert identity["outstanding_limit_counts_all_unexpired_retained_statuses"] is True
+    assert identity["state_locale_and_origin_handoff_created_atomically"] is True
+    assert identity["identity_start_admission_state"] == (
+        "primary-postgresql-pendingloginstate"
+    )
+    assert identity["identity_start_admission_lock"] == (
+        "registered-client-keyed-postgresql-transaction-advisory-lock"
+    )
+    assert identity["identity_start_limit_response"] == (
+        "429-with-bounded-retry-after"
+    )
+    assert identity["identity_start_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert identity["identity_start_database_failure_fails_closed"] is True
+    assert identity["sqlite_identity_start_lock_is_live_multi_process_proof"] is False
+    assert identity[
+        "postgresql_identity_start_multi_process_ci_proof_implemented"
+    ] is True
+    assert "identity-start-and-outstanding-state-limits" not in missing
+    assert "identity-start-short-lived-network-signal-limit" in missing
+    assert "adaptive-status-poll-slowdown" in missing
+
+
 def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     contract = _load_contract()
     principles = contract["principles"]

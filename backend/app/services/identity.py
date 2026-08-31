@@ -9,14 +9,19 @@ Handles:
 """
 import hashlib
 import logging
+import math
 import os
+from contextlib import nullcontext
 from datetime import UTC, datetime, timedelta
 from secrets import compare_digest
 from secrets import token_urlsafe
+from threading import Lock
 from typing import Callable, Optional
 from uuid import uuid4
 
+import sqlalchemy as sa
 from sqlalchemy import delete, update
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from app.models import (
@@ -39,6 +44,13 @@ LOGIN_STATE_LENGTH = 48
 ORIGIN_HANDOFF_TOKEN_LENGTH = 48
 LOGIN_STATE_LIFETIME_SECONDS = int(os.getenv("LOGIN_STATE_LIFETIME_SECONDS", "300"))
 WORDPRESS_BRIDGE_SECRET = os.getenv("WORDPRESS_BRIDGE_SECRET", "")
+LOGIN_START_LIMIT_PER_CLIENT = 20
+LOGIN_START_WINDOW_SECONDS = 60
+OUTSTANDING_LOGIN_LIMIT_PER_CLIENT = 50
+LOGIN_ADMISSION_RETRY_AFTER_MAX_SECONDS = 60
+LOGIN_ADMISSION_UNAVAILABLE_RETRY_SECONDS = 5
+
+_local_login_admission_lock = Lock()
 
 if not WORDPRESS_BRIDGE_SECRET:
     logger.warning(
@@ -80,6 +92,216 @@ def generate_origin_handoff_token() -> str:
 def hash_origin_handoff_token(token: str) -> str:
     """Hash an origin-browser handoff token before persistent storage."""
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+class IdentityStartAdmissionRejected(Exception):
+    """Bounded login-start rejection safe to expose through the API."""
+
+    def __init__(self, reason: str, retry_after_seconds: int, *, status_code: int) -> None:
+        if status_code not in {429, 503}:
+            raise ValueError("identity admission status_code must be 429 or 503")
+        super().__init__(reason)
+        self.reason = reason
+        self.status_code = status_code
+        self.retry_after_seconds = max(
+            1,
+            min(LOGIN_ADMISSION_RETRY_AFTER_MAX_SECONDS, retry_after_seconds),
+        )
+
+
+def validate_identity_start_admission_configuration(
+    client_id: str,
+    state_lifetime_seconds: int,
+    *,
+    start_limit: int = LOGIN_START_LIMIT_PER_CLIENT,
+    window_seconds: int = LOGIN_START_WINDOW_SECONDS,
+    outstanding_limit: int = OUTSTANDING_LOGIN_LIMIT_PER_CLIENT,
+) -> None:
+    """Validate fixed server-side controls before accepting traffic."""
+    if not client_id or len(client_id) > 120:
+        raise ValueError("CALORIEAPP_CLIENT_ID must contain 1 to 120 characters")
+    if start_limit <= 0:
+        raise ValueError("login start limit must be greater than zero")
+    if window_seconds <= 0 or window_seconds > 60:
+        raise ValueError("login start window must be between 1 and 60 seconds")
+    if outstanding_limit <= 0:
+        raise ValueError("outstanding login limit must be greater than zero")
+    if state_lifetime_seconds < window_seconds:
+        raise ValueError(
+            "LOGIN_STATE_LIFETIME_SECONDS must be at least the login start window"
+        )
+
+
+def _identity_advisory_lock_key(client_id: str) -> int:
+    raw = int.from_bytes(
+        hashlib.sha256(f"identity-start:{client_id}".encode("utf-8")).digest()[:8],
+        byteorder="big",
+        signed=False,
+    )
+    return raw - (1 << 64) if raw >= (1 << 63) else raw
+
+
+def _retry_after_datetime(target: datetime, now: datetime) -> int:
+    return max(
+        1,
+        min(
+            LOGIN_ADMISSION_RETRY_AFTER_MAX_SECONDS,
+            math.ceil((target - now).total_seconds()),
+        ),
+    )
+
+
+def create_limited_login_transaction(
+    session: Session,
+    *,
+    client_id: str,
+    state_lifetime_seconds: int,
+    post_login_redirect: Optional[str] = None,
+    locale: str = "en",
+    start_limit: int = LOGIN_START_LIMIT_PER_CLIENT,
+    window_seconds: int = LOGIN_START_WINDOW_SECONDS,
+    outstanding_limit: int = OUTSTANDING_LOGIN_LIMIT_PER_CLIENT,
+) -> tuple[str, PendingLoginStateDB, str]:
+    """Atomically admit and create one bounded login transaction."""
+    validate_identity_start_admission_configuration(
+        client_id,
+        state_lifetime_seconds,
+        start_limit=start_limit,
+        window_seconds=window_seconds,
+        outstanding_limit=outstanding_limit,
+    )
+
+    table = PendingLoginStateDB.__table__
+    try:
+        dialect = session.get_bind().dialect.name
+    except (AttributeError, SQLAlchemyError) as exc:
+        raise IdentityStartAdmissionRejected(
+            "login_admission_unavailable",
+            LOGIN_ADMISSION_UNAVAILABLE_RETRY_SECONDS,
+            status_code=503,
+        ) from exc
+
+    if dialect not in {"postgresql", "sqlite"}:
+        raise IdentityStartAdmissionRejected(
+            "login_admission_unavailable",
+            LOGIN_ADMISSION_UNAVAILABLE_RETRY_SECONDS,
+            status_code=503,
+        )
+
+    local_lock = _local_login_admission_lock if dialect == "sqlite" else nullcontext()
+    with local_lock:
+        try:
+            if dialect == "postgresql":
+                session.execute(
+                    sa.text("SELECT pg_advisory_xact_lock(:lock_key)"),
+                    {"lock_key": _identity_advisory_lock_key(client_id)},
+                )
+                now = session.execute(
+                    sa.text("SELECT timezone('UTC', clock_timestamp())")
+                ).scalar_one()
+                if not isinstance(now, datetime):
+                    raise TypeError("PostgreSQL clock did not return a datetime")
+            else:
+                now = utc_now()
+
+            cutoff = now - timedelta(seconds=window_seconds)
+            recent_count, oldest_created = session.execute(
+                sa.select(
+                    sa.func.count(table.c.id),
+                    sa.func.min(table.c.created_at),
+                ).where(
+                    table.c.client_id == client_id,
+                    table.c.created_at > cutoff,
+                )
+            ).one()
+            if int(recent_count) >= start_limit:
+                if not isinstance(oldest_created, datetime):
+                    raise TypeError("Oldest login admission was not a datetime")
+                raise IdentityStartAdmissionRejected(
+                    "login_start_rate_limit",
+                    _retry_after_datetime(
+                        oldest_created + timedelta(seconds=window_seconds),
+                        now,
+                    ),
+                    status_code=429,
+                )
+
+            outstanding_count, earliest_expiry = session.execute(
+                sa.select(
+                    sa.func.count(table.c.id),
+                    sa.func.min(table.c.expires_at),
+                ).where(
+                    table.c.client_id == client_id,
+                    table.c.expires_at > now,
+                )
+            ).one()
+            if int(outstanding_count) >= outstanding_limit:
+                if not isinstance(earliest_expiry, datetime):
+                    raise TypeError("Earliest login expiry was not a datetime")
+                raise IdentityStartAdmissionRejected(
+                    "outstanding_login_limit",
+                    _retry_after_datetime(earliest_expiry, now),
+                    status_code=429,
+                )
+
+            expires_at = now + timedelta(seconds=state_lifetime_seconds)
+            for _ in range(3):
+                state = generate_login_state()
+                state_hash = hash_login_state(state)
+                handoff_token = generate_origin_handoff_token()
+                handoff_token_hash = hash_origin_handoff_token(handoff_token)
+                existing_state = session.execute(
+                    sa.select(table.c.id).where(table.c.state_hash == state_hash)
+                ).first()
+                existing_handoff = session.execute(
+                    sa.select(OriginLoginHandoffDB.__table__.c.id).where(
+                        OriginLoginHandoffDB.__table__.c.handoff_token_hash
+                        == handoff_token_hash
+                    )
+                ).first()
+                if existing_state is not None or existing_handoff is not None:
+                    continue
+
+                pending = PendingLoginStateDB(
+                    state_hash=state_hash,
+                    client_id=client_id,
+                    status="pending",
+                    created_at=now,
+                    expires_at=expires_at,
+                    post_login_redirect=post_login_redirect,
+                )
+                session.add_all(
+                    [
+                        pending,
+                        PendingLoginLocaleDB(
+                            state_hash=state_hash,
+                            locale=locale,
+                            created_at=now,
+                            expires_at=expires_at,
+                        ),
+                        OriginLoginHandoffDB(
+                            state_hash=state_hash,
+                            handoff_token_hash=handoff_token_hash,
+                            status="pending",
+                            created_at=now,
+                            expires_at=expires_at,
+                        ),
+                    ]
+                )
+                session.commit()
+                return state, pending, handoff_token
+
+            raise RuntimeError("Unable to allocate unique login transaction")
+        except IdentityStartAdmissionRejected:
+            session.rollback()
+            raise
+        except (SQLAlchemyError, TypeError, ValueError, RuntimeError) as exc:
+            session.rollback()
+            raise IdentityStartAdmissionRejected(
+                "login_admission_unavailable",
+                LOGIN_ADMISSION_UNAVAILABLE_RETRY_SECONDS,
+                status_code=503,
+            ) from exc
 
 
 def create_pending_login_state(

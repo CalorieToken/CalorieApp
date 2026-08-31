@@ -26,6 +26,7 @@
         "backend/app/capacity_probe.py",
         "backend/app/request_limits.py",
         "backend/app/route_rate_limiter.py",
+        "backend/app/services/identity.py",
         "backend/app/source_admission.py",
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
@@ -42,7 +43,8 @@
         "docs/REQUEST_BODY_LIMITS.md",
         "docs/ADAPTER_ADMISSION_CONTROL.md",
         "docs/SHARED_PROVIDER_RATE_GOVERNOR.md",
-        "docs/SHARED_ROUTE_RATE_LIMITER.md"
+        "docs/SHARED_ROUTE_RATE_LIMITER.md",
+        "docs/IDENTITY_START_ADMISSION_CONTROL.md"
       ]
     },
     {
@@ -82,6 +84,7 @@
         "backend/app/schema_migrations/versions/v20260830_0001.py",
         "backend/app/schema_migrations/versions/v20260831_0002.py",
         "backend/app/schema_migrations/versions/v20260831_0003.py",
+        "backend/app/schema_migrations/versions/v20260831_0004.py",
         "backend/tests/test_database.py"
       ]
     },

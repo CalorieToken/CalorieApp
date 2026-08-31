@@ -197,6 +197,12 @@ _required_food_log_columns = {
     "created_at",
 }
 
+# Later forward migrations may extend a baseline table. Keep this list explicit
+# so the baseline validator still rejects every unrelated extra column.
+_allowed_later_columns = {
+    "pendingloginstate": {"client_id"},
+}
+
 
 def _food_log_has_owner_foreign_key(connection: Connection) -> bool:
     return any(
@@ -340,7 +346,11 @@ def validate(connection: Connection) -> None:
 
         actual_columns = {str(column["name"]) for column in inspector.get_columns(table.name)}
         expected_columns = {column.name for column in table.columns}
-        if actual_columns != expected_columns:
+        allowed_extras = _allowed_later_columns.get(table.name, set())
+        if (
+            not expected_columns.issubset(actual_columns)
+            or not (actual_columns - expected_columns).issubset(allowed_extras)
+        ):
             raise RuntimeError(f"Schema column drift detected for table {table.name}")
 
         actual_indexes = {index["name"] for index in inspector.get_indexes(table.name)}

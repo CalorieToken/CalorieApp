@@ -86,6 +86,18 @@ class PendingLoginStateDB(SQLModel, table=True):
     """Persistent login transaction state used for XUMM callback protection."""
 
     __tablename__ = "pendingloginstate"
+    __table_args__ = (
+        Index(
+            "ix_pendingloginstate_client_created",
+            "client_id",
+            "created_at",
+        ),
+        Index(
+            "ix_pendingloginstate_client_expires",
+            "client_id",
+            "expires_at",
+        ),
+    )
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     state_hash: str = Field(max_length=64, unique=True, index=True)
@@ -94,6 +106,7 @@ class PendingLoginStateDB(SQLModel, table=True):
     expires_at: datetime
     consumed_at: Optional[datetime] = Field(default=None)
     post_login_redirect: Optional[str] = Field(default=None, max_length=255)
+    client_id: str = Field(default="legacy", max_length=120)
 
 
 class PendingLoginLocaleDB(SQLModel, table=True):
