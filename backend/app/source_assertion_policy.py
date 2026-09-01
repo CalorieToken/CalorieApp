@@ -9,6 +9,7 @@ from types import MappingProxyType
 
 
 SOURCE_ASSERTION_CONTENT_POLICY_VERSION = "1.0.0"
+SOURCE_ASSERTION_VALUE_MAX_LENGTH = 255
 _PLAIN_NON_NEGATIVE_DECIMAL_PATTERN = re.compile(
     r"(?:0|[1-9][0-9]*)(?:\.(?P<fractional_digits>[0-9]+))?"
 )
@@ -93,11 +94,12 @@ def normalize_source_assertion_value(
         raise ValueError("attribute_key is not in the reviewed assertion policy")
     if unit_or_value_type != policy.unit:
         raise ValueError("unit_or_value_type does not match the attribute policy")
-    value_match = (
-        _PLAIN_NON_NEGATIVE_DECIMAL_PATTERN.fullmatch(value)
-        if isinstance(value, str)
-        else None
-    )
+    if not isinstance(value, str) or len(value) > SOURCE_ASSERTION_VALUE_MAX_LENGTH:
+        raise ValueError(
+            "value must be a string with at most "
+            f"{SOURCE_ASSERTION_VALUE_MAX_LENGTH} characters"
+        )
+    value_match = _PLAIN_NON_NEGATIVE_DECIMAL_PATTERN.fullmatch(value)
     fractional_digits = (
         value_match.group("fractional_digits") if value_match is not None else None
     )

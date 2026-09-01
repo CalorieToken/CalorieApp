@@ -313,6 +313,7 @@ def test_assertion_ingest_rejects_missing_lineage_without_audit(
         {"value": "https://example.test/raw-payload"},
         {"value": "1e2"},
         {"value": "-1"},
+        {"value": "9" * 256},
         {"value": "1000.000001"},
         {"unit_or_value_type": "KCAL"},
         {"unit_or_value_type": "g-per-100g"},

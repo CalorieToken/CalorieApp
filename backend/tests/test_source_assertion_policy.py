@@ -8,6 +8,7 @@ import pytest
 import app.source_assertion_policy as source_assertion_policy
 from app.source_assertion_policy import (
     SOURCE_ASSERTION_CONTENT_POLICY_VERSION,
+    SOURCE_ASSERTION_VALUE_MAX_LENGTH,
     NumericAssertionPolicy,
     normalize_source_assertion_value,
     source_assertion_policy_snapshot,
@@ -109,6 +110,22 @@ def test_policy_enforces_attribute_specific_fractional_digit_limit(
         normalize_source_assertion_value(
             attribute_key="nutrition.energy",
             value="12.345",
+            unit_or_value_type="kcal-per-100g",
+        )
+
+
+def test_policy_rejects_oversized_value_before_decimal_conversion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_decimal_conversion(_value: str) -> Decimal:
+        raise AssertionError("oversized values must fail before Decimal conversion")
+
+    monkeypatch.setattr(source_assertion_policy, "Decimal", fail_decimal_conversion)
+
+    with pytest.raises(ValueError, match="at most 255 characters"):
+        normalize_source_assertion_value(
+            attribute_key="nutrition.energy",
+            value="9" * (SOURCE_ASSERTION_VALUE_MAX_LENGTH + 1),
             unit_or_value_type="kcal-per-100g",
         )
 
