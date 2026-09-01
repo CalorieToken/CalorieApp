@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -78,7 +78,11 @@
         "backend/app/schema_migrations/versions/v20260901_0011.py",
         "backend/tests/test_source_assertion_correction.py",
         "backend/tests/test_postgresql_integration.py",
-        "docs/SOURCE_ASSERTION_CORRECTION.md"
+        "docs/SOURCE_ASSERTION_CORRECTION.md",
+        "backend/app/postgresql_privileges.py",
+        "backend/app/postgresql_privilege_cli.py",
+        "backend/tests/test_postgresql_privileges.py",
+        "docs/POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md"
       ]
     },
     {

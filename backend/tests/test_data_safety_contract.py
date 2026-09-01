@@ -16,7 +16,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.6.0"
+    assert contract["contract_version"] == "1.7.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -62,6 +62,12 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
         "automated_evidence"
     ]
     assert "encrypted-provider-staging-backup-restoration" in proof["does_not_prove"]
+    assert "synthetic-runtime-role-row-only-and-insert-only-audit-enforcement" in proof[
+        "automated_evidence"
+    ]
+    assert "staging-or-production-runtime-role-privilege-application" in proof[
+        "does_not_prove"
+    ]
     assert proof["provider_selection_status"] == "pending-separate-evaluation"
 
 
@@ -341,6 +347,13 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety["silent_catalog_assertion_overwrite_allowed"] is False
     assert safety["unmoderated_public_contribution_activation_allowed"] is False
     assert safety["production_schema_mutation_requires_separate_approval"] is True
+    assert safety["postgresql_runtime_role_privilege_policy_implemented"] is True
+    assert safety[
+        "postgresql_runtime_role_synthetic_ci_proof_implemented"
+    ] is True
+    assert safety[
+        "postgresql_runtime_role_staging_or_production_proof_completed"
+    ] is False
     assert safety["automatic_xrpl_transaction_creation_allowed"] is False
     assert safety["current_release_dependency"] is True
 
@@ -568,7 +581,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.1.0"
+    assert matrix["contract_version"] == "1.2.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -577,6 +590,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["formal_schema_migrations"]["status"] == "verified"
     assert gates["v2_deployment_provenance"]["status"] == "partial"
     assert gates["abuse_capacity_and_mutation_controls"]["status"] == "partial"
+    assert "backend/app/postgresql_privileges.py" in gates[
+        "abuse_capacity_and_mutation_controls"
+    ]["evidence"]
+    assert "docs/POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md" in gates[
+        "abuse_capacity_and_mutation_controls"
+    ]["evidence"]
     assert gates["component_rights_and_contributor_provenance"]["status"] == "partial"
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"

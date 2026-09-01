@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.12.0",
+  "contract_version": "1.13.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -320,6 +320,16 @@
     "correction_preserves_superseded_assertion": true,
     "production_application_role_may_execute_ddl": false,
     "production_migration_uses_separate_approved_role": true,
+    "postgresql_application_role_privilege_policy_implemented": true,
+    "postgresql_application_role_owns_database_or_schema_objects_allowed": false,
+    "postgresql_application_role_inherited_roles_allowed": false,
+    "postgresql_application_role_normal_table_privileges": ["SELECT", "INSERT", "UPDATE", "DELETE"],
+    "postgresql_application_role_audit_table_privileges": ["SELECT", "INSERT"],
+    "postgresql_application_role_schema_history_privileges": ["SELECT"],
+    "postgresql_application_role_create_or_temporary_privileges_allowed": false,
+    "postgresql_application_role_synthetic_ci_proof_implemented": true,
+    "postgresql_application_role_staging_proof_completed": false,
+    "postgresql_application_role_production_enforcement_completed": false,
     "mass_mutation_requires_dry_run_scope_preview_and_explicit_approval": true,
     "xrpl_transaction_creation_or_signing_automatic": false
   },
@@ -457,7 +467,8 @@
     "idempotent-quarantined-source-assertion-correction",
     "atomic-minimal-append-only-source-assertion-correction-audit",
     "postgresql-multi-process-source-assertion-correction-proof",
-    "source-assertion-correction-fails-closed-on-database-error"
+    "source-assertion-correction-fails-closed-on-database-error",
+    "postgresql-application-role-row-only-and-insert-only-audit-ci-proof"
   ],
   "release_blocking_missing_controls": [
     "identity-start-short-lived-network-signal-limit",
