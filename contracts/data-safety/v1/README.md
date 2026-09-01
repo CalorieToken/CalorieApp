@@ -13,10 +13,15 @@ Files:
 
 - `data-safety.json`: architecture, data classes, retention boundaries and
   prohibited storage patterns.
+- `privacy-notice-alignment.json`: canonical product facts, English consequence-
+  copy evidence and the still-closed legal, provider, translation and
+  publication fields.
 - `release-test-matrix.json`: auditable status of every release-blocking gate.
 
 The selected retention periods and their still-closed enforcement boundaries
 are documented in `docs/RETENTION_POLICY.md`.
+Privacy-notice alignment and its still-closed publication boundary are
+documented in `docs/PRIVACY_NOTICE_ALIGNMENT.md`.
 
 Status vocabulary:
 

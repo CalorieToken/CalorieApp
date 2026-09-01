@@ -89,7 +89,9 @@ activation, a human must approve and verify:
 
 The current implementation makes no claim that backups are already erased. No
 live account, session or personal record was mutated while implementing this
-gate.
+gate. `PRIVACY_NOTICE_ALIGNMENT.md` records the canonical consequence facts
+without claiming that the current English interface is a complete or published
+privacy notice.
 
 ## Primary privacy-design references
 
