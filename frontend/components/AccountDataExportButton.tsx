@@ -16,7 +16,7 @@ type AccountDataExportButtonProps = {
   onAuthenticationLost: (message: string) => void;
 };
 
-function isVersionedAccountExport(payload: unknown): boolean {
+export function isVersionedAccountExport(payload: unknown): boolean {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return false;
   }
@@ -26,9 +26,11 @@ function isVersionedAccountExport(payload: unknown): boolean {
     candidate.export_version === ACCOUNT_EXPORT_VERSION &&
     candidate.account !== null &&
     typeof candidate.account === "object" &&
+    !Array.isArray(candidate.account) &&
     Array.isArray(candidate.food_logs) &&
     Array.isArray(candidate.external_identities) &&
     Array.isArray(candidate.authentication_sessions) &&
+    Array.isArray(candidate.authorization_events) &&
     Array.isArray(candidate.login_handoffs) &&
     Array.isArray(candidate.excluded_security_fields)
   );

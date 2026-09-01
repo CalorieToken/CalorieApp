@@ -271,9 +271,10 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
-      - name: Test embedded WordPress login readiness
+      - name: Test embedded login and private export readiness
         run: >-
           node --test
+          tools/tests/account_data_export_validation.test.mjs
           tools/tests/calorieapp_embed_readiness.test.mjs
           tools/tests/identity_locales.test.mjs
           tools/tests/xaman_login_start_retry.test.mjs
