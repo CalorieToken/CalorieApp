@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.8.0",
+  "contract_version": "1.9.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -96,12 +96,15 @@
     "food_history": "Retain for the user's active history until user deletion, account closure, or a separately approved and disclosed inactivity policy.",
     "identity_link": "Retain only while required for the CalorieApp account and delete or unlink through the approved account-erasure flow.",
     "authentication_transient": "Remove after the security retention window; expired records must not remain indefinitely.",
-    "backups": "Use a documented encrypted backup retention schedule and propagate erasure according to that schedule.",
+    "backups": "Encrypted backups may retain erased data for no more than 30 days; any restore must reapply prior erasure requests before service resumes.",
+    "account_erasure_policy_decision_date": "2026-09-01",
+    "account_erasure_policy_decision_authority": "current-operator-explicit-selection",
+    "selected_account_erasure_recovery_window_days": 0,
+    "maximum_encrypted_backup_retention_days": 30,
+    "provider_and_restore_replay_proof_pending": true,
     "unresolved_release_decisions": [
       "inactive-account retention and notice period",
-      "backup retention and deletion schedule",
-      "account export format and delivery safeguards",
-      "account erasure confirmation and recovery window"
+      "authentication-transient security retention window"
     ]
   },
   "account_data_export": {
@@ -127,12 +130,15 @@
     "eleven_language_export_ui_completed": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
-    "account_erasure_or_retention_policy_changed": false
+    "account_export_changes_erasure_or_retention_policy": false
   },
   "account_erasure": {
-    "status": "v2-backend-implemented-disabled-pending-policy-ui-and-notice",
+    "status": "v2-backend-and-english-ui-implemented-disabled-pending-eleven-language-notice-and-provider-proof",
     "enabled_by_default": false,
+    "ui_enabled_by_default": false,
+    "frontend_and_backend_separate_enablement_required": true,
     "authenticated_user_only": true,
+    "same_origin_intent_required": true,
     "explicit_internal_user_id_confirmation_required": true,
     "fixed_machine_acknowledgement_required": true,
     "cross_user_deletion_allowed": false,
@@ -145,7 +151,14 @@
     "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed": true,
     "browser_session_cookie_cleared": true,
     "backup_erasure_claimed_complete": false,
-    "recovery_window_selected": false,
+    "recovery_window_selected": true,
+    "recovery_window_days": 0,
+    "primary_store_erasure_immediate_after_confirmed_request": true,
+    "maximum_encrypted_backup_retention_days": 30,
+    "restored_backup_must_reapply_erasure_requests": true,
+    "backup_schedule_and_restore_replay_proved": false,
+    "english_confirmation_ui_implemented": true,
+    "english_ui_is_approved_privacy_notice": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
     "human_release_approval_required_to_enable": true,
@@ -173,7 +186,10 @@
     },
     "encrypted_production_backup_selected": false,
     "provider_staging_restore_completed": false,
-    "retention_and_backup_erasure_schedule_approved": false
+    "maximum_encrypted_backup_retention_days": 30,
+    "restored_backup_must_reapply_erasure_requests": true,
+    "restore_replay_mechanism_implemented_and_proved": false,
+    "retention_and_backup_erasure_schedule_approved": true
   },
   "postgresql_ci_proof": {
     "status": "automated-gate-configured-success-required-per-merge-candidate",

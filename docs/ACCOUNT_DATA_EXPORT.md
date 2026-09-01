@@ -66,8 +66,9 @@ is transparent.
   Identity Bridge locales;
 - align the privacy notice with the exact exported data classes;
 - complete PostgreSQL and restore-path verification;
-- obtain a human decision on account erasure, recovery window, inactive-account
-  retention and backup-erasure timing.
+- implement the selected zero-day erasure and maximum 30-day encrypted-backup
+  boundary on a reviewed provider; and
+- decide inactive-account and authentication-transient retention periods.
 
 The export endpoint does not choose a retention period, send an export to a
 third party or publish private history. The separately implemented account-
