@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.10.0",
+  "contract_version": "1.11.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -14,7 +14,7 @@
   "purpose": "Keep authenticated food history durable, private, portable, exportable and deletable before public user onboarding.",
   "architecture": {
     "primary_live_store": "postgresql",
-    "provider_selection": "pending-staging-evaluation",
+    "provider_selection": "neon-free-selected-for-synthetic-staging-account-not-configured",
     "provider_neutral_configuration": "DATABASE_URL",
     "sqlite_allowed_environments": ["local", "test"],
     "sqlite_allowed_for_public_live_history": false,
@@ -236,7 +236,7 @@
       "staging-or-production-runtime-role-privilege-application",
       "production-readiness"
     ],
-    "provider_selection_status": "pending-separate-evaluation"
+    "provider_selection_status": "neon-synthetic-staging-selected-account-not-configured"
   },
   "postgresql_redeploy_ci_proof": {
     "status": "synthetic-two-process-proof-configured-provider-proof-pending",
@@ -250,7 +250,9 @@
     "first_process_stopped_before_second_starts": true,
     "second_process_reads_via_authenticated_http": true,
     "schema_head_and_owner_links_verified": true,
-    "provider_selected": false,
+    "provider_selected": true,
+    "provider_selection_scope": "isolated-synthetic-staging-only",
+    "provider_account_created": false,
     "real_provider_redeploy_proven": false,
     "production_or_staging_data_allowed": false,
     "deployment_or_live_mutation_performed": false
@@ -487,10 +489,14 @@
     "free_tier_expiry_may_define_retention": false,
     "no_additional_cost_exit_plan_required_before_public_onboarding": true,
     "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
-    "provider_shortlist_status": "time-bounded-evidence-recorded-human-selection-required",
-    "provider_evidence_reviewed_on": "2026-08-31",
-    "provider_evidence_revalidate_by": "2026-11-29",
-    "provider_selected": false
+    "provider_shortlist_status": "neon-synthetic-staging-selected-preconfiguration-review-required",
+    "provider_evidence_reviewed_on": "2026-09-01",
+    "provider_evidence_revalidate_by": "2026-11-30",
+    "provider_selected": true,
+    "selected_provider": "neon_free",
+    "provider_selection_scope": "isolated-synthetic-staging-only",
+    "provider_selected_for_public_release": false,
+    "provider_account_created": false
   },
   "free_core_and_optional_services": {
     "free_core": [

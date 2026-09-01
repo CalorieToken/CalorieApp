@@ -18,7 +18,7 @@ def _load_contract() -> dict:
     return json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
 
 
-def test_provider_evidence_is_time_bounded_and_not_a_selection() -> None:
+def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     contract = _load_contract()
     reviewed_on = date.fromisoformat(contract["evidence_reviewed_on"])
     revalidate_by = date.fromisoformat(contract["evidence_revalidate_by"])
@@ -26,19 +26,34 @@ def test_provider_evidence_is_time_bounded_and_not_a_selection() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
+    assert contract["contract_version"] == "1.1.0"
     assert contract["decision_state"] == (
-        "shortlist-ready-human-selection-and-live-proof-required"
+        "neon-synthetic-staging-selected-account-configuration-blocked"
     )
     assert 1 <= (revalidate_by - reviewed_on).days <= 92
     assert date.today() <= revalidate_by, (
         "provider evidence expired; recheck official terms before merging"
     )
-    assert contract["provider_selected"] is False
+    assert contract["provider_selected"] is True
+    assert contract["provider_selection_scope"] == "isolated-synthetic-staging-only"
+    assert contract["provider_selected_for_public_release"] is False
     assert contract["provider_account_created"] is False
     assert contract["payment_method_added"] is False
     assert contract["deployment_or_live_data_mutation_performed"] is False
     assert contract["third_party_terms_may_change"] is True
     assert contract["unchanged_free_tier_forever_claim_allowed"] is False
+    selection = contract["selection_record"]
+    assert selection == {
+        "selected_candidate": "neon_free",
+        "selected_on": "2026-09-01",
+        "approval_reference": "operator-decision-2026-09-01-neon-synthetic-staging",
+        "approved_scope": "preparation-for-isolated-synthetic-staging-only",
+        "account_or_project_creation_approved": False,
+        "payment_method_or_paid_upgrade_approved": False,
+        "real_user_or_production_data_approved": False,
+        "external_schema_migration_approved": False,
+        "production_deployment_approved": False,
+    }
 
 
 def test_non_negotiable_cost_durability_and_privacy_boundaries_remain() -> None:
@@ -89,7 +104,13 @@ def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
         "supabase_free",
         "render_free_postgresql",
     }
-    assert all(candidate["selected"] is False for candidate in candidates.values())
+    assert candidates["neon_free"]["selected"] is True
+    assert candidates["neon_free"]["selection_scope"] == (
+        "isolated-synthetic-staging-only"
+    )
+    assert candidates["neon_free"]["selected_for_public_release"] is False
+    assert candidates["supabase_free"]["selected"] is False
+    assert candidates["render_free_postgresql"]["selected"] is False
     assert candidates["neon_free"]["evaluation"] == (
         "recommended-for-synthetic-staging-evaluation-only"
     )
@@ -112,9 +133,11 @@ def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
     assert candidates["render_free_postgresql"]["managed_backups_supported"] is False
     assert experiment["database_candidate"] == "neon_free"
     assert experiment["scope"] == "isolated-synthetic-staging-only"
+    assert experiment["candidate_selection_human_approved"] is True
     assert experiment[
         "human_approval_required_before_account_or_provider_configuration"
     ] is True
+    assert experiment["account_or_project_creation_approved"] is False
     assert experiment["real_user_or_production_data_allowed"] is False
     assert experiment["production_deployment_allowed"] is False
     runtime = contract["runtime_candidate"]
@@ -144,10 +167,11 @@ def test_provider_facts_use_official_https_sources_only() -> None:
 def test_real_provider_work_remains_release_blocked() -> None:
     contract = _load_contract()
 
-    assert contract["release_blocking_before_provider_selection"]
+    assert contract["release_blocking_before_provider_selection"] == []
+    assert contract["release_blocking_before_provider_configuration"]
     assert contract["release_blocking_after_provider_selection"]
-    assert "fresh official terms recheck" in contract[
-        "release_blocking_before_provider_selection"
+    assert "EU data region and data processing terms review" in contract[
+        "release_blocking_before_provider_configuration"
     ]
     assert "human review before any real user data" in contract[
         "release_blocking_after_provider_selection"
@@ -180,7 +204,7 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "time-bounded-evidence-recorded-human-selection-required"
+        "neon-synthetic-staging-selected-preconfiguration-review-required"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"
@@ -188,4 +212,8 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
     assert cost["provider_evidence_revalidate_by"] == contract[
         "evidence_revalidate_by"
     ]
-    assert cost["provider_selected"] is False
+    assert cost["provider_selected"] is True
+    assert cost["selected_provider"] == "neon_free"
+    assert cost["provider_selection_scope"] == "isolated-synthetic-staging-only"
+    assert cost["provider_selected_for_public_release"] is False
+    assert cost["provider_account_created"] is False
