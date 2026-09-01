@@ -23,9 +23,11 @@ before deleting an eligible session.
 
 The runner:
 
-- defaults to dry-run and performs no flush or commit in that mode;
+- defaults to dry-run, performs no flush or commit in that mode and rolls its
+  read transaction back before returning;
 - accepts only SQLite or PostgreSQL;
-- requires a clean, dedicated database session;
+- requires a clean, dedicated database session with no pre-existing
+  transaction, loaded identity-map objects or pending mutations;
 - selects at most 500 rows per table by default and never accepts more than
   5,000 rows per table in one pass;
 - splits every update and deletion into statements containing at most 500 row

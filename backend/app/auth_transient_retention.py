@@ -102,7 +102,13 @@ def _validate_session(session: Session) -> None:
         raise RetentionCleanupSafetyError(
             "authentication-transient cleanup requires SQLite or PostgreSQL"
         )
-    if session.new or session.dirty or session.deleted:
+    if (
+        session.in_transaction()
+        or len(session.identity_map) > 0
+        or session.new
+        or session.dirty
+        or session.deleted
+    ):
         raise RetentionCleanupSafetyError(
             "authentication-transient cleanup requires a clean dedicated session"
         )
@@ -196,6 +202,7 @@ def cleanup_authentication_transients(
                         more_rows_pending=more_rows_pending,
                     )
                 )
+            session.rollback()
         else:
             for table_name, model, ids, more_rows_pending in selections:
                 if model is AuthSessionDB and ids:

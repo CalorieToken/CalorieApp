@@ -241,6 +241,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
         is False
     )
     assert cleanup["dedicated_clean_database_session_required"] is True
+    assert cleanup["preexisting_transaction_or_loaded_identity_map_allowed"] is False
+    assert cleanup["dry_run_read_transaction_rolled_back_before_return"] is True
     assert cleanup["explicit_non_production_enablement_required"] is True
     assert cleanup["explicit_approval_reference_required"] is True
     assert cleanup["scheduler_configured"] is False

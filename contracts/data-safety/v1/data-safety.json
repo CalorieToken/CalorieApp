@@ -138,6 +138,8 @@
       "aggregate_only_output": true,
       "record_identifiers_secrets_or_network_signals_in_output_allowed": false,
       "dedicated_clean_database_session_required": true,
+      "preexisting_transaction_or_loaded_identity_map_allowed": false,
+      "dry_run_read_transaction_rolled_back_before_return": true,
       "explicit_non_production_enablement_required": true,
       "explicit_approval_reference_required": true,
       "scheduler_configured": false,

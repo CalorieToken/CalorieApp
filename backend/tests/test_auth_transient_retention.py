@@ -164,6 +164,8 @@ def test_dry_run_covers_all_six_tables_without_writing_or_exposing_ids(
 ) -> None:
     with Session(retention_engine) as session:
         identifiers = _seed_all_transient_tables(session)
+
+    with Session(retention_engine) as session:
         result = cleanup_authentication_transients(
             session,
             dry_run=True,
@@ -187,6 +189,10 @@ def test_dry_run_covers_all_six_tables_without_writing_or_exposing_ids(
         }
         assert table_results["authsession"]["selected"] == 2
         assert all(table["deleted"] == 0 for table in table_results.values())
+        assert session.in_transaction() is False
+        assert len(session.identity_map) == 0
+
+    with Session(retention_engine) as session:
         assert len(session.exec(select(AuthorizationCodeDB)).all()) == 2
 
     serialized = json.dumps(payload)
@@ -223,6 +229,7 @@ def test_execute_deletes_only_eligible_rows_and_clears_inbound_session_reference
         assert active is not None
         assert active.replaced_by_session_id is None
 
+    with Session(retention_engine) as session:
         repeated = cleanup_authentication_transients(
             session,
             dry_run=False,
@@ -423,6 +430,29 @@ def test_cleanup_rejects_dirty_session_and_invalid_batch_limit(retention_engine)
                 cutoff=NOW,
                 batch_limit=0,
             )
+
+
+def test_cleanup_rejects_preexisting_transaction_and_loaded_identity_map(
+    retention_engine,
+) -> None:
+    with Session(retention_engine) as session:
+        session.add(_authorization_code("existing", NOW + timedelta(hours=1)))
+        session.commit()
+
+    with Session(retention_engine) as session:
+        session.exec(select(AuthorizationCodeDB.id)).all()
+        assert session.in_transaction() is True
+        with pytest.raises(RetentionCleanupSafetyError, match="clean dedicated session"):
+            cleanup_authentication_transients(session, dry_run=True, cutoff=NOW)
+
+    with Session(retention_engine) as session:
+        loaded = session.exec(select(AuthorizationCodeDB)).one()
+        session.commit()
+        assert session.in_transaction() is False
+        assert len(session.identity_map) == 1
+        assert loaded in session
+        with pytest.raises(RetentionCleanupSafetyError, match="clean dedicated session"):
+            cleanup_authentication_transients(session, dry_run=True, cutoff=NOW)
 
 
 @pytest.mark.parametrize(
