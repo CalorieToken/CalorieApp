@@ -274,7 +274,7 @@ test("account erasure proxy requires same-origin intent", async () => {
   );
   assert.equal(
     isTrustedAccountErasureRequest(path, requestWithHeaders(intent)),
-    true
+    false
   );
   for (const fetchSite of ["cross-site", "same-site", "none"]) {
     assert.equal(

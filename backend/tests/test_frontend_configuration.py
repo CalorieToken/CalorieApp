@@ -87,6 +87,7 @@ def test_account_erasure_ui_is_hidden_fail_closed_and_proxy_allowlisted():
 
     assert "ACCOUNT_ERASURE_REQUEST_HEADER" in request_policy_source
     assert 'fetchSite === "same-origin"' in request_policy_source
+    assert "(!fetchSite ||" not in request_policy_source
     assert "<AccountErasurePanel" in panel_source
     assert "NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED" in panel_source
     assert "NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED=false" in frontend_env

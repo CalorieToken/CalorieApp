@@ -18,7 +18,7 @@ export function isTrustedAccountErasureRequest(
 
   const fetchSite = request.headers.get("sec-fetch-site");
   return (
-    (!fetchSite || fetchSite === "same-origin") &&
+    fetchSite === "same-origin" &&
     request.headers.get(ACCOUNT_ERASURE_REQUEST_HEADER) ===
       ACCOUNT_ERASURE_REQUEST_VALUE
   );
