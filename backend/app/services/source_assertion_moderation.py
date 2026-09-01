@@ -60,6 +60,14 @@ class SourceAssertionModerationRejected(Exception):
         self.retry_after_seconds = retry_after_seconds
 
 
+def _moderation_unavailable() -> SourceAssertionModerationRejected:
+    return SourceAssertionModerationRejected(
+        "source_assertion_moderation_unavailable",
+        status_code=503,
+        retry_after_seconds=DATA_GROWTH_UNAVAILABLE_RETRY_SECONDS,
+    )
+
+
 @dataclass(frozen=True)
 class SourceAssertionModerationResult:
     assertion: FoodAttributeAssertionDB
@@ -212,7 +220,7 @@ def _moderate_locked(
             or assertion.verification_version != existing.resulting_version
             or assertion.verification_status != existing.new_status
         ):
-            raise TypeError("Moderation audit does not match its source assertion")
+            raise _moderation_unavailable()
         session.commit()
         session.refresh(assertion)
         session.refresh(existing)
@@ -301,7 +309,7 @@ def moderate_source_assertion(
         elif backend == "sqlite":
             local_lock = _sqlite_assertion_moderation_lock
         else:
-            raise TypeError("unsupported database backend for assertion moderation")
+            raise _moderation_unavailable()
 
         with local_lock:
             return _moderate_locked(
@@ -317,10 +325,6 @@ def moderate_source_assertion(
     except SourceAssertionModerationRejected:
         session.rollback()
         raise
-    except (SQLAlchemyError, TypeError) as exc:
+    except SQLAlchemyError as exc:
         session.rollback()
-        raise SourceAssertionModerationRejected(
-            "source_assertion_moderation_unavailable",
-            status_code=503,
-            retry_after_seconds=DATA_GROWTH_UNAVAILABLE_RETRY_SECONDS,
-        ) from exc
+        raise _moderation_unavailable() from exc

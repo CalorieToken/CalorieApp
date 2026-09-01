@@ -409,6 +409,57 @@ def test_assertion_moderation_database_failure_fails_closed() -> None:
     assert session.rolled_back is True
 
 
+def test_assertion_moderation_unsupported_backend_fails_closed_explicitly() -> None:
+    class UnsupportedDialect:
+        name = "mysql"
+
+    class UnsupportedBind:
+        dialect = UnsupportedDialect()
+
+    class UnsupportedBackendSession:
+        rolled_back = False
+
+        def get_bind(self):
+            return UnsupportedBind()
+
+        def rollback(self) -> None:
+            self.rolled_back = True
+
+    session = UnsupportedBackendSession()
+    with pytest.raises(SourceAssertionModerationRejected) as rejected:
+        _moderate(session, "assertion-1")  # type: ignore[arg-type]
+    assert rejected.value.reason == "source_assertion_moderation_unavailable"
+    assert rejected.value.status_code == 503
+    assert rejected.value.retry_after_seconds == 5
+    assert rejected.value.__cause__ is None
+    assert session.rolled_back is True
+
+
+def test_assertion_moderation_inconsistent_audit_fails_closed_explicitly(
+    tmp_path,
+) -> None:
+    engine = _engine(tmp_path / "inconsistent-assertion-audit.db")
+    try:
+        with Session(engine) as session:
+            assertion = _seed_assertion(session)
+            _moderate(session, assertion.id)
+            assertion.verification_version = 3
+            session.add(assertion)
+            session.commit()
+
+            with pytest.raises(SourceAssertionModerationRejected) as rejected:
+                _moderate(session, assertion.id)
+            assert rejected.value.reason == "source_assertion_moderation_unavailable"
+            assert rejected.value.status_code == 503
+            assert rejected.value.retry_after_seconds == 5
+            assert rejected.value.__cause__ is None
+            assert len(
+                session.exec(select(FoodAttributeAssertionModerationAuditDB)).all()
+            ) == 1
+    finally:
+        engine.dispose()
+
+
 @pytest.mark.parametrize(
     ("field_name", "invalid_value"),
     [
