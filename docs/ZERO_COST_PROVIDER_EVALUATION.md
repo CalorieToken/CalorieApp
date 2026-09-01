@@ -1,14 +1,17 @@
 # Zero-additional-cost provider evaluation
 
-Status: shortlist evidence recorded on 2026-08-31; human selection and all live
-provider proofs remain pending. Revalidate official terms by 2026-11-29.
+Status: Neon Free was selected on 2026-09-01 for preparation of one isolated,
+synthetic staging experiment only. Account configuration, every live provider
+proof and any public-release decision remain blocked. Revalidate official terms
+by 2026-11-30.
 
 ## Outcome
 
-The recommended next experiment is an isolated, synthetic staging database on
-Neon Free connected to the existing Render Free web runtime. This is a test
-recommendation, not a provider selection or production decision. No account,
-payment method, deployment or database was created during this evaluation.
+The operator approved Neon Free as the candidate for preparing one isolated,
+synthetic staging experiment connected to the existing Render Free web runtime.
+This is not a production-provider selection or permission to create an account,
+apply an external migration, add a payment method, deploy, or use real user
+data. None of those actions occurred during this decision.
 
 Render Free PostgreSQL is rejected as the durable primary history store. Its
 official documentation says that Free databases expire after 30 days, become
@@ -59,15 +62,22 @@ additional compute or egress signal required by that plan.
 Exact byte and compute thresholds are set only after the chosen plan's live
 account limits match the current official terms.
 
-## Human gate before any account action
+## Recorded decision and remaining gate before any account action
 
-1. Recheck every official source if the evidence date has expired.
-2. Approve one candidate for synthetic staging only.
-3. Review the available EU data region, data-processing terms, subprocessors and
+Completed on 2026-09-01:
+
+- current official plan evidence was rechecked;
+- Neon Free was selected for preparation of synthetic staging only.
+
+Still required:
+
+1. Recheck the official terms again if the evidence date has expired or the
+   account screen differs from the recorded snapshot.
+2. Review the available EU data region, data-processing terms, subprocessors and
    operator responsibilities.
-4. Confirm that no payment method or automatic paid upgrade is required.
-5. Approve an encrypted off-provider backup destination and retention schedule.
-6. Confirm a distinct PostgreSQL exit target for the portability drill.
+3. Confirm that no payment method or automatic paid upgrade is required.
+4. Approve an encrypted off-provider backup destination and retention schedule.
+5. Confirm a distinct PostgreSQL exit target for the portability drill.
 
 Only then may a provider account or project be configured. The first live tests
 remain synthetic: migration/readiness, restart, actual provider redeploy,

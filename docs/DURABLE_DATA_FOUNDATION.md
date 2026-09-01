@@ -75,7 +75,7 @@ until the durable-data and privacy gates pass.
 | PostgreSQL support | Ephemeral PostgreSQL 16 CI gate configured | Require successful migration, identity isolation and restart checks for every merge candidate |
 | Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
-| Zero-additional-cost operation | Time-bounded shortlist recorded; no provider selected | Human-approve a synthetic Neon staging experiment, then prove alerts, backup and exit |
+| Zero-additional-cost operation | Neon Free selected for preparation of isolated synthetic staging; no account or project configured | Complete EU/DPA, billing, backup and exit-target review before any account action, then prove alerts, backup and exit |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
@@ -86,7 +86,7 @@ until the durable-data and privacy gates pass.
 ## DS-2 implementation order
 
 1. Run the complete migration, identity and ownership suite against PostgreSQL.
-2. Human-review the zero-additional-subscription shortlist and approve one synthetic staging experiment.
+2. Complete the remaining preconfiguration review for the approved synthetic Neon staging experiment.
 3. Prove the no-additional-cost exit path with a synthetic database copy.
 4. Repeat the synthetic restart and process-replacement persistence proofs on the chosen provider.
 5. Implement authenticated data export and versioned import.

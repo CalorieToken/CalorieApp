@@ -20,9 +20,12 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.10.0"
+    assert contract["contract_version"] == "1.11.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
+    assert contract["architecture"]["provider_selection"] == (
+        "neon-free-selected-for-synthetic-staging-account-not-configured"
+    )
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
     assert contract["architecture"]["sqlite_allowed_for_public_live_history"] is False
     assert contract["architecture"]["provider_driven_history_expiry_allowed"] is False
@@ -72,7 +75,9 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
     assert "staging-or-production-runtime-role-privilege-application" in proof[
         "does_not_prove"
     ]
-    assert proof["provider_selection_status"] == "pending-separate-evaluation"
+    assert proof["provider_selection_status"] == (
+        "neon-synthetic-staging-selected-account-not-configured"
+    )
 
 
 def test_redeploy_ci_proof_is_two_process_synthetic_and_still_partial() -> None:
@@ -91,7 +96,9 @@ def test_redeploy_ci_proof_is_two_process_synthetic_and_still_partial() -> None:
     assert proof["first_process_stopped_before_second_starts"] is True
     assert proof["second_process_reads_via_authenticated_http"] is True
     assert proof["schema_head_and_owner_links_verified"] is True
-    assert proof["provider_selected"] is False
+    assert proof["provider_selected"] is True
+    assert proof["provider_selection_scope"] == "isolated-synthetic-staging-only"
+    assert proof["provider_account_created"] is False
     assert proof["real_provider_redeploy_proven"] is False
     assert proof["production_or_staging_data_allowed"] is False
     assert proof["deployment_or_live_mutation_performed"] is False
@@ -536,7 +543,11 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
     assert cost["provider_evaluation_contract"] == (
         "contracts/data-safety/v1/provider-evaluation.json"
     )
-    assert cost["provider_selected"] is False
+    assert cost["provider_selected"] is True
+    assert cost["selected_provider"] == "neon_free"
+    assert cost["provider_selection_scope"] == "isolated-synthetic-staging-only"
+    assert cost["provider_selected_for_public_release"] is False
+    assert cost["provider_account_created"] is False
     assert access["optional_value_added_services_may_be_paid"] is True
     assert access["core_data_rights_may_be_paywalled"] is False
     assert access["identity_access_may_be_paywalled"] is False
