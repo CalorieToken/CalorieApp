@@ -16,7 +16,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.9.0"
+    assert contract["contract_version"] == "1.10.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -167,20 +167,43 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["account_export_changes_erasure_or_retention_policy"] is False
 
 
-def test_selected_erasure_retention_is_zero_day_and_backup_bounded() -> None:
+def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     retention = _load_json("data-safety.json")["retention"]
 
+    assert retention["status"] == (
+        "policy-selected-enforcement-notice-and-provider-proof-pending"
+    )
     assert retention["account_erasure_policy_decision_date"] == "2026-09-01"
     assert retention["account_erasure_policy_decision_authority"] == (
         "current-operator-explicit-selection"
     )
     assert retention["selected_account_erasure_recovery_window_days"] == 0
     assert retention["maximum_encrypted_backup_retention_days"] == 30
+    assert retention["remaining_retention_policy_decision_date"] == "2026-09-01"
+    assert retention["remaining_retention_policy_decision_authority"] == (
+        "current-operator-explicit-selection"
+    )
+    assert retention["inactive_account_retention_months"] == 24
+    assert retention["inactive_account_notice_days"] == 30
+    assert retention["inactive_account_activity_anchor"] == (
+        "last-authenticated-calorieapp-activity"
+    )
+    assert retention["authenticated_activity_during_notice_cancels_pending_erasure"] is True
+    assert retention["notice_delivery_required_before_inactive_account_erasure"] is True
+    assert retention["inactive_account_notice_delivery_implemented"] is False
+    assert retention["inactive_account_erasure_enforcement_implemented"] is False
+    assert (
+        retention["authentication_transient_security_retention_max_days_after_expiry"]
+        == 30
+    )
+    assert retention["shorter_authentication_lifetimes_continue_to_apply"] is True
+    assert retention["raw_ip_or_equivalent_network_signal_subject_to_same_maximum"] is True
+    assert (
+        retention["complete_authentication_transient_cleanup_enforcement_implemented"]
+        is False
+    )
     assert retention["provider_and_restore_replay_proof_pending"] is True
-    assert retention["unresolved_release_decisions"] == [
-        "inactive-account retention and notice period",
-        "authentication-transient security retention window",
-    ]
+    assert retention["unresolved_release_decisions"] == []
 
 
 def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
@@ -621,7 +644,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.4.0"
+    assert matrix["contract_version"] == "1.5.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -659,7 +682,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "frontend/components/AccountErasurePanel.tsx" in gates[
         "user_erasure"
     ]["evidence"]
-    assert gates["retention_policy"]["status"] == "decision_required"
+    assert gates["retention_policy"]["status"] == "partial"
+    assert "docs/RETENTION_POLICY.md" in gates["retention_policy"]["evidence"]
+    assert gates["privacy_notice_alignment"]["status"] == "not_started"
     assert matrix["release_state"] == "blocked"
 
 
