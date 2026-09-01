@@ -11,6 +11,7 @@ import {
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v1";
 const ACCOUNT_EXPORT_FILENAME = "calorieapp-account-data-v1.json";
+const PRIVATE_EXPORT_URL_REVOCATION_DELAY_MS = 1_000;
 
 type AccountDataExportButtonProps = {
   onAuthenticationLost: (message: string) => void;
@@ -36,7 +37,7 @@ export function isVersionedAccountExport(payload: unknown): boolean {
   );
 }
 
-function downloadPrivateJson(payload: unknown): void {
+export function downloadPrivateJson(payload: unknown): void {
   const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], {
     type: "application/json",
   });
@@ -51,7 +52,10 @@ function downloadPrivateJson(payload: unknown): void {
     anchor.click();
   } finally {
     anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+    window.setTimeout(
+      () => URL.revokeObjectURL(objectUrl),
+      PRIVATE_EXPORT_URL_REVOCATION_DELAY_MS
+    );
   }
 }
 
@@ -83,8 +87,7 @@ export function AccountDataExportButton({
           cache: "no-store",
           headers: { Accept: "application/json" },
           signal: controller.signal,
-        },
-        70_000
+        }
       );
 
       if (response.status === 401) {

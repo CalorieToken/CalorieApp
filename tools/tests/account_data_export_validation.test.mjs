@@ -12,7 +12,7 @@ const requireFromFrontend = createRequire(
   new URL("../../frontend/package.json", import.meta.url)
 );
 
-async function loadValidator() {
+async function loadAccountDataExportModule(globals = {}) {
   const typescript = requireFromFrontend("typescript");
   const source = await readFile(COMPONENT_PATH, "utf8");
   const compiled = typescript.transpileModule(source, {
@@ -47,14 +47,15 @@ async function loadValidator() {
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },
+    ...globals,
   });
 
   vm.runInContext(compiled, context);
-  return module.exports.isVersionedAccountExport;
+  return module.exports;
 }
 
 test("private export validation fails closed on malformed reviewed fields", async () => {
-  const isVersionedAccountExport = await loadValidator();
+  const { isVersionedAccountExport } = await loadAccountDataExportModule();
   const validPayload = {
     export_version: "calorieapp-account-data-v1",
     account: { user_id: "user-1" },
@@ -79,4 +80,65 @@ test("private export validation fails closed on malformed reviewed fields", asyn
     isVersionedAccountExport({ ...validPayload, authorization_events: {} }),
     false
   );
+});
+
+test("private export request uses the shared bounded timeout", async () => {
+  const source = await readFile(COMPONENT_PATH, "utf8");
+
+  assert.equal(source.includes("70_000"), false);
+});
+
+test("private export keeps its object URL alive long enough to start", async () => {
+  let appended = false;
+  let clicked = false;
+  let removed = false;
+  let revokedUrl = null;
+  let revocationDelayMs = null;
+
+  class TestBlob {}
+  const anchor = {
+    click() {
+      clicked = true;
+    },
+    remove() {
+      removed = true;
+    },
+  };
+  const { downloadPrivateJson } = await loadAccountDataExportModule({
+    Blob: TestBlob,
+    URL: {
+      createObjectURL() {
+        return "blob:private-export";
+      },
+      revokeObjectURL(value) {
+        revokedUrl = value;
+      },
+    },
+    document: {
+      createElement(elementName) {
+        assert.equal(elementName, "a");
+        return anchor;
+      },
+      body: {
+        appendChild(value) {
+          assert.equal(value, anchor);
+          appended = true;
+        },
+      },
+    },
+    window: {
+      setTimeout(callback, delayMs) {
+        revocationDelayMs = delayMs;
+        callback();
+      },
+    },
+  });
+
+  downloadPrivateJson({ export_version: "calorieapp-account-data-v1" });
+
+  assert.equal(appended, true);
+  assert.equal(clicked, true);
+  assert.equal(removed, true);
+  assert.equal(revocationDelayMs, 1_000);
+  assert.equal(revokedUrl, "blob:private-export");
 });
