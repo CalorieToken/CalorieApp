@@ -65,7 +65,7 @@
     },
     "direct_account_erasure": {
       "enabled_by_default": false,
-      "primary_store_erasure_after_confirmed_request": "immediate",
+      "primary_store_erasure_immediate_after_confirmed_request": true,
       "app_recovery_window_days": 0,
       "maximum_encrypted_backup_retention_days": 30,
       "excluded_external_systems": [
@@ -74,7 +74,7 @@
         "public-xrpl-data",
         "third-party-source-data"
       ],
-      "provider_backup_and_restore_replay_proved": false
+      "backup_schedule_and_restore_replay_proved": false
     },
     "inactive_account_retention": {
       "automatic_enforcement_enabled": false,

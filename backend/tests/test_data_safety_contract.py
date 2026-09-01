@@ -246,13 +246,20 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert facts["private_account_export"]["external_delivery_performed"] is False
     assert facts["private_account_export"]["download_changes_or_deletes_server_data"] is False
     assert facts["direct_account_erasure"]["enabled_by_default"] is False
+    assert facts["direct_account_erasure"][
+        "primary_store_erasure_immediate_after_confirmed_request"
+    ] == safety["account_erasure"][
+        "primary_store_erasure_immediate_after_confirmed_request"
+    ]
     assert facts["direct_account_erasure"]["app_recovery_window_days"] == (
         safety["account_erasure"]["recovery_window_days"]
     )
     assert facts["direct_account_erasure"]["maximum_encrypted_backup_retention_days"] == (
         safety["account_erasure"]["maximum_encrypted_backup_retention_days"]
     )
-    assert facts["direct_account_erasure"]["provider_backup_and_restore_replay_proved"] is False
+    assert facts["direct_account_erasure"][
+        "backup_schedule_and_restore_replay_proved"
+    ] == safety["account_erasure"]["backup_schedule_and_restore_replay_proved"]
     assert facts["inactive_account_retention"]["automatic_enforcement_enabled"] is False
     assert facts["inactive_account_retention"]["inactivity_months"] == (
         safety["retention"]["inactive_account_retention_months"]
