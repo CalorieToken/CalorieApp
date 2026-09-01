@@ -96,11 +96,15 @@ uses the existing repository automation and creates no second database account.
 The selection applies only to isolated synthetic staging. It does not select a
 production backup destination or a durable alternate production provider.
 
-No artifact or key was created by this selection. Before the first provider
-experiment, the encryption recipient and private-key custody must be approved.
-Plaintext upload is forbidden and no credential, private key or dump may enter
-Git. The exact procedure is recorded in
-`docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
+No artifact or key was created by this selection. On 2026-09-01, the operator
+approved `age` encryption with a passphrase-encrypted private identity held in
+separate offline primary and recovery copies. Only the public recipient may be
+recorded in repository configuration. For an approved synthetic restore, the
+decrypted identity may exist only as a temporary, required-reviewer-gated
+environment secret and must be deleted after every run. It may not be a
+permanent GitHub secret or workflow input. Plaintext upload is forbidden and no
+credential, private key or dump may enter Git. The exact procedure is recorded
+in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
 
 Still required:
 
@@ -112,8 +116,8 @@ Still required:
 3. Confirm in the live account that no payment method is present, no automatic
    paid upgrade is possible, and the documented quota metrics and hard limits
    are available on Free.
-4. Configure the client-side encryption recipient and approve private-key
-   custody without committing any key material.
+4. Generate the offline `age` identity, verify both encrypted offline copies,
+   store the passphrase separately and configure only the public recipient.
 
 Only then may a provider account or project be configured. The first live tests
 remain synthetic: migration/readiness, restart, actual provider redeploy,
@@ -127,3 +131,6 @@ Additional primary sources reviewed for this preconfiguration boundary:
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
 - [Neon `pg_dump` backups](https://neon.com/docs/manage/backup-pg-dump)
 - [Neon subprocessor updates](https://neon.com/subscribe-to-subprocessors)
+- [GitHub environments and required reviewers](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
+- [GitHub Actions secrets](https://docs.github.com/en/actions/concepts/security/secrets)
+- [`age` project and usage](https://github.com/FiloSottile/age)
