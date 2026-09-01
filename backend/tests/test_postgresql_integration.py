@@ -347,6 +347,34 @@ def _assert_application_role_rejected(
     assert getattr(rejected.value.orig, "sqlstate", None) == "42501"
 
 
+def _drop_synthetic_application_role(engine: Engine, role_name: str) -> None:
+    """Revoke this proof's grants before dropping its synthetic runtime role."""
+    quoted_role = engine.dialect.identifier_preparer.quote_identifier(role_name)
+    quoted_public = engine.dialect.identifier_preparer.quote_identifier("public")
+    with engine.begin() as connection:
+        database_name = connection.exec_driver_sql(
+            "SELECT current_database()"
+        ).scalar_one()
+        quoted_database = engine.dialect.identifier_preparer.quote_identifier(
+            database_name
+        )
+        connection.exec_driver_sql(
+            f"REVOKE ALL PRIVILEGES ON DATABASE {quoted_database} FROM {quoted_role}"
+        )
+        connection.exec_driver_sql(
+            f"REVOKE ALL PRIVILEGES ON SCHEMA {quoted_public} FROM {quoted_role}"
+        )
+        connection.exec_driver_sql(
+            f"REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA "
+            f"{quoted_public} FROM {quoted_role}"
+        )
+        connection.exec_driver_sql(
+            f"REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "
+            f"{quoted_public} FROM {quoted_role}"
+        )
+        connection.exec_driver_sql(f"DROP ROLE IF EXISTS {quoted_role}")
+
+
 @pytest.fixture()
 def postgres_engine() -> Engine:
     raw_url = _required_postgresql_test_url()
@@ -605,9 +633,7 @@ def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
         assert checked == proof
         assert stored_reason == "synthetic-reviewed"
     finally:
-        with postgres_engine.begin() as connection:
-            connection.exec_driver_sql(f"DROP OWNED BY {quoted_role}")
-            connection.exec_driver_sql(f"DROP ROLE IF EXISTS {quoted_role}")
+        _drop_synthetic_application_role(postgres_engine, role_name)
 
 
 def test_postgresql_transaction_advisory_lock_wait_is_bounded(
