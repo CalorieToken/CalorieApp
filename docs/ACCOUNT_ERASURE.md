@@ -17,8 +17,10 @@ The reviewed V2 policy is privacy-first:
   data are outside the CalorieApp erasure boundary.
 
 This selection does not claim that a production backup provider, expiry job or
-restore-replay mechanism is already configured or proved. Inactive-account and
-authentication-transient retention periods remain separate policy decisions.
+restore-replay mechanism is already configured or proved. The separate
+inactive-account and authentication-transient periods are now selected in
+`RETENTION_POLICY.md`, but their notice and cleanup mechanisms remain disabled
+and unproved.
 
 ## Backend contract
 
@@ -81,6 +83,8 @@ activation, a human must approve and verify:
 - a provider-specific encrypted-backup schedule of no more than 30 days;
 - a restore mechanism that reliably reapplies prior erasure requests;
 - a PostgreSQL staging test and documented restore/erasure drill;
+- the selected inactive-account notice and retention enforcement;
+- the selected authentication-transient cleanup boundary;
 - the exact production deployment and rollback plan.
 
 The current implementation makes no claim that backups are already erased. No

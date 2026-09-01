@@ -68,9 +68,13 @@ is transparent.
 - complete PostgreSQL and restore-path verification;
 - implement the selected zero-day erasure and maximum 30-day encrypted-backup
   boundary on a reviewed provider; and
-- decide inactive-account and authentication-transient retention periods.
+- implement and disclose the selected 24-month inactive-account period with a
+  30-day advance notice and the maximum 30-day post-expiry security retention
+  for authentication transients.
 
 The export endpoint does not choose a retention period, send an export to a
 third party or publish private history. The separately implemented account-
 erasure endpoint remains disabled by default and fails closed on matching
 legacy authorization rows without direct ownership; see `ACCOUNT_ERASURE.md`.
+The selected but not yet enforced lifecycle is defined in
+`RETENTION_POLICY.md`.

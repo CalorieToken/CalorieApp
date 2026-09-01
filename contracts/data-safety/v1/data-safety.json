@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.9.0",
+  "contract_version": "1.10.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -93,19 +93,30 @@
     }
   ],
   "retention": {
-    "food_history": "Retain for the user's active history until user deletion, account closure, or a separately approved and disclosed inactivity policy.",
+    "status": "policy-selected-enforcement-notice-and-provider-proof-pending",
+    "food_history": "Retain for the user's active history until user deletion, account closure, or completion of the selected inactive-account notice and erasure process.",
     "identity_link": "Retain only while required for the CalorieApp account and delete or unlink through the approved account-erasure flow.",
-    "authentication_transient": "Remove after the security retention window; expired records must not remain indefinitely.",
+    "authentication_transient": "Keep each authentication transient only for its shorter operational lifetime or a documented security need, and delete it no later than 30 days after expiry.",
     "backups": "Encrypted backups may retain erased data for no more than 30 days; any restore must reapply prior erasure requests before service resumes.",
     "account_erasure_policy_decision_date": "2026-09-01",
     "account_erasure_policy_decision_authority": "current-operator-explicit-selection",
     "selected_account_erasure_recovery_window_days": 0,
     "maximum_encrypted_backup_retention_days": 30,
+    "remaining_retention_policy_decision_date": "2026-09-01",
+    "remaining_retention_policy_decision_authority": "current-operator-explicit-selection",
+    "inactive_account_retention_months": 24,
+    "inactive_account_notice_days": 30,
+    "inactive_account_activity_anchor": "last-authenticated-calorieapp-activity",
+    "authenticated_activity_during_notice_cancels_pending_erasure": true,
+    "notice_delivery_required_before_inactive_account_erasure": true,
+    "inactive_account_notice_delivery_implemented": false,
+    "inactive_account_erasure_enforcement_implemented": false,
+    "authentication_transient_security_retention_max_days_after_expiry": 30,
+    "shorter_authentication_lifetimes_continue_to_apply": true,
+    "raw_ip_or_equivalent_network_signal_subject_to_same_maximum": true,
+    "complete_authentication_transient_cleanup_enforcement_implemented": false,
     "provider_and_restore_replay_proof_pending": true,
-    "unresolved_release_decisions": [
-      "inactive-account retention and notice period",
-      "authentication-transient security retention window"
-    ]
+    "unresolved_release_decisions": []
   },
   "account_data_export": {
     "status": "v2-backend-and-english-ui-implemented-eleven-language-and-notice-review-pending",

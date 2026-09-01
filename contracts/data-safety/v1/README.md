@@ -15,6 +15,9 @@ Files:
   prohibited storage patterns.
 - `release-test-matrix.json`: auditable status of every release-blocking gate.
 
+The selected retention periods and their still-closed enforcement boundaries
+are documented in `docs/RETENTION_POLICY.md`.
+
 Status vocabulary:
 
 - `verified`: implemented and covered by the cited automated evidence.
