@@ -1,7 +1,8 @@
 # Food-data source architecture
 
 Status: the source-neutral catalog schema, immutable source records, terminal
-record moderation and bounded internal assertion ingest are implemented. Open
+record and assertion moderation, and bounded internal assertion ingest are
+implemented. Open
 Food Facts remains the only enabled read-only search adapter; no public source
 onboarding, contribution or catalog-write flow is enabled.
 
@@ -28,6 +29,7 @@ schema for each one.
 | `food_product_source_link` | Reviewable match between a provider record and internal product |
 | `food_attribute_assertion` | A source-specific value, unit, observation time and verification state |
 | `food_attribute_assertion_ingest_audit` | Minimal append-only receipt for bounded assertion admission |
+| `food_attribute_assertion_moderation_audit` | Minimal append-only evidence for a terminal assertion decision |
 | `food_log_snapshot` | Private point-in-time values selected by the user |
 
 Migration `20260831_0006` currently implements `food_source` and
@@ -55,7 +57,11 @@ and a minimal assertion-ingest audit. The internal service requires an enabled
 source, active product, validated record and validated link at the supplied
 record version. It creates only quarantined version-1 assertions and is
 idempotent and PostgreSQL-process-safe. See `SOURCE_ASSERTION_INGEST.md`.
-Correction, assertion moderation and public mutation routes remain disabled.
+Migration `20260901_0010` adds terminal source-assertion moderation. The
+internal service requires a purpose-limited scope, expected version and
+idempotency key, allows only quarantine to validated/rejected, and commits a
+minimal audit atomically. See `SOURCE_ASSERTION_MODERATION.md`. Correction and
+public mutation routes remain disabled.
 
 An adapter emits normalized source records and assertions. Its idempotency key
 is `(source_id, external_record_id, source_version_or_content_digest)`. A new
@@ -101,12 +107,15 @@ ODbL, contents and image-licence boundary documented in `DATA_LICENSING.md`.
 5. Add product/link/assertion entities, then verify conflict retention,
    licence-aware evidence export and log snapshot immutability with synthetic
    data. Completed by `20260831_0008` for the schema and read-only evidence
-   path; contribution and assertion-moderation writes remain blocked.
+   path; contribution and public moderation writes remain blocked.
 6. Add bounded assertion admission with validated lineage, expected version,
    idempotency, audit and per-source budget. Completed by `20260831_0009` for
    the internal service only; correction, moderation and public routes remain
    blocked.
-7. Pilot one additional low-risk source only after privacy, licence and data
+7. Add terminal assertion moderation with purpose scope, expected version,
+   idempotency and minimal audit. Completed by `20260901_0010` for the internal
+   service only; correction and public routes remain blocked.
+8. Pilot one additional low-risk source only after privacy, licence and data
    quality review.
 
 The source-independent schema compatibility is a V2 completion requirement;

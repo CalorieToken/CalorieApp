@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.10.0",
+  "contract_version": "1.11.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -270,9 +270,28 @@
     "source_assertion_ingest_conflict_response": "409-without-retry-after",
     "source_assertion_ingest_database_failure_response": "503-with-bounded-retry-after",
     "source_assertion_ingest_public_endpoint_enabled": false,
-    "source_assertion_correction_service_implemented": false,
-    "source_assertion_moderation_service_implemented": false,
     "postgresql_source_assertion_ingest_multi_process_ci_proof_implemented": true,
+    "source_assertion_moderation_service_implemented": true,
+    "source_assertion_moderation_authorization_scope": "catalog:source-assertion:moderate",
+    "source_assertion_moderation_requires_expected_version": true,
+    "source_assertion_moderation_requires_idempotency_key": true,
+    "source_assertion_validation_rechecks_content_policy": true,
+    "source_assertion_validation_requires_current_active_reviewed_lineage": true,
+    "source_assertion_moderation_transitions": [
+      "quarantined-to-validated",
+      "quarantined-to-rejected"
+    ],
+    "source_assertion_moderation_terminal_status_rewrite_allowed": false,
+    "source_assertion_moderation_audit_table": "food_attribute_assertion_moderation_audit",
+    "source_assertion_moderation_audit_inserted_atomically": true,
+    "source_assertion_moderation_audit_service_is_append_only": true,
+    "source_assertion_moderation_audit_stores_free_text_payload_email_or_ip": false,
+    "source_assertion_moderation_lock": "assertion-and-idempotency-keyed-postgresql-transaction-advisory-locks",
+    "source_assertion_moderation_conflict_response": "409-without-retry-after",
+    "source_assertion_moderation_database_failure_response": "503-with-bounded-retry-after",
+    "source_assertion_moderation_public_endpoint_enabled": false,
+    "postgresql_source_assertion_moderation_multi_process_ci_proof_implemented": true,
+    "source_assertion_correction_service_implemented": false,
     "complete_source_assertion_mutation_flow_implemented": false,
     "community_or_ecosystem_contribution_enters_quarantine": true,
     "moderation_required_before_public_activation": true,
@@ -407,11 +426,16 @@
     "postgresql-multi-process-source-assertion-budget-proof",
     "source-assertion-ingest-fails-closed-on-database-error",
     "postgresql-advisory-lock-waits-bounded-and-contention-tested",
-    "versioned-source-assertion-content-policy-rejects-arbitrary-text"
+    "versioned-source-assertion-content-policy-rejects-arbitrary-text",
+    "terminal-source-assertion-moderation-requires-purpose-scope-and-expected-version",
+    "idempotent-source-assertion-moderation-without-terminal-rewrite",
+    "atomic-minimal-append-only-source-assertion-moderation-audit",
+    "postgresql-multi-process-source-assertion-moderation-proof",
+    "source-assertion-moderation-fails-closed-on-database-error"
   ],
   "release_blocking_missing_controls": [
     "identity-start-short-lived-network-signal-limit",
-    "mutation-quarantine-moderation-audit-and-expected-version-enforcement",
+    "mutation-authenticated-correction-and-production-audit-privilege-enforcement",
     "capacity-alert-destination-and-live-delivery-proof",
     "chosen-provider-exact-quota-configuration-and-live-pause-exercise",
     "shared-multi-instance-admission-and-proxy-topology-test"

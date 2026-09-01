@@ -246,6 +246,7 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
         "food_product_source_link",
         "food_attribute_assertion",
         "food_attribute_assertion_ingest_audit",
+        "food_attribute_assertion_moderation_audit",
     ]
     assert sources["internal_source_record_ingest_service_implemented"] is True
     assert sources[
@@ -269,8 +270,14 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
         "source_assertion_ingest_atomic_minimal_audit_implemented"
     ] is True
     assert sources["source_assertion_ingest_per_source_budget_implemented"] is True
+    assert sources["source_assertion_moderation_service_implemented"] is True
+    assert sources[
+        "source_assertion_moderation_expected_version_and_audit_implemented"
+    ] is True
+    assert sources[
+        "source_assertion_validation_rechecks_policy_and_active_lineage"
+    ] is True
     assert sources["source_assertion_correction_service_implemented"] is False
-    assert sources["source_assertion_moderation_service_implemented"] is False
     assert sources["public_source_assertion_ingest_endpoint_enabled"] is False
     assert sources["public_catalog_read_endpoint_enabled"] is False
     assert sources["complete_source_assertion_mutation_flow_implemented"] is False
@@ -309,6 +316,9 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety["source_record_terminal_moderation_and_audit_implemented"] is True
     assert safety["source_assertion_ingest_and_audit_implemented"] is True
     assert safety["source_assertion_ingest_per_source_budget_implemented"] is True
+    assert safety[
+        "source_assertion_terminal_moderation_and_audit_implemented"
+    ] is True
     assert safety["complete_contribution_mutation_flow_implemented"] is False
     assert safety["raw_ip_or_search_text_in_long_term_abuse_profile_allowed"] is False
     assert safety["external_integration_default_access"] == "read-only"

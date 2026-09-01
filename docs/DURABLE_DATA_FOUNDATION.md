@@ -209,8 +209,8 @@ Bridge may later attest a consenting contributor's role through a pseudonymous
 reference, but its private identity fields do not enter the catalog. Future XRPL
 references attach to reviewed provenance events, never automatically to personal
 food logs. DS-3 fixed this contract first; migrations `20260831_0006` through
-`20260831_0009` now provide the source, record, moderation, product, link and
-assertion schema plus bounded internal assertion admission after the PostgreSQL
-compatibility proof. Public write paths, assertion correction and assertion
-moderation remain disabled. Enabling a second source is not itself required to
+`20260901_0010` now provide the source, record, moderation, product, link and
+assertion schema plus bounded internal assertion admission and terminal
+assertion moderation after the PostgreSQL compatibility proof. Public write
+paths and assertion correction remain disabled. Enabling a second source is not itself required to
 complete V2. See `docs/FOOD_DATA_SOURCE_ARCHITECTURE.md`.

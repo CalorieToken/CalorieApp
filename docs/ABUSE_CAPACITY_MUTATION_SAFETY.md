@@ -105,6 +105,16 @@ the generic assertion value. Numeric assertions still require quarantine and
 human moderation. Policy expansion always requires human review; it cannot
 activate a provider or public write route.
 
+Quarantined source assertions now have one terminal internal moderation path.
+It requires the fixed `catalog:source-assertion:moderate` scope, expected
+version, idempotency key, pseudonymous moderator reference and controlled reason
+code. Only quarantine to validated/rejected is allowed. The status/version
+change and minimal audit commit atomically; PostgreSQL advisory locks serialize
+decisions across processes. A validated decision also rechecks canonical
+content policy and the current enabled/validated/active source lineage. No
+public moderation endpoint exists. See
+`SOURCE_ASSERTION_MODERATION.md`.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
@@ -141,8 +151,8 @@ validated/rejected transitions, and appends one minimal audit event in the same
 transaction. PostgreSQL serializes both record and idempotency conflicts across
 processes. No public route exists. The source-neutral product/link/assertion
 schema, read-only licensed evidence query and bounded internal assertion-ingest
-service now exist. Public contribution, assertion moderation, correction and
-production audit-table privilege proof remain open. The combined mutation
+service now exist. Public contribution, assertion correction, real caller
+authentication and production audit-table privilege proof remain open. The combined mutation
 release gate is therefore not yet claimed complete. Exact boundaries are in
 `SOURCE_RECORD_MODERATION.md`, `SOURCE_ASSERTION_CATALOG.md` and
 `SOURCE_ASSERTION_INGEST.md`.
@@ -173,7 +183,8 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, the Identity Bridge short-lived network-signal
-control, mutation quarantine/audit, chosen-provider alert delivery,
+control, authenticated assertion correction and production audit privileges,
+chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants
 remain fixed in

@@ -21,7 +21,7 @@ def test_food_data_model_is_source_independent_and_extensible() -> None:
     contract = _load_contract()
     principles = contract["principles"]
 
-    assert contract["contract_version"] == "1.5.0"
+    assert contract["contract_version"] == "1.6.0"
     assert principles["open_food_facts_is_one_adapter_not_canonical_model"] is True
     assert principles["single_source_database_design_allowed"] is False
     assert principles["new_source_requires_core_schema_rewrite"] is False
@@ -102,6 +102,20 @@ def test_every_source_record_and_assertion_remains_traceable() -> None:
         "created_at",
     } <= set(
         entities["food_attribute_assertion_ingest_audit"]["required_fields"]
+    )
+    assert {
+        "assertion_id",
+        "idempotency_key",
+        "expected_version",
+        "resulting_version",
+        "previous_status",
+        "new_status",
+        "moderator_reference",
+        "authorization_scope",
+        "reason_code",
+        "created_at",
+    } <= set(
+        entities["food_attribute_assertion_moderation_audit"]["required_fields"]
     )
     assert contract["adapter_contract"]["idempotency_key"] == [
         "source_id",
@@ -194,8 +208,32 @@ def test_source_expansion_preserves_licensing_privacy_and_history() -> None:
     assert mutation[
         "source_assertion_ingest_audit_allows_free_text_payload_email_or_ip"
     ] is False
+    assert mutation["source_assertion_moderation_service_implemented"] is True
+    assert mutation["source_assertion_moderation_authorization_scope"] == (
+        "catalog:source-assertion:moderate"
+    )
+    assert mutation["source_assertion_moderation_requires_expected_version"] is True
+    assert mutation["source_assertion_moderation_requires_idempotency_key"] is True
+    assert mutation["source_assertion_validation_rechecks_content_policy"] is True
+    assert mutation[
+        "source_assertion_validation_requires_current_active_reviewed_lineage"
+    ] is True
+    assert mutation["source_assertion_moderation_transitions"] == [
+        "quarantined-to-validated",
+        "quarantined-to-rejected",
+    ]
+    assert mutation[
+        "source_assertion_moderation_terminal_status_rewrite_allowed"
+    ] is False
+    assert mutation["source_assertion_moderation_audit_inserted_atomically"] is True
+    assert mutation[
+        "source_assertion_moderation_audit_is_insert_only_in_service"
+    ] is True
+    assert mutation[
+        "source_assertion_moderation_audit_allows_free_text_payload_email_or_ip"
+    ] is False
+    assert mutation["source_assertion_moderation_public_endpoint_enabled"] is False
     assert mutation["source_assertion_correction_service_implemented"] is False
-    assert mutation["source_assertion_moderation_service_implemented"] is False
     assert mutation["public_source_assertion_ingest_endpoint_enabled"] is False
     assert mutation[
         "read_only_licensed_assertion_evidence_export_implemented"
@@ -237,6 +275,7 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
         "food_product_source_link",
         "food_attribute_assertion",
         "food_attribute_assertion_ingest_audit",
+        "food_attribute_assertion_moderation_audit",
     ]
     assert implementation["remaining_catalog_tables"] == []
     assert implementation["internal_source_record_ingest_service_implemented"] is True
@@ -255,8 +294,8 @@ def test_multi_source_schema_is_v2_work_without_forcing_a_second_source() -> Non
     ] is True
     assert implementation["source_assertion_content_policy_implemented"] is True
     assert implementation["source_assertion_ingest_defaults_to_quarantine"] is True
+    assert implementation["source_assertion_moderation_service_implemented"] is True
     assert implementation["source_assertion_correction_service_implemented"] is False
-    assert implementation["source_assertion_moderation_service_implemented"] is False
     assert implementation["public_source_assertion_ingest_endpoint_enabled"] is False
     assert implementation["public_catalog_read_endpoint_enabled"] is False
     assert implementation[

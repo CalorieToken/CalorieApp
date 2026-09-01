@@ -1,8 +1,9 @@
 # Source-neutral assertion catalog
 
-Status: schema foundation, read-only evidence export and bounded internal
-assertion ingest are implemented with synthetic proof. No public catalog write
-or read API, assertion moderation or additional food source is enabled.
+Status: schema foundation, read-only evidence export, bounded internal
+assertion ingest and terminal internal moderation are implemented with
+synthetic proof. No public catalog write or read API or additional food source
+is enabled.
 
 ## Neutral identities and reviewable links
 
@@ -28,9 +29,12 @@ A correction is a new assertion row that may reference an earlier assertion for
 the same product and source record. The database rejects cross-product or
 cross-record correction lineage, and the prior row remains present. Migration
 `20260831_0009` adds only a bounded internal write service for new quarantined
-version-1 assertions with validated lineage. Correction and assertion-moderation
-services remain absent; direct catalog-table writes remain forbidden outside
-reviewed migrations and test fixtures. See `SOURCE_ASSERTION_INGEST.md`.
+version-1 assertions with validated lineage. Migration `20260901_0010` adds a
+terminal internal moderation service that may only move a version-matched
+quarantined assertion to validated or rejected and records a minimal audit
+atomically. Correction remains absent; direct catalog-table writes remain
+forbidden outside reviewed migrations and test fixtures. See
+`SOURCE_ASSERTION_INGEST.md` and `SOURCE_ASSERTION_MODERATION.md`.
 
 ## Licence-aware evidence
 
@@ -53,8 +57,8 @@ review decision and does not automatically enable a source or public route.
 
 ## Deliberate non-claims
 
-This foundation does not implement public contributions, assertion correction
-or moderation, a public catalog endpoint, source activation or licence approval.
+This foundation does not implement public contributions, assertion correction,
+public moderation, a public catalog endpoint, source activation or licence approval.
 The ingest audit covers admission only and is not a moderation decision. The
 combined contribution-mutation release gate remains open. Open Food Facts search
 stays read-only and is not persisted automatically.
