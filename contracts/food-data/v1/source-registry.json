@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.food-data-source-registry",
-  "contract_version": "1.4.0",
-  "status": "bounded-source-assertion-ingest-implemented-no-public-source-enabled",
+  "contract_version": "1.5.0",
+  "status": "bounded-validated-source-assertion-ingest-implemented-no-public-source-enabled",
   "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
   "principles": {
     "open_food_facts_is_one_adapter_not_canonical_model": true,
@@ -159,6 +159,79 @@
     "correction_keeps_prior_assertion_row": true,
     "correction_must_keep_product_and_source_record_lineage": true
   },
+  "assertion_content_policy": {
+    "policy_version": "1.0.0",
+    "applied_before_database_work": true,
+    "initial_scope": "source-neutral-nutrition-per-100g",
+    "unknown_attribute_allowed": false,
+    "arbitrary_text_value_allowed": false,
+    "unit_must_match_attribute_policy": true,
+    "numeric_format": "finite-non-negative-decimal-with-at-most-6-fractional-digits",
+    "equivalent_decimal_forms_canonicalized_before_idempotency_check": true,
+    "policy_extension_requires_human_review": true,
+    "allowed_numeric_attributes": {
+      "nutrition.energy": {
+        "unit": "kcal-per-100g",
+        "minimum": "0",
+        "maximum": "1000",
+        "max_fractional_digits": 6
+      },
+      "nutrition.energy-kj": {
+        "unit": "kj-per-100g",
+        "minimum": "0",
+        "maximum": "5000",
+        "max_fractional_digits": 6
+      },
+      "nutrition.protein": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.fat": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.saturated-fat": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.carbohydrates": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.sugars": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.fiber": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.salt": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      },
+      "nutrition.sodium": {
+        "unit": "g-per-100g",
+        "minimum": "0",
+        "maximum": "100",
+        "max_fractional_digits": 6
+      }
+    }
+  },
   "mutation_policy": {
     "external_client_default_access": "read-only",
     "direct_catalog_table_write_allowed": false,
@@ -181,6 +254,12 @@
     "source_assertion_ingest_requires_active_product_and_enabled_source": true,
     "source_assertion_ingest_requires_expected_record_version": true,
     "source_assertion_ingest_requires_idempotency_key": true,
+    "source_assertion_ingest_content_policy_version": "1.0.0",
+    "source_assertion_ingest_unknown_attribute_allowed": false,
+    "source_assertion_ingest_arbitrary_text_value_allowed": false,
+    "source_assertion_ingest_unit_must_match_attribute_policy": true,
+    "source_assertion_ingest_equivalent_decimal_forms_canonicalized": true,
+    "source_assertion_content_policy_extension_requires_human_review": true,
     "source_assertion_ingest_defaults_to_quarantine": true,
     "source_assertion_ingest_audit_inserted_atomically": true,
     "source_assertion_ingest_audit_is_insert_only_in_service": true,
@@ -236,6 +315,7 @@
     "read_only_licensed_assertion_evidence_export_implemented": true,
     "catalog_assertion_write_service_implemented": true,
     "internal_source_assertion_ingest_service_implemented": true,
+    "source_assertion_content_policy_implemented": true,
     "source_assertion_ingest_defaults_to_quarantine": true,
     "source_assertion_correction_service_implemented": false,
     "source_assertion_moderation_service_implemented": false,

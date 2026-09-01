@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-abuse-capacity-and-mutation-safety",
-  "contract_version": "1.9.0",
+  "contract_version": "1.10.0",
   "status": "partial-release-blocking",
   "purpose": "Keep the free V2 service and wider ecosystem available without allowing request amplification, uncontrolled data growth or unauthorized mutation.",
   "principles": {
@@ -253,6 +253,13 @@
     "source_assertion_ingest_requires_active_product_and_enabled_source": true,
     "source_assertion_ingest_requires_expected_record_version": true,
     "source_assertion_ingest_requires_idempotency_key": true,
+    "source_assertion_ingest_content_policy_version": "1.0.0",
+    "source_assertion_ingest_content_policy_scope": "source-neutral-nutrition-per-100g",
+    "source_assertion_ingest_unknown_attribute_allowed": false,
+    "source_assertion_ingest_arbitrary_text_value_allowed": false,
+    "source_assertion_ingest_unit_must_match_attribute_policy": true,
+    "source_assertion_ingest_equivalent_decimal_forms_canonicalized": true,
+    "source_assertion_content_policy_extension_requires_human_review": true,
     "source_assertion_ingest_default_status": "quarantined",
     "source_assertion_ingest_resulting_version": 1,
     "source_assertion_ingest_audit_table": "food_attribute_assertion_ingest_audit",
@@ -399,7 +406,8 @@
     "reviewed-positive-assertion-limit-per-registered-source",
     "postgresql-multi-process-source-assertion-budget-proof",
     "source-assertion-ingest-fails-closed-on-database-error",
-    "postgresql-advisory-lock-waits-bounded-and-contention-tested"
+    "postgresql-advisory-lock-waits-bounded-and-contention-tested",
+    "versioned-source-assertion-content-policy-rejects-arbitrary-text"
   ],
   "release_blocking_missing_controls": [
     "identity-start-short-lived-network-signal-limit",

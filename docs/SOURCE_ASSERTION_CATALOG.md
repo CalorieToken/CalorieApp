@@ -45,6 +45,12 @@ reuse evidence and that a later correction preserves the earlier assertion.
 They also prove that adding or correcting catalog assertions does not rewrite a
 private `food_log` snapshot.
 
+The internal ingest path applies versioned content policy `1.0.0` before any
+database work. Its initial scope is a reviewed set of source-neutral numeric
+nutrition values per 100g; arbitrary text and unknown attributes are rejected.
+See `SOURCE_ASSERTION_CONTENT_POLICY.md`. Extending that scope remains a human
+review decision and does not automatically enable a source or public route.
+
 ## Deliberate non-claims
 
 This foundation does not implement public contributions, assertion correction

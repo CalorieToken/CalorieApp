@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import re
-import unicodedata
 from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import datetime
@@ -25,6 +24,7 @@ from ..models import (
     utc_now,
 )
 from ..postgresql_locking import acquire_bounded_transaction_advisory_locks
+from ..source_assertion_policy import normalize_source_assertion_value
 
 
 SOURCE_ASSERTION_INGEST_SCOPE = "catalog:source-assertion:ingest"
@@ -83,7 +83,7 @@ def _validate_request(
     value: str,
     unit_or_value_type: str,
     observed_or_effective_at: datetime,
-) -> None:
+) -> str:
     for field_name, field_value in (
         ("food_product_id", food_product_id),
         ("source_record_id", source_record_id),
@@ -110,18 +110,14 @@ def _validate_request(
         raise ValueError("attribute_key must use the reviewed namespaced format")
     if not _UNIT_PATTERN.fullmatch(unit_or_value_type):
         raise ValueError("unit_or_value_type must use the reviewed controlled format")
-    if (
-        not value.strip()
-        or value != value.strip()
-        or len(value) > 255
-        or any(unicodedata.category(character).startswith("C") for character in value)
-    ):
-        raise ValueError(
-            "value must contain 1 to 255 visible characters without "
-            "surrounding whitespace"
-        )
+    normalized_value = normalize_source_assertion_value(
+        attribute_key=attribute_key,
+        value=value,
+        unit_or_value_type=unit_or_value_type,
+    )
     if observed_or_effective_at.tzinfo is not None:
         raise ValueError("observed_or_effective_at must be a naive UTC datetime")
+    return normalized_value
 
 
 def _advisory_lock_key(domain: str, value: str) -> int:
@@ -348,7 +344,7 @@ def ingest_source_assertion(
 ) -> SourceAssertionIngestResult:
     """Insert one quarantined assertion and audit receipt atomically."""
 
-    _validate_request(
+    normalized_value = _validate_request(
         food_product_id=food_product_id,
         source_record_id=source_record_id,
         expected_source_record_version=expected_source_record_version,
@@ -393,7 +389,7 @@ def ingest_source_assertion(
                 submitter_reference=submitter_reference,
                 authorization_scope=authorization_scope,
                 attribute_key=attribute_key,
-                value=value,
+                value=normalized_value,
                 unit_or_value_type=unit_or_value_type,
                 observed_or_effective_at=observed_or_effective_at,
             )

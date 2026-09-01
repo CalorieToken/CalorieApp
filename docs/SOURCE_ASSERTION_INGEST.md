@@ -18,6 +18,13 @@ service accepts a source assertion only when all of these conditions hold:
 - the exact product/source-record link exists and is validated; and
 - the request fields use bounded controlled formats.
 
+Before any database work, content policy `1.0.0` accepts only the reviewed,
+source-neutral nutrition keys listed in `SOURCE_ASSERTION_CONTENT_POLICY.md`.
+Each key has one exact per-100g unit and a numeric range. Unknown keys, mismatched
+units, negative or non-finite numbers, exponent notation, excessive precision
+and arbitrary text are rejected. Equivalent decimal forms are canonicalized
+before idempotency and duplicate checks.
+
 Every admitted assertion is a new immutable version-1 row in `quarantined`
 state with no correction predecessor. Validation or public activation is not
 part of this service.
@@ -52,8 +59,9 @@ lineage than the assertion.
 
 The service never updates an audit row and the schema contains no raw source
 payload, free-text reason, email, IP address, session, wallet or private user
-identifier. Production insert-only privileges remain a separate deployment
-proof.
+identifier. The content policy closes the prior arbitrary-text path through the
+assertion `value` field; quarantine and human moderation still apply to numeric
+values. Production insert-only privileges remain a separate deployment proof.
 
 ## Deliberate non-claims
 

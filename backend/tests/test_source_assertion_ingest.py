@@ -102,8 +102,15 @@ def _ingest(
     expected_version: int = 2,
     attribute_key: str = "nutrition.energy",
     value: str = "100",
+    unit_or_value_type: str | None = None,
     observed_at: datetime = OBSERVED_AT,
 ):
+    if unit_or_value_type is None:
+        unit_or_value_type = (
+            "kcal-per-100g"
+            if attribute_key == "nutrition.energy"
+            else "g-per-100g"
+        )
     return ingest_source_assertion(
         session,
         food_product_id=product_id,
@@ -114,7 +121,7 @@ def _ingest(
         authorization_scope=SOURCE_ASSERTION_INGEST_SCOPE,
         attribute_key=attribute_key,
         value=value,
-        unit_or_value_type="kcal-per-100g",
+        unit_or_value_type=unit_or_value_type,
         observed_or_effective_at=observed_at,
     )
 
@@ -142,6 +149,8 @@ def test_assertion_ingest_is_idempotent_quarantined_audited_and_budgeted(
             assert duplicate.assertion.id == first.assertion.id
             assert duplicate.audit.id == first.audit.id
             assert second.created is True
+            assert second.assertion.value == "7.5"
+            assert second.assertion.unit_or_value_type == "g-per-100g"
             assert first.assertion.verification_status == "quarantined"
             assert first.assertion.verification_version == 1
             assert first.assertion.supersedes_assertion_id is None
@@ -297,10 +306,17 @@ def test_assertion_ingest_rejects_missing_lineage_without_audit(
         {"idempotency_key": " ingest-key"},
         {"submitter_reference": "Adapter Name"},
         {"attribute_key": "Nutrition.Energy"},
+        {"attribute_key": "product.description"},
         {"value": " 100"},
         {"value": "100\n"},
-        {"value": "x" * 256},
+        {"value": "person@example.test"},
+        {"value": "https://example.test/raw-payload"},
+        {"value": "1e2"},
+        {"value": "-1"},
+        {"value": "9" * 256},
+        {"value": "1000.000001"},
         {"unit_or_value_type": "KCAL"},
+        {"unit_or_value_type": "g-per-100g"},
         {"observed_or_effective_at": datetime.now(UTC)},
     ],
 )
@@ -350,6 +366,32 @@ def test_assertion_ingest_scope_denial_precedes_database_work() -> None:
     assert rejected.value.reason == "source_assertion_ingest_scope_denied"
     assert rejected.value.status_code == 403
     assert rejected.value.retry_after_seconds is None
+
+
+def test_assertion_ingest_normalizes_equivalent_numeric_evidence(tmp_path) -> None:
+    engine = _engine(tmp_path / "normalized-evidence.db")
+    try:
+        with Session(engine) as session:
+            _, product, records = _seed(session)
+            first = _ingest(
+                session,
+                product.id,
+                records[0].id,
+                value="100.000000",
+            )
+            duplicate = _ingest(
+                session,
+                product.id,
+                records[0].id,
+                value="100",
+            )
+
+            assert first.assertion.value == "100"
+            assert duplicate.created is False
+            assert duplicate.assertion.id == first.assertion.id
+            assert len(session.exec(select(FoodAttributeAssertionDB)).all()) == 1
+    finally:
+        engine.dispose()
 
 
 def test_assertion_ingest_database_failure_fails_closed() -> None:
