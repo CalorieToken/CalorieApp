@@ -50,4 +50,6 @@ This change does not:
 The release gate remains partial until the marker is separately migrated and
 proved, warning delivery is reliable, activity cancels a pending warning, and
 the bounded account-erasure process plus backup replay proof are reviewed
-together.
+together. `docs/INACTIVE_ACCOUNT_PREVIEW.md` describes the read-only,
+aggregate-only boundary calculation that is prepared without enabling any of
+those actions.

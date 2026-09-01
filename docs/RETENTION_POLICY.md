@@ -33,6 +33,13 @@ export. This is prepared code only: no staging or production migration,
 warning delivery, scheduling or inactive-account erasure was activated. See
 `docs/AUTHENTICATED_ACTIVITY_RETENTION_MARKER.md`.
 
+An aggregate-only inactive-account preview is also prepared. It evaluates the
+oldest active accounts in a bounded batch and calculates each account's notice
+and retention boundaries using calendar-month arithmetic. Its dedicated read
+transaction is rolled back before return and its output contains counts only.
+It cannot send a warning, mark or erase an account, and production use remains
+blocked. See `docs/INACTIVE_ACCOUNT_PREVIEW.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
