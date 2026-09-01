@@ -50,6 +50,11 @@ from app.postgresql_locking import (
     POSTGRESQL_ADVISORY_LOCK_TIMEOUT_MILLISECONDS,
     acquire_bounded_transaction_advisory_locks,
 )
+from app.postgresql_privileges import (
+    APPLICATION_AUDIT_TABLES,
+    apply_postgresql_application_privileges,
+    verify_postgresql_application_privileges,
+)
 from app.route_rate_limiter import (
     PostgreSQLRouteRateLimiter,
     RouteRateLimitRejected,
@@ -319,6 +324,29 @@ def _reset_synthetic_database(engine: Engine) -> None:
         connection.exec_driver_sql("CREATE SCHEMA public")
 
 
+def _execute_as_role(
+    engine: Engine,
+    role_name: str,
+    statement: str,
+    parameters: tuple[object, ...] = (),
+) -> None:
+    quoted_role = engine.dialect.identifier_preparer.quote_identifier(role_name)
+    with engine.begin() as connection:
+        connection.exec_driver_sql(f"SET LOCAL ROLE {quoted_role}")
+        connection.exec_driver_sql(statement, parameters)
+
+
+def _assert_application_role_rejected(
+    engine: Engine,
+    role_name: str,
+    statement: str,
+    parameters: tuple[object, ...] = (),
+) -> None:
+    with pytest.raises(SQLAlchemyError) as rejected:
+        _execute_as_role(engine, role_name, statement, parameters)
+    assert getattr(rejected.value.orig, "sqlstate", None) == "42501"
+
+
 @pytest.fixture()
 def postgres_engine() -> Engine:
     raw_url = _required_postgresql_test_url()
@@ -438,6 +466,148 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "client_id",
         "expires_at",
     )
+
+
+def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-APPLICATION-ROLE",
+    )
+    role_name = f"calorieapp_ci_runtime_{uuid4().hex[:12]}"
+    quoted_role = postgres_engine.dialect.identifier_preparer.quote_identifier(
+        role_name
+    )
+    with postgres_engine.begin() as connection:
+        connection.exec_driver_sql(
+            f"CREATE ROLE {quoted_role} NOLOGIN NOSUPERUSER NOCREATEDB "
+            "NOCREATEROLE NOREPLICATION NOBYPASSRLS"
+        )
+
+    try:
+        source = FoodSourceDB(
+            source_key=f"privilege-proof-{uuid4().hex}",
+            source_category="synthetic-ci",
+            operator_name="Synthetic CI Source",
+            status="enabled",
+            licence_id="synthetic-test-only",
+            terms_reference="https://example.test/terms",
+            attribution_text="Synthetic CI data",
+            record_limit=2,
+        )
+        record = FoodSourceRecordDB(
+            source_id=source.id,
+            external_record_id="privilege-proof-record",
+            source_version_or_content_digest="version-1",
+        )
+        record_id = record.id
+        with Session(postgres_engine) as session:
+            session.add(source)
+            session.commit()
+            session.add(record)
+            session.commit()
+
+        with postgres_engine.begin() as connection:
+            proof = apply_postgresql_application_privileges(
+                connection,
+                role_name,
+                approval_reference="CI-POSTGRES-APPLICATION-ROLE",
+            )
+        assert proof.application_role == role_name
+        assert proof.insert_only_audit_table_count == len(APPLICATION_AUDIT_TABLES)
+        assert proof.read_only_table_count == 1
+        assert proof.sequence_count >= 1
+
+        audit_id = str(uuid4())
+        with postgres_engine.begin() as connection:
+            connection.exec_driver_sql(f"SET LOCAL ROLE {quoted_role}")
+            connection.exec_driver_sql(
+                """
+                UPDATE food_source_record
+                SET verification_status = 'validated', verification_version = 2
+                WHERE id = %s
+                """,
+                (record_id,),
+            )
+            connection.exec_driver_sql(
+                """
+                INSERT INTO food_source_moderation_audit (
+                    id, source_record_id, idempotency_key, expected_version,
+                    resulting_version, previous_status, new_status,
+                    moderator_reference, authorization_scope, reason_code,
+                    created_at
+                ) VALUES (%s, %s, %s, 1, 2, 'quarantined', 'validated',
+                          'synthetic-ci', 'catalog:source-record:moderate',
+                          'synthetic-reviewed', %s)
+                """,
+                (
+                    audit_id,
+                    record_id,
+                    f"privilege-proof-{uuid4().hex}",
+                    utc_now(),
+                ),
+            )
+        _execute_as_role(
+            postgres_engine,
+            role_name,
+            """
+            INSERT INTO food_log (
+                product_name, calories, protein, fat, carbohydrates, created_at
+            ) VALUES ('Synthetic privilege proof', 1, 0, 0, 0, %s)
+            """,
+            (utc_now(),),
+        )
+
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "UPDATE food_source_moderation_audit SET reason_code = 'rewritten' "
+            "WHERE id = %s",
+            (audit_id,),
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "DELETE FROM food_source_moderation_audit WHERE id = %s",
+            (audit_id,),
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "TRUNCATE TABLE food_source_moderation_audit",
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "UPDATE calorie_schema_revision SET approval_reference = 'rewritten'",
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "CREATE TABLE public.privilege_escape (id INTEGER)",
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "CREATE TEMPORARY TABLE privilege_escape_temp (id INTEGER)",
+        )
+
+        with postgres_engine.connect() as connection:
+            checked = verify_postgresql_application_privileges(
+                connection,
+                role_name,
+            )
+            stored_reason = connection.exec_driver_sql(
+                "SELECT reason_code FROM food_source_moderation_audit WHERE id = %s",
+                (audit_id,),
+            ).scalar_one()
+        assert checked == proof
+        assert stored_reason == "synthetic-reviewed"
+    finally:
+        with postgres_engine.begin() as connection:
+            connection.exec_driver_sql(f"DROP OWNED BY {quoted_role}")
+            connection.exec_driver_sql(f"DROP ROLE IF EXISTS {quoted_role}")
 
 
 def test_postgresql_transaction_advisory_lock_wait_is_bounded(

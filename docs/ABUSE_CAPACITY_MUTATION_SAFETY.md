@@ -154,6 +154,13 @@ Migrations use a separate approved role. Mass changes require dry-run scope
 preview and explicit approval. No automated component creates, signs or pays for
 an XRPL transaction.
 
+The provider-neutral PostgreSQL privilege policy now encodes that role split.
+Its synthetic CI proof permits ordinary row work and atomic audit insertion but
+rejects audit update, delete and truncate, migration-history mutation, persistent
+DDL and temporary DDL. An unknown future table fails closed until reviewed. See
+`POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md`. This is not a claim that staging or
+production credentials already use the policy.
+
 The first internal source-record moderation path now enforces this pattern. It
 accepts only a fixed moderation scope and controlled pseudonymous references,
 requires an idempotency key and expected version, permits only quarantine to
@@ -163,8 +170,9 @@ processes. No public route exists. The source-neutral product/link/assertion
 schema, read-only licensed evidence query and bounded internal assertion-ingest
 service, terminal assertion moderation and retained correction service now
 exist. Public contribution, real caller authentication and production
-audit-table privilege proof remain open. The combined mutation release gate is
-therefore not yet claimed complete. Exact boundaries are in
+audit-table privilege application and live proof remain open. The combined
+mutation release gate is therefore not yet claimed complete. Exact boundaries
+are in
 `SOURCE_RECORD_MODERATION.md`, `SOURCE_ASSERTION_CATALOG.md`,
 `SOURCE_ASSERTION_INGEST.md`, `SOURCE_ASSERTION_MODERATION.md` and
 `SOURCE_ASSERTION_CORRECTION.md`.
@@ -195,7 +203,7 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, the Identity Bridge short-lived network-signal
-control, authenticated mutation callers and production audit privileges,
+control, authenticated mutation callers and live production audit privileges,
 chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants

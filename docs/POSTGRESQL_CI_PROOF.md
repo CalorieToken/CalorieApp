@@ -49,6 +49,9 @@ provider account, recurring subscription, live database or user data.
 20. Hold a real transaction advisory lock and prove a competing acquisition is
     cancelled after the configured one-second wait with PostgreSQL SQLSTATE
     `55P03`.
+21. Apply the reviewed runtime-role privilege matrix to a synthetic role and
+    prove normal row/audit insertion works while audit rewrite/deletion,
+    migration-history mutation, persistent DDL and temporary DDL are rejected.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes
@@ -61,6 +64,7 @@ the test unusable against a remote, staging or production database.
 - chosen-provider alert destination/delivery or a live onboarding-pause exercise;
 - encrypted provider backup creation or a staging restoration;
 - export/import into another provider;
+- application of the runtime-role policy to staging or production credentials;
 - production security, privacy or operational readiness.
 
 The synthetic logical restore is documented separately in

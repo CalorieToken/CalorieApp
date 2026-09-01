@@ -18,7 +18,7 @@ def test_automation_cannot_remove_permanent_human_control() -> None:
     contract = _load_contract()
     human = contract["human_control_boundary"]
 
-    assert contract["contract_version"] == "1.12.0"
+    assert contract["contract_version"] == "1.13.0"
     assert human["fully_autonomous_operation_allowed"] is False
     assert human["human_approval_required_for_limit_policy_scope_expansion"] is True
     assert human["human_incident_command_and_emergency_pause_required"] is True
@@ -396,6 +396,34 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation["correction_preserves_superseded_assertion"] is True
     assert mutation["production_application_role_may_execute_ddl"] is False
     assert mutation["production_migration_uses_separate_approved_role"] is True
+    assert mutation["postgresql_application_role_privilege_policy_implemented"] is True
+    assert mutation[
+        "postgresql_application_role_owns_database_or_schema_objects_allowed"
+    ] is False
+    assert mutation["postgresql_application_role_inherited_roles_allowed"] is False
+    assert mutation["postgresql_application_role_normal_table_privileges"] == [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+    ]
+    assert mutation["postgresql_application_role_audit_table_privileges"] == [
+        "SELECT",
+        "INSERT",
+    ]
+    assert mutation["postgresql_application_role_schema_history_privileges"] == [
+        "SELECT"
+    ]
+    assert mutation[
+        "postgresql_application_role_create_or_temporary_privileges_allowed"
+    ] is False
+    assert mutation[
+        "postgresql_application_role_synthetic_ci_proof_implemented"
+    ] is True
+    assert mutation["postgresql_application_role_staging_proof_completed"] is False
+    assert mutation[
+        "postgresql_application_role_production_enforcement_completed"
+    ] is False
     assert mutation["xrpl_transaction_creation_or_signing_automatic"] is False
     assert (
         "mutation-authenticated-caller-and-production-audit-privilege-enforcement"
@@ -411,6 +439,10 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     )
     assert (
         "postgresql-multi-process-source-assertion-correction-proof"
+        in contract["current_implemented_evidence"]
+    )
+    assert (
+        "postgresql-application-role-row-only-and-insert-only-audit-ci-proof"
         in contract["current_implemented_evidence"]
     )
 

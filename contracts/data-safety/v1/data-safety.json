@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.6.0",
+  "contract_version": "1.7.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -189,7 +189,8 @@
       "two-separate-backend-process-persistence",
       "synthetic-custom-format-backup-and-distinct-database-restore",
       "provider-neutral-low-cardinality-capacity-alert-interface",
-      "bounded-source-assertion-ingest-and-multi-process-budget"
+      "bounded-source-assertion-ingest-and-multi-process-budget",
+      "synthetic-runtime-role-row-only-and-insert-only-audit-enforcement"
     ],
     "does_not_prove": [
       "free-provider-tier-permanence",
@@ -197,6 +198,7 @@
       "chosen-provider-alert-destination-and-live-delivery",
       "encrypted-provider-staging-backup-restoration",
       "provider-exit-import",
+      "staging-or-production-runtime-role-privilege-application",
       "production-readiness"
     ],
     "provider_selection_status": "pending-separate-evaluation"
@@ -390,6 +392,9 @@
     "silent_catalog_assertion_overwrite_allowed": false,
     "unmoderated_public_contribution_activation_allowed": false,
     "production_schema_mutation_requires_separate_approval": true,
+    "postgresql_runtime_role_privilege_policy_implemented": true,
+    "postgresql_runtime_role_synthetic_ci_proof_implemented": true,
+    "postgresql_runtime_role_staging_or_production_proof_completed": false,
     "automatic_xrpl_transaction_creation_allowed": false,
     "current_release_dependency": true
   },
