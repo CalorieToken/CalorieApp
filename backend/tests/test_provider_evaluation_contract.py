@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.3.0"
+    assert contract["contract_version"] == "1.4.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-selected-account-configuration-blocked"
     )
@@ -99,7 +99,7 @@ def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
     review = contract["preconfiguration_review"]
 
     assert review["status"] == (
-        "synthetic-backup-and-exit-selected-console-and-key-custody-pending"
+        "offline-key-custody-selected-console-and-recipient-configuration-pending"
     )
     assert review["eu_region"] == {
         "documented_candidate": "aws-eu-central-1",
@@ -126,7 +126,37 @@ def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
     assert backup["selection_scope"] == "isolated-synthetic-neon-staging-only"
     assert backup["artifact_retention_days"] == 30
     assert backup["client_side_encryption_recipient_configured"] is False
-    assert backup["private_decryption_key_custody_approved"] is False
+    assert backup["private_decryption_key_custody_approved"] is True
+    assert backup["key_custody_selection_date"] == "2026-09-01"
+    assert backup["key_custody_approval_reference"] == (
+        "operator-decision-2026-09-01-offline-age-key-custody"
+    )
+    assert backup["encryption_format"] == "age"
+    assert backup["private_key_custody_mode"] == (
+        "passphrase-encrypted-age-identity-offline"
+    )
+    assert backup["offline_primary_and_recovery_copies_required"] is True
+    assert backup["offline_copy_locations_recorded_in_public_repository"] is False
+    assert backup["identity_passphrase_stored_separately_from_encrypted_identity"] is True
+    assert backup["public_recipient_may_be_committed"] is True
+    assert backup["private_key_generated_or_configured"] is False
+    assert backup["permanent_github_private_key_secret_allowed"] is False
+    assert backup["restore_identity_transfer"] == (
+        "temporary-github-environment-secret-after-required-review"
+    )
+    assert backup["restore_environment"] == "neon-synthetic-restore"
+    assert backup["restore_environment_must_be_precreated_and_protected"] is True
+    assert backup["restore_environment_branch_policy"] == "main-only"
+    assert backup["restore_environment_required_reviewer"] is True
+    assert backup["restore_environment_admin_bypass_allowed"] is False
+    assert backup["restore_workflow_trigger"] == "workflow-dispatch-only"
+    assert backup["pull_request_workflow_identity_access_allowed"] is False
+    assert backup["restore_identity_secret_name"] == (
+        "CALORIEAPP_SYNTHETIC_AGE_IDENTITY"
+    )
+    assert backup["restore_identity_secret_created_only_for_approved_run"] is True
+    assert backup["restore_identity_secret_deleted_after_every_run"] is True
+    assert backup["unreviewed_workflow_input_for_identity_allowed"] is False
     assert backup["plaintext_artifact_upload_allowed"] is False
     assert backup["artifact_upload_implemented_or_performed"] is False
     assert backup["real_user_or_production_data_allowed"] is False
@@ -211,7 +241,10 @@ def test_provider_facts_use_official_https_sources_only() -> None:
     for source in sources:
         parsed = urlsplit(source)
         assert parsed.scheme == "https"
-        assert parsed.hostname in allowed_hosts
+        if parsed.hostname == "github.com":
+            assert source == "https://github.com/FiloSottile/age"
+        else:
+            assert parsed.hostname in allowed_hosts
 
 
 def test_real_provider_work_remains_release_blocked() -> None:
@@ -230,7 +263,7 @@ def test_real_provider_work_remains_release_blocked() -> None:
         in blockers
     )
     assert (
-        "configure the client-side encryption recipient and approve private-key custody without committing key material"
+        "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
         in blockers
     )
     assert not any("approve an encrypted off-provider backup destination" in item for item in blockers)
@@ -266,7 +299,7 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "neon-synthetic-staging-selected-console-and-key-custody-required"
+        "neon-synthetic-staging-selected-console-and-recipient-configuration-required"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"

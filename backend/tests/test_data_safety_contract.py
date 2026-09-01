@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.12.0"
+    assert contract["contract_version"] == "1.13.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -829,7 +829,24 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
         "exit_target": "github_hosted_runner_postgresql_16",
         "target_is_ephemeral_and_outside_neon": True,
         "runbook": "docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md",
-        "encryption_recipient_and_private_key_custody_approved": False,
+        "encryption_recipient_and_private_key_custody_approved": True,
+        "key_custody_selection_date": "2026-09-01",
+        "key_custody_approval_reference": (
+            "operator-decision-2026-09-01-offline-age-key-custody"
+        ),
+        "encryption_format": "age",
+        "key_custody_mode": "passphrase-encrypted-age-identity-offline",
+        "public_recipient_configured": False,
+        "private_key_generated_or_configured": False,
+        "permanent_github_private_key_secret_allowed": False,
+        "temporary_review_gated_restore_secret_required": True,
+        "restore_environment": "neon-synthetic-restore",
+        "restore_environment_must_be_precreated_and_protected": True,
+        "restore_environment_branch_policy": "main-only",
+        "restore_environment_admin_bypass_allowed": False,
+        "restore_workflow_trigger": "workflow-dispatch-only",
+        "pull_request_workflow_identity_access_allowed": False,
+        "restore_identity_secret_deleted_after_every_run": True,
         "implemented_or_performed": False,
         "real_user_or_production_data_allowed": False,
     }
