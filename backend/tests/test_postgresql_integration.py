@@ -26,6 +26,7 @@ from app.data_growth import (
     create_food_log_with_subject_budget,
 )
 from app.main import SESSION_COOKIE_NAME, app
+from app.inactive_account_preview import preview_inactive_accounts
 from app.models import (
     AuthSessionDB,
     CalorieAppUserDB,
@@ -1541,3 +1542,45 @@ def test_postgresql_account_erasure_clears_cross_account_session_reference(
             assert preserved_session.replaced_by_session_id is None
     finally:
         db_module.engine = original_engine
+
+
+def test_postgresql_inactive_account_preview_is_aggregate_and_read_only(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-INACTIVE-ACCOUNT-PREVIEW",
+    )
+    with Session(postgres_engine) as session:
+        session.add_all(
+            [
+                CalorieAppUserDB(
+                    id="synthetic-preview-due",
+                    status="active",
+                    last_authenticated_activity_at=datetime(2024, 1, 1),
+                ),
+                CalorieAppUserDB(
+                    id="synthetic-preview-new",
+                    status="active",
+                    last_authenticated_activity_at=datetime(2026, 1, 1),
+                ),
+            ]
+        )
+        session.commit()
+
+    with Session(postgres_engine) as session:
+        payload = preview_inactive_accounts(
+            session,
+            as_of=datetime(2026, 9, 1, 12, 0, 0),
+            batch_limit=10,
+        ).as_payload()
+        assert session.in_transaction() is False
+
+    assert payload["evaluated_accounts"] == 2
+    assert payload["retention_boundary_reached_accounts"] == 1
+    assert payload["notice_window_accounts"] == 0
+    assert "synthetic-preview-due" not in str(payload)
+
+    with Session(postgres_engine) as session:
+        assert session.get(CalorieAppUserDB, "synthetic-preview-due") is not None
+        assert session.get(CalorieAppUserDB, "synthetic-preview-new") is not None
