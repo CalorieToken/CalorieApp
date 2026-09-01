@@ -69,17 +69,51 @@ Completed on 2026-09-01:
 - current official plan evidence was rechecked;
 - Neon Free was selected for preparation of synthetic staging only.
 
+An official-source preconfiguration review was recorded on 2026-09-01. Neon
+documents an EU project region (`aws-eu-central-1`), with the region fixed when
+the project is created. Its published DPA describes Neon as processor and the
+customer as controller for European data, allows global processing subject to
+the stated transfer mechanisms, and leaves lawful use, secure operation and
+export before account deletion with the customer. This records facts, not legal
+approval or confirmation that the DPA has been executed for a Free account.
+
+The Free plan is listed at $0/month with finite allowances. Neon documents
+machine-readable consumption metrics and configurable hard quotas: a configured
+quota suspends project compute until the next billing period. Metrics are
+updated every 15 minutes and may take up to one hour to become reportable, so
+CalorieApp's earlier 70/85/95-percent guard must retain enough headroom for that
+delay. Live-console proof is still required that the Free account has no payment
+method, cannot automatically upgrade or incur paid usage, and exposes the
+needed metrics and hard-limit controls.
+
+Neon also documents portable `pg_dump` export and PostgreSQL restore. CalorieApp
+will encrypt a dump on the client side before it leaves the controlled runner;
+no dump, plaintext data, database credential or encryption key may enter Git.
+The independent storage destination, retention schedule, distinct PostgreSQL
+exit target and restore runbook still require operator selection.
+
 Still required:
 
 1. Recheck the official terms again if the evidence date has expired or the
    account screen differs from the recorded snapshot.
-2. Review the available EU data region, data-processing terms, subprocessors and
-   operator responsibilities.
-3. Confirm that no payment method or automatic paid upgrade is required.
+2. Confirm `aws-eu-central-1` in the live account before project creation;
+   confirm DPA execution or account acceptance and subscribe to subprocessor
+   changes.
+3. Confirm in the live account that no payment method is present, no automatic
+   paid upgrade is possible, and the documented quota metrics and hard limits
+   are available on Free.
 4. Approve an encrypted off-provider backup destination and retention schedule.
-5. Confirm a distinct PostgreSQL exit target for the portability drill.
+5. Approve a distinct PostgreSQL exit target and synthetic restore runbook.
 
 Only then may a provider account or project be configured. The first live tests
 remain synthetic: migration/readiness, restart, actual provider redeploy,
 encrypted restore, provider-exit restore and capacity/onboarding-pause. A fresh
 human review is still required before any real user or production data.
+
+Additional primary sources reviewed for this preconfiguration boundary:
+
+- [Neon Data Processing Agreement](https://neon.com/pdf/DPA.pdf)
+- [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
+- [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
+- [Neon `pg_dump` backups](https://neon.com/docs/manage/backup-pg-dump)
+- [Neon subprocessor updates](https://neon.com/subscribe-to-subprocessors)

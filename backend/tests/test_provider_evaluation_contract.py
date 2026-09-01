@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.1.0"
+    assert contract["contract_version"] == "1.2.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-selected-account-configuration-blocked"
     )
@@ -94,6 +94,37 @@ def test_non_negotiable_cost_durability_and_privacy_boundaries_remain() -> None:
     assert capacity["provider_dashboard_only_monitoring_counts_as_complete"] is False
 
 
+def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
+    contract = _load_contract()
+    review = contract["preconfiguration_review"]
+
+    assert review["status"] == (
+        "official-facts-recorded-console-and-operator-approvals-pending"
+    )
+    assert review["eu_region"] == {
+        "documented_candidate": "aws-eu-central-1",
+        "region_is_fixed_at_project_creation": True,
+        "account_console_confirmation_required": True,
+        "approved_for_account_creation": False,
+    }
+    assert review["data_processing"]["published_dpa_reviewed"] is True
+    assert review["data_processing"]["global_access_or_processing_may_occur"] is True
+    assert review["data_processing"][
+        "dpa_execution_or_account_acceptance_confirmed"
+    ] is False
+    assert review["data_processing"]["approved_for_real_personal_data"] is False
+    assert review["billing_and_quota"]["free_plan_listed_price_usd_per_month"] == 0
+    assert review["billing_and_quota"][
+        "payment_method_absence_confirmed_in_live_account"
+    ] is False
+    assert review["billing_and_quota"][
+        "automatic_paid_upgrade_disabled_in_live_account"
+    ] is False
+    assert review["portable_backup"]["off_provider_destination_selected"] is False
+    assert review["portable_backup"]["credentials_or_keys_may_be_committed"] is False
+    assert review["provider_exit"]["distinct_postgresql_target_selected"] is False
+
+
 def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
     contract = _load_contract()
     candidates = {item["id"]: item for item in contract["database_candidates"]}
@@ -155,6 +186,7 @@ def test_provider_facts_use_official_https_sources_only() -> None:
         for candidate in contract["database_candidates"]
     ]
     source_groups.append(contract["runtime_candidate"]["official_sources"])
+    source_groups.append(contract["preconfiguration_review"]["official_sources"])
 
     sources = [source for group in source_groups for source in group]
     assert sources
@@ -170,9 +202,15 @@ def test_real_provider_work_remains_release_blocked() -> None:
     assert contract["release_blocking_before_provider_selection"] == []
     assert contract["release_blocking_before_provider_configuration"]
     assert contract["release_blocking_after_provider_selection"]
-    assert "EU data region and data processing terms review" in contract[
-        "release_blocking_before_provider_configuration"
-    ]
+    blockers = contract["release_blocking_before_provider_configuration"]
+    assert (
+        "confirm the recorded EU region in the live account console before project creation"
+        in blockers
+    )
+    assert (
+        "confirm DPA execution or account acceptance and subscribe to subprocessor changes"
+        in blockers
+    )
     assert "human review before any real user data" in contract[
         "release_blocking_after_provider_selection"
     ]
