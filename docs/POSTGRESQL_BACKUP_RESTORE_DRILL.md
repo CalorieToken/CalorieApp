@@ -34,9 +34,10 @@ humans separately approve and verify:
   backup location;
 - restricted backup credentials, key custody and restore authorization;
 - automated backup frequency, monitoring and failure alerts;
-- retention, recovery-window and backup-erasure timing;
+- the selected zero-day recovery window, maximum 30-day encrypted-backup
+  expiry and erasure replay after restore;
 - a staging restore/erasure drill using synthetic records; and
 - an exact provider-exit, deployment and rollback runbook.
 
-No live data, external provider, production deployment or retention decision is
-created by this CI proof.
+No live data, external provider, production deployment or provider-specific
+retention configuration is created by this CI proof.

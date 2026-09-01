@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.3.0",
+  "contract_version": "1.4.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -219,6 +219,11 @@
         "backend/app/main.py",
         "backend/app/schemas.py",
         "backend/tests/test_account_erasure.py",
+        "backend/tests/test_frontend_configuration.py",
+        "frontend/app/api/backend/[...path]/route.ts",
+        "frontend/components/AccountErasurePanel.tsx",
+        "frontend/lib/accountErasureRequest.ts",
+        "tools/tests/account_erasure_ui.test.mjs",
         "docs/ACCOUNT_ERASURE.md"
       ]
     },
@@ -226,7 +231,10 @@
       "id": "retention_policy",
       "status": "decision_required",
       "release_blocking": true,
-      "evidence": ["contracts/data-safety/v1/data-safety.json"]
+      "evidence": [
+        "contracts/data-safety/v1/data-safety.json",
+        "docs/ACCOUNT_ERASURE.md"
+      ]
     },
     {
       "id": "privacy_notice_alignment",

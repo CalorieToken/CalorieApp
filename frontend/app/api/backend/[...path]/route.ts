@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isTrustedAccountErasureRequest } from "@/lib/accountErasureRequest";
 import { isTrustedPrivateExportRequest } from "@/lib/privateExportRequest";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
     methods: new Set(["POST"]),
   },
   { pattern: /^api\/identity\/(me|export)$/, methods: new Set(["GET"]) },
+  { pattern: /^api\/identity\/account$/, methods: new Set(["DELETE"]) },
 ];
 
 type RouteContext = {
@@ -68,6 +70,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
 
   if (
     !isTrustedMutationRequest(request) ||
+    !isTrustedAccountErasureRequest(path, request) ||
     !isTrustedPrivateExportRequest(path, request)
   ) {
     return NextResponse.json({ detail: "Origin not allowed" }, { status: 403 });

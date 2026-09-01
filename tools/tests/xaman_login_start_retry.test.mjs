@@ -84,6 +84,9 @@ test("login start retries transport errors and transient responses", async () =>
       if (specifier === "@/components/AccountDataExportButton") {
         return { AccountDataExportButton() {} };
       }
+      if (specifier === "@/components/AccountErasurePanel") {
+        return { AccountErasurePanel() {} };
+      }
       if (specifier === "@/components/authEvents") {
         return { announceAuthState() {} };
       }
@@ -185,6 +188,9 @@ test("embedded login wakes the backend before creating login state", async () =>
       if (specifier === "@/components/AccountDataExportButton") {
         return { AccountDataExportButton() {} };
       }
+      if (specifier === "@/components/AccountErasurePanel") {
+        return { AccountErasurePanel() {} };
+      }
       if (specifier === "@/components/authEvents") {
         return { announceAuthState() {} };
       }
@@ -269,6 +275,9 @@ test("embedded login does not report progress after cancellation", async () => {
       }
       if (specifier === "@/components/AccountDataExportButton") {
         return { AccountDataExportButton() {} };
+      }
+      if (specifier === "@/components/AccountErasurePanel") {
+        return { AccountErasurePanel() {} };
       }
       if (specifier === "@/components/authEvents") {
         return { announceAuthState() {} };
@@ -393,6 +402,9 @@ test("login status polling slows down by age, failures, and Retry-After", async 
       }
       if (specifier === "@/components/AccountDataExportButton") {
         return { AccountDataExportButton() {} };
+      }
+      if (specifier === "@/components/AccountErasurePanel") {
+        return { AccountErasurePanel() {} };
       }
       if (specifier === "@/components/authEvents") {
         return { announceAuthState() {} };

@@ -16,7 +16,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.8.0"
+    assert contract["contract_version"] == "1.9.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -164,17 +164,37 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["eleven_language_export_ui_completed"] is False
     assert export["eleven_language_identity_bridge_ui_required"] is True
     assert export["privacy_notice_alignment_required"] is True
-    assert export["account_erasure_or_retention_policy_changed"] is False
+    assert export["account_export_changes_erasure_or_retention_policy"] is False
+
+
+def test_selected_erasure_retention_is_zero_day_and_backup_bounded() -> None:
+    retention = _load_json("data-safety.json")["retention"]
+
+    assert retention["account_erasure_policy_decision_date"] == "2026-09-01"
+    assert retention["account_erasure_policy_decision_authority"] == (
+        "current-operator-explicit-selection"
+    )
+    assert retention["selected_account_erasure_recovery_window_days"] == 0
+    assert retention["maximum_encrypted_backup_retention_days"] == 30
+    assert retention["provider_and_restore_replay_proof_pending"] is True
+    assert retention["unresolved_release_decisions"] == [
+        "inactive-account retention and notice period",
+        "authentication-transient security retention window",
+    ]
 
 
 def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     erasure = _load_json("data-safety.json")["account_erasure"]
 
     assert erasure["status"] == (
-        "v2-backend-implemented-disabled-pending-policy-ui-and-notice"
+        "v2-backend-and-english-ui-implemented-disabled-"
+        "pending-eleven-language-notice-and-provider-proof"
     )
     assert erasure["enabled_by_default"] is False
+    assert erasure["ui_enabled_by_default"] is False
+    assert erasure["frontend_and_backend_separate_enablement_required"] is True
     assert erasure["authenticated_user_only"] is True
+    assert erasure["same_origin_intent_required"] is True
     assert erasure["explicit_internal_user_id_confirmation_required"] is True
     assert erasure["fixed_machine_acknowledgement_required"] is True
     assert erasure["cross_user_deletion_allowed"] is False
@@ -191,7 +211,14 @@ def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     ] is True
     assert erasure["browser_session_cookie_cleared"] is True
     assert erasure["backup_erasure_claimed_complete"] is False
-    assert erasure["recovery_window_selected"] is False
+    assert erasure["recovery_window_selected"] is True
+    assert erasure["recovery_window_days"] == 0
+    assert erasure["primary_store_erasure_immediate_after_confirmed_request"] is True
+    assert erasure["maximum_encrypted_backup_retention_days"] == 30
+    assert erasure["restored_backup_must_reapply_erasure_requests"] is True
+    assert erasure["backup_schedule_and_restore_replay_proved"] is False
+    assert erasure["english_confirmation_ui_implemented"] is True
+    assert erasure["english_ui_is_approved_privacy_notice"] is False
     assert erasure["eleven_language_identity_bridge_ui_required"] is True
     assert erasure["privacy_notice_alignment_required"] is True
     assert erasure["human_release_approval_required_to_enable"] is True
@@ -594,7 +621,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.3.0"
+    assert matrix["contract_version"] == "1.4.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -629,6 +656,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/tests/test_account_erasure.py" in gates["user_erasure"][
         "evidence"
     ]
+    assert "frontend/components/AccountErasurePanel.tsx" in gates[
+        "user_erasure"
+    ]["evidence"]
     assert gates["retention_policy"]["status"] == "decision_required"
     assert matrix["release_state"] == "blocked"
 
@@ -651,7 +681,10 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert drill["production_or_staging_data_allowed"] is False
     assert backup["encrypted_production_backup_selected"] is False
     assert backup["provider_staging_restore_completed"] is False
-    assert backup["retention_and_backup_erasure_schedule_approved"] is False
+    assert backup["maximum_encrypted_backup_retention_days"] == 30
+    assert backup["restored_backup_must_reapply_erasure_requests"] is True
+    assert backup["restore_replay_mechanism_implemented_and_proved"] is False
+    assert backup["retention_and_backup_erasure_schedule_approved"] is True
 
 
 def test_contract_release_order_ends_with_review_and_explicit_publication_go() -> None:

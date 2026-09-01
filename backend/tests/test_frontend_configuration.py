@@ -53,3 +53,44 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
     assert "<AccountDataExportButton" in panel_source
     assert 'pattern: /^api\\/identity\\/(me|export)$/' in proxy_source
     assert '"content-disposition"' in proxy_source
+
+
+def test_account_erasure_ui_is_hidden_fail_closed_and_proxy_allowlisted():
+    erasure_source = (
+        REPO_ROOT / "frontend" / "components" / "AccountErasurePanel.tsx"
+    ).read_text(encoding="utf-8")
+    request_policy_source = (
+        REPO_ROOT / "frontend" / "lib" / "accountErasureRequest.ts"
+    ).read_text(encoding="utf-8")
+    panel_source = (
+        REPO_ROOT / "frontend" / "components" / "XamanLoginPanel.tsx"
+    ).read_text(encoding="utf-8")
+    proxy_source = (
+        REPO_ROOT / "frontend" / "app" / "api" / "backend" / "[...path]" / "route.ts"
+    ).read_text(encoding="utf-8")
+    frontend_env = (REPO_ROOT / "frontend" / ".env.example").read_text(
+        encoding="utf-8"
+    )
+    backend_env = (REPO_ROOT / "backend" / ".env.example").read_text(
+        encoding="utf-8"
+    )
+
+    assert "${BACKEND_BASE_URL}/api/identity/account" in erasure_source
+    assert 'method: "DELETE"' in erasure_source
+    assert 'cache: "no-store"' in erasure_source
+    assert '"delete-my-calorieapp-account"' in erasure_source
+    assert "isAccountErasureConfirmationReady" in erasure_source
+    assert "isAccountErasureResponse(payload)" in erasure_source
+    assert "localStorage" not in erasure_source
+    assert "sessionStorage" not in erasure_source
+    assert "fetch(" not in erasure_source
+
+    assert "ACCOUNT_ERASURE_REQUEST_HEADER" in request_policy_source
+    assert 'fetchSite === "same-origin"' in request_policy_source
+    assert "(!fetchSite ||" not in request_policy_source
+    assert "<AccountErasurePanel" in panel_source
+    assert "NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED" in panel_source
+    assert "NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED=false" in frontend_env
+    assert "ACCOUNT_ERASURE_ENABLED=false" in backend_env
+    assert 'pattern: /^api\\/identity\\/account$/' in proxy_source
+    assert "isTrustedAccountErasureRequest(path, request)" in proxy_source
