@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.2.0",
+  "contract_version": "1.3.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -205,6 +205,9 @@
         "backend/app/main.py",
         "backend/app/schemas.py",
         "backend/tests/test_account_data_export.py",
+        "backend/tests/test_frontend_configuration.py",
+        "frontend/app/api/backend/[...path]/route.ts",
+        "frontend/components/AccountDataExportButton.tsx",
         "docs/ACCOUNT_DATA_EXPORT.md"
       ]
     },

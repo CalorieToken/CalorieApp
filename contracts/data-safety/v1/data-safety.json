@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.7.0",
+  "contract_version": "1.8.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -105,7 +105,7 @@
     ]
   },
   "account_data_export": {
-    "status": "v2-backend-implemented-ui-and-notice-pending",
+    "status": "v2-backend-and-english-ui-implemented-eleven-language-and-notice-review-pending",
     "format": "versioned-json",
     "format_version": "calorieapp-account-data-v1",
     "authenticated_user_only": true,
@@ -117,6 +117,14 @@
     "legacy_authorization_events_without_direct_ownership_included": false,
     "authorization_events_field_reserved_as_empty_list": true,
     "direct_ownership_migration_required_before_authorization_event_inclusion": true,
+    "authenticated_frontend_download_control_implemented": true,
+    "same_origin_backend_proxy_required": true,
+    "download_requires_reviewed_export_version": "calorieapp-account-data-v1",
+    "download_payload_rendered_or_persisted_in_browser_storage": false,
+    "download_sends_data_to_external_service": false,
+    "english_private_file_warning_implemented": true,
+    "english_warning_is_approved_privacy_notice": false,
+    "eleven_language_export_ui_completed": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
     "account_erasure_or_retention_policy_changed": false

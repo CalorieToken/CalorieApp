@@ -15,7 +15,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
     pattern: /^api\/identity\/(login\/(start|status)|callback|logout)$/,
     methods: new Set(["POST"]),
   },
-  { pattern: /^api\/identity\/me$/, methods: new Set(["GET"]) },
+  { pattern: /^api\/identity\/(me|export)$/, methods: new Set(["GET"]) },
 ];
 
 type RouteContext = {
@@ -119,6 +119,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     const responseHeaders = new Headers();
     for (const name of [
       "cache-control",
+      "content-disposition",
       "content-type",
       "pragma",
       "retry-after",
