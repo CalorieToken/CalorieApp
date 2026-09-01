@@ -21,6 +21,7 @@ from .models import (
 
 DEFAULT_BATCH_LIMIT = 500
 MAX_BATCH_LIMIT = 5_000
+STATEMENT_ID_CHUNK_SIZE = 500
 CLEANUP_SCHEMA_VERSION = "calorieapp-auth-transient-cleanup-v1"
 SUPPORTED_DATABASE_BACKENDS = frozenset({"postgresql", "sqlite"})
 
@@ -131,12 +132,29 @@ def _bounded_ids(
     return list(candidates[:batch_limit]), len(candidates) > batch_limit
 
 
+def _id_chunks(ids: list[str]) -> tuple[list[str], ...]:
+    return tuple(
+        ids[start : start + STATEMENT_ID_CHUNK_SIZE]
+        for start in range(0, len(ids), STATEMENT_ID_CHUNK_SIZE)
+    )
+
+
+def _clear_inbound_session_references(session: Session, ids: list[str]) -> None:
+    for chunk in _id_chunks(ids):
+        session.exec(
+            update(AuthSessionDB)
+            .where(AuthSessionDB.replaced_by_session_id.in_(chunk))
+            .values(replaced_by_session_id=None)
+        )
+
+
 def _delete_selected_rows(session: Session, model: Any, ids: list[str]) -> int:
-    if not ids:
-        return 0
-    result = session.exec(delete(model).where(model.id.in_(ids)))
-    rowcount = getattr(result, "rowcount", None)
-    return len(ids) if rowcount is None or rowcount < 0 else int(rowcount)
+    deleted = 0
+    for chunk in _id_chunks(ids):
+        result = session.exec(delete(model).where(model.id.in_(chunk)))
+        rowcount = getattr(result, "rowcount", None)
+        deleted += len(chunk) if rowcount is None or rowcount < 0 else int(rowcount)
+    return deleted
 
 
 def cleanup_authentication_transients(
@@ -181,11 +199,7 @@ def cleanup_authentication_transients(
         else:
             for table_name, model, ids, more_rows_pending in selections:
                 if model is AuthSessionDB and ids:
-                    session.exec(
-                        update(AuthSessionDB)
-                        .where(AuthSessionDB.replaced_by_session_id.in_(ids))
-                        .values(replaced_by_session_id=None)
-                    )
+                    _clear_inbound_session_references(session, ids)
                 deleted_count = _delete_selected_rows(session, model, ids)
                 results.append(
                     TableCleanupResult(

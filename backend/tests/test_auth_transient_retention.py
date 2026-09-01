@@ -7,7 +7,7 @@ import sys
 from datetime import datetime, timedelta
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlmodel import SQLModel, Session, select
 from sqlmodel.pool import StaticPool
 
@@ -15,6 +15,7 @@ import app.auth_transient_retention as retention_module
 import app.auth_transient_retention_cli as cli_module
 from app.auth_transient_retention import (
     RetentionCleanupSafetyError,
+    STATEMENT_ID_CHUNK_SIZE,
     cleanup_authentication_transients,
 )
 from app.auth_transient_retention_cli import validate_execution_authorization
@@ -273,6 +274,96 @@ def test_batch_limit_is_per_table_and_reports_more_rows(retention_engine) -> Non
         ).as_payload()
         assert _table_results(third)["authorizationcode"]["more_rows_pending"] is False
         assert len(session.exec(select(AuthorizationCodeDB)).all()) == 0
+
+
+def test_large_session_batch_chunks_every_in_clause_below_sqlite_limit(
+    retention_engine,
+) -> None:
+    expired_count = 1_001
+    with Session(retention_engine) as session:
+        user = CalorieAppUserDB(id="large-retention-user", status="active")
+        session.add(user)
+        session.add_all(
+            [
+                AuthSessionDB(
+                    id=f"expired-{index:04d}",
+                    session_token_hash=f"{index:064x}",
+                    calorieapp_user_id=user.id,
+                    created_at=NOW - timedelta(hours=2),
+                    last_seen_at=NOW - timedelta(hours=2),
+                    expires_at=NOW - timedelta(seconds=1),
+                )
+                for index in range(expired_count)
+            ]
+        )
+        session.add(
+            AuthSessionDB(
+                id="active-large-batch-session",
+                session_token_hash="f" * 64,
+                calorieapp_user_id=user.id,
+                created_at=NOW,
+                last_seen_at=NOW,
+                expires_at=NOW + timedelta(hours=1),
+                replaced_by_session_id="expired-0000",
+            )
+        )
+        session.commit()
+
+    mutation_parameter_counts: list[tuple[str, int]] = []
+
+    def record_mutation_parameters(
+        _connection: object,
+        _cursor: object,
+        statement: str,
+        parameters: tuple[object, ...],
+        _context: object,
+        _executemany: bool,
+    ) -> None:
+        normalized = statement.lstrip().upper()
+        if normalized.startswith("UPDATE AUTHSESSION"):
+            mutation_parameter_counts.append(("update", len(parameters)))
+        elif normalized.startswith("DELETE FROM AUTHSESSION"):
+            mutation_parameter_counts.append(("delete", len(parameters)))
+
+    event.listen(
+        retention_engine,
+        "before_cursor_execute",
+        record_mutation_parameters,
+    )
+    try:
+        with Session(retention_engine) as session:
+            payload = cleanup_authentication_transients(
+                session,
+                dry_run=False,
+                cutoff=NOW,
+                batch_limit=expired_count,
+            ).as_payload()
+            active = session.get(AuthSessionDB, "active-large-batch-session")
+            assert active is not None
+            assert active.replaced_by_session_id is None
+    finally:
+        event.remove(
+            retention_engine,
+            "before_cursor_execute",
+            record_mutation_parameters,
+        )
+
+    assert payload["selected_total"] == expired_count
+    assert payload["deleted_total"] == expired_count
+    update_counts = [
+        count
+        for operation, count in mutation_parameter_counts
+        if operation == "update"
+    ]
+    delete_counts = [
+        count
+        for operation, count in mutation_parameter_counts
+        if operation == "delete"
+    ]
+    assert len(update_counts) == 3
+    assert len(delete_counts) == 3
+    assert max(update_counts) <= STATEMENT_ID_CHUNK_SIZE + 1
+    assert max(delete_counts) <= STATEMENT_ID_CHUNK_SIZE
 
 
 def test_execute_rolls_back_every_table_when_one_delete_fails(

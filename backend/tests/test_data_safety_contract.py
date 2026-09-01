@@ -230,6 +230,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert cleanup["default_mode"] == "dry-run"
     assert cleanup["default_batch_limit_per_table"] == 500
     assert cleanup["maximum_batch_limit_per_table"] == 5_000
+    assert cleanup["maximum_ids_per_mutation_statement"] == 500
+    assert cleanup["large_batches_chunked_for_sqlite_parameter_safety"] is True
     assert cleanup["supported_database_backends"] == ["postgresql", "sqlite"]
     assert cleanup["atomic_execution_and_full_rollback_on_failure"] is True
     assert cleanup["inbound_session_replacement_references_cleared_before_delete"] is True

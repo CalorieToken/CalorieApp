@@ -28,6 +28,9 @@ The runner:
 - requires a clean, dedicated database session;
 - selects at most 500 rows per table by default and never accepts more than
   5,000 rows per table in one pass;
+- splits every update and deletion into statements containing at most 500 row
+  identifiers, including when a larger per-table batch is requested, so SQLite
+  parameter limits cannot be exceeded;
 - executes all six table mutations in one transaction and rolls all of them
   back if any step fails;
 - emits only table names and aggregate counts, never row identifiers, token

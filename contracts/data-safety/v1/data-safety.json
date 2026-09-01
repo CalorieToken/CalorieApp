@@ -130,6 +130,8 @@
       "default_mode": "dry-run",
       "default_batch_limit_per_table": 500,
       "maximum_batch_limit_per_table": 5000,
+      "maximum_ids_per_mutation_statement": 500,
+      "large_batches_chunked_for_sqlite_parameter_safety": true,
       "supported_database_backends": ["postgresql", "sqlite"],
       "atomic_execution_and_full_rollback_on_failure": true,
       "inbound_session_replacement_references_cleared_before_delete": true,
