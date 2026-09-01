@@ -35,7 +35,9 @@ current English export and erasure components.
   public XRPL records or third-party source data.
 - The selected inactive-account policy is 24 months of inactivity with a
   required 30-day advance warning. Authenticated activity during the warning
-  cancels pending erasure. Warning delivery and automatic enforcement are not
+  cancels pending erasure. A durable activity marker and private-export field
+  are prepared in the repository, but they have not been migrated or proved on
+  staging or production. Warning delivery and automatic enforcement are not
   implemented or enabled.
 - Shorter operational lifetimes continue to apply to authentication
   transients, with a selected ceiling of 30 days after expiry. Complete

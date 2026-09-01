@@ -104,6 +104,7 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert data["export_version"] == "calorieapp-account-data-v1"
     assert data["account"]["user_id"] == user_id
     assert data["account"]["status"] == "active"
+    assert data["account"]["last_authenticated_activity_at"].endswith("Z")
     assert {identity["external_subject"] for identity in data["external_identities"]} == {
         own_subject
     }

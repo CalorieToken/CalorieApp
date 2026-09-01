@@ -20,6 +20,7 @@ from app.schema_migrations import (
     current_revision,
     upgrade_database,
 )
+from app.schema_migrations.versions import v20260901_0012
 
 
 def test_normalize_render_postgresql_url_uses_psycopg_v3() -> None:
@@ -148,7 +149,7 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 11
+        assert count == 12
     finally:
         test_engine.dispose()
 
@@ -285,11 +286,71 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
                 "SELECT applied_at, approval_reference "
                 "FROM calorie_schema_revision ORDER BY revision"
             ).all()
-        assert len(history) == 11
+        assert len(history) == 12
         for applied_at, reference in history:
             applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
             age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()
             assert 0 <= age_seconds < 5
             assert reference == "CHANGE-2026-001"
+    finally:
+        test_engine.dispose()
+
+
+def test_last_authenticated_activity_migration_backfills_latest_known_activity() -> None:
+    test_engine = _memory_engine()
+    try:
+        with test_engine.begin() as connection:
+            connection.exec_driver_sql(
+                """
+                CREATE TABLE calorieappuser (
+                    id VARCHAR PRIMARY KEY,
+                    created_at DATETIME NOT NULL,
+                    updated_at DATETIME NOT NULL,
+                    status VARCHAR NOT NULL
+                )
+                """
+            )
+            connection.exec_driver_sql(
+                """
+                CREATE TABLE authsession (
+                    id VARCHAR PRIMARY KEY,
+                    calorieapp_user_id VARCHAR NOT NULL,
+                    last_seen_at DATETIME NOT NULL
+                )
+                """
+            )
+            connection.exec_driver_sql(
+                """
+                INSERT INTO calorieappuser
+                    (id, created_at, updated_at, status)
+                VALUES
+                    ('with-session', '2026-01-01 10:00:00',
+                     '2026-01-05 10:00:00', 'active'),
+                    ('without-session', '2026-02-01 12:00:00',
+                     '2026-02-05 12:00:00', 'active')
+                """
+            )
+            connection.exec_driver_sql(
+                """
+                INSERT INTO authsession
+                    (id, calorieapp_user_id, last_seen_at)
+                VALUES
+                    ('older', 'with-session', '2026-01-02 10:00:00'),
+                    ('latest', 'with-session', '2026-01-03 11:30:00')
+                """
+            )
+
+            v20260901_0012.upgrade(connection)
+            v20260901_0012.validate(connection)
+
+            rows = connection.exec_driver_sql(
+                "SELECT id, last_authenticated_activity_at "
+                "FROM calorieappuser ORDER BY id"
+            ).all()
+
+        assert [(row[0], str(row[1])) for row in rows] == [
+            ("with-session", "2026-01-03 11:30:00"),
+            ("without-session", "2026-02-01 12:00:00"),
+        ]
     finally:
         test_engine.dispose()

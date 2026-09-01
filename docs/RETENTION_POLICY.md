@@ -22,6 +22,17 @@ this policy record. If a reliable approved warning cannot be delivered, the
 automatic inactive-account path must remain disabled rather than silently
 delete an account.
 
+A repository implementation of the durable account-level
+`last_authenticated_activity_at` anchor is now prepared. It advances
+monotonically when a session is created and whenever a request is successfully
+authenticated, so cleanup of short-lived session rows cannot erase the
+inactivity anchor. Forward migration `20260901_0012` backfills existing
+accounts from their latest retained session activity or, when no session is
+available, account creation. The field is included in the private account
+export. This is prepared code only: no staging or production migration,
+warning delivery, scheduling or inactive-account erasure was activated. See
+`docs/AUTHENTICATED_ACTIVITY_RETENTION_MARKER.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
@@ -52,7 +63,8 @@ boundary and commands are in `docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md`.
 The retention release gate remains partial until all of the following exist and
 are reviewed together:
 
-1. a durable, unambiguous last-authenticated-activity marker;
+1. deployment and provider proof of the prepared durable, unambiguous
+   last-authenticated-activity marker;
 2. a reliable warning mechanism that does not create an unnecessary new
    identity or marketing dataset;
 3. an idempotent, bounded and auditable inactive-account erasure process;

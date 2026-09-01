@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.14.0",
+  "contract_version": "1.15.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -107,6 +107,14 @@
     "inactive_account_retention_months": 24,
     "inactive_account_notice_days": 30,
     "inactive_account_activity_anchor": "last-authenticated-calorieapp-activity",
+    "last_authenticated_activity_marker_repository_status": "prepared-forward-migration-not-deployed",
+    "last_authenticated_activity_marker_is_monotonic": true,
+    "last_authenticated_activity_marker_write_points": [
+      "successful-session-creation",
+      "successful-authenticated-request"
+    ],
+    "existing_account_marker_backfill_source": "latest-auth-session-last-seen-or-account-created-at",
+    "last_authenticated_activity_marker_deployment_and_backfill_proved": false,
     "authenticated_activity_during_notice_cancels_pending_erasure": true,
     "notice_delivery_required_before_inactive_account_erasure": true,
     "inactive_account_notice_delivery_implemented": false,
@@ -165,6 +173,7 @@
     "external_delivery_or_publication_performed": false,
     "security_token_hashes_codes_and_login_state_included": false,
     "identity_food_history_and_directly_owned_authentication_activity_included": true,
+    "durable_last_authenticated_activity_marker_included": true,
     "legacy_authorization_events_without_direct_ownership_included": false,
     "authorization_events_field_reserved_as_empty_list": true,
     "direct_ownership_migration_required_before_authorization_event_inclusion": true,

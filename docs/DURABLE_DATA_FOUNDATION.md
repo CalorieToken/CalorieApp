@@ -81,7 +81,7 @@ until the durable-data and privacy gates pass.
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
 | User export | Authenticated versioned backend and English download UI exist | Add the eleven-language UI and aligned notice |
 | User erasure | Backend and English double-confirmation UI exist and default off; zero-day primary deletion selected | Prove maximum 30-day backup expiry/restore replay, translate and align the notice before activation |
-| Retention | Zero-day erasure and maximum 30-day encrypted-backup boundary selected | Decide inactivity and authentication-transient periods and align the notice |
+| Retention | Zero-day erasure, 30-day encrypted-backup ceiling, 24-month inactivity policy, bounded authentication-transient cleanup and a durable activity-marker migration are prepared | Prove provider migration/backfill, warning delivery, scheduling, restore replay and aligned eleven-language notices before activation |
 
 ## DS-2 implementation order
 

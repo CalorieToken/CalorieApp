@@ -12,7 +12,8 @@ The response is a downloadable JSON document with the stable version identifier
 
 The export contains only records belonging to the authenticated internal user:
 
-- account identifier, status and timestamps;
+- account identifier, status, timestamps and the durable
+  `last_authenticated_activity_at` retention anchor;
 - linked external identities and optional XRPL address;
 - every owned private food-log snapshot;
 - session activity timestamps;

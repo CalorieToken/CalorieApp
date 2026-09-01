@@ -201,8 +201,14 @@ class AccountExportAccount(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+    last_authenticated_activity_at: datetime
 
-    @field_validator("created_at", "updated_at", mode="after")
+    @field_validator(
+        "created_at",
+        "updated_at",
+        "last_authenticated_activity_at",
+        mode="after",
+    )
     @classmethod
     def normalize_account_timestamps(cls, value: datetime) -> datetime:
         return _ensure_utc(value)
