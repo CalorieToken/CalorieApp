@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.2.0"
+    assert contract["contract_version"] == "1.3.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-selected-account-configuration-blocked"
     )
@@ -99,7 +99,7 @@ def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
     review = contract["preconfiguration_review"]
 
     assert review["status"] == (
-        "official-facts-recorded-console-and-operator-approvals-pending"
+        "synthetic-backup-and-exit-selected-console-and-key-custody-pending"
     )
     assert review["eu_region"] == {
         "documented_candidate": "aws-eu-central-1",
@@ -120,9 +120,27 @@ def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
     assert review["billing_and_quota"][
         "automatic_paid_upgrade_disabled_in_live_account"
     ] is False
-    assert review["portable_backup"]["off_provider_destination_selected"] is False
+    backup = review["portable_backup"]
+    assert backup["off_provider_destination_selected"] is True
+    assert backup["selected_destination"] == "github_actions_artifact"
+    assert backup["selection_scope"] == "isolated-synthetic-neon-staging-only"
+    assert backup["artifact_retention_days"] == 30
+    assert backup["client_side_encryption_recipient_configured"] is False
+    assert backup["private_decryption_key_custody_approved"] is False
+    assert backup["plaintext_artifact_upload_allowed"] is False
+    assert backup["artifact_upload_implemented_or_performed"] is False
+    assert backup["real_user_or_production_data_allowed"] is False
+    assert backup["production_backup_destination_selected"] is False
     assert review["portable_backup"]["credentials_or_keys_may_be_committed"] is False
-    assert review["provider_exit"]["distinct_postgresql_target_selected"] is False
+    provider_exit = review["provider_exit"]
+    assert provider_exit["distinct_postgresql_target_selected"] is True
+    assert provider_exit["selected_target"] == "github_hosted_runner_postgresql_16"
+    assert provider_exit["target_is_outside_neon"] is True
+    assert provider_exit["target_is_ephemeral"] is True
+    assert provider_exit["synthetic_restore_runbook_approved"] is True
+    assert provider_exit["provider_exit_restore_implemented_or_performed"] is False
+    assert provider_exit["real_user_or_production_data_allowed"] is False
+    assert provider_exit["production_exit_target_selected"] is False
 
 
 def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
@@ -180,7 +198,7 @@ def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
 
 def test_provider_facts_use_official_https_sources_only() -> None:
     contract = _load_contract()
-    allowed_hosts = {"neon.com", "supabase.com", "render.com"}
+    allowed_hosts = {"docs.github.com", "neon.com", "supabase.com", "render.com"}
     source_groups = [
         candidate["official_sources"]
         for candidate in contract["database_candidates"]
@@ -211,6 +229,12 @@ def test_real_provider_work_remains_release_blocked() -> None:
         "confirm DPA execution or account acceptance and subscribe to subprocessor changes"
         in blockers
     )
+    assert (
+        "configure the client-side encryption recipient and approve private-key custody without committing key material"
+        in blockers
+    )
+    assert not any("approve an encrypted off-provider backup destination" in item for item in blockers)
+    assert not any("approve a distinct PostgreSQL provider-exit target" in item for item in blockers)
     assert "human review before any real user data" in contract[
         "release_blocking_after_provider_selection"
     ]
@@ -242,7 +266,7 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "neon-synthetic-staging-selected-preconfiguration-review-required"
+        "neon-synthetic-staging-selected-console-and-key-custody-required"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"

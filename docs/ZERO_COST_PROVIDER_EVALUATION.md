@@ -89,8 +89,18 @@ needed metrics and hard-limit controls.
 Neon also documents portable `pg_dump` export and PostgreSQL restore. CalorieApp
 will encrypt a dump on the client side before it leaves the controlled runner;
 no dump, plaintext data, database credential or encryption key may enter Git.
-The independent storage destination, retention schedule, distinct PostgreSQL
-exit target and restore runbook still require operator selection.
+On 2026-09-01, the operator selected a GitHub-only synthetic lane: a client-side
+encrypted Actions artifact retained for at most 30 days, with restoration into
+a disposable PostgreSQL 16 service on a GitHub-hosted runner outside Neon. This
+uses the existing repository automation and creates no second database account.
+The selection applies only to isolated synthetic staging. It does not select a
+production backup destination or a durable alternate production provider.
+
+No artifact or key was created by this selection. Before the first provider
+experiment, the encryption recipient and private-key custody must be approved.
+Plaintext upload is forbidden and no credential, private key or dump may enter
+Git. The exact procedure is recorded in
+`docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
 
 Still required:
 
@@ -102,8 +112,8 @@ Still required:
 3. Confirm in the live account that no payment method is present, no automatic
    paid upgrade is possible, and the documented quota metrics and hard limits
    are available on Free.
-4. Approve an encrypted off-provider backup destination and retention schedule.
-5. Approve a distinct PostgreSQL exit target and synthetic restore runbook.
+4. Configure the client-side encryption recipient and approve private-key
+   custody without committing any key material.
 
 Only then may a provider account or project be configured. The first live tests
 remain synthetic: migration/readiness, restart, actual provider redeploy,

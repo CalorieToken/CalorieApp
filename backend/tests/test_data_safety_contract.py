@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.11.0"
+    assert contract["contract_version"] == "1.12.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -806,7 +806,7 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     drill = backup["synthetic_ci_logical_restore"]
 
     assert backup["status"] == (
-        "synthetic-logical-restore-proof-configured-production-design-pending"
+        "synthetic-staging-backup-exit-design-selected-implementation-and-production-pending"
     )
     assert drill["automated_per_merge_candidate"] is True
     assert drill["loopback_only"] is True
@@ -817,6 +817,22 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert drill["schema_head_and_owner_links_verified"] is True
     assert drill["archive_persisted_or_uploaded"] is False
     assert drill["production_or_staging_data_allowed"] is False
+    design = backup["synthetic_neon_staging_design"]
+    assert design == {
+        "operator_selected": True,
+        "selection_date": "2026-09-01",
+        "approval_reference": (
+            "operator-decision-2026-09-01-github-synthetic-backup-exit"
+        ),
+        "encrypted_destination": "github_actions_artifact",
+        "artifact_retention_days": 30,
+        "exit_target": "github_hosted_runner_postgresql_16",
+        "target_is_ephemeral_and_outside_neon": True,
+        "runbook": "docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md",
+        "encryption_recipient_and_private_key_custody_approved": False,
+        "implemented_or_performed": False,
+        "real_user_or_production_data_allowed": False,
+    }
     assert backup["encrypted_production_backup_selected"] is False
     assert backup["provider_staging_restore_completed"] is False
     assert backup["maximum_encrypted_backup_retention_days"] == 30
