@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from sqlalchemy import event, inspect
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import SQLModel, Session, create_engine, select
 
 from app.models import (
@@ -304,6 +304,48 @@ def test_assertion_correction_prevents_forks_and_idempotency_reuse(tmp_path) -> 
             assert forked.value.reason == "source_assertion_already_corrected"
             assert forked.value.status_code == 409
             assert len(session.exec(select(FoodAttributeAssertionDB)).all()) == 2
+    finally:
+        engine.dispose()
+
+
+def test_assertion_table_rejects_forked_direct_writes(tmp_path) -> None:
+    engine = _engine(tmp_path / "correction-direct-write-fork.db")
+    try:
+        with Session(engine) as session:
+            predecessor, _, _, _, _ = _seed_predecessor(session)
+            first_correction = FoodAttributeAssertionDB(
+                food_product_id=predecessor.food_product_id,
+                source_record_id=predecessor.source_record_id,
+                attribute_key="nutrition.energy",
+                value="105",
+                unit_or_value_type="kcal-per-100g",
+                observed_or_effective_at=CORRECTED_AT,
+                supersedes_assertion_id=predecessor.id,
+            )
+            session.add(first_correction)
+            session.commit()
+
+            forked_correction = FoodAttributeAssertionDB(
+                food_product_id=predecessor.food_product_id,
+                source_record_id=predecessor.source_record_id,
+                attribute_key="nutrition.energy",
+                value="106",
+                unit_or_value_type="kcal-per-100g",
+                observed_or_effective_at=CORRECTED_AT + timedelta(minutes=1),
+                supersedes_assertion_id=predecessor.id,
+            )
+            session.add(forked_correction)
+            with pytest.raises(IntegrityError):
+                session.commit()
+            session.rollback()
+
+            children = session.exec(
+                select(FoodAttributeAssertionDB).where(
+                    FoodAttributeAssertionDB.supersedes_assertion_id
+                    == predecessor.id
+                )
+            ).all()
+            assert [item.id for item in children] == [first_correction.id]
     finally:
         engine.dispose()
 

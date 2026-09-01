@@ -153,6 +153,24 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
         test_engine.dispose()
 
 
+def test_schema_readiness_requires_correction_predecessor_uniqueness() -> None:
+    test_engine = _memory_engine()
+    try:
+        upgrade_database(test_engine)
+        with test_engine.begin() as connection:
+            connection.exec_driver_sql(
+                "DROP INDEX ux_food_assertion_correction_predecessor"
+            )
+
+        with pytest.raises(
+            RuntimeError,
+            match="Assertion correction uniqueness indexes are missing",
+        ):
+            assert_database_at_head(test_engine)
+    finally:
+        test_engine.dispose()
+
+
 def test_legacy_food_log_is_preserved_and_receives_owner_foreign_key() -> None:
     test_engine = _memory_engine()
     try:

@@ -26,6 +26,11 @@ food_assertion_correction_lineage_index = sa.Index(
     food_attribute_assertion.c.supersedes_assertion_id,
     unique=True,
 )
+food_assertion_correction_predecessor_index = sa.Index(
+    "ux_food_assertion_correction_predecessor",
+    food_attribute_assertion.c.supersedes_assertion_id,
+    unique=True,
+)
 food_attribute_assertion_correction_audit = sa.Table(
     "food_attribute_assertion_correction_audit",
     metadata,
@@ -101,6 +106,10 @@ sa.Index(
 
 def upgrade(connection: Connection) -> None:
     food_assertion_correction_lineage_index.create(connection, checkfirst=True)
+    food_assertion_correction_predecessor_index.create(
+        connection,
+        checkfirst=True,
+    )
     food_attribute_assertion_correction_audit.create(connection, checkfirst=True)
 
 
@@ -186,8 +195,15 @@ def validate(connection: Connection) -> None:
         item["name"]: (tuple(item["column_names"]), bool(item["unique"]))
         for item in inspector.get_indexes(food_attribute_assertion.name)
     }
-    if assertion_indexes.get("ux_food_assertion_correction_lineage") != (
-        ("id", "supersedes_assertion_id"),
-        True,
-    ):
-        raise RuntimeError("Assertion correction lineage index is missing")
+    expected_assertion_indexes = {
+        "ux_food_assertion_correction_lineage": (
+            ("id", "supersedes_assertion_id"),
+            True,
+        ),
+        "ux_food_assertion_correction_predecessor": (
+            ("supersedes_assertion_id",),
+            True,
+        ),
+    }
+    if not expected_assertion_indexes.items() <= assertion_indexes.items():
+        raise RuntimeError("Assertion correction uniqueness indexes are missing")

@@ -226,6 +226,11 @@ class FoodAttributeAssertionDB(SQLModel, table=True):
             "supersedes_assertion_id",
             unique=True,
         ),
+        Index(
+            "ux_food_assertion_correction_predecessor",
+            "supersedes_assertion_id",
+            unique=True,
+        ),
         ForeignKeyConstraint(
             (
                 "supersedes_assertion_id",
