@@ -41,3 +41,7 @@ humans separately approve and verify:
 
 No live data, external provider, production deployment or provider-specific
 retention configuration is created by this CI proof.
+
+The separately selected, still-unimplemented Neon synthetic staging lane is
+documented in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`. It does not weaken
+the loopback-only guard in this per-merge CI proof.

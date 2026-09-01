@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.11.0",
+  "contract_version": "1.12.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -176,7 +176,7 @@
     "production_enabled_or_data_mutation_performed": false
   },
   "backup_and_recovery": {
-    "status": "synthetic-logical-restore-proof-configured-production-design-pending",
+    "status": "synthetic-staging-backup-exit-design-selected-implementation-and-production-pending",
     "encrypted_at_rest_and_in_transit_required": true,
     "restricted_operator_access_required": true,
     "automated_backup_required": true,
@@ -194,6 +194,19 @@
       "schema_head_and_owner_links_verified": true,
       "archive_persisted_or_uploaded": false,
       "production_or_staging_data_allowed": false
+    },
+    "synthetic_neon_staging_design": {
+      "operator_selected": true,
+      "selection_date": "2026-09-01",
+      "approval_reference": "operator-decision-2026-09-01-github-synthetic-backup-exit",
+      "encrypted_destination": "github_actions_artifact",
+      "artifact_retention_days": 30,
+      "exit_target": "github_hosted_runner_postgresql_16",
+      "target_is_ephemeral_and_outside_neon": true,
+      "runbook": "docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md",
+      "encryption_recipient_and_private_key_custody_approved": false,
+      "implemented_or_performed": false,
+      "real_user_or_production_data_allowed": false
     },
     "encrypted_production_backup_selected": false,
     "provider_staging_restore_completed": false,
@@ -489,7 +502,7 @@
     "free_tier_expiry_may_define_retention": false,
     "no_additional_cost_exit_plan_required_before_public_onboarding": true,
     "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
-    "provider_shortlist_status": "neon-synthetic-staging-selected-preconfiguration-review-required",
+    "provider_shortlist_status": "neon-synthetic-staging-selected-console-and-key-custody-required",
     "provider_evidence_reviewed_on": "2026-09-01",
     "provider_evidence_revalidate_by": "2026-11-30",
     "provider_selected": true,
