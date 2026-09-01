@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isTrustedPrivateExportRequest } from "@/lib/privateExportRequest";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ detail: "Not found" }, { status: 404 });
   }
 
-  if (!isTrustedMutationRequest(request)) {
+  if (
+    !isTrustedMutationRequest(request) ||
+    !isTrustedPrivateExportRequest(path, request)
+  ) {
     return NextResponse.json({ detail: "Origin not allowed" }, { status: 403 });
   }
 

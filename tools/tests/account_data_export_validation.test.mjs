@@ -8,12 +8,17 @@ const COMPONENT_PATH = new URL(
   "../../frontend/components/AccountDataExportButton.tsx",
   import.meta.url
 );
+const PRIVATE_EXPORT_REQUEST_PATH = new URL(
+  "../../frontend/lib/privateExportRequest.ts",
+  import.meta.url
+);
 const requireFromFrontend = createRequire(
   new URL("../../frontend/package.json", import.meta.url)
 );
 
 async function loadAccountDataExportModule(globals = {}) {
   const typescript = requireFromFrontend("typescript");
+  const privateExportRequestModule = await loadPrivateExportRequestModule();
   const source = await readFile(COMPONENT_PATH, "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: {
@@ -45,6 +50,9 @@ async function loadAccountDataExportModule(globals = {}) {
           waitForBackendReady() {},
         };
       }
+      if (specifier === "@/lib/privateExportRequest") {
+        return privateExportRequestModule;
+      }
       throw new Error(`Unexpected require: ${specifier}`);
     },
     ...globals,
@@ -52,6 +60,36 @@ async function loadAccountDataExportModule(globals = {}) {
 
   vm.runInContext(compiled, context);
   return module.exports;
+}
+
+async function loadPrivateExportRequestModule() {
+  const typescript = requireFromFrontend("typescript");
+  const source = await readFile(PRIVATE_EXPORT_REQUEST_PATH, "utf8");
+  const compiled = typescript.transpileModule(source, {
+    compilerOptions: {
+      module: typescript.ModuleKind.CommonJS,
+      target: typescript.ScriptTarget.ES2022,
+    },
+  }).outputText;
+
+  const module = { exports: {} };
+  const context = vm.createContext({
+    exports: module.exports,
+    module,
+  });
+
+  vm.runInContext(compiled, context);
+  return module.exports;
+}
+
+function requestWithHeaders(values = {}) {
+  return {
+    headers: {
+      get(name) {
+        return values[name.toLowerCase()] ?? null;
+      },
+    },
+  };
 }
 
 test("private export validation fails closed on malformed reviewed fields", async () => {
@@ -86,6 +124,52 @@ test("private export request uses the shared bounded timeout", async () => {
   const source = await readFile(COMPONENT_PATH, "utf8");
 
   assert.equal(source.includes("70_000"), false);
+  assert.equal(source.includes("PRIVATE_EXPORT_REQUEST_HEADER"), true);
+  assert.equal(source.includes("PRIVATE_EXPORT_REQUEST_VALUE"), true);
+});
+
+test("private export proxy rejects cross-site navigation and missing intent", async () => {
+  const { isTrustedPrivateExportRequest } =
+    await loadPrivateExportRequestModule();
+  const privateExportPath = "api/identity/export";
+  const intentHeader = { "x-calorieapp-request": "private-export" };
+
+  assert.equal(isTrustedPrivateExportRequest("health", requestWithHeaders()), true);
+  assert.equal(
+    isTrustedPrivateExportRequest(
+      privateExportPath,
+      requestWithHeaders({ "sec-fetch-site": "same-origin", ...intentHeader })
+    ),
+    true
+  );
+  assert.equal(
+    isTrustedPrivateExportRequest(
+      privateExportPath,
+      requestWithHeaders(intentHeader)
+    ),
+    true
+  );
+  assert.equal(
+    isTrustedPrivateExportRequest(
+      privateExportPath,
+      requestWithHeaders({ "sec-fetch-site": "cross-site", ...intentHeader })
+    ),
+    false
+  );
+  assert.equal(
+    isTrustedPrivateExportRequest(
+      privateExportPath,
+      requestWithHeaders({ "sec-fetch-site": "same-site", ...intentHeader })
+    ),
+    false
+  );
+  assert.equal(
+    isTrustedPrivateExportRequest(
+      privateExportPath,
+      requestWithHeaders({ "sec-fetch-site": "same-origin" })
+    ),
+    false
+  );
 });
 
 test("private export keeps its object URL alive long enough to start", async () => {

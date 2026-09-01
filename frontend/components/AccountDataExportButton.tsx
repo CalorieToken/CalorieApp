@@ -7,6 +7,10 @@ import {
   backendUnavailableMessage,
   waitForBackendReady,
 } from "@/lib/backendRequest";
+import {
+  PRIVATE_EXPORT_REQUEST_HEADER,
+  PRIVATE_EXPORT_REQUEST_VALUE,
+} from "@/lib/privateExportRequest";
 
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v1";
@@ -85,7 +89,10 @@ export function AccountDataExportButton({
         `${BACKEND_BASE_URL}/api/identity/export`,
         {
           cache: "no-store",
-          headers: { Accept: "application/json" },
+          headers: {
+            Accept: "application/json",
+            [PRIVATE_EXPORT_REQUEST_HEADER]: PRIVATE_EXPORT_REQUEST_VALUE,
+          },
           signal: controller.signal,
         }
       );
