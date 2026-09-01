@@ -1,0 +1,149 @@
+{
+  "contract_id": "calorieapp.privacy-notice-alignment",
+  "contract_version": "1.0.0",
+  "status": "canonical-facts-and-english-consequence-copy-aligned-publication-pending",
+  "release_state": "blocked",
+  "legal_certification_claimed": false,
+  "publication": {
+    "authorized": false,
+    "published_by_this_change": false,
+    "complete_privacy_notice_approved": false,
+    "controller_identity_and_contact_approved": false,
+    "processing_purposes_and_legal_bases_approved": false,
+    "special_category_and_dpia_need_assessed": false,
+    "processors_recipients_and_transfer_safeguards_approved": false,
+    "data_subject_request_contact_route_approved": false,
+    "supervisory_authority_information_approved": false,
+    "consent_withdrawal_information_approved": false,
+    "automated_decision_making_and_profiling_information_approved": false,
+    "data_provision_requirements_and_consequences_approved": false,
+    "child_user_and_age_assurance_assessment_completed": false,
+    "provider_specific_storage_and_backup_wording_approved": false,
+    "independent_legal_privacy_review_completed": false,
+    "eleven_language_review_completed": false
+  },
+  "required_locales": [
+    "en",
+    "zh-Hans",
+    "hi",
+    "es",
+    "ar",
+    "fr",
+    "bn",
+    "pt",
+    "id",
+    "ur",
+    "nl"
+  ],
+  "notice_scope_data_classes": {
+    "source": "contracts/data-safety/v1/data-safety.json",
+    "required_ids": [
+      "food_history",
+      "identity_link",
+      "authentication_transient",
+      "food_search_query",
+      "voluntary_profile",
+      "donation_contact",
+      "xrpl_transaction_reference",
+      "calorie_record_fingerprint"
+    ]
+  },
+  "canonical_current_facts": {
+    "private_account_export": {
+      "authenticated_user_only": true,
+      "included_categories": [
+        "internal-account-identifier-and-status",
+        "linked-external-identity-and-optional-xrpl-address",
+        "owned-private-food-log-history",
+        "authentication-session-timing",
+        "directly-owned-login-handoff-activity"
+      ],
+      "security_secrets_excluded": true,
+      "unowned_legacy_authorization_activity_withheld": true,
+      "external_delivery_performed": false,
+      "download_changes_or_deletes_server_data": false
+    },
+    "direct_account_erasure": {
+      "enabled_by_default": false,
+      "primary_store_erasure_immediate_after_confirmed_request": true,
+      "app_recovery_window_days": 0,
+      "maximum_encrypted_backup_retention_days": 30,
+      "excluded_external_systems": [
+        "wordpress-account",
+        "xaman-account",
+        "public-xrpl-data",
+        "third-party-source-data"
+      ],
+      "backup_schedule_and_restore_replay_proved": false
+    },
+    "inactive_account_retention": {
+      "automatic_enforcement_enabled": false,
+      "inactivity_months": 24,
+      "advance_notice_days": 30,
+      "authenticated_activity_during_notice_cancels_pending_erasure": true,
+      "warning_delivery_implemented": false
+    },
+    "authentication_transients": {
+      "complete_cleanup_enforcement_enabled": false,
+      "shorter_operational_lifetimes_continue_to_apply": true,
+      "maximum_days_after_expiry": 30
+    },
+    "decentralized_boundary": {
+      "personal_data_on_public_blockchain_allowed": false,
+      "personal_data_on_public_ipfs_allowed": false
+    }
+  },
+  "current_english_product_copy": {
+    "status": "factual-consequence-copy-aligned-not-a-complete-privacy-notice",
+    "complete_privacy_notice": false,
+    "private_export": {
+      "source": "frontend/components/AccountDataExportButton.tsx",
+      "required_plain_language_facts": [
+        "Security tokens are excluded.",
+        "Some older authorization activity remains withheld when ownership cannot be proven.",
+        "CalorieApp does not send the file anywhere else",
+        "This download does not delete your CalorieApp data."
+      ]
+    },
+    "account_erasure": {
+      "source": "frontend/components/AccountErasurePanel.tsx",
+      "required_plain_language_facts": [
+        "There is no recovery window.",
+        "Encrypted backups may retain a protected copy for at most 30 days.",
+        "Separate WordPress or Xaman accounts, public XRPL data, and third-party source data are not deleted.",
+        "Download your private export first if you want a copy."
+      ]
+    }
+  },
+  "official_reference_requirements": [
+    {
+      "id": "gdpr-article-9-special-categories",
+      "source": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "recorded_requirement": "Whether nutrition or profile processing involves health or another special category, and which Article 9 condition applies if it does, requires explicit assessment before publication or activation."
+    },
+    {
+      "id": "gdpr-article-12-clear-language",
+      "source": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "recorded_requirement": "Information must be concise, transparent, intelligible, easily accessible, and use clear and plain language."
+    },
+    {
+      "id": "gdpr-article-13-transparency-content",
+      "source": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "recorded_requirement": "A complete notice must state the storage period or criteria and explain applicable data-subject rights and complaint routes."
+    },
+    {
+      "id": "gdpr-articles-15-and-17-access-and-erasure",
+      "source": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "recorded_requirement": "Access and erasure information must preserve the scope, conditions, and exceptions of the applicable rights."
+    }
+  ],
+  "activation_guards": {
+    "release_remains_blocked": true,
+    "account_erasure_flags_changed": false,
+    "inactive_account_deletion_enabled": false,
+    "authentication_transient_cleanup_enabled": false,
+    "migration_performed": false,
+    "deployment_performed": false,
+    "live_personal_data_mutated": false
+  }
+}

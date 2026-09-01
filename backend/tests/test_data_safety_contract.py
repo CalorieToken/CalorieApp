@@ -12,6 +12,10 @@ def _load_json(name: str) -> dict:
     return json.loads((CONTRACT_DIR / name).read_text(encoding="utf-8"))
 
 
+def _normalized_copy(path: Path) -> str:
+    return " ".join(path.read_text(encoding="utf-8").replace("&apos;", "'").split())
+
+
 def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
@@ -204,6 +208,98 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     )
     assert retention["provider_and_restore_replay_proof_pending"] is True
     assert retention["unresolved_release_decisions"] == []
+
+
+def test_privacy_notice_alignment_records_facts_without_authorizing_publication() -> None:
+    alignment = _load_json("privacy-notice-alignment.json")
+    safety = _load_json("data-safety.json")
+    publication = alignment["publication"]
+    facts = alignment["canonical_current_facts"]
+    guards = alignment["activation_guards"]
+
+    assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
+    assert alignment["contract_version"] == "1.0.0"
+    assert alignment["release_state"] == "blocked"
+    assert alignment["legal_certification_claimed"] is False
+    assert publication["authorized"] is False
+    assert publication["published_by_this_change"] is False
+    assert publication["complete_privacy_notice_approved"] is False
+    assert publication["controller_identity_and_contact_approved"] is False
+    assert publication["processing_purposes_and_legal_bases_approved"] is False
+    assert publication["special_category_and_dpia_need_assessed"] is False
+    assert publication["processors_recipients_and_transfer_safeguards_approved"] is False
+    assert publication["data_subject_request_contact_route_approved"] is False
+    assert publication["supervisory_authority_information_approved"] is False
+    assert publication["consent_withdrawal_information_approved"] is False
+    assert (
+        publication["automated_decision_making_and_profiling_information_approved"]
+        is False
+    )
+    assert publication["data_provision_requirements_and_consequences_approved"] is False
+    assert publication["child_user_and_age_assurance_assessment_completed"] is False
+    assert publication["provider_specific_storage_and_backup_wording_approved"] is False
+    assert publication["independent_legal_privacy_review_completed"] is False
+    assert publication["eleven_language_review_completed"] is False
+
+    assert facts["private_account_export"]["authenticated_user_only"] is True
+    assert facts["private_account_export"]["security_secrets_excluded"] is True
+    assert facts["private_account_export"]["external_delivery_performed"] is False
+    assert facts["private_account_export"]["download_changes_or_deletes_server_data"] is False
+    assert facts["direct_account_erasure"]["enabled_by_default"] is False
+    assert facts["direct_account_erasure"][
+        "primary_store_erasure_immediate_after_confirmed_request"
+    ] == safety["account_erasure"][
+        "primary_store_erasure_immediate_after_confirmed_request"
+    ]
+    assert facts["direct_account_erasure"]["app_recovery_window_days"] == (
+        safety["account_erasure"]["recovery_window_days"]
+    )
+    assert facts["direct_account_erasure"]["maximum_encrypted_backup_retention_days"] == (
+        safety["account_erasure"]["maximum_encrypted_backup_retention_days"]
+    )
+    assert facts["direct_account_erasure"][
+        "backup_schedule_and_restore_replay_proved"
+    ] == safety["account_erasure"]["backup_schedule_and_restore_replay_proved"]
+    assert facts["inactive_account_retention"]["automatic_enforcement_enabled"] is False
+    assert facts["inactive_account_retention"]["inactivity_months"] == (
+        safety["retention"]["inactive_account_retention_months"]
+    )
+    assert facts["inactive_account_retention"]["advance_notice_days"] == (
+        safety["retention"]["inactive_account_notice_days"]
+    )
+    assert facts["authentication_transients"]["maximum_days_after_expiry"] == (
+        safety["retention"][
+            "authentication_transient_security_retention_max_days_after_expiry"
+        ]
+    )
+    assert facts["decentralized_boundary"]["personal_data_on_public_blockchain_allowed"] is False
+    assert facts["decentralized_boundary"]["personal_data_on_public_ipfs_allowed"] is False
+
+    assert set(alignment["notice_scope_data_classes"]["required_ids"]) == {
+        item["id"] for item in safety["data_classes"]
+    }
+
+    locale_registry = json.loads(
+        (ROOT / "frontend" / "config" / "locales.json").read_text(encoding="utf-8")
+    )
+    assert alignment["required_locales"] == [
+        locale["tag"] for locale in locale_registry["locales"]
+    ]
+
+    for copy_boundary in alignment["current_english_product_copy"].values():
+        if not isinstance(copy_boundary, dict) or "source" not in copy_boundary:
+            continue
+        source = _normalized_copy(ROOT / copy_boundary["source"])
+        for required_fact in copy_boundary["required_plain_language_facts"]:
+            assert required_fact in source
+
+    assert guards["release_remains_blocked"] is True
+    assert guards["account_erasure_flags_changed"] is False
+    assert guards["inactive_account_deletion_enabled"] is False
+    assert guards["authentication_transient_cleanup_enabled"] is False
+    assert guards["migration_performed"] is False
+    assert guards["deployment_performed"] is False
+    assert guards["live_personal_data_mutated"] is False
 
 
 def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
@@ -644,7 +740,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.5.0"
+    assert matrix["contract_version"] == "1.6.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -684,7 +780,13 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]["evidence"]
     assert gates["retention_policy"]["status"] == "partial"
     assert "docs/RETENTION_POLICY.md" in gates["retention_policy"]["evidence"]
-    assert gates["privacy_notice_alignment"]["status"] == "not_started"
+    assert gates["privacy_notice_alignment"]["status"] == "partial"
+    assert "contracts/data-safety/v1/privacy-notice-alignment.json" in gates[
+        "privacy_notice_alignment"
+    ]["evidence"]
+    assert "docs/PRIVACY_NOTICE_ALIGNMENT.md" in gates[
+        "privacy_notice_alignment"
+    ]["evidence"]
     assert matrix["release_state"] == "blocked"
 
 

@@ -77,4 +77,6 @@ third party or publish private history. The separately implemented account-
 erasure endpoint remains disabled by default and fails closed on matching
 legacy authorization rows without direct ownership; see `ACCOUNT_ERASURE.md`.
 The selected but not yet enforced lifecycle is defined in
-`RETENTION_POLICY.md`.
+`RETENTION_POLICY.md`. Canonical facts for the future complete privacy notice
+and the still-closed legal, provider, translation and publication fields are
+recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.

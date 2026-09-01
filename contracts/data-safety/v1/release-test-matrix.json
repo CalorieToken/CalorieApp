@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.5.0",
+  "contract_version": "1.6.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -240,9 +240,15 @@
     },
     {
       "id": "privacy_notice_alignment",
-      "status": "not_started",
+      "status": "partial",
       "release_blocking": true,
-      "evidence": []
+      "evidence": [
+        "contracts/data-safety/v1/privacy-notice-alignment.json",
+        "docs/PRIVACY_NOTICE_ALIGNMENT.md",
+        "frontend/components/AccountDataExportButton.tsx",
+        "frontend/components/AccountErasurePanel.tsx",
+        "backend/tests/test_data_safety_contract.py"
+      ]
     },
     {
       "id": "no_personal_data_in_decentralized_public_storage",
