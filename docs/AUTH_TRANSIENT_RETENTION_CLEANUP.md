@@ -14,10 +14,12 @@ One cleanup pass covers these six tables:
 - `authsession`; and
 - `bridgeauthnonce`.
 
-Expired rows are eligible at their shorter operational expiry. Revoked sessions
-are also eligible before their scheduled expiry, matching the existing session
-lifecycle. The runner clears any inbound `replaced_by_session_id` reference
-before deleting an eligible session.
+Expired rows are eligible at their shorter operational expiry. A revoked session
+is eligible only when its `revoked_at` value is on or before the fixed run
+cutoff. Session batches are ordered by the earliest applicable expiry or
+revocation timestamp so revoked sessions with a future expiry cannot be starved
+by a continuing expired-session backlog. The runner clears any inbound
+`replaced_by_session_id` reference before deleting an eligible session.
 
 ## Safety boundary
 

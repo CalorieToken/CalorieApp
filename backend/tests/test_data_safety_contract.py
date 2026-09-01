@@ -227,6 +227,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     ]
     assert cleanup["expired_rows_eligible_at_operational_expiry"] is True
     assert cleanup["revoked_sessions_eligible_before_expiry"] is True
+    assert cleanup["revoked_sessions_require_revocation_at_or_before_cutoff"] is True
+    assert cleanup["auth_session_order_uses_earliest_expiry_or_revocation"] is True
     assert cleanup["default_mode"] == "dry-run"
     assert cleanup["default_batch_limit_per_table"] == 500
     assert cleanup["maximum_batch_limit_per_table"] == 5_000

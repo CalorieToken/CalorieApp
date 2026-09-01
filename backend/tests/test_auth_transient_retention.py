@@ -240,6 +240,84 @@ def test_execute_deletes_only_eligible_rows_and_clears_inbound_session_reference
         assert repeated["deleted_total"] == 0
 
 
+def test_future_revocation_is_not_eligible_before_fixed_cutoff(
+    retention_engine,
+) -> None:
+    with Session(retention_engine) as session:
+        user = CalorieAppUserDB(id="future-revocation-user", status="active")
+        session.add(user)
+        session.add(
+            AuthSessionDB(
+                id="future-revocation-session",
+                session_token_hash="d" * 64,
+                calorieapp_user_id=user.id,
+                created_at=NOW,
+                last_seen_at=NOW,
+                expires_at=NOW + timedelta(hours=2),
+                revoked_at=NOW + timedelta(hours=1),
+            )
+        )
+        session.commit()
+
+    with Session(retention_engine) as session:
+        payload = cleanup_authentication_transients(
+            session,
+            dry_run=True,
+            cutoff=NOW,
+            batch_limit=10,
+        ).as_payload()
+
+    auth_sessions = _table_results(payload)["authsession"]
+    assert auth_sessions["selected"] == 0
+    assert auth_sessions["deleted"] == 0
+
+
+def test_revoked_session_order_prevents_future_expiry_starvation(
+    retention_engine,
+) -> None:
+    with Session(retention_engine) as session:
+        user = CalorieAppUserDB(id="revocation-order-user", status="active")
+        session.add(user)
+        session.add(
+            AuthSessionDB(
+                id="revoked-before-expired-session",
+                session_token_hash="e" * 64,
+                calorieapp_user_id=user.id,
+                created_at=NOW - timedelta(days=3),
+                last_seen_at=NOW - timedelta(days=3),
+                expires_at=NOW + timedelta(days=1),
+                revoked_at=NOW - timedelta(days=2),
+            )
+        )
+        session.add(
+            AuthSessionDB(
+                id="recently-expired-session",
+                session_token_hash="f" * 64,
+                calorieapp_user_id=user.id,
+                created_at=NOW - timedelta(hours=2),
+                last_seen_at=NOW - timedelta(hours=2),
+                expires_at=NOW - timedelta(hours=1),
+            )
+        )
+        session.commit()
+
+    with Session(retention_engine) as session:
+        payload = cleanup_authentication_transients(
+            session,
+            dry_run=False,
+            cutoff=NOW,
+            batch_limit=1,
+        ).as_payload()
+
+    auth_sessions = _table_results(payload)["authsession"]
+    assert auth_sessions["selected"] == 1
+    assert auth_sessions["deleted"] == 1
+    assert auth_sessions["more_rows_pending"] is True
+    with Session(retention_engine) as session:
+        assert session.get(AuthSessionDB, "revoked-before-expired-session") is None
+        assert session.get(AuthSessionDB, "recently-expired-session") is not None
+
+
 def test_batch_limit_is_per_table_and_reports_more_rows(retention_engine) -> None:
     with Session(retention_engine) as session:
         for index in range(3):

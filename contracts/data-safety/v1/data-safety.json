@@ -127,6 +127,8 @@
       ],
       "expired_rows_eligible_at_operational_expiry": true,
       "revoked_sessions_eligible_before_expiry": true,
+      "revoked_sessions_require_revocation_at_or_before_cutoff": true,
+      "auth_session_order_uses_earliest_expiry_or_revocation": true,
       "default_mode": "dry-run",
       "default_batch_limit_per_table": 500,
       "maximum_batch_limit_per_table": 5000,

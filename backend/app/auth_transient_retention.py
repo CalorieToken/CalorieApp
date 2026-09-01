@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import delete, or_, update
+from sqlalchemy import and_, case, delete, or_, update
 from sqlmodel import Session, select
 
 from .models import (
@@ -118,9 +118,25 @@ def _eligibility(model: Any, cutoff: datetime) -> Any:
     if model is AuthSessionDB:
         return or_(
             AuthSessionDB.expires_at <= cutoff,
-            AuthSessionDB.revoked_at.is_not(None),
+            AuthSessionDB.revoked_at <= cutoff,
         )
     return model.expires_at <= cutoff
+
+
+def _ordering(model: Any) -> tuple[Any, Any]:
+    if model is AuthSessionDB:
+        earliest_eligibility = case(
+            (
+                and_(
+                    AuthSessionDB.revoked_at.is_not(None),
+                    AuthSessionDB.revoked_at < AuthSessionDB.expires_at,
+                ),
+                AuthSessionDB.revoked_at,
+            ),
+            else_=AuthSessionDB.expires_at,
+        )
+        return earliest_eligibility, AuthSessionDB.id
+    return model.expires_at, model.id
 
 
 def _bounded_ids(
@@ -132,7 +148,7 @@ def _bounded_ids(
     candidates = session.exec(
         select(model.id)
         .where(_eligibility(model, cutoff))
-        .order_by(model.expires_at, model.id)
+        .order_by(*_ordering(model))
         .limit(batch_limit + 1)
     ).all()
     return list(candidates[:batch_limit]), len(candidates) > batch_limit
