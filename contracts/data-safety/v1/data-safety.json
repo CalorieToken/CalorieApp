@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.4.0",
+  "contract_version": "1.5.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -300,7 +300,7 @@
     "backup_separation_exception": "allowed only when required for recoverability and documented before use"
   },
   "food_data_sources": {
-    "status": "bounded-source-assertion-ingest-implemented-no-new-source-enabled",
+    "status": "terminal-source-assertion-moderation-implemented-no-new-source-enabled",
     "contract": "contracts/food-data/v1/source-registry.json",
     "current_adapter": "open_food_facts",
     "current_adapter_catalog_persistence_enabled": false,
@@ -311,7 +311,8 @@
       "food_product",
       "food_product_source_link",
       "food_attribute_assertion",
-      "food_attribute_assertion_ingest_audit"
+      "food_attribute_assertion_ingest_audit",
+      "food_attribute_assertion_moderation_audit"
     ],
     "internal_source_record_ingest_service_implemented": true,
     "internal_source_record_terminal_moderation_service_implemented": true,
@@ -325,8 +326,10 @@
     "source_assertion_ingest_defaults_to_quarantine": true,
     "source_assertion_ingest_atomic_minimal_audit_implemented": true,
     "source_assertion_ingest_per_source_budget_implemented": true,
+    "source_assertion_moderation_service_implemented": true,
+    "source_assertion_moderation_expected_version_and_audit_implemented": true,
+    "source_assertion_validation_rechecks_policy_and_active_lineage": true,
     "source_assertion_correction_service_implemented": false,
-    "source_assertion_moderation_service_implemented": false,
     "public_source_assertion_ingest_endpoint_enabled": false,
     "public_catalog_read_endpoint_enabled": false,
     "complete_source_assertion_mutation_flow_implemented": false,
@@ -364,6 +367,7 @@
     "source_record_terminal_moderation_and_audit_implemented": true,
     "source_assertion_ingest_and_audit_implemented": true,
     "source_assertion_ingest_per_source_budget_implemented": true,
+    "source_assertion_terminal_moderation_and_audit_implemented": true,
     "complete_contribution_mutation_flow_implemented": false,
     "capacity_alerts_and_onboarding_pause_required": true,
     "provider_neutral_capacity_signal_implemented": true,

@@ -1,7 +1,7 @@
 # Bounded source-assertion ingest
 
 Status: implemented for an internal service only. No public catalog-write route,
-assertion correction, assertion moderation, source activation or production
+assertion correction, public moderation, source activation or production
 migration is enabled.
 
 ## Admission boundary
@@ -67,8 +67,9 @@ values. Production insert-only privileges remain a separate deployment proof.
 
 This slice does not expose an HTTP endpoint, persist Open Food Facts search
 results, enable community contributions, add a second source, choose a provider,
-or implement assertion correction or moderation. The complete contribution
-mutation gate therefore remains open.
+or implement assertion correction. Terminal internal moderation is a separate
+service documented in `SOURCE_ASSERTION_MODERATION.md`; the complete
+contribution mutation gate therefore remains open.
 
 The change adds no provider, paid service, recurring upstream request, extra
 GitHub Actions job, production migration or deployment.

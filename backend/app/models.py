@@ -308,6 +308,53 @@ class FoodAttributeAssertionIngestAuditDB(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class FoodAttributeAssertionModerationAuditDB(SQLModel, table=True):
+    """Minimal append-only evidence for one terminal assertion decision."""
+
+    __tablename__ = "food_attribute_assertion_moderation_audit"
+    __table_args__ = (
+        UniqueConstraint(
+            "assertion_id",
+            name="uq_food_assertion_moderation_audit_assertion",
+        ),
+        UniqueConstraint(
+            "idempotency_key",
+            name="uq_food_assertion_moderation_audit_idempotency",
+        ),
+        CheckConstraint(
+            "previous_status = 'quarantined'",
+            name="ck_food_assertion_moderation_audit_previous_status",
+        ),
+        CheckConstraint(
+            "new_status IN ('validated', 'rejected')",
+            name="ck_food_assertion_moderation_audit_new_status",
+        ),
+        CheckConstraint(
+            "expected_version > 0 AND resulting_version = expected_version + 1",
+            name="ck_food_assertion_moderation_audit_versions",
+        ),
+        CheckConstraint(
+            "authorization_scope = 'catalog:source-assertion:moderate'",
+            name="ck_food_assertion_moderation_audit_scope",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    assertion_id: str = Field(
+        foreign_key="food_attribute_assertion.id",
+        index=True,
+    )
+    idempotency_key: str = Field(max_length=128)
+    expected_version: int = Field(gt=0)
+    resulting_version: int = Field(gt=1)
+    previous_status: str = Field(max_length=20)
+    new_status: str = Field(max_length=20)
+    moderator_reference: str = Field(max_length=120)
+    authorization_scope: str = Field(max_length=80)
+    reason_code: str = Field(max_length=80)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
 class CalorieAppUserDB(SQLModel, table=True):
     """Internal CalorieApp user identity. Immutable identifier."""
 

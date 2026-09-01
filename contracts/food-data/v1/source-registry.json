@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.food-data-source-registry",
-  "contract_version": "1.5.0",
-  "status": "bounded-validated-source-assertion-ingest-implemented-no-public-source-enabled",
+  "contract_version": "1.6.0",
+  "status": "terminal-source-assertion-moderation-implemented-no-public-source-enabled",
   "purpose": "Allow reviewed food-data sources to coexist without making one provider the canonical model or weakening provenance, privacy or licence controls.",
   "principles": {
     "open_food_facts_is_one_adapter_not_canonical_model": true,
@@ -113,6 +113,21 @@
         "resulting_assertion_version",
         "submitter_reference",
         "authorization_scope",
+        "created_at"
+      ]
+    },
+    "food_attribute_assertion_moderation_audit": {
+      "purpose": "Preserve minimal append-only evidence for one terminal source-assertion moderation decision.",
+      "required_fields": [
+        "assertion_id",
+        "idempotency_key",
+        "expected_version",
+        "resulting_version",
+        "previous_status",
+        "new_status",
+        "moderator_reference",
+        "authorization_scope",
+        "reason_code",
         "created_at"
       ]
     },
@@ -264,8 +279,22 @@
     "source_assertion_ingest_audit_inserted_atomically": true,
     "source_assertion_ingest_audit_is_insert_only_in_service": true,
     "source_assertion_ingest_audit_allows_free_text_payload_email_or_ip": false,
+    "source_assertion_moderation_service_implemented": true,
+    "source_assertion_moderation_authorization_scope": "catalog:source-assertion:moderate",
+    "source_assertion_moderation_requires_expected_version": true,
+    "source_assertion_moderation_requires_idempotency_key": true,
+    "source_assertion_validation_rechecks_content_policy": true,
+    "source_assertion_validation_requires_current_active_reviewed_lineage": true,
+    "source_assertion_moderation_transitions": [
+      "quarantined-to-validated",
+      "quarantined-to-rejected"
+    ],
+    "source_assertion_moderation_terminal_status_rewrite_allowed": false,
+    "source_assertion_moderation_audit_inserted_atomically": true,
+    "source_assertion_moderation_audit_is_insert_only_in_service": true,
+    "source_assertion_moderation_audit_allows_free_text_payload_email_or_ip": false,
+    "source_assertion_moderation_public_endpoint_enabled": false,
     "source_assertion_correction_service_implemented": false,
-    "source_assertion_moderation_service_implemented": false,
     "public_source_assertion_ingest_endpoint_enabled": false,
     "read_only_licensed_assertion_evidence_export_implemented": true,
     "complete_source_assertion_mutation_flow_implemented": false,
@@ -306,7 +335,8 @@
       "food_product",
       "food_product_source_link",
       "food_attribute_assertion",
-      "food_attribute_assertion_ingest_audit"
+      "food_attribute_assertion_ingest_audit",
+      "food_attribute_assertion_moderation_audit"
     ],
     "remaining_catalog_tables": [],
     "internal_source_record_ingest_service_implemented": true,
@@ -317,8 +347,8 @@
     "internal_source_assertion_ingest_service_implemented": true,
     "source_assertion_content_policy_implemented": true,
     "source_assertion_ingest_defaults_to_quarantine": true,
+    "source_assertion_moderation_service_implemented": true,
     "source_assertion_correction_service_implemented": false,
-    "source_assertion_moderation_service_implemented": false,
     "public_source_assertion_ingest_endpoint_enabled": false,
     "public_catalog_read_endpoint_enabled": false,
     "general_source_record_update_or_delete_service_implemented": false,

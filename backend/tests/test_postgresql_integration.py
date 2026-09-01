@@ -32,6 +32,7 @@ from app.models import (
     ExternalIdentityDB,
     FoodAttributeAssertionDB,
     FoodAttributeAssertionIngestAuditDB,
+    FoodAttributeAssertionModerationAuditDB,
     FoodLogDB,
     FoodProductDB,
     FoodProductSourceLinkDB,
@@ -64,6 +65,11 @@ from app.services.source_assertion_ingest import (
     SOURCE_ASSERTION_INGEST_SCOPE,
     SourceAssertionIngestRejected,
     ingest_source_assertion,
+)
+from app.services.source_assertion_moderation import (
+    SOURCE_ASSERTION_MODERATION_SCOPE,
+    SourceAssertionModerationRejected,
+    moderate_source_assertion,
 )
 from app.services.source_catalog import ingest_source_record
 from app.services.source_moderation import (
@@ -233,6 +239,30 @@ def _source_assertion_ingest_process_attempt(
     return ("created" if result.created else "duplicate", None, None)
 
 
+def _source_assertion_moderation_process_attempt(
+    args: tuple[str, str, int],
+) -> tuple[str, int | None, str | None]:
+    raw_url, assertion_id, index = args
+    worker_engine = create_engine(raw_url, pool_pre_ping=True)
+    try:
+        with Session(worker_engine) as session:
+            result = moderate_source_assertion(
+                session,
+                assertion_id=assertion_id,
+                target_status="validated" if index % 2 == 0 else "rejected",
+                expected_version=1,
+                idempotency_key=f"concurrent-assertion-moderation-{index}",
+                moderator_reference="moderator-ci",
+                authorization_scope=SOURCE_ASSERTION_MODERATION_SCOPE,
+                reason_code="synthetic-quality-reviewed",
+            )
+    except SourceAssertionModerationRejected as exc:
+        return ("rejected", exc.status_code, exc.reason)
+    finally:
+        worker_engine.dispose()
+    return ("moderated" if result.created else "duplicate", None, None)
+
+
 def _required_postgresql_test_url() -> str:
     raw_url = os.getenv(POSTGRES_TEST_URL_ENV, "").strip()
     if not raw_url:
@@ -332,6 +362,9 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_product_source_link" in inspect(postgres_engine).get_table_names()
     assert "food_attribute_assertion" in inspect(postgres_engine).get_table_names()
     assert "food_attribute_assertion_ingest_audit" in inspect(
+        postgres_engine
+    ).get_table_names()
+    assert "food_attribute_assertion_moderation_audit" in inspect(
         postgres_engine
     ).get_table_names()
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
@@ -764,6 +797,106 @@ def test_postgresql_source_assertion_budget_is_atomic_across_processes(
         "quarantined"
     }
     assert {assertion.verification_version for assertion in assertions} == {1}
+
+
+def test_postgresql_source_assertion_moderation_is_atomic_across_processes(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-SOURCE-ASSERTION-MODERATION",
+    )
+    raw_url = _required_postgresql_test_url()
+    source = FoodSourceDB(
+        source_key=f"assertion-moderation-{uuid4().hex}",
+        source_category="open-dataset",
+        operator_name="Synthetic CI Assertion Moderation Source",
+        status="enabled",
+        licence_id="synthetic-test-only",
+        terms_reference="https://example.test/terms",
+        attribution_text="Synthetic CI data",
+        record_limit=2,
+        assertion_limit=2,
+    )
+    product = FoodProductDB(status="active")
+    record = FoodSourceRecordDB(
+        source_id=source.id,
+        external_record_id="moderated-assertion-record",
+        source_version_or_content_digest="version-1",
+        verification_status="validated",
+        verification_version=2,
+    )
+    with Session(postgres_engine) as session:
+        session.add_all([source, product])
+        session.commit()
+        session.add(record)
+        session.commit()
+        session.add(
+            FoodProductSourceLinkDB(
+                food_product_id=product.id,
+                source_record_id=record.id,
+                match_method="synthetic-reviewed-match",
+                match_confidence=1,
+                review_status="validated",
+            )
+        )
+        session.commit()
+        assertion_id = ingest_source_assertion(
+            session,
+            food_product_id=product.id,
+            source_record_id=record.id,
+            expected_source_record_version=2,
+            idempotency_key="assertion-moderation-ingest",
+            submitter_reference="adapter-synthetic-ci",
+            authorization_scope=SOURCE_ASSERTION_INGEST_SCOPE,
+            attribute_key="nutrition.energy",
+            value="100",
+            unit_or_value_type="kcal-per-100g",
+            observed_or_effective_at=ASSERTION_OBSERVED_AT,
+        ).assertion.id
+
+    decision_count = 12
+    arguments = [
+        (raw_url, assertion_id, index) for index in range(decision_count)
+    ]
+    context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=4, mp_context=context) as executor:
+        results = list(
+            executor.map(_source_assertion_moderation_process_attempt, arguments)
+        )
+
+    assert [result[0] for result in results].count("moderated") == 1
+    rejected = [result for result in results if result[0] == "rejected"]
+    assert len(rejected) == decision_count - 1
+    assert {result[1] for result in rejected} == {409}
+    assert {result[2] for result in rejected} == {
+        "source_assertion_version_conflict"
+    }
+
+    admitted_index = next(
+        index for index, result in enumerate(results) if result[0] == "moderated"
+    )
+    expected_status = "validated" if admitted_index % 2 == 0 else "rejected"
+    with Session(postgres_engine) as session:
+        duplicate = moderate_source_assertion(
+            session,
+            assertion_id=assertion_id,
+            target_status=expected_status,
+            expected_version=1,
+            idempotency_key=f"concurrent-assertion-moderation-{admitted_index}",
+            moderator_reference="moderator-ci",
+            authorization_scope=SOURCE_ASSERTION_MODERATION_SCOPE,
+            reason_code="synthetic-quality-reviewed",
+        )
+        assertion = session.get(FoodAttributeAssertionDB, assertion_id)
+        audits = session.exec(
+            select(FoodAttributeAssertionModerationAuditDB)
+        ).all()
+    assert duplicate.created is False
+    assert assertion is not None
+    assert assertion.verification_status == expected_status
+    assert assertion.verification_version == 2
+    assert len(audits) == 1
 
 
 def test_postgresql_identity_start_limits_are_atomic_across_processes(

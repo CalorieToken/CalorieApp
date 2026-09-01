@@ -69,7 +69,11 @@
         "backend/app/services/source_assertion_ingest.py",
         "backend/app/schema_migrations/versions/v20260831_0009.py",
         "backend/tests/test_source_assertion_ingest.py",
-        "docs/SOURCE_ASSERTION_INGEST.md"
+        "docs/SOURCE_ASSERTION_INGEST.md",
+        "backend/app/services/source_assertion_moderation.py",
+        "backend/app/schema_migrations/versions/v20260901_0010.py",
+        "backend/tests/test_source_assertion_moderation.py",
+        "docs/SOURCE_ASSERTION_MODERATION.md"
       ]
     },
     {
@@ -115,6 +119,7 @@
         "backend/app/schema_migrations/versions/v20260831_0007.py",
         "backend/app/schema_migrations/versions/v20260831_0008.py",
         "backend/app/schema_migrations/versions/v20260831_0009.py",
+        "backend/app/schema_migrations/versions/v20260901_0010.py",
         "backend/tests/test_database.py"
       ]
     },
