@@ -159,6 +159,20 @@ def _table_results(payload: dict[str, object]) -> dict[str, dict[str, object]]:
     return {str(table["table"]): table for table in tables}
 
 
+def _configure_cli_database(
+    monkeypatch: pytest.MonkeyPatch,
+    selected_engine: object,
+) -> None:
+    def validate_test_environment(*_args: object, **_kwargs: object) -> str:
+        return "test"
+
+    monkeypatch.setattr(
+        cli_module,
+        "_load_database_runtime",
+        lambda: (selected_engine, False, validate_test_environment),
+    )
+
+
 def test_dry_run_covers_all_six_tables_without_writing_or_exposing_ids(
     retention_engine,
 ) -> None:
@@ -570,8 +584,7 @@ def test_cli_defaults_to_dry_run_and_outputs_aggregates_only(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setattr(cli_module, "engine", retention_engine)
-    monkeypatch.setattr(cli_module, "_DATABASE_URL_WAS_EXPLICIT", False)
+    _configure_cli_database(monkeypatch, retention_engine)
     monkeypatch.setattr(cli_module, "assert_database_at_head", lambda engine: None)
     monkeypatch.setenv("CALORIEAPP_ENV", "test")
     monkeypatch.delenv(cli_module.EXECUTION_ENABLE_ENV, raising=False)
@@ -591,8 +604,7 @@ def test_cli_blocks_execute_before_database_access_when_not_enabled(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setattr(cli_module, "engine", retention_engine)
-    monkeypatch.setattr(cli_module, "_DATABASE_URL_WAS_EXPLICIT", False)
+    _configure_cli_database(monkeypatch, retention_engine)
     monkeypatch.setenv("CALORIEAPP_ENV", "test")
     monkeypatch.delenv(cli_module.EXECUTION_ENABLE_ENV, raising=False)
     monkeypatch.setattr(
@@ -619,3 +631,40 @@ def test_cli_blocks_execute_before_database_access_when_not_enabled(
         "dry_run": None,
         "reason_code": "execution-not-authorized",
     }
+
+
+@pytest.mark.parametrize("failure_stage", ["load", "validate"])
+def test_cli_redacts_database_runtime_and_validation_failures(
+    retention_engine,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    failure_stage: str,
+) -> None:
+    sensitive_detail = "postgresql://operator:secret@example.test/calorieapp"
+
+    def fail_validation(*_args: object, **_kwargs: object) -> str:
+        raise ValueError(sensitive_detail)
+
+    def load_database_runtime() -> tuple[object, bool, object]:
+        if failure_stage == "load":
+            raise ValueError(sensitive_detail)
+        return retention_engine, False, fail_validation
+
+    monkeypatch.setattr(
+        cli_module,
+        "_load_database_runtime",
+        load_database_runtime,
+    )
+    monkeypatch.setattr(sys, "argv", ["auth-transient-retention"])
+
+    assert cli_module.main() == 2
+
+    output = capsys.readouterr()
+    assert json.loads(output.out) == {
+        "schema_version": "calorieapp-auth-transient-cleanup-v1",
+        "status": "blocked",
+        "dry_run": None,
+        "reason_code": "database-environment-invalid",
+    }
+    assert sensitive_detail not in output.out
+    assert output.err == ""

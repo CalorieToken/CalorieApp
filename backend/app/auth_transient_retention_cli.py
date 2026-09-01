@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from collections.abc import Callable
 
+from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from .auth_transient_retention import (
@@ -15,15 +17,22 @@ from .auth_transient_retention import (
     RetentionCleanupSafetyError,
     cleanup_authentication_transients,
 )
-from .database import (
-    _DATABASE_URL_WAS_EXPLICIT,
-    engine,
-    validate_database_environment,
-)
 from .schema_migrations import assert_database_at_head
 
 
 EXECUTION_ENABLE_ENV = "CALORIEAPP_AUTH_TRANSIENT_CLEANUP_ENABLED"
+
+
+def _load_database_runtime() -> tuple[Engine, bool, Callable[..., str]]:
+    """Load database configuration inside the CLI's redacted failure boundary."""
+
+    from .database import (  # noqa: PLC0415
+        _DATABASE_URL_WAS_EXPLICIT,
+        engine,
+        validate_database_environment,
+    )
+
+    return engine, _DATABASE_URL_WAS_EXPLICIT, validate_database_environment
 
 
 def _batch_limit(value: str) -> int:
@@ -103,12 +112,15 @@ def main() -> int:
     dry_run = not args.execute
 
     try:
-        environment = validate_database_environment(
-            str(engine.url),
-            os.getenv("CALORIEAPP_ENV"),
-            database_url_was_explicit=_DATABASE_URL_WAS_EXPLICIT,
+        selected_engine, database_url_was_explicit, validator = (
+            _load_database_runtime()
         )
-    except RuntimeError:
+        environment = validator(
+            str(selected_engine.url),
+            os.getenv("CALORIEAPP_ENV"),
+            database_url_was_explicit=database_url_was_explicit,
+        )
+    except Exception:
         print(
             json.dumps(
                 _failure_payload("database-environment-invalid"),
@@ -136,8 +148,8 @@ def main() -> int:
             return 2
 
     try:
-        assert_database_at_head(engine)
-        with Session(engine) as session:
+        assert_database_at_head(selected_engine)
+        with Session(selected_engine) as session:
             result = cleanup_authentication_transients(
                 session,
                 dry_run=dry_run,
