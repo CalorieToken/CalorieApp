@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.6.0",
+  "contract_version": "1.7.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -234,7 +234,11 @@
       "evidence": [
         "contracts/data-safety/v1/data-safety.json",
         "docs/RETENTION_POLICY.md",
+        "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md",
         "docs/ACCOUNT_ERASURE.md",
+        "backend/app/auth_transient_retention.py",
+        "backend/app/auth_transient_retention_cli.py",
+        "backend/tests/test_auth_transient_retention.py",
         "backend/tests/test_data_safety_contract.py"
       ]
     },

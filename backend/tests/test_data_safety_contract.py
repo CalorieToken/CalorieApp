@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.13.0"
+    assert contract["contract_version"] == "1.14.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -213,6 +213,37 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
         retention["complete_authentication_transient_cleanup_enforcement_implemented"]
         is False
     )
+    cleanup = retention["authentication_transient_cleanup"]
+    assert cleanup["implementation_status"] == (
+        "bounded-runner-implemented-scheduling-and-production-activation-pending"
+    )
+    assert cleanup["covered_tables"] == [
+        "authorizationcode",
+        "pendingloginstate",
+        "pendingloginlocale",
+        "originloginhandoff",
+        "authsession",
+        "bridgeauthnonce",
+    ]
+    assert cleanup["expired_rows_eligible_at_operational_expiry"] is True
+    assert cleanup["revoked_sessions_eligible_before_expiry"] is True
+    assert cleanup["default_mode"] == "dry-run"
+    assert cleanup["default_batch_limit_per_table"] == 500
+    assert cleanup["maximum_batch_limit_per_table"] == 5_000
+    assert cleanup["supported_database_backends"] == ["postgresql", "sqlite"]
+    assert cleanup["atomic_execution_and_full_rollback_on_failure"] is True
+    assert cleanup["inbound_session_replacement_references_cleared_before_delete"] is True
+    assert cleanup["aggregate_only_output"] is True
+    assert (
+        cleanup["record_identifiers_secrets_or_network_signals_in_output_allowed"]
+        is False
+    )
+    assert cleanup["dedicated_clean_database_session_required"] is True
+    assert cleanup["explicit_non_production_enablement_required"] is True
+    assert cleanup["explicit_approval_reference_required"] is True
+    assert cleanup["scheduler_configured"] is False
+    assert cleanup["production_execution_enabled"] is False
+    assert cleanup["real_data_mutation_performed"] is False
     assert retention["provider_and_restore_replay_proof_pending"] is True
     assert retention["unresolved_release_decisions"] == []
 
@@ -751,7 +782,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.6.0"
+    assert matrix["contract_version"] == "1.7.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -791,6 +822,18 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]["evidence"]
     assert gates["retention_policy"]["status"] == "partial"
     assert "docs/RETENTION_POLICY.md" in gates["retention_policy"]["evidence"]
+    assert "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/auth_transient_retention.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/auth_transient_retention_cli.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_auth_transient_retention.py" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"
     assert "contracts/data-safety/v1/privacy-notice-alignment.json" in gates[
         "privacy_notice_alignment"
