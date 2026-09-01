@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import json
 import tempfile
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from secrets import token_urlsafe
 
 import pytest
@@ -449,7 +449,34 @@ class TestIdentityEndpoints:
         assert response.status_code == 401
 
     def test_me_with_valid_session(self, client: TestClient):
-        user = CalorieAppUserDB(status="active")
+        old_activity = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=1)
+        user = CalorieAppUserDB(
+            status="active",
+            last_authenticated_activity_at=old_activity,
+        )
+        with Session(db_module.engine) as session:
+            session.add(user)
+            session.commit()
+            user_id = user.id
+
+        _set_authenticated_cookie(client, user_id)
+        request_started_at = datetime.now(UTC).replace(tzinfo=None)
+
+        response = client.get("/api/identity/me")
+        assert response.status_code == 200
+        assert response.json()["user_id"] == user_id
+
+        with Session(db_module.engine) as session:
+            recorded_user = session.get(CalorieAppUserDB, user_id)
+            assert recorded_user is not None
+            assert recorded_user.last_authenticated_activity_at >= request_started_at
+
+    def test_authenticated_activity_marker_never_regresses(self, client: TestClient):
+        future_activity = datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=1)
+        user = CalorieAppUserDB(
+            status="active",
+            last_authenticated_activity_at=future_activity,
+        )
         with Session(db_module.engine) as session:
             session.add(user)
             session.commit()
@@ -459,7 +486,52 @@ class TestIdentityEndpoints:
 
         response = client.get("/api/identity/me")
         assert response.status_code == 200
-        assert response.json()["user_id"] == user_id
+
+        with Session(db_module.engine) as session:
+            recorded_user = session.get(CalorieAppUserDB, user_id)
+            assert recorded_user is not None
+            assert recorded_user.last_authenticated_activity_at == future_activity
+
+    def test_authenticated_activity_marker_normalizes_offset_to_naive_utc(
+        self,
+        client: TestClient,
+    ):
+        initial_activity = datetime(2026, 9, 1, 9, 0, 0)
+        observed_at = datetime(
+            2026,
+            9,
+            1,
+            14,
+            30,
+            0,
+            tzinfo=timezone(timedelta(hours=2)),
+        )
+        user = CalorieAppUserDB(
+            status="active",
+            last_authenticated_activity_at=initial_activity,
+        )
+        with Session(db_module.engine) as session:
+            session.add(user)
+            session.commit()
+            user_id = user.id
+
+            main_module._record_authenticated_activity(
+                session,
+                user_id,
+                observed_at,
+            )
+            session.commit()
+            session.refresh(user)
+
+            assert user.last_authenticated_activity_at == datetime(
+                2026,
+                9,
+                1,
+                12,
+                30,
+                0,
+            )
+            assert user.last_authenticated_activity_at.tzinfo is None
 
     def test_me_rejects_unknown_token(self, client: TestClient):
         client.cookies.set(SESSION_COOKIE_NAME, token_urlsafe(SESSION_TOKEN_BYTES))
@@ -1171,6 +1243,9 @@ class TestIdentityCallbackFlow:
                 select(AuthSessionDB).where(AuthSessionDB.calorieapp_user_id == payload["user_id"])
             ).first()
             assert auth_session is not None
+            user = session.get(CalorieAppUserDB, payload["user_id"])
+            assert user is not None
+            assert user.last_authenticated_activity_at >= auth_session.created_at
 
     def test_callback_pauses_only_new_account_at_configured_capacity(
         self, client: TestClient, monkeypatch: pytest.MonkeyPatch

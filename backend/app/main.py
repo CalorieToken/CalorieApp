@@ -15,7 +15,7 @@ from fastapi import Cookie, Depends, FastAPI, HTTPException, Query, Request, Res
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import HTTPError
 from pydantic import ValidationError
-from sqlalchemy import delete
+from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
@@ -546,6 +546,30 @@ def _revoke_auth_session(
     session.add(auth_session)
 
 
+def _record_authenticated_activity(
+    session: Session,
+    user_id: str,
+    observed_at: datetime,
+) -> None:
+    """Advance the durable account marker without allowing clock regression."""
+
+    normalized_observed_at = (
+        observed_at.astimezone(UTC).replace(tzinfo=None)
+        if observed_at.tzinfo is not None
+        else observed_at
+    )
+    session.exec(
+        update(CalorieAppUserDB)
+        .where(CalorieAppUserDB.id == user_id)
+        .where(
+            CalorieAppUserDB.last_authenticated_activity_at
+            < normalized_observed_at
+        )
+        .values(last_authenticated_activity_at=normalized_observed_at)
+        .execution_options(synchronize_session=False)
+    )
+
+
 def _create_auth_session(
     session: Session,
     user_id: str,
@@ -581,6 +605,7 @@ def _create_auth_session(
                 replaced_by_session_id=auth_session.id,
             )
 
+        _record_authenticated_activity(session, user_id, now)
         session.commit()
         session.refresh(auth_session)
         return session_token, auth_session
@@ -626,7 +651,9 @@ def _resolve_auth_session(
 
     auth_session.last_seen_at = now
     session.add(auth_session)
+    _record_authenticated_activity(session, user.id, now)
     session.commit()
+    session.refresh(user)
 
     return user, auth_session, "ok"
 
@@ -1101,6 +1128,9 @@ def identity_export(
             status=current_user.status,
             created_at=current_user.created_at,
             updated_at=current_user.updated_at,
+            last_authenticated_activity_at=(
+                current_user.last_authenticated_activity_at
+            ),
         ),
         external_identities=[
             AccountExportExternalIdentity(

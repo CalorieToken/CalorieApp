@@ -200,6 +200,7 @@ _required_food_log_columns = {
 # Later forward migrations may extend a baseline table. Keep this list explicit
 # so the baseline validator still rejects every unrelated extra column.
 _allowed_later_columns = {
+    "calorieappuser": {"last_authenticated_activity_at"},
     "pendingloginstate": {"client_id"},
 }
 

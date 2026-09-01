@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.privacy-notice-alignment",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "status": "canonical-facts-and-english-consequence-copy-aligned-publication-pending",
   "release_state": "blocked",
   "legal_certification_claimed": false,
@@ -80,6 +80,8 @@
       "automatic_enforcement_enabled": false,
       "inactivity_months": 24,
       "advance_notice_days": 30,
+      "activity_marker_repository_implementation_prepared": true,
+      "activity_marker_deployed_or_backfilled": false,
       "authenticated_activity_during_notice_cancels_pending_erasure": true,
       "warning_delivery_implemented": false
     },

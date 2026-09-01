@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.14.0"
+    assert contract["contract_version"] == "1.15.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -156,6 +156,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export[
         "identity_food_history_and_directly_owned_authentication_activity_included"
     ] is True
+    assert export["durable_last_authenticated_activity_marker_included"] is True
     assert export[
         "legacy_authorization_events_without_direct_ownership_included"
     ] is False
@@ -198,6 +199,21 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert retention["inactive_account_notice_days"] == 30
     assert retention["inactive_account_activity_anchor"] == (
         "last-authenticated-calorieapp-activity"
+    )
+    assert retention["last_authenticated_activity_marker_repository_status"] == (
+        "prepared-forward-migration-not-deployed"
+    )
+    assert retention["last_authenticated_activity_marker_is_monotonic"] is True
+    assert retention["last_authenticated_activity_marker_write_points"] == [
+        "successful-session-creation",
+        "successful-authenticated-request",
+    ]
+    assert retention["existing_account_marker_backfill_source"] == (
+        "latest-auth-session-last-seen-or-account-created-at"
+    )
+    assert (
+        retention["last_authenticated_activity_marker_deployment_and_backfill_proved"]
+        is False
     )
     assert retention["authenticated_activity_during_notice_cancels_pending_erasure"] is True
     assert retention["notice_delivery_required_before_inactive_account_erasure"] is True
@@ -262,7 +278,7 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.0.0"
+    assert alignment["contract_version"] == "1.1.0"
     assert alignment["release_state"] == "blocked"
     assert alignment["legal_certification_claimed"] is False
     assert publication["authorized"] is False
@@ -311,6 +327,12 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert facts["inactive_account_retention"]["advance_notice_days"] == (
         safety["retention"]["inactive_account_notice_days"]
     )
+    assert facts["inactive_account_retention"][
+        "activity_marker_repository_implementation_prepared"
+    ] is True
+    assert facts["inactive_account_retention"][
+        "activity_marker_deployed_or_backfilled"
+    ] is False
     assert facts["authentication_transients"]["maximum_days_after_expiry"] == (
         safety["retention"][
             "authentication_transient_security_retention_max_days_after_expiry"
@@ -788,7 +810,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.7.0"
+    assert matrix["contract_version"] == "1.8.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -828,6 +850,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]["evidence"]
     assert gates["retention_policy"]["status"] == "partial"
     assert "docs/RETENTION_POLICY.md" in gates["retention_policy"]["evidence"]
+    assert "docs/AUTHENTICATED_ACTIVITY_RETENTION_MARKER.md" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md" in gates[
         "retention_policy"
     ]["evidence"]
@@ -835,6 +860,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/app/auth_transient_retention_cli.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/schema_migrations/versions/v20260901_0012.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_identity_endpoints.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_auth_transient_retention.py" in gates[

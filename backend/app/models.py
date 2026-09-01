@@ -435,6 +435,10 @@ class CalorieAppUserDB(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
     status: str = Field(default="active")
+    last_authenticated_activity_at: datetime = Field(
+        default_factory=utc_now,
+        index=True,
+    )
 
 
 class ExternalIdentityDB(SQLModel, table=True):
