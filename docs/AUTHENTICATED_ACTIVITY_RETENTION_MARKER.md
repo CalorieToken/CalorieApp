@@ -17,8 +17,10 @@ indexed account-level anchor. It advances at two reviewed write points:
 - successful resolution of an authenticated request.
 
 The database update is conditional, so an older concurrent observation cannot
-move the marker backwards. The field is included in the authenticated user's
-private account export.
+move the marker backwards. A timezone-aware observation is first converted to
+the database convention of naive UTC, including observations carrying a
+non-UTC offset. The field is included in the authenticated user's private
+account export.
 
 ## Existing-account backfill
 

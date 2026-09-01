@@ -553,11 +553,19 @@ def _record_authenticated_activity(
 ) -> None:
     """Advance the durable account marker without allowing clock regression."""
 
+    normalized_observed_at = (
+        observed_at.astimezone(UTC).replace(tzinfo=None)
+        if observed_at.tzinfo is not None
+        else observed_at
+    )
     session.exec(
         update(CalorieAppUserDB)
         .where(CalorieAppUserDB.id == user_id)
-        .where(CalorieAppUserDB.last_authenticated_activity_at < observed_at)
-        .values(last_authenticated_activity_at=observed_at)
+        .where(
+            CalorieAppUserDB.last_authenticated_activity_at
+            < normalized_observed_at
+        )
+        .values(last_authenticated_activity_at=normalized_observed_at)
         .execution_options(synchronize_session=False)
     )
 

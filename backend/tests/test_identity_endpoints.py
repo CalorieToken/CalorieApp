@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import json
 import tempfile
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from secrets import token_urlsafe
 
 import pytest
@@ -491,6 +491,47 @@ class TestIdentityEndpoints:
             recorded_user = session.get(CalorieAppUserDB, user_id)
             assert recorded_user is not None
             assert recorded_user.last_authenticated_activity_at == future_activity
+
+    def test_authenticated_activity_marker_normalizes_offset_to_naive_utc(
+        self,
+        client: TestClient,
+    ):
+        initial_activity = datetime(2026, 9, 1, 9, 0, 0)
+        observed_at = datetime(
+            2026,
+            9,
+            1,
+            14,
+            30,
+            0,
+            tzinfo=timezone(timedelta(hours=2)),
+        )
+        user = CalorieAppUserDB(
+            status="active",
+            last_authenticated_activity_at=initial_activity,
+        )
+        with Session(db_module.engine) as session:
+            session.add(user)
+            session.commit()
+            user_id = user.id
+
+            main_module._record_authenticated_activity(
+                session,
+                user_id,
+                observed_at,
+            )
+            session.commit()
+            session.refresh(user)
+
+            assert user.last_authenticated_activity_at == datetime(
+                2026,
+                9,
+                1,
+                12,
+                30,
+                0,
+            )
+            assert user.last_authenticated_activity_at.tzinfo is None
 
     def test_me_rejects_unknown_token(self, client: TestClient):
         client.cookies.set(SESSION_COOKIE_NAME, token_urlsafe(SESSION_TOKEN_BYTES))
