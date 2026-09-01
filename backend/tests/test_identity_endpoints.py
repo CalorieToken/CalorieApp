@@ -449,7 +449,7 @@ class TestIdentityEndpoints:
         assert response.status_code == 401
 
     def test_me_with_valid_session(self, client: TestClient):
-        old_activity = datetime.now(UTC) - timedelta(days=1)
+        old_activity = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=1)
         user = CalorieAppUserDB(
             status="active",
             last_authenticated_activity_at=old_activity,
