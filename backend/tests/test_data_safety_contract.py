@@ -843,6 +843,7 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
         "restore_environment": "neon-synthetic-restore",
         "restore_environment_must_be_precreated_and_protected": True,
         "restore_environment_branch_policy": "main-only",
+        "restore_environment_required_reviewer": True,
         "restore_environment_admin_bypass_allowed": False,
         "restore_workflow_trigger": "workflow-dispatch-only",
         "pull_request_workflow_identity_access_allowed": False,
