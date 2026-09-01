@@ -441,6 +441,67 @@ class CalorieAppUserDB(SQLModel, table=True):
     )
 
 
+class InactiveAccountNoticeDB(SQLModel, table=True):
+    """Minimal proof of a delivered inactive-account warning."""
+
+    __tablename__ = "inactive_account_notice"
+    __table_args__ = (
+        UniqueConstraint(
+            "calorieapp_user_id",
+            "activity_anchor_at",
+            name="uq_inactive_account_notice_user_anchor",
+        ),
+        CheckConstraint(
+            "status IN ('delivered', 'cancelled')",
+            name="ck_inactive_account_notice_status",
+        ),
+        CheckConstraint(
+            "(status = 'delivered' AND cancelled_at IS NULL "
+            "AND cancellation_reason IS NULL) OR "
+            "(status = 'cancelled' AND cancelled_at IS NOT NULL "
+            "AND cancellation_reason = 'authenticated-activity')",
+            name="ck_inactive_account_notice_cancellation_state",
+        ),
+        CheckConstraint(
+            "activity_anchor_at < notice_window_started_at "
+            "AND notice_window_started_at <= delivered_at "
+            "AND delivered_at < retention_due_at",
+            name="ck_inactive_account_notice_timeline",
+        ),
+        CheckConstraint(
+            "cancelled_at IS NULL OR cancelled_at > activity_anchor_at",
+            name="ck_inactive_account_notice_cancellation_time",
+        ),
+        CheckConstraint(
+            "LENGTH(delivery_evidence_digest) = 64",
+            name="ck_inactive_account_notice_evidence_digest",
+        ),
+        Index(
+            "ix_inactive_account_notice_user_status",
+            "calorieapp_user_id",
+            "status",
+        ),
+        Index(
+            "ix_inactive_account_notice_status_retention_due",
+            "status",
+            "retention_due_at",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    calorieapp_user_id: str = Field(foreign_key="calorieappuser.id")
+    activity_anchor_at: datetime
+    notice_window_started_at: datetime
+    retention_due_at: datetime
+    delivered_at: datetime
+    delivery_channel: str = Field(min_length=1, max_length=40)
+    delivery_evidence_digest: str = Field(min_length=64, max_length=64)
+    status: str = Field(default="delivered", max_length=20)
+    cancelled_at: Optional[datetime] = Field(default=None)
+    cancellation_reason: Optional[str] = Field(default=None, max_length=40)
+    recorded_at: datetime = Field(default_factory=utc_now)
+
+
 class ExternalIdentityDB(SQLModel, table=True):
     """Link CalorieAppUser to an external identity provider."""
 

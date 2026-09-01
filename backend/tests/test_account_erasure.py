@@ -13,6 +13,7 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     FoodLogDB,
+    InactiveAccountNoticeDB,
     OriginLoginHandoffDB,
 )
 
@@ -142,6 +143,28 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
                     created_at=now,
                     expires_at=now + timedelta(minutes=5),
                 ),
+                InactiveAccountNoticeDB(
+                    calorieapp_user_id=user_id,
+                    activity_anchor_at=now - timedelta(days=730),
+                    notice_window_started_at=now - timedelta(days=29),
+                    retention_due_at=now + timedelta(days=1),
+                    delivered_at=now - timedelta(days=20),
+                    delivery_channel="reviewed-channel",
+                    delivery_evidence_digest="a" * 64,
+                    status="delivered",
+                    recorded_at=now - timedelta(days=20),
+                ),
+                InactiveAccountNoticeDB(
+                    calorieapp_user_id=other_user.id,
+                    activity_anchor_at=now - timedelta(days=730),
+                    notice_window_started_at=now - timedelta(days=29),
+                    retention_due_at=now + timedelta(days=1),
+                    delivered_at=now - timedelta(days=20),
+                    delivery_channel="reviewed-channel",
+                    delivery_evidence_digest="b" * 64,
+                    status="delivered",
+                    recorded_at=now - timedelta(days=20),
+                ),
                 OriginLoginHandoffDB(
                     state_hash="6" * 64,
                     handoff_token_hash="7" * 64,
@@ -186,6 +209,18 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
                 OriginLoginHandoffDB.calorieapp_user_id == user_id
             )
         ).all() == []
+        assert session.exec(
+            select(InactiveAccountNoticeDB).where(
+                InactiveAccountNoticeDB.calorieapp_user_id == user_id
+            )
+        ).all() == []
+        assert len(
+            session.exec(
+                select(InactiveAccountNoticeDB).where(
+                    InactiveAccountNoticeDB.calorieapp_user_id == other_user_id
+                )
+            ).all()
+        ) == 1
         assert session.exec(
             select(AuthorizationCodeDB).where(
                 AuthorizationCodeDB.external_subject == other_subject

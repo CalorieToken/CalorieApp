@@ -17,7 +17,9 @@ The export contains only records belonging to the authenticated internal user:
 - linked external identities and optional XRPL address;
 - every owned private food-log snapshot;
 - session activity timestamps;
-- completed or failed browser-login handoff activity.
+- completed or failed browser-login handoff activity; and
+- delivered or cancelled inactive-account warning lifecycle timestamps and the
+  provider-neutral channel key.
 
 Cross-user records are excluded. Legacy food logs whose owner is unknown remain
 quarantined and are not silently claimed by any account.
@@ -56,10 +58,11 @@ complete.
 ## Deliberately excluded secrets
 
 The export never returns authorization-code hashes, login state, internal login
-session identifiers, opaque session-token hashes, or browser-handoff state/token
-hashes. Their presence would weaken authentication without improving data
-portability. The response names these excluded security fields so the boundary
-is transparent.
+session identifiers, opaque session-token hashes, browser-handoff state/token
+hashes or the keyed notice-delivery evidence digest. Their presence would
+weaken authentication or expose internal receipt evidence without improving
+data portability. The response names these excluded security fields so the
+boundary is transparent.
 
 ## Still required before public onboarding
 

@@ -36,6 +36,7 @@ APPLICATION_READ_WRITE_TABLES = frozenset(
         "food_product_source_link",
         "food_attribute_assertion",
         "calorieappuser",
+        "inactive_account_notice",
         "externalidentity",
         "authorizationcode",
         "pendingloginstate",

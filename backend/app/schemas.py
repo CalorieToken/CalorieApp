@@ -295,6 +295,35 @@ class AccountExportLoginHandoff(BaseModel):
         return _ensure_utc(value) if value is not None else None
 
 
+class AccountExportInactiveAccountNotice(BaseModel):
+    """Lifecycle evidence without internal or provider receipt identifiers."""
+
+    status: Literal["delivered", "cancelled"]
+    activity_anchor_at: datetime
+    notice_window_started_at: datetime
+    retention_due_at: datetime
+    delivered_at: datetime
+    delivery_channel: str
+    cancelled_at: Optional[datetime]
+    recorded_at: datetime
+
+    @field_validator(
+        "activity_anchor_at",
+        "notice_window_started_at",
+        "retention_due_at",
+        "delivered_at",
+        "cancelled_at",
+        "recorded_at",
+        mode="after",
+    )
+    @classmethod
+    def normalize_notice_timestamps(
+        cls,
+        value: Optional[datetime],
+    ) -> Optional[datetime]:
+        return _ensure_utc(value) if value is not None else None
+
+
 class AccountDataExportResponse(BaseModel):
     """Versioned authenticated CalorieApp account-data export."""
 
@@ -306,6 +335,7 @@ class AccountDataExportResponse(BaseModel):
     authentication_sessions: list[AccountExportAuthSession]
     authorization_events: list[AccountExportAuthorizationEvent]
     login_handoffs: list[AccountExportLoginHandoff]
+    inactive_account_notices: list[AccountExportInactiveAccountNotice]
     excluded_security_fields: list[str]
 
     @field_validator("exported_at", mode="after")

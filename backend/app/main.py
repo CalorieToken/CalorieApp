@@ -30,6 +30,7 @@ from .data_growth import (
     DataGrowthAdmissionRejected,
     create_food_log_with_subject_budget,
 )
+from .inactive_account_notice import cancel_inactive_account_notices_for_activity
 from .locales import resolve_locale
 from .models import (
     AuthSessionDB,
@@ -38,6 +39,7 @@ from .models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     FoodLogDB,
+    InactiveAccountNoticeDB,
     OriginLoginHandoffDB,
 )
 from .request_limits import RequestBodyLimitMiddleware
@@ -53,6 +55,7 @@ from .schemas import (
     AccountExportAccount,
     AccountExportAuthSession,
     AccountExportExternalIdentity,
+    AccountExportInactiveAccountNotice,
     AccountExportLoginHandoff,
     CurrentUserResponse,
     FoodLog,
@@ -567,6 +570,11 @@ def _record_authenticated_activity(
         )
         .values(last_authenticated_activity_at=normalized_observed_at)
         .execution_options(synchronize_session=False)
+    )
+    cancel_inactive_account_notices_for_activity(
+        session,
+        user_id=user_id,
+        observed_at=normalized_observed_at,
     )
 
 
@@ -1115,6 +1123,14 @@ def identity_export(
         .where(OriginLoginHandoffDB.calorieapp_user_id == current_user.id)
         .order_by(OriginLoginHandoffDB.created_at, OriginLoginHandoffDB.id)
     ).all()
+    inactive_account_notices = session.exec(
+        select(InactiveAccountNoticeDB)
+        .where(InactiveAccountNoticeDB.calorieapp_user_id == current_user.id)
+        .order_by(
+            InactiveAccountNoticeDB.activity_anchor_at,
+            InactiveAccountNoticeDB.id,
+        )
+    ).all()
 
     response.headers["Content-Disposition"] = (
         'attachment; filename="calorieapp-account-data-v1.json"'
@@ -1167,6 +1183,19 @@ def identity_export(
             )
             for handoff in handoffs
         ],
+        inactive_account_notices=[
+            AccountExportInactiveAccountNotice(
+                status=notice.status,
+                activity_anchor_at=notice.activity_anchor_at,
+                notice_window_started_at=notice.notice_window_started_at,
+                retention_due_at=notice.retention_due_at,
+                delivered_at=notice.delivered_at,
+                delivery_channel=notice.delivery_channel,
+                cancelled_at=notice.cancelled_at,
+                recorded_at=notice.recorded_at,
+            )
+            for notice in inactive_account_notices
+        ],
         excluded_security_fields=[
             "authorization_code_hash",
             "authorization_state",
@@ -1174,6 +1203,7 @@ def identity_export(
             "session_token_hash",
             "handoff_state_hash",
             "handoff_token_hash",
+            "notice_delivery_evidence_digest",
         ],
     )
 
@@ -1235,6 +1265,11 @@ def identity_erase_account(
 
     try:
         session.exec(delete(FoodLogDB).where(FoodLogDB.owner_id == current_user.id))
+        session.exec(
+            delete(InactiveAccountNoticeDB).where(
+                InactiveAccountNoticeDB.calorieapp_user_id == current_user.id
+            )
+        )
         session.exec(
             delete(OriginLoginHandoffDB).where(
                 OriginLoginHandoffDB.calorieapp_user_id == current_user.id

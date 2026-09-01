@@ -52,4 +52,6 @@ proved, warning delivery is reliable, activity cancels a pending warning, and
 the bounded account-erasure process plus backup replay proof are reviewed
 together. `docs/INACTIVE_ACCOUNT_PREVIEW.md` describes the read-only,
 aggregate-only boundary calculation that is prepared without enabling any of
-those actions.
+those actions. `docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md` describes the
+separate evidence schema and same-transaction activity cancellation prepared
+without enabling warning delivery.

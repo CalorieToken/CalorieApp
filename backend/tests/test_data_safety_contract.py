@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.16.0"
+    assert contract["contract_version"] == "1.17.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -157,6 +157,11 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
         "identity_food_history_and_directly_owned_authentication_activity_included"
     ] is True
     assert export["durable_last_authenticated_activity_marker_included"] is True
+    assert export["inactive_account_notice_lifecycle_included"] is True
+    assert (
+        export["inactive_account_notice_delivery_evidence_digest_included"]
+        is False
+    )
     assert export[
         "legacy_authorization_events_without_direct_ownership_included"
     ] is False
@@ -249,6 +254,34 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert preview["production_cli_enabled"] is False
     assert preview["real_data_access_performed_by_this_change"] is False
     assert preview["migration_or_deployment_performed"] is False
+    evidence = retention["inactive_account_notice_evidence"]
+    assert evidence["implementation_status"] == (
+        "delivery-evidence-schema-and-activity-cancellation-prepared-"
+        "delivery-disabled"
+    )
+    assert evidence["successful_delivery_evidence_only"] is True
+    assert evidence["pending_delivery_queue_created"] is False
+    assert evidence["one_notice_per_user_activity_anchor"] is True
+    assert evidence["notice_window_and_retention_timeline_constrained"] is True
+    assert evidence["delivery_channel_provider_selected"] is False
+    assert evidence["raw_contact_destination_stored"] is False
+    assert evidence["raw_provider_receipt_stored"] is False
+    assert evidence["keyed_delivery_evidence_digest_required"] is True
+    assert evidence["delivery_evidence_digest_in_private_export"] is False
+    assert evidence["lifecycle_timestamps_and_channel_in_private_export"] is True
+    assert (
+        evidence[
+            "successful_authenticated_activity_cancels_older_notice_atomically"
+        ]
+        is True
+    )
+    assert evidence["notice_evidence_removed_by_account_erasure"] is True
+    assert evidence["notice_delivery_adapter_implemented"] is False
+    assert evidence["scheduler_configured"] is False
+    assert evidence["automatic_erasure_authorized"] is False
+    assert evidence["production_execution_enabled"] is False
+    assert evidence["real_notice_delivery_or_data_mutation_performed"] is False
+    assert evidence["migration_or_deployment_performed"] is False
     assert (
         retention["authentication_transient_security_retention_max_days_after_expiry"]
         == 30
@@ -308,7 +341,7 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.1.0"
+    assert alignment["contract_version"] == "1.2.0"
     assert alignment["release_state"] == "blocked"
     assert alignment["legal_certification_claimed"] is False
     assert publication["authorized"] is False
@@ -333,6 +366,10 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
 
     assert facts["private_account_export"]["authenticated_user_only"] is True
     assert facts["private_account_export"]["security_secrets_excluded"] is True
+    assert (
+        "inactive-account-notice-lifecycle-without-delivery-evidence-digest"
+        in facts["private_account_export"]["included_categories"]
+    )
     assert facts["private_account_export"]["external_delivery_performed"] is False
     assert facts["private_account_export"]["download_changes_or_deletes_server_data"] is False
     assert facts["direct_account_erasure"]["enabled_by_default"] is False
@@ -362,6 +399,15 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     ] is True
     assert facts["inactive_account_retention"][
         "activity_marker_deployed_or_backfilled"
+    ] is False
+    assert facts["inactive_account_retention"][
+        "notice_evidence_schema_and_activity_cancellation_prepared"
+    ] is True
+    assert facts["inactive_account_retention"][
+        "notice_delivery_channel_or_provider_selected"
+    ] is False
+    assert facts["inactive_account_retention"][
+        "raw_contact_or_provider_receipt_stored"
     ] is False
     assert facts["authentication_transients"]["maximum_days_after_expiry"] == (
         safety["retention"][
@@ -840,7 +886,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.9.0"
+    assert matrix["contract_version"] == "1.10.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -904,6 +950,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/schema_migrations/versions/v20260901_0012.py" in gates[
         "retention_policy"
     ]["evidence"]
+    assert "backend/app/schema_migrations/versions/v20260901_0013.py" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "backend/tests/test_identity_endpoints.py" in gates[
         "retention_policy"
     ]["evidence"]
@@ -911,6 +960,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_preview.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_inactive_account_notice.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"

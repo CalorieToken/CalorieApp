@@ -44,6 +44,9 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
     assert '"calorieapp-account-data-v1.json"' in export_source
     assert 'cache: "no-store"' in export_source
     assert "isVersionedAccountExport(payload)" in export_source
+    assert "candidate.inactive_account_notices" in export_source
+    assert "inactive-" in export_source
+    assert "account warning history" in export_source
     assert "URL.revokeObjectURL(objectUrl)" in export_source
     assert "localStorage" not in export_source
     assert "sessionStorage" not in export_source
