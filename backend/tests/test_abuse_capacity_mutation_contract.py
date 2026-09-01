@@ -15,8 +15,10 @@ def _load_contract() -> dict:
 
 
 def test_automation_cannot_remove_permanent_human_control() -> None:
-    human = _load_contract()["human_control_boundary"]
+    contract = _load_contract()
+    human = contract["human_control_boundary"]
 
+    assert contract["contract_version"] == "1.12.0"
     assert human["fully_autonomous_operation_allowed"] is False
     assert human["human_approval_required_for_limit_policy_scope_expansion"] is True
     assert human["human_incident_command_and_emergency_pause_required"] is True
@@ -337,7 +339,56 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation[
         "postgresql_source_assertion_moderation_multi_process_ci_proof_implemented"
     ] is True
-    assert mutation["source_assertion_correction_service_implemented"] is False
+    assert mutation["source_assertion_correction_service_implemented"] is True
+    assert mutation["source_assertion_correction_authorization_scope"] == (
+        "catalog:source-assertion:correct"
+    )
+    assert mutation[
+        "source_assertion_correction_requires_expected_predecessor_version"
+    ] is True
+    assert mutation["source_assertion_correction_requires_idempotency_key"] is True
+    assert mutation["source_assertion_correction_predecessor_statuses"] == [
+        "validated",
+        "rejected",
+    ]
+    assert mutation["source_assertion_correction_rechecks_content_policy"] is True
+    assert mutation[
+        "source_assertion_correction_requires_current_active_reviewed_lineage"
+    ] is True
+    assert mutation[
+        "source_assertion_correction_preserves_product_and_source_record"
+    ] is True
+    assert mutation["source_assertion_correction_default_status"] == "quarantined"
+    assert mutation["source_assertion_correction_resulting_version"] == 1
+    assert mutation[
+        "source_assertion_correction_shares_source_assertion_budget"
+    ] is True
+    assert mutation[
+        "source_assertion_correction_allows_multiple_children_per_predecessor"
+    ] is False
+    assert mutation["source_assertion_correction_audit_table"] == (
+        "food_attribute_assertion_correction_audit"
+    )
+    assert mutation["source_assertion_correction_audit_inserted_atomically"] is True
+    assert mutation[
+        "source_assertion_correction_audit_service_is_append_only"
+    ] is True
+    assert mutation[
+        "source_assertion_correction_audit_stores_free_text_payload_email_or_ip"
+    ] is False
+    assert mutation["source_assertion_correction_conflict_response"] == (
+        "409-without-retry-after"
+    )
+    assert mutation["source_assertion_correction_database_failure_response"] == (
+        "503-with-bounded-retry-after"
+    )
+    assert mutation[
+        "source_assertion_correction_authenticated_caller_enforced"
+    ] is False
+    assert mutation["source_assertion_correction_public_endpoint_enabled"] is False
+    assert mutation[
+        "postgresql_source_assertion_correction_multi_process_ci_proof_implemented"
+    ] is True
     assert mutation["complete_source_assertion_mutation_flow_implemented"] is False
     assert mutation["community_or_ecosystem_contribution_enters_quarantine"] is True
     assert mutation["moderation_required_before_public_activation"] is True
@@ -347,7 +398,7 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     assert mutation["production_migration_uses_separate_approved_role"] is True
     assert mutation["xrpl_transaction_creation_or_signing_automatic"] is False
     assert (
-        "mutation-authenticated-correction-and-production-audit-privilege-enforcement"
+        "mutation-authenticated-caller-and-production-audit-privilege-enforcement"
         in missing
     )
     assert (
@@ -356,6 +407,10 @@ def test_mutation_is_scoped_moderated_and_never_direct() -> None:
     )
     assert (
         "postgresql-multi-process-source-assertion-moderation-proof"
+        in contract["current_implemented_evidence"]
+    )
+    assert (
+        "postgresql-multi-process-source-assertion-correction-proof"
         in contract["current_implemented_evidence"]
     )
 

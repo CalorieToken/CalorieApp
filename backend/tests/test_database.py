@@ -148,7 +148,25 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 10
+        assert count == 11
+    finally:
+        test_engine.dispose()
+
+
+def test_schema_readiness_requires_correction_predecessor_uniqueness() -> None:
+    test_engine = _memory_engine()
+    try:
+        upgrade_database(test_engine)
+        with test_engine.begin() as connection:
+            connection.exec_driver_sql(
+                "DROP INDEX ux_food_assertion_correction_predecessor"
+            )
+
+        with pytest.raises(
+            RuntimeError,
+            match="Assertion correction uniqueness indexes are missing",
+        ):
+            assert_database_at_head(test_engine)
     finally:
         test_engine.dispose()
 
@@ -267,7 +285,7 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
                 "SELECT applied_at, approval_reference "
                 "FROM calorie_schema_revision ORDER BY revision"
             ).all()
-        assert len(history) == 10
+        assert len(history) == 11
         for applied_at, reference in history:
             applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
             age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()

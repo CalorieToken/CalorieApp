@@ -1,9 +1,9 @@
 # Source-neutral assertion catalog
 
 Status: schema foundation, read-only evidence export, bounded internal
-assertion ingest and terminal internal moderation are implemented with
-synthetic proof. No public catalog write or read API or additional food source
-is enabled.
+assertion ingest, terminal internal moderation and retained internal correction
+are implemented with synthetic proof. No public catalog write or read API or
+additional food source is enabled.
 
 ## Neutral identities and reviewable links
 
@@ -32,9 +32,12 @@ cross-record correction lineage, and the prior row remains present. Migration
 version-1 assertions with validated lineage. Migration `20260901_0010` adds a
 terminal internal moderation service that may only move a version-matched
 quarantined assertion to validated or rejected and records a minimal audit
-atomically. Correction remains absent; direct catalog-table writes remain
-forbidden outside reviewed migrations and test fixtures. See
-`SOURCE_ASSERTION_INGEST.md` and `SOURCE_ASSERTION_MODERATION.md`.
+atomically. Migration `20260901_0011` adds a minimal correction audit; its
+internal service retains a terminal predecessor and creates one new version-1
+quarantined correction on the same product/source-record lineage. Direct
+catalog-table writes remain forbidden outside reviewed migrations and test
+fixtures. See `SOURCE_ASSERTION_INGEST.md`, `SOURCE_ASSERTION_MODERATION.md`
+and `SOURCE_ASSERTION_CORRECTION.md`.
 
 ## Licence-aware evidence
 
@@ -57,8 +60,9 @@ review decision and does not automatically enable a source or public route.
 
 ## Deliberate non-claims
 
-This foundation does not implement public contributions, assertion correction,
-public moderation, a public catalog endpoint, source activation or licence approval.
+This foundation does not implement public contributions, authenticated public
+assertion correction, public moderation, a public catalog endpoint, source
+activation or licence approval.
 The ingest audit covers admission only and is not a moderation decision. The
 combined contribution-mutation release gate remains open. Open Food Facts search
 stays read-only and is not persisted automatically.

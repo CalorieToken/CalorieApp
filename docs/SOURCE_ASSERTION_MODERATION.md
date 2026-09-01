@@ -1,8 +1,9 @@
 # Source-assertion moderation
 
 Status: the internal terminal moderation service and migration
-`20260901_0010` are implemented. No public moderation, contribution, source
-activation, correction, migration execution or deployment is enabled.
+`20260901_0010` are implemented. Retained correction is a separate internal
+service documented in `SOURCE_ASSERTION_CORRECTION.md`. No public moderation,
+contribution, source activation, migration execution or deployment is enabled.
 
 ## Admitted decision
 
@@ -51,7 +52,7 @@ privileges and real caller authentication remain separate release proofs.
 
 ## Deliberate non-claims
 
-This service does not decide truth automatically, approve a source licence,
-create a public route or implement assertion correction. A later correction
-must create a new assertion that preserves its predecessor and must pass its own
-content, authorization, moderation and audit gates.
+This service does not decide truth automatically, approve a source licence or
+create a public route. The separate correction service creates a new
+quarantined assertion while retaining its predecessor; this moderation service
+remains the only path that may later validate that correction.

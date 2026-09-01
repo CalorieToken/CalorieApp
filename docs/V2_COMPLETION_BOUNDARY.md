@@ -46,11 +46,11 @@ production recovery, privacy readiness or worldwide regulatory compliance.
    publication.
 
 The source-neutral table portion of step 6 is implemented through migration
-`20260901_0010`, including read-only provenance/licence evidence, bounded
-internal ingest of new quarantined assertions with validated lineage, and
-terminal internal assertion moderation. Open Food Facts catalog persistence,
-public assertion mutation, assertion correction and any second-source activation remain disabled pending their
-separate gates.
+`20260901_0011`, including read-only provenance/licence evidence, bounded
+internal ingest of new quarantined assertions with validated lineage, terminal
+internal assertion moderation and retained internal correction. Open Food Facts
+catalog persistence, authenticated public assertion mutation and any
+second-source activation remain disabled pending their separate gates.
 
 Market/How-to-Buy and optional XRPL provenance stay read-only or disabled unless
 their separate privacy, MiCA and jurisdiction reviews permit the exact feature.
