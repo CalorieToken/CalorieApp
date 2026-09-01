@@ -34,10 +34,18 @@ The selected security-retention ceiling does not extend those lifetimes:
 - a raw IP address or equivalent network signal, where lawfully collected,
   follows the same maximum and may be removed earlier.
 
-Existing opportunistic cleanup of expired login state, handoffs, nonces and
-sessions remains useful but is not proof of complete scheduled enforcement.
-Legacy authorization rows also require direct ownership and cleanup work before
-the gate can be considered complete.
+A provider-neutral cleanup runner now covers all six authentication-transient
+tables, including legacy authorization codes. It selects deterministic bounded
+batches, defaults to a read-only dry-run, emits aggregate counts without record
+identifiers or network signals, and rolls the entire execution back when any
+table fails. It also clears inbound session-replacement references before an
+expired or revoked session is deleted.
+
+The operator CLI requires an explicit enablement flag and reviewed approval
+reference for non-production deletion. Production execution remains blocked in
+code. No scheduler is configured and no real data has been deleted, so this
+implementation is not proof of complete scheduled enforcement. The detailed
+boundary and commands are in `docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md`.
 
 ## Required proof before activation
 
