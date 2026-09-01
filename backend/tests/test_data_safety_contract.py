@@ -16,7 +16,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.7.0"
+    assert contract["contract_version"] == "1.8.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -131,7 +131,10 @@ def test_data_classes_cover_current_and_planned_personal_flows() -> None:
 def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
-    assert export["status"] == "v2-backend-implemented-ui-and-notice-pending"
+    assert export["status"] == (
+        "v2-backend-and-english-ui-implemented-"
+        "eleven-language-and-notice-review-pending"
+    )
     assert export["format"] == "versioned-json"
     assert export["format_version"] == "calorieapp-account-data-v1"
     assert export["authenticated_user_only"] is True
@@ -149,6 +152,16 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export[
         "direct_ownership_migration_required_before_authorization_event_inclusion"
     ] is True
+    assert export["authenticated_frontend_download_control_implemented"] is True
+    assert export["same_origin_backend_proxy_required"] is True
+    assert export["download_requires_reviewed_export_version"] == (
+        "calorieapp-account-data-v1"
+    )
+    assert export["download_payload_rendered_or_persisted_in_browser_storage"] is False
+    assert export["download_sends_data_to_external_service"] is False
+    assert export["english_private_file_warning_implemented"] is True
+    assert export["english_warning_is_approved_privacy_notice"] is False
+    assert export["eleven_language_export_ui_completed"] is False
     assert export["eleven_language_identity_bridge_ui_required"] is True
     assert export["privacy_notice_alignment_required"] is True
     assert export["account_erasure_or_retention_policy_changed"] is False
@@ -581,7 +594,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.2.0"
+    assert matrix["contract_version"] == "1.3.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())

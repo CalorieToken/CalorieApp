@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isTrustedPrivateExportRequest } from "@/lib/privateExportRequest";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
     pattern: /^api\/identity\/(login\/(start|status)|callback|logout)$/,
     methods: new Set(["POST"]),
   },
-  { pattern: /^api\/identity\/me$/, methods: new Set(["GET"]) },
+  { pattern: /^api\/identity\/(me|export)$/, methods: new Set(["GET"]) },
 ];
 
 type RouteContext = {
@@ -65,7 +66,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ detail: "Not found" }, { status: 404 });
   }
 
-  if (!isTrustedMutationRequest(request)) {
+  if (
+    !isTrustedMutationRequest(request) ||
+    !isTrustedPrivateExportRequest(path, request)
+  ) {
     return NextResponse.json({ detail: "Origin not allowed" }, { status: 403 });
   }
 
@@ -119,6 +123,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     const responseHeaders = new Headers();
     for (const name of [
       "cache-control",
+      "content-disposition",
       "content-type",
       "pragma",
       "retry-after",

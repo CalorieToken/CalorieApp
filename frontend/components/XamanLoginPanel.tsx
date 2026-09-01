@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AccountDataExportButton } from "@/components/AccountDataExportButton";
 import { announceAuthState } from "@/components/authEvents";
 import {
   BACKEND_WAKE_BASE_URL,
@@ -960,18 +961,27 @@ export function XamanLoginPanel() {
       </div>
 
       {currentUser ? (
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-brand-primary">
-            Signed in to CalorieApp
-          </p>
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="inline-flex items-center justify-center rounded-full border border-brand-primary px-5 py-2 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isLoggingOut ? "Logging out..." : "Logout"}
-          </button>
+        <div className="mt-4 space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-brand-primary">
+              Signed in to CalorieApp
+            </p>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="inline-flex items-center justify-center rounded-full border border-brand-primary px-5 py-2 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isLoggingOut ? "Logging out..." : "Logout"}
+            </button>
+          </div>
+          <AccountDataExportButton
+            onAuthenticationLost={(message) => {
+              setCurrentUser(null);
+              announceAuthState(false);
+              setError(message);
+            }}
+          />
         </div>
       ) : (
         <button

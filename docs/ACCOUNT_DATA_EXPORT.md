@@ -1,7 +1,7 @@
 # Authenticated account-data export
 
-Status: V2 backend implemented and tested; user-interface placement and privacy
-notice alignment remain release-blocking.
+Status: V2 backend and English download control implemented and tested. Eleven-
+language completion and privacy-notice alignment remain release-blocking.
 
 ## Endpoint
 
@@ -28,6 +28,30 @@ request IP cannot be safely attributed and are withheld. They may be included
 only after a migration records direct ownership without inferring it from the
 subject.
 
+## CalorieApp download control
+
+An authenticated CalorieApp session now shows a **Download private JSON**
+control. It wakes the backend through the public health probe, then requests the
+export only through the same-origin backend proxy with the existing opaque
+session cookie. The proxy allowlist admits exactly the reviewed `GET` route and
+preserves private no-store and download response headers.
+
+The browser accepts the response only when it is JSON and contains the reviewed
+`calorieapp-account-data-v1` version plus the expected private-data collections.
+It creates a `calorieapp-account-data-v1.json` browser download, revokes the
+temporary object URL and does not render the payload or place it in local or
+session storage. CalorieApp does not send the export to another service; the
+browser or operating system controls its configured download location. A `401`,
+ownership ambiguity, malformed response or backend failure produces no file.
+
+The English interface warns that the file may contain account and linked-
+identity details, an optional XRPL address, food history and session timing. It
+also says that security tokens are excluded, some unowned legacy authorization
+activity is withheld, the configured download location must remain private and
+downloading does not delete server data. This is precise interim product
+guidance, not a claim that the final privacy notice or eleven-language review is
+complete.
+
 ## Deliberately excluded secrets
 
 The export never returns authorization-code hashes, login state, internal login
@@ -38,8 +62,8 @@ is transparent.
 
 ## Still required before public onboarding
 
-- add the export control and explanation to the eleven-language Identity Bridge
-  account/profile experience;
+- translate and review the export control and explanation across all eleven
+  Identity Bridge locales;
 - align the privacy notice with the exact exported data classes;
 - complete PostgreSQL and restore-path verification;
 - obtain a human decision on account erasure, recovery window, inactive-account
