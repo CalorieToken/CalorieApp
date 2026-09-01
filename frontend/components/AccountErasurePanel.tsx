@@ -150,9 +150,9 @@ export function AccountErasurePanel({
     } finally {
       if (requestController.current === controller) {
         requestController.current = null;
-        if (!controller.signal.aborted) {
-          setIsErasing(false);
-        }
+      }
+      if (!controller.signal.aborted) {
+        setIsErasing(false);
       }
     }
   }
