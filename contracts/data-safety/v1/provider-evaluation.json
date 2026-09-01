@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "evidence_reviewed_on": "2026-09-01",
   "evidence_revalidate_by": "2026-11-30",
   "decision_state": "neon-synthetic-staging-selected-account-configuration-blocked",
@@ -22,6 +22,58 @@
     "real_user_or_production_data_approved": false,
     "external_schema_migration_approved": false,
     "production_deployment_approved": false
+  },
+  "preconfiguration_review": {
+    "reviewed_on": "2026-09-01",
+    "status": "official-facts-recorded-console-and-operator-approvals-pending",
+    "eu_region": {
+      "documented_candidate": "aws-eu-central-1",
+      "region_is_fixed_at_project_creation": true,
+      "account_console_confirmation_required": true,
+      "approved_for_account_creation": false
+    },
+    "data_processing": {
+      "published_dpa_reviewed": true,
+      "customer_is_controller_neon_is_processor_for_european_data": true,
+      "global_access_or_processing_may_occur": true,
+      "transfer_mechanisms_include_data_privacy_framework_and_standard_contractual_clauses": true,
+      "customer_remains_responsible_for_lawful_processing_security_and_export_before_account_deletion": true,
+      "dpa_execution_or_account_acceptance_confirmed": false,
+      "subprocessor_notification_subscription_confirmed": false,
+      "approved_for_real_personal_data": false
+    },
+    "billing_and_quota": {
+      "free_plan_listed_price_usd_per_month": 0,
+      "free_allowances_are_hard_product_limits_not_a_permanence_guarantee": true,
+      "configurable_project_quotas_documented": true,
+      "quota_metrics_refresh_interval_minutes": 15,
+      "quota_metrics_may_take_up_to_minutes_to_report": 60,
+      "configured_quota_suspends_compute_until_next_billing_period": true,
+      "payment_method_absence_confirmed_in_live_account": false,
+      "automatic_paid_upgrade_disabled_in_live_account": false,
+      "free_plan_quota_api_availability_confirmed_in_live_account": false
+    },
+    "portable_backup": {
+      "postgres_compatible_pg_dump_export_documented": true,
+      "client_side_encryption_required_before_off_provider_storage": true,
+      "off_provider_destination_selected": false,
+      "retention_schedule_selected": false,
+      "credentials_or_keys_may_be_committed": false
+    },
+    "provider_exit": {
+      "standard_pg_dump_pg_restore_path_documented": true,
+      "distinct_postgresql_target_selected": false,
+      "synthetic_restore_runbook_approved": false
+    },
+    "official_sources": [
+      "https://neon.com/docs/introduction/plans",
+      "https://neon.com/docs/introduction/regions",
+      "https://neon.com/docs/guides/consumption-limits",
+      "https://neon.com/docs/guides/consumption-metrics",
+      "https://neon.com/docs/manage/backup-pg-dump",
+      "https://neon.com/pdf/DPA.pdf",
+      "https://neon.com/subscribe-to-subprocessors"
+    ]
   },
   "non_negotiable_requirements": {
     "zero_additional_recurring_subscription_at_initial_release": true,
@@ -155,12 +207,12 @@
   },
   "release_blocking_before_provider_selection": [],
   "release_blocking_before_provider_configuration": [
-    "confirm official terms still match the 2026-09-01 snapshot",
-    "EU data region and data processing terms review",
-    "confirm no automatic billing or paid upgrade path",
-    "confirm quota exhaustion behavior and machine-readable monitoring path",
-    "approve encrypted off-provider backup design",
-    "approve provider-exit import target and runbook"
+    "confirm the recorded EU region in the live account console before project creation",
+    "confirm DPA execution or account acceptance and subscribe to subprocessor changes",
+    "confirm no payment method and no automatic paid upgrade in the live account",
+    "confirm Free-plan quota metrics and hard-limit controls in the live account",
+    "approve an encrypted off-provider backup destination and retention schedule",
+    "approve a distinct PostgreSQL provider-exit target and synthetic restore runbook"
   ],
   "release_blocking_after_provider_selection": [
     "synthetic forward migration and readiness proof",
