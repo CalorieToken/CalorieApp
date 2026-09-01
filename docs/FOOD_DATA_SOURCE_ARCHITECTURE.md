@@ -1,8 +1,8 @@
 # Food-data source architecture
 
 Status: the source-neutral catalog schema, immutable source records, terminal
-record and assertion moderation, and bounded internal assertion ingest are
-implemented. Open
+record and assertion moderation, bounded internal assertion ingest and retained
+internal assertion correction are implemented. Open
 Food Facts remains the only enabled read-only search adapter; no public source
 onboarding, contribution or catalog-write flow is enabled.
 
@@ -30,6 +30,7 @@ schema for each one.
 | `food_attribute_assertion` | A source-specific value, unit, observation time and verification state |
 | `food_attribute_assertion_ingest_audit` | Minimal append-only receipt for bounded assertion admission |
 | `food_attribute_assertion_moderation_audit` | Minimal append-only evidence for a terminal assertion decision |
+| `food_attribute_assertion_correction_audit` | Minimal append-only evidence for a retained assertion correction |
 | `food_log_snapshot` | Private point-in-time values selected by the user |
 
 Migration `20260831_0006` currently implements `food_source` and
@@ -60,8 +61,12 @@ idempotent and PostgreSQL-process-safe. See `SOURCE_ASSERTION_INGEST.md`.
 Migration `20260901_0010` adds terminal source-assertion moderation. The
 internal service requires a purpose-limited scope, expected version and
 idempotency key, allows only quarantine to validated/rejected, and commits a
-minimal audit atomically. See `SOURCE_ASSERTION_MODERATION.md`. Correction and
-public mutation routes remain disabled.
+minimal audit atomically. See `SOURCE_ASSERTION_MODERATION.md`. Migration
+`20260901_0011` adds retained source-assertion correction. Its internal service
+requires a terminal predecessor at the expected version, rechecks content and
+active lineage, shares the source assertion budget, retains the predecessor and
+creates one new quarantined assertion with a minimal atomic audit. See
+`SOURCE_ASSERTION_CORRECTION.md`. Public mutation routes remain disabled.
 
 An adapter emits normalized source records and assertions. Its idempotency key
 is `(source_id, external_record_id, source_version_or_content_digest)`. A new
@@ -114,8 +119,12 @@ ODbL, contents and image-licence boundary documented in `DATA_LICENSING.md`.
    blocked.
 7. Add terminal assertion moderation with purpose scope, expected version,
    idempotency and minimal audit. Completed by `20260901_0010` for the internal
-   service only; correction and public routes remain blocked.
-8. Pilot one additional low-risk source only after privacy, licence and data
+   service only; public routes remain blocked.
+8. Add retained correction with a terminal predecessor, expected version,
+   idempotency, content and lineage rechecks, shared source budget and minimal
+   audit. Completed by `20260901_0011` for the internal service only; caller
+   authentication and public routes remain blocked.
+9. Pilot one additional low-risk source only after privacy, licence and data
    quality review.
 
 The source-independent schema compatibility is a V2 completion requirement;

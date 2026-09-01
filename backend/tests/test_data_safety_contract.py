@@ -16,6 +16,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
+    assert contract["contract_version"] == "1.6.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
@@ -247,6 +248,7 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
         "food_attribute_assertion",
         "food_attribute_assertion_ingest_audit",
         "food_attribute_assertion_moderation_audit",
+        "food_attribute_assertion_correction_audit",
     ]
     assert sources["internal_source_record_ingest_service_implemented"] is True
     assert sources[
@@ -277,7 +279,19 @@ def test_food_data_sources_are_extensible_without_losing_provenance() -> None:
     assert sources[
         "source_assertion_validation_rechecks_policy_and_active_lineage"
     ] is True
-    assert sources["source_assertion_correction_service_implemented"] is False
+    assert sources["source_assertion_correction_service_implemented"] is True
+    assert sources[
+        "source_assertion_correction_expected_version_idempotency_and_audit_implemented"
+    ] is True
+    assert sources[
+        "source_assertion_correction_rechecks_policy_lineage_and_budget"
+    ] is True
+    assert sources[
+        "source_assertion_correction_preserves_predecessor_and_private_history"
+    ] is True
+    assert sources["source_assertion_correction_defaults_to_quarantine"] is True
+    assert sources["source_assertion_correction_authenticated_caller_enforced"] is False
+    assert sources["source_assertion_correction_public_endpoint_enabled"] is False
     assert sources["public_source_assertion_ingest_endpoint_enabled"] is False
     assert sources["public_catalog_read_endpoint_enabled"] is False
     assert sources["complete_source_assertion_mutation_flow_implemented"] is False
@@ -319,6 +333,7 @@ def test_abuse_capacity_and_mutation_are_release_blocking() -> None:
     assert safety[
         "source_assertion_terminal_moderation_and_audit_implemented"
     ] is True
+    assert safety["source_assertion_retained_correction_and_audit_implemented"] is True
     assert safety["complete_contribution_mutation_flow_implemented"] is False
     assert safety["raw_ip_or_search_text_in_long_term_abuse_profile_allowed"] is False
     assert safety["external_integration_default_access"] == "read-only"
@@ -553,6 +568,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
+    assert matrix["contract_version"] == "1.1.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())

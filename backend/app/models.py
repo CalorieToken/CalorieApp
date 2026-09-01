@@ -220,6 +220,12 @@ class FoodAttributeAssertionDB(SQLModel, table=True):
             "source_record_id",
             name="uq_food_attribute_assertion_lineage_target",
         ),
+        Index(
+            "ux_food_assertion_correction_lineage",
+            "id",
+            "supersedes_assertion_id",
+            unique=True,
+        ),
         ForeignKeyConstraint(
             (
                 "supersedes_assertion_id",
@@ -350,6 +356,66 @@ class FoodAttributeAssertionModerationAuditDB(SQLModel, table=True):
     previous_status: str = Field(max_length=20)
     new_status: str = Field(max_length=20)
     moderator_reference: str = Field(max_length=120)
+    authorization_scope: str = Field(max_length=80)
+    reason_code: str = Field(max_length=80)
+    created_at: datetime = Field(default_factory=utc_now)
+
+
+class FoodAttributeAssertionCorrectionAuditDB(SQLModel, table=True):
+    """Minimal append-only receipt for one retained assertion correction."""
+
+    __tablename__ = "food_attribute_assertion_correction_audit"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ("correction_assertion_id", "predecessor_assertion_id"),
+            (
+                "food_attribute_assertion.id",
+                "food_attribute_assertion.supersedes_assertion_id",
+            ),
+            name="fk_food_assertion_correction_audit_lineage",
+        ),
+        UniqueConstraint(
+            "predecessor_assertion_id",
+            name="uq_food_assertion_correction_audit_predecessor",
+        ),
+        UniqueConstraint(
+            "correction_assertion_id",
+            name="uq_food_assertion_correction_audit_correction",
+        ),
+        UniqueConstraint(
+            "idempotency_key",
+            name="uq_food_assertion_correction_audit_idempotency",
+        ),
+        CheckConstraint(
+            "expected_predecessor_version > 0 "
+            "AND resulting_correction_version = 1",
+            name="ck_food_assertion_correction_audit_versions",
+        ),
+        CheckConstraint(
+            "predecessor_assertion_id <> correction_assertion_id",
+            name="ck_food_assertion_correction_audit_distinct_assertions",
+        ),
+        CheckConstraint(
+            "authorization_scope = 'catalog:source-assertion:correct'",
+            name="ck_food_assertion_correction_audit_scope",
+        ),
+        Index(
+            "ix_food_assert_corr_audit_predecessor",
+            "predecessor_assertion_id",
+        ),
+        Index(
+            "ix_food_assert_corr_audit_correction",
+            "correction_assertion_id",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    predecessor_assertion_id: str = Field(foreign_key="food_attribute_assertion.id")
+    correction_assertion_id: str = Field(foreign_key="food_attribute_assertion.id")
+    idempotency_key: str = Field(max_length=128)
+    expected_predecessor_version: int = Field(gt=0)
+    resulting_correction_version: int = Field(default=1, ge=1, le=1)
+    corrector_reference: str = Field(max_length=120)
     authorization_scope: str = Field(max_length=80)
     reason_code: str = Field(max_length=80)
     created_at: datetime = Field(default_factory=utc_now)

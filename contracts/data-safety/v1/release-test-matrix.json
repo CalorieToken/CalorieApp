@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -73,7 +73,12 @@
         "backend/app/services/source_assertion_moderation.py",
         "backend/app/schema_migrations/versions/v20260901_0010.py",
         "backend/tests/test_source_assertion_moderation.py",
-        "docs/SOURCE_ASSERTION_MODERATION.md"
+        "docs/SOURCE_ASSERTION_MODERATION.md",
+        "backend/app/services/source_assertion_correction.py",
+        "backend/app/schema_migrations/versions/v20260901_0011.py",
+        "backend/tests/test_source_assertion_correction.py",
+        "backend/tests/test_postgresql_integration.py",
+        "docs/SOURCE_ASSERTION_CORRECTION.md"
       ]
     },
     {
@@ -120,6 +125,7 @@
         "backend/app/schema_migrations/versions/v20260831_0008.py",
         "backend/app/schema_migrations/versions/v20260831_0009.py",
         "backend/app/schema_migrations/versions/v20260901_0010.py",
+        "backend/app/schema_migrations/versions/v20260901_0011.py",
         "backend/tests/test_database.py"
       ]
     },

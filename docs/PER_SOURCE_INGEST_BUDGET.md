@@ -1,8 +1,9 @@
 # Per-source catalog ingest budget
 
 Status: implemented and PostgreSQL multi-process verified for internal immutable
-source-record persistence and bounded quarantined assertion ingest. No public
-source-onboarding or catalog-write endpoint is enabled.
+source-record persistence, bounded quarantined assertion ingest and retained
+assertion correction. No public source-onboarding or catalog-write endpoint is
+enabled.
 
 ## Registered source boundary
 
@@ -58,8 +59,12 @@ record moderation versioning and minimal audit evidence. Migration
 read-only licence-aware evidence query. Migration `20260831_0009` adds the
 separate positive assertion limit and an atomic minimal ingest audit. Its
 internal service admits only version-checked validated record/link lineage and
-creates quarantined assertions; see `SOURCE_ASSERTION_INGEST.md`. Assertion
-correction, moderation and public mutation remain future release gates.
+creates quarantined assertions; see `SOURCE_ASSERTION_INGEST.md`. Migrations
+`20260901_0010` and `20260901_0011` add terminal assertion moderation and
+retained correction. Corrections share this same positive source-assertion
+budget; see `SOURCE_ASSERTION_MODERATION.md` and
+`SOURCE_ASSERTION_CORRECTION.md`. Public mutation remains a future release
+gate.
 
 Open Food Facts remains the enabled read-only search adapter. Search results are
 not automatically retained as catalog records, and no second source is

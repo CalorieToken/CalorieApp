@@ -115,6 +115,16 @@ content policy and the current enabled/validated/active source lineage. No
 public moderation endpoint exists. See
 `SOURCE_ASSERTION_MODERATION.md`.
 
+Terminal assertions now also have one retained internal correction path. It
+requires the fixed `catalog:source-assertion:correct` scope, expected
+predecessor version, idempotency key, pseudonymous corrector reference and
+controlled reason code. It rechecks content policy and active lineage, shares
+the source assertion budget, preserves the predecessor and creates one new
+version-1 quarantined assertion. The correction and minimal audit commit
+atomically; bounded PostgreSQL locks serialize concurrent attempts. No public
+correction endpoint or authenticated calling boundary exists. See
+`SOURCE_ASSERTION_CORRECTION.md`.
+
 ## One retry budget
 
 Retries are counted end-to-end per user action, not independently in browser,
@@ -151,11 +161,13 @@ validated/rejected transitions, and appends one minimal audit event in the same
 transaction. PostgreSQL serializes both record and idempotency conflicts across
 processes. No public route exists. The source-neutral product/link/assertion
 schema, read-only licensed evidence query and bounded internal assertion-ingest
-service now exist. Public contribution, assertion correction, real caller
-authentication and production audit-table privilege proof remain open. The combined mutation
-release gate is therefore not yet claimed complete. Exact boundaries are in
-`SOURCE_RECORD_MODERATION.md`, `SOURCE_ASSERTION_CATALOG.md` and
-`SOURCE_ASSERTION_INGEST.md`.
+service, terminal assertion moderation and retained correction service now
+exist. Public contribution, real caller authentication and production
+audit-table privilege proof remain open. The combined mutation release gate is
+therefore not yet claimed complete. Exact boundaries are in
+`SOURCE_RECORD_MODERATION.md`, `SOURCE_ASSERTION_CATALOG.md`,
+`SOURCE_ASSERTION_INGEST.md`, `SOURCE_ASSERTION_MODERATION.md` and
+`SOURCE_ASSERTION_CORRECTION.md`.
 
 ## Capacity and incident boundary
 
@@ -183,7 +195,7 @@ destination remains a live, human-approved release gate.
 
 V2 remains blocked until the complete shared multi-instance adapter admission
 and proxy-topology proof, the Identity Bridge short-lived network-signal
-control, authenticated assertion correction and production audit privileges,
+control, authenticated mutation callers and production audit privileges,
 chosen-provider alert delivery,
 chosen-provider quota proof and proxy topology tests exist. Exact
 tunable values belong in reviewed configuration, while the safety invariants
