@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.14.0",
+  "contract_version": "1.15.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -194,8 +194,11 @@
       "evidence": [
         "backend/app/backup_restore_drill.py",
         "backend/tests/test_backup_restore_drill.py",
+        "backend/app/account_erasure_replay_proof.py",
+        "backend/tests/test_account_erasure_replay_proof.py",
         ".github/workflows/ci.yml",
-        "docs/POSTGRESQL_BACKUP_RESTORE_DRILL.md"
+        "docs/POSTGRESQL_BACKUP_RESTORE_DRILL.md",
+        "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
       ]
     },
     {
@@ -220,12 +223,15 @@
         "backend/app/main.py",
         "backend/app/schemas.py",
         "backend/tests/test_account_erasure.py",
+        "backend/app/account_erasure_replay_proof.py",
+        "backend/tests/test_account_erasure_replay_proof.py",
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",
         "frontend/components/AccountErasurePanel.tsx",
         "frontend/lib/accountErasureRequest.ts",
         "tools/tests/account_erasure_ui.test.mjs",
-        "docs/ACCOUNT_ERASURE.md"
+        "docs/ACCOUNT_ERASURE.md",
+        "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
       ]
     },
     {
@@ -243,6 +249,8 @@
         "docs/INACTIVE_ACCOUNT_ERASURE_EXECUTION.md",
         "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md",
         "docs/ACCOUNT_ERASURE.md",
+        "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md",
+        "backend/app/account_erasure_replay_proof.py",
         "backend/app/inactive_account_preview.py",
         "backend/app/inactive_account_preview_cli.py",
         "backend/app/inactive_account_notice.py",
@@ -260,6 +268,7 @@
         "backend/app/schema_migrations/versions/v20260901_0013.py",
         "backend/app/schema_migrations/versions/v20260902_0014.py",
         "backend/tests/test_auth_transient_retention.py",
+        "backend/tests/test_account_erasure_replay_proof.py",
         "backend/tests/test_inactive_account_preview.py",
         "backend/tests/test_inactive_account_notice.py",
         "backend/tests/test_inactive_account_notice_receipt.py",

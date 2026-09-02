@@ -39,6 +39,12 @@ humans separately approve and verify:
 - a staging restore/erasure drill using synthetic records; and
 - an exact provider-exit, deployment and rollback runbook.
 
+`backend/app/account_erasure_replay_proof.py` now defines a pure, privacy-
+minimized proof format for future erasure replay. The CI backup drill does not
+create a key, persist that pseudonymous proof independently, scan restored
+accounts or execute replay, so it supplies none of the missing provider or
+restore-readiness evidence. See `docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+
 No live data, external provider, production deployment or provider-specific
 retention configuration is created by this CI proof.
 

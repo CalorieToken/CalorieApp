@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.24.0"
+    assert contract["contract_version"] == "1.25.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -1089,7 +1089,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.14.0"
+    assert matrix["contract_version"] == "1.15.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1116,6 +1116,15 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/backup_restore_drill.py" in gates["backup_restore_drill"][
         "evidence"
     ]
+    assert "backend/app/account_erasure_replay_proof.py" in gates[
+        "backup_restore_drill"
+    ]["evidence"]
+    assert "backend/tests/test_account_erasure_replay_proof.py" in gates[
+        "backup_restore_drill"
+    ]["evidence"]
+    assert "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md" in gates[
+        "backup_restore_drill"
+    ]["evidence"]
     assert gates["user_data_export"]["status"] == "partial"
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
@@ -1127,6 +1136,15 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "frontend/components/AccountErasurePanel.tsx" in gates[
         "user_erasure"
     ]["evidence"]
+    assert "backend/app/account_erasure_replay_proof.py" in gates[
+        "user_erasure"
+    ]["evidence"]
+    assert "backend/tests/test_account_erasure_replay_proof.py" in gates[
+        "user_erasure"
+    ]["evidence"]
+    assert "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md" in gates["user_erasure"][
+        "evidence"
+    ]
     assert gates["retention_policy"]["status"] == "partial"
     assert "docs/RETENTION_POLICY.md" in gates["retention_policy"]["evidence"]
     assert "docs/AUTHENTICATED_ACTIVITY_RETENTION_MARKER.md" in gates[
@@ -1145,6 +1163,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md" in gates["retention_policy"][
+        "evidence"
+    ]
+    assert "backend/app/account_erasure_replay_proof.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/app/auth_transient_retention.py" in gates[
@@ -1187,6 +1211,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_auth_transient_retention.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_account_erasure_replay_proof.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_preview.py" in gates[
@@ -1274,6 +1301,38 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert backup["provider_staging_restore_completed"] is False
     assert backup["maximum_encrypted_backup_retention_days"] == 30
     assert backup["restored_backup_must_reapply_erasure_requests"] is True
+    replay = backup["erasure_replay_proof"]
+    assert replay["implementation_status"] == (
+        "pure-replay-proof-builder-verifier-prepared-storage-and-replay-disabled"
+    )
+    assert replay["covered_erasure_reasons"] == [
+        "authenticated-user-request",
+        "inactive-account-retention",
+    ]
+    assert replay["schema_version"] == (
+        "calorieapp-account-erasure-replay-proof-v1"
+    )
+    assert replay["algorithm"] == "hmac-sha256-v1"
+    assert replay["minimum_secret_bytes"] == 32
+    assert replay["subject_and_evidence_domain_separated"] is True
+    assert replay["maximum_replay_horizon_days"] == 30
+    assert replay["timezone_aware_erasure_timestamp_required"] is True
+    assert replay["returned_timestamps"] == "naive-utc-with-z-serialization"
+    assert replay["raw_user_id_returned"] is False
+    assert replay["raw_authorization_reference_returned"] is False
+    assert replay["secret_key_returned"] is False
+    assert replay["subject_digest_is_pseudonymous_personal_data"] is True
+    assert replay["protected_independent_persistence_implemented"] is False
+    assert replay["restore_scanning_and_replay_implemented"] is False
+    assert replay["constant_time_digest_comparison"] is True
+    assert replay["creates_database_file_artifact_provider_or_network_record"] is False
+    assert replay["connected_to_logging_cli_endpoint_or_scheduler"] is False
+    assert replay["real_data_mutation_migration_or_deployment_performed"] is False
+    assert replay["implementation"] == (
+        "backend/app/account_erasure_replay_proof.py"
+    )
+    assert replay["tests"] == "backend/tests/test_account_erasure_replay_proof.py"
+    assert replay["runbook"] == "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
     assert backup["restore_replay_mechanism_implemented_and_proved"] is False
     assert backup["retention_and_backup_erasure_schedule_approved"] is True
 
