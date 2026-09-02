@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.27.0",
+  "contract_version": "1.28.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -337,7 +337,7 @@
     "unresolved_release_decisions": []
   },
   "account_data_export": {
-    "status": "v2-backend-and-eleven-language-account-action-ui-implemented-notice-review-pending",
+    "status": "v2-export-ui-and-pure-import-plan-implemented-provider-and-notice-review-pending",
     "format": "versioned-json",
     "format_version": "calorieapp-account-data-v1",
     "authenticated_user_only": true,
@@ -364,6 +364,21 @@
     "independent_language_or_legal_review_completed": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
+    "provider_neutral_import_plan_implemented": true,
+    "import_plan_version": "calorieapp-account-data-import-plan-v1",
+    "import_plan_supported_export_version": "calorieapp-account-data-v1",
+    "import_plan_requires_explicit_source_account_confirmation": true,
+    "import_plan_portable_collections": ["food_logs"],
+    "import_plan_reuses_source_database_row_ids": false,
+    "import_plan_rehydrates_identity_session_handoff_or_notice_state": false,
+    "import_plan_private_digest_may_be_publicly_logged": false,
+    "import_plan_private_digest_bound_to_target_account": true,
+    "import_validation_errors_retain_private_payload_details": false,
+    "future_import_requires_separate_target_authentication_and_authorization": true,
+    "authenticated_import_endpoint_implemented": false,
+    "database_import_mutation_implemented": false,
+    "provider_exit_import_proved": false,
+    "import_plan_has_endpoint_database_file_provider_network_or_deployment_capability": false,
     "account_export_changes_erasure_or_retention_policy": false
   },
   "account_erasure": {
@@ -925,6 +940,9 @@
     "open_schema_and_contracts_required": true,
     "reproducible_build_and_provider_neutral_deployment_required": true,
     "versioned_export_and_import_required": true,
+    "pure_versioned_food_history_import_plan_implemented": true,
+    "authenticated_transactional_import_and_provider_exit_proof_completed": false,
+    "authentication_security_state_may_be_imported_from_user_export": false,
     "user_controlled_encrypted_backup_required_before_continuity_claim": true,
     "public_xrpl_anchors_remain_independently_verifiable": true,
     "confidential_operator_succession_runbook_required": true,

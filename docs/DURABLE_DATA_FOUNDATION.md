@@ -79,7 +79,7 @@ until the durable-data and privacy gates pass.
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
-| User export | Authenticated versioned backend and eleven-language download UI exist | Complete the privacy notice, operator publication review and remaining provider proof |
+| User portability | Authenticated versioned export, eleven-language download UI and a pure fail-closed food-history import planner exist | Add authenticated transactional import, provider-exit proof, privacy notice and operator publication review |
 | User erasure | Backend and eleven-language double-confirmation UI exist and default off; zero-day primary deletion selected | Complete provider backup/replay proof and privacy-notice approval before activation |
 | Retention | Zero-day erasure, 30-day encrypted-backup ceiling, 24-month inactivity policy, bounded authentication-transient cleanup and a durable activity-marker migration are prepared | Prove provider migration/backfill, warning delivery, scheduling, restore replay and aligned eleven-language notices before activation |
 
@@ -89,7 +89,8 @@ until the durable-data and privacy gates pass.
 2. Complete the remaining preconfiguration review for the approved synthetic Neon staging experiment.
 3. Prove the no-additional-cost exit path with a synthetic database copy.
 4. Repeat the synthetic restart and process-replacement persistence proofs on the chosen provider.
-5. Implement authenticated data export and versioned import.
+5. Complete authenticated data portability: export and the pure import planner
+   exist; authenticated transactional import and provider-exit proof remain.
 6. Complete account erasure, including identity links and active sessions.
 7. Select an encrypted backup method and perform a documented staging restore.
 8. Test the confidential operator-succession runbook without exposing secrets.

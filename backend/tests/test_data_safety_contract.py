@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.27.0"
+    assert contract["contract_version"] == "1.28.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -149,7 +149,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-backend-and-eleven-language-account-action-ui-implemented-"
+        "v2-export-ui-and-pure-import-plan-implemented-provider-and-"
         "notice-review-pending"
     )
     assert export["format"] == "versioned-json"
@@ -191,6 +191,35 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["independent_language_or_legal_review_completed"] is False
     assert export["eleven_language_identity_bridge_ui_required"] is True
     assert export["privacy_notice_alignment_required"] is True
+    assert export["provider_neutral_import_plan_implemented"] is True
+    assert export["import_plan_version"] == (
+        "calorieapp-account-data-import-plan-v1"
+    )
+    assert export["import_plan_supported_export_version"] == (
+        "calorieapp-account-data-v1"
+    )
+    assert export[
+        "import_plan_requires_explicit_source_account_confirmation"
+    ] is True
+    assert export["import_plan_portable_collections"] == ["food_logs"]
+    assert export["import_plan_reuses_source_database_row_ids"] is False
+    assert export[
+        "import_plan_rehydrates_identity_session_handoff_or_notice_state"
+    ] is False
+    assert export["import_plan_private_digest_may_be_publicly_logged"] is False
+    assert export["import_plan_private_digest_bound_to_target_account"] is True
+    assert export[
+        "import_validation_errors_retain_private_payload_details"
+    ] is False
+    assert export[
+        "future_import_requires_separate_target_authentication_and_authorization"
+    ] is True
+    assert export["authenticated_import_endpoint_implemented"] is False
+    assert export["database_import_mutation_implemented"] is False
+    assert export["provider_exit_import_proved"] is False
+    assert export[
+        "import_plan_has_endpoint_database_file_provider_network_or_deployment_capability"
+    ] is False
     assert export["account_export_changes_erasure_or_retention_policy"] is False
 
 
@@ -1041,6 +1070,13 @@ def test_official_app_control_and_parallel_ecosystem_are_separate() -> None:
     assert continuity["open_schema_and_contracts_required"] is True
     assert continuity["reproducible_build_and_provider_neutral_deployment_required"] is True
     assert continuity["versioned_export_and_import_required"] is True
+    assert continuity["pure_versioned_food_history_import_plan_implemented"] is True
+    assert continuity[
+        "authenticated_transactional_import_and_provider_exit_proof_completed"
+    ] is False
+    assert continuity[
+        "authentication_security_state_may_be_imported_from_user_export"
+    ] is False
     assert continuity["user_controlled_encrypted_backup_required_before_continuity_claim"] is True
     assert continuity["public_xrpl_anchors_remain_independently_verifiable"] is True
     assert continuity["confidential_operator_succession_runbook_required"] is True
@@ -1126,7 +1162,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.16.0"
+    assert matrix["contract_version"] == "1.17.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1143,7 +1179,16 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]["evidence"]
     assert gates["component_rights_and_contributor_provenance"]["status"] == "partial"
     assert gates["zero_additional_cost_capacity_and_exit_plan"]["status"] == "partial"
+    assert "backend/app/account_data_import.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
+    assert "backend/tests/test_account_data_import.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
+    assert "docs/ACCOUNT_DATA_IMPORT.md" in gates[
+        "ecosystem_operator_succession_and_handover"
+    ]["evidence"]
     assert gates["restart_persistence"]["status"] == "partial"
     assert gates["redeploy_persistence"]["status"] == "partial"
     assert "backend/app/redeploy_persistence_drill.py" in gates[
@@ -1166,6 +1211,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
     ]
+    assert "backend/app/account_data_import.py" in gates["user_data_export"][
+        "evidence"
+    ]
+    assert "backend/tests/test_account_data_import.py" in gates[
+        "user_data_export"
+    ]["evidence"]
     assert "frontend/config/account-privacy-copy.json" in gates[
         "user_data_export"
     ]["evidence"]
