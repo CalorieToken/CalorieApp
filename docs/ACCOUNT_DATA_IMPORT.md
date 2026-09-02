@@ -1,8 +1,9 @@
 # Guarded account-data import foundation
 
-Status: provider-neutral validation, planning, admission and guarded internal
-transaction staging implemented; authenticated upload, production activation
-and provider-exit execution remain blocked.
+Status: provider-neutral validation, planning, admission, guarded transaction
+staging and an authenticated upload route with eleven-language UI are
+implemented but disabled. Production activation and provider-exit execution
+remain blocked.
 
 ## Purpose
 
@@ -12,7 +13,8 @@ first two import slices stop before any write. They prove that an untrusted
 export can be bounded, validated and converted into an explicit food-log plan,
 then admitted under a conservative target and capacity policy without treating
 exported authentication history as reusable proof. A third internal slice can
-stage an admitted plan in a caller-owned non-production transaction.
+stage an admitted plan in a caller-owned non-production transaction. The fourth
+slice connects this to an authenticated route and hidden UI without enabling it.
 
 `backend/app/account_data_import.py` accepts UTF-8 JSON bytes and requires:
 
@@ -108,23 +110,50 @@ SQLite remains a local single-process aid; PostgreSQL supplies the cross-process
 transaction lock and is exercised with synthetic data in CI, including
 contention against the normal food-log writer.
 
+## Authenticated route and UI boundary
+
+`POST /api/identity/import` accepts the original JSON export bytes only after
+normal session authentication. It derives the destination from that server-side
+session and requires the user to type both the exact source account identifier
+from the export and the exact signed-in destination account identifier. A fixed
+acknowledgement confirms that only food-log snapshots are portable.
+
+The route is constrained by all of the following independent gates:
+
+- `ACCOUNT_DATA_IMPORT_ENABLED` defaults to `false`;
+- `CALORIEAPP_ENV` must be `local`, `test` or `staging`; production is rejected;
+- `ACCOUNT_DATA_IMPORT_APPROVED_COMMIT_SHA` must be one lowercase 40-character
+  reviewed commit SHA;
+- `CALORIEAPP_RELEASE_COMMIT_SHA` must identify the actually running code and
+  match that approved SHA exactly, so later builds do not inherit enablement;
+- the same-origin frontend proxy requires an exact import-purpose header;
+- request bodies stop at 5 MiB and the route admits at most five attempts per
+  minute through the shared database-backed limiter; and
+- the complete staged import commits once or rolls back. Validation and
+  database failures return bounded messages without private values or digests.
+
+The UI has an independent
+`NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED=false` default, uses the original
+file bytes without browser persistence, supplies all confirmations and provides
+complete product copy in the eleven registered locales. The copy has not been
+independently reviewed and is not a complete privacy notice.
+
 ## Current safety boundary
 
-These slices have no HTTP route, browser upload control, file output, provider
-integration, network call, scheduler, production mode or deployment action. A
-forward schema migration and internal database staging helper are prepared and
-tested only against disposable local/CI data; no staging or production
-migration was run. They do not prove a provider exit or authorize import of
+The endpoint and browser control now exist but both remain disabled by default.
+They have no provider integration, scheduler or production capability. The
+uploaded JSON exists only in request/browser memory and is not retained as a
+file. A forward schema migration and transaction helper remain prepared and
+tested only against disposable local/CI data; no external staging or production
+migration was run. This does not prove a provider exit or authorize import of
 real user data.
 
-Before import can be enabled, a later reviewed slice must add:
+Before import can be enabled, later reviewed work must add:
 
-1. an authenticated upload endpoint and eleven-language confirmation UI;
-2. route-level derivation of the target from the authenticated session plus an
-   explicitly reviewed feature flag and single commit boundary;
-3. an isolated synthetic PostgreSQL source-to-successor provider-exit test;
-4. an export-format decision for private replay-receipt metadata before any
+1. an isolated synthetic PostgreSQL source-to-successor provider-exit test;
+2. an export-format decision for private replay-receipt metadata before any
    user-facing import activation;
-5. privacy-notice and eleven-language consequence copy; and
-6. explicit operator approval before any external staging mutation, provider action or
+3. an approved complete privacy notice and operator review of the prepared
+   eleven-language consequence copy; and
+4. explicit operator approval before any external staging mutation, provider action or
    production activation.

@@ -20,6 +20,10 @@ const EXPORT_COMPONENT_PATH = new URL(
   "../../frontend/components/AccountDataExportButton.tsx",
   import.meta.url
 );
+const IMPORT_COMPONENT_PATH = new URL(
+  "../../frontend/components/AccountDataImportPanel.tsx",
+  import.meta.url
+);
 const ERASURE_COMPONENT_PATH = new URL(
   "../../frontend/components/AccountErasurePanel.tsx",
   import.meta.url
@@ -45,6 +49,26 @@ const exportKeys = [
   "session_expired",
   "review_required",
   "success",
+  "unavailable",
+];
+const importKeys = [
+  "section_label",
+  "title",
+  "description",
+  "file_label",
+  "source_confirmation",
+  "target_confirmation",
+  "target_account_identifier",
+  "acknowledgement",
+  "button_busy",
+  "button_confirm",
+  "session_expired",
+  "validation_failed",
+  "import_blocked",
+  "temporarily_unavailable",
+  "file_size_invalid",
+  "success",
+  "already_imported",
   "unavailable",
 ];
 const erasureKeys = [
@@ -132,7 +156,7 @@ test("private account controls have complete copy for all eleven locales", async
   const requiredLocales = localeRegistry.locales.map((locale) => locale.tag);
 
   assert.equal(copyRegistry.contract_id, "calorieapp.account-privacy-ui-copy");
-  assert.equal(copyRegistry.contract_version, "1.1.0");
+  assert.equal(copyRegistry.contract_version, "1.2.0");
   assert.equal(copyRegistry.source_locale, "en");
   assert.deepEqual(
     sortedKeys(copyRegistry.locales),
@@ -143,12 +167,17 @@ test("private account controls have complete copy for all eleven locales", async
     const translation = copyRegistry.locales[locale];
     assert.deepEqual(
       sortedKeys(translation),
-      ["service_startup_timeout", "export", "erasure"].sort(),
+      ["service_startup_timeout", "export", "import", "erasure"].sort(),
       locale
     );
     assert.deepEqual(
       sortedKeys(translation.export),
       [...exportKeys].sort(),
+      locale
+    );
+    assert.deepEqual(
+      sortedKeys(translation.import),
+      [...importKeys].sort(),
       locale
     );
     assert.deepEqual(
@@ -159,6 +188,7 @@ test("private account controls have complete copy for all eleven locales", async
     for (const value of [
       translation.service_startup_timeout,
       ...Object.values(translation.export),
+      ...Object.values(translation.import),
       ...Object.values(translation.erasure),
     ]) {
       assert.equal(typeof value, "string", locale);
@@ -166,12 +196,18 @@ test("private account controls have complete copy for all eleven locales", async
     }
     if (locale !== "en") {
       assert.notEqual(translation.export.title, copyRegistry.locales.en.export.title);
+      assert.notEqual(translation.import.title, copyRegistry.locales.en.import.title);
       assert.notEqual(translation.erasure.title, copyRegistry.locales.en.erasure.title);
       assert.notEqual(
         translation.service_startup_timeout,
         copyRegistry.locales.en.service_startup_timeout
       );
     }
+    assert.notEqual(
+      translation.service_startup_timeout,
+      translation.import.unavailable,
+      locale
+    );
     assert.notEqual(
       translation.service_startup_timeout,
       translation.export.unavailable,
@@ -196,6 +232,14 @@ test("English account copy retains every canonical factual consequence", async (
     .required_plain_language_facts) {
     assert.equal(english.export.description.includes(fact), true, fact);
   }
+  for (const fact of privacyAlignment.current_english_product_copy.private_import
+    .required_plain_language_facts) {
+    assert.equal(english.import.description.includes(fact), true, fact);
+  }
+  assert.equal(
+    english.import.temporarily_unavailable,
+    "Private import is temporarily unavailable. No data was imported."
+  );
   const erasureText = [
     english.erasure.description,
     english.erasure.confirmation_intro,
@@ -227,13 +271,14 @@ test("missing right-to-left copy falls back to English locale and direction", as
 });
 
 test("account controls receive locale context and expose language direction", async () => {
-  const [exportComponent, erasureComponent, loginPanel] = await Promise.all([
+  const [exportComponent, importComponent, erasureComponent, loginPanel] = await Promise.all([
     readFile(EXPORT_COMPONENT_PATH, "utf8"),
+    readFile(IMPORT_COMPONENT_PATH, "utf8"),
     readFile(ERASURE_COMPONENT_PATH, "utf8"),
     readFile(LOGIN_PANEL_PATH, "utf8"),
   ]);
 
-  for (const component of [exportComponent, erasureComponent]) {
+  for (const component of [exportComponent, importComponent, erasureComponent]) {
     assert.equal(component.includes("getAccountPrivacyCopy(locale)"), true);
     assert.equal(component.includes("lang={localized.locale}"), true);
     assert.equal(component.includes("dir={localized.direction}"), true);

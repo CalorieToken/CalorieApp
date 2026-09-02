@@ -1,6 +1,6 @@
 # CalorieApp privacy-notice alignment record
 
-Status: canonical product facts and eleven-language export and erasure
+Status: canonical product facts and eleven-language export, import and erasure
 consequence copy are aligned. A complete public privacy notice, controller and
 provider details, linguistic/legal review, publication and production
 activation remain release-blocking.
@@ -15,7 +15,7 @@ repository change is legal certification or a published privacy notice.
 The machine-readable source is
 `contracts/data-safety/v1/privacy-notice-alignment.json`. Contract tests compare
 its selected values with `data-safety.json`, the eleven-locale registry and the
-localized export and erasure copy contract.
+localized export, import and erasure copy contract.
 
 ## Canonical product facts
 
@@ -28,6 +28,13 @@ localized export and erasure copy contract.
   direct ownership is withheld.
 - CalorieApp does not send the downloaded export to another service and the
   download does not itself delete server data.
+- Private import remains disabled by default and rejects production. If later
+  approved for one exact reviewed staging build, it accepts only the signed-in
+  destination account, requires exact source and destination confirmations and
+  requires a new target to have no food-log records. Only private food-log
+  snapshots are imported. Identity links, sessions, authorization activity,
+  browser handoffs, inactive-account notices and source database row IDs are
+  not restored. The uploaded export is not retained as a file.
 - Direct account erasure remains disabled by default. If separately approved
   and enabled, a confirmed request removes directly owned primary-store data
   immediately, with no app recovery window. Encrypted backups may retain a
@@ -50,7 +57,7 @@ localized export and erasure copy contract.
 
 ## Eleven-language consequence copy
 
-The authenticated interface now explains the most immediate export and
+The authenticated interface now explains the most immediate export, import and
 deletion consequences in all eleven registered locales. The source-locale
 sentences remain locked to the canonical facts, every locale must provide every
 copy key, unsupported locales fall back to English, and Arabic and Urdu use

@@ -344,6 +344,14 @@ class AccountDataExportResponse(BaseModel):
         return _ensure_utc(value)
 
 
+class AccountDataImportResponse(BaseModel):
+    """Minimal result for one reviewed private account-data import."""
+
+    import_version: Literal["calorieapp-account-data-import-transaction-v1"]
+    status: Literal["imported", "already_imported"]
+    imported_food_log_rows: int = Field(..., ge=0, le=10_000)
+
+
 class AccountErasureRequest(BaseModel):
     """Explicit confirmation bound to the authenticated internal account."""
 

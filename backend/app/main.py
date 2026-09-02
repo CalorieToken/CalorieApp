@@ -11,7 +11,7 @@ from typing import Annotated, Optional
 from urllib.parse import parse_qsl, quote_plus, urlencode, urlsplit, urlunsplit
 
 import httpx
-from fastapi import Cookie, Depends, FastAPI, HTTPException, Query, Request, Response
+from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import HTTPError
 from pydantic import ValidationError
@@ -20,6 +20,21 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from . import database as db_module
+from .account_data_import import (
+    AccountDataImportSafetyError,
+    plan_account_data_import,
+)
+from .account_data_import_release import (
+    ACCOUNT_DATA_IMPORT_ACKNOWLEDGEMENT,
+    ACCOUNT_DATA_IMPORT_REQUEST_VALUE,
+    AccountDataImportReleaseGateError,
+    require_account_data_import_release_gate,
+)
+from .account_data_import_transaction import (
+    IMPORT_TRANSACTION_VERSION,
+    AccountDataImportTransactionSafetyError,
+    execute_account_data_import_transaction,
+)
 from .capacity import (
     OnboardingCapacityPaused,
     enforce_new_user_onboarding_capacity,
@@ -52,6 +67,7 @@ from .source_admission import AdapterAdmissionRejected
 from .schemas import (
     AccountErasureRequest,
     AccountErasureResponse,
+    AccountDataImportResponse,
     AccountDataExportResponse,
     AccountExportAccount,
     AccountExportAuthSession,
@@ -132,6 +148,18 @@ _ACCOUNT_ERASURE_ENABLED = os.getenv("ACCOUNT_ERASURE_ENABLED", "false").lower()
     "true",
     "yes",
 }
+_ACCOUNT_DATA_IMPORT_ENABLED = os.getenv(
+    "ACCOUNT_DATA_IMPORT_ENABLED",
+    "false",
+).lower() in {"1", "true", "yes"}
+_ACCOUNT_DATA_IMPORT_APPROVED_COMMIT_SHA = os.getenv(
+    "ACCOUNT_DATA_IMPORT_APPROVED_COMMIT_SHA",
+    "",
+).strip()
+_CALORIEAPP_RELEASE_COMMIT_SHA = os.getenv(
+    "CALORIEAPP_RELEASE_COMMIT_SHA",
+    "",
+).strip()
 _IDENTITY_PROVIDER = "wordpress_xumm"
 
 if not _WORDPRESS_BRIDGE_SECRET:
@@ -1206,6 +1234,110 @@ def identity_export(
             "handoff_token_hash",
             "notice_delivery_evidence_digest",
         ],
+    )
+
+
+@app.post("/api/identity/import", response_model=AccountDataImportResponse)
+async def identity_import(
+    request: Request,
+    session: DbSession,
+    current_user: CurrentUser,
+    source_account_confirmation: Annotated[
+        Optional[str],
+        Header(alias="X-CalorieApp-Import-Source-Account"),
+    ] = None,
+    target_account_confirmation: Annotated[
+        Optional[str],
+        Header(alias="X-CalorieApp-Import-Target-Account"),
+    ] = None,
+    acknowledgement: Annotated[
+        Optional[str],
+        Header(alias="X-CalorieApp-Import-Acknowledgement"),
+    ] = None,
+    request_purpose: Annotated[
+        Optional[str],
+        Header(alias="X-CalorieApp-Request"),
+    ] = None,
+) -> AccountDataImportResponse:
+    """Import private food history into one authenticated clean account.
+
+    This route remains disabled by default, rejects production, and is bound
+    to one exact reviewed deployment commit. The request body is the original
+    export JSON so duplicate-key and byte-boundary checks remain effective.
+    """
+
+    try:
+        approval_reference = require_account_data_import_release_gate(
+            enabled=_ACCOUNT_DATA_IMPORT_ENABLED,
+            environment=_CALORIEAPP_ENV,
+            approved_commit_sha=_ACCOUNT_DATA_IMPORT_APPROVED_COMMIT_SHA,
+            running_commit_sha=_CALORIEAPP_RELEASE_COMMIT_SHA,
+        )
+    except AccountDataImportReleaseGateError:
+        raise HTTPException(
+            status_code=503,
+            detail="Account data import is not enabled",
+        ) from None
+
+    if request_purpose != ACCOUNT_DATA_IMPORT_REQUEST_VALUE:
+        raise HTTPException(status_code=403, detail="Import request was not allowed")
+    if acknowledgement != ACCOUNT_DATA_IMPORT_ACKNOWLEDGEMENT:
+        raise HTTPException(status_code=409, detail="Import acknowledgement did not match")
+    if target_account_confirmation != current_user.id:
+        raise HTTPException(status_code=409, detail="Account confirmation did not match")
+
+    content_type = request.headers.get("content-type", "").partition(";")[0].strip().lower()
+    if content_type != "application/json":
+        raise HTTPException(
+            status_code=415,
+            detail="Account data import requires a JSON export",
+        )
+
+    payload = await request.body()
+    try:
+        plan = plan_account_data_import(
+            payload,
+            confirmed_source_user_id=source_account_confirmation or "",
+            target_user_id=current_user.id,
+        )
+        result = execute_account_data_import_transaction(
+            session,
+            plan,
+            authenticated_target_account_id=current_user.id,
+            confirmed_target_account_id=target_account_confirmation,
+            environment=_CALORIEAPP_ENV or "",
+            execute=True,
+            approval_reference=approval_reference,
+        )
+        session.commit()
+    except AccountDataImportSafetyError:
+        session.rollback()
+        raise HTTPException(
+            status_code=422,
+            detail="Account data import did not match the reviewed export format",
+        ) from None
+    except AccountDataImportTransactionSafetyError:
+        session.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Account data import could not be applied safely",
+        ) from None
+    except SQLAlchemyError:
+        session.rollback()
+        raise HTTPException(
+            status_code=503,
+            detail="Account data import is temporarily unavailable",
+        ) from None
+
+    logger.info("Authenticated account-data import committed")
+    return AccountDataImportResponse(
+        import_version=IMPORT_TRANSACTION_VERSION,
+        status=(
+            "imported"
+            if result.action == "staged_insert"
+            else "already_imported"
+        ),
+        imported_food_log_rows=result.staged_food_log_rows,
     )
 
 

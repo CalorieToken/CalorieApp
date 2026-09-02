@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccountDataExportButton } from "@/components/AccountDataExportButton";
+import { AccountDataImportPanel } from "@/components/AccountDataImportPanel";
 import { AccountErasurePanel } from "@/components/AccountErasurePanel";
 import { announceAuthState } from "@/components/authEvents";
 import {
@@ -49,6 +50,8 @@ type PendingLogin = {
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_ERASURE_UI_ENABLED =
   process.env.NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED === "true";
+const ACCOUNT_DATA_IMPORT_UI_ENABLED =
+  process.env.NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED === "true";
 const LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_MIDDLE_POLL_INTERVAL_MS = 10_000;
 const LOGIN_STATUS_LONG_POLL_INTERVAL_MS = 20_000;
@@ -989,6 +992,17 @@ export function XamanLoginPanel() {
               setError(message);
             }}
           />
+          {ACCOUNT_DATA_IMPORT_UI_ENABLED ? (
+            <AccountDataImportPanel
+              userId={currentUser.user_id}
+              locale={displayLocale}
+              onAuthenticationLost={(message) => {
+                setCurrentUser(null);
+                announceAuthState(false);
+                setError(message);
+              }}
+            />
+          ) : null}
           {ACCOUNT_ERASURE_UI_ENABLED ? (
             <AccountErasurePanel
               userId={currentUser.user_id}
