@@ -16,9 +16,12 @@ import app.account_data_import as import_module
 import app.account_data_import_admission as admission_module
 import app.account_data_import_transaction as transaction_module
 from app.account_data_import import (
+    CURRENT_EXPORT_VERSION,
     IMPORT_PLAN_VERSION,
+    LEGACY_EXPORT_VERSION,
     REQUIRED_EXCLUDED_SECURITY_FIELDS,
-    SUPPORTED_EXPORT_VERSION,
+    SUPPORTED_EXPORT_VERSIONS,
+    V1_REQUIRED_EXCLUDED_SECURITY_FIELDS,
     AccountDataImportPlan,
     AccountDataImportSafetyError,
     plan_account_data_import,
@@ -48,9 +51,11 @@ SOURCE_USER_ID = "00000000-0000-0000-0000-000000000071"
 TARGET_USER_ID = "00000000-0000-0000-0000-000000000072"
 
 
-def _payload() -> dict[str, object]:
-    return {
-        "export_version": SUPPORTED_EXPORT_VERSION,
+def _payload(
+    export_version: str = CURRENT_EXPORT_VERSION,
+) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "export_version": export_version,
         "exported_at": "2026-09-02T12:00:00Z",
         "account": {
             "user_id": SOURCE_USER_ID,
@@ -116,8 +121,22 @@ def _payload() -> dict[str, object]:
                 "recorded_at": "2025-12-05T00:00:01Z",
             }
         ],
-        "excluded_security_fields": sorted(REQUIRED_EXCLUDED_SECURITY_FIELDS),
+        "excluded_security_fields": sorted(
+            V1_REQUIRED_EXCLUDED_SECURITY_FIELDS
+            if export_version == LEGACY_EXPORT_VERSION
+            else REQUIRED_EXCLUDED_SECURITY_FIELDS
+        ),
     }
+    if export_version == CURRENT_EXPORT_VERSION:
+        payload["account_import_receipts"] = [
+            {
+                "imported_at": "2026-08-30T09:00:00Z",
+                "food_log_count": 1,
+                "source_export_version": LEGACY_EXPORT_VERSION,
+                "import_plan_version": IMPORT_PLAN_VERSION,
+            }
+        ]
+    return payload
 
 
 def _encoded(payload: dict[str, object] | None = None, **json_options) -> bytes:
@@ -142,6 +161,7 @@ def _admit(plan: AccountDataImportPlan | None = None, **overrides):
         "confirmed_target_account_id": TARGET_USER_ID,
         "existing_target_food_log_count": 0,
         "private_digest_already_recorded": False,
+        "any_private_receipt_recorded": False,
     }
     values.update(overrides)
     return admit_account_data_import(**values)
@@ -151,7 +171,8 @@ def test_planner_prepares_only_newly_owned_food_log_values() -> None:
     plan = _plan()
 
     assert plan.plan_version == IMPORT_PLAN_VERSION
-    assert plan.export_version == SUPPORTED_EXPORT_VERSION
+    assert plan.export_version == CURRENT_EXPORT_VERSION
+    assert plan.export_version in SUPPORTED_EXPORT_VERSIONS
     assert plan.source_account_id == SOURCE_USER_ID
     assert plan.target_account_id == TARGET_USER_ID
     assert plan.exported_at == datetime(2026, 9, 2, 12)
@@ -176,6 +197,7 @@ def test_planner_prepares_only_newly_owned_food_log_values() -> None:
         ("authorization_events", 0),
         ("login_handoffs", 1),
         ("inactive_account_notices", 1),
+        ("account_import_receipts", 1),
     )
     private_plan_text = repr(plan)
     assert private_plan_text == "AccountDataImportPlan(<private>)"
@@ -194,6 +216,43 @@ def test_planner_prepares_only_newly_owned_food_log_values() -> None:
         "food_logs",
         "ignored_collection_counts",
     }
+
+
+def test_legacy_v1_export_remains_supported_without_receipt_summaries() -> None:
+    payload = _payload(LEGACY_EXPORT_VERSION)
+
+    assert "account_import_receipts" not in payload
+    plan = _plan(_encoded(payload))
+
+    assert plan.export_version == LEGACY_EXPORT_VERSION
+    assert plan.ignored_collection_counts == (
+        ("external_identities", 1),
+        ("authentication_sessions", 1),
+        ("authorization_events", 0),
+        ("login_handoffs", 1),
+        ("inactive_account_notices", 1),
+    )
+
+
+def test_export_without_food_logs_is_not_importable() -> None:
+    payload = _payload()
+    payload["food_logs"] = []
+
+    with pytest.raises(AccountDataImportSafetyError, match="at least one food"):
+        _plan(_encoded(payload))
+
+
+def test_v2_receipt_summaries_are_validated_but_never_planned_for_restore() -> None:
+    payload = _payload()
+    payload["account_import_receipts"][0]["private_import_digest"] = "a" * 64
+
+    with pytest.raises(AccountDataImportSafetyError, match="reviewed fields"):
+        _plan(_encoded(payload))
+
+    del payload["account_import_receipts"][0]["private_import_digest"]
+    plan = _plan(_encoded(payload))
+    assert not hasattr(plan, "account_import_receipts")
+    assert ("account_import_receipts", 1) in plan.ignored_collection_counts
 
 
 def test_digest_is_stable_across_json_whitespace_and_key_order() -> None:
@@ -248,7 +307,7 @@ def test_unreviewed_fields_are_rejected_at_every_portable_boundary(
     else:
         payload["food_logs"][0]["owner_id"] = "untrusted-owner"
 
-    with pytest.raises(AccountDataImportSafetyError, match="reviewed v1 fields"):
+    with pytest.raises(AccountDataImportSafetyError, match="reviewed fields"):
         _plan(_encoded(payload))
 
 
@@ -294,8 +353,19 @@ def test_pathological_json_integer_has_a_bounded_safety_error() -> None:
 def test_large_json_integer_in_unreviewed_shape_fails_closed() -> None:
     large_but_parseable = f'{{"number":{"9" * 1_000}}}'.encode("ascii")
 
-    with pytest.raises(AccountDataImportSafetyError, match="reviewed v1 fields"):
+    with pytest.raises(AccountDataImportSafetyError, match="not supported"):
         _plan(large_but_parseable)
+
+
+@pytest.mark.parametrize("invalid_version", [None, 2, [], {}])
+def test_non_string_export_versions_fail_closed(
+    invalid_version: object,
+) -> None:
+    payload = _payload()
+    payload["export_version"] = invalid_version
+
+    with pytest.raises(AccountDataImportSafetyError, match="not supported"):
+        _plan(_encoded(payload))
 
 
 def test_collection_item_limit_fails_closed(monkeypatch) -> None:
@@ -329,7 +399,7 @@ def test_security_exclusion_boundary_must_match_exactly(
         _plan(_encoded(payload))
 
 
-def test_authorization_activity_cannot_be_rehydrated_from_v1() -> None:
+def test_authorization_activity_cannot_be_rehydrated() -> None:
     payload = _payload()
     payload["authorization_events"] = [
         {
@@ -368,6 +438,7 @@ def test_duplicate_food_log_source_ids_are_rejected() -> None:
         (("exported_at",), "2026-09-02T12:00:00"),
         (("account", "created_at"), "2026-01-01T00:00:00"),
         (("food_logs", 0, "created_at"), "2026-08-31T10:30:00"),
+        (("account_import_receipts", 0, "imported_at"), "2026-08-30T09:00:00"),
     ],
 )
 def test_imported_timestamps_require_explicit_timezones(
@@ -395,10 +466,17 @@ def test_account_and_food_log_timeline_must_precede_export() -> None:
     with pytest.raises(AccountDataImportSafetyError, match="food log"):
         _plan(_encoded(food_payload))
 
+    receipt_payload = _payload()
+    receipt_payload["account_import_receipts"][0]["imported_at"] = (
+        "2026-09-03T00:00:00Z"
+    )
+    with pytest.raises(AccountDataImportSafetyError, match="import receipt"):
+        _plan(_encoded(receipt_payload))
+
 
 def test_wrong_version_invalid_values_and_nonfinite_numbers_fail_closed() -> None:
     wrong_version = _payload()
-    wrong_version["export_version"] = "calorieapp-account-data-v2"
+    wrong_version["export_version"] = "calorieapp-account-data-v3"
     with pytest.raises(AccountDataImportSafetyError, match="not supported"):
         _plan(_encoded(wrong_version))
 
@@ -474,6 +552,7 @@ def test_exact_recorded_digest_is_an_idempotent_noop_even_at_capacity() -> None:
     admission = _admit(
         existing_target_food_log_count=FOOD_LOG_IMPORT_TARGET_LIMIT,
         private_digest_already_recorded=True,
+        any_private_receipt_recorded=True,
     )
 
     assert admission.action == "idempotent_noop"
@@ -483,6 +562,16 @@ def test_exact_recorded_digest_is_an_idempotent_noop_even_at_capacity() -> None:
 def test_new_import_into_nonempty_target_fails_closed_without_content_dedup() -> None:
     with pytest.raises(AccountDataImportAdmissionError, match="not clean"):
         _admit(existing_target_food_log_count=1)
+
+
+def test_new_import_rejects_prior_private_import_history() -> None:
+    with pytest.raises(AccountDataImportAdmissionError, match="import history"):
+        _admit(any_private_receipt_recorded=True)
+
+
+def test_exact_receipt_evidence_cannot_contradict_receipt_history() -> None:
+    with pytest.raises(AccountDataImportAdmissionError, match="inconsistent"):
+        _admit(private_digest_already_recorded=True)
 
 
 def test_distinct_source_rows_with_equal_food_content_are_preserved() -> None:
@@ -541,6 +630,7 @@ def test_import_admission_requires_authenticated_and_confirmed_exact_target(
             "reviewed maximum",
         ),
         ({"private_digest_already_recorded": 1}, "must be a boolean"),
+        ({"any_private_receipt_recorded": 1}, "must be a boolean"),
     ],
 )
 def test_import_admission_rejects_ambiguous_control_values(
@@ -555,9 +645,11 @@ def test_import_admission_rejects_ambiguous_control_values(
     "invalid_plan",
     [
         replace(_plan(), plan_version="unreviewed-plan-version"),
+        replace(_plan(), export_version=[]),
         replace(_plan(), private_import_digest="A" * 64),
         replace(_plan(), private_import_digest=1),
         replace(_plan(), food_logs=[]),
+        replace(_plan(), food_logs=()),
         replace(
             _plan(),
             food_logs=(
@@ -665,6 +757,35 @@ def test_account_import_transaction_commit_makes_exact_replay_a_noop() -> None:
             assert len(session.exec(select(FoodLogDB)).all()) == 1
             assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
             session.rollback()
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_rejects_new_plan_after_logs_are_deleted() -> None:
+    test_engine = _transaction_engine()
+    try:
+        with Session(test_engine) as session:
+            created = _execute_transaction(session)
+            assert created.action == "staged_insert"
+            session.commit()
+
+        with Session(test_engine) as session:
+            session.delete(session.exec(select(FoodLogDB)).one())
+            session.commit()
+
+        changed_payload = _payload()
+        changed_payload["food_logs"][0]["product_name"] = "Different apple"
+        changed_plan = _plan(_encoded(changed_payload))
+        with Session(test_engine) as session:
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="admission was rejected",
+            ):
+                _execute_transaction(session, changed_plan)
+            assert session.exec(select(FoodLogDB)).all() == []
+            assert len(
+                session.exec(select(AccountDataImportReceiptDB)).all()
+            ) == 1
     finally:
         test_engine.dispose()
 

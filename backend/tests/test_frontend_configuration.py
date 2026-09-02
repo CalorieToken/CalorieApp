@@ -46,11 +46,12 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
 
     assert '"/api/backend"' in export_source
     assert "${BACKEND_BASE_URL}/api/identity/export" in export_source
-    assert '"calorieapp-account-data-v1"' in export_source
-    assert '"calorieapp-account-data-v1.json"' in export_source
+    assert '"calorieapp-account-data-v2"' in export_source
+    assert '"calorieapp-account-data-v2.json"' in export_source
     assert 'cache: "no-store"' in export_source
     assert "isVersionedAccountExport(payload)" in export_source
     assert "candidate.inactive_account_notices" in export_source
+    assert "candidate.account_import_receipts" in export_source
     assert "getAccountPrivacyCopy(locale)" in export_source
     assert "warning" in account_copy["description"]
     assert "history for inactive accounts" in account_copy["description"]

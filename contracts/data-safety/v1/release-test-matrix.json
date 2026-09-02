@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.21.0",
+  "contract_version": "1.22.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -55,6 +55,7 @@
         "backend/app/account_data_import_transaction.py",
         "backend/app/account_data_import_release.py",
         "backend/app/schema_migrations/versions/v20260902_0015.py",
+        "backend/app/schema_migrations/versions/v20260902_0016.py",
         "backend/app/schema_migrations/versions/v20260831_0005.py",
         "backend/tests/test_data_growth.py",
         "docs/PER_SUBJECT_STORAGE_BUDGET.md",
@@ -138,6 +139,7 @@
         "backend/app/schema_migrations/versions/v20260901_0013.py",
         "backend/app/schema_migrations/versions/v20260902_0014.py",
         "backend/app/schema_migrations/versions/v20260902_0015.py",
+        "backend/app/schema_migrations/versions/v20260902_0016.py",
         "backend/tests/test_database.py"
       ]
     },
@@ -237,6 +239,7 @@
         "backend/app/account_data_import_transaction.py",
         "backend/app/account_data_import_release.py",
         "backend/app/schema_migrations/versions/v20260902_0015.py",
+        "backend/app/schema_migrations/versions/v20260902_0016.py",
         "backend/tests/test_account_data_import.py",
         "backend/tests/test_account_data_import_endpoint.py",
         "backend/tests/test_postgresql_integration.py",

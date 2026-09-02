@@ -156,7 +156,7 @@ test("private account controls have complete copy for all eleven locales", async
   const requiredLocales = localeRegistry.locales.map((locale) => locale.tag);
 
   assert.equal(copyRegistry.contract_id, "calorieapp.account-privacy-ui-copy");
-  assert.equal(copyRegistry.contract_version, "1.2.0");
+  assert.equal(copyRegistry.contract_version, "1.3.0");
   assert.equal(copyRegistry.source_locale, "en");
   assert.deepEqual(
     sortedKeys(copyRegistry.locales),

@@ -96,8 +96,9 @@ encrypted backup. If the central service disappears, those artifacts preserve
 the user's own history without exposing it publicly. A successor service may
 import it only after authentication, format validation and explicit user action.
 
-The current pure import planner validates the exact v1 private export and
-prepares only food-log snapshots for a separately authenticated target account.
+The current pure import planner validates the exact version-specific v1 or v2
+private export and prepares only food-log snapshots for a separately
+authenticated target account.
 The pure admission layer then requires the authenticated target and explicit
 confirmation to match, allows a new plan only for a clean target, treats an
 already-recorded exact digest as a no-op, and enforces the retained-row ceiling.
@@ -106,9 +107,10 @@ food rows and private replay receipt under the same transaction lock without
 committing. A guarded authenticated upload route and eleven-language UI also
 exist, remain disabled by default and reject production. None of these layers
 rehydrates exported identities, sessions, authorization activity, browser
-handoffs or retention notices. The future v2 receipt-summary boundary is
-selected without exporting the replay digest, but its runtime implementation
-and provider-exit evidence remain pending; see `ACCOUNT_DATA_IMPORT.md`.
+handoffs or retention notices. V2 receipt summaries exclude the private replay
+digest and are validated only as informational history, never restored as live
+replay evidence. The prepared migration and provider-exit evidence remain
+pending; see `ACCOUNT_DATA_IMPORT.md`.
 
 ## Prohibited shortcuts
 

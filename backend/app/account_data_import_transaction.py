@@ -155,6 +155,20 @@ def _private_digest_receipt(
     ).one_or_none()
 
 
+def _target_has_private_receipt(
+    session: Session,
+    target_account_id: str,
+) -> bool:
+    return bool(
+        session.exec(
+            select(sa.func.count(AccountDataImportReceiptDB.id)).where(
+                AccountDataImportReceiptDB.target_account_id
+                == target_account_id
+            )
+        ).one()
+    )
+
+
 def _require_receipt_matches_plan(
     receipt: AccountDataImportReceiptDB | None,
     plan: AccountDataImportPlan,
@@ -234,6 +248,7 @@ def execute_account_data_import_transaction(
             confirmed_target_account_id=confirmed_target_account_id,
             existing_target_food_log_count=0,
             private_digest_already_recorded=False,
+            any_private_receipt_recorded=False,
             food_log_limit=FOOD_LOG_SUBJECT_ENTRY_LIMIT,
         )
 
@@ -254,12 +269,17 @@ def execute_account_data_import_transaction(
                 private_import_digest=plan.private_import_digest,
             )
             digest_recorded = _require_receipt_matches_plan(receipt, plan)
+            any_receipt_recorded = _target_has_private_receipt(
+                session,
+                authenticated_target_account_id,
+            )
             admission = admit_account_data_import(
                 plan,
                 authenticated_target_account_id=authenticated_target_account_id,
                 confirmed_target_account_id=confirmed_target_account_id,
                 existing_target_food_log_count=existing_count,
                 private_digest_already_recorded=digest_recorded,
+                any_private_receipt_recorded=any_receipt_recorded,
                 food_log_limit=FOOD_LOG_SUBJECT_ENTRY_LIMIT,
             )
             if admission.action == "idempotent_noop":

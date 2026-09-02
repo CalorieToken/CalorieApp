@@ -4,7 +4,7 @@ Status: V2 backend and eleven-language download control implemented and tested.
 Privacy-notice approval, provider proof and production activation remain
 release-blocking.
 
-The matching v1 import path now includes strict validation, planning, admission
+The matching v1/v2 import path now includes strict validation, planning, admission
 and guarded non-production transaction staging plus an authenticated upload
 route and eleven-language UI. The route and UI remain disabled by default and
 there is no production activation. See `ACCOUNT_DATA_IMPORT.md`.
@@ -13,7 +13,7 @@ there is no production activation. See `ACCOUNT_DATA_IMPORT.md`.
 
 `GET /api/identity/export` requires the normal opaque CalorieApp session cookie.
 The response is a downloadable JSON document with the stable version identifier
-`calorieapp-account-data-v1`. Identity responses and the export are marked
+`calorieapp-account-data-v2`. Identity responses and the export are marked
 `Cache-Control: no-store` and `Pragma: no-cache`.
 
 The export contains only records belonging to the authenticated internal user:
@@ -25,7 +25,9 @@ The export contains only records belonging to the authenticated internal user:
 - session activity timestamps;
 - completed or failed browser-login handoff activity; and
 - delivered or cancelled inactive-account warning lifecycle timestamps and the
-  provider-neutral channel key.
+  provider-neutral channel key; and
+- account-owned import-history summaries containing only the import timestamp,
+  food-log count, source export version and import-plan version.
 
 Cross-user records are excluded. Legacy food logs whose owner is unknown remain
 quarantined and are not silently claimed by any account.
@@ -46,8 +48,8 @@ session cookie. The proxy allowlist admits exactly the reviewed `GET` route and
 preserves private no-store and download response headers.
 
 The browser accepts the response only when it is JSON and contains the reviewed
-`calorieapp-account-data-v1` version plus the expected private-data collections.
-It creates a `calorieapp-account-data-v1.json` browser download, revokes the
+`calorieapp-account-data-v2` version plus the expected private-data collections.
+It creates a `calorieapp-account-data-v2.json` browser download, revokes the
 temporary object URL and does not render the payload or place it in local or
 session storage. CalorieApp does not send the export to another service; the
 browser or operating system controls its configured download location. A `401`,
@@ -70,18 +72,19 @@ implementation.
 
 The export never returns authorization-code hashes, login state, internal login
 session identifiers, opaque session-token hashes, browser-handoff state/token
-hashes or the keyed notice-delivery evidence digest. Their presence would
+hashes, the keyed notice-delivery evidence digest or the private import replay
+digest. Their presence would
 weaken authentication or expose internal receipt evidence without improving
 data portability. The response names these excluded security fields so the
 boundary is transparent.
 
-## Selected future import-receipt disclosure
+## Implemented import-receipt disclosure
 
-The current `calorieapp-account-data-v1` response remains unchanged and does
-not contain import receipts. A reviewed future
-`calorieapp-account-data-v2` response may add an `account_import_receipts`
-collection containing only the account-owned import timestamp, imported food-
-log count, source export version and import-plan version.
+The current `calorieapp-account-data-v2` response contains an
+`account_import_receipts` collection with only the account-owned import
+timestamp, imported food-log count, source export version and import-plan
+version. The importer continues to accept the legacy
+`calorieapp-account-data-v1` format, which has no receipt-summary collection.
 
 The internal receipt ID, repeated target-account ID and private replay digest
 must not be exported. Source account identifiers, source food values or IDs and
@@ -89,21 +92,20 @@ approval or release commit references must not be derived or joined into the
 summary. The private digest remains internal target-bound replay evidence and
 must not appear in exports, logs or errors.
 
-If a future v2 file is imported, its receipt summaries are informational
-history only. They must be validated but must never be restored as live replay
-receipts or used to bypass the fresh target-bound import checks. The current v1
-format must remain accepted when v2 support is implemented. This selected
-boundary is machine-readable in
-`contracts/data-safety/v1/account-data-import-receipt-disclosure.json`; this
-change does not implement v2 runtime behavior.
+When a v2 file is imported, its receipt summaries are informational history
+only. They are validated but never restored as live replay receipts or used to
+bypass the fresh target-bound import checks. This boundary and the retained v1
+compatibility are machine-readable in
+`contracts/data-safety/v1/account-data-import-receipt-disclosure.json`.
 
 ## Still required before public onboarding
 
 - complete the operator publication review and any later independent linguistic
   or legal/privacy review of the eleven implemented translations;
 - align the privacy notice with the exact exported data classes;
-- implement and review the selected v2 import-receipt summary while preserving
-  v1 import compatibility and the private replay boundary;
+- apply the prepared forward migration only after an explicitly approved
+  synthetic staging operation, then prove v1/v2 receipt-version constraints on
+  the selected provider;
 - complete PostgreSQL and restore-path verification;
 - implement the selected zero-day erasure and maximum 30-day encrypted-backup
   boundary on a reviewed provider; and
@@ -122,6 +124,7 @@ recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.
 
 An export is not authentication. A future import must authenticate its target
 account independently and may not restore exported identity, session, handoff
-or inactive-notice state as live security state. The future receipt-disclosure
-boundary is selected, but its v2 runtime implementation and review remain
-required before user-facing import can be enabled.
+or inactive-notice state as live security state. Receipt summaries imported
+from v2 remain informational and never become live replay evidence. Provider-
+exit proof, privacy approval and explicit activation still remain required
+before user-facing import can be enabled.

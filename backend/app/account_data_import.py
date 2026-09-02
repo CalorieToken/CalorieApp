@@ -1,9 +1,9 @@
-"""Pure fail-closed planning for a future account-data import.
+"""Pure fail-closed planning for a guarded account-data import.
 
-The planner accepts only the reviewed CalorieApp v1 private export, requires
-explicit confirmation of its source account, and prepares food-log inserts for
-an already authenticated target account. It has no endpoint, database session,
-file, provider, network, commit or deployment capability.
+The planner accepts only reviewed CalorieApp v1 or v2 private exports, requires
+explicit confirmation of the source account, and prepares food-log inserts for
+an already authenticated target account. Receipt summaries in v2 are validated
+as informational history and are never prepared as live replay receipts.
 
 Authentication state is deliberately not portable. External identities,
 sessions, authorization events, browser handoffs and inactive-account notices
@@ -20,16 +20,20 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from .schemas import AccountDataExportResponse
+from .schemas import AccountDataExportResponse, AccountDataExportV1Response
 
 
 IMPORT_PLAN_VERSION = "calorieapp-account-data-import-plan-v1"
-SUPPORTED_EXPORT_VERSION = "calorieapp-account-data-v1"
+LEGACY_EXPORT_VERSION = "calorieapp-account-data-v1"
+CURRENT_EXPORT_VERSION = "calorieapp-account-data-v2"
+SUPPORTED_EXPORT_VERSIONS = frozenset(
+    {LEGACY_EXPORT_VERSION, CURRENT_EXPORT_VERSION}
+)
 MAXIMUM_IMPORT_BYTES = 5 * 1024 * 1024
 MAXIMUM_COLLECTION_ITEMS = 10_000
 MAXIMUM_USER_ID_BYTES = 255
 
-REQUIRED_EXCLUDED_SECURITY_FIELDS = frozenset(
+V1_REQUIRED_EXCLUDED_SECURITY_FIELDS = frozenset(
     {
         "authorization_code_hash",
         "authorization_state",
@@ -40,9 +44,12 @@ REQUIRED_EXCLUDED_SECURITY_FIELDS = frozenset(
         "notice_delivery_evidence_digest",
     }
 )
+REQUIRED_EXCLUDED_SECURITY_FIELDS = frozenset(
+    {*V1_REQUIRED_EXCLUDED_SECURITY_FIELDS, "private_import_digest"}
+)
 
 _IMPORT_DIGEST_DOMAIN = b"calorieapp.account-data.import.v1\x00"
-_TOP_LEVEL_FIELDS = frozenset(
+_V1_TOP_LEVEL_FIELDS = frozenset(
     {
         "export_version",
         "exported_at",
@@ -55,6 +62,9 @@ _TOP_LEVEL_FIELDS = frozenset(
         "inactive_account_notices",
         "excluded_security_fields",
     }
+)
+_V2_TOP_LEVEL_FIELDS = frozenset(
+    {*_V1_TOP_LEVEL_FIELDS, "account_import_receipts"}
 )
 _ACCOUNT_FIELDS = frozenset(
     {
@@ -131,6 +141,14 @@ _COLLECTION_FIELDS = {
             "recorded_at",
         }
     ),
+    "account_import_receipts": frozenset(
+        {
+            "imported_at",
+            "food_log_count",
+            "source_export_version",
+            "import_plan_version",
+        }
+    ),
 }
 _TIMESTAMP_FIELDS = {
     "external_identities": ("created_at", "last_verified_at"),
@@ -156,6 +174,7 @@ _TIMESTAMP_FIELDS = {
         "cancelled_at",
         "recorded_at",
     ),
+    "account_import_receipts": ("imported_at",),
 }
 
 
@@ -278,7 +297,7 @@ def _require_exact_fields(
     actual_fields = frozenset(value)
     if actual_fields != expected_fields:
         raise AccountDataImportSafetyError(
-            f"{field_name} does not match the reviewed v1 fields"
+            f"{field_name} does not match the reviewed fields"
         )
     return value
 
@@ -314,8 +333,19 @@ def _bounded_user_id(value: object, *, field_name: str) -> str:
     return value
 
 
-def _validate_shape(parsed: dict[str, Any]) -> None:
-    _require_exact_fields(parsed, _TOP_LEVEL_FIELDS, field_name="payload")
+def _validate_shape(parsed: dict[str, Any]) -> str:
+    export_version = parsed.get("export_version")
+    if (
+        not isinstance(export_version, str)
+        or export_version not in SUPPORTED_EXPORT_VERSIONS
+    ):
+        raise AccountDataImportSafetyError("export version is not supported")
+    expected_top_level = (
+        _V1_TOP_LEVEL_FIELDS
+        if export_version == LEGACY_EXPORT_VERSION
+        else _V2_TOP_LEVEL_FIELDS
+    )
+    _require_exact_fields(parsed, expected_top_level, field_name="payload")
     account = _require_exact_fields(
         parsed["account"],
         _ACCOUNT_FIELDS,
@@ -326,6 +356,8 @@ def _validate_shape(parsed: dict[str, Any]) -> None:
         _require_explicit_timezone(account[field], field_name=f"account.{field}")
 
     for collection_name, expected_fields in _COLLECTION_FIELDS.items():
+        if collection_name not in parsed:
+            continue
         collection = parsed[collection_name]
         if not isinstance(collection, list):
             raise AccountDataImportSafetyError(
@@ -350,7 +382,7 @@ def _validate_shape(parsed: dict[str, Any]) -> None:
 
     if parsed["authorization_events"]:
         raise AccountDataImportSafetyError(
-            "v1 authorization_events must remain empty"
+            "authorization_events must remain empty"
         )
     excluded = parsed["excluded_security_fields"]
     if not isinstance(excluded, list) or any(
@@ -359,16 +391,23 @@ def _validate_shape(parsed: dict[str, Any]) -> None:
         raise AccountDataImportSafetyError(
             "excluded_security_fields must be an array of strings"
         )
-    if (
-        len(excluded) != len(REQUIRED_EXCLUDED_SECURITY_FIELDS)
-        or frozenset(excluded) != REQUIRED_EXCLUDED_SECURITY_FIELDS
+    required_exclusions = (
+        V1_REQUIRED_EXCLUDED_SECURITY_FIELDS
+        if export_version == LEGACY_EXPORT_VERSION
+        else REQUIRED_EXCLUDED_SECURITY_FIELDS
+    )
+    if len(excluded) != len(required_exclusions) or frozenset(excluded) != (
+        required_exclusions
     ):
         raise AccountDataImportSafetyError(
-            "excluded_security_fields does not match the reviewed v1 boundary"
+            "excluded_security_fields does not match the reviewed boundary"
         )
+    return export_version
 
 
-def _validate_timeline(export: AccountDataExportResponse) -> None:
+def _validate_timeline(
+    export: AccountDataExportV1Response | AccountDataExportResponse,
+) -> None:
     account = export.account
     if not account.created_at <= account.updated_at <= export.exported_at:
         raise AccountDataImportSafetyError("account timestamps are inconsistent")
@@ -386,6 +425,13 @@ def _validate_timeline(export: AccountDataExportResponse) -> None:
     ):
         raise AccountDataImportSafetyError(
             "food log cannot be newer than the export"
+        )
+    if isinstance(export, AccountDataExportResponse) and any(
+        receipt.imported_at > export.exported_at
+        for receipt in export.account_import_receipts
+    ):
+        raise AccountDataImportSafetyError(
+            "import receipt cannot be newer than the export"
         )
 
 
@@ -428,9 +474,7 @@ def plan_account_data_import(
     """
 
     parsed = _parse_payload(payload)
-    _validate_shape(parsed)
-    if parsed["export_version"] != SUPPORTED_EXPORT_VERSION:
-        raise AccountDataImportSafetyError("export version is not supported")
+    export_version = _validate_shape(parsed)
     confirmed_source = _bounded_user_id(
         confirmed_source_user_id,
         field_name="confirmed_source_user_id",
@@ -441,13 +485,18 @@ def plan_account_data_import(
     )
 
     try:
-        export = AccountDataExportResponse.model_validate_json(
+        export_schema = (
+            AccountDataExportV1Response
+            if export_version == LEGACY_EXPORT_VERSION
+            else AccountDataExportResponse
+        )
+        export = export_schema.model_validate_json(
             payload,
             strict=True,
         )
     except ValidationError:
         raise AccountDataImportSafetyError(
-            "payload does not match the reviewed v1 export schema"
+            "payload does not match the reviewed export schema"
         ) from None
     if export.account.user_id != confirmed_source:
         raise AccountDataImportSafetyError(
@@ -455,6 +504,10 @@ def plan_account_data_import(
         )
 
     source_ids = [food_log.id for food_log in export.food_logs]
+    if not source_ids:
+        raise AccountDataImportSafetyError(
+            "at least one food log is required for import"
+        )
     if any(source_id <= 0 for source_id in source_ids):
         raise AccountDataImportSafetyError("food log source IDs must be positive")
     if len(source_ids) != len(set(source_ids)):
@@ -480,19 +533,22 @@ def plan_account_data_import(
         )
         for food_log in export.food_logs
     )
+    ignored_collection_names = [
+        "external_identities",
+        "authentication_sessions",
+        "authorization_events",
+        "login_handoffs",
+        "inactive_account_notices",
+    ]
+    if isinstance(export, AccountDataExportResponse):
+        ignored_collection_names.append("account_import_receipts")
     ignored_counts = tuple(
         (collection_name, len(getattr(export, collection_name)))
-        for collection_name in (
-            "external_identities",
-            "authentication_sessions",
-            "authorization_events",
-            "login_handoffs",
-            "inactive_account_notices",
-        )
+        for collection_name in ignored_collection_names
     )
     return AccountDataImportPlan(
         plan_version=IMPORT_PLAN_VERSION,
-        export_version=SUPPORTED_EXPORT_VERSION,
+        export_version=export.export_version,
         private_import_digest=_private_import_digest(
             parsed,
             target_user_id=selected_target,

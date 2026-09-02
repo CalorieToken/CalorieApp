@@ -79,7 +79,7 @@ until the durable-data and privacy gates pass.
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |
-| User portability | Authenticated versioned export plus a disabled authenticated import route, exact reviewed-running-commit gate and eleven-language controls exist; the future v2 receipt-summary boundary is selected and import remains non-production only | Implement the selected receipt summary, complete provider-exit proof, privacy notice and operator activation review |
+| User portability | Authenticated v2 export plus disabled v1/v2 import, an exact reviewed-running-commit gate and eleven-language controls exist; receipt summaries exclude the private replay digest and never restore live replay evidence | Apply the prepared migration only with explicit synthetic-staging approval, then complete provider-exit proof, privacy notice and operator activation review |
 | User erasure | Backend and eleven-language double-confirmation UI exist and default off; zero-day primary deletion selected | Complete provider backup/replay proof and privacy-notice approval before activation |
 | Retention | Zero-day erasure, 30-day encrypted-backup ceiling, 24-month inactivity policy, bounded authentication-transient cleanup and a durable activity-marker migration are prepared | Prove provider migration/backfill, warning delivery, scheduling, restore replay and aligned eleven-language notices before activation |
 
@@ -91,9 +91,10 @@ until the durable-data and privacy gates pass.
 4. Repeat the synthetic restart and process-replacement persistence proofs on the chosen provider.
 5. Complete authenticated data portability: export, import planning/admission,
    guarded transaction execution, authenticated endpoint, reviewed commit gate
-   and eleven-language UI exist but remain disabled; the future v2 receipt-
-   summary boundary is selected, while its implementation, the provider-exit
-   proof and privacy approval remain.
+   and eleven-language UI exist but remain disabled; the v2 receipt-summary
+   boundary is implemented with v1 import compatibility, while the prepared
+   migration, provider-exit proof and privacy approval remain unapplied or
+   incomplete.
 6. Complete account erasure, including identity links and active sessions.
 7. Select an encrypted backup method and perform a documented staging restore.
 8. Test the confidential operator-succession runbook without exposing secrets.

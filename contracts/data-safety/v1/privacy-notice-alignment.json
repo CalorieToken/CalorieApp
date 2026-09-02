@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.privacy-notice-alignment",
-  "contract_version": "1.5.0",
-  "status": "canonical-facts-and-eleven-language-export-import-erasure-copy-aligned-publication-pending",
+  "contract_version": "1.6.0",
+  "status": "canonical-v2-facts-and-eleven-language-export-import-erasure-copy-aligned-publication-pending",
   "release_state": "blocked",
   "legal_certification_claimed": false,
   "publication": {
@@ -57,7 +57,8 @@
         "owned-private-food-log-history",
         "authentication-session-timing",
         "directly-owned-login-handoff-activity",
-        "inactive-account-notice-lifecycle-without-delivery-evidence-digest"
+        "inactive-account-notice-lifecycle-without-delivery-evidence-digest",
+        "import-receipt-summary-without-private-replay-digest"
       ],
       "security_secrets_excluded": true,
       "unowned_legacy_authorization_activity_withheld": true,
@@ -78,7 +79,8 @@
         "authorization-activity",
         "browser-login-handoffs",
         "inactive-account-notices",
-        "source-database-row-identifiers"
+        "source-database-row-identifiers",
+        "import-receipt-summaries-as-live-replay-evidence"
       ],
       "uploaded_export_retained_as_file": false,
       "provider_exit_import_proved": false
@@ -118,11 +120,11 @@
       "personal_data_on_public_ipfs_allowed": false
     }
   },
-  "selected_future_disclosure": {
+  "implemented_disclosure": {
     "private_import_receipt_summaries": {
       "contract": "contracts/data-safety/v1/account-data-import-receipt-disclosure.json",
-      "target_export_version": "calorieapp-account-data-v2",
-      "current_runtime_changed": false,
+      "current_export_version": "calorieapp-account-data-v2",
+      "current_runtime_changed": true,
       "included_fields": [
         "imported_at",
         "food_log_count",
@@ -145,6 +147,7 @@
     "private_export": {
       "source": "frontend/config/account-privacy-copy.json",
       "required_plain_language_facts": [
+        "It also includes minimal import-history summaries (time, food-log count, and format versions), but never the private replay digest.",
         "Security tokens are excluded.",
         "Some older authorization activity remains withheld when ownership cannot be proven.",
         "CalorieApp does not send the file anywhere else",
