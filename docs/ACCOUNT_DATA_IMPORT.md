@@ -1,15 +1,17 @@
 # Guarded account-data import planning
 
-Status: pure provider-neutral validation and planning implemented; authenticated
-upload, database mutation and provider-exit execution remain blocked.
+Status: pure provider-neutral validation, planning and admission implemented;
+authenticated upload, database mutation and provider-exit execution remain
+blocked.
 
 ## Purpose
 
 CalorieApp's private `calorieapp-account-data-v1` export must eventually let an
 authorized user move food history to a clean provider-neutral deployment. The
-first import slice deliberately stops before any write. It proves that an
+first two import slices deliberately stop before any write. They prove that an
 untrusted export can be bounded, validated and converted into an explicit food-
-log plan without treating exported authentication history as reusable proof.
+log plan, then admitted under a conservative target and capacity policy without
+treating exported authentication history as reusable proof.
 
 `backend/app/account_data_import.py` accepts UTF-8 JSON bytes and requires:
 
@@ -54,18 +56,39 @@ input and the selected target account to support future per-target idempotency.
 The digest remains private evidence: it is not suitable for public logs, XRPL,
 public artifacts or analytics.
 
+## Pure admission policy
+
+`backend/app/account_data_import_admission.py` accepts only a reviewed plan. A
+future caller must supply a server-authenticated target identifier and a
+separate exact target confirmation; both must match the target already bound
+into the private digest. The function does not authenticate a user itself.
+
+The initial duplicate policy is intentionally conservative:
+
+- a new digest is admitted only when the target has no food-log rows;
+- a digest already recorded for that target becomes an idempotent no-op;
+- food records are never deduplicated merely because their nutrition values,
+  labels or timestamps match; distinct source row identifiers remain distinct;
+- the planned row count cannot exceed the existing 10,000-row per-user budget,
+  and callers may lower but never raise that reviewed ceiling.
+
+A later database implementation must obtain the existing row count and exact
+private-digest match while holding the same transaction and lock used for the
+inserts. Passing those values into this pure function is not database proof.
+
 ## Current safety boundary
 
-This slice has no HTTP route, browser upload control, database session, insert,
-commit, file output, provider integration, network call, migration, scheduler or
-deployment action. It does not prove a provider exit or authorize import of real
-user data.
+These slices have no HTTP route, browser upload control, database session,
+insert, commit, file output, provider integration, network call, migration,
+scheduler or deployment action. They do not prove a provider exit or authorize
+import of real user data.
 
 Before import can be enabled, a later reviewed slice must add:
 
-1. authenticated target-account authorization and explicit user confirmation;
-2. private idempotency storage and conflict handling inside one transaction;
-3. duplicate-food-history policy and bounded capacity admission;
+1. an authenticated upload endpoint and eleven-language confirmation UI;
+2. private idempotency storage, target count, locking and conflict handling
+   inside one caller-owned transaction;
+3. atomic food-log insertion with complete rollback on any failure;
 4. an isolated synthetic PostgreSQL source-to-successor execution test;
 5. privacy-notice and eleven-language consequence copy; and
 6. explicit operator approval before any staging mutation, provider action or

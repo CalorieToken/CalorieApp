@@ -1,9 +1,10 @@
 # Calorie ecosystem continuity foundation
 
-Status: pre-release and incomplete. Pure v1 food-history import planning is
-implemented, while authenticated transactional import and provider-exit proof
-remain blocked. This document defines the technical continuity target; it does
-not transfer legal ownership, credentials, personal data or trade mark rights.
+Status: pre-release and incomplete. Pure v1 food-history import planning and
+clean-target admission are implemented, while authenticated transactional
+import and provider-exit proof remain blocked. This document defines the
+technical continuity target; it does not transfer legal ownership, credentials,
+personal data or trade mark rights.
 
 ## Official management and parallel ecosystem
 
@@ -96,8 +97,11 @@ import it only after authentication, format validation and explicit user action.
 
 The current pure import planner validates the exact v1 private export and
 prepares only food-log snapshots for a separately authenticated target account.
-It never rehydrates exported identities, sessions, authorization activity,
-browser handoffs or retention notices. It performs no database write and does
+The pure admission layer then requires the authenticated target and explicit
+confirmation to match, allows a new plan only for a clean target, treats an
+already-recorded exact digest as a no-op, and enforces the retained-row ceiling.
+Neither layer rehydrates exported identities, sessions, authorization activity,
+browser handoffs or retention notices. They perform no database write and do
 not yet satisfy the provider-exit evidence requirement; see
 `ACCOUNT_DATA_IMPORT.md`.
 

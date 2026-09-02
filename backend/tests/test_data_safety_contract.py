@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.28.0"
+    assert contract["contract_version"] == "1.29.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -149,7 +149,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-export-ui-and-pure-import-plan-implemented-provider-and-"
+        "v2-export-ui-pure-import-plan-and-admission-implemented-provider-and-"
         "notice-review-pending"
     )
     assert export["format"] == "versioned-json"
@@ -210,6 +210,36 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["import_plan_private_digest_bound_to_target_account"] is True
     assert export[
         "import_validation_errors_retain_private_payload_details"
+    ] is False
+    assert export["provider_neutral_import_admission_implemented"] is True
+    assert export["import_admission_version"] == (
+        "calorieapp-account-data-import-admission-v1"
+    )
+    assert export["import_admission_duplicate_policy"] == (
+        "clean-target-exact-plan-replay-only-v1"
+    )
+    assert export[
+        "import_admission_requires_reviewed_plan_version_digest_format_and_target_ownership"
+    ] is True
+    assert export["import_admission_requires_authenticated_target_match"] is True
+    assert export["import_admission_requires_explicit_target_confirmation"] is True
+    assert export["import_admission_new_plan_requires_clean_target"] is True
+    assert export[
+        "import_admission_content_based_food_log_deduplication_performed"
+    ] is False
+    assert export["import_admission_exact_private_digest_replay_action"] == (
+        "idempotent-noop"
+    )
+    assert export["import_admission_target_food_log_limit"] == 10_000
+    assert export[
+        "import_admission_limit_may_exceed_live_subject_budget"
+    ] is False
+    assert export[
+        "import_admission_count_and_digest_must_be_read_in_future_transaction"
+    ] is True
+    assert export["private_import_idempotency_storage_implemented"] is False
+    assert export[
+        "import_admission_has_endpoint_database_file_provider_network_or_deployment_capability"
     ] is False
     assert export[
         "future_import_requires_separate_target_authentication_and_authorization"
@@ -1162,7 +1192,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.17.0"
+    assert matrix["contract_version"] == "1.18.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1174,6 +1204,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/postgresql_privileges.py" in gates[
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
+    assert "backend/app/account_data_import_admission.py" in gates[
+        "abuse_capacity_and_mutation_controls"
+    ]["evidence"]
     assert "docs/POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md" in gates[
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
@@ -1182,11 +1215,17 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/account_data_import.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
+    assert "backend/app/account_data_import_admission.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
     assert "backend/tests/test_account_data_import.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert "docs/ACCOUNT_DATA_IMPORT.md" in gates[
+        "ecosystem_operator_succession_and_handover"
+    ]["evidence"]
+    assert "backend/app/account_data_import_admission.py" in gates[
         "ecosystem_operator_succession_and_handover"
     ]["evidence"]
     assert gates["restart_persistence"]["status"] == "partial"
@@ -1214,6 +1253,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/account_data_import.py" in gates["user_data_export"][
         "evidence"
     ]
+    assert "backend/app/account_data_import_admission.py" in gates[
+        "user_data_export"
+    ]["evidence"]
     assert "backend/tests/test_account_data_import.py" in gates[
         "user_data_export"
     ]["evidence"]
