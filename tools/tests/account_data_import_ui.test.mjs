@@ -51,6 +51,7 @@ async function loadComponentModule() {
     vm.createContext({
       AbortController,
       console,
+      TextEncoder,
       exports: module.exports,
       module,
       require(specifier) {
@@ -104,6 +105,7 @@ function requestWithHeaders(values = {}) {
 test("private import confirmation requires file, source, exact target and acknowledgement", async () => {
   const {
     ACCOUNT_IMPORT_MAX_BYTES,
+    ACCOUNT_IMPORT_MAX_USER_ID_BYTES,
     isAccountDataImportConfirmationReady,
   } = await loadComponentModule();
   const file = { size: ACCOUNT_IMPORT_MAX_BYTES };
@@ -115,6 +117,28 @@ test("private import confirmation requires file, source, exact target and acknow
   assert.equal(
     isAccountDataImportConfirmationReady("target", "", "target", true, file),
     false
+  );
+  for (const source of [" source", "source ", "é".repeat(128)]) {
+    assert.equal(
+      isAccountDataImportConfirmationReady(
+        "target",
+        source,
+        "target",
+        true,
+        file
+      ),
+      false
+    );
+  }
+  assert.equal(
+    isAccountDataImportConfirmationReady(
+      "target",
+      "a".repeat(ACCOUNT_IMPORT_MAX_USER_ID_BYTES),
+      "target",
+      true,
+      file
+    ),
+    true
   );
   assert.equal(
     isAccountDataImportConfirmationReady("target", "source", " target", true, file),

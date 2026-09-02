@@ -91,6 +91,8 @@ def test_account_import_ui_is_hidden_fail_closed_and_proxy_allowlisted():
     assert 'cache: "no-store"' in import_source
     assert "selectedFile.arrayBuffer()" in import_source
     assert "isAccountDataImportConfirmationReady" in import_source
+    assert "ACCOUNT_IMPORT_MAX_USER_ID_BYTES = 255" in import_source
+    assert "sourceConfirmation === sourceConfirmation.trim()" in import_source
     assert "isAccountDataImportResponse" in import_source
     assert "localStorage" not in import_source
     assert "sessionStorage" not in import_source

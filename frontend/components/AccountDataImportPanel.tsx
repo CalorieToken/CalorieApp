@@ -20,6 +20,7 @@ import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
 
 const BACKEND_BASE_URL = "/api/backend";
 export const ACCOUNT_IMPORT_MAX_BYTES = 5 * 1024 * 1024;
+export const ACCOUNT_IMPORT_MAX_USER_ID_BYTES = 255;
 
 type AccountDataImportPanelProps = {
   userId: string;
@@ -58,11 +59,16 @@ export function isAccountDataImportConfirmationReady(
   acknowledged: boolean,
   selectedFile: File | null
 ): boolean {
+  const sourceConfirmationBytes = new TextEncoder().encode(
+    sourceConfirmation
+  ).byteLength;
   return (
     selectedFile !== null &&
     selectedFile.size > 0 &&
     selectedFile.size <= ACCOUNT_IMPORT_MAX_BYTES &&
     sourceConfirmation.length > 0 &&
+    sourceConfirmation === sourceConfirmation.trim() &&
+    sourceConfirmationBytes <= ACCOUNT_IMPORT_MAX_USER_ID_BYTES &&
     targetConfirmation === userId &&
     acknowledged
   );
@@ -250,6 +256,7 @@ export function AccountDataImportPanel({
             type="text"
             value={sourceConfirmation}
             onChange={(event) => setSourceConfirmation(event.target.value)}
+            maxLength={ACCOUNT_IMPORT_MAX_USER_ID_BYTES}
             autoComplete="off"
             spellCheck={false}
             disabled={isImporting}
