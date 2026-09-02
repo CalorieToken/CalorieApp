@@ -38,6 +38,23 @@ persist or log the key. The private account export includes the lifecycle
 timestamps and channel, but deliberately excludes the digest. Account erasure
 deletes the evidence row before deleting the account.
 
+## Provider-neutral receipt proof
+
+`backend/app/inactive_account_notice_receipt.py` prepares the pure receipt-
+minimization step for a future reviewed delivery adapter. Only after a provider
+has confirmed successful delivery may the function derive an `hmac-sha256-v1`
+digest. The HMAC binds the opaque provider receipt to the internal account,
+activity anchor, notice window, retention boundary, delivery timestamp and a
+bounded provider-neutral channel key.
+
+The secret must contain at least 32 bytes and remains caller-owned. The opaque
+receipt is limited to 4096 UTF-8 bytes. The function returns only the channel,
+delivery timestamp normalized to persistence-compatible naive UTC and a
+64-character digest; it has no provider,
+network, logging, database, scheduling or erasure capability. The raw receipt
+and secret are neither fields of the returned value nor persisted by this
+module. Tests use a synthetic receipt and a non-production key only.
+
 ## Activity cancellation
 
 Every successfully created session and successfully authenticated request
@@ -53,9 +70,10 @@ an erasure instruction.
 This repository change does not select a contact channel or provider, create a
 pending-delivery queue, send a warning, write a real evidence row, configure a
 scheduler, authorize erasure, apply a staging or production migration, or
-deploy the application. There is no CLI or public endpoint for notice creation.
+deploy the application. Receipt-proof preparation does not change that
+boundary. There is no CLI or public endpoint for notice creation.
 
-Before activation, a separate review must implement idempotent delivery, prove
-the keyed receipt process, align all eleven locale notices, test the chosen
-provider and deployed cancellation path, and obtain explicit migration and
-deployment approval.
+Before activation, a separate review must implement idempotent delivery, define
+key generation, custody, rotation and verification, align all eleven locale
+notices, test the chosen provider and deployed cancellation path, and obtain
+explicit migration and deployment approval.

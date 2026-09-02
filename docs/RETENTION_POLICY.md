@@ -55,6 +55,13 @@ timestamp cannot precede delivery. PostgreSQL enforces this with a check
 constraint and SQLite with equivalent insert and update triggers. Authenticated
 activity observed before delivery therefore cannot cancel a future warning.
 
+A pure provider-neutral receipt-proof builder prepares HMAC-SHA256 minimization
+of a future successful delivery receipt. It binds the opaque receipt to the
+internal account and policy timeline while returning only the bounded channel,
+delivery time and digest. It cannot contact a provider, store a receipt, write
+notice evidence, schedule delivery or authorize erasure. Provider selection and
+key custody remain separately blocked.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
