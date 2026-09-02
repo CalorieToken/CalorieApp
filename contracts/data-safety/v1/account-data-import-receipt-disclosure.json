@@ -51,7 +51,7 @@
     "target_account_id_repetition_required": false,
     "deterministic_order": [
       "imported_at",
-      "internal-receipt-id-private-tiebreaker"
+      "internal-receipt-id"
     ],
     "private_tiebreaker_exported": false
   },

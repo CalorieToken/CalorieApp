@@ -73,7 +73,7 @@ def test_receipt_summary_cannot_become_live_replay_evidence() -> None:
     assert security["target_account_id_repetition_required"] is False
     assert security["deterministic_order"] == [
         "imported_at",
-        "internal-receipt-id-private-tiebreaker",
+        "internal-receipt-id",
     ]
     assert security["private_tiebreaker_exported"] is False
     assert future_import["v1_export_remains_accepted"] is True
