@@ -98,6 +98,14 @@ cleared first, and the caller must explicitly commit or roll back. Production,
 endpoints, CLI access, scheduling, provider contact and automatic commit remain
 absent. See `docs/INACTIVE_ACCOUNT_ERASURE_EXECUTION.md`.
 
+A pure restore-replay proof builder and verifier covers both this inactive-
+account path and authenticated user-request erasure. It returns a keyed
+pseudonymous subject selector and a separate context digest with a 30-day
+replay boundary. The proof creates no key or record and remains unsafe for
+public logs or unprotected artifacts. Independent protected persistence,
+backup scanning and actual replay remain unimplemented and release-blocking.
+See `docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization

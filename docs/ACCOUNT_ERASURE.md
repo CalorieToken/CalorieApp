@@ -22,6 +22,13 @@ inactive-account and authentication-transient periods are now selected in
 `RETENTION_POLICY.md`, but their notice and cleanup mechanisms remain disabled
 and unproved.
 
+A pure provider-neutral builder and verifier now defines privacy-minimized
+restore-replay evidence for both authenticated user requests and inactive-
+account erasure. Its HMAC subject selector remains pseudonymous personal data.
+No key, protected independent storage, backup scanning or replay execution is
+implemented, so this preparation does not change the blocked release status.
+See `ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+
 ## Backend contract
 
 `DELETE /api/identity/account` requires the normal opaque CalorieApp session

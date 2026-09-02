@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.24.0",
+  "contract_version": "1.25.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -444,6 +444,33 @@
       "restore_identity_secret_deleted_after_every_run": true,
       "implemented_or_performed": false,
       "real_user_or_production_data_allowed": false
+    },
+    "erasure_replay_proof": {
+      "implementation_status": "pure-replay-proof-builder-verifier-prepared-storage-and-replay-disabled",
+      "covered_erasure_reasons": [
+        "authenticated-user-request",
+        "inactive-account-retention"
+      ],
+      "schema_version": "calorieapp-account-erasure-replay-proof-v1",
+      "algorithm": "hmac-sha256-v1",
+      "minimum_secret_bytes": 32,
+      "subject_and_evidence_domain_separated": true,
+      "maximum_replay_horizon_days": 30,
+      "timezone_aware_erasure_timestamp_required": true,
+      "returned_timestamps": "naive-utc-with-z-serialization",
+      "raw_user_id_returned": false,
+      "raw_authorization_reference_returned": false,
+      "secret_key_returned": false,
+      "subject_digest_is_pseudonymous_personal_data": true,
+      "protected_independent_persistence_implemented": false,
+      "restore_scanning_and_replay_implemented": false,
+      "constant_time_digest_comparison": true,
+      "creates_database_file_artifact_provider_or_network_record": false,
+      "connected_to_logging_cli_endpoint_or_scheduler": false,
+      "real_data_mutation_migration_or_deployment_performed": false,
+      "implementation": "backend/app/account_erasure_replay_proof.py",
+      "tests": "backend/tests/test_account_erasure_replay_proof.py",
+      "runbook": "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
     },
     "encrypted_production_backup_selected": false,
     "provider_staging_restore_completed": false,
