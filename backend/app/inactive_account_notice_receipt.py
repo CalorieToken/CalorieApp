@@ -35,7 +35,7 @@ class InactiveAccountNoticeDeliveryEvidence:
 
 def _canonical_timestamp(value: datetime, *, field_name: str) -> str:
     if not isinstance(value, datetime):
-        raise ValueError(f"{field_name} must be a datetime with a timezone")
+        raise ValueError(f"{field_name} must be a datetime")
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError(f"{field_name} must include a timezone")
     return value.astimezone(UTC).isoformat(timespec="microseconds").replace(

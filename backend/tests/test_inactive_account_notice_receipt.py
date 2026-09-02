@@ -203,7 +203,7 @@ def test_timestamps_require_explicit_timezone() -> None:
 
 
 def test_timestamp_wrong_type_has_a_predictable_field_error() -> None:
-    with pytest.raises(ValueError, match="delivered_at must be a datetime"):
+    with pytest.raises(ValueError, match=r"^delivered_at must be a datetime$"):
         _evidence(delivered_at="2025-12-05T00:00:00Z")
 
 
