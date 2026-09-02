@@ -146,7 +146,7 @@ def successful_delivery_receipt_to_evidence(
 
 def verify_successful_delivery_receipt_evidence(
     *,
-    expected_digest: str,
+    expected_digest: object,
     secret_key: bytes,
     provider_receipt: str,
     user_id: str,
@@ -156,7 +156,12 @@ def verify_successful_delivery_receipt_evidence(
     delivered_at: datetime,
     delivery_channel: str,
 ) -> bool:
-    """Verify minimized evidence without exposing secret or raw receipt data."""
+    """Verify minimized evidence without exposing secret or raw receipt data.
+
+    A malformed or non-string expected digest returns ``False``. Invalid audit
+    inputs raise ``ValueError`` under the same validation rules as evidence
+    creation, so callers can distinguish bad evidence from bad audit context.
+    """
 
     if not isinstance(expected_digest, str) or not _DIGEST_PATTERN.fullmatch(
         expected_digest

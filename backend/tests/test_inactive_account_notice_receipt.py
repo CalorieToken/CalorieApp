@@ -37,7 +37,7 @@ def _evidence(**overrides) -> InactiveAccountNoticeDeliveryEvidence:
     return successful_delivery_receipt_to_evidence(**values)
 
 
-def _verify(expected_digest: str, **overrides) -> bool:
+def _verify(expected_digest: object, **overrides) -> bool:
     values = {
         "expected_digest": expected_digest,
         "secret_key": SECRET,
@@ -133,8 +133,15 @@ def test_changed_secret_receipt_or_context_does_not_verify(overrides: dict) -> N
     "expected_digest",
     ["", "a" * 63, "A" * 64, "z" * 64, None],
 )
-def test_malformed_expected_digest_does_not_verify(expected_digest) -> None:
+def test_malformed_expected_digest_does_not_verify(expected_digest: object) -> None:
     assert _verify(expected_digest) is False
+
+
+def test_verification_propagates_invalid_audit_context() -> None:
+    expected = _evidence().delivery_evidence_digest
+
+    with pytest.raises(ValueError, match="timeline"):
+        _verify(expected, retention_due_at=DELIVERED)
 
 
 def test_equivalent_timezones_produce_the_same_evidence() -> None:
