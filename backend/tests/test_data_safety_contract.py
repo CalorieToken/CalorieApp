@@ -275,7 +275,11 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["receipt_proof_digest_comparison"] == "hmac.compare_digest"
     assert evidence["malformed_expected_digest_rejected"] is True
     assert evidence["transaction_owned_evidence_recording_implemented"] is True
-    assert evidence["recording_requires_current_locked_activity_anchor"] is True
+    assert evidence["new_recording_requires_current_locked_activity_anchor"] is True
+    assert (
+        evidence["identical_retry_may_return_existing_row_after_later_activity"]
+        is True
+    )
     assert evidence["identical_user_anchor_retry_is_idempotent"] is True
     assert evidence["conflicting_user_anchor_retry_rejected"] is True
     assert evidence["recording_function_commits_transaction"] is False

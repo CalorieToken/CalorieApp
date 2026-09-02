@@ -132,6 +132,28 @@ def test_identical_retry_returns_existing_notice_without_duplicate() -> None:
         engine.dispose()
 
 
+def test_identical_retry_survives_later_authenticated_activity() -> None:
+    engine = _memory_engine()
+    try:
+        with Session(engine) as session:
+            _add_user(session)
+            first = _record(session)
+            session.commit()
+
+            user = session.get(CalorieAppUserDB, "recording-user")
+            assert user is not None
+            user.last_authenticated_activity_at = ANCHOR.replace(
+                tzinfo=None
+            ) + timedelta(seconds=1)
+            session.commit()
+
+            retry = _record(session, recorded_at=RECORDED + timedelta(minutes=1))
+            assert retry.id == first.id
+            assert len(session.exec(select(InactiveAccountNoticeDB)).all()) == 1
+    finally:
+        engine.dispose()
+
+
 def test_conflicting_retry_fails_closed_without_replacing_evidence() -> None:
     engine = _memory_engine()
     try:

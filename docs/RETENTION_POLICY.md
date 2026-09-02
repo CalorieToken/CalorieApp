@@ -70,10 +70,12 @@ and grants no provider, database or erasure access. Key lifecycle and audit
 authorization remain blocked.
 
 An internal transaction-owned repository helper can now stage already-minimized
-successful-delivery evidence. It locks and matches the durable activity anchor,
-keeps identical retries idempotent, rejects conflicting retries and leaves the
-commit or rollback decision to its caller. It is not connected to an endpoint,
-provider, contact destination, queue, scheduler or erasure path.
+successful-delivery evidence. Before a new insert it locks the user row and
+requires the durable activity anchor to remain current. An identical retry may
+return the existing lifecycle row after later activity has advanced that anchor;
+conflicting retries are rejected. The helper leaves the commit or rollback
+decision to its caller and is not connected to an endpoint, provider, contact
+destination, queue, scheduler or erasure path.
 
 ## Selected authentication-transient boundary
 

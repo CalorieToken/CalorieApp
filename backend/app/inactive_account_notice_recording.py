@@ -114,10 +114,11 @@ def record_successful_delivery_notice_evidence(
 ) -> InactiveAccountNoticeDB:
     """Stage confirmed minimized evidence in the caller-owned transaction.
 
-    The current user row is locked before checking its durable activity anchor.
-    Repeating identical evidence for the same user and anchor returns the
-    existing lifecycle row. A conflicting replay or stale anchor fails closed.
-    This function flushes for constraint validation but never commits.
+    The current user row is locked. Before a new row is inserted, the account
+    must still be active and its durable activity anchor must match. Repeating
+    identical evidence returns the existing lifecycle row even if later
+    activity has advanced the current anchor; a conflicting replay fails
+    closed. This function flushes for constraint validation but never commits.
     """
 
     backend = session.get_bind().dialect.name

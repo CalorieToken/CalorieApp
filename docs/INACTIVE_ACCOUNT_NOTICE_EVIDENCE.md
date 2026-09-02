@@ -67,11 +67,13 @@ remain outside this prepared code and must be reviewed before activation.
 
 `backend/app/inactive_account_notice_recording.py` provides the next internal
 repository boundary. It can stage already-minimized evidence only inside its
-caller's transaction. It locks the current user row, rejects a stale activity
-anchor, returns an existing row for an identical retry and rejects conflicting
-evidence for the same user and anchor. It flushes database constraints but does
-not commit. The module has no provider, destination, network, queue, scheduler,
-endpoint or erasure capability and cannot itself establish successful delivery.
+caller's transaction. It locks the current user row and, before a new insert,
+requires an active account whose durable activity anchor still matches. An
+identical retry returns the existing lifecycle row even after later activity
+has advanced the current anchor; conflicting evidence for the same user and
+anchor is rejected. It flushes database constraints but does not commit. The
+module has no provider, destination, network, queue, scheduler, endpoint or
+erasure capability and cannot itself establish successful delivery.
 
 ## Activity cancellation
 
