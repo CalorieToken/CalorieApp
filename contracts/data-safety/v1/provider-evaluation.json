@@ -1,13 +1,14 @@
 {
   "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
-  "contract_version": "1.4.0",
-  "evidence_reviewed_on": "2026-09-01",
-  "evidence_revalidate_by": "2026-11-30",
-  "decision_state": "neon-synthetic-staging-selected-account-configuration-blocked",
+  "contract_version": "1.5.0",
+  "evidence_reviewed_on": "2026-09-02",
+  "evidence_revalidate_by": "2026-12-01",
+  "decision_state": "neon-synthetic-staging-project-created-use-blocked",
   "provider_selected": true,
   "provider_selection_scope": "isolated-synthetic-staging-only",
   "provider_selected_for_public_release": false,
-  "provider_account_created": false,
+  "provider_account_created": true,
+  "provider_project_created": true,
   "payment_method_added": false,
   "deployment_or_live_data_mutation_performed": false,
   "third_party_terms_may_change": true,
@@ -15,22 +16,25 @@
   "selection_record": {
     "selected_candidate": "neon_free",
     "selected_on": "2026-09-01",
-    "approval_reference": "operator-decision-2026-09-01-neon-synthetic-staging",
-    "approved_scope": "preparation-for-isolated-synthetic-staging-only",
-    "account_or_project_creation_approved": false,
+    "approval_reference": "operator-decision-2026-09-02-neon-free-frankfurt-synthetic-staging",
+    "approved_scope": "one-free-frankfurt-project-for-isolated-synthetic-staging-only",
+    "account_or_project_creation_approved": true,
     "payment_method_or_paid_upgrade_approved": false,
     "real_user_or_production_data_approved": false,
     "external_schema_migration_approved": false,
     "production_deployment_approved": false
   },
   "preconfiguration_review": {
-    "reviewed_on": "2026-09-01",
-    "status": "offline-key-custody-selected-console-and-recipient-configuration-pending",
+    "reviewed_on": "2026-09-02",
+    "status": "free-frankfurt-project-created-provider-use-and-recipient-configuration-blocked",
+    "live_evidence_document": "docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md",
     "eu_region": {
       "documented_candidate": "aws-eu-central-1",
       "region_is_fixed_at_project_creation": true,
-      "account_console_confirmation_required": true,
-      "approved_for_account_creation": false
+      "account_console_confirmation_required": false,
+      "confirmed_in_live_project": true,
+      "project_postgres_version": 16,
+      "approved_for_account_creation": true
     },
     "data_processing": {
       "published_dpa_reviewed": true,
@@ -49,8 +53,32 @@
       "quota_metrics_refresh_interval_minutes": 15,
       "quota_metrics_may_take_up_to_minutes_to_report": 60,
       "configured_quota_suspends_compute_until_next_billing_period": true,
-      "payment_method_absence_confirmed_in_live_account": false,
-      "automatic_paid_upgrade_disabled_in_live_account": false,
+      "live_console_reviewed_on": "2026-09-02",
+      "live_plan": "Free",
+      "live_price_usd_per_month": 0,
+      "live_project_count": 1,
+      "live_synthetic_project_name": "calorieapp-synthetic-staging",
+      "live_neon_auth_enabled": false,
+      "live_compute_defaults_cu": {
+        "minimum": 0.25,
+        "maximum": 2
+      },
+      "live_scale_to_zero_minutes": 5,
+      "payment_method_absence_confirmed_in_live_account": true,
+      "automatic_paid_upgrade_disabled_in_live_account": true,
+      "free_console_usage_metrics_confirmed": [
+        "compute_cu_hours",
+        "storage_gb",
+        "history_gb",
+        "network_transfer_gb"
+      ],
+      "free_console_usage_was_zero_at_review": true,
+      "usage_based_consumption_api_documented_for_free_plan": false,
+      "configurable_hard_quota_requires_api_key": true,
+      "project_scoped_api_key_is_least_privilege_available": true,
+      "organization_api_key_present": false,
+      "personal_api_key_present": false,
+      "project_scoped_api_key_created": false,
       "free_plan_quota_api_availability_confirmed_in_live_account": false
     },
     "portable_backup": {
@@ -113,6 +141,7 @@
       "https://neon.com/docs/introduction/regions",
       "https://neon.com/docs/guides/consumption-limits",
       "https://neon.com/docs/guides/consumption-metrics",
+      "https://neon.com/docs/manage/api-keys",
       "https://neon.com/docs/manage/backup-pg-dump",
       "https://neon.com/pdf/DPA.pdf",
       "https://neon.com/subscribe-to-subprocessors",
@@ -146,8 +175,10 @@
     "configured_measurement_failure_pauses_new_onboarding": true,
     "exact_provider_quota_configured": false,
     "alert_delivery_configured": false,
+    "free_console_usage_metrics_confirmed_live": true,
+    "persistent_provider_api_key_created": false,
     "existing_user_read_export_and_erasure_access_preserved_while_paused": true,
-    "provider_quota_values_must_be_confirmed_at_account_creation": true,
+    "provider_quota_values_must_be_confirmed_before_provider_use": true,
     "provider_dashboard_only_monitoring_counts_as_complete": false
   },
   "database_candidates": [
@@ -170,7 +201,7 @@
         "cold start after scale to zero",
         "short provider restore window is not an independent backup",
         "free-plan terms can change",
-        "EU region DPA quota exhaustion behavior and account controls still require live review"
+        "EU region and zero-cost account boundary are confirmed; DPA, API quota enforcement and independent backup still require proof"
       ],
       "official_sources": [
         "https://neon.com/pricing",
@@ -249,16 +280,17 @@
     "scope": "isolated-synthetic-staging-only",
     "candidate_selection_human_approved": true,
     "human_approval_required_before_account_or_provider_configuration": true,
-    "account_or_project_creation_approved": false,
+    "account_or_project_creation_approved": true,
+    "provider_project_created": true,
     "real_user_or_production_data_allowed": false,
     "production_deployment_allowed": false
   },
   "release_blocking_before_provider_selection": [],
-  "release_blocking_before_provider_configuration": [
-    "confirm the recorded EU region in the live account console before project creation",
+  "release_blocking_before_provider_configuration": [],
+  "release_blocking_before_synthetic_provider_use": [
     "confirm DPA execution or account acceptance and subscribe to subprocessor changes",
-    "confirm no payment method and no automatic paid upgrade in the live account",
-    "confirm Free-plan quota metrics and hard-limit controls in the live account",
+    "approve and configure a least-privilege provider measurement path without exposing a persistent API key",
+    "configure exact provider quota values and prove fail-closed suspension behavior",
     "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
   ],
   "release_blocking_after_provider_selection": [
