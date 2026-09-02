@@ -1,17 +1,17 @@
 # Zero-additional-cost provider evaluation
 
-Status: Neon Free was selected on 2026-09-01 for preparation of one isolated,
-synthetic staging experiment only. Account configuration, every live provider
-proof and any public-release decision remain blocked. Revalidate official terms
-by 2026-11-30.
+Status: one Neon Free project was created on 2026-09-02 in Frankfurt for an
+isolated synthetic staging experiment only. Provider use, every live drill and
+any public-release decision remain blocked. Revalidate official terms by
+2026-12-01.
 
 ## Outcome
 
-The operator approved Neon Free as the candidate for preparing one isolated,
-synthetic staging experiment connected to the existing Render Free web runtime.
-This is not a production-provider selection or permission to create an account,
-apply an external migration, add a payment method, deploy, or use real user
-data. None of those actions occurred during this decision.
+The operator approved one Neon Free project for isolated synthetic staging. The
+project now exists as `calorieapp-synthetic-staging` with PostgreSQL 16 in
+`aws-eu-central-1`. No application connected to it and no SQL, migration,
+deployment, payment method or application data was added. This is not a
+production-provider selection or permission to use real user data.
 
 Render Free PostgreSQL is rejected as the durable primary history store. Its
 official documentation says that Free databases expire after 30 days, become
@@ -24,7 +24,7 @@ retention.
 
 | Candidate | Snapshot | Evaluation |
 |---|---|---|
-| Neon Free | $0; 0.5 GB storage per project; finite compute and egress; scale-to-zero; six-hour restore window | Best candidate for a synthetic staging experiment; quota behavior, EU region, DPA and independent backup remain unproven |
+| Neon Free | $0; 0.5 GB storage per project; finite compute and egress; scale-to-zero; six-hour restore window | One Frankfurt synthetic project exists; the zero-cost boundary and region are live-confirmed, while DPA acceptance, automated quota enforcement and independent backup remain unproven |
 | Supabase Free | $0; 500 MB database; 5 GB egress; low-activity projects can pause after seven days; no automatic Free-plan backups | Conditional alternative; a paused project can be resumed within the documented one-year window, but pause behavior adds operational risk |
 | Render Free PostgreSQL | $0; 1 GB; fixed 30-day expiry; 14-day paid-upgrade grace; deletion after grace; no backups | Rejected for durable personal history |
 | Existing Render Free web service | 750 workspace hours monthly; spins down after 15 idle minutes; ephemeral filesystem | Conditional runtime only; all durable history must live in external PostgreSQL |
@@ -62,12 +62,28 @@ additional compute or egress signal required by that plan.
 Exact byte and compute thresholds are set only after the chosen plan's live
 account limits match the current official terms.
 
-## Recorded decision and remaining gate before any account action
+## Recorded decision and remaining gate before provider use
 
 Completed on 2026-09-01:
 
 - current official plan evidence was rechecked;
 - Neon Free was selected for preparation of synthetic staging only.
+
+Completed on 2026-09-02 under explicit operator approval:
+
+- the Free account and one project were created;
+- the project region was confirmed as `aws-eu-central-1` before creation;
+- PostgreSQL 16 and Neon Auth disabled were confirmed before creation;
+- the live billing page showed Free at $0/month, no payment method and no
+  enabled invoice-payment action;
+- the console showed exactly one project and zero reported usage; and
+- personal, organization and project-scoped API-key lists were empty.
+
+The complete live snapshot and its limits are recorded in
+`docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md`. No provider secret, database
+credential, API-key value, Neon account ID or Neon project ID is recorded
+there. It does record non-secret operational labels such as the project name
+and region ID.
 
 An official-source preconfiguration review was recorded on 2026-09-01. Neon
 documents an EU project region (`aws-eu-central-1`), with the region fixed when
@@ -77,14 +93,19 @@ the stated transfer mechanisms, and leaves lawful use, secure operation and
 export before account deletion with the customer. This records facts, not legal
 approval or confirmation that the DPA has been executed for a Free account.
 
-The Free plan is listed at $0/month with finite allowances. Neon documents
-machine-readable consumption metrics and configurable hard quotas: a configured
-quota suspends project compute until the next billing period. Metrics are
-updated every 15 minutes and may take up to one hour to become reportable, so
-CalorieApp's earlier 70/85/95-percent guard must retain enough headroom for that
-delay. Live-console proof is still required that the Free account has no payment
-method, cannot automatically upgrade or incur paid usage, and exposes the
-needed metrics and hard-limit controls.
+The Free plan is listed at $0/month with finite allowances. The live console
+confirmed the plan, cost boundary, absence of a payment method and aggregate
+compute, storage, history and network-transfer counters. Paid plans require a
+separate plan-selection action. Neon documents configurable hard quotas that
+suspend project compute until the next billing period, with metrics updated
+every 15 minutes and potentially delayed by one hour.
+
+That does not complete the alert gate. Hard-quota configuration requires an API
+key, the usage-based metrics API is not documented for Free, and no persistent
+key was created. A project-scoped key is the least-privilege available option,
+but still grants lasting Editor access and exposes its secret only once. The
+credential custody, exact counters and 70/85/95-percent delivery path therefore
+remain blocked pending separate approval.
 
 Neon also documents portable `pg_dump` export and PostgreSQL restore. CalorieApp
 will encrypt a dump on the client side before it leaves the controlled runner;
@@ -106,29 +127,28 @@ permanent GitHub secret or workflow input. Plaintext upload is forbidden and no
 credential, private key or dump may enter Git. The exact procedure is recorded
 in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
 
-Still required:
+Still required before using the project:
 
 1. Recheck the official terms again if the evidence date has expired or the
    account screen differs from the recorded snapshot.
-2. Confirm `aws-eu-central-1` in the live account before project creation;
-   confirm DPA execution or account acceptance and subscribe to subprocessor
+2. Confirm DPA execution or account acceptance and subscribe to subprocessor
    changes.
-3. Confirm in the live account that no payment method is present, no automatic
-   paid upgrade is possible, and the documented quota metrics and hard limits
-   are available on Free.
+3. Approve a least-privilege provider measurement path, configure exact hard
+   limits and prove the alert and suspension behavior without exposing a key.
 4. Generate the offline `age` identity, verify both encrypted offline copies,
    store the passphrase separately and configure only the public recipient.
 
-Only then may a provider account or project be configured. The first live tests
-remain synthetic: migration/readiness, restart, actual provider redeploy,
-encrypted restore, provider-exit restore and capacity/onboarding-pause. A fresh
-human review is still required before any real user or production data.
+Only then may the project be used. The first live tests remain separately
+approved and synthetic: migration/readiness, restart, actual provider redeploy,
+encrypted restore, provider-exit restore and capacity/onboarding-pause. Real
+user or production data remains blocked.
 
 Additional primary sources reviewed for this preconfiguration boundary:
 
 - [Neon Data Processing Agreement](https://neon.com/pdf/DPA.pdf)
 - [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
+- [Neon API keys](https://neon.com/docs/manage/api-keys)
 - [Neon `pg_dump` backups](https://neon.com/docs/manage/backup-pg-dump)
 - [Neon subprocessor updates](https://neon.com/subscribe-to-subprocessors)
 - [GitHub environments and required reviewers](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)

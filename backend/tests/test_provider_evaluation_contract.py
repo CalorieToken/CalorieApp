@@ -26,9 +26,9 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.4.0"
+    assert contract["contract_version"] == "1.5.0"
     assert contract["decision_state"] == (
-        "neon-synthetic-staging-selected-account-configuration-blocked"
+        "neon-synthetic-staging-project-created-use-blocked"
     )
     assert 1 <= (revalidate_by - reviewed_on).days <= 92
     assert date.today() <= revalidate_by, (
@@ -37,7 +37,8 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["provider_selected"] is True
     assert contract["provider_selection_scope"] == "isolated-synthetic-staging-only"
     assert contract["provider_selected_for_public_release"] is False
-    assert contract["provider_account_created"] is False
+    assert contract["provider_account_created"] is True
+    assert contract["provider_project_created"] is True
     assert contract["payment_method_added"] is False
     assert contract["deployment_or_live_data_mutation_performed"] is False
     assert contract["third_party_terms_may_change"] is True
@@ -49,6 +50,21 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
         "approval_reference": "operator-decision-2026-09-01-neon-synthetic-staging",
         "approved_scope": "preparation-for-isolated-synthetic-staging-only",
         "account_or_project_creation_approved": False,
+        "payment_method_or_paid_upgrade_approved": False,
+        "real_user_or_production_data_approved": False,
+        "external_schema_migration_approved": False,
+        "production_deployment_approved": False,
+    }
+    assert contract["project_creation_record"] == {
+        "created_on": "2026-09-02",
+        "approval_reference": (
+            "operator-decision-2026-09-02-neon-free-frankfurt-synthetic-staging"
+        ),
+        "approved_scope": (
+            "one-free-frankfurt-project-for-isolated-synthetic-staging-only"
+        ),
+        "account_created": True,
+        "project_created": True,
         "payment_method_or_paid_upgrade_approved": False,
         "real_user_or_production_data_approved": False,
         "external_schema_migration_approved": False,
@@ -85,27 +101,33 @@ def test_non_negotiable_cost_durability_and_privacy_boundaries_remain() -> None:
     assert capacity["configured_measurement_failure_pauses_new_onboarding"] is True
     assert capacity["exact_provider_quota_configured"] is False
     assert capacity["alert_delivery_configured"] is False
+    assert capacity["free_console_usage_metrics_confirmed_live"] is True
+    assert capacity["persistent_provider_api_key_created"] is False
     assert capacity[
         "existing_user_read_export_and_erasure_access_preserved_while_paused"
     ] is True
     assert capacity[
-        "provider_quota_values_must_be_confirmed_at_account_creation"
+        "provider_quota_values_must_be_confirmed_before_provider_use"
     ] is True
     assert capacity["provider_dashboard_only_monitoring_counts_as_complete"] is False
 
 
-def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
+def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     contract = _load_contract()
     review = contract["preconfiguration_review"]
 
     assert review["status"] == (
-        "offline-key-custody-selected-console-and-recipient-configuration-pending"
+        "free-frankfurt-project-created-provider-use-and-recipient-configuration-blocked"
     )
+    live_evidence = ROOT / review["live_evidence_document"]
+    assert live_evidence.is_file()
     assert review["eu_region"] == {
         "documented_candidate": "aws-eu-central-1",
         "region_is_fixed_at_project_creation": True,
-        "account_console_confirmation_required": True,
-        "approved_for_account_creation": False,
+        "account_console_confirmation_required": False,
+        "confirmed_in_live_project": True,
+        "project_postgres_version": 16,
+        "approved_for_account_creation": True,
     }
     assert review["data_processing"]["published_dpa_reviewed"] is True
     assert review["data_processing"]["global_access_or_processing_may_occur"] is True
@@ -116,10 +138,32 @@ def test_preconfiguration_facts_do_not_authorize_account_or_real_data() -> None:
     assert review["billing_and_quota"]["free_plan_listed_price_usd_per_month"] == 0
     assert review["billing_and_quota"][
         "payment_method_absence_confirmed_in_live_account"
-    ] is False
+    ] is True
     assert review["billing_and_quota"][
         "automatic_paid_upgrade_disabled_in_live_account"
-    ] is False
+    ] is True
+    billing = review["billing_and_quota"]
+    assert billing["live_plan"] == "Free"
+    assert billing["live_price_usd_per_month"] == 0
+    assert billing["live_project_count"] == 1
+    assert billing["live_synthetic_project_name"] == "calorieapp-synthetic-staging"
+    assert billing["live_neon_auth_enabled"] is False
+    assert billing["live_compute_defaults_cu"] == {"minimum": 0.25, "maximum": 2}
+    assert billing["live_scale_to_zero_minutes"] == 5
+    assert billing["free_console_usage_metrics_confirmed"] == [
+        "compute_cu_hours",
+        "storage_gb",
+        "history_gb",
+        "network_transfer_gb",
+    ]
+    assert billing["free_console_usage_was_zero_at_review"] is True
+    assert billing["usage_based_consumption_api_documented_for_free_plan"] is False
+    assert billing["configurable_hard_quota_requires_api_key"] is True
+    assert billing["project_scoped_api_key_is_least_privilege_available"] is True
+    assert billing["organization_api_key_present"] is False
+    assert billing["personal_api_key_present"] is False
+    assert billing["project_scoped_api_key_created"] is False
+    assert billing["free_plan_quota_api_availability_confirmed_in_live_account"] is False
     backup = review["portable_backup"]
     assert backup["off_provider_destination_selected"] is True
     assert backup["selected_destination"] == "github_actions_artifact"
@@ -216,7 +260,8 @@ def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
     assert experiment[
         "human_approval_required_before_account_or_provider_configuration"
     ] is True
-    assert experiment["account_or_project_creation_approved"] is False
+    assert experiment["account_or_project_creation_approved"] is True
+    assert experiment["provider_project_created"] is True
     assert experiment["real_user_or_production_data_allowed"] is False
     assert experiment["production_deployment_allowed"] is False
     runtime = contract["runtime_candidate"]
@@ -251,19 +296,20 @@ def test_real_provider_work_remains_release_blocked() -> None:
     contract = _load_contract()
 
     assert contract["release_blocking_before_provider_selection"] == []
-    assert contract["release_blocking_before_provider_configuration"]
+    assert contract["release_blocking_before_provider_configuration"] == []
+    assert contract["release_blocking_before_synthetic_provider_use"]
     assert contract["release_blocking_after_provider_selection"]
-    blockers = contract["release_blocking_before_provider_configuration"]
-    assert (
-        "confirm the recorded EU region in the live account console before project creation"
-        in blockers
-    )
+    blockers = contract["release_blocking_before_synthetic_provider_use"]
     assert (
         "confirm DPA execution or account acceptance and subscribe to subprocessor changes"
         in blockers
     )
     assert (
         "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
+        in blockers
+    )
+    assert (
+        "approve and configure a least-privilege provider measurement path without exposing a persistent API key"
         in blockers
     )
     assert not any("approve an encrypted off-provider backup destination" in item for item in blockers)
@@ -299,7 +345,7 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "neon-synthetic-staging-selected-console-and-recipient-configuration-required"
+        "neon-free-frankfurt-synthetic-staging-project-created-use-blocked"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"
@@ -311,4 +357,5 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
     assert cost["selected_provider"] == "neon_free"
     assert cost["provider_selection_scope"] == "isolated-synthetic-staging-only"
     assert cost["provider_selected_for_public_release"] is False
-    assert cost["provider_account_created"] is False
+    assert cost["provider_account_created"] is True
+    assert cost["provider_project_created"] is True
