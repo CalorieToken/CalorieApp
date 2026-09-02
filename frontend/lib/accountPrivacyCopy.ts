@@ -34,22 +34,29 @@ export type AccountErasureCopy = {
 export type AccountPrivacyCopy = {
   locale: string;
   direction: LocaleDirection;
+  service_startup_timeout: string;
   export: AccountExportCopy;
   erasure: AccountErasureCopy;
 };
 
 const translations = copyRegistry.locales as Record<
   string,
-  { export: AccountExportCopy; erasure: AccountErasureCopy }
+  {
+    service_startup_timeout: string;
+    export: AccountExportCopy;
+    erasure: AccountErasureCopy;
+  }
 >;
 
 export function getAccountPrivacyCopy(locale?: string | null): AccountPrivacyCopy {
   const resolved = resolveLocale(locale);
-  const translation = translations[resolved] ?? translations.en;
+  const effectiveLocale = translations[resolved] ? resolved : "en";
+  const translation = translations[effectiveLocale];
 
   return {
-    locale: translations[resolved] ? resolved : "en",
-    direction: localeDirection(resolved),
+    locale: effectiveLocale,
+    direction: localeDirection(effectiveLocale),
+    service_startup_timeout: translation.service_startup_timeout,
     export: translation.export,
     erasure: translation.erasure,
   };

@@ -1,9 +1,10 @@
 {
   "contract_id": "calorieapp.account-privacy-ui-copy",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "source_locale": "en",
   "locales": {
     "en": {
+      "service_startup_timeout": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.",
       "export": {
         "section_label": "Private account data export",
         "title": "Download your private account data",
@@ -34,6 +35,7 @@
       }
     },
     "zh-Hans": {
+      "service_startup_timeout": "CalorieApp 服务启动所需时间比预期更长。请等待几分钟后再试；反复刷新可能会减慢启动。",
       "export": {
         "section_label": "导出私密账户数据",
         "title": "下载您的私密账户数据",
@@ -64,6 +66,7 @@
       }
     },
     "hi": {
+      "service_startup_timeout": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय लग रहा है। दोबारा प्रयास करने से पहले कुछ मिनट प्रतीक्षा करें; बार-बार रीफ़्रेश करने से शुरुआत धीमी हो सकती है।",
       "export": {
         "section_label": "निजी खाता डेटा निर्यात",
         "title": "अपना निजी खाता डेटा डाउनलोड करें",
@@ -94,6 +97,7 @@
       }
     },
     "es": {
+      "service_startup_timeout": "El servicio CalorieApp está tardando más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede ralentizar el inicio.",
       "export": {
         "section_label": "Exportación de datos privados de la cuenta",
         "title": "Descarga los datos privados de tu cuenta",
@@ -124,6 +128,7 @@
       }
     },
     "ar": {
+      "service_startup_timeout": "يستغرق بدء خدمة CalorieApp وقتًا أطول من المتوقع. انتظر بضع دقائق قبل المحاولة مجددًا؛ فقد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل.",
       "export": {
         "section_label": "تصدير بيانات الحساب الخاصة",
         "title": "نزّل بيانات حسابك الخاصة",
@@ -154,6 +159,7 @@
       }
     },
     "fr": {
+      "service_startup_timeout": "Le démarrage du service CalorieApp prend plus de temps que prévu. Attendez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage.",
       "export": {
         "section_label": "Exportation des données privées du compte",
         "title": "Téléchargez les données privées de votre compte",
@@ -184,6 +190,7 @@
       }
     },
     "bn": {
+      "service_startup_timeout": "CalorieApp সেবা চালু হতে প্রত্যাশার চেয়ে বেশি সময় নিচ্ছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও দেরি হতে পারে।",
       "export": {
         "section_label": "ব্যক্তিগত অ্যাকাউন্ট ডেটা রপ্তানি",
         "title": "আপনার ব্যক্তিগত অ্যাকাউন্ট ডেটা ডাউনলোড করুন",
@@ -214,6 +221,7 @@
       }
     },
     "pt": {
+      "service_startup_timeout": "O serviço CalorieApp está demorando mais do que o esperado para iniciar. Aguarde alguns minutos antes de tentar novamente; atualizações repetidas podem atrasar a inicialização.",
       "export": {
         "section_label": "Exportação de dados privados da conta",
         "title": "Baixe os dados privados da sua conta",
@@ -244,6 +252,7 @@
       }
     },
     "id": {
+      "service_startup_timeout": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat proses mulai.",
       "export": {
         "section_label": "Ekspor data akun pribadi",
         "title": "Unduh data akun pribadi Anda",
@@ -274,6 +283,7 @@
       }
     },
     "ur": {
+      "service_startup_timeout": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز مزید سست ہو سکتا ہے۔",
       "export": {
         "section_label": "نجی اکاؤنٹ ڈیٹا کی برآمد",
         "title": "اپنے اکاؤنٹ کا نجی ڈیٹا ڈاؤن لوڈ کریں",
@@ -304,6 +314,7 @@
       }
     },
     "nl": {
+      "service_startup_timeout": "Het duurt langer dan verwacht voordat de CalorieApp-service is gestart. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen.",
       "export": {
         "section_label": "Export van privé-accountgegevens",
         "title": "Download je privé-accountgegevens",

@@ -69,13 +69,16 @@ async function loadJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
-async function loadCopyModule() {
+async function loadCopyModule({ missingLocale } = {}) {
   const typescript = requireFromFrontend("typescript");
   const [source, copyRegistry, localeRegistry] = await Promise.all([
     readFile(COPY_MODULE_PATH, "utf8"),
     loadJson(COPY_PATH),
     loadJson(LOCALES_PATH),
   ]);
+  if (missingLocale) {
+    delete copyRegistry.locales[missingLocale];
+  }
   const compiled = typescript.transpileModule(source, {
     compilerOptions: {
       module: typescript.ModuleKind.CommonJS,
@@ -125,14 +128,21 @@ test("private account controls have complete copy for all eleven locales", async
   const requiredLocales = localeRegistry.locales.map((locale) => locale.tag);
 
   assert.equal(copyRegistry.contract_id, "calorieapp.account-privacy-ui-copy");
+  assert.equal(copyRegistry.contract_version, "1.1.0");
   assert.equal(copyRegistry.source_locale, "en");
   assert.deepEqual(Object.keys(copyRegistry.locales), requiredLocales);
 
   for (const locale of requiredLocales) {
     const translation = copyRegistry.locales[locale];
+    assert.deepEqual(
+      Object.keys(translation),
+      ["service_startup_timeout", "export", "erasure"],
+      locale
+    );
     assert.deepEqual(Object.keys(translation.export), exportKeys, locale);
     assert.deepEqual(Object.keys(translation.erasure), erasureKeys, locale);
     for (const value of [
+      translation.service_startup_timeout,
       ...Object.values(translation.export),
       ...Object.values(translation.erasure),
     ]) {
@@ -142,7 +152,21 @@ test("private account controls have complete copy for all eleven locales", async
     if (locale !== "en") {
       assert.notEqual(translation.export.title, copyRegistry.locales.en.export.title);
       assert.notEqual(translation.erasure.title, copyRegistry.locales.en.erasure.title);
+      assert.notEqual(
+        translation.service_startup_timeout,
+        copyRegistry.locales.en.service_startup_timeout
+      );
     }
+    assert.notEqual(
+      translation.service_startup_timeout,
+      translation.export.unavailable,
+      locale
+    );
+    assert.notEqual(
+      translation.service_startup_timeout,
+      translation.erasure.unavailable,
+      locale
+    );
   }
 });
 
@@ -177,6 +201,16 @@ test("copy lookup resolves aliases, direction and safe English fallback", async 
   assert.equal(getAccountPrivacyCopy("unsupported").locale, "en");
 });
 
+test("missing right-to-left copy falls back to English locale and direction", async () => {
+  const { getAccountPrivacyCopy } = await loadCopyModule({
+    missingLocale: "ar",
+  });
+  const fallback = getAccountPrivacyCopy("ar-EG");
+
+  assert.equal(fallback.locale, "en");
+  assert.equal(fallback.direction, "ltr");
+});
+
 test("account controls receive locale context and expose language direction", async () => {
   const [exportComponent, erasureComponent, loginPanel] = await Promise.all([
     readFile(EXPORT_COMPONENT_PATH, "utf8"),
@@ -188,6 +222,10 @@ test("account controls receive locale context and expose language direction", as
     assert.equal(component.includes("getAccountPrivacyCopy(locale)"), true);
     assert.equal(component.includes("lang={localized.locale}"), true);
     assert.equal(component.includes("dir={localized.direction}"), true);
+    assert.equal(
+      component.includes("localized.service_startup_timeout"),
+      true
+    );
   }
   assert.equal(loginPanel.includes("locale={displayLocale}"), true);
   assert.equal(loginPanel.includes("setDisplayLocale(nextLocale)"), true);

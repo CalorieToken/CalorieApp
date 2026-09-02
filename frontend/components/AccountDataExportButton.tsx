@@ -136,7 +136,7 @@ export function AccountDataExportButton({
         backendUnavailableMessage(
           requestError,
           copy.unavailable,
-          copy.unavailable
+          localized.service_startup_timeout
         )
       );
     } finally {
