@@ -4,7 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 from sqlalchemy import inspect
-from sqlmodel import SQLModel, create_engine
+from sqlalchemy.exc import IntegrityError
+from sqlmodel import SQLModel, Session, create_engine
 from sqlmodel.pool import StaticPool
 
 from app import models  # noqa: F401
@@ -153,7 +154,54 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 15
+        assert count == 16
+    finally:
+        test_engine.dispose()
+
+
+def test_import_receipt_constraint_accepts_v1_and_v2_only() -> None:
+    test_engine = _memory_engine()
+    try:
+        upgrade_database(test_engine)
+        with Session(test_engine) as session:
+            user = models.CalorieAppUserDB(
+                id="receipt-version-owner",
+                status="active",
+            )
+            session.add(user)
+            session.commit()
+            session.add_all(
+                [
+                    models.AccountDataImportReceiptDB(
+                        target_account_id=user.id,
+                        private_import_digest="1" * 64,
+                        plan_version="calorieapp-account-data-import-plan-v1",
+                        export_version="calorieapp-account-data-v1",
+                        food_log_count=0,
+                    ),
+                    models.AccountDataImportReceiptDB(
+                        target_account_id=user.id,
+                        private_import_digest="2" * 64,
+                        plan_version="calorieapp-account-data-import-plan-v1",
+                        export_version="calorieapp-account-data-v2",
+                        food_log_count=0,
+                    ),
+                ]
+            )
+            session.commit()
+
+            session.add(
+                models.AccountDataImportReceiptDB(
+                    target_account_id=user.id,
+                    private_import_digest="3" * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v3",
+                    food_log_count=0,
+                )
+            )
+            with pytest.raises(IntegrityError):
+                session.commit()
+            session.rollback()
     finally:
         test_engine.dispose()
 
@@ -290,7 +338,7 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
                 "SELECT applied_at, approval_reference "
                 "FROM calorie_schema_revision ORDER BY revision"
             ).all()
-        assert len(history) == 15
+        assert len(history) == 16
         for applied_at, reference in history:
             applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
             age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()

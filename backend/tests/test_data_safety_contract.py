@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.33.0"
+    assert contract["contract_version"] == "1.34.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -153,11 +153,11 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-export-and-disabled-authenticated-import-ui-implemented-"
+        "v2-receipt-export-and-disabled-v1-v2-import-implemented-"
         "provider-exit-and-notice-review-pending"
     )
     assert export["format"] == "versioned-json"
-    assert export["format_version"] == "calorieapp-account-data-v1"
+    assert export["format_version"] == "calorieapp-account-data-v2"
     assert export["authenticated_user_only"] is True
     assert export["cross_user_records_allowed"] is False
     assert export["private_http_caching_allowed"] is False
@@ -182,7 +182,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["authenticated_frontend_download_control_implemented"] is True
     assert export["same_origin_backend_proxy_required"] is True
     assert export["download_requires_reviewed_export_version"] == (
-        "calorieapp-account-data-v1"
+        "calorieapp-account-data-v2"
     )
     assert export["download_payload_rendered_or_persisted_in_browser_storage"] is False
     assert export["download_sends_data_to_external_service"] is False
@@ -199,13 +199,15 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["import_plan_version"] == (
         "calorieapp-account-data-import-plan-v1"
     )
-    assert export["import_plan_supported_export_version"] == (
-        "calorieapp-account-data-v1"
-    )
+    assert export["import_plan_supported_export_versions"] == [
+        "calorieapp-account-data-v1",
+        "calorieapp-account-data-v2",
+    ]
     assert export[
         "import_plan_requires_explicit_source_account_confirmation"
     ] is True
     assert export["import_plan_portable_collections"] == ["food_logs"]
+    assert export["import_plan_requires_at_least_one_food_log"] is True
     assert export["import_plan_reuses_source_database_row_ids"] is False
     assert export[
         "import_plan_rehydrates_identity_session_handoff_or_notice_state"
@@ -228,6 +230,9 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["import_admission_requires_authenticated_target_match"] is True
     assert export["import_admission_requires_explicit_target_confirmation"] is True
     assert export["import_admission_new_plan_requires_clean_target"] is True
+    assert export[
+        "import_admission_new_plan_requires_no_prior_private_receipt"
+    ] is True
     assert export[
         "import_admission_content_based_food_log_deduplication_performed"
     ] is False
@@ -277,8 +282,14 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["import_receipt_disclosure_selected_export_version"] == (
         "calorieapp-account-data-v2"
     )
-    assert export["import_receipt_disclosure_runtime_implemented"] is False
-    assert export["current_v1_export_changed_by_receipt_disclosure_decision"] is False
+    assert export["import_receipt_disclosure_runtime_implemented"] is True
+    assert export["legacy_v1_import_compatibility_retained"] is True
+    assert export["import_receipt_summary_export_fields"] == [
+        "imported_at",
+        "food_log_count",
+        "source_export_version",
+        "import_plan_version",
+    ]
     assert export["private_import_digest_export_allowed"] is False
     assert (
         export[
@@ -293,7 +304,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
         "synthetic_postgresql_import_lock_shared_with_live_food_log_writer_tested"
     ] is True
     assert export["import_schema_migration_repository_status"] == (
-        "prepared-forward-migration-not-deployed"
+        "v2-receipt-version-forward-migration-prepared-not-deployed"
     )
     assert export["external_database_migration_or_deployment_performed"] is False
     assert export[
@@ -696,9 +707,9 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.5.0"
+    assert alignment["contract_version"] == "1.6.0"
     assert alignment["status"] == (
-        "canonical-facts-and-eleven-language-export-import-erasure-copy-"
+        "canonical-v2-facts-and-eleven-language-export-import-erasure-copy-"
         "aligned-publication-pending"
     )
     assert alignment["release_state"] == "blocked"
@@ -763,16 +774,16 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert "authentication-sessions" in private_import["excluded_live_state"]
     assert private_import["uploaded_export_retained_as_file"] is False
     assert private_import["provider_exit_import_proved"] is False
-    receipt_disclosure = alignment["selected_future_disclosure"][
+    receipt_disclosure = alignment["implemented_disclosure"][
         "private_import_receipt_summaries"
     ]
     assert receipt_disclosure["contract"] == (
         "contracts/data-safety/v1/account-data-import-receipt-disclosure.json"
     )
-    assert receipt_disclosure["target_export_version"] == (
+    assert receipt_disclosure["current_export_version"] == (
         "calorieapp-account-data-v2"
     )
-    assert receipt_disclosure["current_runtime_changed"] is False
+    assert receipt_disclosure["current_runtime_changed"] is True
     assert set(receipt_disclosure["included_fields"]) == {
         "imported_at",
         "food_log_count",
@@ -1311,7 +1322,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.21.0"
+    assert matrix["contract_version"] == "1.22.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1392,6 +1403,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "backend/tests/test_account_data_import_receipt_disclosure_contract.py"
         in gates["user_data_export"]["evidence"]
     )
+    assert "backend/app/schema_migrations/versions/v20260902_0016.py" in gates[
+        "user_data_export"
+    ]["evidence"]
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
     ]

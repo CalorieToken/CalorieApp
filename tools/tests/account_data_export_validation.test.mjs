@@ -113,13 +113,15 @@ function requestWithHeaders(values = {}) {
 test("private export validation fails closed on malformed reviewed fields", async () => {
   const { isVersionedAccountExport } = await loadAccountDataExportModule();
   const validPayload = {
-    export_version: "calorieapp-account-data-v1",
+    export_version: "calorieapp-account-data-v2",
     account: { user_id: "user-1" },
     food_logs: [],
     external_identities: [],
     authentication_sessions: [],
     authorization_events: [],
     login_handoffs: [],
+    inactive_account_notices: [],
+    account_import_receipts: [],
     excluded_security_fields: [],
   };
 
@@ -136,6 +138,15 @@ test("private export validation fails closed on malformed reviewed fields", asyn
     isVersionedAccountExport({ ...validPayload, authorization_events: {} }),
     false
   );
+  assert.equal(
+    isVersionedAccountExport({ ...validPayload, account_import_receipts: {} }),
+    false
+  );
+  const { account_import_receipts: _receipts, ...missingReceipts } = validPayload;
+  assert.equal(isVersionedAccountExport(missingReceipts), false);
+  const { inactive_account_notices: _inactive, ...missingInactiveNotices } =
+    validPayload;
+  assert.equal(isVersionedAccountExport(missingInactiveNotices), false);
 });
 
 test("private export request uses the shared bounded timeout", async () => {
@@ -236,7 +247,7 @@ test("private export keeps its object URL alive long enough to start", async () 
     },
   });
 
-  downloadPrivateJson({ export_version: "calorieapp-account-data-v1" });
+  downloadPrivateJson({ export_version: "calorieapp-account-data-v2" });
 
   assert.equal(appended, true);
   assert.equal(clicked, true);

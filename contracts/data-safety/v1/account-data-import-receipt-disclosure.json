@@ -1,15 +1,15 @@
 {
   "contract_id": "calorieapp.account-data-import-receipt-disclosure",
-  "contract_version": "1.0.0",
-  "status": "future-v2-disclosure-selected-runtime-implementation-pending",
+  "contract_version": "1.1.0",
+  "status": "v2-disclosure-implemented-activation-and-migration-pending",
   "release_state": "blocked",
   "decision": {
     "completed": true,
-    "current_export_version": "calorieapp-account-data-v1",
-    "future_export_version": "calorieapp-account-data-v2",
-    "future_collection_name": "account_import_receipts",
-    "current_export_changed_by_this_contract": false,
-    "runtime_implementation_completed": false,
+    "current_export_version": "calorieapp-account-data-v2",
+    "selected_export_version": "calorieapp-account-data-v2",
+    "collection_name": "account_import_receipts",
+    "current_export_changed_by_this_contract": true,
+    "runtime_implementation_completed": true,
     "allowed_summary_fields": [
       {
         "export_name": "imported_at",
@@ -55,7 +55,7 @@
     ],
     "private_tiebreaker_exported": false
   },
-  "future_import_behavior": {
+  "import_behavior": {
     "v1_export_remains_accepted": true,
     "v2_receipt_summary_validation_required": true,
     "receipt_summaries_are_informational_history_only": true,
@@ -65,10 +65,11 @@
   },
   "activation_guards": {
     "release_remains_blocked": true,
-    "endpoint_changed": false,
-    "database_schema_changed": false,
-    "export_version_changed": false,
+    "endpoint_changed": true,
+    "database_schema_changed": true,
+    "export_version_changed": true,
     "feature_flag_changed": false,
+    "forward_migration_repository_artifact_prepared": true,
     "migration_performed": false,
     "deployment_performed": false,
     "provider_action_performed": false,

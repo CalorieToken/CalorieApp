@@ -73,6 +73,7 @@ from .schemas import (
     AccountExportAuthSession,
     AccountExportExternalIdentity,
     AccountExportInactiveAccountNotice,
+    AccountExportImportReceipt,
     AccountExportLoginHandoff,
     CurrentUserResponse,
     FoodLog,
@@ -1160,13 +1161,21 @@ def identity_export(
             InactiveAccountNoticeDB.id,
         )
     ).all()
+    import_receipts = session.exec(
+        select(AccountDataImportReceiptDB)
+        .where(AccountDataImportReceiptDB.target_account_id == current_user.id)
+        .order_by(
+            AccountDataImportReceiptDB.created_at,
+            AccountDataImportReceiptDB.id,
+        )
+    ).all()
 
     response.headers["Content-Disposition"] = (
-        'attachment; filename="calorieapp-account-data-v1.json"'
+        'attachment; filename="calorieapp-account-data-v2.json"'
     )
 
     return AccountDataExportResponse(
-        export_version="calorieapp-account-data-v1",
+        export_version="calorieapp-account-data-v2",
         exported_at=datetime.now(UTC),
         account=AccountExportAccount(
             user_id=current_user.id,
@@ -1225,6 +1234,15 @@ def identity_export(
             )
             for notice in inactive_account_notices
         ],
+        account_import_receipts=[
+            AccountExportImportReceipt(
+                imported_at=receipt.created_at,
+                food_log_count=receipt.food_log_count,
+                source_export_version=receipt.export_version,
+                import_plan_version=receipt.plan_version,
+            )
+            for receipt in import_receipts
+        ],
         excluded_security_fields=[
             "authorization_code_hash",
             "authorization_state",
@@ -1233,6 +1251,7 @@ def identity_export(
             "handoff_state_hash",
             "handoff_token_hash",
             "notice_delivery_evidence_digest",
+            "private_import_digest",
         ],
     )
 

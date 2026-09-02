@@ -7,8 +7,9 @@ remain blocked.
 
 ## Purpose
 
-CalorieApp's private `calorieapp-account-data-v1` export must eventually let an
-authorized user move food history to a clean provider-neutral deployment. The
+CalorieApp's private `calorieapp-account-data-v1` and
+`calorieapp-account-data-v2` exports must eventually let an authorized user
+move food history to a clean provider-neutral deployment. The
 first two import slices stop before any write. They prove that an untrusted
 export can be bounded, validated and converted into an explicit food-log plan,
 then admitted under a conservative target and capacity policy without treating
@@ -18,13 +19,14 @@ slice connects this to an authenticated route and hidden UI without enabling it.
 
 `backend/app/account_data_import.py` accepts UTF-8 JSON bytes and requires:
 
-- the exact reviewed v1 top-level and nested fields;
+- the exact reviewed, version-specific v1 or v2 top-level and nested fields;
 - no duplicate JSON keys or non-finite numbers;
 - a maximum five-MiB input and at most 10,000 entries per collection;
 - explicit timezones and consistent account, export and food-log timestamps;
-- the exact v1 list of security fields excluded by the exporter;
+- the exact version-specific list of security fields excluded by the exporter;
 - an empty legacy `authorization_events` collection;
-- positive, unique source food-log identifiers; and
+- positive, unique source food-log identifiers;
+- at least one portable food-log snapshot; and
 - explicit confirmation of the source account identifier.
 
 Validation failures return bounded field-level safety messages without retaining
@@ -47,12 +49,15 @@ state:
 - external identity links;
 - authentication sessions;
 - authorization activity;
-- browser login handoffs; and
-- inactive-account notice state.
+- browser login handoffs;
+- inactive-account notice state; and
+- v2 import-receipt summaries.
 
 Those records describe security or lifecycle history. Identity must be proven
 again, new sessions must be created normally, and retention state needs a
-separately reviewed migration policy.
+separately reviewed migration policy. A v2 receipt summary is informational;
+it never becomes target-bound replay evidence and cannot bypass a fresh import
+digest check.
 
 The plan includes a deterministic SHA-256 digest over canonicalized private
 input and the selected target account to support future per-target idempotency.
@@ -68,7 +73,8 @@ into the private digest. The function does not authenticate a user itself.
 
 The initial duplicate policy is intentionally conservative:
 
-- a new digest is admitted only when the target has no food-log rows;
+- a new digest is admitted only when the target has no food-log rows and no
+  prior private import receipt;
 - a digest already recorded for that target becomes an idempotent no-op;
 - food records are never deduplicated merely because their nutrition values,
   labels or timestamps match; distinct source row identifiers remain distinct;
@@ -76,9 +82,9 @@ The initial duplicate policy is intentionally conservative:
   and callers may lower but never raise that reviewed ceiling.
 
 The database execution layer must obtain the existing row count and exact
-private-digest match while holding the same transaction and lock used for the
-inserts. Passing those values into this pure function alone is not database
-proof.
+private-digest match, and determine whether any prior receipt exists, while
+holding the same transaction and lock used for the inserts. Passing those
+values into this pure function alone is not database proof.
 
 ## Guarded transaction staging
 
@@ -143,17 +149,17 @@ independently reviewed and is not a complete privacy notice.
 The endpoint and browser control now exist but both remain disabled by default.
 They have no provider integration, scheduler or production capability. The
 uploaded JSON exists only in request/browser memory and is not retained as a
-file. A forward schema migration and transaction helper remain prepared and
-tested only against disposable local/CI data; no external staging or production
-migration was run. This does not prove a provider exit or authorize import of
-real user data.
+file. Forward schema migrations, including the v1/v2 receipt-version
+constraint, and the transaction helper remain prepared and tested only against
+disposable local/CI data; no external staging or production migration was run.
+This does not prove a provider exit or authorize import of real user data.
 
 Before import can be enabled, later reviewed work must add:
 
 1. an isolated synthetic PostgreSQL source-to-successor provider-exit test;
-2. implementation and review of the selected v2 import-receipt summary without
-   exposing the replay digest, while retaining v1 import compatibility;
+2. execution and verification of the prepared v1/v2 receipt-version migration
+   on explicitly approved synthetic staging only;
 3. an approved complete privacy notice and operator review of the prepared
    eleven-language consequence copy; and
-4. explicit operator approval before any external staging mutation, provider action or
-   production activation.
+4. explicit operator approval before any external staging mutation, provider
+   action or production activation.

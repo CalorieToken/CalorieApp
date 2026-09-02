@@ -14,7 +14,7 @@ from typing import Literal
 from .account_data_import import (
     IMPORT_PLAN_VERSION,
     MAXIMUM_USER_ID_BYTES,
-    SUPPORTED_EXPORT_VERSION,
+    SUPPORTED_EXPORT_VERSIONS,
     AccountDataImportPlan,
     PlannedFoodLogImport,
 )
@@ -80,7 +80,8 @@ def _validate_plan_integrity(plan: object) -> AccountDataImportPlan:
         )
     if (
         plan.plan_version != IMPORT_PLAN_VERSION
-        or plan.export_version != SUPPORTED_EXPORT_VERSION
+        or not isinstance(plan.export_version, str)
+        or plan.export_version not in SUPPORTED_EXPORT_VERSIONS
     ):
         raise AccountDataImportAdmissionError("plan version is not supported")
     _bounded_account_id(plan.source_account_id, field_name="plan source account")
@@ -92,7 +93,7 @@ def _validate_plan_integrity(plan: object) -> AccountDataImportPlan:
         or any(character not in "0123456789abcdef" for character in digest)
     ):
         raise AccountDataImportAdmissionError("plan digest is not valid")
-    if not isinstance(plan.food_logs, tuple) or any(
+    if not isinstance(plan.food_logs, tuple) or not plan.food_logs or any(
         not isinstance(food_log, PlannedFoodLogImport)
         for food_log in plan.food_logs
     ):
@@ -114,6 +115,7 @@ def admit_account_data_import(
     confirmed_target_account_id: str,
     existing_target_food_log_count: int,
     private_digest_already_recorded: bool,
+    any_private_receipt_recorded: bool,
     food_log_limit: int = FOOD_LOG_IMPORT_TARGET_LIMIT,
 ) -> AccountDataImportAdmission:
     """Return a pure admission decision for a future caller-owned transaction.
@@ -149,6 +151,14 @@ def admit_account_data_import(
         raise AccountDataImportAdmissionError(
             "private_digest_already_recorded must be a boolean"
         )
+    if not isinstance(any_private_receipt_recorded, bool):
+        raise AccountDataImportAdmissionError(
+            "any_private_receipt_recorded must be a boolean"
+        )
+    if private_digest_already_recorded and not any_private_receipt_recorded:
+        raise AccountDataImportAdmissionError(
+            "private receipt evidence is inconsistent"
+        )
     if authenticated_target != reviewed_plan.target_account_id:
         raise AccountDataImportAdmissionError(
             "authenticated target account does not match the import plan"
@@ -172,6 +182,10 @@ def admit_account_data_import(
     if existing_count != 0:
         raise AccountDataImportAdmissionError(
             "target account is not clean for the initial import policy"
+        )
+    if any_private_receipt_recorded:
+        raise AccountDataImportAdmissionError(
+            "target account already has private import history"
         )
     planned_count = len(reviewed_plan.food_logs)
     if planned_count > selected_limit:

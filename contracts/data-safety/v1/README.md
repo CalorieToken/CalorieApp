@@ -13,8 +13,9 @@ Files:
 
 - `data-safety.json`: architecture, data classes, retention boundaries and
   prohibited storage patterns.
-- `account-data-import-receipt-disclosure.json`: selected future v2 disclosure
-  boundary for private import-receipt metadata, without exposing replay evidence.
+- `account-data-import-receipt-disclosure.json`: implemented v2 disclosure
+  boundary for private import-receipt metadata, without exposing replay evidence,
+  plus retained v1 import compatibility and closed activation guards.
 - `privacy-notice-alignment.json`: canonical product facts, English consequence-
   copy evidence and the still-closed legal, provider, translation and
   publication fields.

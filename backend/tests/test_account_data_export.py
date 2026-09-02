@@ -8,6 +8,7 @@ from sqlmodel import Session
 import app.database as db_module
 from app.account_data_import import plan_account_data_import
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthorizationCodeDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -68,6 +69,9 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     own_handoff_token_hash = "c" * 64
     own_notice_digest = "1" * 64
     other_notice_digest = "2" * 64
+    own_import_digest_earlier = "3" * 64
+    own_import_digest_later = "4" * 64
+    other_import_digest = "5" * 64
     notice_anchor = datetime(2024, 1, 1)
     notice_due = datetime(2026, 1, 1)
 
@@ -139,6 +143,33 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
                     status="delivered",
                     recorded_at=notice_due - timedelta(days=20),
                 ),
+                AccountDataImportReceiptDB(
+                    id="own-receipt-later",
+                    target_account_id=user_id,
+                    private_import_digest=own_import_digest_later,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v2",
+                    food_log_count=2,
+                    created_at=now - timedelta(hours=1),
+                ),
+                AccountDataImportReceiptDB(
+                    id="own-receipt-earlier",
+                    target_account_id=user_id,
+                    private_import_digest=own_import_digest_earlier,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=1,
+                    created_at=now - timedelta(hours=2),
+                ),
+                AccountDataImportReceiptDB(
+                    id="other-private-receipt",
+                    target_account_id=other_user.id,
+                    private_import_digest=other_import_digest,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=9,
+                    created_at=now - timedelta(hours=3),
+                ),
             ]
         )
         session.commit()
@@ -155,11 +186,11 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["pragma"] == "no-cache"
     assert response.headers["content-disposition"] == (
-        'attachment; filename="calorieapp-account-data-v1.json"'
+        'attachment; filename="calorieapp-account-data-v2.json"'
     )
 
     data = response.json()
-    assert data["export_version"] == "calorieapp-account-data-v1"
+    assert data["export_version"] == "calorieapp-account-data-v2"
     assert data["account"]["user_id"] == user_id
     assert data["account"]["status"] == "active"
     assert data["account"]["last_authenticated_activity_at"].endswith("Z")
@@ -178,6 +209,24 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
         "reviewed-channel"
     )
     assert "delivery_evidence_digest" not in data["inactive_account_notices"][0]
+    assert data["account_import_receipts"] == [
+        {
+            "imported_at": (now - timedelta(hours=2)).isoformat().replace(
+                "+00:00", "Z"
+            ),
+            "food_log_count": 1,
+            "source_export_version": "calorieapp-account-data-v1",
+            "import_plan_version": "calorieapp-account-data-import-plan-v1",
+        },
+        {
+            "imported_at": (now - timedelta(hours=1)).isoformat().replace(
+                "+00:00", "Z"
+            ),
+            "food_log_count": 2,
+            "source_export_version": "calorieapp-account-data-v2",
+            "import_plan_version": "calorieapp-account-data-import-plan-v1",
+        },
+    ]
 
     exported_text = response.text
     for secret in (
@@ -188,6 +237,12 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
         own_notice_digest,
         other_notice_digest,
         "other-private-channel",
+        own_import_digest_earlier,
+        own_import_digest_later,
+        other_import_digest,
+        "own-receipt-earlier",
+        "own-receipt-later",
+        "other-private-receipt",
     ):
         assert secret not in exported_text
 
@@ -195,6 +250,7 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert "authorization_code_hash" in data["excluded_security_fields"]
     assert "handoff_token_hash" in data["excluded_security_fields"]
     assert "notice_delivery_evidence_digest" in data["excluded_security_fields"]
+    assert "private_import_digest" in data["excluded_security_fields"]
 
 
 def test_account_data_export_withholds_unowned_legacy_authorization_events(

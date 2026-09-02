@@ -14,7 +14,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 from sqlalchemy.engine import Engine, make_url
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
@@ -513,6 +513,51 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "client_id",
         "expires_at",
     )
+
+
+def test_postgresql_import_receipt_constraint_accepts_v1_and_v2_only(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-RECEIPT-VERSION-CONSTRAINT",
+    )
+    target_user_id = f"synthetic-receipt-version-{uuid4().hex}"
+    with Session(postgres_engine) as session:
+        session.add(CalorieAppUserDB(id=target_user_id, status="active"))
+        session.commit()
+        session.add_all(
+            [
+                AccountDataImportReceiptDB(
+                    target_account_id=target_user_id,
+                    private_import_digest="1" * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=0,
+                ),
+                AccountDataImportReceiptDB(
+                    target_account_id=target_user_id,
+                    private_import_digest="2" * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v2",
+                    food_log_count=0,
+                ),
+            ]
+        )
+        session.commit()
+
+        session.add(
+            AccountDataImportReceiptDB(
+                target_account_id=target_user_id,
+                private_import_digest="3" * 64,
+                plan_version="calorieapp-account-data-import-plan-v1",
+                export_version="calorieapp-account-data-v3",
+                food_log_count=0,
+            )
+        )
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
 
 
 def test_postgresql_account_import_is_atomic_private_and_replay_safe(

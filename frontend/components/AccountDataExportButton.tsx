@@ -14,8 +14,8 @@ import {
 import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
 
 const BACKEND_BASE_URL = "/api/backend";
-const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v1";
-const ACCOUNT_EXPORT_FILENAME = "calorieapp-account-data-v1.json";
+const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v2";
+const ACCOUNT_EXPORT_FILENAME = "calorieapp-account-data-v2.json";
 const PRIVATE_EXPORT_URL_REVOCATION_DELAY_MS = 1_000;
 
 type AccountDataExportButtonProps = {
@@ -39,8 +39,8 @@ export function isVersionedAccountExport(payload: unknown): boolean {
     Array.isArray(candidate.authentication_sessions) &&
     Array.isArray(candidate.authorization_events) &&
     Array.isArray(candidate.login_handoffs) &&
-    (candidate.inactive_account_notices === undefined ||
-      Array.isArray(candidate.inactive_account_notices)) &&
+    Array.isArray(candidate.inactive_account_notices) &&
+    Array.isArray(candidate.account_import_receipts) &&
     Array.isArray(candidate.excluded_security_fields)
   );
 }

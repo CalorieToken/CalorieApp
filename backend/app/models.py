@@ -72,7 +72,8 @@ class AccountDataImportReceiptDB(SQLModel, table=True):
             name="ck_account_data_import_receipt_plan_version",
         ),
         CheckConstraint(
-            "export_version = 'calorieapp-account-data-v1'",
+            "export_version IN ('calorieapp-account-data-v1', "
+            "'calorieapp-account-data-v2')",
             name="ck_account_data_import_receipt_export_version",
         ),
     )

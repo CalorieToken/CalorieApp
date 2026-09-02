@@ -324,10 +324,9 @@ class AccountExportInactiveAccountNotice(BaseModel):
         return _ensure_utc(value) if value is not None else None
 
 
-class AccountDataExportResponse(BaseModel):
-    """Versioned authenticated CalorieApp account-data export."""
+class AccountDataExportBase(BaseModel):
+    """Fields shared by reviewed CalorieApp account-data export versions."""
 
-    export_version: Literal["calorieapp-account-data-v1"]
     exported_at: datetime
     account: AccountExportAccount
     external_identities: list[AccountExportExternalIdentity]
@@ -342,6 +341,36 @@ class AccountDataExportResponse(BaseModel):
     @classmethod
     def normalize_export_timestamp(cls, value: datetime) -> datetime:
         return _ensure_utc(value)
+
+
+class AccountDataExportV1Response(AccountDataExportBase):
+    """Legacy v1 export retained for fail-closed import compatibility."""
+
+    export_version: Literal["calorieapp-account-data-v1"]
+
+
+class AccountExportImportReceipt(BaseModel):
+    """Account-owned import history without private replay evidence."""
+
+    imported_at: datetime
+    food_log_count: int = Field(..., ge=0, le=10_000)
+    source_export_version: Literal[
+        "calorieapp-account-data-v1",
+        "calorieapp-account-data-v2",
+    ]
+    import_plan_version: Literal["calorieapp-account-data-import-plan-v1"]
+
+    @field_validator("imported_at", mode="after")
+    @classmethod
+    def normalize_import_timestamp(cls, value: datetime) -> datetime:
+        return _ensure_utc(value)
+
+
+class AccountDataExportResponse(AccountDataExportBase):
+    """Current v2 export with minimal private import-history summaries."""
+
+    export_version: Literal["calorieapp-account-data-v2"]
+    account_import_receipts: list[AccountExportImportReceipt]
 
 
 class AccountDataImportResponse(BaseModel):

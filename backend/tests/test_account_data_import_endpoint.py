@@ -27,7 +27,7 @@ REVIEWED_COMMIT_SHA = "a" * 40
 def _payload() -> bytes:
     return json.dumps(
         {
-            "export_version": "calorieapp-account-data-v1",
+            "export_version": "calorieapp-account-data-v2",
             "exported_at": "2026-09-02T12:00:00Z",
             "account": {
                 "user_id": SOURCE_USER_ID,
@@ -58,6 +58,16 @@ def _payload() -> bytes:
             "authorization_events": [],
             "login_handoffs": [],
             "inactive_account_notices": [],
+            "account_import_receipts": [
+                {
+                    "imported_at": "2026-08-30T09:00:00Z",
+                    "food_log_count": 1,
+                    "source_export_version": "calorieapp-account-data-v1",
+                    "import_plan_version": (
+                        "calorieapp-account-data-import-plan-v1"
+                    ),
+                }
+            ],
             "excluded_security_fields": sorted(REQUIRED_EXCLUDED_SECURITY_FIELDS),
         },
         separators=(",", ":"),
@@ -155,6 +165,8 @@ def test_account_data_import_commits_only_food_history_to_authenticated_target(
         assert food_logs[0].product_name == "Portable synthetic pear"
         assert len(receipts) == 1
         assert receipts[0].target_account_id == target_user_id
+        assert receipts[0].export_version == "calorieapp-account-data-v2"
+        assert receipts[0].food_log_count == 1
         assert SOURCE_USER_ID not in repr(receipts[0])
 
 

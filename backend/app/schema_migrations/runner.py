@@ -25,6 +25,7 @@ from .versions import (
     v20260901_0013,
     v20260902_0014,
     v20260902_0015,
+    v20260902_0016,
 )
 
 
@@ -130,6 +131,12 @@ MIGRATIONS = (
         down_revision=v20260902_0015.down_revision,
         upgrade=v20260902_0015.upgrade,
         validate=v20260902_0015.validate,
+    ),
+    Migration(
+        revision=v20260902_0016.revision,
+        down_revision=v20260902_0016.down_revision,
+        upgrade=v20260902_0016.upgrade,
+        validate=v20260902_0016.validate,
     ),
 )
 SCHEMA_HEAD = MIGRATIONS[-1].revision
