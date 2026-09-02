@@ -238,6 +238,7 @@
         "docs/AUTHENTICATED_ACTIVITY_RETENTION_MARKER.md",
         "docs/INACTIVE_ACCOUNT_PREVIEW.md",
         "docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md",
+        "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md",
         "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md",
         "docs/ACCOUNT_ERASURE.md",
         "backend/app/inactive_account_preview.py",
@@ -245,6 +246,7 @@
         "backend/app/inactive_account_notice.py",
         "backend/app/inactive_account_notice_receipt.py",
         "backend/app/inactive_account_notice_recording.py",
+        "backend/app/inactive_account_erasure_eligibility.py",
         "backend/app/auth_transient_retention.py",
         "backend/app/auth_transient_retention_cli.py",
         "backend/app/models.py",
@@ -258,6 +260,7 @@
         "backend/tests/test_inactive_account_notice.py",
         "backend/tests/test_inactive_account_notice_receipt.py",
         "backend/tests/test_inactive_account_notice_recording.py",
+        "backend/tests/test_inactive_account_erasure_eligibility.py",
         "backend/tests/test_identity_endpoints.py",
         "backend/tests/test_account_data_export.py",
         "backend/tests/test_data_safety_contract.py"

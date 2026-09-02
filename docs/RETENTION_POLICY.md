@@ -77,6 +77,12 @@ conflicting retries are rejected. The helper leaves the commit or rollback
 decision to its caller and is not connected to an endpoint, provider, contact
 destination, queue, scheduler or erasure path.
 
+A separate internal read-only guard can revalidate one delivered notice and its
+current account under caller-owned transaction locks after the retention
+deadline. It returns only minimal internal candidate facts and never authorizes
+or performs deletion. Batch selection, scheduling and production execution
+remain absent. See `docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
