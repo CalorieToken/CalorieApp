@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.17.0",
+  "contract_version": "1.18.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -51,6 +51,7 @@
         "tools/tests/calorieapp_embed_readiness.test.mjs",
         "tools/tests/xaman_login_start_retry.test.mjs",
         "backend/app/data_growth.py",
+        "backend/app/account_data_import_admission.py",
         "backend/app/schema_migrations/versions/v20260831_0005.py",
         "backend/tests/test_data_growth.py",
         "docs/PER_SUBJECT_STORAGE_BUDGET.md",
@@ -147,6 +148,7 @@
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
         "backend/app/account_data_import.py",
+        "backend/app/account_data_import_admission.py",
         "backend/tests/test_account_data_import.py",
         "docs/DURABLE_DATA_FOUNDATION.md",
         "docs/ZERO_COST_PROVIDER_EVALUATION.md",
@@ -162,6 +164,7 @@
       "evidence": [
         "contracts/data-safety/v1/data-safety.json",
         "backend/app/account_data_import.py",
+        "backend/app/account_data_import_admission.py",
         "backend/tests/test_account_data_import.py",
         "docs/ACCOUNT_DATA_IMPORT.md",
         "docs/ECOSYSTEM_CONTINUITY.md"
@@ -215,6 +218,7 @@
         "backend/app/main.py",
         "backend/app/schemas.py",
         "backend/app/account_data_import.py",
+        "backend/app/account_data_import_admission.py",
         "backend/tests/test_account_data_import.py",
         "backend/tests/test_account_data_export.py",
         "backend/tests/test_frontend_configuration.py",

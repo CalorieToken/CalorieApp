@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import fields
+from dataclasses import fields, replace
 from datetime import datetime
 import inspect
 import json
@@ -11,6 +11,7 @@ import json
 import pytest
 
 import app.account_data_import as import_module
+import app.account_data_import_admission as admission_module
 from app.account_data_import import (
     IMPORT_PLAN_VERSION,
     REQUIRED_EXCLUDED_SECURITY_FIELDS,
@@ -19,6 +20,14 @@ from app.account_data_import import (
     AccountDataImportSafetyError,
     plan_account_data_import,
 )
+from app.account_data_import_admission import (
+    FOOD_LOG_IMPORT_TARGET_LIMIT,
+    IMPORT_ADMISSION_VERSION,
+    IMPORT_DUPLICATE_POLICY,
+    AccountDataImportAdmissionError,
+    admit_account_data_import,
+)
+from app.data_growth import FOOD_LOG_SUBJECT_ENTRY_LIMIT
 
 
 SOURCE_USER_ID = "00000000-0000-0000-0000-000000000071"
@@ -110,6 +119,18 @@ def _plan(payload: bytes | None = None, **overrides) -> AccountDataImportPlan:
     }
     values.update(overrides)
     return plan_account_data_import(**values)
+
+
+def _admit(plan: AccountDataImportPlan | None = None, **overrides):
+    values = {
+        "plan": _plan() if plan is None else plan,
+        "authenticated_target_account_id": TARGET_USER_ID,
+        "confirmed_target_account_id": TARGET_USER_ID,
+        "existing_target_food_log_count": 0,
+        "private_digest_already_recorded": False,
+    }
+    values.update(overrides)
+    return admit_account_data_import(**values)
 
 
 def test_planner_prepares_only_newly_owned_food_log_values() -> None:
@@ -407,6 +428,139 @@ def test_portable_numbers_are_not_coerced_from_strings(
 
 def test_planner_module_has_no_database_network_or_endpoint_capability() -> None:
     source = inspect.getsource(import_module)
+
+    assert "sqlmodel" not in source
+    assert "requests" not in source
+    assert "@app." not in source
+    assert ".commit(" not in source
+
+
+def test_import_admission_accepts_only_a_clean_target_within_budget() -> None:
+    plan = _plan()
+    admission = _admit(plan)
+
+    assert admission.admission_version == IMPORT_ADMISSION_VERSION
+    assert admission.action == "prepare_insert"
+    assert admission.duplicate_policy == IMPORT_DUPLICATE_POLICY
+    assert admission.plan is plan
+    assert admission.existing_target_food_log_count == 0
+    assert admission.planned_insert_count == 1
+    assert admission.food_log_limit == FOOD_LOG_IMPORT_TARGET_LIMIT
+    assert repr(admission) == "AccountDataImportAdmission(<private>)"
+    assert plan.private_import_digest not in repr(admission)
+    assert TARGET_USER_ID not in repr(admission)
+    assert "Portable apple" not in repr(admission)
+
+
+def test_import_admission_limit_matches_live_food_log_subject_budget() -> None:
+    assert FOOD_LOG_IMPORT_TARGET_LIMIT == FOOD_LOG_SUBJECT_ENTRY_LIMIT == 10_000
+
+
+def test_exact_recorded_digest_is_an_idempotent_noop_even_at_capacity() -> None:
+    admission = _admit(
+        existing_target_food_log_count=FOOD_LOG_IMPORT_TARGET_LIMIT,
+        private_digest_already_recorded=True,
+    )
+
+    assert admission.action == "idempotent_noop"
+    assert admission.planned_insert_count == 0
+
+
+def test_new_import_into_nonempty_target_fails_closed_without_content_dedup() -> None:
+    with pytest.raises(AccountDataImportAdmissionError, match="not clean"):
+        _admit(existing_target_food_log_count=1)
+
+
+def test_distinct_source_rows_with_equal_food_content_are_preserved() -> None:
+    payload = _payload()
+    second_food_log = deepcopy(payload["food_logs"][0])
+    second_food_log["id"] = 42
+    payload["food_logs"].append(second_food_log)
+
+    admission = _admit(_plan(_encoded(payload)))
+
+    assert admission.action == "prepare_insert"
+    assert admission.planned_insert_count == 2
+    assert [item.source_record_id for item in admission.plan.food_logs] == [41, 42]
+
+
+def test_import_larger_than_available_target_budget_fails_closed() -> None:
+    payload = _payload()
+    second_food_log = deepcopy(payload["food_logs"][0])
+    second_food_log["id"] = 42
+    payload["food_logs"].append(second_food_log)
+
+    with pytest.raises(AccountDataImportAdmissionError, match="capacity"):
+        _admit(_plan(_encoded(payload)), food_log_limit=1)
+
+
+@pytest.mark.parametrize(
+    ("override", "message"),
+    [
+        (
+            {"authenticated_target_account_id": SOURCE_USER_ID},
+            "authenticated target account",
+        ),
+        (
+            {"confirmed_target_account_id": SOURCE_USER_ID},
+            "confirmed target account",
+        ),
+    ],
+)
+def test_import_admission_requires_authenticated_and_confirmed_exact_target(
+    override: dict[str, object],
+    message: str,
+) -> None:
+    with pytest.raises(AccountDataImportAdmissionError, match=message):
+        _admit(**override)
+
+
+@pytest.mark.parametrize(
+    ("override", "message"),
+    [
+        ({"existing_target_food_log_count": -1}, "non-negative integer"),
+        ({"existing_target_food_log_count": True}, "non-negative integer"),
+        ({"food_log_limit": 0}, "positive integer"),
+        ({"food_log_limit": True}, "positive integer"),
+        (
+            {"food_log_limit": FOOD_LOG_IMPORT_TARGET_LIMIT + 1},
+            "reviewed maximum",
+        ),
+        ({"private_digest_already_recorded": 1}, "must be a boolean"),
+    ],
+)
+def test_import_admission_rejects_ambiguous_control_values(
+    override: dict[str, object],
+    message: str,
+) -> None:
+    with pytest.raises(AccountDataImportAdmissionError, match=message):
+        _admit(**override)
+
+
+@pytest.mark.parametrize(
+    "invalid_plan",
+    [
+        replace(_plan(), plan_version="unreviewed-plan-version"),
+        replace(_plan(), private_import_digest="A" * 64),
+        replace(_plan(), private_import_digest=1),
+        replace(_plan(), food_logs=[]),
+        replace(
+            _plan(),
+            food_logs=(
+                replace(_plan().food_logs[0], target_owner_id=SOURCE_USER_ID),
+            ),
+        ),
+    ],
+)
+def test_import_admission_revalidates_private_plan_integrity(
+    invalid_plan: AccountDataImportPlan,
+) -> None:
+    with pytest.raises(AccountDataImportAdmissionError):
+        _admit(invalid_plan)
+
+
+def test_import_admission_module_has_no_database_network_or_endpoint_capability() -> None:
+    source = inspect.getsource(admission_module)
 
     assert "sqlmodel" not in source
     assert "requests" not in source

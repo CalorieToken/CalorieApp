@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.28.0",
+  "contract_version": "1.29.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -337,7 +337,7 @@
     "unresolved_release_decisions": []
   },
   "account_data_export": {
-    "status": "v2-export-ui-and-pure-import-plan-implemented-provider-and-notice-review-pending",
+    "status": "v2-export-ui-pure-import-plan-and-admission-implemented-provider-and-notice-review-pending",
     "format": "versioned-json",
     "format_version": "calorieapp-account-data-v1",
     "authenticated_user_only": true,
@@ -374,6 +374,20 @@
     "import_plan_private_digest_may_be_publicly_logged": false,
     "import_plan_private_digest_bound_to_target_account": true,
     "import_validation_errors_retain_private_payload_details": false,
+    "provider_neutral_import_admission_implemented": true,
+    "import_admission_version": "calorieapp-account-data-import-admission-v1",
+    "import_admission_duplicate_policy": "clean-target-exact-plan-replay-only-v1",
+    "import_admission_requires_reviewed_plan_version_digest_format_and_target_ownership": true,
+    "import_admission_requires_authenticated_target_match": true,
+    "import_admission_requires_explicit_target_confirmation": true,
+    "import_admission_new_plan_requires_clean_target": true,
+    "import_admission_content_based_food_log_deduplication_performed": false,
+    "import_admission_exact_private_digest_replay_action": "idempotent-noop",
+    "import_admission_target_food_log_limit": 10000,
+    "import_admission_limit_may_exceed_live_subject_budget": false,
+    "import_admission_count_and_digest_must_be_read_in_future_transaction": true,
+    "private_import_idempotency_storage_implemented": false,
+    "import_admission_has_endpoint_database_file_provider_network_or_deployment_capability": false,
     "future_import_requires_separate_target_authentication_and_authorization": true,
     "authenticated_import_endpoint_implemented": false,
     "database_import_mutation_implemented": false,
