@@ -65,6 +65,14 @@ is fed incrementally to avoid allocating one combined domain-plus-payload buffer
 Key identifiers, generation, custody, rotation and authorized audit access
 remain outside this prepared code and must be reviewed before activation.
 
+`backend/app/inactive_account_notice_recording.py` provides the next internal
+repository boundary. It can stage already-minimized evidence only inside its
+caller's transaction. It locks the current user row, rejects a stale activity
+anchor, returns an existing row for an identical retry and rejects conflicting
+evidence for the same user and anchor. It flushes database constraints but does
+not commit. The module has no provider, destination, network, queue, scheduler,
+endpoint or erasure capability and cannot itself establish successful delivery.
+
 ## Activity cancellation
 
 Every successfully created session and successfully authenticated request

@@ -69,6 +69,12 @@ builder's normal `ValueError`. The verifier does not retrieve receipts or keys
 and grants no provider, database or erasure access. Key lifecycle and audit
 authorization remain blocked.
 
+An internal transaction-owned repository helper can now stage already-minimized
+successful-delivery evidence. It locks and matches the durable activity anchor,
+keeps identical retries idempotent, rejects conflicting retries and leaves the
+commit or rollback decision to its caller. It is not connected to an endpoint,
+provider, contact destination, queue, scheduler or erasure path.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization

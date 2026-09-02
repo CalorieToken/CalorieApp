@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.20.0"
+    assert contract["contract_version"] == "1.21.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -256,8 +256,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert preview["migration_or_deployment_performed"] is False
     evidence = retention["inactive_account_notice_evidence"]
     assert evidence["implementation_status"] == (
-        "receipt-proof-builder-and-verifier-schema-and-activity-"
-        "cancellation-prepared-delivery-disabled"
+        "receipt-proof-builder-verifier-and-transaction-owned-recording-"
+        "schema-and-activity-cancellation-prepared-delivery-disabled"
     )
     assert evidence["successful_delivery_evidence_only"] is True
     assert evidence["pending_delivery_queue_created"] is False
@@ -274,6 +274,17 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["provider_neutral_receipt_proof_verifier_implemented"] is True
     assert evidence["receipt_proof_digest_comparison"] == "hmac.compare_digest"
     assert evidence["malformed_expected_digest_rejected"] is True
+    assert evidence["transaction_owned_evidence_recording_implemented"] is True
+    assert evidence["recording_requires_current_locked_activity_anchor"] is True
+    assert evidence["identical_user_anchor_retry_is_idempotent"] is True
+    assert evidence["conflicting_user_anchor_retry_rejected"] is True
+    assert evidence["recording_function_commits_transaction"] is False
+    assert (
+        evidence[
+            "recording_function_has_provider_network_queue_scheduler_or_erasure_capability"
+        ]
+        is False
+    )
     assert (
         evidence["raw_provider_receipt_returned_or_persisted_by_proof_builder"]
         is False
@@ -297,9 +308,13 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["receipt_proof"] == (
         "backend/app/inactive_account_notice_receipt.py"
     )
+    assert evidence["evidence_recording"] == (
+        "backend/app/inactive_account_notice_recording.py"
+    )
     assert evidence["tests"] == [
         "backend/tests/test_inactive_account_notice.py",
         "backend/tests/test_inactive_account_notice_receipt.py",
+        "backend/tests/test_inactive_account_notice_recording.py",
     ]
     assert evidence["notice_evidence_removed_by_account_erasure"] is True
     assert evidence["notice_delivery_adapter_implemented"] is False
@@ -967,6 +982,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/inactive_account_notice_receipt.py" in gates[
         "retention_policy"
     ]["evidence"]
+    assert "backend/app/inactive_account_notice_recording.py" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "backend/app/inactive_account_preview.py" in gates[
         "retention_policy"
     ]["evidence"]
@@ -998,6 +1016,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_notice_receipt.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_inactive_account_notice_recording.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"
