@@ -6,6 +6,7 @@ endpoint, provider, queue, scheduler or production activation capability.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -15,6 +16,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from .inactive_account_erasure_eligibility import (
+    InactiveAccountErasureEligibilitySafetyError,
     lock_inactive_account_erasure_candidate,
 )
 from .models import (
@@ -29,6 +31,7 @@ from .models import (
 
 MAXIMUM_ROWS_PER_RELATION = 10_000
 MAXIMUM_TOTAL_DELETE_ROWS = 20_000
+MAXIMUM_SUBJECTS_PER_QUERY = 500
 
 
 class InactiveAccountErasurePreflightSafetyError(RuntimeError):
@@ -95,6 +98,11 @@ def _external_subjects(session: Session, user_id: str) -> list[str]:
     return sorted(set(subjects))
 
 
+def _subject_chunks(external_subjects: list[str]) -> Iterator[list[str]]:
+    for offset in range(0, len(external_subjects), MAXIMUM_SUBJECTS_PER_QUERY):
+        yield external_subjects[offset : offset + MAXIMUM_SUBJECTS_PER_QUERY]
+
+
 def _require_unambiguous_identity_ownership(
     session: Session,
     user_id: str,
@@ -103,26 +111,28 @@ def _require_unambiguous_identity_ownership(
     if not external_subjects:
         return
 
-    ambiguous_identity = session.exec(
-        select(ExternalIdentityDB.id).where(
-            ExternalIdentityDB.external_subject.in_(external_subjects),
-            ExternalIdentityDB.calorieapp_user_id != user_id,
-        )
-    ).first()
-    if ambiguous_identity is not None:
-        raise InactiveAccountErasurePreflightSafetyError(
-            "account identity requires operator review before erasure"
-        )
+    for subject_chunk in _subject_chunks(external_subjects):
+        ambiguous_identity = session.exec(
+            select(ExternalIdentityDB.id).where(
+                ExternalIdentityDB.external_subject.in_(subject_chunk),
+                ExternalIdentityDB.calorieapp_user_id != user_id,
+            )
+        ).first()
+        if ambiguous_identity is not None:
+            raise InactiveAccountErasurePreflightSafetyError(
+                "account identity requires operator review before erasure"
+            )
 
-    legacy_authorization = session.exec(
-        select(AuthorizationCodeDB.id).where(
-            AuthorizationCodeDB.external_subject.in_(external_subjects)
-        )
-    ).first()
-    if legacy_authorization is not None:
-        raise InactiveAccountErasurePreflightSafetyError(
-            "account authorization history requires operator review before erasure"
-        )
+    for subject_chunk in _subject_chunks(external_subjects):
+        legacy_authorization = session.exec(
+            select(AuthorizationCodeDB.id).where(
+                AuthorizationCodeDB.external_subject.in_(subject_chunk)
+            )
+        ).first()
+        if legacy_authorization is not None:
+            raise InactiveAccountErasurePreflightSafetyError(
+                "account authorization history requires operator review before erasure"
+            )
 
 
 def preflight_inactive_account_erasure(
@@ -138,15 +148,15 @@ def preflight_inactive_account_erasure(
     must keep any future separately reviewed action in the same transaction.
     """
 
-    candidate = lock_inactive_account_erasure_candidate(
-        session,
-        notice_id=notice_id,
-        as_of=as_of,
-    )
-    if candidate is None:
-        return None
-
     try:
+        candidate = lock_inactive_account_erasure_candidate(
+            session,
+            notice_id=notice_id,
+            as_of=as_of,
+        )
+        if candidate is None:
+            return None
+
         with session.no_autoflush:
             external_subjects = _external_subjects(session, candidate.user_id)
             _require_unambiguous_identity_ownership(
@@ -213,6 +223,10 @@ def preflight_inactive_account_erasure(
         return result
     except InactiveAccountErasurePreflightSafetyError:
         raise
+    except InactiveAccountErasureEligibilitySafetyError as exc:
+        raise InactiveAccountErasurePreflightSafetyError(
+            "inactive-account erasure eligibility is unavailable"
+        ) from exc
     except SQLAlchemyError as exc:
         raise InactiveAccountErasurePreflightSafetyError(
             "inactive-account erasure preflight is unavailable"

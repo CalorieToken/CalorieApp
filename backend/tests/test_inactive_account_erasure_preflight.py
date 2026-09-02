@@ -11,6 +11,9 @@ from app.inactive_account_erasure_preflight import (
     InactiveAccountErasurePreflightSafetyError,
     preflight_inactive_account_erasure,
 )
+from app.inactive_account_erasure_eligibility import (
+    InactiveAccountErasureEligibilitySafetyError,
+)
 from app.models import (
     AuthSessionDB,
     AuthorizationCodeDB,
@@ -162,7 +165,9 @@ def test_preflight_returns_none_for_ineligible_candidate() -> None:
         engine.dispose()
 
 
-def test_preflight_rejects_ambiguous_external_subject() -> None:
+def test_preflight_rejects_ambiguous_external_subject_across_chunks(
+    monkeypatch,
+) -> None:
     engine = _memory_engine()
     try:
         with Session(engine) as session:
@@ -171,6 +176,14 @@ def test_preflight_rejects_ambiguous_external_subject() -> None:
             session.add_all(
                 [
                     other_user,
+                    *[
+                        ExternalIdentityDB(
+                            calorieapp_user_id=user_id,
+                            provider="wordpress_xumm",
+                            external_subject=f"ambiguous-filler-{index}",
+                        )
+                        for index in range(4)
+                    ],
                     ExternalIdentityDB(
                         calorieapp_user_id=user_id,
                         provider="wordpress_xumm",
@@ -184,6 +197,11 @@ def test_preflight_rejects_ambiguous_external_subject() -> None:
                 ]
             )
             session.commit()
+            monkeypatch.setattr(
+                preflight_module,
+                "MAXIMUM_SUBJECTS_PER_QUERY",
+                2,
+            )
 
             with pytest.raises(
                 InactiveAccountErasurePreflightSafetyError,
@@ -202,7 +220,9 @@ def test_preflight_rejects_ambiguous_external_subject() -> None:
         engine.dispose()
 
 
-def test_preflight_rejects_unowned_legacy_authorization() -> None:
+def test_preflight_rejects_unowned_legacy_authorization_across_chunks(
+    monkeypatch,
+) -> None:
     engine = _memory_engine()
     try:
         with Session(engine) as session:
@@ -210,6 +230,14 @@ def test_preflight_rejects_unowned_legacy_authorization() -> None:
             subject = "legacy-preflight-subject"
             session.add_all(
                 [
+                    *[
+                        ExternalIdentityDB(
+                            calorieapp_user_id=user_id,
+                            provider="wordpress_xumm",
+                            external_subject=f"legacy-filler-{index}",
+                        )
+                        for index in range(4)
+                    ],
                     ExternalIdentityDB(
                         calorieapp_user_id=user_id,
                         provider="wordpress_xumm",
@@ -225,6 +253,11 @@ def test_preflight_rejects_unowned_legacy_authorization() -> None:
                 ]
             )
             session.commit()
+            monkeypatch.setattr(
+                preflight_module,
+                "MAXIMUM_SUBJECTS_PER_QUERY",
+                2,
+            )
 
             with pytest.raises(
                 InactiveAccountErasurePreflightSafetyError,
@@ -240,6 +273,57 @@ def test_preflight_rejects_unowned_legacy_authorization() -> None:
         with Session(engine) as session:
             assert session.get(CalorieAppUserDB, user_id) is not None
             assert len(session.exec(select(AuthorizationCodeDB)).all()) == 1
+    finally:
+        engine.dispose()
+
+
+def test_preflight_wraps_invalid_eligibility_time() -> None:
+    engine = _memory_engine()
+    try:
+        with Session(engine) as session:
+            _user_id, notice_id = _seed_candidate(session)
+
+            with pytest.raises(
+                InactiveAccountErasurePreflightSafetyError,
+                match="eligibility is unavailable",
+            ) as exc_info:
+                preflight_inactive_account_erasure(
+                    session,
+                    notice_id=notice_id,
+                    as_of=datetime(2026, 1, 2),
+                )
+
+            assert isinstance(
+                exc_info.value.__cause__,
+                InactiveAccountErasureEligibilitySafetyError,
+            )
+            session.rollback()
+    finally:
+        engine.dispose()
+
+
+def test_preflight_wraps_dirty_session_eligibility_error() -> None:
+    engine = _memory_engine()
+    try:
+        with Session(engine) as session:
+            _user_id, notice_id = _seed_candidate(session)
+            session.add(CalorieAppUserDB(id="pending-preflight-user"))
+
+            with pytest.raises(
+                InactiveAccountErasurePreflightSafetyError,
+                match="eligibility is unavailable",
+            ) as exc_info:
+                preflight_inactive_account_erasure(
+                    session,
+                    notice_id=notice_id,
+                    as_of=AS_OF,
+                )
+
+            assert isinstance(
+                exc_info.value.__cause__,
+                InactiveAccountErasureEligibilitySafetyError,
+            )
+            session.rollback()
     finally:
         engine.dispose()
 
