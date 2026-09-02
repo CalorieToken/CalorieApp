@@ -101,6 +101,18 @@ def test_receipt_must_be_nonempty_and_bounded(provider_receipt: str) -> None:
         _evidence(provider_receipt=provider_receipt)
 
 
+def test_oversized_receipt_is_rejected_before_utf8_allocation() -> None:
+    class OversizedHostileString(str):
+        def __len__(self) -> int:
+            return MAXIMUM_RECEIPT_BYTES + 1
+
+        def encode(self, *args, **kwargs) -> bytes:
+            raise AssertionError("oversized input must not be encoded")
+
+    with pytest.raises(ValueError, match="provider_receipt"):
+        _evidence(provider_receipt=OversizedHostileString("receipt"))
+
+
 @pytest.mark.parametrize(
     "delivery_channel",
     ["", "Email", "contains space", "x" * 41],

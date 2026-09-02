@@ -49,6 +49,10 @@ def _bounded_utf8(
 ) -> str:
     if not isinstance(value, str) or not value:
         raise ValueError(f"{field_name} must be a non-empty string")
+    # Every Unicode code point needs at least one UTF-8 byte. Reject impossible
+    # values before allocating an encoded copy of a potentially hostile string.
+    if len(value) > maximum_bytes:
+        raise ValueError(f"{field_name} exceeds its byte limit")
     if len(value.encode("utf-8")) > maximum_bytes:
         raise ValueError(f"{field_name} exceeds its byte limit")
     return value
