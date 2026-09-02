@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.20.0",
+  "contract_version": "1.21.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -146,7 +146,7 @@
       "runbook": "docs/INACTIVE_ACCOUNT_PREVIEW.md"
     },
     "inactive_account_notice_evidence": {
-      "implementation_status": "receipt-proof-builder-and-verifier-schema-and-activity-cancellation-prepared-delivery-disabled",
+      "implementation_status": "receipt-proof-builder-verifier-and-transaction-owned-recording-schema-and-activity-cancellation-prepared-delivery-disabled",
       "successful_delivery_evidence_only": true,
       "pending_delivery_queue_created": false,
       "one_notice_per_user_activity_anchor": true,
@@ -162,6 +162,13 @@
       "provider_neutral_receipt_proof_verifier_implemented": true,
       "receipt_proof_digest_comparison": "hmac.compare_digest",
       "malformed_expected_digest_rejected": true,
+      "transaction_owned_evidence_recording_implemented": true,
+      "new_recording_requires_current_locked_activity_anchor": true,
+      "identical_retry_may_return_existing_row_after_later_activity": true,
+      "identical_user_anchor_retry_is_idempotent": true,
+      "conflicting_user_anchor_retry_rejected": true,
+      "recording_function_commits_transaction": false,
+      "recording_function_has_provider_network_queue_scheduler_or_erasure_capability": false,
       "raw_provider_receipt_returned_or_persisted_by_proof_builder": false,
       "returned_delivery_timestamp_convention": "naive-utc-for-persistence",
       "delivery_evidence_digest_in_private_export": false,
@@ -179,11 +186,13 @@
       "model": "backend/app/models.py",
       "activity_cancellation": "backend/app/inactive_account_notice.py",
       "receipt_proof": "backend/app/inactive_account_notice_receipt.py",
+      "evidence_recording": "backend/app/inactive_account_notice_recording.py",
       "migration": "backend/app/schema_migrations/versions/v20260901_0013.py",
       "constraint_hardening_migration": "backend/app/schema_migrations/versions/v20260902_0014.py",
       "tests": [
         "backend/tests/test_inactive_account_notice.py",
-        "backend/tests/test_inactive_account_notice_receipt.py"
+        "backend/tests/test_inactive_account_notice_receipt.py",
+        "backend/tests/test_inactive_account_notice_recording.py"
       ],
       "runbook": "docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md"
     },
