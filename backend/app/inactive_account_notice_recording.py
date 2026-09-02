@@ -13,12 +13,12 @@ import re
 from sqlmodel import Session, select
 
 from .inactive_account_notice_receipt import (
+    MAXIMUM_USER_ID_BYTES,
     InactiveAccountNoticeDeliveryEvidence,
 )
 from .models import CalorieAppUserDB, InactiveAccountNoticeDB
 
 
-MAXIMUM_USER_ID_BYTES = 255
 SUPPORTED_DATABASE_BACKENDS = frozenset({"postgresql", "sqlite"})
 _CHANNEL_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,39}$")
 _DIGEST_PATTERN = re.compile(r"^[0-9a-f]{64}$")
