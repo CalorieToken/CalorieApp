@@ -37,6 +37,8 @@ export function isVersionedAccountExport(payload: unknown): boolean {
     Array.isArray(candidate.authentication_sessions) &&
     Array.isArray(candidate.authorization_events) &&
     Array.isArray(candidate.login_handoffs) &&
+    (candidate.inactive_account_notices === undefined ||
+      Array.isArray(candidate.inactive_account_notices)) &&
     Array.isArray(candidate.excluded_security_fields)
   );
 }
@@ -157,11 +159,12 @@ export function AccountDataExportButton({
       </p>
       <p className="mt-1 text-xs leading-relaxed text-brand-secondary/90">
         The JSON file can include your account identifier, linked identity and
-        optional XRPL address, food-log history, and session timing. Security
-        tokens are excluded. Some older authorization activity remains withheld
-        when ownership cannot be proven. CalorieApp does not send the file
-        anywhere else; keep your browser&apos;s configured download location
-        private. This download does not delete your CalorieApp data.
+        optional XRPL address, food-log history, session timing, and warning
+        history for inactive accounts. Security tokens are excluded. Internal
+        delivery evidence is also excluded. Some older authorization activity
+        remains withheld when ownership cannot be proven. CalorieApp does not
+        send the file anywhere else; keep your browser&apos;s configured download
+        location private. This download does not delete your CalorieApp data.
       </p>
       <button
         type="button"

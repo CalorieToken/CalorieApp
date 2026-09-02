@@ -11,6 +11,7 @@ from app.models import (
     CalorieAppUserDB,
     ExternalIdentityDB,
     FoodLogDB,
+    InactiveAccountNoticeDB,
     OriginLoginHandoffDB,
 )
 
@@ -34,6 +35,10 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     other_subject = "wp:calorietoken.net:other-user"
     own_handoff_state_hash = "b" * 64
     own_handoff_token_hash = "c" * 64
+    own_notice_digest = "1" * 64
+    other_notice_digest = "2" * 64
+    notice_anchor = datetime(2024, 1, 1)
+    notice_due = datetime(2026, 1, 1)
 
     with Session(db_module.engine) as session:
         other_user = CalorieAppUserDB(status="active")
@@ -81,6 +86,28 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
                     calories=999,
                     owner_id=other_user.id,
                 ),
+                InactiveAccountNoticeDB(
+                    calorieapp_user_id=user_id,
+                    activity_anchor_at=notice_anchor,
+                    notice_window_started_at=notice_due - timedelta(days=30),
+                    retention_due_at=notice_due,
+                    delivered_at=notice_due - timedelta(days=20),
+                    delivery_channel="reviewed-channel",
+                    delivery_evidence_digest=own_notice_digest,
+                    status="delivered",
+                    recorded_at=notice_due - timedelta(days=20),
+                ),
+                InactiveAccountNoticeDB(
+                    calorieapp_user_id=other_user.id,
+                    activity_anchor_at=notice_anchor,
+                    notice_window_started_at=notice_due - timedelta(days=30),
+                    retention_due_at=notice_due,
+                    delivered_at=notice_due - timedelta(days=20),
+                    delivery_channel="other-private-channel",
+                    delivery_evidence_digest=other_notice_digest,
+                    status="delivered",
+                    recorded_at=notice_due - timedelta(days=20),
+                ),
             ]
         )
         session.commit()
@@ -115,6 +142,11 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
     assert data["authorization_events"] == []
     assert len(data["login_handoffs"]) == 1
     assert data["login_handoffs"][0]["status"] == "claimed"
+    assert len(data["inactive_account_notices"]) == 1
+    assert data["inactive_account_notices"][0]["delivery_channel"] == (
+        "reviewed-channel"
+    )
+    assert "delivery_evidence_digest" not in data["inactive_account_notices"][0]
 
     exported_text = response.text
     for secret in (
@@ -122,12 +154,16 @@ def test_account_data_export_is_complete_scoped_versioned_and_secret_free(
         own_handoff_token_hash,
         "other-user",
         "Other user's private food",
+        own_notice_digest,
+        other_notice_digest,
+        "other-private-channel",
     ):
         assert secret not in exported_text
 
     assert "session_token_hash" not in data["authentication_sessions"][0]
     assert "authorization_code_hash" in data["excluded_security_fields"]
     assert "handoff_token_hash" in data["excluded_security_fields"]
+    assert "notice_delivery_evidence_digest" in data["excluded_security_fields"]
 
 
 def test_account_data_export_withholds_unowned_legacy_authorization_events(

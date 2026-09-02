@@ -22,8 +22,10 @@ current English export and erasure components.
 - The private account export is available only to the authenticated user. It
   may contain the internal account record, linked identity and optional XRPL
   address, owned food history, session timing and directly owned login-handoff
-  activity. Security secrets are excluded, and legacy authorization activity
-  without direct ownership is withheld.
+  activity. It also includes any inactive-account warning lifecycle timestamps
+  and provider-neutral channel key. Security secrets and the keyed delivery-
+  evidence digest are excluded, and legacy authorization activity without
+  direct ownership is withheld.
 - CalorieApp does not send the downloaded export to another service and the
   download does not itself delete server data.
 - Direct account erasure remains disabled by default. If separately approved
@@ -36,9 +38,11 @@ current English export and erasure components.
 - The selected inactive-account policy is 24 months of inactivity with a
   required 30-day advance warning. Authenticated activity during the warning
   cancels pending erasure. A durable activity marker and private-export field
-  are prepared in the repository, but they have not been migrated or proved on
-  staging or production. Warning delivery and automatic enforcement are not
-  implemented or enabled.
+  are prepared in the repository. A minimal notice-evidence schema and same-
+  transaction activity cancellation are also prepared without storing a raw
+  contact destination or provider receipt. They have not been migrated or
+  proved on staging or production. No delivery channel or provider is selected;
+  warning delivery and automatic enforcement are not implemented or enabled.
 - Shorter operational lifetimes continue to apply to authentication
   transients, with a selected ceiling of 30 days after expiry. Complete
   scheduled cleanup is not yet implemented.

@@ -40,6 +40,21 @@ transaction is rolled back before return and its output contains counts only.
 It cannot send a warning, mark or erase an account, and production use remains
 blocked. See `docs/INACTIVE_ACCOUNT_PREVIEW.md`.
 
+Forward migration `20260901_0013` prepares a minimal notice-evidence table. It
+can hold only evidence for a successfully delivered warning: the account and
+activity anchor, policy timestamps, a bounded channel key and a keyed evidence
+digest. It stores no contact destination or raw provider receipt. A later
+successful authenticated request cancels an older notice in the same database
+transaction as the activity update. The lifecycle timestamps are included in
+the private export without the evidence digest, and account erasure removes the
+row. No delivery adapter or write path creates these rows yet. See
+`docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md`.
+
+Forward migration `20260902_0014` hardens cancellation ordering: a cancellation
+timestamp cannot precede delivery. PostgreSQL enforces this with a check
+constraint and SQLite with equivalent insert and update triggers. Authenticated
+activity observed before delivery therefore cannot cancel a future warning.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
@@ -72,8 +87,8 @@ are reviewed together:
 
 1. deployment and provider proof of the prepared durable, unambiguous
    last-authenticated-activity marker;
-2. a reliable warning mechanism that does not create an unnecessary new
-   identity or marketing dataset;
+2. a reliable warning mechanism, approved channel and keyed receipt process
+   that do not create an unnecessary new identity or marketing dataset;
 3. an idempotent, bounded and auditable inactive-account erasure process;
 4. complete scheduled cleanup for every authentication-transient table;
 5. provider-specific encrypted-backup expiry and restore-erasure replay proof;

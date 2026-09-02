@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.privacy-notice-alignment",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "status": "canonical-facts-and-english-consequence-copy-aligned-publication-pending",
   "release_state": "blocked",
   "legal_certification_claimed": false,
@@ -56,7 +56,8 @@
         "linked-external-identity-and-optional-xrpl-address",
         "owned-private-food-log-history",
         "authentication-session-timing",
-        "directly-owned-login-handoff-activity"
+        "directly-owned-login-handoff-activity",
+        "inactive-account-notice-lifecycle-without-delivery-evidence-digest"
       ],
       "security_secrets_excluded": true,
       "unowned_legacy_authorization_activity_withheld": true,
@@ -83,6 +84,9 @@
       "activity_marker_repository_implementation_prepared": true,
       "activity_marker_deployed_or_backfilled": false,
       "authenticated_activity_during_notice_cancels_pending_erasure": true,
+      "notice_evidence_schema_and_activity_cancellation_prepared": true,
+      "notice_delivery_channel_or_provider_selected": false,
+      "raw_contact_or_provider_receipt_stored": false,
       "warning_delivery_implemented": false
     },
     "authentication_transients": {
