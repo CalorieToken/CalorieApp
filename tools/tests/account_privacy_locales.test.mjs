@@ -236,6 +236,10 @@ test("English account copy retains every canonical factual consequence", async (
     .required_plain_language_facts) {
     assert.equal(english.import.description.includes(fact), true, fact);
   }
+  assert.equal(
+    english.import.temporarily_unavailable,
+    "Private import is temporarily unavailable. No data was imported."
+  );
   const erasureText = [
     english.erasure.description,
     english.erasure.confirmation_intro,
