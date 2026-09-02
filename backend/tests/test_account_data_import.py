@@ -143,8 +143,12 @@ def test_planner_prepares_only_newly_owned_food_log_values() -> None:
         ("inactive_account_notices", 1),
     )
     private_plan_text = repr(plan)
-    assert "private-external-subject" not in private_plan_text
-    assert "synthetic-channel" not in private_plan_text
+    assert private_plan_text == "AccountDataImportPlan(<private>)"
+    assert plan.private_import_digest not in private_plan_text
+    assert SOURCE_USER_ID not in private_plan_text
+    assert TARGET_USER_ID not in private_plan_text
+    assert "Portable apple" not in private_plan_text
+    assert repr(food_log) == "PlannedFoodLogImport(<private>)"
     assert {field.name for field in fields(plan)} == {
         "plan_version",
         "export_version",
@@ -236,10 +240,18 @@ def test_payload_byte_limit_is_checked_before_decoding(monkeypatch) -> None:
 
 
 def test_pathological_json_integer_has_a_bounded_safety_error() -> None:
-    pathological = b'{"number":' + (b"9" * 5_000) + b"}"
+    # Syntactically valid JSON; Python's integer-digit limit rejects it safely.
+    pathological = f'{{"number":{"9" * 5_000}}}'.encode("ascii")
 
     with pytest.raises(AccountDataImportSafetyError, match="bounded JSON"):
         _plan(pathological)
+
+
+def test_large_json_integer_in_unreviewed_shape_fails_closed() -> None:
+    large_but_parseable = f'{{"number":{"9" * 1_000}}}'.encode("ascii")
+
+    with pytest.raises(AccountDataImportSafetyError, match="reviewed v1 fields"):
+        _plan(large_but_parseable)
 
 
 def test_collection_item_limit_fails_closed(monkeypatch) -> None:

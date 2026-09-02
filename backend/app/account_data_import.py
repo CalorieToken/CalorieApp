@@ -163,7 +163,7 @@ class AccountDataImportSafetyError(ValueError):
     """Raised when an untrusted export cannot produce a safe import plan."""
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, repr=False)
 class PlannedFoodLogImport:
     """One portable food-log snapshot with a newly assigned target owner."""
 
@@ -181,6 +181,11 @@ class PlannedFoodLogImport:
     serving_size: str | None
     nutri_score: str | None
     created_at: datetime
+
+    def __repr__(self) -> str:
+        """Keep private food-log and account values out of debug output."""
+
+        return "PlannedFoodLogImport(<private>)"
 
     def as_insert_values(self) -> dict[str, object]:
         """Return values for a future insert without reusing the source row ID."""
@@ -202,7 +207,7 @@ class PlannedFoodLogImport:
         }
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, repr=False)
 class AccountDataImportPlan:
     """Private deterministic plan; it is not authorization to write data."""
 
@@ -214,6 +219,11 @@ class AccountDataImportPlan:
     exported_at: datetime
     food_logs: tuple[PlannedFoodLogImport, ...]
     ignored_collection_counts: tuple[tuple[str, int], ...]
+
+    def __repr__(self) -> str:
+        """Keep the complete private plan out of debug output."""
+
+        return "AccountDataImportPlan(<private>)"
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
