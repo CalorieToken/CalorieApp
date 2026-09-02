@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.22.0",
+  "contract_version": "1.23.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -220,6 +220,37 @@
       "implementation": "backend/app/inactive_account_erasure_eligibility.py",
       "tests": "backend/tests/test_inactive_account_erasure_eligibility.py",
       "runbook": "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md"
+    },
+    "inactive_account_erasure_preflight": {
+      "implementation_status": "single-candidate-transaction-bound-read-only-dependent-data-preflight-prepared-erasure-disabled",
+      "locked_eligibility_guard_reused": true,
+      "single_candidate_only": true,
+      "maximum_rows_per_relation": 10000,
+      "maximum_total_delete_rows": 20000,
+      "direct_primary_store_delete_shape_counted": true,
+      "covered_delete_relations": [
+        "calorieappuser",
+        "food_log",
+        "externalidentity",
+        "originloginhandoff",
+        "authsession",
+        "inactive_account_notice"
+      ],
+      "inbound_session_replacement_references_counted": true,
+      "shared_external_subject_requires_operator_review": true,
+      "unowned_legacy_authorization_requires_operator_review": true,
+      "postgresql_read_only_integration_test_implemented": true,
+      "food_values_contact_external_subject_wallet_receipt_session_secret_or_network_data_returned": false,
+      "preflight_authorizes_erasure": false,
+      "account_deletion_or_marking_implemented": false,
+      "function_flushes_commits_or_rolls_back": false,
+      "provider_network_queue_scheduler_cli_or_endpoint_capability": false,
+      "production_execution_enabled": false,
+      "real_data_access_or_mutation_performed": false,
+      "migration_or_deployment_performed": false,
+      "implementation": "backend/app/inactive_account_erasure_preflight.py",
+      "tests": "backend/tests/test_inactive_account_erasure_preflight.py",
+      "runbook": "docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md"
     },
     "authentication_transient_security_retention_max_days_after_expiry": 30,
     "shorter_authentication_lifetimes_continue_to_apply": true,

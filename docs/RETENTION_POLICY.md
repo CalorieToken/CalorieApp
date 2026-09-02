@@ -83,6 +83,12 @@ deadline. It returns only minimal internal candidate facts and never authorizes
 or performs deletion. Batch selection, scheduling and production execution
 remain absent. See `docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md`.
 
+An additional internal read-only preflight can reuse that locked candidate and
+count only its bounded, directly related primary-store deletion shape. Shared
+external subjects, unowned legacy authorization history and excessive row
+counts fail closed for operator review. The preflight performs no mutation and
+does not authorize erasure. See `docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization

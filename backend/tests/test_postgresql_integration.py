@@ -6,7 +6,7 @@ import multiprocessing
 import os
 import time
 from concurrent.futures import ProcessPoolExecutor
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from secrets import token_urlsafe
 from uuid import uuid4
 
@@ -26,6 +26,9 @@ from app.data_growth import (
     create_food_log_with_subject_budget,
 )
 from app.main import SESSION_COOKIE_NAME, app
+from app.inactive_account_erasure_preflight import (
+    preflight_inactive_account_erasure,
+)
 from app.inactive_account_preview import preview_inactive_accounts
 from app.models import (
     AuthSessionDB,
@@ -41,6 +44,7 @@ from app.models import (
     FoodSourceDB,
     FoodSourceModerationAuditDB,
     FoodSourceRecordDB,
+    InactiveAccountNoticeDB,
     OriginLoginHandoffDB,
     PendingLoginLocaleDB,
     PendingLoginStateDB,
@@ -1584,3 +1588,62 @@ def test_postgresql_inactive_account_preview_is_aggregate_and_read_only(
     with Session(postgres_engine) as session:
         assert session.get(CalorieAppUserDB, "synthetic-preview-due") is not None
         assert session.get(CalorieAppUserDB, "synthetic-preview-new") is not None
+
+
+def test_postgresql_inactive_account_erasure_preflight_is_read_only(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-INACTIVE-ERASURE-PREFLIGHT",
+    )
+    user_id = "synthetic-erasure-preflight-user"
+    notice_id = "synthetic-erasure-preflight-notice"
+    with Session(postgres_engine) as session:
+        session.add_all(
+            [
+                CalorieAppUserDB(
+                    id=user_id,
+                    status="active",
+                    last_authenticated_activity_at=datetime(2024, 1, 1),
+                ),
+                InactiveAccountNoticeDB(
+                    id=notice_id,
+                    calorieapp_user_id=user_id,
+                    activity_anchor_at=datetime(2024, 1, 1),
+                    notice_window_started_at=datetime(2025, 12, 2),
+                    retention_due_at=datetime(2026, 1, 1),
+                    delivered_at=datetime(2025, 12, 5),
+                    delivery_channel="synthetic-ci",
+                    delivery_evidence_digest="a" * 64,
+                    status="delivered",
+                    recorded_at=datetime(2025, 12, 5, 0, 0, 1),
+                ),
+                FoodLogDB(
+                    product_name="Synthetic private preflight food",
+                    calories=1,
+                    owner_id=user_id,
+                ),
+            ]
+        )
+        session.commit()
+
+    with Session(postgres_engine) as session:
+        plan = preflight_inactive_account_erasure(
+            session,
+            notice_id=notice_id,
+            as_of=datetime(2026, 1, 2, tzinfo=UTC),
+        )
+        assert plan is not None
+        assert plan.user_id == user_id
+        assert plan.food_log_rows == 1
+        assert plan.inactive_account_notice_rows == 1
+        assert plan.total_delete_rows == 3
+        session.rollback()
+
+    with Session(postgres_engine) as session:
+        assert session.get(CalorieAppUserDB, user_id) is not None
+        assert session.get(InactiveAccountNoticeDB, notice_id) is not None
+        assert session.exec(
+            select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
+        ).one().product_name == "Synthetic private preflight food"
