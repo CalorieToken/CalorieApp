@@ -25,7 +25,7 @@ _CHANNEL_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,39}$")
 
 @dataclass(frozen=True, slots=True)
 class InactiveAccountNoticeDeliveryEvidence:
-    """Only the minimized values approved for durable evidence storage."""
+    """Only minimized values approved for persistence using naive UTC."""
 
     delivery_channel: str
     delivered_at: datetime
@@ -129,6 +129,6 @@ def successful_delivery_receipt_to_evidence(
 
     return InactiveAccountNoticeDeliveryEvidence(
         delivery_channel=delivery_channel,
-        delivered_at=delivered_at.astimezone(UTC),
+        delivered_at=delivered_at.astimezone(UTC).replace(tzinfo=None),
         delivery_evidence_digest=digest,
     )

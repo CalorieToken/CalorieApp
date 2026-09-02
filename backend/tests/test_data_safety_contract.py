@@ -275,6 +275,9 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
         evidence["raw_provider_receipt_returned_or_persisted_by_proof_builder"]
         is False
     )
+    assert evidence["returned_delivery_timestamp_convention"] == (
+        "naive-utc-for-persistence"
+    )
     assert evidence["delivery_evidence_digest_in_private_export"] is False
     assert evidence["lifecycle_timestamps_and_channel_in_private_export"] is True
     assert (

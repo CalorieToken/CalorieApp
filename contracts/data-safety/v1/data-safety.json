@@ -160,6 +160,7 @@
       "maximum_raw_provider_receipt_bytes": 4096,
       "provider_neutral_receipt_proof_builder_implemented": true,
       "raw_provider_receipt_returned_or_persisted_by_proof_builder": false,
+      "returned_delivery_timestamp_convention": "naive-utc-for-persistence",
       "delivery_evidence_digest_in_private_export": false,
       "lifecycle_timestamps_and_channel_in_private_export": true,
       "successful_authenticated_activity_cancels_older_notice_atomically": true,

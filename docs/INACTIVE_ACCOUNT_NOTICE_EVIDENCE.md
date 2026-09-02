@@ -49,7 +49,8 @@ bounded provider-neutral channel key.
 
 The secret must contain at least 32 bytes and remains caller-owned. The opaque
 receipt is limited to 4096 UTF-8 bytes. The function returns only the channel,
-normalized delivery timestamp and 64-character digest; it has no provider,
+delivery timestamp normalized to persistence-compatible naive UTC and a
+64-character digest; it has no provider,
 network, logging, database, scheduling or erasure capability. The raw receipt
 and secret are neither fields of the returned value nor persisted by this
 module. Tests use a synthetic receipt and a non-production key only.

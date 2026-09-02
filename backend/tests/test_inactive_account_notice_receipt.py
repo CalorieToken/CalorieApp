@@ -42,7 +42,8 @@ def test_successful_receipt_builds_deterministic_minimized_evidence() -> None:
     assert EVIDENCE_ALGORITHM == "hmac-sha256-v1"
     assert first == second
     assert first.delivery_channel == "synthetic-email"
-    assert first.delivered_at == DELIVERED
+    assert first.delivered_at == DELIVERED.replace(tzinfo=None)
+    assert first.delivered_at.tzinfo is None
     assert len(first.delivery_evidence_digest) == 64
     int(first.delivery_evidence_digest, 16)
     assert {field.name for field in fields(first)} == {
@@ -81,7 +82,8 @@ def test_equivalent_timezones_produce_the_same_evidence() -> None:
     )
 
     assert shifted == _evidence()
-    assert shifted.delivered_at.tzinfo is UTC
+    assert shifted.delivered_at == DELIVERED.replace(tzinfo=None)
+    assert shifted.delivered_at.tzinfo is None
 
 
 @pytest.mark.parametrize("secret_key", [b"", b"too-short", "not-bytes"])
