@@ -15,6 +15,7 @@ ROUTE_BODY_LIMIT_BYTES: dict[tuple[str, str], int] = {
     ("POST", "/api/identity/login/state/validate"): 2 * 1024,
     ("POST", "/api/identity/callback"): 4 * 1024,
     ("POST", "/api/identity/login/status"): 4 * 1024,
+    ("POST", "/api/identity/import"): 5 * 1024 * 1024,
     ("DELETE", "/api/identity/account"): 4 * 1024,
     ("POST", "/api/identity/logout"): 1024,
     ("POST", "/log-food"): DEFAULT_MUTATION_BODY_LIMIT_BYTES,

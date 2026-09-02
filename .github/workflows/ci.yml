@@ -274,6 +274,7 @@ jobs:
       - name: Test embedded login and private account controls
         run: >-
           node --test
+          tools/tests/account_data_import_ui.test.mjs
           tools/tests/account_data_export_validation.test.mjs
           tools/tests/account_erasure_ui.test.mjs
           tools/tests/account_privacy_locales.test.mjs

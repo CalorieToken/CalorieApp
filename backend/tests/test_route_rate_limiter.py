@@ -111,6 +111,7 @@ def test_current_public_route_budgets_are_explicit_and_reviewable() -> None:
         ),
         ("GET", "/api/identity/me"): ("identity_me", 240, 60),
         ("GET", "/api/identity/export"): ("identity_export", 30, 60),
+        ("POST", "/api/identity/import"): ("identity_import", 5, 60),
         ("DELETE", "/api/identity/account"): (
             "identity_account_delete",
             10,

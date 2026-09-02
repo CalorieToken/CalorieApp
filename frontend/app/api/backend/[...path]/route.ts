@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTrustedAccountErasureRequest } from "@/lib/accountErasureRequest";
+import {
+  ACCOUNT_IMPORT_ACKNOWLEDGEMENT_HEADER,
+  ACCOUNT_IMPORT_PATH,
+  ACCOUNT_IMPORT_REQUEST_HEADER,
+  ACCOUNT_IMPORT_SOURCE_HEADER,
+  ACCOUNT_IMPORT_TARGET_HEADER,
+  isTrustedAccountImportRequest,
+} from "@/lib/accountImportRequest";
 import { isTrustedPrivateExportRequest } from "@/lib/privateExportRequest";
 
 export const dynamic = "force-dynamic";
 
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
 const COLD_START_UPSTREAM_TIMEOUT_MS = 70_000;
+const ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS = 60_000;
 
 const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^health$/, methods: new Set(["GET"]) },
@@ -18,6 +27,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
     methods: new Set(["POST"]),
   },
   { pattern: /^api\/identity\/(me|export)$/, methods: new Set(["GET"]) },
+  { pattern: /^api\/identity\/import$/, methods: new Set(["POST"]) },
   { pattern: /^api\/identity\/account$/, methods: new Set(["DELETE"]) },
 ];
 
@@ -71,6 +81,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   if (
     !isTrustedMutationRequest(request) ||
     !isTrustedAccountErasureRequest(path, request) ||
+    !isTrustedAccountImportRequest(path, request) ||
     !isTrustedPrivateExportRequest(path, request)
   ) {
     return NextResponse.json({ detail: "Origin not allowed" }, { status: 403 });
@@ -94,19 +105,35 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       headers.set(name, value);
     }
   }
+  if (path === ACCOUNT_IMPORT_PATH) {
+    for (const name of [
+      ACCOUNT_IMPORT_REQUEST_HEADER,
+      ACCOUNT_IMPORT_SOURCE_HEADER,
+      ACCOUNT_IMPORT_TARGET_HEADER,
+      ACCOUNT_IMPORT_ACKNOWLEDGEMENT_HEADER,
+    ]) {
+      const value = request.headers.get(name);
+      if (value) {
+        headers.set(name, value);
+      }
+    }
+  }
 
   const controller = new AbortController();
   // A sleeping Render backend can need well over the ordinary request timeout
   // before its health endpoint answers. Keep only this readiness probe alive
   // long enough to wake it; normal application requests retain the tighter
   // timeout after readiness has been established.
-  const upstreamTimeoutMs = [
-    "health",
-    "api/identity/login/start",
-    "api/identity/callback",
-  ].includes(path)
-    ? COLD_START_UPSTREAM_TIMEOUT_MS
-    : DEFAULT_UPSTREAM_TIMEOUT_MS;
+  const upstreamTimeoutMs =
+    path === ACCOUNT_IMPORT_PATH
+      ? ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS
+      : [
+          "health",
+          "api/identity/login/start",
+          "api/identity/callback",
+        ].includes(path)
+        ? COLD_START_UPSTREAM_TIMEOUT_MS
+        : DEFAULT_UPSTREAM_TIMEOUT_MS;
   const timeoutId = setTimeout(() => controller.abort(), upstreamTimeoutMs);
 
   try {

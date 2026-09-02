@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.31.0"
+    assert contract["contract_version"] == "1.32.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -153,8 +153,8 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-export-ui-and-guarded-import-transaction-staging-implemented-"
-        "provider-and-notice-review-pending"
+        "v2-export-and-disabled-authenticated-import-ui-implemented-"
+        "provider-exit-and-notice-review-pending"
     )
     assert export["format"] == "versioned-json"
     assert export["format_version"] == "calorieapp-account-data-v1"
@@ -284,9 +284,32 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
         "import_admission_has_endpoint_database_file_provider_network_or_deployment_capability"
     ] is False
     assert export[
-        "future_import_requires_separate_target_authentication_and_authorization"
+        "import_requires_separate_target_authentication_and_authorization"
     ] is True
-    assert export["authenticated_import_endpoint_implemented"] is False
+    assert export["authenticated_import_endpoint_implemented"] is True
+    assert export["authenticated_import_endpoint_disabled_by_default"] is True
+    assert export["authenticated_import_endpoint_non_production_only"] is True
+    assert export[
+        "authenticated_import_route_derives_target_from_server_session"
+    ] is True
+    assert export[
+        "authenticated_import_route_requires_source_and_target_confirmation"
+    ] is True
+    assert export["authenticated_import_route_same_origin_intent_required"] is True
+    assert export["authenticated_import_route_body_limit_bytes"] == 5 * 1024 * 1024
+    assert export["authenticated_import_route_requests_per_minute"] == 5
+    assert export[
+        "authenticated_import_route_exact_reviewed_running_commit_match_required"
+    ] is True
+    assert export[
+        "authenticated_import_route_private_values_in_errors_or_logs_allowed"
+    ] is False
+    assert export[
+        "authenticated_import_route_commits_or_rolls_back_complete_import"
+    ] is True
+    assert export["authenticated_import_ui_enabled_by_default"] is False
+    assert export["eleven_language_import_ui_completed"] is True
+    assert export["imported_file_retained_as_file_by_calorieapp"] is False
     assert export["database_import_mutation_implemented"] is True
     assert export["provider_exit_import_proved"] is False
     assert export[
@@ -657,10 +680,10 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.3.0"
+    assert alignment["contract_version"] == "1.4.0"
     assert alignment["status"] == (
-        "canonical-facts-and-eleven-language-account-action-copy-aligned-"
-        "publication-pending"
+        "canonical-facts-and-eleven-language-export-import-erasure-copy-"
+        "aligned-publication-pending"
     )
     assert alignment["release_state"] == "blocked"
     assert alignment["legal_certification_claimed"] is False
@@ -688,6 +711,7 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert localized["source"] == "frontend/config/account-privacy-copy.json"
     assert localized["required_locales_complete"] is True
     assert localized["private_export_copy_complete"] is True
+    assert localized["private_import_copy_complete"] is True
     assert localized["account_erasure_copy_complete"] is True
     assert localized["rtl_direction_applied_for_arabic_and_urdu"] is True
     assert localized["safe_english_fallback_required"] is True
@@ -710,6 +734,19 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     )
     assert facts["private_account_export"]["external_delivery_performed"] is False
     assert facts["private_account_export"]["download_changes_or_deletes_server_data"] is False
+    private_import = facts["private_account_import"]
+    assert private_import["enabled_by_default"] is False
+    assert private_import["authenticated_target_only"] is True
+    assert private_import["non_production_only"] is True
+    assert private_import["same_origin_intent_required"] is True
+    assert private_import["exact_reviewed_running_commit_match_required"] is True
+    assert private_import["target_account_must_be_empty_for_new_import"] is True
+    assert private_import["imported_categories"] == [
+        "owned-private-food-log-snapshots"
+    ]
+    assert "authentication-sessions" in private_import["excluded_live_state"]
+    assert private_import["uploaded_export_retained_as_file"] is False
+    assert private_import["provider_exit_import_proved"] is False
     assert facts["direct_account_erasure"]["enabled_by_default"] is False
     assert facts["direct_account_erasure"][
         "primary_store_erasure_immediate_after_confirmed_request"
@@ -775,6 +812,8 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
 
     assert guards["release_remains_blocked"] is True
     assert guards["account_erasure_flags_changed"] is False
+    assert guards["account_import_enabled_by_default"] is False
+    assert guards["account_import_activated_by_this_change"] is False
     assert guards["inactive_account_deletion_enabled"] is False
     assert guards["authentication_transient_cleanup_enabled"] is False
     assert guards["migration_performed"] is False
@@ -1238,7 +1277,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.19.0"
+    assert matrix["contract_version"] == "1.20.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1254,6 +1293,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
     assert "backend/app/account_data_import_transaction.py" in gates[
+        "abuse_capacity_and_mutation_controls"
+    ]["evidence"]
+    assert "backend/app/account_data_import_release.py" in gates[
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
     assert "docs/POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md" in gates[
@@ -1273,6 +1315,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/tests/test_account_data_import.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
+    assert "backend/tests/test_account_data_import_endpoint.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
     assert gates["ecosystem_operator_succession_and_handover"]["status"] == "partial"
     assert "docs/ACCOUNT_DATA_IMPORT.md" in gates[
         "ecosystem_operator_succession_and_handover"
@@ -1281,6 +1326,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "ecosystem_operator_succession_and_handover"
     ]["evidence"]
     assert "backend/app/account_data_import_transaction.py" in gates[
+        "ecosystem_operator_succession_and_handover"
+    ]["evidence"]
+    assert "backend/app/account_data_import_release.py" in gates[
         "ecosystem_operator_succession_and_handover"
     ]["evidence"]
     assert gates["restart_persistence"]["status"] == "partial"
@@ -1315,6 +1363,15 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "user_data_export"
     ]["evidence"]
     assert "backend/tests/test_account_data_import.py" in gates[
+        "user_data_export"
+    ]["evidence"]
+    assert "backend/tests/test_account_data_import_endpoint.py" in gates[
+        "user_data_export"
+    ]["evidence"]
+    assert "frontend/components/AccountDataImportPanel.tsx" in gates[
+        "user_data_export"
+    ]["evidence"]
+    assert "tools/tests/account_data_import_ui.test.mjs" in gates[
         "user_data_export"
     ]["evidence"]
     assert "frontend/config/account-privacy-copy.json" in gates[

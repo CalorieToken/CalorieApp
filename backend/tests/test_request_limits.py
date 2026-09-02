@@ -9,6 +9,7 @@ from collections import deque
 import pytest
 from starlette.types import Message, Scope
 
+from app.account_data_import import MAXIMUM_IMPORT_BYTES
 from app.request_limits import (
     DEFAULT_MUTATION_BODY_LIMIT_BYTES,
     ROUTE_BODY_LIMIT_BYTES,
@@ -99,10 +100,12 @@ def test_current_route_limits_are_narrow_and_explicit() -> None:
         ("POST", "/api/identity/login/state/validate"): 2 * 1024,
         ("POST", "/api/identity/callback"): 4 * 1024,
         ("POST", "/api/identity/login/status"): 4 * 1024,
+        ("POST", "/api/identity/import"): 5 * 1024 * 1024,
         ("DELETE", "/api/identity/account"): 4 * 1024,
         ("POST", "/api/identity/logout"): 1024,
         ("POST", "/log-food"): 16 * 1024,
     }
+    assert ROUTE_BODY_LIMIT_BYTES[("POST", "/api/identity/import")] == MAXIMUM_IMPORT_BYTES
 
 
 def test_limit_rejects_declared_oversize_without_reading_body() -> None:
