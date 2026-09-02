@@ -55,6 +55,14 @@ network, logging, database, scheduling or erasure capability. The raw receipt
 and secret are neither fields of the returned value nor persisted by this
 module. Tests use a synthetic receipt and a non-production key only.
 
+The same pure module can recompute and verify evidence when an authorized audit
+supplies the original opaque receipt, matching secret and identical timeline
+context. It rejects malformed stored digests and uses `hmac.compare_digest` for
+the final comparison. Timestamp type failures are explicit, and HMAC input is
+fed incrementally to avoid allocating one combined domain-plus-payload buffer.
+Key identifiers, generation, custody, rotation and authorized audit access
+remain outside this prepared code and must be reviewed before activation.
+
 ## Activity cancellation
 
 Every successfully created session and successfully authenticated request

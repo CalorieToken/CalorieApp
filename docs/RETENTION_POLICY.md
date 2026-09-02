@@ -62,6 +62,11 @@ delivery time and digest. It cannot contact a provider, store a receipt, write
 notice evidence, schedule delivery or authorize erasure. Provider selection and
 key custody remain separately blocked.
 
+The builder also has a pure verifier that recomputes the same minimized proof
+from authorized audit inputs and compares digests with `hmac.compare_digest`.
+It does not retrieve receipts or keys and grants no provider, database or
+erasure access. Key lifecycle and audit authorization remain blocked.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization
