@@ -1,0 +1,77 @@
+{
+  "contract_id": "calorieapp.account-data-import-receipt-disclosure",
+  "contract_version": "1.0.0",
+  "status": "future-v2-disclosure-selected-runtime-implementation-pending",
+  "release_state": "blocked",
+  "decision": {
+    "completed": true,
+    "current_export_version": "calorieapp-account-data-v1",
+    "future_export_version": "calorieapp-account-data-v2",
+    "future_collection_name": "account_import_receipts",
+    "current_export_changed_by_this_contract": false,
+    "runtime_implementation_completed": false,
+    "allowed_summary_fields": [
+      {
+        "export_name": "imported_at",
+        "receipt_source": "created_at",
+        "purpose": "account-owned-import-history-timestamp"
+      },
+      {
+        "export_name": "food_log_count",
+        "receipt_source": "food_log_count",
+        "purpose": "account-owned-import-history-count"
+      },
+      {
+        "export_name": "source_export_version",
+        "receipt_source": "export_version",
+        "purpose": "non-secret-source-format-version"
+      },
+      {
+        "export_name": "import_plan_version",
+        "receipt_source": "plan_version",
+        "purpose": "non-secret-import-format-version"
+      }
+    ],
+    "forbidden_receipt_source_fields": [
+      "id",
+      "target_account_id",
+      "private_import_digest"
+    ],
+    "forbidden_derived_or_joined_fields": [
+      "source_account_identifier",
+      "source_food_log_identifiers",
+      "source_food_values",
+      "approval_or_release_commit_reference"
+    ]
+  },
+  "security_boundary": {
+    "private_import_digest_is_internal_replay_evidence": true,
+    "private_import_digest_export_allowed": false,
+    "private_import_digest_log_or_error_disclosure_allowed": false,
+    "target_account_id_repetition_required": false,
+    "deterministic_order": [
+      "imported_at",
+      "internal-receipt-id"
+    ],
+    "private_tiebreaker_exported": false
+  },
+  "future_import_behavior": {
+    "v1_export_remains_accepted": true,
+    "v2_receipt_summary_validation_required": true,
+    "receipt_summaries_are_informational_history_only": true,
+    "receipt_summaries_restored_as_live_replay_receipts": false,
+    "receipt_summaries_may_bypass_target_bound_replay_controls": false,
+    "live_receipt_requires_fresh_target_bound_verified_import_transaction": true
+  },
+  "activation_guards": {
+    "release_remains_blocked": true,
+    "endpoint_changed": false,
+    "database_schema_changed": false,
+    "export_version_changed": false,
+    "feature_flag_changed": false,
+    "migration_performed": false,
+    "deployment_performed": false,
+    "provider_action_performed": false,
+    "live_personal_data_mutated": false
+  }
+}

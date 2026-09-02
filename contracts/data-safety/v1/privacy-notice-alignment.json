@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.privacy-notice-alignment",
-  "contract_version": "1.4.0",
+  "contract_version": "1.5.0",
   "status": "canonical-facts-and-eleven-language-export-import-erasure-copy-aligned-publication-pending",
   "release_state": "blocked",
   "legal_certification_claimed": false,
@@ -116,6 +116,27 @@
     "decentralized_boundary": {
       "personal_data_on_public_blockchain_allowed": false,
       "personal_data_on_public_ipfs_allowed": false
+    }
+  },
+  "selected_future_disclosure": {
+    "private_import_receipt_summaries": {
+      "contract": "contracts/data-safety/v1/account-data-import-receipt-disclosure.json",
+      "target_export_version": "calorieapp-account-data-v2",
+      "current_runtime_changed": false,
+      "included_fields": [
+        "imported_at",
+        "food_log_count",
+        "source_export_version",
+        "import_plan_version"
+      ],
+      "excluded_fields": [
+        "internal-receipt-id",
+        "target-account-id",
+        "private-import-digest",
+        "source-account-identifier",
+        "source-food-values-and-identifiers"
+      ],
+      "restored_as_live_replay_evidence": false
     }
   },
   "current_english_product_copy": {

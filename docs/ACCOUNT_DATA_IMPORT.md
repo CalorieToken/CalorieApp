@@ -151,8 +151,8 @@ real user data.
 Before import can be enabled, later reviewed work must add:
 
 1. an isolated synthetic PostgreSQL source-to-successor provider-exit test;
-2. an export-format decision for private replay-receipt metadata before any
-   user-facing import activation;
+2. implementation and review of the selected v2 import-receipt summary without
+   exposing the replay digest, while retaining v1 import compatibility;
 3. an approved complete privacy notice and operator review of the prepared
    eleven-language consequence copy; and
 4. explicit operator approval before any external staging mutation, provider action or
