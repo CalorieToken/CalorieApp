@@ -394,8 +394,12 @@ def _private_import_digest(
     *,
     target_user_id: str,
 ) -> str:
+    canonical_payload = {
+        **parsed,
+        "excluded_security_fields": sorted(parsed["excluded_security_fields"]),
+    }
     canonical = json.dumps(
-        parsed,
+        canonical_payload,
         allow_nan=False,
         ensure_ascii=False,
         separators=(",", ":"),

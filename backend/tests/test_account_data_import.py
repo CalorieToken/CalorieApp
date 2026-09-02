@@ -164,8 +164,17 @@ def test_planner_prepares_only_newly_owned_food_log_values() -> None:
 def test_digest_is_stable_across_json_whitespace_and_key_order() -> None:
     compact = _plan(_encoded(separators=(",", ":")))
     reordered = _plan(_encoded(sort_keys=True, indent=2))
+    reversed_exclusions_payload = _payload()
+    reversed_exclusions_payload["excluded_security_fields"] = list(
+        reversed(reversed_exclusions_payload["excluded_security_fields"])
+    )
+    reversed_exclusions = _plan(_encoded(reversed_exclusions_payload))
 
     assert compact == reordered
+    assert (
+        compact.private_import_digest
+        == reversed_exclusions.private_import_digest
+    )
     different_target = _plan(target_user_id="different-target-user")
     assert different_target.private_import_digest != compact.private_import_digest
 
