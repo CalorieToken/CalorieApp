@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.23.0",
+  "contract_version": "1.24.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -251,6 +251,46 @@
       "implementation": "backend/app/inactive_account_erasure_preflight.py",
       "tests": "backend/tests/test_inactive_account_erasure_preflight.py",
       "runbook": "docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md"
+    },
+    "inactive_account_erasure_execution": {
+      "implementation_status": "single-candidate-transaction-bound-non-production-staging-prepared-production-disabled",
+      "locked_preflight_reused": true,
+      "single_candidate_only": true,
+      "explicit_execution_enablement_required": true,
+      "explicit_approval_reference_required": true,
+      "maximum_approval_reference_bytes": 120,
+      "approval_reference_returned_as": "sha256-digest-only",
+      "allowed_execution_environments": [
+        "local",
+        "staging",
+        "test"
+      ],
+      "exact_per_relation_rowcount_revalidation": true,
+      "covered_delete_relations": [
+        "calorieappuser",
+        "food_log",
+        "externalidentity",
+        "originloginhandoff",
+        "authsession",
+        "inactive_account_notice"
+      ],
+      "inbound_session_replacement_references_cleared_before_delete": true,
+      "sqlite_real_outer_transaction_started_before_savepoint": true,
+      "inner_savepoint_rolls_back_failed_mutation_sequence": true,
+      "caller_commit_or_rollback_required": true,
+      "function_commits_or_rolls_back_outer_transaction": false,
+      "missing_or_ineligible_notice_is_noop": true,
+      "aggregate_only_result": true,
+      "account_notice_food_contact_external_subject_wallet_receipt_session_secret_or_network_data_returned": false,
+      "endpoint_cli_batch_provider_network_queue_or_scheduler_capability": false,
+      "automatic_erasure_authorized": false,
+      "production_execution_enabled": false,
+      "postgresql_rollback_integration_test_implemented": true,
+      "real_data_access_or_mutation_performed": false,
+      "migration_or_deployment_performed": false,
+      "implementation": "backend/app/inactive_account_erasure_execution.py",
+      "tests": "backend/tests/test_inactive_account_erasure_execution.py",
+      "runbook": "docs/INACTIVE_ACCOUNT_ERASURE_EXECUTION.md"
     },
     "authentication_transient_security_retention_max_days_after_expiry": 30,
     "shorter_authentication_lifetimes_continue_to_apply": true,

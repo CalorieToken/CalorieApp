@@ -89,6 +89,15 @@ external subjects, unowned legacy authorization history and excessive row
 counts fail closed for operator review. The preflight performs no mutation and
 does not authorize erasure. See `docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md`.
 
+A narrowly guarded helper can now stage that exact preflighted deletion shape
+inside a caller-owned transaction for synthetic non-production proof only. It
+requires explicit execution enablement, an allowed non-production environment
+and a bounded approval reference whose digest is included in aggregate-only
+evidence. Exact mutation counts are revalidated, inbound session references are
+cleared first, and the caller must explicitly commit or roll back. Production,
+endpoints, CLI access, scheduling, provider contact and automatic commit remain
+absent. See `docs/INACTIVE_ACCOUNT_ERASURE_EXECUTION.md`.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization

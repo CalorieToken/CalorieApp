@@ -26,6 +26,9 @@ from app.data_growth import (
     create_food_log_with_subject_budget,
 )
 from app.main import SESSION_COOKIE_NAME, app
+from app.inactive_account_erasure_execution import (
+    execute_inactive_account_erasure,
+)
 from app.inactive_account_erasure_preflight import (
     preflight_inactive_account_erasure,
 )
@@ -1647,3 +1650,100 @@ def test_postgresql_inactive_account_erasure_preflight_is_read_only(
         assert session.exec(
             select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
         ).one().product_name == "Synthetic private preflight food"
+
+
+def test_postgresql_inactive_account_erasure_execution_stages_and_rolls_back(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-INACTIVE-ERASURE-EXECUTION",
+    )
+    user_id = "synthetic-erasure-execution-user"
+    notice_id = "synthetic-erasure-execution-notice"
+    target_session_id = "synthetic-erasure-execution-target-session"
+    inbound_session_id = "synthetic-erasure-execution-inbound-session"
+    other_user_id = "synthetic-erasure-execution-other-user"
+    with Session(postgres_engine) as session:
+        target_user = CalorieAppUserDB(
+            id=user_id,
+            status="active",
+            last_authenticated_activity_at=datetime(2024, 1, 1),
+        )
+        other_user = CalorieAppUserDB(id=other_user_id, status="active")
+        target_session = AuthSessionDB(
+            id=target_session_id,
+            session_token_hash="d" * 64,
+            calorieapp_user_id=user_id,
+            created_at=datetime(2024, 1, 1),
+            last_seen_at=datetime(2024, 1, 1),
+            expires_at=datetime(2026, 1, 1),
+        )
+        session.add_all([target_user, other_user])
+        session.flush()
+        session.add(target_session)
+        session.flush()
+        session.add_all(
+            [
+                InactiveAccountNoticeDB(
+                    id=notice_id,
+                    calorieapp_user_id=user_id,
+                    activity_anchor_at=datetime(2024, 1, 1),
+                    notice_window_started_at=datetime(2025, 12, 2),
+                    retention_due_at=datetime(2026, 1, 1),
+                    delivered_at=datetime(2025, 12, 5),
+                    delivery_channel="synthetic-ci",
+                    delivery_evidence_digest="e" * 64,
+                    status="delivered",
+                    recorded_at=datetime(2025, 12, 5, 0, 0, 1),
+                ),
+                FoodLogDB(
+                    product_name="Synthetic private execution food",
+                    calories=1,
+                    owner_id=user_id,
+                ),
+                AuthSessionDB(
+                    id=inbound_session_id,
+                    session_token_hash="f" * 64,
+                    calorieapp_user_id=other_user_id,
+                    created_at=datetime(2024, 1, 1),
+                    last_seen_at=datetime(2024, 1, 1),
+                    expires_at=datetime(2026, 1, 1),
+                    replaced_by_session_id=target_session_id,
+                ),
+            ]
+        )
+        session.commit()
+
+    with Session(postgres_engine) as session:
+        result = execute_inactive_account_erasure(
+            session,
+            notice_id=notice_id,
+            as_of=datetime(2026, 1, 2, tzinfo=UTC),
+            environment="test",
+            execute=True,
+            approval_reference="synthetic-postgresql-rollback-proof",
+        )
+        assert result is not None
+        assert result.food_log_rows_deleted == 1
+        assert result.auth_session_rows_deleted == 1
+        assert result.inactive_account_notice_rows_deleted == 1
+        assert result.inbound_session_references_cleared == 1
+        assert result.user_rows_deleted == 1
+        assert result.total_delete_rows == 4
+        assert session.get(CalorieAppUserDB, user_id) is None
+        preserved = session.get(AuthSessionDB, inbound_session_id)
+        assert preserved is not None
+        assert preserved.replaced_by_session_id is None
+        session.rollback()
+
+    with Session(postgres_engine) as session:
+        assert session.get(CalorieAppUserDB, user_id) is not None
+        assert session.get(InactiveAccountNoticeDB, notice_id) is not None
+        assert session.get(AuthSessionDB, target_session_id) is not None
+        restored = session.get(AuthSessionDB, inbound_session_id)
+        assert restored is not None
+        assert restored.replaced_by_session_id == target_session_id
+        assert session.exec(
+            select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
+        ).one().product_name == "Synthetic private execution food"
