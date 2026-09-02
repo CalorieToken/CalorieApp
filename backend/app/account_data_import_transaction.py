@@ -159,7 +159,7 @@ def _target_has_private_receipt(
     session: Session,
     target_account_id: str,
 ) -> bool:
-    return bool(
+    receipt_count = int(
         session.exec(
             select(sa.func.count(AccountDataImportReceiptDB.id)).where(
                 AccountDataImportReceiptDB.target_account_id
@@ -167,6 +167,7 @@ def _target_has_private_receipt(
             )
         ).one()
     )
+    return receipt_count > 0
 
 
 def _require_receipt_matches_plan(
