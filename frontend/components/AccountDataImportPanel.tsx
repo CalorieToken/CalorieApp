@@ -10,6 +10,7 @@ import {
 import {
   ACCOUNT_IMPORT_ACKNOWLEDGEMENT,
   ACCOUNT_IMPORT_ACKNOWLEDGEMENT_HEADER,
+  ACCOUNT_IMPORT_PATH,
   ACCOUNT_IMPORT_REQUEST_HEADER,
   ACCOUNT_IMPORT_REQUEST_VALUE,
   ACCOUNT_IMPORT_SOURCE_HEADER,
@@ -132,7 +133,7 @@ export function AccountDataImportPanel({
 
       await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
       const response = await backendRequest(
-        `${BACKEND_BASE_URL}/api/identity/import`,
+        `${BACKEND_BASE_URL}/${ACCOUNT_IMPORT_PATH}`,
         {
           method: "POST",
           cache: "no-store",

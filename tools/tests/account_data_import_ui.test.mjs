@@ -196,6 +196,8 @@ test("private import UI keeps the file transient and uses exact raw bytes", asyn
 
   assert.equal(source.includes("selectedFile.arrayBuffer()"), true);
   assert.equal(source.includes("body: payload"), true);
+  assert.equal(source.includes("${BACKEND_BASE_URL}/${ACCOUNT_IMPORT_PATH}"), true);
+  assert.equal(source.includes("${BACKEND_BASE_URL}/api/identity/import"), false);
   assert.equal(source.includes("ACCOUNT_IMPORT_SOURCE_HEADER"), true);
   assert.equal(source.includes("ACCOUNT_IMPORT_TARGET_HEADER"), true);
   assert.equal(source.includes("ACCOUNT_IMPORT_ACKNOWLEDGEMENT_HEADER"), true);

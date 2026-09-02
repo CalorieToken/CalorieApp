@@ -85,7 +85,8 @@ def test_account_import_ui_is_hidden_fail_closed_and_proxy_allowlisted():
         encoding="utf-8"
     )
 
-    assert "${BACKEND_BASE_URL}/api/identity/import" in import_source
+    assert "ACCOUNT_IMPORT_PATH" in import_source
+    assert "${BACKEND_BASE_URL}/${ACCOUNT_IMPORT_PATH}" in import_source
     assert 'method: "POST"' in import_source
     assert 'cache: "no-store"' in import_source
     assert "selectedFile.arrayBuffer()" in import_source
