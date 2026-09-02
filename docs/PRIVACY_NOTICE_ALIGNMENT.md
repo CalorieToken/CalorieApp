@@ -35,6 +35,13 @@ localized export, import and erasure copy contract.
   snapshots are imported. Identity links, sessions, authorization activity,
   browser handoffs, inactive-account notices and source database row IDs are
   not restored. The uploaded export is not retained as a file.
+- The current v1 export contains no private import-receipt records. A selected
+  future v2 disclosure may show only the account-owned import timestamp, food-
+  log count, source export version and import-plan version. The private replay
+  digest, internal receipt ID, repeated target account ID, source identity and
+  source food values or IDs remain excluded. Imported receipt summaries are
+  informational history and must never become live replay evidence. This
+  selected boundary is not yet implemented in the runtime.
 - Direct account erasure remains disabled by default. If separately approved
   and enabled, a confirmed request removes directly owned primary-store data
   immediately, with no app recovery window. Encrypted backups may retain a

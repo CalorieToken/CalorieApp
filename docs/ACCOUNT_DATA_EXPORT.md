@@ -5,8 +5,9 @@ Privacy-notice approval, provider proof and production activation remain
 release-blocking.
 
 The matching v1 import path now includes strict validation, planning, admission
-and guarded non-production transaction staging, but no authenticated upload
-endpoint or production activation. See `ACCOUNT_DATA_IMPORT.md`.
+and guarded non-production transaction staging plus an authenticated upload
+route and eleven-language UI. The route and UI remain disabled by default and
+there is no production activation. See `ACCOUNT_DATA_IMPORT.md`.
 
 ## Endpoint
 
@@ -74,11 +75,35 @@ weaken authentication or expose internal receipt evidence without improving
 data portability. The response names these excluded security fields so the
 boundary is transparent.
 
+## Selected future import-receipt disclosure
+
+The current `calorieapp-account-data-v1` response remains unchanged and does
+not contain import receipts. A reviewed future
+`calorieapp-account-data-v2` response may add an `account_import_receipts`
+collection containing only the account-owned import timestamp, imported food-
+log count, source export version and import-plan version.
+
+The internal receipt ID, repeated target-account ID and private replay digest
+must not be exported. Source account identifiers, source food values or IDs and
+approval or release commit references must not be derived or joined into the
+summary. The private digest remains internal target-bound replay evidence and
+must not appear in exports, logs or errors.
+
+If a future v2 file is imported, its receipt summaries are informational
+history only. They must be validated but must never be restored as live replay
+receipts or used to bypass the fresh target-bound import checks. The current v1
+format must remain accepted when v2 support is implemented. This selected
+boundary is machine-readable in
+`contracts/data-safety/v1/account-data-import-receipt-disclosure.json`; this
+change does not implement v2 runtime behavior.
+
 ## Still required before public onboarding
 
 - complete the operator publication review and any later independent linguistic
   or legal/privacy review of the eleven implemented translations;
 - align the privacy notice with the exact exported data classes;
+- implement and review the selected v2 import-receipt summary while preserving
+  v1 import compatibility and the private replay boundary;
 - complete PostgreSQL and restore-path verification;
 - implement the selected zero-day erasure and maximum 30-day encrypted-backup
   boundary on a reviewed provider; and
@@ -97,6 +122,6 @@ recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.
 
 An export is not authentication. A future import must authenticate its target
 account independently and may not restore exported identity, session, handoff
-or inactive-notice state as live security state. Before user-facing import is
-enabled, the next export-version review must also decide how private import
-receipt metadata is disclosed without exposing its replay digest.
+or inactive-notice state as live security state. The future receipt-disclosure
+boundary is selected, but its v2 runtime implementation and review remain
+required before user-facing import can be enabled.

@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.32.0",
+  "contract_version": "1.33.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -403,6 +403,13 @@
     "import_receipt_stores_source_account_identifier_or_food_values": false,
     "import_receipt_erased_with_account": true,
     "import_receipt_runtime_update_allowed": false,
+    "import_receipt_disclosure_contract": "contracts/data-safety/v1/account-data-import-receipt-disclosure.json",
+    "import_receipt_disclosure_decision_completed": true,
+    "import_receipt_disclosure_selected_export_version": "calorieapp-account-data-v2",
+    "import_receipt_disclosure_runtime_implemented": false,
+    "current_v1_export_changed_by_receipt_disclosure_decision": false,
+    "private_import_digest_export_allowed": false,
+    "imported_receipt_summaries_may_be_restored_as_live_replay_receipts": false,
     "synthetic_postgresql_import_transaction_test_implemented": true,
     "synthetic_postgresql_import_lock_shared_with_live_food_log_writer_tested": true,
     "import_schema_migration_repository_status": "prepared-forward-migration-not-deployed",

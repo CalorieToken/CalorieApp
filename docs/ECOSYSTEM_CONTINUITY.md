@@ -103,10 +103,12 @@ confirmation to match, allows a new plan only for a clean target, treats an
 already-recorded exact digest as a no-op, and enforces the retained-row ceiling.
 An internal, disabled-by-default non-production helper now stages the admitted
 food rows and private replay receipt under the same transaction lock without
-committing. None of these layers rehydrates exported identities, sessions,
-authorization activity, browser handoffs or retention notices. There is still
-no authenticated upload endpoint or provider-exit evidence; see
-`ACCOUNT_DATA_IMPORT.md`.
+committing. A guarded authenticated upload route and eleven-language UI also
+exist, remain disabled by default and reject production. None of these layers
+rehydrates exported identities, sessions, authorization activity, browser
+handoffs or retention notices. The future v2 receipt-summary boundary is
+selected without exporting the replay digest, but its runtime implementation
+and provider-exit evidence remain pending; see `ACCOUNT_DATA_IMPORT.md`.
 
 ## Prohibited shortcuts
 

@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.20.0",
+  "contract_version": "1.21.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -229,6 +229,7 @@
       "status": "partial",
       "release_blocking": true,
       "evidence": [
+        "contracts/data-safety/v1/account-data-import-receipt-disclosure.json",
         "backend/app/main.py",
         "backend/app/schemas.py",
         "backend/app/account_data_import.py",
@@ -240,6 +241,7 @@
         "backend/tests/test_account_data_import_endpoint.py",
         "backend/tests/test_postgresql_integration.py",
         "backend/tests/test_account_data_export.py",
+        "backend/tests/test_account_data_import_receipt_disclosure_contract.py",
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",
         "frontend/components/AccountDataExportButton.tsx",

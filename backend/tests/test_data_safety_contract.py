@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.32.0"
+    assert contract["contract_version"] == "1.33.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -270,6 +270,22 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     ] is False
     assert export["import_receipt_erased_with_account"] is True
     assert export["import_receipt_runtime_update_allowed"] is False
+    assert export["import_receipt_disclosure_contract"] == (
+        "contracts/data-safety/v1/account-data-import-receipt-disclosure.json"
+    )
+    assert export["import_receipt_disclosure_decision_completed"] is True
+    assert export["import_receipt_disclosure_selected_export_version"] == (
+        "calorieapp-account-data-v2"
+    )
+    assert export["import_receipt_disclosure_runtime_implemented"] is False
+    assert export["current_v1_export_changed_by_receipt_disclosure_decision"] is False
+    assert export["private_import_digest_export_allowed"] is False
+    assert (
+        export[
+            "imported_receipt_summaries_may_be_restored_as_live_replay_receipts"
+        ]
+        is False
+    )
     assert export[
         "synthetic_postgresql_import_transaction_test_implemented"
     ] is True
@@ -680,7 +696,7 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.4.0"
+    assert alignment["contract_version"] == "1.5.0"
     assert alignment["status"] == (
         "canonical-facts-and-eleven-language-export-import-erasure-copy-"
         "aligned-publication-pending"
@@ -747,6 +763,24 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert "authentication-sessions" in private_import["excluded_live_state"]
     assert private_import["uploaded_export_retained_as_file"] is False
     assert private_import["provider_exit_import_proved"] is False
+    receipt_disclosure = alignment["selected_future_disclosure"][
+        "private_import_receipt_summaries"
+    ]
+    assert receipt_disclosure["contract"] == (
+        "contracts/data-safety/v1/account-data-import-receipt-disclosure.json"
+    )
+    assert receipt_disclosure["target_export_version"] == (
+        "calorieapp-account-data-v2"
+    )
+    assert receipt_disclosure["current_runtime_changed"] is False
+    assert set(receipt_disclosure["included_fields"]) == {
+        "imported_at",
+        "food_log_count",
+        "source_export_version",
+        "import_plan_version",
+    }
+    assert "private-import-digest" in receipt_disclosure["excluded_fields"]
+    assert receipt_disclosure["restored_as_live_replay_evidence"] is False
     assert facts["direct_account_erasure"]["enabled_by_default"] is False
     assert facts["direct_account_erasure"][
         "primary_store_erasure_immediate_after_confirmed_request"
@@ -1277,7 +1311,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.20.0"
+    assert matrix["contract_version"] == "1.21.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1350,6 +1384,14 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "backup_restore_drill"
     ]["evidence"]
     assert gates["user_data_export"]["status"] == "partial"
+    assert (
+        "contracts/data-safety/v1/account-data-import-receipt-disclosure.json"
+        in gates["user_data_export"]["evidence"]
+    )
+    assert (
+        "backend/tests/test_account_data_import_receipt_disclosure_contract.py"
+        in gates["user_data_export"]["evidence"]
+    )
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
     ]
