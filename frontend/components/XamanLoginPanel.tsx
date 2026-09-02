@@ -434,11 +434,12 @@ export function XamanLoginPanel() {
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
   const [isEmbedded, setIsEmbedded] = useState(false);
+  const [displayLocale, setDisplayLocale] = useState(initialLocale);
   const loginAbortController = useRef<AbortController | null>(null);
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
-  const activeLocale = useRef(initialLocale());
+  const activeLocale = useRef(displayLocale);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     try {
@@ -579,9 +580,11 @@ export function XamanLoginPanel() {
       ) {
         origin = event.origin;
         parentOrigin.current = event.origin;
-        activeLocale.current = resolveLocale(
+        const nextLocale = resolveLocale(
           typeof event.data.locale === "string" ? event.data.locale : activeLocale.current
         );
+        activeLocale.current = nextLocale;
+        setDisplayLocale(nextLocale);
         setIsEmbedded(true);
         postHeight();
         return;
@@ -979,6 +982,7 @@ export function XamanLoginPanel() {
             </button>
           </div>
           <AccountDataExportButton
+            locale={displayLocale}
             onAuthenticationLost={(message) => {
               setCurrentUser(null);
               announceAuthState(false);
@@ -988,18 +992,17 @@ export function XamanLoginPanel() {
           {ACCOUNT_ERASURE_UI_ENABLED ? (
             <AccountErasurePanel
               userId={currentUser.user_id}
+              locale={displayLocale}
               onAuthenticationLost={(message) => {
                 setCurrentUser(null);
                 announceAuthState(false);
                 setError(message);
               }}
-              onErased={() => {
+              onErased={(message) => {
                 setCurrentUser(null);
                 announceAuthState(false);
                 setError(null);
-                setSuccessNotice(
-                  "Your CalorieApp account and directly owned primary data were deleted."
-                );
+                setSuccessNotice(message);
               }}
             />
           ) : null}

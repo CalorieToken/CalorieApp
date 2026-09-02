@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 
@@ -37,6 +38,11 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
     proxy_source = (
         REPO_ROOT / "frontend" / "app" / "api" / "backend" / "[...path]" / "route.ts"
     ).read_text(encoding="utf-8")
+    account_copy = json.loads(
+        (
+            REPO_ROOT / "frontend" / "config" / "account-privacy-copy.json"
+        ).read_text(encoding="utf-8")
+    )["locales"]["en"]["export"]
 
     assert '"/api/backend"' in export_source
     assert "${BACKEND_BASE_URL}/api/identity/export" in export_source
@@ -45,9 +51,9 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
     assert 'cache: "no-store"' in export_source
     assert "isVersionedAccountExport(payload)" in export_source
     assert "candidate.inactive_account_notices" in export_source
-    assert "warning" in export_source
-    assert "history for inactive accounts" in export_source
-    assert "inactive-\n        account" not in export_source
+    assert "getAccountPrivacyCopy(locale)" in export_source
+    assert "warning" in account_copy["description"]
+    assert "history for inactive accounts" in account_copy["description"]
     assert "URL.revokeObjectURL(objectUrl)" in export_source
     assert "localStorage" not in export_source
     assert "sessionStorage" not in export_source

@@ -1,7 +1,7 @@
 # Authenticated account erasure
 
-Status: V2 backend and English confirmation UI implemented, both disabled by
-default. The direct-deletion policy is selected, but this remains a
+Status: V2 backend and eleven-language confirmation UI implemented, both
+disabled by default. The direct-deletion policy is selected, but this remains a
 release-blocking partial gate rather than a production-ready deletion claim.
 
 ## Selected V2 policy
@@ -64,7 +64,8 @@ future erasure flow may include legacy authorization activity.
 `ACCOUNT_ERASURE_ENABLED=true`, so changing only one flag cannot activate the
 complete flow.
 
-The English UI:
+The UI provides the following consequence and confirmation flow in all eleven
+registered Identity Bridge locales:
 
 - explains the immediate primary-store deletion, zero-day recovery window,
   maximum 30-day encrypted-backup boundary and excluded external systems;
@@ -77,6 +78,12 @@ The English UI:
 - clears the local signed-in state only after a reviewed `{ "status":
   "erased" }` response.
 
+The active locale is inherited from the Identity Bridge flow. Locale aliases
+are normalized, unsupported values fall back to English, and Arabic and Urdu
+render right-to-left. The localized strings are complete product copy but are
+not a complete or approved privacy notice. Independent linguistic and
+legal/privacy review remains recorded as incomplete.
+
 The proxy admits only `DELETE /api/identity/account` and requires both the
 normal same-origin mutation check and the CalorieApp-only account-erasure intent
 header. Cross-site, same-site and top-level-navigation requests fail closed.
@@ -88,7 +95,8 @@ configuration. Code completion does not authorize live activation. Before
 activation, a human must approve and verify:
 
 - privacy-notice wording and support/escalation handling;
-- the translated eleven-language confirmation and consequence UI;
+- operator publication review and any later independent linguistic or
+  legal/privacy review of the implemented eleven-language UI;
 - a provider-specific encrypted-backup schedule of no more than 30 days;
 - a restore mechanism that reliably reapplies prior erasure requests;
 - a PostgreSQL staging test and documented restore/erasure drill;
