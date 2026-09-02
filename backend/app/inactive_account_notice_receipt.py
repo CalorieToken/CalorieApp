@@ -21,6 +21,7 @@ MAXIMUM_RECEIPT_BYTES = 4096
 MAXIMUM_USER_ID_BYTES = 255
 _DOMAIN = b"calorieapp.inactive-account-notice.delivery-evidence.v1\x00"
 _CHANNEL_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,39}$")
+_DIGEST_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +34,8 @@ class InactiveAccountNoticeDeliveryEvidence:
 
 
 def _canonical_timestamp(value: datetime, *, field_name: str) -> str:
+    if not isinstance(value, datetime):
+        raise ValueError(f"{field_name} must be a datetime")
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError(f"{field_name} must include a timezone")
     return value.astimezone(UTC).isoformat(timespec="microseconds").replace(
@@ -129,10 +132,49 @@ def successful_delivery_receipt_to_evidence(
         separators=(",", ":"),
         sort_keys=True,
     ).encode("utf-8")
-    digest = hmac.new(secret_key, _DOMAIN + payload, hashlib.sha256).hexdigest()
+    digest_builder = hmac.new(secret_key, digestmod=hashlib.sha256)
+    digest_builder.update(_DOMAIN)
+    digest_builder.update(payload)
+    digest = digest_builder.hexdigest()
 
     return InactiveAccountNoticeDeliveryEvidence(
         delivery_channel=delivery_channel,
         delivered_at=delivered_at.astimezone(UTC).replace(tzinfo=None),
         delivery_evidence_digest=digest,
     )
+
+
+def verify_successful_delivery_receipt_evidence(
+    *,
+    expected_digest: object,
+    secret_key: bytes,
+    provider_receipt: str,
+    user_id: str,
+    activity_anchor_at: datetime,
+    notice_window_started_at: datetime,
+    retention_due_at: datetime,
+    delivered_at: datetime,
+    delivery_channel: str,
+) -> bool:
+    """Verify minimized evidence without exposing secret or raw receipt data.
+
+    A malformed or non-string expected digest returns ``False``. Invalid audit
+    inputs raise ``ValueError`` under the same validation rules as evidence
+    creation, so callers can distinguish bad evidence from bad audit context.
+    """
+
+    if not isinstance(expected_digest, str) or not _DIGEST_PATTERN.fullmatch(
+        expected_digest
+    ):
+        return False
+    actual = successful_delivery_receipt_to_evidence(
+        secret_key=secret_key,
+        provider_receipt=provider_receipt,
+        user_id=user_id,
+        activity_anchor_at=activity_anchor_at,
+        notice_window_started_at=notice_window_started_at,
+        retention_due_at=retention_due_at,
+        delivered_at=delivered_at,
+        delivery_channel=delivery_channel,
+    )
+    return hmac.compare_digest(actual.delivery_evidence_digest, expected_digest)

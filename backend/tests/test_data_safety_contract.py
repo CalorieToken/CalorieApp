@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.19.0"
+    assert contract["contract_version"] == "1.20.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -256,8 +256,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert preview["migration_or_deployment_performed"] is False
     evidence = retention["inactive_account_notice_evidence"]
     assert evidence["implementation_status"] == (
-        "receipt-proof-builder-schema-and-activity-cancellation-"
-        "prepared-delivery-disabled"
+        "receipt-proof-builder-and-verifier-schema-and-activity-"
+        "cancellation-prepared-delivery-disabled"
     )
     assert evidence["successful_delivery_evidence_only"] is True
     assert evidence["pending_delivery_queue_created"] is False
@@ -271,6 +271,9 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["minimum_digest_secret_bytes"] == 32
     assert evidence["maximum_raw_provider_receipt_bytes"] == 4096
     assert evidence["provider_neutral_receipt_proof_builder_implemented"] is True
+    assert evidence["provider_neutral_receipt_proof_verifier_implemented"] is True
+    assert evidence["receipt_proof_digest_comparison"] == "hmac.compare_digest"
+    assert evidence["malformed_expected_digest_rejected"] is True
     assert (
         evidence["raw_provider_receipt_returned_or_persisted_by_proof_builder"]
         is False

@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.19.0",
+  "contract_version": "1.20.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -146,7 +146,7 @@
       "runbook": "docs/INACTIVE_ACCOUNT_PREVIEW.md"
     },
     "inactive_account_notice_evidence": {
-      "implementation_status": "receipt-proof-builder-schema-and-activity-cancellation-prepared-delivery-disabled",
+      "implementation_status": "receipt-proof-builder-and-verifier-schema-and-activity-cancellation-prepared-delivery-disabled",
       "successful_delivery_evidence_only": true,
       "pending_delivery_queue_created": false,
       "one_notice_per_user_activity_anchor": true,
@@ -159,6 +159,9 @@
       "minimum_digest_secret_bytes": 32,
       "maximum_raw_provider_receipt_bytes": 4096,
       "provider_neutral_receipt_proof_builder_implemented": true,
+      "provider_neutral_receipt_proof_verifier_implemented": true,
+      "receipt_proof_digest_comparison": "hmac.compare_digest",
+      "malformed_expected_digest_rejected": true,
       "raw_provider_receipt_returned_or_persisted_by_proof_builder": false,
       "returned_delivery_timestamp_convention": "naive-utc-for-persistence",
       "delivery_evidence_digest_in_private_export": false,
