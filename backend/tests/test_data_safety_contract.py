@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.17.0"
+    assert contract["contract_version"] == "1.18.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -274,6 +274,11 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
             "successful_authenticated_activity_cancels_older_notice_atomically"
         ]
         is True
+    )
+    assert evidence["cancellation_requires_activity_at_or_after_delivery"] is True
+    assert evidence["cancelled_at_not_before_delivered_at_constrained"] is True
+    assert evidence["constraint_hardening_migration"] == (
+        "backend/app/schema_migrations/versions/v20260902_0014.py"
     )
     assert evidence["notice_evidence_removed_by_account_erasure"] is True
     assert evidence["notice_delivery_adapter_implemented"] is False
@@ -886,7 +891,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.10.0"
+    assert matrix["contract_version"] == "1.11.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -951,6 +956,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/app/schema_migrations/versions/v20260901_0013.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/schema_migrations/versions/v20260902_0014.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_identity_endpoints.py" in gates[

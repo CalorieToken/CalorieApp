@@ -50,6 +50,11 @@ the private export without the evidence digest, and account erasure removes the
 row. No delivery adapter or write path creates these rows yet. See
 `docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md`.
 
+Forward migration `20260902_0014` hardens cancellation ordering: a cancellation
+timestamp cannot precede delivery. PostgreSQL enforces this with a check
+constraint and SQLite with equivalent insert and update triggers. Authenticated
+activity observed before delivery therefore cannot cancel a future warning.
+
 ## Selected authentication-transient boundary
 
 Short operational lifetimes continue to control login state, authorization

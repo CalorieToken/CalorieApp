@@ -40,6 +40,10 @@ def cancel_inactive_account_notices_for_activity(
             InactiveAccountNoticeDB.activity_anchor_at
             < normalized_observed_at
         )
+        .where(
+            InactiveAccountNoticeDB.delivered_at
+            <= normalized_observed_at
+        )
         .values(
             status="cancelled",
             cancelled_at=normalized_observed_at,

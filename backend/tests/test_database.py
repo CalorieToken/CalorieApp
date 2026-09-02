@@ -20,7 +20,11 @@ from app.schema_migrations import (
     current_revision,
     upgrade_database,
 )
-from app.schema_migrations.versions import v20260901_0012, v20260901_0013
+from app.schema_migrations.versions import (
+    v20260901_0012,
+    v20260901_0013,
+    v20260902_0014,
+)
 
 
 def test_normalize_render_postgresql_url_uses_psycopg_v3() -> None:
@@ -149,7 +153,7 @@ def test_migration_is_idempotent_and_records_one_revision() -> None:
             count = connection.exec_driver_sql(
                 "SELECT COUNT(*) FROM calorie_schema_revision"
             ).scalar_one()
-        assert count == 13
+        assert count == 14
     finally:
         test_engine.dispose()
 
@@ -286,7 +290,7 @@ def test_migration_history_stores_approved_reference_without_secret_data() -> No
                 "SELECT applied_at, approval_reference "
                 "FROM calorie_schema_revision ORDER BY revision"
             ).all()
-        assert len(history) == 13
+        assert len(history) == 14
         for applied_at, reference in history:
             applied_at_utc = datetime.fromisoformat(str(applied_at)).replace(tzinfo=UTC)
             age_seconds = (datetime.now(UTC) - applied_at_utc).total_seconds()
@@ -394,5 +398,46 @@ def test_inactive_account_notice_migration_rejects_unsafe_evidence_rows() -> Non
 
         with test_engine.connect() as connection:
             v20260901_0013.validate(connection)
+            v20260902_0014.validate(connection)
+    finally:
+        test_engine.dispose()
+
+
+def test_inactive_account_notice_rejects_cancellation_before_delivery() -> None:
+    test_engine = _memory_engine()
+    try:
+        upgrade_database(test_engine)
+        with test_engine.begin() as connection:
+            connection.exec_driver_sql(
+                """
+                INSERT INTO calorieappuser
+                    (id, created_at, updated_at, status,
+                     last_authenticated_activity_at)
+                VALUES
+                    ('ordered-notice-user', '2024-01-01 00:00:00',
+                     '2024-01-01 00:00:00', 'active',
+                     '2024-01-01 00:00:00')
+                """
+            )
+
+            with pytest.raises(Exception):
+                connection.exec_driver_sql(
+                    """
+                    INSERT INTO inactive_account_notice
+                        (id, calorieapp_user_id, activity_anchor_at,
+                         notice_window_started_at, retention_due_at,
+                         delivered_at, delivery_channel,
+                         delivery_evidence_digest, status, cancelled_at,
+                         cancellation_reason, recorded_at)
+                    VALUES
+                        ('misordered-notice', 'ordered-notice-user',
+                         '2024-01-01 00:00:00', '2025-12-02 00:00:00',
+                         '2026-01-01 00:00:00', '2025-12-05 00:00:00',
+                         'email',
+                         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                         'cancelled', '2025-12-04 23:59:59',
+                         'authenticated-activity', '2025-12-05 00:00:00')
+                    """
+                )
     finally:
         test_engine.dispose()

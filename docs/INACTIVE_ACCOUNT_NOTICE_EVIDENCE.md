@@ -16,6 +16,9 @@ Forward migration `20260901_0013` therefore prepares one evidence row per user
 and durable activity anchor. A row represents a successfully delivered notice,
 not an attempted or queued message. Database constraints require a delivery
 inside the notice window and keep delivered and cancelled states unambiguous.
+Forward migration `20260902_0014` additionally requires cancellation at or
+after delivery. PostgreSQL enforces that ordering with a check constraint;
+SQLite uses equivalent insert and update triggers without rebuilding the table.
 
 ## Data minimization
 
@@ -40,8 +43,10 @@ deletes the evidence row before deleting the account.
 Every successfully created session and successfully authenticated request
 already advances `last_authenticated_activity_at`. The same transaction now
 changes an older delivered notice to `cancelled`. A failed transaction rolls
-back both changes, and an equal or older observation cannot cancel a notice.
-Cancellation never creates an erasure instruction.
+back both changes. An equal or older activity-anchor observation cannot cancel
+a notice, and activity observed before delivery cannot cancel a later warning.
+Activity at the delivery timestamp can cancel it. Cancellation never creates
+an erasure instruction.
 
 ## Explicit non-activation boundary
 

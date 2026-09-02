@@ -159,8 +159,8 @@ export function AccountDataExportButton({
       </p>
       <p className="mt-1 text-xs leading-relaxed text-brand-secondary/90">
         The JSON file can include your account identifier, linked identity and
-        optional XRPL address, food-log history, session timing, and inactive-
-        account warning history. Security tokens are excluded. Internal
+        optional XRPL address, food-log history, session timing, and warning
+        history for inactive accounts. Security tokens are excluded. Internal
         delivery evidence is also excluded. Some older authorization activity
         remains withheld when ownership cannot be proven. CalorieApp does not
         send the file anywhere else; keep your browser&apos;s configured download

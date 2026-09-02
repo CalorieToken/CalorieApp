@@ -473,6 +473,10 @@ class InactiveAccountNoticeDB(SQLModel, table=True):
             name="ck_inactive_account_notice_cancellation_time",
         ),
         CheckConstraint(
+            "cancelled_at IS NULL OR cancelled_at >= delivered_at",
+            name="ck_inactive_account_notice_cancelled_after_delivery",
+        ),
+        CheckConstraint(
             "LENGTH(delivery_evidence_digest) = 64",
             name="ck_inactive_account_notice_evidence_digest",
         ),

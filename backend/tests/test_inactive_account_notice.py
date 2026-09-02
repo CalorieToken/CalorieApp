@@ -112,6 +112,62 @@ def test_activity_at_or_before_notice_anchor_does_not_cancel() -> None:
         engine.dispose()
 
 
+def test_activity_before_notice_delivery_does_not_cancel() -> None:
+    engine = _memory_engine()
+    anchor = datetime(2024, 1, 1)
+    try:
+        with Session(engine) as session:
+            user = CalorieAppUserDB(
+                id="pre-delivery-user",
+                last_authenticated_activity_at=anchor,
+            )
+            notice = _notice(user.id, anchor=anchor, digest="f" * 64)
+            session.add_all([user, notice])
+            session.commit()
+
+            observed_at = notice.delivered_at - timedelta(seconds=1)
+            cancel_inactive_account_notices_for_activity(
+                session,
+                user_id=user.id,
+                observed_at=observed_at.replace(tzinfo=UTC),
+            )
+            session.commit()
+            session.refresh(notice)
+
+            assert observed_at > anchor
+            assert notice.status == "delivered"
+            assert notice.cancelled_at is None
+    finally:
+        engine.dispose()
+
+
+def test_activity_at_notice_delivery_time_can_cancel() -> None:
+    engine = _memory_engine()
+    anchor = datetime(2024, 1, 1)
+    try:
+        with Session(engine) as session:
+            user = CalorieAppUserDB(
+                id="delivery-time-user",
+                last_authenticated_activity_at=anchor,
+            )
+            notice = _notice(user.id, anchor=anchor, digest="9" * 64)
+            session.add_all([user, notice])
+            session.commit()
+
+            cancel_inactive_account_notices_for_activity(
+                session,
+                user_id=user.id,
+                observed_at=notice.delivered_at.replace(tzinfo=UTC),
+            )
+            session.commit()
+            session.refresh(notice)
+
+            assert notice.status == "cancelled"
+            assert notice.cancelled_at == notice.delivered_at
+    finally:
+        engine.dispose()
+
+
 def test_successful_authenticated_request_cancels_notice_atomically(
     authenticated_client: TestClient,
 ) -> None:
@@ -136,8 +192,7 @@ def test_successful_authenticated_request_cancels_notice_atomically(
         assert persisted.cancellation_reason == AUTHENTICATED_ACTIVITY_CANCELLATION
 
 
-def test_failed_activity_transaction_does_not_partially_cancel_notice(
-) -> None:
+def test_failed_activity_transaction_does_not_partially_cancel_notice() -> None:
     engine = _memory_engine()
     original_engine = db_module.engine
     anchor = datetime(2024, 1, 1)

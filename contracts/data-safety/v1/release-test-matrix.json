@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.10.0",
+  "contract_version": "1.11.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -250,6 +250,7 @@
         "backend/app/schemas.py",
         "backend/app/schema_migrations/versions/v20260901_0012.py",
         "backend/app/schema_migrations/versions/v20260901_0013.py",
+        "backend/app/schema_migrations/versions/v20260902_0014.py",
         "backend/tests/test_auth_transient_retention.py",
         "backend/tests/test_inactive_account_preview.py",
         "backend/tests/test_inactive_account_notice.py",

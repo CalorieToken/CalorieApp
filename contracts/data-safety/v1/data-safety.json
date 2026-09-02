@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.17.0",
+  "contract_version": "1.18.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -158,6 +158,8 @@
       "delivery_evidence_digest_in_private_export": false,
       "lifecycle_timestamps_and_channel_in_private_export": true,
       "successful_authenticated_activity_cancels_older_notice_atomically": true,
+      "cancellation_requires_activity_at_or_after_delivery": true,
+      "cancelled_at_not_before_delivered_at_constrained": true,
       "notice_evidence_removed_by_account_erasure": true,
       "notice_delivery_adapter_implemented": false,
       "scheduler_configured": false,
@@ -168,6 +170,7 @@
       "model": "backend/app/models.py",
       "activity_cancellation": "backend/app/inactive_account_notice.py",
       "migration": "backend/app/schema_migrations/versions/v20260901_0013.py",
+      "constraint_hardening_migration": "backend/app/schema_migrations/versions/v20260902_0014.py",
       "tests": "backend/tests/test_inactive_account_notice.py",
       "runbook": "docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md"
     },
