@@ -52,6 +52,9 @@ provider account, recurring subscription, live database or user data.
 21. Apply the reviewed runtime-role privilege matrix to a synthetic role and
     prove normal row/audit insertion works while audit rewrite/deletion,
     migration-history mutation, persistent DDL and temporary DDL are rejected.
+22. After creating a logical backup, erase one fixed synthetic account, restore
+    the older archive, prove that account reappears, then match an in-memory
+    HMAC replay proof and reapply the erasure while preserving the other user.
 
 The integration test refuses to reset a database unless the host is loopback
 and the database name is exactly `calorieapp_ci_test`. This deliberately makes
@@ -63,6 +66,7 @@ the test unusable against a remote, staging or production database.
 - permanence or exact quota of any free tier;
 - chosen-provider alert destination/delivery or a live onboarding-pause exercise;
 - encrypted provider backup creation or a staging restoration;
+- independently persisted erasure evidence and provider restore replay;
 - export/import into another provider;
 - application of the runtime-role policy to staging or production credentials;
 - production security, privacy or operational readiness.

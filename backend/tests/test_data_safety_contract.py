@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.25.0"
+    assert contract["contract_version"] == "1.26.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -64,6 +64,12 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
     assert "chosen-provider-redeploy-persistence" in proof["does_not_prove"]
     assert "synthetic-custom-format-backup-and-distinct-database-restore" in proof[
         "automated_evidence"
+    ]
+    assert "synthetic-in-memory-erasure-replay-after-older-backup-restore" in proof[
+        "automated_evidence"
+    ]
+    assert "independently-persisted-provider-restore-erasure-replay" in proof[
+        "does_not_prove"
     ]
     assert "bounded-source-assertion-ingest-and-multi-process-budget" in proof[
         "automated_evidence"
@@ -1252,7 +1258,7 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     drill = backup["synthetic_ci_logical_restore"]
 
     assert backup["status"] == (
-        "synthetic-staging-backup-exit-design-selected-implementation-and-production-pending"
+        "synthetic-ci-restore-erasure-replay-configured-staging-exit-and-production-pending"
     )
     assert drill["automated_per_merge_candidate"] is True
     assert drill["loopback_only"] is True
@@ -1261,6 +1267,18 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert drill["distinct_restore_database_required"] is True
     assert drill["synthetic_data_only"] is True
     assert drill["schema_head_and_owner_links_verified"] is True
+    assert drill["post_backup_synthetic_primary_store_erasure_performed"] is True
+    assert drill["replay_proof_location"] == (
+        "in-process-memory-outside-backup-archive"
+    )
+    assert drill["replay_proof_uses_hardcoded_nonsecret_ci_key"] is True
+    assert drill["restored_account_reappearance_verified_before_replay"] is True
+    assert drill["restored_erasure_reapplied_before_final_verification"] is True
+    assert drill["unrelated_synthetic_account_preserved"] is True
+    assert drill["inbound_session_reference_cleared_during_replay"] is True
+    assert drill["second_replay_is_idempotent_noop"] is True
+    assert drill["independent_protected_replay_proof_persistence"] is False
+    assert drill["provider_restore_replay_proved"] is False
     assert drill["archive_persisted_or_uploaded"] is False
     assert drill["production_or_staging_data_allowed"] is False
     design = backup["synthetic_neon_staging_design"]
@@ -1303,7 +1321,8 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert backup["restored_backup_must_reapply_erasure_requests"] is True
     replay = backup["erasure_replay_proof"]
     assert replay["implementation_status"] == (
-        "pure-replay-proof-builder-verifier-prepared-storage-and-replay-disabled"
+        "pure-builder-verifier-and-loopback-ci-replay-drill-prepared-"
+        "independent-storage-and-provider-replay-disabled"
     )
     assert replay["covered_erasure_reasons"] == [
         "authenticated-user-request",
@@ -1322,6 +1341,14 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert replay["raw_authorization_reference_returned"] is False
     assert replay["secret_key_returned"] is False
     assert replay["subject_digest_is_pseudonymous_personal_data"] is True
+    assert replay["synthetic_loopback_postgresql_replay_drill_implemented"] is True
+    assert replay["synthetic_drill_proof_storage"] == "process-memory-only"
+    assert replay["synthetic_drill_uses_nonsecret_test_key"] is True
+    assert replay[
+        "synthetic_drill_replays_authenticated_request_after_older_backup_restore"
+    ] is True
+    assert replay["synthetic_drill_preserves_unrelated_account"] is True
+    assert replay["synthetic_drill_idempotency_verified"] is True
     assert replay["protected_independent_persistence_implemented"] is False
     assert replay["restore_scanning_and_replay_implemented"] is False
     assert replay["constant_time_digest_comparison"] is True
@@ -1331,6 +1358,7 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert replay["implementation"] == (
         "backend/app/account_erasure_replay_proof.py"
     )
+    assert replay["synthetic_drill"] == "backend/app/backup_restore_drill.py"
     assert replay["tests"] == "backend/tests/test_account_erasure_replay_proof.py"
     assert replay["runbook"] == "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
     assert backup["restore_replay_mechanism_implemented_and_proved"] is False

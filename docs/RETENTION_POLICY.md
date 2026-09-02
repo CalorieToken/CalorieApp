@@ -103,8 +103,10 @@ account path and authenticated user-request erasure. It returns a keyed
 pseudonymous subject selector and a separate context digest with a 30-day
 replay boundary. The proof creates no key or record and remains unsafe for
 public logs or unprotected artifacts. Independent protected persistence,
-backup scanning and actual replay remain unimplemented and release-blocking.
-See `docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+production key custody and provider restore replay remain unimplemented and
+release-blocking. A separate loopback CI drill now proves only an in-memory
+synthetic replay against an older disposable PostgreSQL archive. See
+`docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
 
 ## Selected authentication-transient boundary
 

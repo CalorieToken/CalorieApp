@@ -1,8 +1,9 @@
 # Account-erasure restore-replay proof
 
-Status: pure proof builder and verifier prepared. Independent protected
-persistence, restore scanning, replay execution, provider configuration,
-migration and deployment remain unimplemented and release-blocking.
+Status: pure proof builder/verifier and an in-memory loopback PostgreSQL replay
+drill prepared. Independent protected persistence, provider restore replay,
+production key custody, migration and deployment remain unimplemented and
+release-blocking.
 
 An older encrypted backup can still contain an account after its primary-store
 erasure. Restoring that backup must therefore reapply every still-relevant
@@ -29,6 +30,21 @@ authorization-reference digest. The verifier recomputes the same values and
 uses `hmac.compare_digest` for both comparisons. The raw internal identifier,
 authorization reference and secret are not returned.
 
+## Synthetic loopback replay evidence
+
+The per-merge PostgreSQL backup drill now creates an older archive containing
+two fixed synthetic accounts, then erases one account from the source and
+holds its replay proof only in process memory outside that archive. After
+restoring the archive, the drill first verifies that the deleted account has
+reappeared. It then matches the HMAC proof, removes that account's synthetic
+primary-store rows, clears an incoming session-replacement reference and
+verifies that the unrelated account remains intact. A second replay is an
+idempotent no-op.
+
+The drill accepts only loopback PostgreSQL and the exact disposable CI database
+names. Its hard-coded key is deliberately labelled non-secret and unfit for
+production. No proof or archive is uploaded or retained.
+
 ## Privacy and non-activation boundary
 
 The subject digest is pseudonymous personal data because a holder of the secret
@@ -37,9 +53,9 @@ placed in public logs, source control or unprotected artifacts. Its future
 storage needs an independently reviewed location, restricted access, expiry,
 key generation, custody, rotation and destruction process.
 
-This module creates no key, database row, file, artifact or provider record. It
-does not alter the existing account-erasure paths, scan a backup, select a
-candidate, delete an account, commit a transaction, configure a provider or
-claim restore-replay readiness. Production remains blocked until independent
-persistence and a complete synthetic restore/replay drill are implemented and
-reviewed together.
+The proof module itself creates no key, database row, file, artifact or provider
+record and does not alter the existing account-erasure paths. The separate CI
+drill performs only fixed synthetic mutations in disposable loopback databases.
+It does not claim restore-replay readiness. Production remains blocked until
+protected independent persistence, real key lifecycle controls and a reviewed
+provider staging restore/replay drill are implemented together.
