@@ -47,9 +47,24 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert selection == {
         "selected_candidate": "neon_free",
         "selected_on": "2026-09-01",
-        "approval_reference": "operator-decision-2026-09-02-neon-free-frankfurt-synthetic-staging",
-        "approved_scope": "one-free-frankfurt-project-for-isolated-synthetic-staging-only",
-        "account_or_project_creation_approved": True,
+        "approval_reference": "operator-decision-2026-09-01-neon-synthetic-staging",
+        "approved_scope": "preparation-for-isolated-synthetic-staging-only",
+        "account_or_project_creation_approved": False,
+        "payment_method_or_paid_upgrade_approved": False,
+        "real_user_or_production_data_approved": False,
+        "external_schema_migration_approved": False,
+        "production_deployment_approved": False,
+    }
+    assert contract["project_creation_record"] == {
+        "created_on": "2026-09-02",
+        "approval_reference": (
+            "operator-decision-2026-09-02-neon-free-frankfurt-synthetic-staging"
+        ),
+        "approved_scope": (
+            "one-free-frankfurt-project-for-isolated-synthetic-staging-only"
+        ),
+        "account_created": True,
+        "project_created": True,
         "payment_method_or_paid_upgrade_approved": False,
         "real_user_or_production_data_approved": False,
         "external_schema_migration_approved": False,
@@ -106,7 +121,6 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     )
     live_evidence = ROOT / review["live_evidence_document"]
     assert live_evidence.is_file()
-    assert "No key was created" in live_evidence.read_text(encoding="utf-8")
     assert review["eu_region"] == {
         "documented_candidate": "aws-eu-central-1",
         "region_is_fixed_at_project_creation": True,

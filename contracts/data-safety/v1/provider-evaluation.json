@@ -16,9 +16,20 @@
   "selection_record": {
     "selected_candidate": "neon_free",
     "selected_on": "2026-09-01",
+    "approval_reference": "operator-decision-2026-09-01-neon-synthetic-staging",
+    "approved_scope": "preparation-for-isolated-synthetic-staging-only",
+    "account_or_project_creation_approved": false,
+    "payment_method_or_paid_upgrade_approved": false,
+    "real_user_or_production_data_approved": false,
+    "external_schema_migration_approved": false,
+    "production_deployment_approved": false
+  },
+  "project_creation_record": {
+    "created_on": "2026-09-02",
     "approval_reference": "operator-decision-2026-09-02-neon-free-frankfurt-synthetic-staging",
     "approved_scope": "one-free-frankfurt-project-for-isolated-synthetic-staging-only",
-    "account_or_project_creation_approved": true,
+    "account_created": true,
+    "project_created": true,
     "payment_method_or_paid_upgrade_approved": false,
     "real_user_or_production_data_approved": false,
     "external_schema_migration_approved": false,

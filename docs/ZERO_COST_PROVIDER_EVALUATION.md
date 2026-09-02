@@ -80,8 +80,10 @@ Completed on 2026-09-02 under explicit operator approval:
 - personal, organization and project-scoped API-key lists were empty.
 
 The complete live snapshot and its limits are recorded in
-`docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md`. No provider credential or
-account identifier is recorded there.
+`docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md`. No provider secret, database
+credential, API-key value, Neon account ID or Neon project ID is recorded
+there. It does record non-secret operational labels such as the project name
+and region ID.
 
 An official-source preconfiguration review was recorded on 2026-09-01. Neon
 documents an EU project region (`aws-eu-central-1`), with the region fixed when
