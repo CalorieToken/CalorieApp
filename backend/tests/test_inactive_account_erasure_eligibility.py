@@ -204,6 +204,20 @@ def test_as_of_requires_explicit_timezone() -> None:
         engine.dispose()
 
 
+def test_as_of_is_a_required_argument() -> None:
+    engine = _memory_engine()
+    try:
+        with Session(engine) as session:
+            notice_id = _seed(session)
+            with pytest.raises(TypeError, match="as_of"):
+                lock_inactive_account_erasure_candidate(  # type: ignore[call-arg]
+                    session,
+                    notice_id=notice_id,
+                )
+    finally:
+        engine.dispose()
+
+
 def test_pending_session_mutation_fails_closed() -> None:
     engine = _memory_engine()
     try:

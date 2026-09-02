@@ -33,17 +33,16 @@ class InactiveAccountErasureCandidate:
     evaluated_at: datetime
 
 
-def _explicit_naive_utc(value: datetime | None) -> datetime:
-    selected = value or datetime.now(UTC)
-    if not isinstance(selected, datetime):
+def _explicit_naive_utc(value: datetime) -> datetime:
+    if not isinstance(value, datetime):
         raise InactiveAccountErasureEligibilitySafetyError(
             "as_of must be a datetime with a timezone"
         )
-    if selected.tzinfo is None or selected.utcoffset() is None:
+    if value.tzinfo is None or value.utcoffset() is None:
         raise InactiveAccountErasureEligibilitySafetyError(
             "as_of must include a timezone"
         )
-    return selected.astimezone(UTC).replace(tzinfo=None)
+    return value.astimezone(UTC).replace(tzinfo=None)
 
 
 def _stored_naive_utc(value: object) -> datetime | None:
@@ -85,7 +84,7 @@ def lock_inactive_account_erasure_candidate(
     session: Session,
     *,
     notice_id: str,
-    as_of: datetime | None = None,
+    as_of: datetime,
 ) -> InactiveAccountErasureCandidate | None:
     """Lock and revalidate one candidate without deleting or committing.
 
