@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.22.0"
+    assert contract["contract_version"] == "1.23.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -370,6 +370,56 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     )
     assert eligibility["runbook"] == (
         "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md"
+    )
+    preflight = retention["inactive_account_erasure_preflight"]
+    assert preflight["implementation_status"] == (
+        "single-candidate-transaction-bound-read-only-dependent-data-"
+        "preflight-prepared-erasure-disabled"
+    )
+    assert preflight["locked_eligibility_guard_reused"] is True
+    assert preflight["single_candidate_only"] is True
+    assert preflight["maximum_rows_per_relation"] == 10_000
+    assert preflight["maximum_total_delete_rows"] == 20_000
+    assert preflight["direct_primary_store_delete_shape_counted"] is True
+    assert preflight["covered_delete_relations"] == [
+        "calorieappuser",
+        "food_log",
+        "externalidentity",
+        "originloginhandoff",
+        "authsession",
+        "inactive_account_notice",
+    ]
+    assert preflight["inbound_session_replacement_references_counted"] is True
+    assert preflight["shared_external_subject_requires_operator_review"] is True
+    assert (
+        preflight["unowned_legacy_authorization_requires_operator_review"] is True
+    )
+    assert preflight["postgresql_read_only_integration_test_implemented"] is True
+    assert (
+        preflight[
+            "food_values_contact_external_subject_wallet_receipt_session_secret_"
+            "or_network_data_returned"
+        ]
+        is False
+    )
+    assert preflight["preflight_authorizes_erasure"] is False
+    assert preflight["account_deletion_or_marking_implemented"] is False
+    assert preflight["function_flushes_commits_or_rolls_back"] is False
+    assert (
+        preflight["provider_network_queue_scheduler_cli_or_endpoint_capability"]
+        is False
+    )
+    assert preflight["production_execution_enabled"] is False
+    assert preflight["real_data_access_or_mutation_performed"] is False
+    assert preflight["migration_or_deployment_performed"] is False
+    assert preflight["implementation"] == (
+        "backend/app/inactive_account_erasure_preflight.py"
+    )
+    assert preflight["tests"] == (
+        "backend/tests/test_inactive_account_erasure_preflight.py"
+    )
+    assert preflight["runbook"] == (
+        "docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md"
     )
     assert (
         retention["authentication_transient_security_retention_max_days_after_expiry"]
@@ -975,7 +1025,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.12.0"
+    assert matrix["contract_version"] == "1.13.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1024,6 +1074,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md" in gates[
         "retention_policy"
     ]["evidence"]
+    assert "docs/INACTIVE_ACCOUNT_ERASURE_PREFLIGHT.md" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md" in gates[
         "retention_policy"
     ]["evidence"]
@@ -1037,6 +1090,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/app/inactive_account_erasure_eligibility.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/inactive_account_erasure_preflight.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/app/inactive_account_preview.py" in gates[
@@ -1076,6 +1132,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_erasure_eligibility.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_inactive_account_erasure_preflight.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"
