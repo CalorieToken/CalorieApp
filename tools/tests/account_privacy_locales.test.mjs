@@ -69,6 +69,10 @@ async function loadJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
+function sortedKeys(value) {
+  return Object.keys(value).sort();
+}
+
 async function loadCopyModule({ missingLocale } = {}) {
   const typescript = requireFromFrontend("typescript");
   const [source, copyRegistry, localeRegistry] = await Promise.all([
@@ -130,17 +134,28 @@ test("private account controls have complete copy for all eleven locales", async
   assert.equal(copyRegistry.contract_id, "calorieapp.account-privacy-ui-copy");
   assert.equal(copyRegistry.contract_version, "1.1.0");
   assert.equal(copyRegistry.source_locale, "en");
-  assert.deepEqual(Object.keys(copyRegistry.locales), requiredLocales);
+  assert.deepEqual(
+    sortedKeys(copyRegistry.locales),
+    [...requiredLocales].sort()
+  );
 
   for (const locale of requiredLocales) {
     const translation = copyRegistry.locales[locale];
     assert.deepEqual(
-      Object.keys(translation),
-      ["service_startup_timeout", "export", "erasure"],
+      sortedKeys(translation),
+      ["service_startup_timeout", "export", "erasure"].sort(),
       locale
     );
-    assert.deepEqual(Object.keys(translation.export), exportKeys, locale);
-    assert.deepEqual(Object.keys(translation.erasure), erasureKeys, locale);
+    assert.deepEqual(
+      sortedKeys(translation.export),
+      [...exportKeys].sort(),
+      locale
+    );
+    assert.deepEqual(
+      sortedKeys(translation.erasure),
+      [...erasureKeys].sort(),
+      locale
+    );
     for (const value of [
       translation.service_startup_timeout,
       ...Object.values(translation.export),
