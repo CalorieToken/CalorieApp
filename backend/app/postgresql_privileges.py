@@ -26,6 +26,7 @@ APPLICATION_AUDIT_TABLES = frozenset(
         "food_attribute_assertion_correction_audit",
     }
 )
+APPLICATION_APPEND_DELETE_TABLES = frozenset({"account_data_import_receipt"})
 APPLICATION_READ_ONLY_TABLES = frozenset({"calorie_schema_revision"})
 APPLICATION_READ_WRITE_TABLES = frozenset(
     {
@@ -50,6 +51,7 @@ APPLICATION_READ_WRITE_TABLES = frozenset(
 )
 APPLICATION_MANAGED_TABLES = (
     APPLICATION_AUDIT_TABLES
+    | APPLICATION_APPEND_DELETE_TABLES
     | APPLICATION_READ_ONLY_TABLES
     | APPLICATION_READ_WRITE_TABLES
 )
@@ -82,6 +84,7 @@ class ApplicationPrivilegeProof:
     database_name: str
     read_write_table_count: int
     insert_only_audit_table_count: int
+    append_delete_table_count: int
     read_only_table_count: int
     sequence_count: int
 
@@ -408,6 +411,10 @@ def verify_postgresql_application_privileges(
             for table in APPLICATION_AUDIT_TABLES
         },
         **{
+            table: frozenset({"SELECT", "INSERT", "DELETE"})
+            for table in APPLICATION_APPEND_DELETE_TABLES
+        },
+        **{
             table: frozenset({"SELECT"})
             for table in APPLICATION_READ_ONLY_TABLES
         },
@@ -440,6 +447,7 @@ def verify_postgresql_application_privileges(
         database_name=database_name,
         read_write_table_count=len(APPLICATION_READ_WRITE_TABLES),
         insert_only_audit_table_count=len(APPLICATION_AUDIT_TABLES),
+        append_delete_table_count=len(APPLICATION_APPEND_DELETE_TABLES),
         read_only_table_count=len(APPLICATION_READ_ONLY_TABLES),
         sequence_count=len(sequence_names),
     )
@@ -512,6 +520,12 @@ def apply_postgresql_application_privileges(
         role,
         APPLICATION_AUDIT_TABLES,
         "SELECT, INSERT",
+    )
+    _grant_tables(
+        connection,
+        role,
+        APPLICATION_APPEND_DELETE_TABLES,
+        "SELECT, INSERT, DELETE",
     )
     _grant_tables(
         connection,

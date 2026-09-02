@@ -5,6 +5,7 @@ from sqlmodel import SQLModel, create_engine
 
 import app.models  # noqa: F401 - loads the reviewed SQLModel table inventory
 from app.postgresql_privileges import (
+    APPLICATION_APPEND_DELETE_TABLES,
     APPLICATION_MANAGED_TABLES,
     APPLICATION_READ_ONLY_TABLES,
     PostgreSQLPrivilegeError,
@@ -18,6 +19,9 @@ def test_privilege_policy_classifies_every_current_application_table() -> None:
     model_tables = frozenset(SQLModel.metadata.tables)
     assert APPLICATION_MANAGED_TABLES == model_tables | APPLICATION_READ_ONLY_TABLES
     assert APPLICATION_READ_ONLY_TABLES == frozenset({"calorie_schema_revision"})
+    assert APPLICATION_APPEND_DELETE_TABLES == frozenset(
+        {"account_data_import_receipt"}
+    )
 
 
 @pytest.mark.parametrize(

@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.29.0"
+    assert contract["contract_version"] == "1.30.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -75,7 +75,10 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
         "automated_evidence"
     ]
     assert "encrypted-provider-staging-backup-restoration" in proof["does_not_prove"]
-    assert "synthetic-runtime-role-row-only-and-insert-only-audit-enforcement" in proof[
+    assert "synthetic-account-import-transaction-and-private-replay-idempotency" in proof[
+        "automated_evidence"
+    ]
+    assert "synthetic-runtime-role-row-only-audit-and-import-receipt-enforcement" in proof[
         "automated_evidence"
     ]
     assert "staging-or-production-runtime-role-privilege-application" in proof[
@@ -149,8 +152,8 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-export-ui-pure-import-plan-and-admission-implemented-provider-and-"
-        "notice-review-pending"
+        "v2-export-ui-and-guarded-import-transaction-staging-implemented-"
+        "provider-and-notice-review-pending"
     )
     assert export["format"] == "versioned-json"
     assert export["format_version"] == "calorieapp-account-data-v1"
@@ -237,7 +240,45 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export[
         "import_admission_count_and_digest_must_be_read_in_future_transaction"
     ] is True
-    assert export["private_import_idempotency_storage_implemented"] is False
+    assert export["private_import_idempotency_storage_implemented"] is True
+    assert export["import_transaction_version"] == (
+        "calorieapp-account-data-import-transaction-v1"
+    )
+    assert export["import_transaction_disabled_by_default"] is True
+    assert export["import_transaction_non_production_only"] is True
+    assert export["import_transaction_caller_commit_required"] is True
+    assert export[
+        "import_transaction_requires_no_pending_session_mutations"
+    ] is True
+    assert export["import_transaction_uses_live_food_log_subject_lock"] is True
+    assert export[
+        "import_transaction_locks_active_target_and_reads_count_and_digest_before_insert"
+    ] is True
+    assert export[
+        "import_transaction_food_logs_and_private_receipt_share_one_savepoint"
+    ] is True
+    assert export[
+        "import_transaction_database_errors_retain_private_values"
+    ] is False
+    assert export["import_transaction_exact_digest_replay_writes_rows"] is False
+    assert export[
+        "import_transaction_conflicting_private_receipt_fails_closed"
+    ] is True
+    assert export[
+        "import_receipt_stores_source_account_identifier_or_food_values"
+    ] is False
+    assert export["import_receipt_erased_with_account"] is True
+    assert export["import_receipt_runtime_update_allowed"] is False
+    assert export[
+        "synthetic_postgresql_import_transaction_test_implemented"
+    ] is True
+    assert export[
+        "synthetic_postgresql_import_lock_shared_with_live_food_log_writer_tested"
+    ] is True
+    assert export["import_schema_migration_repository_status"] == (
+        "prepared-forward-migration-not-deployed"
+    )
+    assert export["external_database_migration_or_deployment_performed"] is False
     assert export[
         "import_admission_has_endpoint_database_file_provider_network_or_deployment_capability"
     ] is False
@@ -245,7 +286,7 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
         "future_import_requires_separate_target_authentication_and_authorization"
     ] is True
     assert export["authenticated_import_endpoint_implemented"] is False
-    assert export["database_import_mutation_implemented"] is False
+    assert export["database_import_mutation_implemented"] is True
     assert export["provider_exit_import_proved"] is False
     assert export[
         "import_plan_has_endpoint_database_file_provider_network_or_deployment_capability"
@@ -453,6 +494,7 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert preflight["covered_delete_relations"] == [
         "calorieappuser",
         "food_log",
+        "account_data_import_receipt",
         "externalidentity",
         "originloginhandoff",
         "authsession",
@@ -510,6 +552,7 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert execution["covered_delete_relations"] == [
         "calorieappuser",
         "food_log",
+        "account_data_import_receipt",
         "externalidentity",
         "originloginhandoff",
         "authsession",
@@ -764,6 +807,7 @@ def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     assert erasure[
         "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed"
     ] is True
+    assert erasure["private_account_import_replay_receipts_removed"] is True
     assert erasure["browser_session_cookie_cleared"] is True
     assert erasure["backup_erasure_claimed_complete"] is False
     assert erasure["recovery_window_selected"] is True
@@ -1192,7 +1236,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.18.0"
+    assert matrix["contract_version"] == "1.19.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1207,6 +1251,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/account_data_import_admission.py" in gates[
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
+    assert "backend/app/account_data_import_transaction.py" in gates[
+        "abuse_capacity_and_mutation_controls"
+    ]["evidence"]
     assert "docs/POSTGRESQL_APPLICATION_ROLE_PRIVILEGES.md" in gates[
         "abuse_capacity_and_mutation_controls"
     ]["evidence"]
@@ -1218,6 +1265,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/account_data_import_admission.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
+    assert "backend/app/account_data_import_transaction.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
     assert "backend/tests/test_account_data_import.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
@@ -1226,6 +1276,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "ecosystem_operator_succession_and_handover"
     ]["evidence"]
     assert "backend/app/account_data_import_admission.py" in gates[
+        "ecosystem_operator_succession_and_handover"
+    ]["evidence"]
+    assert "backend/app/account_data_import_transaction.py" in gates[
         "ecosystem_operator_succession_and_handover"
     ]["evidence"]
     assert gates["restart_persistence"]["status"] == "partial"
@@ -1254,6 +1307,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "evidence"
     ]
     assert "backend/app/account_data_import_admission.py" in gates[
+        "user_data_export"
+    ]["evidence"]
+    assert "backend/app/account_data_import_transaction.py" in gates[
         "user_data_export"
     ]["evidence"]
     assert "backend/tests/test_account_data_import.py" in gates[
@@ -1400,6 +1456,9 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
     assert drill["distinct_restore_database_required"] is True
     assert drill["synthetic_data_only"] is True
     assert drill["schema_head_and_owner_links_verified"] is True
+    assert drill[
+        "private_account_import_receipts_restored_and_erased_with_owner"
+    ] is True
     assert drill["post_backup_synthetic_primary_store_erasure_performed"] is True
     assert drill["replay_proof_location"] == (
         "in-process-memory-outside-backup-archive"

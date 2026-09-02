@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.18.0",
+  "contract_version": "1.19.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -52,6 +52,8 @@
         "tools/tests/xaman_login_start_retry.test.mjs",
         "backend/app/data_growth.py",
         "backend/app/account_data_import_admission.py",
+        "backend/app/account_data_import_transaction.py",
+        "backend/app/schema_migrations/versions/v20260902_0015.py",
         "backend/app/schema_migrations/versions/v20260831_0005.py",
         "backend/tests/test_data_growth.py",
         "docs/PER_SUBJECT_STORAGE_BUDGET.md",
@@ -132,6 +134,9 @@
         "backend/app/schema_migrations/versions/v20260901_0010.py",
         "backend/app/schema_migrations/versions/v20260901_0011.py",
         "backend/app/schema_migrations/versions/v20260901_0012.py",
+        "backend/app/schema_migrations/versions/v20260901_0013.py",
+        "backend/app/schema_migrations/versions/v20260902_0014.py",
+        "backend/app/schema_migrations/versions/v20260902_0015.py",
         "backend/tests/test_database.py"
       ]
     },
@@ -149,7 +154,10 @@
         "backend/tests/test_capacity_probe.py",
         "backend/app/account_data_import.py",
         "backend/app/account_data_import_admission.py",
+        "backend/app/account_data_import_transaction.py",
+        "backend/app/schema_migrations/versions/v20260902_0015.py",
         "backend/tests/test_account_data_import.py",
+        "backend/tests/test_postgresql_integration.py",
         "docs/DURABLE_DATA_FOUNDATION.md",
         "docs/ZERO_COST_PROVIDER_EVALUATION.md",
         "docs/ACCOUNT_DATA_IMPORT.md",
@@ -165,7 +173,9 @@
         "contracts/data-safety/v1/data-safety.json",
         "backend/app/account_data_import.py",
         "backend/app/account_data_import_admission.py",
+        "backend/app/account_data_import_transaction.py",
         "backend/tests/test_account_data_import.py",
+        "backend/tests/test_postgresql_integration.py",
         "docs/ACCOUNT_DATA_IMPORT.md",
         "docs/ECOSYSTEM_CONTINUITY.md"
       ]
@@ -219,7 +229,10 @@
         "backend/app/schemas.py",
         "backend/app/account_data_import.py",
         "backend/app/account_data_import_admission.py",
+        "backend/app/account_data_import_transaction.py",
+        "backend/app/schema_migrations/versions/v20260902_0015.py",
         "backend/tests/test_account_data_import.py",
+        "backend/tests/test_postgresql_integration.py",
         "backend/tests/test_account_data_export.py",
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",

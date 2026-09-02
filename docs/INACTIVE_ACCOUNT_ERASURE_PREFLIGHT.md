@@ -5,11 +5,11 @@ erasure, scheduling, batch selection and production execution remain disabled.
 
 `backend/app/inactive_account_erasure_preflight.py` reuses the locked
 single-candidate eligibility guard and describes only the directly related
-primary-store deletion shape. It counts food logs, external identities, login
-handoffs, authentication sessions, inactive-account notices and inbound session
-replacement references. It returns no food values, contact destinations,
-external subjects, wallet data, receipt values, session secrets or network
-signals.
+primary-store deletion shape. It counts food logs, private account-import replay
+receipts, external identities, login handoffs, authentication sessions,
+inactive-account notices and inbound session replacement references. It returns
+no food values, contact destinations, external subjects, wallet data, receipt
+values, session secrets or network signals.
 
 Every relation is capped at 10,000 rows and the complete candidate at 20,000
 delete rows. Exceeding either boundary fails closed for operator review. The

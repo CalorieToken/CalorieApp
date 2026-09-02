@@ -4,8 +4,9 @@ Status: V2 backend and eleven-language download control implemented and tested.
 Privacy-notice approval, provider proof and production activation remain
 release-blocking.
 
-The matching v1 import path currently stops at strict, non-mutating food-history
-validation and planning. See `ACCOUNT_DATA_IMPORT.md`.
+The matching v1 import path now includes strict validation, planning, admission
+and guarded non-production transaction staging, but no authenticated upload
+endpoint or production activation. See `ACCOUNT_DATA_IMPORT.md`.
 
 ## Endpoint
 
@@ -96,4 +97,6 @@ recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.
 
 An export is not authentication. A future import must authenticate its target
 account independently and may not restore exported identity, session, handoff
-or inactive-notice state as live security state.
+or inactive-notice state as live security state. Before user-facing import is
+enabled, the next export-version review must also decide how private import
+receipt metadata is disclosed without exposing its replay digest.

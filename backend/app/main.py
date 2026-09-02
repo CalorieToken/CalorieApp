@@ -33,6 +33,7 @@ from .data_growth import (
 from .inactive_account_notice import cancel_inactive_account_notices_for_activity
 from .locales import resolve_locale
 from .models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     AuthorizationCodeDB,
     BridgeAuthNonceDB,
@@ -1265,6 +1266,11 @@ def identity_erase_account(
 
     try:
         session.exec(delete(FoodLogDB).where(FoodLogDB.owner_id == current_user.id))
+        session.exec(
+            delete(AccountDataImportReceiptDB).where(
+                AccountDataImportReceiptDB.target_account_id == current_user.id
+            )
+        )
         session.exec(
             delete(InactiveAccountNoticeDB).where(
                 InactiveAccountNoticeDB.calorieapp_user_id == current_user.id

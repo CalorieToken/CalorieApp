@@ -40,8 +40,8 @@ cookie plus two explicit JSON confirmations:
 
 When `ACCOUNT_ERASURE_ENABLED=true`, one successful transaction removes the
 authenticated user's directly owned primary-store food history, Identity Bridge
-links, browser handoffs, inactive-account notice evidence, all authentication
-sessions and the internal account.
+links, browser handoffs, inactive-account notice evidence, private account-
+import replay receipts, all authentication sessions and the internal account.
 Before session deletion it clears incoming replacement references, including a
 reference from an older session belonging to another account, while preserving
 that other account and session. It then clears the browser session cookie. It

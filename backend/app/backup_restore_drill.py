@@ -22,6 +22,7 @@ from .account_erasure_replay_proof import (
     verify_account_erasure_replay_proof,
 )
 from .models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     AuthorizationCodeDB,
     CalorieAppUserDB,
@@ -207,6 +208,13 @@ def _seed_synthetic_accounts(session: Session, *, now: datetime) -> None:
                     calories=50.0 * index,
                     owner_id=user_id,
                 ),
+                AccountDataImportReceiptDB(
+                    target_account_id=user_id,
+                    private_import_digest=str(index + 7) * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=1,
+                ),
                 OriginLoginHandoffDB(
                     state_hash=str(index + 2) * 64,
                     handoff_token_hash=str(index + 4) * 64,
@@ -272,6 +280,11 @@ def _verify_restore(url: URL, user_ids: list[str], products: list[str]) -> None:
                 select(AuthSessionDB).order_by(AuthSessionDB.calorieapp_user_id)
             ).all()
             food_logs = session.exec(select(FoodLogDB).order_by(FoodLogDB.id)).all()
+            import_receipts = session.exec(
+                select(AccountDataImportReceiptDB).order_by(
+                    AccountDataImportReceiptDB.target_account_id
+                )
+            ).all()
             handoffs = session.exec(
                 select(OriginLoginHandoffDB).order_by(
                     OriginLoginHandoffDB.calorieapp_user_id
@@ -297,6 +310,8 @@ def _verify_restore(url: URL, user_ids: list[str], products: list[str]) -> None:
             zip(products, user_ids, strict=True)
         ):
             raise RuntimeError("Restored food-history ownership differs from source")
+        if [receipt.target_account_id for receipt in import_receipts] != user_ids:
+            raise RuntimeError("Restored private import receipts differ from source")
         if [handoff.calorieapp_user_id for handoff in handoffs] != user_ids:
             raise RuntimeError("Restored login-handoff ownership differs from source")
         if [notice.calorieapp_user_id for notice in notices] != user_ids:
@@ -376,6 +391,15 @@ def _stage_synthetic_replay_target(session: Session, user_id: str) -> None:
         session.exec(delete(FoodLogDB).where(FoodLogDB.owner_id == user_id)),
         expected=1,
         relation="food_log",
+    )
+    _exact_synthetic_rowcount(
+        session.exec(
+            delete(AccountDataImportReceiptDB).where(
+                AccountDataImportReceiptDB.target_account_id == user_id
+            )
+        ),
+        expected=1,
+        relation="account_data_import_receipt",
     )
     _exact_synthetic_rowcount(
         session.exec(
@@ -471,6 +495,7 @@ def _verify_synthetic_target_erased(
             identities = session.exec(select(ExternalIdentityDB)).all()
             auth_sessions = session.exec(select(AuthSessionDB)).all()
             food_logs = session.exec(select(FoodLogDB)).all()
+            import_receipts = session.exec(select(AccountDataImportReceiptDB)).all()
             handoffs = session.exec(select(OriginLoginHandoffDB)).all()
             notices = session.exec(select(InactiveAccountNoticeDB)).all()
 
@@ -489,6 +514,10 @@ def _verify_synthetic_target_erased(
             (retained_product, retained_user_id)
         ]:
             raise RuntimeError("Synthetic post-erasure food-history set differs")
+        if [receipt.target_account_id for receipt in import_receipts] != [
+            retained_user_id
+        ]:
+            raise RuntimeError("Synthetic post-erasure import receipts differ")
         if [handoff.calorieapp_user_id for handoff in handoffs] != [retained_user_id]:
             raise RuntimeError("Synthetic post-erasure login-handoff set differs")
         if [notice.calorieapp_user_id for notice in notices] != [retained_user_id]:
