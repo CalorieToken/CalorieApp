@@ -25,9 +25,10 @@ and unproved.
 A pure provider-neutral builder and verifier now defines privacy-minimized
 restore-replay evidence for both authenticated user requests and inactive-
 account erasure. Its HMAC subject selector remains pseudonymous personal data.
-No key, protected independent storage, backup scanning or replay execution is
-implemented, so this preparation does not change the blocked release status.
-See `ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+A loopback-only CI drill replays one fixed synthetic erasure from process
+memory after restoring an older archive. No production key, protected
+independent storage or provider replay is implemented, so this preparation does
+not change the blocked release status. See `ACCOUNT_ERASURE_REPLAY_PROOF.md`.
 
 ## Backend contract
 

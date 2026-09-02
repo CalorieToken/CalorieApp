@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.25.0",
+  "contract_version": "1.26.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -397,7 +397,7 @@
     "production_enabled_or_data_mutation_performed": false
   },
   "backup_and_recovery": {
-    "status": "synthetic-staging-backup-exit-design-selected-implementation-and-production-pending",
+    "status": "synthetic-ci-restore-erasure-replay-configured-staging-exit-and-production-pending",
     "encrypted_at_rest_and_in_transit_required": true,
     "restricted_operator_access_required": true,
     "automated_backup_required": true,
@@ -413,6 +413,16 @@
       "synthetic_data_only": true,
       "custom_format_pg_dump_and_pg_restore": true,
       "schema_head_and_owner_links_verified": true,
+      "post_backup_synthetic_primary_store_erasure_performed": true,
+      "replay_proof_location": "in-process-memory-outside-backup-archive",
+      "replay_proof_uses_hardcoded_nonsecret_ci_key": true,
+      "restored_account_reappearance_verified_before_replay": true,
+      "restored_erasure_reapplied_before_final_verification": true,
+      "unrelated_synthetic_account_preserved": true,
+      "inbound_session_reference_cleared_during_replay": true,
+      "second_replay_is_idempotent_noop": true,
+      "independent_protected_replay_proof_persistence": false,
+      "provider_restore_replay_proved": false,
       "archive_persisted_or_uploaded": false,
       "production_or_staging_data_allowed": false
     },
@@ -446,7 +456,7 @@
       "real_user_or_production_data_allowed": false
     },
     "erasure_replay_proof": {
-      "implementation_status": "pure-replay-proof-builder-verifier-prepared-storage-and-replay-disabled",
+      "implementation_status": "pure-builder-verifier-and-loopback-ci-replay-drill-prepared-independent-storage-and-provider-replay-disabled",
       "covered_erasure_reasons": [
         "authenticated-user-request",
         "inactive-account-retention"
@@ -462,6 +472,12 @@
       "raw_authorization_reference_returned": false,
       "secret_key_returned": false,
       "subject_digest_is_pseudonymous_personal_data": true,
+      "synthetic_loopback_postgresql_replay_drill_implemented": true,
+      "synthetic_drill_proof_storage": "process-memory-only",
+      "synthetic_drill_uses_nonsecret_test_key": true,
+      "synthetic_drill_replays_authenticated_request_after_older_backup_restore": true,
+      "synthetic_drill_preserves_unrelated_account": true,
+      "synthetic_drill_idempotency_verified": true,
       "protected_independent_persistence_implemented": false,
       "restore_scanning_and_replay_implemented": false,
       "constant_time_digest_comparison": true,
@@ -469,6 +485,7 @@
       "connected_to_logging_cli_endpoint_or_scheduler": false,
       "real_data_mutation_migration_or_deployment_performed": false,
       "implementation": "backend/app/account_erasure_replay_proof.py",
+      "synthetic_drill": "backend/app/backup_restore_drill.py",
       "tests": "backend/tests/test_account_erasure_replay_proof.py",
       "runbook": "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
     },
@@ -500,6 +517,7 @@
       "application-engine-restart-persistence",
       "two-separate-backend-process-persistence",
       "synthetic-custom-format-backup-and-distinct-database-restore",
+      "synthetic-in-memory-erasure-replay-after-older-backup-restore",
       "provider-neutral-low-cardinality-capacity-alert-interface",
       "bounded-source-assertion-ingest-and-multi-process-budget",
       "synthetic-runtime-role-row-only-and-insert-only-audit-enforcement"
@@ -509,6 +527,7 @@
       "chosen-provider-redeploy-persistence",
       "chosen-provider-alert-destination-and-live-delivery",
       "encrypted-provider-staging-backup-restoration",
+      "independently-persisted-provider-restore-erasure-replay",
       "provider-exit-import",
       "staging-or-production-runtime-role-privilege-application",
       "production-readiness"

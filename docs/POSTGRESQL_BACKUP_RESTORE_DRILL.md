@@ -12,12 +12,18 @@ backup and restores it into a separate disposable database. The drill:
 2. requires the exact source database `calorieapp_ci_test` and distinct target
    `calorieapp_ci_restore`;
 3. migrates the empty source to the current schema head;
-4. creates two synthetic accounts with identity links, opaque sessions and
-   separately owned food-history rows;
+4. creates two synthetic accounts with identity links, opaque sessions,
+   handoffs, inactive-notice history and separately owned food-history rows;
 5. creates a `pg_dump` custom-format archive without owners or privileges;
-6. restores it atomically with `pg_restore` into the target database;
-7. validates the migration head, record completeness and ownership links; and
-8. removes the temporary archive without uploading or retaining it.
+6. after that archive, deletes one fixed synthetic account from the source and
+   builds its replay proof in process memory outside the archive;
+7. verifies that source deletion while preserving the other account;
+8. restores the older archive atomically with `pg_restore`, verifies that the
+   erased account reappeared and reapplies the proof before final validation;
+9. verifies the target account and all owned rows are gone, the incoming
+   session reference is cleared, the other account remains intact and a second
+   replay is an idempotent no-op; and
+10. removes the temporary archive without uploading or retaining it.
 
 The hard-coded host and database-name guards deliberately make the drill
 unusable against a remote, staging or production database. Re-running it is
@@ -34,16 +40,17 @@ humans separately approve and verify:
   backup location;
 - restricted backup credentials, key custody and restore authorization;
 - automated backup frequency, monitoring and failure alerts;
-- the selected zero-day recovery window, maximum 30-day encrypted-backup
-  expiry and erasure replay after restore;
+- independently persisted replay evidence, its production key custody, expiry
+  and retrieval during a provider restore;
 - a staging restore/erasure drill using synthetic records; and
 - an exact provider-exit, deployment and rollback runbook.
 
-`backend/app/account_erasure_replay_proof.py` now defines a pure, privacy-
-minimized proof format for future erasure replay. The CI backup drill does not
-create a key, persist that pseudonymous proof independently, scan restored
-accounts or execute replay, so it supplies none of the missing provider or
-restore-readiness evidence. See `docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
+The CI drill uses a hard-coded non-secret test key and carries the pseudonymous
+proof only in process memory. It now proves matching and replay against an
+older loopback PostgreSQL backup, but it does not persist or retrieve evidence
+independently, exercise production key custody, use an encrypted artifact or
+run against a provider. It therefore remains partial evidence rather than a
+restore-readiness claim. See `docs/ACCOUNT_ERASURE_REPLAY_PROOF.md`.
 
 No live data, external provider, production deployment or provider-specific
 retention configuration is created by this CI proof.
