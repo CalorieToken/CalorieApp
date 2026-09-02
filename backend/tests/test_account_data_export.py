@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 import app.database as db_module
+from app.account_data_import import plan_account_data_import
 from app.models import (
     AuthorizationCodeDB,
     CalorieAppUserDB,
@@ -21,6 +22,36 @@ def test_account_data_export_requires_authentication(client: TestClient) -> None
 
     assert response.status_code == 401
     assert response.headers["cache-control"] == "no-store"
+
+
+def test_account_data_export_round_trips_into_a_non_mutating_food_log_plan(
+    authenticated_client: TestClient,
+) -> None:
+    me = authenticated_client.get("/api/identity/me")
+    assert me.status_code == 200
+    source_user_id = me.json()["user_id"]
+    create_log = authenticated_client.post(
+        "/log-food",
+        json={"product_name": "Portable pear", "calories": 57},
+    )
+    assert create_log.status_code == 200
+
+    response = authenticated_client.get("/api/identity/export")
+    assert response.status_code == 200
+    plan = plan_account_data_import(
+        response.content,
+        confirmed_source_user_id=source_user_id,
+        target_user_id="synthetic-successor-user",
+    )
+
+    assert plan.source_account_id == source_user_id
+    assert plan.target_account_id == "synthetic-successor-user"
+    assert [food_log.product_name for food_log in plan.food_logs] == [
+        "Portable pear"
+    ]
+    assert plan.food_logs[0].as_insert_values()["owner_id"] == (
+        "synthetic-successor-user"
+    )
 
 
 def test_account_data_export_is_complete_scoped_versioned_and_secret_free(

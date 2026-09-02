@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.16.0",
+  "contract_version": "1.17.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -146,8 +146,11 @@
         "backend/app/capacity_probe.py",
         "backend/tests/test_capacity.py",
         "backend/tests/test_capacity_probe.py",
+        "backend/app/account_data_import.py",
+        "backend/tests/test_account_data_import.py",
         "docs/DURABLE_DATA_FOUNDATION.md",
         "docs/ZERO_COST_PROVIDER_EVALUATION.md",
+        "docs/ACCOUNT_DATA_IMPORT.md",
         "docs/DATABASE_CAPACITY_ONBOARDING_GUARD.md",
         "docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md"
       ]
@@ -158,6 +161,9 @@
       "release_blocking": true,
       "evidence": [
         "contracts/data-safety/v1/data-safety.json",
+        "backend/app/account_data_import.py",
+        "backend/tests/test_account_data_import.py",
+        "docs/ACCOUNT_DATA_IMPORT.md",
         "docs/ECOSYSTEM_CONTINUITY.md"
       ]
     },
@@ -208,6 +214,8 @@
       "evidence": [
         "backend/app/main.py",
         "backend/app/schemas.py",
+        "backend/app/account_data_import.py",
+        "backend/tests/test_account_data_import.py",
         "backend/tests/test_account_data_export.py",
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",
@@ -215,6 +223,7 @@
         "frontend/config/account-privacy-copy.json",
         "frontend/lib/accountPrivacyCopy.ts",
         "tools/tests/account_privacy_locales.test.mjs",
+        "docs/ACCOUNT_DATA_IMPORT.md",
         "docs/ACCOUNT_DATA_EXPORT.md"
       ]
     },

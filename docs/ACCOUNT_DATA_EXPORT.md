@@ -4,6 +4,9 @@ Status: V2 backend and eleven-language download control implemented and tested.
 Privacy-notice approval, provider proof and production activation remain
 release-blocking.
 
+The matching v1 import path currently stops at strict, non-mutating food-history
+validation and planning. See `ACCOUNT_DATA_IMPORT.md`.
+
 ## Endpoint
 
 `GET /api/identity/export` requires the normal opaque CalorieApp session cookie.
@@ -90,3 +93,7 @@ The selected but not yet enforced lifecycle is defined in
 `RETENTION_POLICY.md`. Canonical facts for the future complete privacy notice
 and the still-closed legal, provider, language-review and publication fields are
 recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.
+
+An export is not authentication. A future import must authenticate its target
+account independently and may not restore exported identity, session, handoff
+or inactive-notice state as live security state.
