@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.15.0",
+  "contract_version": "1.16.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -212,6 +212,9 @@
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",
         "frontend/components/AccountDataExportButton.tsx",
+        "frontend/config/account-privacy-copy.json",
+        "frontend/lib/accountPrivacyCopy.ts",
+        "tools/tests/account_privacy_locales.test.mjs",
         "docs/ACCOUNT_DATA_EXPORT.md"
       ]
     },
@@ -228,8 +231,11 @@
         "backend/tests/test_frontend_configuration.py",
         "frontend/app/api/backend/[...path]/route.ts",
         "frontend/components/AccountErasurePanel.tsx",
+        "frontend/config/account-privacy-copy.json",
+        "frontend/lib/accountPrivacyCopy.ts",
         "frontend/lib/accountErasureRequest.ts",
         "tools/tests/account_erasure_ui.test.mjs",
+        "tools/tests/account_privacy_locales.test.mjs",
         "docs/ACCOUNT_ERASURE.md",
         "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md"
       ]
@@ -290,6 +296,9 @@
         "docs/PRIVACY_NOTICE_ALIGNMENT.md",
         "frontend/components/AccountDataExportButton.tsx",
         "frontend/components/AccountErasurePanel.tsx",
+        "frontend/config/account-privacy-copy.json",
+        "frontend/lib/accountPrivacyCopy.ts",
+        "tools/tests/account_privacy_locales.test.mjs",
         "backend/tests/test_data_safety_contract.py"
       ]
     },

@@ -12,6 +12,10 @@ const PRIVATE_EXPORT_REQUEST_PATH = new URL(
   "../../frontend/lib/privateExportRequest.ts",
   import.meta.url
 );
+const ACCOUNT_PRIVACY_COPY_PATH = new URL(
+  "../../frontend/config/account-privacy-copy.json",
+  import.meta.url
+);
 const requireFromFrontend = createRequire(
   new URL("../../frontend/package.json", import.meta.url)
 );
@@ -19,6 +23,9 @@ const requireFromFrontend = createRequire(
 async function loadAccountDataExportModule(globals = {}) {
   const typescript = requireFromFrontend("typescript");
   const privateExportRequestModule = await loadPrivateExportRequestModule();
+  const accountPrivacyCopy = JSON.parse(
+    await readFile(ACCOUNT_PRIVACY_COPY_PATH, "utf8")
+  );
   const source = await readFile(COMPONENT_PATH, "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: {
@@ -52,6 +59,17 @@ async function loadAccountDataExportModule(globals = {}) {
       }
       if (specifier === "@/lib/privateExportRequest") {
         return privateExportRequestModule;
+      }
+      if (specifier === "@/lib/accountPrivacyCopy") {
+        return {
+          getAccountPrivacyCopy() {
+            return {
+              locale: "en",
+              direction: "ltr",
+              ...accountPrivacyCopy.locales.en,
+            };
+          },
+        };
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },

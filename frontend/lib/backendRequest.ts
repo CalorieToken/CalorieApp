@@ -187,10 +187,11 @@ export async function waitForBackendReady(
 
 export function backendUnavailableMessage(
   error: unknown,
-  fallbackMessage: string
+  fallbackMessage: string,
+  timeoutMessage = "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup."
 ) {
   if (error instanceof BackendRequestTimeoutError) {
-    return "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.";
+    return timeoutMessage;
   }
 
   return fallbackMessage;

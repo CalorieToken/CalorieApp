@@ -11,6 +11,7 @@ import {
   PRIVATE_EXPORT_REQUEST_HEADER,
   PRIVATE_EXPORT_REQUEST_VALUE,
 } from "@/lib/privateExportRequest";
+import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
 
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v1";
@@ -18,6 +19,7 @@ const ACCOUNT_EXPORT_FILENAME = "calorieapp-account-data-v1.json";
 const PRIVATE_EXPORT_URL_REVOCATION_DELAY_MS = 1_000;
 
 type AccountDataExportButtonProps = {
+  locale?: string;
   onAuthenticationLost: (message: string) => void;
 };
 
@@ -66,8 +68,11 @@ export function downloadPrivateJson(payload: unknown): void {
 }
 
 export function AccountDataExportButton({
+  locale,
   onAuthenticationLost,
 }: AccountDataExportButtonProps) {
+  const localized = getAccountPrivacyCopy(locale);
+  const copy = localized.export;
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -100,15 +105,11 @@ export function AccountDataExportButton({
       );
 
       if (response.status === 401) {
-        onAuthenticationLost(
-          "Your session expired. Sign in again before requesting a private export. No file was downloaded."
-        );
+        onAuthenticationLost(copy.session_expired);
         return;
       }
       if (response.status === 409) {
-        setError(
-          "This export needs operator review because older identity records cannot be assigned safely. No file was downloaded."
-        );
+        setError(copy.review_required);
         return;
       }
       if (!response.ok) {
@@ -126,9 +127,7 @@ export function AccountDataExportButton({
       }
 
       downloadPrivateJson(payload);
-      setSuccess(
-        "Private export downloaded. Store it securely and do not share it publicly."
-      );
+      setSuccess(copy.success);
     } catch (requestError) {
       if (controller.signal.aborted) {
         return;
@@ -136,7 +135,8 @@ export function AccountDataExportButton({
       setError(
         backendUnavailableMessage(
           requestError,
-          "Your private export is unavailable right now. No file was downloaded. Please try again later."
+          copy.unavailable,
+          localized.service_startup_timeout
         )
       );
     } finally {
@@ -151,20 +151,16 @@ export function AccountDataExportButton({
 
   return (
     <section
-      aria-label="Private account data export"
+      aria-label={copy.section_label}
+      lang={localized.locale}
+      dir={localized.direction}
       className="rounded-xl border border-brand-secondary/15 bg-white/80 p-3"
     >
       <p className="text-sm font-semibold text-brand-primary">
-        Download your private account data
+        {copy.title}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-brand-secondary/90">
-        The JSON file can include your account identifier, linked identity and
-        optional XRPL address, food-log history, session timing, and warning
-        history for inactive accounts. Security tokens are excluded. Internal
-        delivery evidence is also excluded. Some older authorization activity
-        remains withheld when ownership cannot be proven. CalorieApp does not
-        send the file anywhere else; keep your browser&apos;s configured download
-        location private. This download does not delete your CalorieApp data.
+        {copy.description}
       </p>
       <button
         type="button"
@@ -172,7 +168,7 @@ export function AccountDataExportButton({
         disabled={isDownloading}
         className="mt-3 inline-flex items-center justify-center rounded-full bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isDownloading ? "Preparing private export..." : "Download private JSON"}
+        {isDownloading ? copy.button_busy : copy.button_idle}
       </button>
 
       {error ? (

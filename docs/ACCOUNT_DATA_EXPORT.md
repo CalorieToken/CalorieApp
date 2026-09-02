@@ -1,7 +1,8 @@
 # Authenticated account-data export
 
-Status: V2 backend and English download control implemented and tested. Eleven-
-language completion and privacy-notice alignment remain release-blocking.
+Status: V2 backend and eleven-language download control implemented and tested.
+Privacy-notice approval, provider proof and production activation remain
+release-blocking.
 
 ## Endpoint
 
@@ -47,13 +48,18 @@ session storage. CalorieApp does not send the export to another service; the
 browser or operating system controls its configured download location. A `401`,
 ownership ambiguity, malformed response or backend failure produces no file.
 
-The English interface warns that the file may contain account and linked-
-identity details, an optional XRPL address, food history and session timing. It
-also says that security tokens are excluded, some unowned legacy authorization
-activity is withheld, the configured download location must remain private and
-downloading does not delete server data. This is precise interim product
-guidance, not a claim that the final privacy notice or eleven-language review is
-complete.
+The interface now provides that consequence copy in all eleven registered
+locales. The active Identity Bridge locale is passed to the control; locale
+aliases are normalized, unsupported values fail safely to English, and Arabic
+and Urdu render right-to-left. Every locale explains the included private-data
+categories, excluded security material, withheld unowned authorization
+activity, private download-location boundary and that downloading does not
+delete server data.
+
+The localized strings are complete product copy, not a complete or approved
+privacy notice. Independent linguistic and legal/privacy review remains
+recorded as incomplete, and no publication or activation is authorized by this
+implementation.
 
 ## Deliberately excluded secrets
 
@@ -66,8 +72,8 @@ boundary is transparent.
 
 ## Still required before public onboarding
 
-- translate and review the export control and explanation across all eleven
-  Identity Bridge locales;
+- complete the operator publication review and any later independent linguistic
+  or legal/privacy review of the eleven implemented translations;
 - align the privacy notice with the exact exported data classes;
 - complete PostgreSQL and restore-path verification;
 - implement the selected zero-day erasure and maximum 30-day encrypted-backup
@@ -82,5 +88,5 @@ erasure endpoint remains disabled by default and fails closed on matching
 legacy authorization rows without direct ownership; see `ACCOUNT_ERASURE.md`.
 The selected but not yet enforced lifecycle is defined in
 `RETENTION_POLICY.md`. Canonical facts for the future complete privacy notice
-and the still-closed legal, provider, translation and publication fields are
+and the still-closed legal, provider, language-review and publication fields are
 recorded in `PRIVACY_NOTICE_ALIGNMENT.md`.

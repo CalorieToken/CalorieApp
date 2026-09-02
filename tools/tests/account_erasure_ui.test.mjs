@@ -16,6 +16,10 @@ const PANEL_PATH = new URL(
   "../../frontend/components/XamanLoginPanel.tsx",
   import.meta.url
 );
+const ACCOUNT_PRIVACY_COPY_PATH = new URL(
+  "../../frontend/config/account-privacy-copy.json",
+  import.meta.url
+);
 const ENV_EXAMPLE_PATH = new URL(
   "../../frontend/.env.example",
   import.meta.url
@@ -48,6 +52,9 @@ async function loadRequestPolicyModule() {
 
 async function loadComponentModule(overrides = {}) {
   const requestPolicy = await loadRequestPolicyModule();
+  const accountPrivacyCopy = JSON.parse(
+    await readFile(ACCOUNT_PRIVACY_COPY_PATH, "utf8")
+  );
   const compiled = await transpile(COMPONENT_PATH, true);
   const module = { exports: {} };
   const jsxRuntime = overrides.jsxRuntime ?? {
@@ -80,6 +87,17 @@ async function loadComponentModule(overrides = {}) {
       }
       if (specifier === "@/lib/accountErasureRequest") {
         return requestPolicy;
+      }
+      if (specifier === "@/lib/accountPrivacyCopy") {
+        return {
+          getAccountPrivacyCopy() {
+            return {
+              locale: "en",
+              direction: "ltr",
+              ...accountPrivacyCopy.locales.en,
+            };
+          },
+        };
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },

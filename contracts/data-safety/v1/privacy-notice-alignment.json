@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.privacy-notice-alignment",
-  "contract_version": "1.2.0",
-  "status": "canonical-facts-and-english-consequence-copy-aligned-publication-pending",
+  "contract_version": "1.3.0",
+  "status": "canonical-facts-and-eleven-language-account-action-copy-aligned-publication-pending",
   "release_state": "blocked",
   "legal_certification_claimed": false,
   "publication": {
@@ -103,7 +103,7 @@
     "status": "factual-consequence-copy-aligned-not-a-complete-privacy-notice",
     "complete_privacy_notice": false,
     "private_export": {
-      "source": "frontend/components/AccountDataExportButton.tsx",
+      "source": "frontend/config/account-privacy-copy.json",
       "required_plain_language_facts": [
         "Security tokens are excluded.",
         "Some older authorization activity remains withheld when ownership cannot be proven.",
@@ -112,7 +112,7 @@
       ]
     },
     "account_erasure": {
-      "source": "frontend/components/AccountErasurePanel.tsx",
+      "source": "frontend/config/account-privacy-copy.json",
       "required_plain_language_facts": [
         "There is no recovery window.",
         "Encrypted backups may retain a protected copy for at most 30 days.",
@@ -120,6 +120,21 @@
         "Download your private export first if you want a copy."
       ]
     }
+  },
+  "current_localized_account_action_copy": {
+    "status": "eleven-language-product-copy-implemented-not-an-approved-complete-privacy-notice",
+    "source": "frontend/config/account-privacy-copy.json",
+    "locale_context_source": "frontend/components/XamanLoginPanel.tsx",
+    "required_locales_complete": true,
+    "private_export_copy_complete": true,
+    "account_erasure_copy_complete": true,
+    "rtl_direction_applied_for_arabic_and_urdu": true,
+    "safe_english_fallback_required": true,
+    "independent_language_review_completed": false,
+    "independent_legal_privacy_review_completed": false,
+    "unavailable_independent_review_blocks_five_step_plan_development": false,
+    "publication_and_production_still_require_explicit_operator_approval": true,
+    "operator_publication_approval_completed": false
   },
   "official_reference_requirements": [
     {

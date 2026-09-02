@@ -1,8 +1,8 @@
 # CalorieApp privacy-notice alignment record
 
-Status: canonical product facts and the existing English export and erasure
+Status: canonical product facts and eleven-language export and erasure
 consequence copy are aligned. A complete public privacy notice, controller and
-provider details, eleven reviewed translations, publication and production
+provider details, linguistic/legal review, publication and production
 activation remain release-blocking.
 
 ## Purpose of this record
@@ -15,7 +15,7 @@ repository change is legal certification or a published privacy notice.
 The machine-readable source is
 `contracts/data-safety/v1/privacy-notice-alignment.json`. Contract tests compare
 its selected values with `data-safety.json`, the eleven-locale registry and the
-current English export and erasure components.
+localized export and erasure copy contract.
 
 ## Canonical product facts
 
@@ -48,12 +48,21 @@ current English export and erasure components.
   scheduled cleanup is not yet implemented.
 - Personal data must not be placed on a public blockchain or public IPFS.
 
-## Existing English consequence copy
+## Eleven-language consequence copy
 
-The current authenticated interface already explains the most immediate
-export and deletion consequences in plain language. Automated evidence now
-guards those factual sentences against accidental drift. This limited copy is
-not a substitute for the complete privacy notice required before onboarding.
+The authenticated interface now explains the most immediate export and
+deletion consequences in all eleven registered locales. The source-locale
+sentences remain locked to the canonical facts, every locale must provide every
+copy key, unsupported locales fall back to English, and Arabic and Urdu use
+right-to-left rendering. Automated evidence guards completeness and prevents
+the translated controls from silently reverting to English-only behavior.
+
+This is machine-assisted product copy and has not received independent
+linguistic or legal/privacy approval. It is not a substitute for the complete
+privacy notice required before onboarding, and the unavailable independent
+review does not block ordinary five-step-plan development or require repeated
+process-exception prompts. Publication and production activation remain
+separate explicit operator decisions.
 
 ## Still required before publication or activation
 
@@ -73,7 +82,8 @@ Human review must still approve and supply:
    any automated decision-making or profiling information that applies;
 7. provider-specific storage, encrypted-backup and restore wording;
 8. a working data-subject request and escalation route;
-9. reviewed wording in all eleven registered locales; and
+9. operator-reviewed wording in all eleven registered locales and, when it
+   becomes available, independent linguistic/legal review; and
 10. explicit publication, migration and deployment approval.
 
 Unknown legal, provider or contact details must remain visibly pending. They

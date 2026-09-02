@@ -1,0 +1,348 @@
+{
+  "contract_id": "calorieapp.account-privacy-ui-copy",
+  "contract_version": "1.1.0",
+  "source_locale": "en",
+  "locales": {
+    "en": {
+      "service_startup_timeout": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.",
+      "export": {
+        "section_label": "Private account data export",
+        "title": "Download your private account data",
+        "description": "The JSON file can include your account identifier, linked identity and optional XRPL address, food-log history, session timing, and warning history for inactive accounts. Security tokens are excluded. Internal delivery evidence is also excluded. Some older authorization activity remains withheld when ownership cannot be proven. CalorieApp does not send the file anywhere else; keep your browser's configured download location private. This download does not delete your CalorieApp data.",
+        "button_idle": "Download private JSON",
+        "button_busy": "Preparing private export...",
+        "session_expired": "Your session expired. Sign in again before requesting a private export. No file was downloaded.",
+        "review_required": "This export needs operator review because older identity records cannot be assigned safely. No file was downloaded.",
+        "success": "Private export downloaded. Store it securely and do not share it publicly.",
+        "unavailable": "Your private export is unavailable right now. No file was downloaded. Please try again later."
+      },
+      "erasure": {
+        "section_label": "Delete CalorieApp account",
+        "title": "Delete your CalorieApp account",
+        "description": "If enabled after release review, this permanently removes your directly owned CalorieApp account, food-log history, identity link, sessions, and browser handoffs from the primary database immediately. There is no recovery window. Encrypted backups may retain a protected copy for at most 30 days. Separate WordPress or Xaman accounts, public XRPL data, and third-party source data are not deleted.",
+        "review_button": "Review account deletion",
+        "confirmation_intro": "Download your private export first if you want a copy. Then type this exact account identifier to confirm:",
+        "account_identifier": "Account identifier",
+        "acknowledgement": "I understand that primary CalorieApp data is deleted immediately, cannot be recovered through the app, and that this does not delete separate WordPress, Xaman, XRPL, or third-party data.",
+        "button_busy": "Deleting CalorieApp account...",
+        "button_confirm": "Delete CalorieApp account permanently",
+        "button_cancel": "Cancel",
+        "session_expired": "Your session expired. Sign in again before managing your account. No data was deleted.",
+        "confirmation_failed": "Deletion stopped safely because the account confirmation or older identity ownership could not be verified. No data was deleted.",
+        "temporarily_unavailable": "Account deletion is currently unavailable. No data was deleted.",
+        "unavailable": "Your account could not be deleted right now. No deletion was confirmed. Please try again later.",
+        "success": "Your CalorieApp account and directly owned primary data were deleted."
+      }
+    },
+    "zh-Hans": {
+      "service_startup_timeout": "CalorieApp 服务启动所需时间比预期更长。请等待几分钟后再试；反复刷新可能会减慢启动。",
+      "export": {
+        "section_label": "导出私密账户数据",
+        "title": "下载您的私密账户数据",
+        "description": "JSON 文件可能包含您的账户标识符、关联身份和可选的 XRPL 地址、食物日志历史、会话时间，以及非活跃账户的通知历史。安全令牌不包含在内。内部投递证据也不包含在内。当无法证明归属时，某些较早的授权活动仍会被排除。CalorieApp 不会将文件发送到其他地方；请确保浏览器配置的下载位置保持私密。此下载不会删除您的 CalorieApp 数据。",
+        "button_idle": "下载私密 JSON",
+        "button_busy": "正在准备私密导出……",
+        "session_expired": "您的会话已过期。请重新登录后再请求私密导出。未下载任何文件。",
+        "review_required": "由于无法安全确认较早身份记录的归属，此导出需要运营者审查。未下载任何文件。",
+        "success": "私密导出已下载。请安全保存，不要公开分享。",
+        "unavailable": "目前无法获取您的私密导出。未下载任何文件。请稍后重试。"
+      },
+      "erasure": {
+        "section_label": "删除 CalorieApp 账户",
+        "title": "删除您的 CalorieApp 账户",
+        "description": "如果在发布审查后启用，此操作会立即从主数据库永久删除您直接拥有的 CalorieApp 账户、食物日志历史、身份关联、会话和浏览器交接记录。没有恢复期。加密备份最多可能保留受保护的副本 30 天。独立的 WordPress 或 Xaman 账户、公开 XRPL 数据以及第三方来源数据不会被删除。",
+        "review_button": "审查账户删除",
+        "confirmation_intro": "如果您想保留副本，请先下载私密导出。然后输入以下完全一致的账户标识符进行确认：",
+        "account_identifier": "账户标识符",
+        "acknowledgement": "我了解主要 CalorieApp 数据会被立即删除，无法通过应用恢复，并且此操作不会删除独立的 WordPress、Xaman、XRPL 或第三方数据。",
+        "button_busy": "正在删除 CalorieApp 账户……",
+        "button_confirm": "永久删除 CalorieApp 账户",
+        "button_cancel": "取消",
+        "session_expired": "您的会话已过期。请重新登录后再管理账户。未删除任何数据。",
+        "confirmation_failed": "由于无法验证账户确认信息或较早身份记录的归属，删除已安全停止。未删除任何数据。",
+        "temporarily_unavailable": "账户删除目前不可用。未删除任何数据。",
+        "unavailable": "目前无法删除您的账户。没有确认任何删除。请稍后重试。",
+        "success": "您的 CalorieApp 账户和直接拥有的主要数据已被删除。"
+      }
+    },
+    "hi": {
+      "service_startup_timeout": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय लग रहा है। दोबारा प्रयास करने से पहले कुछ मिनट प्रतीक्षा करें; बार-बार रीफ़्रेश करने से शुरुआत धीमी हो सकती है।",
+      "export": {
+        "section_label": "निजी खाता डेटा निर्यात",
+        "title": "अपना निजी खाता डेटा डाउनलोड करें",
+        "description": "JSON फ़ाइल में आपका खाता पहचानकर्ता, जुड़ी पहचान और वैकल्पिक XRPL पता, भोजन-लॉग इतिहास, सत्र का समय और निष्क्रिय खातों की चेतावनी का इतिहास शामिल हो सकता है। सुरक्षा टोकन शामिल नहीं होते। आंतरिक डिलीवरी प्रमाण भी शामिल नहीं होता। स्वामित्व सिद्ध न होने पर कुछ पुरानी प्राधिकरण गतिविधि रोकी रहती है। CalorieApp फ़ाइल को कहीं और नहीं भेजता; अपने ब्राउज़र का निर्धारित डाउनलोड स्थान निजी रखें। यह डाउनलोड आपका CalorieApp डेटा नहीं मिटाता।",
+        "button_idle": "निजी JSON डाउनलोड करें",
+        "button_busy": "निजी निर्यात तैयार हो रहा है...",
+        "session_expired": "आपका सत्र समाप्त हो गया। निजी निर्यात मांगने से पहले फिर से साइन इन करें। कोई फ़ाइल डाउनलोड नहीं हुई।",
+        "review_required": "पुराने पहचान रिकॉर्ड सुरक्षित रूप से आवंटित नहीं किए जा सकते, इसलिए इस निर्यात की संचालक समीक्षा आवश्यक है। कोई फ़ाइल डाउनलोड नहीं हुई।",
+        "success": "निजी निर्यात डाउनलोड हो गया। इसे सुरक्षित रखें और सार्वजनिक रूप से साझा न करें।",
+        "unavailable": "आपका निजी निर्यात अभी उपलब्ध नहीं है। कोई फ़ाइल डाउनलोड नहीं हुई। बाद में फिर प्रयास करें।"
+      },
+      "erasure": {
+        "section_label": "CalorieApp खाता मिटाएँ",
+        "title": "अपना CalorieApp खाता मिटाएँ",
+        "description": "रिलीज़ समीक्षा के बाद सक्षम होने पर यह आपके सीधे स्वामित्व वाले CalorieApp खाते, भोजन-लॉग इतिहास, पहचान लिंक, सत्रों और ब्राउज़र हैंडऑफ़ को प्राथमिक डेटाबेस से तुरंत और स्थायी रूप से हटा देता है। कोई पुनर्प्राप्ति अवधि नहीं है। एन्क्रिप्टेड बैकअप अधिकतम 30 दिनों तक सुरक्षित प्रति रख सकते हैं। अलग WordPress या Xaman खाते, सार्वजनिक XRPL डेटा और तृतीय-पक्ष स्रोत डेटा नहीं मिटाए जाते।",
+        "review_button": "खाता मिटाने की समीक्षा करें",
+        "confirmation_intro": "यदि आपको प्रति चाहिए तो पहले अपना निजी निर्यात डाउनलोड करें। पुष्टि के लिए फिर यही सटीक खाता पहचानकर्ता लिखें:",
+        "account_identifier": "खाता पहचानकर्ता",
+        "acknowledgement": "मैं समझता/समझती हूँ कि प्राथमिक CalorieApp डेटा तुरंत मिटा दिया जाता है, ऐप से पुनर्प्राप्त नहीं किया जा सकता, और इससे अलग WordPress, Xaman, XRPL या तृतीय-पक्ष डेटा नहीं मिटता।",
+        "button_busy": "CalorieApp खाता मिटाया जा रहा है...",
+        "button_confirm": "CalorieApp खाता स्थायी रूप से मिटाएँ",
+        "button_cancel": "रद्द करें",
+        "session_expired": "आपका सत्र समाप्त हो गया। खाता प्रबंधित करने से पहले फिर से साइन इन करें। कोई डेटा नहीं मिटाया गया।",
+        "confirmation_failed": "खाता पुष्टि या पुराने पहचान स्वामित्व को सत्यापित न कर पाने के कारण मिटाना सुरक्षित रूप से रोक दिया गया। कोई डेटा नहीं मिटाया गया।",
+        "temporarily_unavailable": "खाता मिटाना अभी उपलब्ध नहीं है। कोई डेटा नहीं मिटाया गया।",
+        "unavailable": "आपका खाता अभी नहीं मिटाया जा सका। किसी मिटाने की पुष्टि नहीं हुई। बाद में फिर प्रयास करें।",
+        "success": "आपका CalorieApp खाता और सीधे स्वामित्व वाला प्राथमिक डेटा मिटा दिया गया।"
+      }
+    },
+    "es": {
+      "service_startup_timeout": "El servicio CalorieApp está tardando más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede ralentizar el inicio.",
+      "export": {
+        "section_label": "Exportación de datos privados de la cuenta",
+        "title": "Descarga los datos privados de tu cuenta",
+        "description": "El archivo JSON puede incluir el identificador de tu cuenta, la identidad vinculada y la dirección XRPL opcional, el historial del registro de alimentos, los tiempos de sesión y el historial de avisos de cuentas inactivas. Se excluyen los tokens de seguridad. También se excluyen las pruebas internas de entrega. Algunas actividades de autorización antiguas se omiten cuando no puede demostrarse su titularidad. CalorieApp no envía el archivo a ningún otro lugar; mantén privada la ubicación de descarga configurada en tu navegador. Esta descarga no elimina tus datos de CalorieApp.",
+        "button_idle": "Descargar JSON privado",
+        "button_busy": "Preparando la exportación privada...",
+        "session_expired": "Tu sesión ha caducado. Vuelve a iniciar sesión antes de solicitar una exportación privada. No se descargó ningún archivo.",
+        "review_required": "Esta exportación requiere una revisión del operador porque algunos registros de identidad antiguos no pueden asignarse de forma segura. No se descargó ningún archivo.",
+        "success": "La exportación privada se ha descargado. Guárdala de forma segura y no la compartas públicamente.",
+        "unavailable": "Tu exportación privada no está disponible ahora. No se descargó ningún archivo. Inténtalo de nuevo más tarde."
+      },
+      "erasure": {
+        "section_label": "Eliminar cuenta de CalorieApp",
+        "title": "Elimina tu cuenta de CalorieApp",
+        "description": "Si se habilita tras la revisión de la versión, esta acción elimina inmediatamente y de forma permanente de la base de datos principal tu cuenta de CalorieApp, el historial del registro de alimentos, el vínculo de identidad, las sesiones y las transferencias del navegador que te pertenecen directamente. No hay período de recuperación. Las copias de seguridad cifradas pueden conservar una copia protegida durante un máximo de 30 días. No se eliminan las cuentas independientes de WordPress o Xaman, los datos públicos de XRPL ni los datos de fuentes externas.",
+        "review_button": "Revisar la eliminación de la cuenta",
+        "confirmation_intro": "Descarga primero tu exportación privada si quieres conservar una copia. Después escribe este identificador de cuenta exacto para confirmar:",
+        "account_identifier": "Identificador de la cuenta",
+        "acknowledgement": "Entiendo que los datos principales de CalorieApp se eliminan inmediatamente, no pueden recuperarse mediante la aplicación y que esto no elimina datos independientes de WordPress, Xaman, XRPL ni de terceros.",
+        "button_busy": "Eliminando la cuenta de CalorieApp...",
+        "button_confirm": "Eliminar permanentemente la cuenta de CalorieApp",
+        "button_cancel": "Cancelar",
+        "session_expired": "Tu sesión ha caducado. Vuelve a iniciar sesión antes de administrar tu cuenta. No se eliminó ningún dato.",
+        "confirmation_failed": "La eliminación se detuvo de forma segura porque no se pudo verificar la confirmación de la cuenta o la titularidad de identidades antiguas. No se eliminó ningún dato.",
+        "temporarily_unavailable": "La eliminación de la cuenta no está disponible actualmente. No se eliminó ningún dato.",
+        "unavailable": "Tu cuenta no se pudo eliminar ahora. No se confirmó ninguna eliminación. Inténtalo de nuevo más tarde.",
+        "success": "Tu cuenta de CalorieApp y los datos principales que te pertenecían directamente se han eliminado."
+      }
+    },
+    "ar": {
+      "service_startup_timeout": "يستغرق بدء خدمة CalorieApp وقتًا أطول من المتوقع. انتظر بضع دقائق قبل المحاولة مجددًا؛ فقد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل.",
+      "export": {
+        "section_label": "تصدير بيانات الحساب الخاصة",
+        "title": "نزّل بيانات حسابك الخاصة",
+        "description": "قد يتضمن ملف JSON معرّف حسابك والهوية المرتبطة وعنوان XRPL الاختياري وسجل الطعام وتوقيت الجلسات وسجل تنبيهات الحسابات غير النشطة. لا يتضمن رموز الأمان. كما لا يتضمن أدلة التسليم الداخلية. تظل بعض أنشطة التفويض القديمة محجوبة عندما يتعذر إثبات ملكيتها. لا يرسل CalorieApp الملف إلى أي مكان آخر؛ حافظ على خصوصية موقع التنزيل المحدد في متصفحك. لا يؤدي هذا التنزيل إلى حذف بياناتك في CalorieApp.",
+        "button_idle": "تنزيل ملف JSON الخاص",
+        "button_busy": "جارٍ إعداد التصدير الخاص...",
+        "session_expired": "انتهت جلستك. سجّل الدخول مجددًا قبل طلب تصدير خاص. لم يتم تنزيل أي ملف.",
+        "review_required": "يحتاج هذا التصدير إلى مراجعة المشغّل لأن بعض سجلات الهوية القديمة لا يمكن إسنادها بأمان. لم يتم تنزيل أي ملف.",
+        "success": "تم تنزيل التصدير الخاص. خزّنه بأمان ولا تشاركه علنًا.",
+        "unavailable": "التصدير الخاص غير متاح حاليًا. لم يتم تنزيل أي ملف. حاول مرة أخرى لاحقًا."
+      },
+      "erasure": {
+        "section_label": "حذف حساب CalorieApp",
+        "title": "احذف حسابك في CalorieApp",
+        "description": "إذا فُعّل بعد مراجعة الإصدار، فسيؤدي ذلك فورًا وبشكل دائم إلى إزالة حساب CalorieApp الذي تملكه مباشرةً وسجل الطعام ورابط الهوية والجلسات وعمليات تسليم المتصفح من قاعدة البيانات الأساسية. لا توجد مهلة استرداد. قد تحتفظ النسخ الاحتياطية المشفّرة بنسخة محمية لمدة لا تتجاوز 30 يومًا. لا تُحذف حسابات WordPress أو Xaman المنفصلة ولا بيانات XRPL العامة ولا بيانات المصادر الخارجية.",
+        "review_button": "مراجعة حذف الحساب",
+        "confirmation_intro": "نزّل تصديرك الخاص أولًا إذا أردت الاحتفاظ بنسخة. ثم اكتب معرّف الحساب التالي تمامًا للتأكيد:",
+        "account_identifier": "معرّف الحساب",
+        "acknowledgement": "أفهم أن بيانات CalorieApp الأساسية تُحذف فورًا ولا يمكن استعادتها عبر التطبيق، وأن هذا لا يحذف بيانات WordPress أو Xaman أو XRPL أو بيانات الجهات الخارجية المنفصلة.",
+        "button_busy": "جارٍ حذف حساب CalorieApp...",
+        "button_confirm": "حذف حساب CalorieApp نهائيًا",
+        "button_cancel": "إلغاء",
+        "session_expired": "انتهت جلستك. سجّل الدخول مجددًا قبل إدارة حسابك. لم تُحذف أي بيانات.",
+        "confirmation_failed": "توقف الحذف بأمان لتعذر التحقق من تأكيد الحساب أو ملكية سجلات الهوية القديمة. لم تُحذف أي بيانات.",
+        "temporarily_unavailable": "حذف الحساب غير متاح حاليًا. لم تُحذف أي بيانات.",
+        "unavailable": "تعذر حذف حسابك حاليًا. لم يتم تأكيد أي حذف. حاول مرة أخرى لاحقًا.",
+        "success": "تم حذف حسابك في CalorieApp والبيانات الأساسية التي كنت تملكها مباشرةً."
+      }
+    },
+    "fr": {
+      "service_startup_timeout": "Le démarrage du service CalorieApp prend plus de temps que prévu. Attendez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage.",
+      "export": {
+        "section_label": "Exportation des données privées du compte",
+        "title": "Téléchargez les données privées de votre compte",
+        "description": "Le fichier JSON peut contenir l’identifiant de votre compte, l’identité liée et l’adresse XRPL facultative, l’historique du journal alimentaire, les horaires de session et l’historique des avertissements liés aux comptes inactifs. Les jetons de sécurité sont exclus. Les preuves internes de remise sont également exclues. Certaines anciennes activités d’autorisation restent masquées lorsque leur propriété ne peut pas être prouvée. CalorieApp n’envoie le fichier nulle part ailleurs ; gardez privé l’emplacement de téléchargement configuré dans votre navigateur. Ce téléchargement ne supprime pas vos données CalorieApp.",
+        "button_idle": "Télécharger le JSON privé",
+        "button_busy": "Préparation de l’exportation privée...",
+        "session_expired": "Votre session a expiré. Reconnectez-vous avant de demander une exportation privée. Aucun fichier n’a été téléchargé.",
+        "review_required": "Cette exportation nécessite l’examen de l’opérateur, car certains anciens enregistrements d’identité ne peuvent pas être attribués de manière sûre. Aucun fichier n’a été téléchargé.",
+        "success": "L’exportation privée a été téléchargée. Conservez-la en lieu sûr et ne la partagez pas publiquement.",
+        "unavailable": "Votre exportation privée est actuellement indisponible. Aucun fichier n’a été téléchargé. Réessayez plus tard."
+      },
+      "erasure": {
+        "section_label": "Supprimer le compte CalorieApp",
+        "title": "Supprimez votre compte CalorieApp",
+        "description": "Si cette fonction est activée après l’examen de la version, elle supprime immédiatement et définitivement de la base de données principale votre compte CalorieApp détenu directement, l’historique du journal alimentaire, le lien d’identité, les sessions et les transferts du navigateur. Il n’existe aucune période de récupération. Les sauvegardes chiffrées peuvent conserver une copie protégée pendant 30 jours au maximum. Les comptes WordPress ou Xaman distincts, les données XRPL publiques et les données provenant de sources tierces ne sont pas supprimés.",
+        "review_button": "Examiner la suppression du compte",
+        "confirmation_intro": "Téléchargez d’abord votre exportation privée si vous souhaitez en conserver une copie. Saisissez ensuite exactement cet identifiant de compte pour confirmer :",
+        "account_identifier": "Identifiant du compte",
+        "acknowledgement": "Je comprends que les données principales de CalorieApp sont supprimées immédiatement, qu’elles ne peuvent pas être récupérées via l’application et que cela ne supprime pas les données distinctes de WordPress, Xaman, XRPL ou de tiers.",
+        "button_busy": "Suppression du compte CalorieApp...",
+        "button_confirm": "Supprimer définitivement le compte CalorieApp",
+        "button_cancel": "Annuler",
+        "session_expired": "Votre session a expiré. Reconnectez-vous avant de gérer votre compte. Aucune donnée n’a été supprimée.",
+        "confirmation_failed": "La suppression a été interrompue en toute sécurité, car la confirmation du compte ou la propriété d’anciens enregistrements d’identité n’a pas pu être vérifiée. Aucune donnée n’a été supprimée.",
+        "temporarily_unavailable": "La suppression du compte est actuellement indisponible. Aucune donnée n’a été supprimée.",
+        "unavailable": "Votre compte n’a pas pu être supprimé pour le moment. Aucune suppression n’a été confirmée. Réessayez plus tard.",
+        "success": "Votre compte CalorieApp et les données principales que vous déteniez directement ont été supprimés."
+      }
+    },
+    "bn": {
+      "service_startup_timeout": "CalorieApp সেবা চালু হতে প্রত্যাশার চেয়ে বেশি সময় নিচ্ছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও দেরি হতে পারে।",
+      "export": {
+        "section_label": "ব্যক্তিগত অ্যাকাউন্ট ডেটা রপ্তানি",
+        "title": "আপনার ব্যক্তিগত অ্যাকাউন্ট ডেটা ডাউনলোড করুন",
+        "description": "JSON ফাইলে আপনার অ্যাকাউন্ট শনাক্তকারী, সংযুক্ত পরিচয় ও ঐচ্ছিক XRPL ঠিকানা, খাদ্য-লগের ইতিহাস, সেশনের সময় এবং নিষ্ক্রিয় অ্যাকাউন্টের সতর্কতার ইতিহাস থাকতে পারে। নিরাপত্তা টোকেন অন্তর্ভুক্ত হয় না। অভ্যন্তরীণ সরবরাহের প্রমাণও অন্তর্ভুক্ত হয় না। মালিকানা প্রমাণ করা না গেলে কিছু পুরোনো অনুমোদন কার্যকলাপ গোপন রাখা হয়। CalorieApp ফাইলটি অন্য কোথাও পাঠায় না; আপনার ব্রাউজারে নির্ধারিত ডাউনলোডের স্থান ব্যক্তিগত রাখুন। এই ডাউনলোড আপনার CalorieApp ডেটা মুছে দেয় না।",
+        "button_idle": "ব্যক্তিগত JSON ডাউনলোড করুন",
+        "button_busy": "ব্যক্তিগত রপ্তানি প্রস্তুত হচ্ছে...",
+        "session_expired": "আপনার সেশনের মেয়াদ শেষ হয়েছে। ব্যক্তিগত রপ্তানির অনুরোধের আগে আবার সাইন ইন করুন। কোনো ফাইল ডাউনলোড হয়নি।",
+        "review_required": "পুরোনো পরিচয় রেকর্ড নিরাপদে বরাদ্দ করা যাচ্ছে না বলে এই রপ্তানিতে পরিচালকের পর্যালোচনা দরকার। কোনো ফাইল ডাউনলোড হয়নি।",
+        "success": "ব্যক্তিগত রপ্তানি ডাউনলোড হয়েছে। এটি নিরাপদে রাখুন এবং প্রকাশ্যে শেয়ার করবেন না।",
+        "unavailable": "আপনার ব্যক্তিগত রপ্তানি এখন পাওয়া যাচ্ছে না। কোনো ফাইল ডাউনলোড হয়নি। পরে আবার চেষ্টা করুন।"
+      },
+      "erasure": {
+        "section_label": "CalorieApp অ্যাকাউন্ট মুছুন",
+        "title": "আপনার CalorieApp অ্যাকাউন্ট মুছুন",
+        "description": "রিলিজ পর্যালোচনার পরে চালু করা হলে এটি আপনার সরাসরি মালিকানাধীন CalorieApp অ্যাকাউন্ট, খাদ্য-লগের ইতিহাস, পরিচয় সংযোগ, সেশন এবং ব্রাউজার হ্যান্ডঅফ প্রাথমিক ডেটাবেস থেকে অবিলম্বে ও স্থায়ীভাবে সরিয়ে দেয়। কোনো পুনরুদ্ধার সময় নেই। এনক্রিপ্ট করা ব্যাকআপ সর্বোচ্চ ৩০ দিন একটি সুরক্ষিত কপি রাখতে পারে। আলাদা WordPress বা Xaman অ্যাকাউন্ট, প্রকাশ্য XRPL ডেটা এবং তৃতীয়-পক্ষ উৎসের ডেটা মুছে ফেলা হয় না।",
+        "review_button": "অ্যাকাউন্ট মোছা পর্যালোচনা করুন",
+        "confirmation_intro": "একটি কপি চাইলে আগে আপনার ব্যক্তিগত রপ্তানি ডাউনলোড করুন। তারপর নিশ্চিত করতে এই হুবহু অ্যাকাউন্ট শনাক্তকারী লিখুন:",
+        "account_identifier": "অ্যাকাউন্ট শনাক্তকারী",
+        "acknowledgement": "আমি বুঝি যে প্রাথমিক CalorieApp ডেটা অবিলম্বে মুছে যায়, অ্যাপের মাধ্যমে পুনরুদ্ধার করা যায় না এবং এতে আলাদা WordPress, Xaman, XRPL বা তৃতীয়-পক্ষের ডেটা মুছে যায় না।",
+        "button_busy": "CalorieApp অ্যাকাউন্ট মোছা হচ্ছে...",
+        "button_confirm": "CalorieApp অ্যাকাউন্ট স্থায়ীভাবে মুছুন",
+        "button_cancel": "বাতিল",
+        "session_expired": "আপনার সেশনের মেয়াদ শেষ হয়েছে। অ্যাকাউন্ট পরিচালনার আগে আবার সাইন ইন করুন। কোনো ডেটা মোছা হয়নি।",
+        "confirmation_failed": "অ্যাকাউন্ট নিশ্চিতকরণ বা পুরোনো পরিচয়ের মালিকানা যাচাই করা যায়নি বলে মোছা নিরাপদে বন্ধ হয়েছে। কোনো ডেটা মোছা হয়নি।",
+        "temporarily_unavailable": "অ্যাকাউন্ট মোছা বর্তমানে উপলভ্য নয়। কোনো ডেটা মোছা হয়নি।",
+        "unavailable": "আপনার অ্যাকাউন্ট এখন মোছা যায়নি। কোনো মোছা নিশ্চিত হয়নি। পরে আবার চেষ্টা করুন।",
+        "success": "আপনার CalorieApp অ্যাকাউন্ট এবং সরাসরি মালিকানাধীন প্রাথমিক ডেটা মুছে ফেলা হয়েছে।"
+      }
+    },
+    "pt": {
+      "service_startup_timeout": "O serviço CalorieApp está demorando mais do que o esperado para iniciar. Aguarde alguns minutos antes de tentar novamente; atualizações repetidas podem atrasar a inicialização.",
+      "export": {
+        "section_label": "Exportação de dados privados da conta",
+        "title": "Baixe os dados privados da sua conta",
+        "description": "O arquivo JSON pode incluir o identificador da sua conta, a identidade vinculada e o endereço XRPL opcional, o histórico do registro alimentar, os horários das sessões e o histórico de avisos de contas inativas. Os tokens de segurança são excluídos. As provas internas de entrega também são excluídas. Algumas atividades de autorização antigas permanecem omitidas quando a titularidade não pode ser comprovada. O CalorieApp não envia o arquivo para outro local; mantenha privado o local de download configurado no navegador. Este download não exclui seus dados do CalorieApp.",
+        "button_idle": "Baixar JSON privado",
+        "button_busy": "Preparando a exportação privada...",
+        "session_expired": "Sua sessão expirou. Entre novamente antes de solicitar uma exportação privada. Nenhum arquivo foi baixado.",
+        "review_required": "Esta exportação precisa de revisão do operador porque alguns registros de identidade antigos não podem ser atribuídos com segurança. Nenhum arquivo foi baixado.",
+        "success": "A exportação privada foi baixada. Armazene-a com segurança e não a compartilhe publicamente.",
+        "unavailable": "Sua exportação privada não está disponível agora. Nenhum arquivo foi baixado. Tente novamente mais tarde."
+      },
+      "erasure": {
+        "section_label": "Excluir conta do CalorieApp",
+        "title": "Exclua sua conta do CalorieApp",
+        "description": "Se ativada após a revisão da versão, esta ação remove imediatamente e de forma permanente do banco de dados principal sua conta do CalorieApp, o histórico do registro alimentar, o vínculo de identidade, as sessões e as transferências do navegador que são diretamente seus. Não há período de recuperação. Backups criptografados podem manter uma cópia protegida por no máximo 30 dias. Contas separadas do WordPress ou Xaman, dados públicos da XRPL e dados de fontes externas não são excluídos.",
+        "review_button": "Revisar exclusão da conta",
+        "confirmation_intro": "Baixe primeiro sua exportação privada se quiser uma cópia. Depois, digite exatamente este identificador de conta para confirmar:",
+        "account_identifier": "Identificador da conta",
+        "acknowledgement": "Entendo que os dados principais do CalorieApp são excluídos imediatamente, não podem ser recuperados pelo aplicativo e que isso não exclui dados separados do WordPress, Xaman, XRPL ou de terceiros.",
+        "button_busy": "Excluindo a conta do CalorieApp...",
+        "button_confirm": "Excluir permanentemente a conta do CalorieApp",
+        "button_cancel": "Cancelar",
+        "session_expired": "Sua sessão expirou. Entre novamente antes de gerenciar sua conta. Nenhum dado foi excluído.",
+        "confirmation_failed": "A exclusão foi interrompida com segurança porque não foi possível verificar a confirmação da conta ou a titularidade de identidades antigas. Nenhum dado foi excluído.",
+        "temporarily_unavailable": "A exclusão da conta está indisponível no momento. Nenhum dado foi excluído.",
+        "unavailable": "Não foi possível excluir sua conta agora. Nenhuma exclusão foi confirmada. Tente novamente mais tarde.",
+        "success": "Sua conta do CalorieApp e os dados principais diretamente pertencentes a você foram excluídos."
+      }
+    },
+    "id": {
+      "service_startup_timeout": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat proses mulai.",
+      "export": {
+        "section_label": "Ekspor data akun pribadi",
+        "title": "Unduh data akun pribadi Anda",
+        "description": "File JSON dapat memuat pengenal akun Anda, identitas tertaut dan alamat XRPL opsional, riwayat catatan makanan, waktu sesi, serta riwayat peringatan untuk akun tidak aktif. Token keamanan tidak disertakan. Bukti pengiriman internal juga tidak disertakan. Sebagian aktivitas otorisasi lama tetap tidak ditampilkan jika kepemilikannya tidak dapat dibuktikan. CalorieApp tidak mengirim file ke tempat lain; jaga agar lokasi unduhan yang dikonfigurasi di peramban tetap privat. Unduhan ini tidak menghapus data CalorieApp Anda.",
+        "button_idle": "Unduh JSON pribadi",
+        "button_busy": "Menyiapkan ekspor pribadi...",
+        "session_expired": "Sesi Anda telah berakhir. Masuk kembali sebelum meminta ekspor pribadi. Tidak ada file yang diunduh.",
+        "review_required": "Ekspor ini memerlukan tinjauan operator karena catatan identitas lama tidak dapat ditetapkan dengan aman. Tidak ada file yang diunduh.",
+        "success": "Ekspor pribadi telah diunduh. Simpan dengan aman dan jangan bagikan secara publik.",
+        "unavailable": "Ekspor pribadi Anda saat ini tidak tersedia. Tidak ada file yang diunduh. Coba lagi nanti."
+      },
+      "erasure": {
+        "section_label": "Hapus akun CalorieApp",
+        "title": "Hapus akun CalorieApp Anda",
+        "description": "Jika diaktifkan setelah tinjauan rilis, tindakan ini segera dan secara permanen menghapus akun CalorieApp yang Anda miliki langsung, riwayat catatan makanan, tautan identitas, sesi, dan serah-terima peramban dari basis data utama. Tidak ada masa pemulihan. Cadangan terenkripsi dapat menyimpan salinan terlindungi paling lama 30 hari. Akun WordPress atau Xaman yang terpisah, data XRPL publik, dan data sumber pihak ketiga tidak dihapus.",
+        "review_button": "Tinjau penghapusan akun",
+        "confirmation_intro": "Unduh ekspor pribadi Anda terlebih dahulu jika ingin menyimpan salinan. Kemudian ketik pengenal akun persis berikut untuk mengonfirmasi:",
+        "account_identifier": "Pengenal akun",
+        "acknowledgement": "Saya memahami bahwa data utama CalorieApp segera dihapus, tidak dapat dipulihkan melalui aplikasi, dan tindakan ini tidak menghapus data WordPress, Xaman, XRPL, atau pihak ketiga yang terpisah.",
+        "button_busy": "Menghapus akun CalorieApp...",
+        "button_confirm": "Hapus akun CalorieApp secara permanen",
+        "button_cancel": "Batal",
+        "session_expired": "Sesi Anda telah berakhir. Masuk kembali sebelum mengelola akun. Tidak ada data yang dihapus.",
+        "confirmation_failed": "Penghapusan dihentikan dengan aman karena konfirmasi akun atau kepemilikan identitas lama tidak dapat diverifikasi. Tidak ada data yang dihapus.",
+        "temporarily_unavailable": "Penghapusan akun saat ini tidak tersedia. Tidak ada data yang dihapus.",
+        "unavailable": "Akun Anda tidak dapat dihapus sekarang. Tidak ada penghapusan yang dikonfirmasi. Coba lagi nanti.",
+        "success": "Akun CalorieApp dan data utama yang Anda miliki langsung telah dihapus."
+      }
+    },
+    "ur": {
+      "service_startup_timeout": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز مزید سست ہو سکتا ہے۔",
+      "export": {
+        "section_label": "نجی اکاؤنٹ ڈیٹا کی برآمد",
+        "title": "اپنے اکاؤنٹ کا نجی ڈیٹا ڈاؤن لوڈ کریں",
+        "description": "JSON فائل میں آپ کے اکاؤنٹ کا شناخت کنندہ، منسلک شناخت اور اختیاری XRPL پتہ، کھانے کے لاگ کی تاریخ، سیشن کے اوقات اور غیر فعال اکاؤنٹ کی تنبیہات کی تاریخ شامل ہو سکتی ہے۔ سکیورٹی ٹوکن شامل نہیں ہوتے۔ داخلی ترسیل کا ثبوت بھی شامل نہیں ہوتا۔ جب ملکیت ثابت نہ ہو سکے تو کچھ پرانی اجازت کی سرگرمی روکی رہتی ہے۔ CalorieApp فائل کہیں اور نہیں بھیجتا؛ اپنے براؤزر میں مقررہ ڈاؤن لوڈ مقام کو نجی رکھیں۔ یہ ڈاؤن لوڈ آپ کا CalorieApp ڈیٹا حذف نہیں کرتا۔",
+        "button_idle": "نجی JSON ڈاؤن لوڈ کریں",
+        "button_busy": "نجی برآمد تیار کی جا رہی ہے...",
+        "session_expired": "آپ کا سیشن ختم ہو گیا۔ نجی برآمد کی درخواست سے پہلے دوبارہ سائن ان کریں۔ کوئی فائل ڈاؤن لوڈ نہیں ہوئی۔",
+        "review_required": "اس برآمد کو آپریٹر کے جائزے کی ضرورت ہے کیونکہ پرانے شناختی ریکارڈ محفوظ طریقے سے منسوب نہیں کیے جا سکتے۔ کوئی فائل ڈاؤن لوڈ نہیں ہوئی۔",
+        "success": "نجی برآمد ڈاؤن لوڈ ہو گئی۔ اسے محفوظ رکھیں اور عوامی طور پر شیئر نہ کریں۔",
+        "unavailable": "آپ کی نجی برآمد ابھی دستیاب نہیں۔ کوئی فائل ڈاؤن لوڈ نہیں ہوئی۔ بعد میں دوبارہ کوشش کریں۔"
+      },
+      "erasure": {
+        "section_label": "CalorieApp اکاؤنٹ حذف کریں",
+        "title": "اپنا CalorieApp اکاؤنٹ حذف کریں",
+        "description": "ریلیز جائزے کے بعد فعال ہونے کی صورت میں یہ آپ کے براہ راست زیر ملکیت CalorieApp اکاؤنٹ، کھانے کے لاگ کی تاریخ، شناختی ربط، سیشنز اور براؤزر ہینڈ آف کو بنیادی ڈیٹابیس سے فوری اور مستقل طور پر ہٹا دیتا ہے۔ بازیابی کی کوئی مدت نہیں۔ خفیہ کردہ بیک اپ زیادہ سے زیادہ 30 دن تک محفوظ نقل رکھ سکتے ہیں۔ علیحدہ WordPress یا Xaman اکاؤنٹس، عوامی XRPL ڈیٹا اور تیسرے فریق کے ماخذ کا ڈیٹا حذف نہیں ہوتا۔",
+        "review_button": "اکاؤنٹ حذف کرنے کا جائزہ لیں",
+        "confirmation_intro": "اگر نقل رکھنا چاہتے ہیں تو پہلے اپنی نجی برآمد ڈاؤن لوڈ کریں۔ پھر تصدیق کے لیے یہ عین اکاؤنٹ شناخت کنندہ لکھیں:",
+        "account_identifier": "اکاؤنٹ شناخت کنندہ",
+        "acknowledgement": "میں سمجھتا/سمجھتی ہوں کہ بنیادی CalorieApp ڈیٹا فوراً حذف ہو جاتا ہے، ایپ کے ذریعے بحال نہیں کیا جا سکتا، اور اس سے علیحدہ WordPress، Xaman، XRPL یا تیسرے فریق کا ڈیٹا حذف نہیں ہوتا۔",
+        "button_busy": "CalorieApp اکاؤنٹ حذف کیا جا رہا ہے...",
+        "button_confirm": "CalorieApp اکاؤنٹ مستقل طور پر حذف کریں",
+        "button_cancel": "منسوخ کریں",
+        "session_expired": "آپ کا سیشن ختم ہو گیا۔ اکاؤنٹ سنبھالنے سے پہلے دوبارہ سائن ان کریں۔ کوئی ڈیٹا حذف نہیں ہوا۔",
+        "confirmation_failed": "اکاؤنٹ کی تصدیق یا پرانی شناخت کی ملکیت کی توثیق نہ ہونے کے باعث حذف کرنے کا عمل محفوظ طور پر روک دیا گیا۔ کوئی ڈیٹا حذف نہیں ہوا۔",
+        "temporarily_unavailable": "اکاؤنٹ حذف کرنا فی الحال دستیاب نہیں۔ کوئی ڈیٹا حذف نہیں ہوا۔",
+        "unavailable": "آپ کا اکاؤنٹ اس وقت حذف نہیں ہو سکا۔ کسی حذف کی تصدیق نہیں ہوئی۔ بعد میں دوبارہ کوشش کریں۔",
+        "success": "آپ کا CalorieApp اکاؤنٹ اور براہ راست زیر ملکیت بنیادی ڈیٹا حذف کر دیا گیا ہے۔"
+      }
+    },
+    "nl": {
+      "service_startup_timeout": "Het duurt langer dan verwacht voordat de CalorieApp-service is gestart. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen.",
+      "export": {
+        "section_label": "Export van privé-accountgegevens",
+        "title": "Download je privé-accountgegevens",
+        "description": "Het JSON-bestand kan je account-ID, gekoppelde identiteit en optionele XRPL-adres, voedingslogboek, sessietijden en waarschuwingsgeschiedenis voor inactieve accounts bevatten. Beveiligingstokens zijn uitgesloten. Intern bezorgbewijs is eveneens uitgesloten. Sommige oudere autorisatieactiviteit blijft achterwege wanneer het eigendom niet kan worden bewezen. CalorieApp stuurt het bestand nergens anders heen; houd de ingestelde downloadlocatie van je browser privé. Deze download verwijdert je CalorieApp-gegevens niet.",
+        "button_idle": "Privé-JSON downloaden",
+        "button_busy": "Privé-export voorbereiden...",
+        "session_expired": "Je sessie is verlopen. Log opnieuw in voordat je een privé-export aanvraagt. Er is geen bestand gedownload.",
+        "review_required": "Deze export vereist controle door de beheerder omdat oudere identiteitsrecords niet veilig kunnen worden toegewezen. Er is geen bestand gedownload.",
+        "success": "De privé-export is gedownload. Bewaar hem veilig en deel hem niet openbaar.",
+        "unavailable": "Je privé-export is momenteel niet beschikbaar. Er is geen bestand gedownload. Probeer het later opnieuw."
+      },
+      "erasure": {
+        "section_label": "CalorieApp-account verwijderen",
+        "title": "Verwijder je CalorieApp-account",
+        "description": "Als dit na de releasecontrole wordt ingeschakeld, worden je rechtstreeks beheerde CalorieApp-account, voedingslogboek, identiteitskoppeling, sessies en browseroverdrachten onmiddellijk en permanent uit de primaire database verwijderd. Er is geen herstelperiode. Versleutelde back-ups mogen maximaal 30 dagen een beveiligde kopie bewaren. Afzonderlijke WordPress- of Xaman-accounts, openbare XRPL-gegevens en gegevens van externe bronnen worden niet verwijderd.",
+        "review_button": "Accountverwijdering controleren",
+        "confirmation_intro": "Download eerst je privé-export als je een kopie wilt bewaren. Typ daarna ter bevestiging exact deze account-ID:",
+        "account_identifier": "Account-ID",
+        "acknowledgement": "Ik begrijp dat primaire CalorieApp-gegevens onmiddellijk worden verwijderd, niet via de app kunnen worden hersteld en dat dit geen afzonderlijke WordPress-, Xaman-, XRPL- of externe gegevens verwijdert.",
+        "button_busy": "CalorieApp-account verwijderen...",
+        "button_confirm": "CalorieApp-account permanent verwijderen",
+        "button_cancel": "Annuleren",
+        "session_expired": "Je sessie is verlopen. Log opnieuw in voordat je je account beheert. Er zijn geen gegevens verwijderd.",
+        "confirmation_failed": "De verwijdering is veilig gestopt omdat de accountbevestiging of het eigendom van oudere identiteitsgegevens niet kon worden geverifieerd. Er zijn geen gegevens verwijderd.",
+        "temporarily_unavailable": "Accountverwijdering is momenteel niet beschikbaar. Er zijn geen gegevens verwijderd.",
+        "unavailable": "Je account kon nu niet worden verwijderd. Er is geen verwijdering bevestigd. Probeer het later opnieuw.",
+        "success": "Je CalorieApp-account en rechtstreeks beheerde primaire gegevens zijn verwijderd."
+      }
+    }
+  }
+}

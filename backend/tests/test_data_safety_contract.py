@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.26.0"
+    assert contract["contract_version"] == "1.27.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -149,8 +149,8 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     export = _load_json("data-safety.json")["account_data_export"]
 
     assert export["status"] == (
-        "v2-backend-and-english-ui-implemented-"
-        "eleven-language-and-notice-review-pending"
+        "v2-backend-and-eleven-language-account-action-ui-implemented-"
+        "notice-review-pending"
     )
     assert export["format"] == "versioned-json"
     assert export["format_version"] == "calorieapp-account-data-v1"
@@ -184,7 +184,11 @@ def test_account_export_is_private_versioned_and_secret_free() -> None:
     assert export["download_sends_data_to_external_service"] is False
     assert export["english_private_file_warning_implemented"] is True
     assert export["english_warning_is_approved_privacy_notice"] is False
-    assert export["eleven_language_export_ui_completed"] is False
+    assert export["eleven_language_export_ui_completed"] is True
+    assert export["localized_copy_source"] == (
+        "frontend/config/account-privacy-copy.json"
+    )
+    assert export["independent_language_or_legal_review_completed"] is False
     assert export["eleven_language_identity_bridge_ui_required"] is True
     assert export["privacy_notice_alignment_required"] is True
     assert export["account_export_changes_erasure_or_retention_policy"] is False
@@ -550,7 +554,11 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     guards = alignment["activation_guards"]
 
     assert alignment["contract_id"] == "calorieapp.privacy-notice-alignment"
-    assert alignment["contract_version"] == "1.2.0"
+    assert alignment["contract_version"] == "1.3.0"
+    assert alignment["status"] == (
+        "canonical-facts-and-eleven-language-account-action-copy-aligned-"
+        "publication-pending"
+    )
     assert alignment["release_state"] == "blocked"
     assert alignment["legal_certification_claimed"] is False
     assert publication["authorized"] is False
@@ -572,6 +580,24 @@ def test_privacy_notice_alignment_records_facts_without_authorizing_publication(
     assert publication["provider_specific_storage_and_backup_wording_approved"] is False
     assert publication["independent_legal_privacy_review_completed"] is False
     assert publication["eleven_language_review_completed"] is False
+
+    localized = alignment["current_localized_account_action_copy"]
+    assert localized["source"] == "frontend/config/account-privacy-copy.json"
+    assert localized["required_locales_complete"] is True
+    assert localized["private_export_copy_complete"] is True
+    assert localized["account_erasure_copy_complete"] is True
+    assert localized["rtl_direction_applied_for_arabic_and_urdu"] is True
+    assert localized["safe_english_fallback_required"] is True
+    assert localized["independent_language_review_completed"] is False
+    assert localized["independent_legal_privacy_review_completed"] is False
+    assert (
+        localized["unavailable_independent_review_blocks_five_step_plan_development"]
+        is False
+    )
+    assert localized[
+        "publication_and_production_still_require_explicit_operator_approval"
+    ] is True
+    assert localized["operator_publication_approval_completed"] is False
 
     assert facts["private_account_export"]["authenticated_user_only"] is True
     assert facts["private_account_export"]["security_secrets_excluded"] is True
@@ -657,8 +683,8 @@ def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     erasure = _load_json("data-safety.json")["account_erasure"]
 
     assert erasure["status"] == (
-        "v2-backend-and-english-ui-implemented-disabled-"
-        "pending-eleven-language-notice-and-provider-proof"
+        "v2-backend-and-eleven-language-ui-implemented-disabled-"
+        "pending-notice-and-provider-proof"
     )
     assert erasure["enabled_by_default"] is False
     assert erasure["ui_enabled_by_default"] is False
@@ -689,6 +715,11 @@ def test_account_erasure_is_private_fail_closed_and_human_gated() -> None:
     assert erasure["backup_schedule_and_restore_replay_proved"] is False
     assert erasure["english_confirmation_ui_implemented"] is True
     assert erasure["english_ui_is_approved_privacy_notice"] is False
+    assert erasure["eleven_language_erasure_ui_completed"] is True
+    assert erasure["localized_copy_source"] == (
+        "frontend/config/account-privacy-copy.json"
+    )
+    assert erasure["independent_language_or_legal_review_completed"] is False
     assert erasure["eleven_language_identity_bridge_ui_required"] is True
     assert erasure["privacy_notice_alignment_required"] is True
     assert erasure["human_release_approval_required_to_enable"] is True
@@ -1095,7 +1126,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.15.0"
+    assert matrix["contract_version"] == "1.16.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1135,11 +1166,20 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/tests/test_account_data_export.py" in gates["user_data_export"][
         "evidence"
     ]
+    assert "frontend/config/account-privacy-copy.json" in gates[
+        "user_data_export"
+    ]["evidence"]
+    assert "tools/tests/account_privacy_locales.test.mjs" in gates[
+        "user_data_export"
+    ]["evidence"]
     assert gates["user_erasure"]["status"] == "partial"
     assert "backend/tests/test_account_erasure.py" in gates["user_erasure"][
         "evidence"
     ]
     assert "frontend/components/AccountErasurePanel.tsx" in gates[
+        "user_erasure"
+    ]["evidence"]
+    assert "frontend/config/account-privacy-copy.json" in gates[
         "user_erasure"
     ]["evidence"]
     assert "backend/app/account_erasure_replay_proof.py" in gates[

@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.26.0",
+  "contract_version": "1.27.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -337,7 +337,7 @@
     "unresolved_release_decisions": []
   },
   "account_data_export": {
-    "status": "v2-backend-and-english-ui-implemented-eleven-language-and-notice-review-pending",
+    "status": "v2-backend-and-eleven-language-account-action-ui-implemented-notice-review-pending",
     "format": "versioned-json",
     "format_version": "calorieapp-account-data-v1",
     "authenticated_user_only": true,
@@ -359,13 +359,15 @@
     "download_sends_data_to_external_service": false,
     "english_private_file_warning_implemented": true,
     "english_warning_is_approved_privacy_notice": false,
-    "eleven_language_export_ui_completed": false,
+    "eleven_language_export_ui_completed": true,
+    "localized_copy_source": "frontend/config/account-privacy-copy.json",
+    "independent_language_or_legal_review_completed": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
     "account_export_changes_erasure_or_retention_policy": false
   },
   "account_erasure": {
-    "status": "v2-backend-and-english-ui-implemented-disabled-pending-eleven-language-notice-and-provider-proof",
+    "status": "v2-backend-and-eleven-language-ui-implemented-disabled-pending-notice-and-provider-proof",
     "enabled_by_default": false,
     "ui_enabled_by_default": false,
     "frontend_and_backend_separate_enablement_required": true,
@@ -391,6 +393,9 @@
     "backup_schedule_and_restore_replay_proved": false,
     "english_confirmation_ui_implemented": true,
     "english_ui_is_approved_privacy_notice": false,
+    "eleven_language_erasure_ui_completed": true,
+    "localized_copy_source": "frontend/config/account-privacy-copy.json",
+    "independent_language_or_legal_review_completed": false,
     "eleven_language_identity_bridge_ui_required": true,
     "privacy_notice_alignment_required": true,
     "human_release_approval_required_to_enable": true,
