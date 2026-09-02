@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.21.0",
+  "contract_version": "1.22.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -195,6 +195,31 @@
         "backend/tests/test_inactive_account_notice_recording.py"
       ],
       "runbook": "docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md"
+    },
+    "inactive_account_erasure_eligibility": {
+      "implementation_status": "single-candidate-transaction-bound-read-only-guard-prepared-erasure-disabled",
+      "single_notice_lookup_only": true,
+      "explicit_timezone_evaluation_required": true,
+      "retention_deadline_rechecked": true,
+      "active_account_and_unchanged_activity_anchor_required": true,
+      "delivered_uncancelled_notice_required": true,
+      "postgresql_notice_and_user_for_update_requested": true,
+      "postgresql_lock_order": "user-then-notice-matches-authenticated-activity",
+      "sqlite_row_lock_equivalence_claimed": false,
+      "pending_session_mutations_allowed": false,
+      "minimal_internal_candidate_returned": true,
+      "evidence_digest_contact_receipt_session_or_network_data_returned": false,
+      "candidate_return_authorizes_erasure": false,
+      "batch_selection_implemented": false,
+      "account_deletion_or_marking_implemented": false,
+      "provider_network_queue_scheduler_or_endpoint_capability": false,
+      "function_commits_or_rolls_back": false,
+      "production_execution_enabled": false,
+      "real_data_access_or_mutation_performed": false,
+      "migration_or_deployment_performed": false,
+      "implementation": "backend/app/inactive_account_erasure_eligibility.py",
+      "tests": "backend/tests/test_inactive_account_erasure_eligibility.py",
+      "runbook": "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md"
     },
     "authentication_transient_security_retention_max_days_after_expiry": 30,
     "shorter_authentication_lifetimes_continue_to_apply": true,

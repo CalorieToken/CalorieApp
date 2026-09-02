@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.21.0"
+    assert contract["contract_version"] == "1.22.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -327,6 +327,50 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["production_execution_enabled"] is False
     assert evidence["real_notice_delivery_or_data_mutation_performed"] is False
     assert evidence["migration_or_deployment_performed"] is False
+    eligibility = retention["inactive_account_erasure_eligibility"]
+    assert eligibility["implementation_status"] == (
+        "single-candidate-transaction-bound-read-only-guard-prepared-"
+        "erasure-disabled"
+    )
+    assert eligibility["single_notice_lookup_only"] is True
+    assert eligibility["explicit_timezone_evaluation_required"] is True
+    assert eligibility["retention_deadline_rechecked"] is True
+    assert eligibility[
+        "active_account_and_unchanged_activity_anchor_required"
+    ] is True
+    assert eligibility["delivered_uncancelled_notice_required"] is True
+    assert eligibility["postgresql_notice_and_user_for_update_requested"] is True
+    assert eligibility["postgresql_lock_order"] == (
+        "user-then-notice-matches-authenticated-activity"
+    )
+    assert eligibility["sqlite_row_lock_equivalence_claimed"] is False
+    assert eligibility["pending_session_mutations_allowed"] is False
+    assert eligibility["minimal_internal_candidate_returned"] is True
+    assert (
+        eligibility[
+            "evidence_digest_contact_receipt_session_or_network_data_returned"
+        ]
+        is False
+    )
+    assert eligibility["candidate_return_authorizes_erasure"] is False
+    assert eligibility["batch_selection_implemented"] is False
+    assert eligibility["account_deletion_or_marking_implemented"] is False
+    assert eligibility[
+        "provider_network_queue_scheduler_or_endpoint_capability"
+    ] is False
+    assert eligibility["function_commits_or_rolls_back"] is False
+    assert eligibility["production_execution_enabled"] is False
+    assert eligibility["real_data_access_or_mutation_performed"] is False
+    assert eligibility["migration_or_deployment_performed"] is False
+    assert eligibility["implementation"] == (
+        "backend/app/inactive_account_erasure_eligibility.py"
+    )
+    assert eligibility["tests"] == (
+        "backend/tests/test_inactive_account_erasure_eligibility.py"
+    )
+    assert eligibility["runbook"] == (
+        "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md"
+    )
     assert (
         retention["authentication_transient_security_retention_max_days_after_expiry"]
         == 30
@@ -977,6 +1021,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "docs/INACTIVE_ACCOUNT_PREVIEW.md" in gates["retention_policy"][
         "evidence"
     ]
+    assert "docs/INACTIVE_ACCOUNT_ERASURE_ELIGIBILITY.md" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "docs/AUTH_TRANSIENT_RETENTION_CLEANUP.md" in gates[
         "retention_policy"
     ]["evidence"]
@@ -987,6 +1034,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/app/inactive_account_notice_recording.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/app/inactive_account_erasure_eligibility.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert "backend/app/inactive_account_preview.py" in gates[
@@ -1023,6 +1073,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_notice_recording.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_inactive_account_erasure_eligibility.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"
