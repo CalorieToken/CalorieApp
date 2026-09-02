@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.18.0",
+  "contract_version": "1.19.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -146,7 +146,7 @@
       "runbook": "docs/INACTIVE_ACCOUNT_PREVIEW.md"
     },
     "inactive_account_notice_evidence": {
-      "implementation_status": "delivery-evidence-schema-and-activity-cancellation-prepared-delivery-disabled",
+      "implementation_status": "receipt-proof-builder-schema-and-activity-cancellation-prepared-delivery-disabled",
       "successful_delivery_evidence_only": true,
       "pending_delivery_queue_created": false,
       "one_notice_per_user_activity_anchor": true,
@@ -155,6 +155,11 @@
       "raw_contact_destination_stored": false,
       "raw_provider_receipt_stored": false,
       "keyed_delivery_evidence_digest_required": true,
+      "delivery_evidence_digest_algorithm": "hmac-sha256-v1",
+      "minimum_digest_secret_bytes": 32,
+      "maximum_raw_provider_receipt_bytes": 4096,
+      "provider_neutral_receipt_proof_builder_implemented": true,
+      "raw_provider_receipt_returned_or_persisted_by_proof_builder": false,
       "delivery_evidence_digest_in_private_export": false,
       "lifecycle_timestamps_and_channel_in_private_export": true,
       "successful_authenticated_activity_cancels_older_notice_atomically": true,
@@ -169,9 +174,13 @@
       "migration_or_deployment_performed": false,
       "model": "backend/app/models.py",
       "activity_cancellation": "backend/app/inactive_account_notice.py",
+      "receipt_proof": "backend/app/inactive_account_notice_receipt.py",
       "migration": "backend/app/schema_migrations/versions/v20260901_0013.py",
       "constraint_hardening_migration": "backend/app/schema_migrations/versions/v20260902_0014.py",
-      "tests": "backend/tests/test_inactive_account_notice.py",
+      "tests": [
+        "backend/tests/test_inactive_account_notice.py",
+        "backend/tests/test_inactive_account_notice_receipt.py"
+      ],
       "runbook": "docs/INACTIVE_ACCOUNT_NOTICE_EVIDENCE.md"
     },
     "authentication_transient_security_retention_max_days_after_expiry": 30,

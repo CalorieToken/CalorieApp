@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.18.0"
+    assert contract["contract_version"] == "1.19.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -256,8 +256,8 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert preview["migration_or_deployment_performed"] is False
     evidence = retention["inactive_account_notice_evidence"]
     assert evidence["implementation_status"] == (
-        "delivery-evidence-schema-and-activity-cancellation-prepared-"
-        "delivery-disabled"
+        "receipt-proof-builder-schema-and-activity-cancellation-"
+        "prepared-delivery-disabled"
     )
     assert evidence["successful_delivery_evidence_only"] is True
     assert evidence["pending_delivery_queue_created"] is False
@@ -267,6 +267,14 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["raw_contact_destination_stored"] is False
     assert evidence["raw_provider_receipt_stored"] is False
     assert evidence["keyed_delivery_evidence_digest_required"] is True
+    assert evidence["delivery_evidence_digest_algorithm"] == "hmac-sha256-v1"
+    assert evidence["minimum_digest_secret_bytes"] == 32
+    assert evidence["maximum_raw_provider_receipt_bytes"] == 4096
+    assert evidence["provider_neutral_receipt_proof_builder_implemented"] is True
+    assert (
+        evidence["raw_provider_receipt_returned_or_persisted_by_proof_builder"]
+        is False
+    )
     assert evidence["delivery_evidence_digest_in_private_export"] is False
     assert evidence["lifecycle_timestamps_and_channel_in_private_export"] is True
     assert (
@@ -280,6 +288,13 @@ def test_selected_retention_policy_is_bounded_and_still_not_enforced() -> None:
     assert evidence["constraint_hardening_migration"] == (
         "backend/app/schema_migrations/versions/v20260902_0014.py"
     )
+    assert evidence["receipt_proof"] == (
+        "backend/app/inactive_account_notice_receipt.py"
+    )
+    assert evidence["tests"] == [
+        "backend/tests/test_inactive_account_notice.py",
+        "backend/tests/test_inactive_account_notice_receipt.py",
+    ]
     assert evidence["notice_evidence_removed_by_account_erasure"] is True
     assert evidence["notice_delivery_adapter_implemented"] is False
     assert evidence["scheduler_configured"] is False
@@ -891,7 +906,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.11.0"
+    assert matrix["contract_version"] == "1.12.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -943,6 +958,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/app/auth_transient_retention.py" in gates[
         "retention_policy"
     ]["evidence"]
+    assert "backend/app/inactive_account_notice_receipt.py" in gates[
+        "retention_policy"
+    ]["evidence"]
     assert "backend/app/inactive_account_preview.py" in gates[
         "retention_policy"
     ]["evidence"]
@@ -971,6 +989,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "retention_policy"
     ]["evidence"]
     assert "backend/tests/test_inactive_account_notice.py" in gates[
+        "retention_policy"
+    ]["evidence"]
+    assert "backend/tests/test_inactive_account_notice_receipt.py" in gates[
         "retention_policy"
     ]["evidence"]
     assert gates["privacy_notice_alignment"]["status"] == "partial"
