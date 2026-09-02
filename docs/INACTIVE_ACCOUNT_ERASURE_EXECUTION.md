@@ -28,9 +28,10 @@ wallet, receipt, session-secret or network identifier.
 - a missing or no-longer-eligible notice is an idempotent no-op.
 
 The prepared deletion shape covers only `calorieappuser`, `food_log`,
-`externalidentity`, `originloginhandoff`, `authsession` and
-`inactive_account_notice`. The preflight continues to reject shared external
-subjects, unowned legacy authorization history and excessive row counts.
+`account_data_import_receipt`, `externalidentity`, `originloginhandoff`,
+`authsession` and `inactive_account_notice`. The preflight continues to reject
+shared external subjects, unowned legacy authorization history and excessive
+row counts.
 
 ## Deliberately absent
 

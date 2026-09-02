@@ -19,6 +19,10 @@ from sqlmodel import Session, create_engine, select
 
 import app.database as db_module
 import app.main as main_module
+from app.account_data_import import AccountDataImportPlan, PlannedFoodLogImport
+from app.account_data_import_transaction import (
+    execute_account_data_import_transaction,
+)
 from app.capacity import database_capacity_snapshot, database_used_bytes
 from app.capacity_probe import EXIT_PAUSE, capacity_probe_from_session
 from app.data_growth import (
@@ -34,6 +38,7 @@ from app.inactive_account_erasure_preflight import (
 )
 from app.inactive_account_preview import preview_inactive_accounts
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -59,6 +64,7 @@ from app.postgresql_locking import (
     acquire_bounded_transaction_advisory_locks,
 )
 from app.postgresql_privileges import (
+    APPLICATION_APPEND_DELETE_TABLES,
     APPLICATION_AUDIT_TABLES,
     apply_postgresql_application_privileges,
     verify_postgresql_application_privileges,
@@ -451,6 +457,9 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "database_revision": SCHEMA_HEAD,
     }
     assert "food_log" in inspect(postgres_engine).get_table_names()
+    assert "account_data_import_receipt" in inspect(
+        postgres_engine
+    ).get_table_names()
     assert "food_source" in inspect(postgres_engine).get_table_names()
     assert "food_source_record" in inspect(postgres_engine).get_table_names()
     assert "food_source_moderation_audit" in inspect(
@@ -468,6 +477,8 @@ def test_postgresql_empty_database_migrates_and_is_ready(
     assert "food_attribute_assertion_correction_audit" in inspect(
         postgres_engine
     ).get_table_names()
+
+
     assert "provider_rate_event" in inspect(postgres_engine).get_table_names()
     assert "route_rate_event" in inspect(postgres_engine).get_table_names()
     food_log_indexes = {
@@ -502,6 +513,106 @@ def test_postgresql_empty_database_migrates_and_is_ready(
         "client_id",
         "expires_at",
     )
+
+
+def test_postgresql_account_import_is_atomic_private_and_replay_safe(
+    postgres_engine: Engine,
+) -> None:
+    upgrade_database(
+        postgres_engine,
+        approval_reference="CI-POSTGRES-ACCOUNT-IMPORT-TRANSACTION",
+    )
+    target_user_id = "synthetic-postgresql-import-target"
+    with Session(postgres_engine) as session:
+        session.add(CalorieAppUserDB(id=target_user_id, status="active"))
+        session.commit()
+
+    plan = AccountDataImportPlan(
+        plan_version="calorieapp-account-data-import-plan-v1",
+        export_version="calorieapp-account-data-v1",
+        private_import_digest="a" * 64,
+        source_account_id="synthetic-postgresql-import-source",
+        target_account_id=target_user_id,
+        exported_at=datetime(2026, 9, 2, 12),
+        food_logs=(
+            PlannedFoodLogImport(
+                source_record_id=41,
+                target_owner_id=target_user_id,
+                product_name="Synthetic imported apple",
+                calories=52,
+                protein=0.3,
+                fat=0.2,
+                carbohydrates=14,
+                portion_percentage=100,
+                barcode="synthetic-import-barcode",
+                image_url=None,
+                brand="Synthetic orchard",
+                serving_size="100 g",
+                nutri_score="A",
+                created_at=datetime(2026, 8, 31, 10, 30),
+            ),
+        ),
+        ignored_collection_counts=(),
+    )
+
+    with Session(postgres_engine) as session:
+        staged = execute_account_data_import_transaction(
+            session,
+            plan,
+            authenticated_target_account_id=target_user_id,
+            confirmed_target_account_id=target_user_id,
+            environment="test",
+            execute=True,
+            approval_reference="synthetic-postgresql-import-rollback-proof",
+        )
+        assert staged.action == "staged_insert"
+        assert staged.staged_food_log_rows == 1
+        assert staged.staged_receipt_rows == 1
+        assert len(session.exec(select(FoodLogDB)).all()) == 1
+        assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
+        with Session(postgres_engine) as contender:
+            with pytest.raises(DataGrowthAdmissionRejected) as locked:
+                create_food_log_with_subject_budget(
+                    contender,
+                    FoodLogDB(
+                        product_name="Concurrent synthetic food log",
+                        calories=1,
+                        owner_id=target_user_id,
+                    ),
+                )
+            assert locked.value.status_code == 503
+            assert locked.value.reason == "data_growth_admission_unavailable"
+        session.rollback()
+
+    with Session(postgres_engine) as session:
+        assert session.exec(select(FoodLogDB)).all() == []
+        assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+        created = execute_account_data_import_transaction(
+            session,
+            plan,
+            authenticated_target_account_id=target_user_id,
+            confirmed_target_account_id=target_user_id,
+            environment="test",
+            execute=True,
+            approval_reference="synthetic-postgresql-import-commit-proof",
+        )
+        assert created.action == "staged_insert"
+        session.commit()
+
+    with Session(postgres_engine) as session:
+        replay = execute_account_data_import_transaction(
+            session,
+            plan,
+            authenticated_target_account_id=target_user_id,
+            confirmed_target_account_id=target_user_id,
+            environment="test",
+            execute=True,
+            approval_reference="synthetic-postgresql-import-replay-proof",
+        )
+        assert replay.action == "idempotent_noop"
+        assert len(session.exec(select(FoodLogDB)).all()) == 1
+        assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
+        session.rollback()
 
 
 def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
@@ -543,6 +654,12 @@ def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
             session.commit()
             session.add(record)
             session.commit()
+            receipt_target = CalorieAppUserDB(
+                id="synthetic-privilege-import-target",
+                status="active",
+            )
+            session.add(receipt_target)
+            session.commit()
 
         with postgres_engine.begin() as connection:
             proof = apply_postgresql_application_privileges(
@@ -552,6 +669,9 @@ def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
             )
         assert proof.application_role == role_name
         assert proof.insert_only_audit_table_count == len(APPLICATION_AUDIT_TABLES)
+        assert proof.append_delete_table_count == len(
+            APPLICATION_APPEND_DELETE_TABLES
+        )
         assert proof.read_only_table_count == 1
         assert proof.sequence_count >= 1
 
@@ -594,6 +714,20 @@ def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
             """,
             (utc_now(),),
         )
+        receipt_id = str(uuid4())
+        _execute_as_role(
+            postgres_engine,
+            role_name,
+            """
+            INSERT INTO account_data_import_receipt (
+                id, target_account_id, private_import_digest, plan_version,
+                export_version, food_log_count, created_at
+            ) VALUES (%s, 'synthetic-privilege-import-target', %s,
+                      'calorieapp-account-data-import-plan-v1',
+                      'calorieapp-account-data-v1', 0, %s)
+            """,
+            (receipt_id, "b" * 64, utc_now()),
+        )
 
         _assert_application_role_rejected(
             postgres_engine,
@@ -601,6 +735,19 @@ def test_postgresql_application_role_is_row_only_and_audits_are_insert_only(
             "UPDATE food_source_moderation_audit SET reason_code = 'rewritten' "
             "WHERE id = %s",
             (audit_id,),
+        )
+        _assert_application_role_rejected(
+            postgres_engine,
+            role_name,
+            "UPDATE account_data_import_receipt SET food_log_count = 1 "
+            "WHERE id = %s",
+            (receipt_id,),
+        )
+        _execute_as_role(
+            postgres_engine,
+            role_name,
+            "DELETE FROM account_data_import_receipt WHERE id = %s",
+            (receipt_id,),
         )
         _assert_application_role_rejected(
             postgres_engine,

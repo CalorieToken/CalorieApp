@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 import app.database as db_module
 import app.main as main_module
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     AuthorizationCodeDB,
     CalorieAppUserDB,
@@ -130,6 +131,20 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
                     calories=52,
                     owner_id=user_id,
                 ),
+                AccountDataImportReceiptDB(
+                    target_account_id=user_id,
+                    private_import_digest="c" * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=1,
+                ),
+                AccountDataImportReceiptDB(
+                    target_account_id=other_user.id,
+                    private_import_digest="d" * 64,
+                    plan_version="calorieapp-account-data-import-plan-v1",
+                    export_version="calorieapp-account-data-v1",
+                    food_log_count=1,
+                ),
                 FoodLogDB(
                     product_name="Keep private oats",
                     calories=380,
@@ -196,6 +211,18 @@ def test_account_erasure_removes_only_authenticated_users_primary_data(
         assert session.exec(
             select(FoodLogDB).where(FoodLogDB.owner_id == user_id)
         ).all() == []
+        assert session.exec(
+            select(AccountDataImportReceiptDB).where(
+                AccountDataImportReceiptDB.target_account_id == user_id
+            )
+        ).all() == []
+        assert len(
+            session.exec(
+                select(AccountDataImportReceiptDB).where(
+                    AccountDataImportReceiptDB.target_account_id == other_user_id
+                )
+            ).all()
+        ) == 1
         assert session.exec(
             select(AuthSessionDB).where(AuthSessionDB.calorieapp_user_id == user_id)
         ).all() == []

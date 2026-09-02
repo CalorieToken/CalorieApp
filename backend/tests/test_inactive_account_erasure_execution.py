@@ -22,6 +22,7 @@ from app.inactive_account_erasure_preflight import (
     InactiveAccountErasurePreflightSafetyError,
 )
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -126,6 +127,13 @@ def _seed_candidate(session: Session, *, include_relations: bool = True) -> dict
                 calories=52,
                 owner_id=user.id,
             ),
+            AccountDataImportReceiptDB(
+                target_account_id=user.id,
+                private_import_digest="6" * 64,
+                plan_version="calorieapp-account-data-import-plan-v1",
+                export_version="calorieapp-account-data-v1",
+                food_log_count=1,
+            ),
             ExternalIdentityDB(
                 calorieapp_user_id=user.id,
                 provider="wordpress_xumm",
@@ -180,9 +188,10 @@ def test_execution_stages_exact_minimized_shape_and_caller_can_roll_back(
         assert result.origin_login_handoff_rows_deleted == 1
         assert result.auth_session_rows_deleted == 2
         assert result.inactive_account_notice_rows_deleted == 1
+        assert result.account_data_import_receipt_rows_deleted == 1
         assert result.inbound_session_references_cleared == 2
         assert result.user_rows_deleted == 1
-        assert result.total_delete_rows == 7
+        assert result.total_delete_rows == 8
         assert session.get(CalorieAppUserDB, identifiers["user_id"]) is None
         assert session.get(InactiveAccountNoticeDB, identifiers["notice_id"]) is None
         preserved = session.get(AuthSessionDB, identifiers["inbound_session_id"])
@@ -195,7 +204,7 @@ def test_execution_stages_exact_minimized_shape_and_caller_can_roll_back(
         )
         assert payload["status"] == "staged-pending-caller-commit"
         assert payload["caller_commit_required"] is True
-        assert payload["total_delete_rows"] == 7
+        assert payload["total_delete_rows"] == 8
         serialized = json.dumps(payload)
         assert approval_reference not in serialized
         assert identifiers["user_id"] not in serialized
@@ -211,6 +220,14 @@ def test_execution_stages_exact_minimized_shape_and_caller_can_roll_back(
         assert len(
             session.exec(
                 select(FoodLogDB).where(FoodLogDB.owner_id == identifiers["user_id"])
+            ).all()
+        ) == 1
+        assert len(
+            session.exec(
+                select(AccountDataImportReceiptDB).where(
+                    AccountDataImportReceiptDB.target_account_id
+                    == identifiers["user_id"]
+                )
             ).all()
         ) == 1
         restored = session.get(AuthSessionDB, identifiers["inbound_session_id"])

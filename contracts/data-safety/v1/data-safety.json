@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.29.0",
+  "contract_version": "1.30.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -231,6 +231,7 @@
       "covered_delete_relations": [
         "calorieappuser",
         "food_log",
+        "account_data_import_receipt",
         "externalidentity",
         "originloginhandoff",
         "authsession",
@@ -269,6 +270,7 @@
       "covered_delete_relations": [
         "calorieappuser",
         "food_log",
+        "account_data_import_receipt",
         "externalidentity",
         "originloginhandoff",
         "authsession",
@@ -337,7 +339,7 @@
     "unresolved_release_decisions": []
   },
   "account_data_export": {
-    "status": "v2-export-ui-pure-import-plan-and-admission-implemented-provider-and-notice-review-pending",
+    "status": "v2-export-ui-and-guarded-import-transaction-staging-implemented-provider-and-notice-review-pending",
     "format": "versioned-json",
     "format_version": "calorieapp-account-data-v1",
     "authenticated_user_only": true,
@@ -386,11 +388,29 @@
     "import_admission_target_food_log_limit": 10000,
     "import_admission_limit_may_exceed_live_subject_budget": false,
     "import_admission_count_and_digest_must_be_read_in_future_transaction": true,
-    "private_import_idempotency_storage_implemented": false,
+    "private_import_idempotency_storage_implemented": true,
+    "import_transaction_version": "calorieapp-account-data-import-transaction-v1",
+    "import_transaction_disabled_by_default": true,
+    "import_transaction_non_production_only": true,
+    "import_transaction_caller_commit_required": true,
+    "import_transaction_requires_no_pending_session_mutations": true,
+    "import_transaction_uses_live_food_log_subject_lock": true,
+    "import_transaction_locks_active_target_and_reads_count_and_digest_before_insert": true,
+    "import_transaction_food_logs_and_private_receipt_share_one_savepoint": true,
+    "import_transaction_database_errors_retain_private_values": false,
+    "import_transaction_exact_digest_replay_writes_rows": false,
+    "import_transaction_conflicting_private_receipt_fails_closed": true,
+    "import_receipt_stores_source_account_identifier_or_food_values": false,
+    "import_receipt_erased_with_account": true,
+    "import_receipt_runtime_update_allowed": false,
+    "synthetic_postgresql_import_transaction_test_implemented": true,
+    "synthetic_postgresql_import_lock_shared_with_live_food_log_writer_tested": true,
+    "import_schema_migration_repository_status": "prepared-forward-migration-not-deployed",
+    "external_database_migration_or_deployment_performed": false,
     "import_admission_has_endpoint_database_file_provider_network_or_deployment_capability": false,
     "future_import_requires_separate_target_authentication_and_authorization": true,
     "authenticated_import_endpoint_implemented": false,
-    "database_import_mutation_implemented": false,
+    "database_import_mutation_implemented": true,
     "provider_exit_import_proved": false,
     "import_plan_has_endpoint_database_file_provider_network_or_deployment_capability": false,
     "account_export_changes_erasure_or_retention_policy": false
@@ -412,6 +432,7 @@
     "all_primary_authentication_sessions_removed": true,
     "inbound_session_replacement_references_cleared": true,
     "directly_owned_primary_food_history_identity_links_sessions_and_handoffs_removed": true,
+    "private_account_import_replay_receipts_removed": true,
     "browser_session_cookie_cleared": true,
     "backup_erasure_claimed_complete": false,
     "recovery_window_selected": true,
@@ -447,6 +468,7 @@
       "synthetic_data_only": true,
       "custom_format_pg_dump_and_pg_restore": true,
       "schema_head_and_owner_links_verified": true,
+      "private_account_import_receipts_restored_and_erased_with_owner": true,
       "post_backup_synthetic_primary_store_erasure_performed": true,
       "replay_proof_location": "in-process-memory-outside-backup-archive",
       "replay_proof_uses_hardcoded_nonsecret_ci_key": true,
@@ -554,7 +576,8 @@
       "synthetic-in-memory-erasure-replay-after-older-backup-restore",
       "provider-neutral-low-cardinality-capacity-alert-interface",
       "bounded-source-assertion-ingest-and-multi-process-budget",
-      "synthetic-runtime-role-row-only-and-insert-only-audit-enforcement"
+      "synthetic-account-import-transaction-and-private-replay-idempotency",
+      "synthetic-runtime-role-row-only-audit-and-import-receipt-enforcement"
     ],
     "does_not_prove": [
       "free-provider-tier-permanence",

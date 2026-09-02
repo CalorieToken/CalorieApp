@@ -20,6 +20,7 @@ from .inactive_account_erasure_eligibility import (
     lock_inactive_account_erasure_candidate,
 )
 from .models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     AuthorizationCodeDB,
     ExternalIdentityDB,
@@ -51,6 +52,7 @@ class InactiveAccountErasurePreflight:
     auth_session_rows: int
     inactive_account_notice_rows: int
     inbound_session_reference_rows: int
+    account_data_import_receipt_rows: int = 0
 
     @property
     def total_delete_rows(self) -> int:
@@ -61,6 +63,7 @@ class InactiveAccountErasurePreflight:
                 self.origin_login_handoff_rows,
                 self.auth_session_rows,
                 self.inactive_account_notice_rows,
+                self.account_data_import_receipt_rows,
             )
         )
 
@@ -195,6 +198,12 @@ def preflight_inactive_account_erasure(
                 InactiveAccountNoticeDB.calorieapp_user_id == candidate.user_id,
                 relation="inactive_account_notice",
             )
+            account_data_import_receipt_rows = _bounded_count(
+                session,
+                AccountDataImportReceiptDB,
+                AccountDataImportReceiptDB.target_account_id == candidate.user_id,
+                relation="account_data_import_receipt",
+            )
             owned_session_ids = select(AuthSessionDB.id).where(
                 AuthSessionDB.calorieapp_user_id == candidate.user_id
             )
@@ -215,6 +224,7 @@ def preflight_inactive_account_erasure(
             auth_session_rows=auth_session_rows,
             inactive_account_notice_rows=inactive_account_notice_rows,
             inbound_session_reference_rows=inbound_session_reference_rows,
+            account_data_import_receipt_rows=account_data_import_receipt_rows,
         )
         if result.total_delete_rows > MAXIMUM_TOTAL_DELETE_ROWS:
             raise InactiveAccountErasurePreflightSafetyError(

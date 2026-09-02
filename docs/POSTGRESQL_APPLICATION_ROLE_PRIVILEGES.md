@@ -16,6 +16,8 @@ The reviewed runtime matrix is fail-closed:
 
 - normal application tables: `SELECT`, `INSERT`, `UPDATE`, `DELETE`;
 - the four minimal audit tables: `SELECT`, `INSERT` only;
+- private account-import replay receipts: `SELECT`, `INSERT`, `DELETE` only,
+  where deletion is reserved for account erasure;
 - `calorie_schema_revision`: `SELECT` only;
 - application sequences: `USAGE`, `SELECT`, `UPDATE`;
 - database: `CONNECT` only; no `CREATE` or `TEMPORARY`;
@@ -58,6 +60,8 @@ policy and proves that the role can:
 
 - update an ordinary application row;
 - insert a minimal audit receipt;
+- insert and erase a private import replay receipt while being unable to update
+  it;
 - insert a sequence-backed food-log row.
 
 It then proves PostgreSQL rejects attempts to update, delete or truncate that

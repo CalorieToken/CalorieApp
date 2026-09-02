@@ -1,8 +1,9 @@
 # Calorie ecosystem continuity foundation
 
-Status: pre-release and incomplete. Pure v1 food-history import planning and
-clean-target admission are implemented, while authenticated transactional
-import and provider-exit proof remain blocked. This document defines the
+Status: pre-release and incomplete. V1 food-history import planning,
+clean-target admission and guarded internal transaction staging are
+implemented, while the authenticated endpoint, production activation and
+provider-exit proof remain blocked. This document defines the
 technical continuity target; it does not transfer legal ownership, credentials,
 personal data or trade mark rights.
 
@@ -100,9 +101,11 @@ prepares only food-log snapshots for a separately authenticated target account.
 The pure admission layer then requires the authenticated target and explicit
 confirmation to match, allows a new plan only for a clean target, treats an
 already-recorded exact digest as a no-op, and enforces the retained-row ceiling.
-Neither layer rehydrates exported identities, sessions, authorization activity,
-browser handoffs or retention notices. They perform no database write and do
-not yet satisfy the provider-exit evidence requirement; see
+An internal, disabled-by-default non-production helper now stages the admitted
+food rows and private replay receipt under the same transaction lock without
+committing. None of these layers rehydrates exported identities, sessions,
+authorization activity, browser handoffs or retention notices. There is still
+no authenticated upload endpoint or provider-exit evidence; see
 `ACCOUNT_DATA_IMPORT.md`.
 
 ## Prohibited shortcuts

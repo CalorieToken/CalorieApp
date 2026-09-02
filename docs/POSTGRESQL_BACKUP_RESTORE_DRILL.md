@@ -13,7 +13,8 @@ backup and restores it into a separate disposable database. The drill:
    `calorieapp_ci_restore`;
 3. migrates the empty source to the current schema head;
 4. creates two synthetic accounts with identity links, opaque sessions,
-   handoffs, inactive-notice history and separately owned food-history rows;
+   handoffs, inactive-notice history, private import replay receipts and
+   separately owned food-history rows;
 5. creates a `pg_dump` custom-format archive without owners or privileges;
 6. after that archive, deletes one fixed synthetic account from the source and
    builds its replay proof in process memory outside the archive;

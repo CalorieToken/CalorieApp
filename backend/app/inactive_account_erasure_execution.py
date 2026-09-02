@@ -23,6 +23,7 @@ from .inactive_account_erasure_preflight import (
     preflight_inactive_account_erasure,
 )
 from .models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -54,6 +55,7 @@ class InactiveAccountErasureExecutionResult:
     inactive_account_notice_rows_deleted: int
     inbound_session_references_cleared: int
     user_rows_deleted: int
+    account_data_import_receipt_rows_deleted: int = 0
 
     @property
     def total_delete_rows(self) -> int:
@@ -64,6 +66,7 @@ class InactiveAccountErasureExecutionResult:
                 self.origin_login_handoff_rows_deleted,
                 self.auth_session_rows_deleted,
                 self.inactive_account_notice_rows_deleted,
+                self.account_data_import_receipt_rows_deleted,
                 self.user_rows_deleted,
             )
         )
@@ -82,6 +85,9 @@ class InactiveAccountErasureExecutionResult:
                 "originloginhandoff": self.origin_login_handoff_rows_deleted,
                 "authsession": self.auth_session_rows_deleted,
                 "inactive_account_notice": self.inactive_account_notice_rows_deleted,
+                "account_data_import_receipt": (
+                    self.account_data_import_receipt_rows_deleted
+                ),
                 "calorieappuser": self.user_rows_deleted,
             },
             "inbound_session_references_cleared": (
@@ -189,6 +195,15 @@ def _stage_preflighted_erasure(
             expected=preflight.inactive_account_notice_rows,
             relation="inactive_account_notice",
         )
+        import_receipts = _exact_rowcount(
+            session.exec(
+                delete(AccountDataImportReceiptDB).where(
+                    AccountDataImportReceiptDB.target_account_id == user_id
+                )
+            ),
+            expected=preflight.account_data_import_receipt_rows,
+            relation="account_data_import_receipt",
+        )
         handoffs = _exact_rowcount(
             session.exec(
                 delete(OriginLoginHandoffDB).where(
@@ -236,6 +251,7 @@ def _stage_preflighted_erasure(
             (
                 food_logs,
                 notices,
+                import_receipts,
                 handoffs,
                 auth_sessions,
                 identities,
@@ -250,6 +266,7 @@ def _stage_preflighted_erasure(
     return {
         "food_logs": food_logs,
         "notices": notices,
+        "import_receipts": import_receipts,
         "handoffs": handoffs,
         "inbound_references": inbound_references,
         "auth_sessions": auth_sessions,
@@ -297,6 +314,7 @@ def execute_inactive_account_erasure(
             origin_login_handoff_rows_deleted=counts["handoffs"],
             auth_session_rows_deleted=counts["auth_sessions"],
             inactive_account_notice_rows_deleted=counts["notices"],
+            account_data_import_receipt_rows_deleted=counts["import_receipts"],
             inbound_session_references_cleared=counts["inbound_references"],
             user_rows_deleted=counts["users"],
         )

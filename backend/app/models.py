@@ -48,6 +48,53 @@ class FoodLogDB(SQLModel, table=True):
     )
 
 
+class AccountDataImportReceiptDB(SQLModel, table=True):
+    """Private immutable replay receipt for one account-data import plan."""
+
+    __tablename__ = "account_data_import_receipt"
+    __table_args__ = (
+        UniqueConstraint(
+            "target_account_id",
+            "private_import_digest",
+            name="uq_account_data_import_receipt_target_digest",
+        ),
+        CheckConstraint(
+            "LENGTH(private_import_digest) = 64 "
+            "AND private_import_digest = LOWER(private_import_digest)",
+            name="ck_account_data_import_receipt_digest",
+        ),
+        CheckConstraint(
+            "food_log_count >= 0 AND food_log_count <= 10000",
+            name="ck_account_data_import_receipt_food_log_count",
+        ),
+        CheckConstraint(
+            "plan_version = 'calorieapp-account-data-import-plan-v1'",
+            name="ck_account_data_import_receipt_plan_version",
+        ),
+        CheckConstraint(
+            "export_version = 'calorieapp-account-data-v1'",
+            name="ck_account_data_import_receipt_export_version",
+        ),
+    )
+
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    target_account_id: str = Field(
+        foreign_key="calorieappuser.id",
+        max_length=255,
+        index=True,
+    )
+    private_import_digest: str = Field(min_length=64, max_length=64)
+    plan_version: str = Field(max_length=80)
+    export_version: str = Field(max_length=80)
+    food_log_count: int = Field(ge=0, le=10_000)
+    created_at: datetime = Field(default_factory=utc_now)
+
+    def __repr__(self) -> str:
+        """Keep the private target and digest out of debug output."""
+
+        return "AccountDataImportReceiptDB(<private>)"
+
+
 class FoodSourceDB(SQLModel, table=True):
     """Reviewed source registration; no public onboarding route exists."""
 

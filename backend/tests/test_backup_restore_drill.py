@@ -23,6 +23,7 @@ from app.backup_restore_drill import (
     validate_drill_urls,
 )
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     CalorieAppUserDB,
     ExternalIdentityDB,
@@ -214,12 +215,16 @@ def test_synthetic_replay_stage_is_rollback_safe_and_preserves_other_account(
         assert session.get(CalorieAppUserDB, SYNTHETIC_USER_IDS[1]) is not None
         identities = session.exec(select(ExternalIdentityDB)).all()
         food_logs = session.exec(select(FoodLogDB)).all()
+        import_receipts = session.exec(select(AccountDataImportReceiptDB)).all()
         handoffs = session.exec(select(OriginLoginHandoffDB)).all()
         notices = session.exec(select(InactiveAccountNoticeDB)).all()
         assert [row.calorieapp_user_id for row in identities] == [
             SYNTHETIC_USER_IDS[1]
         ]
         assert [row.owner_id for row in food_logs] == [SYNTHETIC_USER_IDS[1]]
+        assert [row.target_account_id for row in import_receipts] == [
+            SYNTHETIC_USER_IDS[1]
+        ]
         assert [row.calorieapp_user_id for row in handoffs] == [
             SYNTHETIC_USER_IDS[1]
         ]

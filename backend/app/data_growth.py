@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterator
+from contextlib import contextmanager
 from threading import Lock
 
 import sqlalchemy as sa
@@ -49,6 +51,33 @@ def _postgresql_lock_key(owner_id: str) -> int:
         signed=False,
     )
     return raw - (1 << 64) if raw >= (1 << 63) else raw
+
+
+@contextmanager
+def food_log_subject_transaction_lock(
+    session: Session,
+    owner_id: str,
+) -> Iterator[None]:
+    """Serialize food-log capacity decisions for one internal account.
+
+    PostgreSQL's transaction advisory lock remains held until the caller ends
+    its transaction. SQLite's process-local lock is suitable only for local
+    development and unit tests.
+    """
+
+    backend = session.get_bind().dialect.name
+    if backend == "postgresql":
+        acquire_bounded_transaction_advisory_locks(
+            session,
+            [_postgresql_lock_key(owner_id)],
+        )
+        yield
+        return
+    if backend == "sqlite":
+        with _sqlite_subject_lock:
+            yield
+        return
+    raise TypeError("unsupported database backend for food-log subject locking")
 
 
 def _count_subject_entries(session: Session, owner_id: str) -> int:
@@ -100,25 +129,12 @@ def create_food_log_with_subject_budget(
         raise ValueError("food log subject limit must be greater than zero")
 
     try:
-        backend = session.get_bind().dialect.name
-        if backend == "postgresql":
-            acquire_bounded_transaction_advisory_locks(
-                session,
-                [_postgresql_lock_key(entry.owner_id)],
-            )
+        with food_log_subject_transaction_lock(session, entry.owner_id):
             return _insert_if_within_budget(
                 session,
                 entry,
                 limit=effective_limit,
             )
-        if backend == "sqlite":
-            with _sqlite_subject_lock:
-                return _insert_if_within_budget(
-                    session,
-                    entry,
-                    limit=effective_limit,
-                )
-        raise TypeError("unsupported database backend for data growth admission")
     except DataGrowthAdmissionRejected:
         session.rollback()
         raise

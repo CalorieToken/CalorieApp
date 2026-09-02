@@ -9,9 +9,12 @@ import inspect
 import json
 
 import pytest
+from sqlmodel import Session, create_engine, select
+from sqlmodel.pool import StaticPool
 
 import app.account_data_import as import_module
 import app.account_data_import_admission as admission_module
+import app.account_data_import_transaction as transaction_module
 from app.account_data_import import (
     IMPORT_PLAN_VERSION,
     REQUIRED_EXCLUDED_SECURITY_FIELDS,
@@ -27,7 +30,18 @@ from app.account_data_import_admission import (
     AccountDataImportAdmissionError,
     admit_account_data_import,
 )
+from app.account_data_import_transaction import (
+    IMPORT_TRANSACTION_VERSION,
+    AccountDataImportTransactionSafetyError,
+    execute_account_data_import_transaction,
+)
 from app.data_growth import FOOD_LOG_SUBJECT_ENTRY_LIMIT
+from app.models import (
+    AccountDataImportReceiptDB,
+    CalorieAppUserDB,
+    FoodLogDB,
+)
+from app.schema_migrations import upgrade_database
 
 
 SOURCE_USER_ID = "00000000-0000-0000-0000-000000000071"
@@ -566,3 +580,246 @@ def test_import_admission_module_has_no_database_network_or_endpoint_capability(
     assert "requests" not in source
     assert "@app." not in source
     assert ".commit(" not in source
+
+
+def _transaction_engine(*, target_status: str = "active"):
+    test_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    upgrade_database(test_engine)
+    with Session(test_engine) as session:
+        session.add(CalorieAppUserDB(id=TARGET_USER_ID, status=target_status))
+        session.commit()
+    return test_engine
+
+
+def _execute_transaction(session: Session, plan=None, **overrides):
+    values = {
+        "session": session,
+        "plan": _plan() if plan is None else plan,
+        "authenticated_target_account_id": TARGET_USER_ID,
+        "confirmed_target_account_id": TARGET_USER_ID,
+        "environment": "test",
+        "execute": True,
+        "approval_reference": "synthetic-account-import-test",
+    }
+    values.update(overrides)
+    return execute_account_data_import_transaction(**values)
+
+
+def test_account_import_transaction_stages_private_rows_for_caller_rollback() -> None:
+    test_engine = _transaction_engine()
+    try:
+        plan = _plan()
+        with Session(test_engine) as session:
+            result = _execute_transaction(session, plan)
+
+            assert result.action == "staged_insert"
+            assert result.staged_food_log_rows == 1
+            assert result.staged_receipt_rows == 1
+            assert len(result.approval_reference_sha256) == 64
+            assert repr(result) == "AccountDataImportTransactionResult(<private>)"
+            payload = result.as_payload()
+            assert payload["transaction_version"] == IMPORT_TRANSACTION_VERSION
+            assert payload["caller_commit_required"] is True
+            assert TARGET_USER_ID not in str(payload)
+            assert plan.private_import_digest not in str(payload)
+
+            staged_log = session.exec(select(FoodLogDB)).one()
+            staged_receipt = session.exec(
+                select(AccountDataImportReceiptDB)
+            ).one()
+            assert staged_log.owner_id == TARGET_USER_ID
+            assert staged_log.product_name == "Portable apple"
+            assert staged_receipt.target_account_id == TARGET_USER_ID
+            assert staged_receipt.private_import_digest == plan.private_import_digest
+            assert staged_receipt.food_log_count == 1
+            assert repr(staged_receipt) == "AccountDataImportReceiptDB(<private>)"
+            session.rollback()
+
+        with Session(test_engine) as session:
+            assert session.exec(select(FoodLogDB)).all() == []
+            assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+            assert session.get(CalorieAppUserDB, TARGET_USER_ID) is not None
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_commit_makes_exact_replay_a_noop() -> None:
+    test_engine = _transaction_engine()
+    try:
+        plan = _plan()
+        with Session(test_engine) as session:
+            created = _execute_transaction(session, plan)
+            assert created.action == "staged_insert"
+            session.commit()
+
+        with Session(test_engine) as session:
+            replay = _execute_transaction(session, plan)
+            assert replay.action == "idempotent_noop"
+            assert replay.staged_food_log_rows == 0
+            assert replay.staged_receipt_rows == 0
+            assert replay.as_payload()["caller_commit_required"] is False
+            assert len(session.exec(select(FoodLogDB)).all()) == 1
+            assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
+            session.rollback()
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_rejects_a_conflicting_private_receipt() -> None:
+    test_engine = _transaction_engine()
+    try:
+        plan = _plan()
+        with Session(test_engine) as session:
+            created = _execute_transaction(session, plan)
+            assert created.action == "staged_insert"
+            session.commit()
+
+        with Session(test_engine) as session:
+            receipt = session.exec(select(AccountDataImportReceiptDB)).one()
+            receipt.food_log_count = 0
+            session.add(receipt)
+            session.commit()
+
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="receipt conflicts",
+            ):
+                _execute_transaction(session, plan)
+            assert len(session.exec(select(FoodLogDB)).all()) == 1
+            assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
+            session.rollback()
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_rejects_nonclean_or_inactive_target() -> None:
+    test_engine = _transaction_engine()
+    try:
+        with Session(test_engine) as session:
+            session.add(
+                FoodLogDB(
+                    product_name="Existing private row",
+                    calories=1,
+                    owner_id=TARGET_USER_ID,
+                )
+            )
+            session.commit()
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="admission was rejected",
+            ):
+                _execute_transaction(session)
+            assert len(session.exec(select(FoodLogDB)).all()) == 1
+            assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+            session.rollback()
+    finally:
+        test_engine.dispose()
+
+    inactive_engine = _transaction_engine(target_status="inactive")
+    try:
+        with Session(inactive_engine) as session:
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="target is unavailable",
+            ):
+                _execute_transaction(session)
+            session.rollback()
+    finally:
+        inactive_engine.dispose()
+
+
+@pytest.mark.parametrize(
+    ("overrides", "message"),
+    [
+        ({"execute": False}, "disabled by default"),
+        ({"environment": "production"}, "non-production"),
+        ({"approval_reference": ""}, "approval reference"),
+        (
+            {"authenticated_target_account_id": SOURCE_USER_ID},
+            "admission was rejected",
+        ),
+    ],
+)
+def test_account_import_transaction_requires_explicit_bounded_authorization(
+    overrides: dict[str, object],
+    message: str,
+) -> None:
+    test_engine = _transaction_engine()
+    try:
+        with Session(test_engine) as session:
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match=message,
+            ):
+                _execute_transaction(session, **overrides)
+            assert session.exec(select(FoodLogDB)).all() == []
+            assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+            session.rollback()
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_rejects_pending_session_mutations() -> None:
+    test_engine = _transaction_engine()
+    try:
+        with Session(test_engine) as session:
+            session.add(
+                FoodLogDB(
+                    product_name="Unrelated pending row",
+                    calories=1,
+                    owner_id=TARGET_USER_ID,
+                )
+            )
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="no pending session mutations",
+            ):
+                _execute_transaction(session)
+            session.rollback()
+
+        with Session(test_engine) as session:
+            assert session.exec(select(FoodLogDB)).all() == []
+            assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_rolls_back_every_row_on_database_failure() -> None:
+    payload = _payload()
+    second_food_log = deepcopy(payload["food_logs"][0])
+    second_food_log["id"] = 42
+    payload["food_logs"].append(second_food_log)
+    reviewed_plan = _plan(_encoded(payload))
+    invalid_second_row = replace(reviewed_plan.food_logs[1], product_name=None)
+    tampered_plan = replace(
+        reviewed_plan,
+        food_logs=(reviewed_plan.food_logs[0], invalid_second_row),
+    )
+
+    test_engine = _transaction_engine()
+    try:
+        with Session(test_engine) as session:
+            with pytest.raises(
+                AccountDataImportTransactionSafetyError,
+                match="transaction is unavailable",
+            ) as exc_info:
+                _execute_transaction(session, tampered_plan)
+            assert exc_info.value.__cause__ is None
+            assert session.exec(select(FoodLogDB)).all() == []
+            assert session.exec(select(AccountDataImportReceiptDB)).all() == []
+            session.rollback()
+    finally:
+        test_engine.dispose()
+
+
+def test_account_import_transaction_has_no_endpoint_provider_or_commit_capability() -> None:
+    source = inspect.getsource(transaction_module)
+
+    assert "@app." not in source
+    assert "requests" not in source
+    assert ".commit(" not in source
+    assert '"production"' not in source

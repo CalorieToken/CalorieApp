@@ -15,6 +15,7 @@ from app.inactive_account_erasure_eligibility import (
     InactiveAccountErasureEligibilitySafetyError,
 )
 from app.models import (
+    AccountDataImportReceiptDB,
     AuthSessionDB,
     AuthorizationCodeDB,
     CalorieAppUserDB,
@@ -87,6 +88,13 @@ def test_preflight_returns_bounded_minimal_counts_without_mutation() -> None:
                         calories=52,
                         owner_id=user_id,
                     ),
+                    AccountDataImportReceiptDB(
+                        target_account_id=user_id,
+                        private_import_digest="5" * 64,
+                        plan_version="calorieapp-account-data-import-plan-v1",
+                        export_version="calorieapp-account-data-v1",
+                        food_log_count=1,
+                    ),
                     ExternalIdentityDB(
                         calorieapp_user_id=user_id,
                         provider="wordpress_xumm",
@@ -132,14 +140,16 @@ def test_preflight_returns_bounded_minimal_counts_without_mutation() -> None:
             assert plan.origin_login_handoff_rows == 1
             assert plan.auth_session_rows == 1
             assert plan.inactive_account_notice_rows == 1
+            assert plan.account_data_import_receipt_rows == 1
             assert plan.inbound_session_reference_rows == 1
-            assert plan.total_delete_rows == 6
+            assert plan.total_delete_rows == 7
             session.rollback()
 
         with Session(engine) as session:
             assert session.get(CalorieAppUserDB, user_id) is not None
             assert session.get(InactiveAccountNoticeDB, notice_id) is not None
             assert len(session.exec(select(FoodLogDB)).all()) == 1
+            assert len(session.exec(select(AccountDataImportReceiptDB)).all()) == 1
             inbound = session.get(AuthSessionDB, "preflight-inbound-session")
             assert inbound is not None
             assert inbound.replaced_by_session_id == "preflight-target-session"
