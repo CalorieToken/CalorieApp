@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.34.0",
+  "contract_version": "1.35.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -875,9 +875,9 @@
     "no_additional_cost_exit_plan_required_before_public_onboarding": true,
     "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
     "synthetic_provider_use_preflight": "backend/app/synthetic_provider_use_preflight.py",
-    "synthetic_provider_use_preflight_status": "blocked-four-control-groups-no-provider-contact",
+    "synthetic_provider_use_preflight_status": "blocked-three-control-groups-no-provider-contact",
     "provider_shortlist_status": "neon-free-frankfurt-synthetic-staging-project-created-use-blocked",
-    "provider_evidence_reviewed_on": "2026-09-02",
+    "provider_evidence_reviewed_on": "2026-09-03",
     "provider_evidence_revalidate_by": "2026-12-01",
     "provider_selected": true,
     "selected_provider": "neon_free",

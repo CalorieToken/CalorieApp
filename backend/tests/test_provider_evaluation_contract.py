@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.7.0"
+    assert contract["contract_version"] == "1.8.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-project-created-use-blocked"
     )
@@ -133,7 +133,21 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert review["data_processing"]["global_access_or_processing_may_occur"] is True
     assert review["data_processing"][
         "dpa_execution_or_account_acceptance_confirmed"
-    ] is False
+    ] is True
+    assert review["data_processing"][
+        "subprocessor_notification_subscription_confirmed"
+    ] is True
+    assert review["data_processing"]["dpa_execution_record"] == {
+        "confirmed_on": "2026-09-03",
+        "agreement": "Databricks Data Processing Addendum v3 (2023-07-21)",
+        "signing_channel": "Ironclad-generated DocuSign envelope",
+        "completion_certificate_privately_archived": True,
+        "signed_agreement_or_certificate_in_public_repository": False,
+    }
+    assert review["data_processing"]["subprocessor_notification_record"] == {
+        "confirmed_on": "2026-09-03",
+        "recipient_address_recorded_in_public_repository": False,
+    }
     assert review["data_processing"]["approved_for_real_personal_data"] is False
     assert review["billing_and_quota"]["free_plan_listed_price_usd_per_month"] == 0
     assert review["billing_and_quota"][
@@ -284,7 +298,13 @@ def test_shortlist_recommends_only_a_synthetic_experiment() -> None:
 
 def test_provider_facts_use_official_https_sources_only() -> None:
     contract = _load_contract()
-    allowed_hosts = {"docs.github.com", "neon.com", "supabase.com", "render.com"}
+    allowed_hosts = {
+        "docs.github.com",
+        "neon.com",
+        "render.com",
+        "supabase.com",
+        "www.databricks.com",
+    }
     source_groups = [
         candidate["official_sources"]
         for candidate in contract["database_candidates"]
@@ -311,10 +331,7 @@ def test_real_provider_work_remains_release_blocked() -> None:
     assert contract["release_blocking_before_synthetic_provider_use"]
     assert contract["release_blocking_after_provider_selection"]
     blockers = contract["release_blocking_before_synthetic_provider_use"]
-    assert (
-        "confirm DPA execution or account acceptance and subscribe to subprocessor changes"
-        in blockers
-    )
+    assert not any("DPA execution" in item for item in blockers)
     assert (
         "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
         in blockers

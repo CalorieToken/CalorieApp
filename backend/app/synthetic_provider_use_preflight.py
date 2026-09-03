@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -21,7 +21,7 @@ EXIT_BLOCKED = 40
 EXIT_INVALID = 50
 
 _EXPECTED_CONTRACT_ID = "calorieapp.zero-additional-cost-provider-evaluation"
-_EXPECTED_CONTRACT_VERSION = "1.7.0"
+_EXPECTED_CONTRACT_VERSION = "1.8.0"
 _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"
@@ -78,6 +78,7 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
     project = contract["project_creation_record"]
     review = contract["preconfiguration_review"]
     region = review["eu_region"]
+    data_processing = review["data_processing"]
     billing = review["billing_and_quota"]
     capacity = contract["capacity_policy"]
     backup = review["portable_backup"]
@@ -106,6 +107,20 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("unexpected region")
     if region["project_postgres_version"] != 16:
         raise ValueError("unexpected PostgreSQL version")
+    if data_processing["approved_for_real_personal_data"] is not False:
+        raise ValueError("real personal data is outside this preflight")
+    dpa_record = data_processing["dpa_execution_record"]
+    subprocessor_record = data_processing["subprocessor_notification_record"]
+    if date.fromisoformat(dpa_record["confirmed_on"]) > today:
+        raise ValueError("DPA evidence is dated in the future")
+    if date.fromisoformat(subprocessor_record["confirmed_on"]) > today:
+        raise ValueError("subprocessor evidence is dated in the future")
+    if dpa_record["completion_certificate_privately_archived"] is not True:
+        raise ValueError("DPA completion evidence missing")
+    if dpa_record["signed_agreement_or_certificate_in_public_repository"] is not False:
+        raise ValueError("private DPA evidence must not be public")
+    if subprocessor_record["recipient_address_recorded_in_public_repository"] is not False:
+        raise ValueError("subprocessor recipient must not be public")
     if billing["live_plan"] != "Free" or billing["live_price_usd_per_month"] != 0:
         raise ValueError("unexpected plan")
     if billing["live_project_count"] != 1:
@@ -142,7 +157,7 @@ def evaluate_synthetic_provider_use_preflight(
 ) -> SyntheticProviderUsePreflightResult:
     """Evaluate documented controls without contacting an external provider."""
     try:
-        _validate_safe_boundary(contract, today or date.today())
+        _validate_safe_boundary(contract, today or datetime.now(UTC).date())
         review = contract["preconfiguration_review"]
         data_processing = review["data_processing"]
         billing = review["billing_and_quota"]

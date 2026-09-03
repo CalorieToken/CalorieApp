@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
-  "contract_version": "1.7.0",
-  "evidence_reviewed_on": "2026-09-02",
+  "contract_version": "1.8.0",
+  "evidence_reviewed_on": "2026-09-03",
   "evidence_revalidate_by": "2026-12-01",
   "decision_state": "neon-synthetic-staging-project-created-use-blocked",
   "provider_selected": true,
@@ -36,7 +36,7 @@
     "production_deployment_approved": false
   },
   "preconfiguration_review": {
-    "reviewed_on": "2026-09-02",
+    "reviewed_on": "2026-09-03",
     "status": "free-frankfurt-project-created-provider-use-and-recipient-configuration-blocked",
     "live_evidence_document": "docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md",
     "eu_region": {
@@ -53,8 +53,19 @@
       "global_access_or_processing_may_occur": true,
       "transfer_mechanisms_include_data_privacy_framework_and_standard_contractual_clauses": true,
       "customer_remains_responsible_for_lawful_processing_security_and_export_before_account_deletion": true,
-      "dpa_execution_or_account_acceptance_confirmed": false,
-      "subprocessor_notification_subscription_confirmed": false,
+      "dpa_execution_or_account_acceptance_confirmed": true,
+      "dpa_execution_record": {
+        "confirmed_on": "2026-09-03",
+        "agreement": "Databricks Data Processing Addendum v3 (2023-07-21)",
+        "signing_channel": "Ironclad-generated DocuSign envelope",
+        "completion_certificate_privately_archived": true,
+        "signed_agreement_or_certificate_in_public_repository": false
+      },
+      "subprocessor_notification_subscription_confirmed": true,
+      "subprocessor_notification_record": {
+        "confirmed_on": "2026-09-03",
+        "recipient_address_recorded_in_public_repository": false
+      },
       "approved_for_real_personal_data": false
     },
     "billing_and_quota": {
@@ -165,6 +176,7 @@
       "https://neon.com/docs/manage/backup-pg-dump",
       "https://neon.com/pdf/DPA.pdf",
       "https://neon.com/subscribe-to-subprocessors",
+      "https://www.databricks.com/legal/databricks-data-processing-addendum",
       "https://docs.github.com/en/actions/reference/limits",
       "https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization",
       "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
@@ -221,7 +233,7 @@
         "cold start after scale to zero",
         "short provider restore window is not an independent backup",
         "free-plan terms can change",
-        "EU region and zero-cost account boundary are confirmed; DPA, API quota enforcement and independent backup still require proof"
+        "EU region, zero-cost account boundary, DPA execution and subprocessor notifications are confirmed; API quota enforcement and independent backup still require proof"
       ],
       "official_sources": [
         "https://neon.com/pricing",
@@ -308,7 +320,6 @@
   "release_blocking_before_provider_selection": [],
   "release_blocking_before_provider_configuration": [],
   "release_blocking_before_synthetic_provider_use": [
-    "confirm DPA execution or account acceptance and subscribe to subprocessor changes",
     "approve and configure a least-privilege provider measurement path without exposing a persistent API key",
     "configure exact provider quota values and prove fail-closed suspension behavior",
     "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"

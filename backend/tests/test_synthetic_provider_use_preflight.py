@@ -41,7 +41,7 @@ def _ready_contract() -> dict:
 
 def test_current_provider_controls_remain_blocked_without_contacting_neon() -> None:
     result = evaluate_synthetic_provider_use_preflight(
-        _contract(), today=date(2026, 9, 2)
+        _contract(), today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_BLOCKED
@@ -52,7 +52,6 @@ def test_current_provider_controls_remain_blocked_without_contacting_neon() -> N
         "provider": "neon_free",
         "scope": "isolated-synthetic-staging-only",
         "blocked_gate_codes": [
-            "data-processing-controls",
             "provider-measurement-controls",
             "provider-capacity-controls",
             "offline-age-custody",
@@ -63,7 +62,7 @@ def test_current_provider_controls_remain_blocked_without_contacting_neon() -> N
 
 def test_complete_controls_require_separate_operation_approval() -> None:
     result = evaluate_synthetic_provider_use_preflight(
-        _ready_contract(), today=date(2026, 9, 2)
+        _ready_contract(), today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_READY
@@ -93,6 +92,24 @@ def test_complete_controls_require_separate_operation_approval() -> None:
             ),
             True,
         ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_record",
+                "signed_agreement_or_certificate_in_public_repository",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_record",
+                "recipient_address_recorded_in_public_repository",
+            ),
+            True,
+        ),
     ],
 )
 def test_unsafe_policy_expansion_is_invalid(
@@ -105,7 +122,7 @@ def test_unsafe_policy_expansion_is_invalid(
     target[path[-1]] = unsafe_value
 
     result = evaluate_synthetic_provider_use_preflight(
-        contract, today=date(2026, 9, 2)
+        contract, today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_INVALID
