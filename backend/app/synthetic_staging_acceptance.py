@@ -22,7 +22,13 @@ from sqlalchemy.engine import Engine, URL, make_url
 from sqlmodel import SQLModel, Session, create_engine, select
 
 from .database import _normalize_database_url
-from .models import AuthSessionDB, CalorieAppUserDB, ExternalIdentityDB, FoodLogDB
+from .models import (
+    AuthSessionDB,
+    CalorieAppUserDB,
+    ExternalIdentityDB,
+    FoodLogDB,
+    RouteRateEventDB,
+)
 from .schema_migrations import SCHEMA_HEAD, assert_database_at_head, upgrade_database
 
 
@@ -159,11 +165,17 @@ def _assert_only_expected_rows(
     expected_food_log_count: int,
 ) -> SyntheticSnapshot:
     counts = _application_table_counts(engine)
+    expected_route_keys = (
+        ["food_log_create", "food_log_list"]
+        if expected_food_log_count == 2
+        else []
+    )
     expected_nonzero = {
         CalorieAppUserDB.__tablename__: 1,
         ExternalIdentityDB.__tablename__: 1,
         AuthSessionDB.__tablename__: 1,
         FoodLogDB.__tablename__: expected_food_log_count,
+        RouteRateEventDB.__tablename__: len(expected_route_keys),
     }
     unexpected = {
         table: count
@@ -178,6 +190,7 @@ def _assert_only_expected_rows(
         identities = session.exec(select(ExternalIdentityDB)).all()
         auth_sessions = session.exec(select(AuthSessionDB)).all()
         food_logs = session.exec(select(FoodLogDB)).all()
+        route_events = session.exec(select(RouteRateEventDB)).all()
     if len(users) != 1 or users[0].id != SYNTHETIC_USER_ID:
         raise SyntheticStagingSafetyError("unexpected synthetic user")
     if len(identities) != 1:
@@ -221,6 +234,10 @@ def _assert_only_expected_rows(
     }
     if actual_food != expected_food:
         raise SyntheticStagingSafetyError("unexpected synthetic food history")
+    if sorted(event.route_key for event in route_events) != sorted(expected_route_keys):
+        raise SyntheticStagingSafetyError(
+            "unexpected synthetic route admission history"
+        )
     return SyntheticSnapshot(
         user_count=1,
         identity_count=1,
