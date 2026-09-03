@@ -39,7 +39,7 @@ _NEON_TEST_URL = (
 
 
 class _RunningProcess:
-    def poll(self) -> None:
+    def poll(self) -> int | None:
         return None
 
 
@@ -61,6 +61,11 @@ class _FakeResponse:
     def raise_for_status(self) -> None:
         if self._error is not None:
             raise self._error
+        response = httpx.Response(
+            self.status_code,
+            request=httpx.Request("GET", "http://synthetic.test"),
+        )
+        response.raise_for_status()
 
 
 class _ReadinessClient:
