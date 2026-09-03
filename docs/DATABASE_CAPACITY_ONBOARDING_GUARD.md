@@ -1,8 +1,9 @@
 # Database capacity onboarding guard
 
 Status: provider-neutral guard, alert-adapter interface and synthetic proof
-complete; provider selection, exact quota configuration, external alert
-destination and live exercise remain release-blocking.
+complete; a complete chosen-provider measurement path, exact quota
+configuration, external alert destination and live exercise remain
+release-blocking.
 
 ## Safety outcome
 
@@ -20,10 +21,10 @@ quota, provider or account detail.
 ## Configuration and fail-closed behavior
 
 `CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES` is the hard, operator-approved byte
-budget. It is deliberately absent by default because no provider has been
-selected and no exact live quota has been verified. Absence preserves the
-current non-public development baseline but does not satisfy the public-release
-gate.
+budget. It is deliberately absent by default because the selected provider's
+exact live quota and complete measurement path have not been verified. Absence
+preserves the current non-public development baseline but does not satisfy the
+public-release gate.
 
 When set, the value must be a positive integer. A malformed value fails
 application startup. If a configured deployment cannot read its database-size
