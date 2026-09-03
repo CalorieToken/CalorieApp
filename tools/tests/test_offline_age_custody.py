@@ -114,6 +114,23 @@ class OfflineAgeCustodyTests(unittest.TestCase):
                 "offline-locations-not-distinct",
             )
 
+    def test_missing_repository_root_has_a_stable_reason_code(self) -> None:
+        primary_temp, recovery_temp, repository_temp = self._locations()
+        with primary_temp, recovery_temp, repository_temp:
+            missing_repository = Path(repository_temp.name) / "missing"
+
+            with self.assertRaises(custody.CeremonyError) as raised:
+                custody.validate_locations(
+                    Path(primary_temp.name),
+                    Path(recovery_temp.name),
+                    repository_root=missing_repository,
+                )
+
+            self.assertEqual(
+                raised.exception.reason_code,
+                "repository-root-invalid",
+            )
+
     def test_existing_output_is_never_overwritten(self) -> None:
         primary_temp, recovery_temp, repository_temp = self._locations()
         with primary_temp, recovery_temp, repository_temp:
@@ -191,39 +208,49 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             keygen = mock.Mock(stdout=stdout_pipe)
             keygen.wait.return_value = 0
             keygen.poll.return_value = 0
+            encryption = mock.Mock()
+            encryption.poll.return_value = 0
 
-            def encrypted_run(*_args, **_kwargs):
-                _kwargs["stdout"].write(b"encrypted-identity-fixture")
-                _kwargs["stdout"].flush()
-                return subprocess.CompletedProcess([], 0)
+            def encryption_wait():
+                self.assertTrue(stdout_pipe.close.called)
+                return 0
+
+            encryption.wait.side_effect = encryption_wait
+
+            def start_process(command, **kwargs):
+                if command == ["age-keygen"]:
+                    return keygen
+                kwargs["stdout"].write(b"encrypted-identity-fixture")
+                kwargs["stdout"].flush()
+                return encryption
 
             with mock.patch.object(
                 custody.subprocess,
                 "Popen",
-                return_value=keygen,
-            ) as popen, mock.patch.object(
-                custody.subprocess,
-                "run",
-                side_effect=encrypted_run,
-            ) as run:
+                side_effect=start_process,
+            ) as popen:
                 custody.generate_encrypted_identity(
                     custody.AgeCommands("age", "age-keygen"),
                     output,
                 )
 
-            popen.assert_called_once_with(
-                ["age-keygen"],
-                cwd=output.parent,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+            popen.assert_has_calls(
+                [
+                    mock.call(
+                        ["age-keygen"],
+                        cwd=output.parent,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.DEVNULL,
+                    ),
+                    mock.call(
+                        ["age", "--passphrase"],
+                        cwd=output.parent,
+                        stdin=stdout_pipe,
+                        stdout=mock.ANY,
+                    ),
+                ]
             )
-            run.assert_called_once_with(
-                ["age", "--passphrase"],
-                cwd=output.parent,
-                stdin=stdout_pipe,
-                stdout=mock.ANY,
-                check=False,
-            )
+            self.assertEqual(popen.call_count, 2)
             self.assertEqual(
                 sorted(path.name for path in output.parent.iterdir()),
                 [custody.ARTIFACT_NAME],
@@ -258,11 +285,7 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             with mock.patch.object(
                 custody.subprocess,
                 "Popen",
-                return_value=keygen,
-            ), mock.patch.object(
-                custody.subprocess,
-                "run",
-                side_effect=OSError("generation fixture"),
+                side_effect=(keygen, OSError("generation fixture")),
             ):
                 with self.assertRaises(custody.CeremonyError) as raised:
                     custody.generate_encrypted_identity(
@@ -284,40 +307,43 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             decryption = mock.Mock(stdout=stdout_pipe)
             decryption.wait.return_value = 0
             decryption.poll.return_value = 0
-            derivation = subprocess.CompletedProcess(
-                [],
-                0,
-                stdout=(PUBLIC_RECIPIENT + "\n").encode("ascii"),
-            )
+            derivation = mock.Mock(returncode=0)
+            derivation.poll.return_value = 0
+
+            def communicate():
+                self.assertTrue(stdout_pipe.close.called)
+                return (PUBLIC_RECIPIENT + "\n").encode("ascii"), None
+
+            derivation.communicate.side_effect = communicate
 
             with mock.patch.object(
                 custody.subprocess,
                 "Popen",
-                return_value=decryption,
-            ) as popen, mock.patch.object(
-                custody.subprocess,
-                "run",
-                return_value=derivation,
-            ) as run:
+                side_effect=(decryption, derivation),
+            ) as popen:
                 recipient = custody.derive_public_recipient(
                     custody.AgeCommands("age", "age-keygen"),
                     encrypted,
                 )
 
             self.assertEqual(recipient, PUBLIC_RECIPIENT)
-            popen.assert_called_once_with(
-                ["age", "--decrypt", custody.ARTIFACT_NAME],
-                cwd=encrypted.parent,
-                stdout=subprocess.PIPE,
+            popen.assert_has_calls(
+                [
+                    mock.call(
+                        ["age", "--decrypt", custody.ARTIFACT_NAME],
+                        cwd=encrypted.parent,
+                        stdout=subprocess.PIPE,
+                    ),
+                    mock.call(
+                        ["age-keygen", "-y"],
+                        cwd=encrypted.parent,
+                        stdin=stdout_pipe,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.DEVNULL,
+                    ),
+                ]
             )
-            run.assert_called_once_with(
-                ["age-keygen", "-y"],
-                cwd=encrypted.parent,
-                stdin=stdout_pipe,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                check=False,
-            )
+            self.assertEqual(popen.call_count, 2)
 
     def test_derivation_rejects_multiple_output_lines(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -326,22 +352,17 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             decryption = mock.Mock(stdout=mock.Mock())
             decryption.wait.return_value = 0
             decryption.poll.return_value = 0
-            derivation = subprocess.CompletedProcess(
-                [],
-                0,
-                stdout=(PUBLIC_RECIPIENT + "\n" + PUBLIC_RECIPIENT).encode(
-                    "ascii"
-                ),
+            derivation = mock.Mock(returncode=0)
+            derivation.poll.return_value = 0
+            derivation.communicate.return_value = (
+                (PUBLIC_RECIPIENT + "\n" + PUBLIC_RECIPIENT).encode("ascii"),
+                None,
             )
 
             with mock.patch.object(
                 custody.subprocess,
                 "Popen",
-                return_value=decryption,
-            ), mock.patch.object(
-                custody.subprocess,
-                "run",
-                return_value=derivation,
+                side_effect=(decryption, derivation),
             ):
                 with self.assertRaises(custody.CeremonyError) as raised:
                     custody.derive_public_recipient(
@@ -367,20 +388,17 @@ class OfflineAgeCustodyTests(unittest.TestCase):
                 decryption = mock.Mock(stdout=mock.Mock())
                 decryption.wait.return_value = 0
                 decryption.poll.return_value = 0
-                derivation = subprocess.CompletedProcess(
-                    [],
-                    0,
-                    stdout=(recipient + "\n").encode("ascii"),
+                derivation = mock.Mock(returncode=0)
+                derivation.poll.return_value = 0
+                derivation.communicate.return_value = (
+                    (recipient + "\n").encode("ascii"),
+                    None,
                 )
 
                 with mock.patch.object(
                     custody.subprocess,
                     "Popen",
-                    return_value=decryption,
-                ), mock.patch.object(
-                    custody.subprocess,
-                    "run",
-                    return_value=derivation,
+                    side_effect=(decryption, derivation),
                 ):
                     with self.assertRaises(custody.CeremonyError) as raised:
                         custody.derive_public_recipient(
@@ -404,11 +422,7 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             with mock.patch.object(
                 custody.subprocess,
                 "Popen",
-                return_value=decryption,
-            ), mock.patch.object(
-                custody.subprocess,
-                "run",
-                side_effect=OSError("derivation fixture"),
+                side_effect=(decryption, OSError("derivation fixture")),
             ):
                 with self.assertRaises(custody.CeremonyError) as raised:
                     custody.derive_public_recipient(

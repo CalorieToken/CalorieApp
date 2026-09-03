@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_NAME = "calorieapp-synthetic-age-identity.age"
 SCHEMA_VERSION = "calorieapp.offline-age-custody.v1"
 
+# Keep the reviewed ceremony on the classic X25519 public-recipient format.
 _CLASSIC_RECIPIENT = re.compile(
     r"age1[023456789acdefghjklmnpqrstuvwxyz]{58}"
 )
@@ -70,7 +71,7 @@ def _is_within(path: Path, parent: Path) -> bool:
 def _resolve_directory(path: Path, reason_code: str) -> Path:
     try:
         resolved = path.resolve(strict=True)
-    except OSError as exc:
+    except (OSError, RuntimeError) as exc:
         raise CeremonyError(reason_code) from exc
     if not resolved.is_dir():
         raise CeremonyError(reason_code)
@@ -89,7 +90,10 @@ def validate_locations(
         recovery_directory,
         "recovery-directory-invalid",
     )
-    repository = repository_root.resolve(strict=True)
+    repository = _resolve_directory(
+        repository_root,
+        "repository-root-invalid",
+    )
 
     if primary == recovery or _is_within(primary, recovery) or _is_within(
         recovery, primary
@@ -146,9 +150,18 @@ def _terminate_process_best_effort(process: subprocess.Popen[bytes]) -> None:
         pass
 
 
+def _close_pipe_best_effort(pipe: BinaryIO | None) -> None:
+    try:
+        if pipe is not None:
+            pipe.close()
+    except OSError:
+        pass
+
+
 def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
     """Pipe a new identity directly into passphrase encryption."""
     keygen: subprocess.Popen[bytes] | None = None
+    encryption: subprocess.Popen[bytes] | None = None
     output_created = False
     try:
         with _open_exclusive_binary(output) as encrypted_output:
@@ -161,16 +174,16 @@ def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
             )
             if keygen.stdout is None:
                 raise CeremonyError("identity-generation-failed")
-            encryption = subprocess.run(
+            encryption = subprocess.Popen(
                 [commands.age, "--passphrase"],
                 cwd=output.parent,
                 stdin=keygen.stdout,
                 stdout=encrypted_output,
-                check=False,
             )
-        keygen.stdout.close()
-        keygen_status = keygen.wait()
-        if encryption.returncode != 0 or keygen_status != 0:
+            keygen.stdout.close()
+            encryption_status = encryption.wait()
+            keygen_status = keygen.wait()
+        if encryption_status != 0 or keygen_status != 0:
             raise CeremonyError("identity-generation-failed")
         if output.stat().st_size == 0:
             raise CeremonyError("encrypted-output-empty")
@@ -188,8 +201,10 @@ def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
             output.unlink(missing_ok=True)
         raise
     finally:
-        if keygen is not None and keygen.stdout is not None:
-            keygen.stdout.close()
+        if keygen is not None:
+            _close_pipe_best_effort(keygen.stdout)
+        if encryption is not None:
+            _terminate_process_best_effort(encryption)
         if keygen is not None:
             _terminate_process_best_effort(keygen)
 
@@ -197,6 +212,7 @@ def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
 def derive_public_recipient(commands: AgeCommands, encrypted: Path) -> str:
     """Decrypt through a pipe and retain only the public recipient."""
     decryption: subprocess.Popen[bytes] | None = None
+    derivation: subprocess.Popen[bytes] | None = None
     try:
         decryption = subprocess.Popen(
             [commands.age, "--decrypt", encrypted.name],
@@ -205,30 +221,40 @@ def derive_public_recipient(commands: AgeCommands, encrypted: Path) -> str:
         )
         if decryption.stdout is None:
             raise CeremonyError("copy-recovery-verification-failed")
-        derivation = subprocess.run(
+        derivation = subprocess.Popen(
             [commands.age_keygen, "-y"],
             cwd=encrypted.parent,
             stdin=decryption.stdout,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-            check=False,
         )
         decryption.stdout.close()
+        derivation_output, _ = derivation.communicate()
+        derivation_status = derivation.returncode
         decryption_status = decryption.wait()
-    except OSError as exc:
+    except (OSError, subprocess.SubprocessError) as exc:
         raise CeremonyError("copy-recovery-verification-failed") from exc
     finally:
-        if decryption is not None and decryption.stdout is not None:
-            decryption.stdout.close()
+        if decryption is not None:
+            _close_pipe_best_effort(decryption.stdout)
+        if derivation is not None:
+            _terminate_process_best_effort(derivation)
         if decryption is not None:
             _terminate_process_best_effort(decryption)
 
-    if derivation.returncode != 0 or decryption_status != 0:
+    if (
+        derivation_status != 0
+        or decryption_status != 0
+        or derivation_output is None
+    ):
         raise CeremonyError("copy-recovery-verification-failed")
     try:
         recipients = [
             line
-            for line in derivation.stdout.decode("ascii", errors="strict").splitlines()
+            for line in derivation_output.decode(
+                "ascii",
+                errors="strict",
+            ).splitlines()
             if line
         ]
     except UnicodeDecodeError as exc:

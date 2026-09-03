@@ -75,10 +75,12 @@ python tools/offline_age_custody.py --primary-directory <PRIMARY_OFFLINE_DIRECTO
 The command prompts locally for the passphrase during creation and once for
 each recovery check. A successful result contains only a stable status, the
 `copies_match` boolean and the public `age` recipient. Record only that public
-recipient in repository configuration. Do not record the command's directory
-arguments, passphrase, encrypted copies or any terminal transcript in the
-repository. A blocked result invalidates the ceremony; investigate locally and
-start again with empty target locations.
+recipient in repository configuration. The reviewed helper accepts only the
+canonical 62-character classic X25519 recipient form; another key type or
+recipient format requires a separate review. Do not record the command's
+directory arguments, passphrase, encrypted copies or any terminal transcript
+in the repository. A blocked result invalidates the ceremony; investigate
+locally and start again with empty target locations.
 
 ## Gates before implementation
 
