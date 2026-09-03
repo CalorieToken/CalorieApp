@@ -248,6 +248,34 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             self.assertEqual(output.read_bytes(), b"existing-encrypted-copy")
             popen.assert_not_called()
 
+    def test_generation_cleanup_does_not_mask_the_original_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / custody.ARTIFACT_NAME
+            keygen = mock.Mock(stdout=mock.Mock())
+            keygen.poll.return_value = None
+            keygen.terminate.side_effect = OSError("cleanup fixture")
+
+            with mock.patch.object(
+                custody.subprocess,
+                "Popen",
+                return_value=keygen,
+            ), mock.patch.object(
+                custody.subprocess,
+                "run",
+                side_effect=OSError("generation fixture"),
+            ):
+                with self.assertRaises(custody.CeremonyError) as raised:
+                    custody.generate_encrypted_identity(
+                        custody.AgeCommands("age", "age-keygen"),
+                        output,
+                    )
+
+            self.assertEqual(
+                raised.exception.reason_code,
+                "identity-generation-failed",
+            )
+            self.assertFalse(output.exists())
+
     def test_derivation_pipes_plaintext_and_returns_only_public_value(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             encrypted = Path(directory) / custody.ARTIFACT_NAME
@@ -324,6 +352,34 @@ class OfflineAgeCustodyTests(unittest.TestCase):
             self.assertEqual(
                 raised.exception.reason_code,
                 "public-recipient-invalid",
+            )
+
+    def test_derivation_cleanup_does_not_mask_the_original_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            encrypted = Path(directory) / custody.ARTIFACT_NAME
+            encrypted.write_bytes(b"encrypted-identity-fixture")
+            decryption = mock.Mock(stdout=mock.Mock())
+            decryption.poll.return_value = None
+            decryption.terminate.side_effect = OSError("cleanup fixture")
+
+            with mock.patch.object(
+                custody.subprocess,
+                "Popen",
+                return_value=decryption,
+            ), mock.patch.object(
+                custody.subprocess,
+                "run",
+                side_effect=OSError("derivation fixture"),
+            ):
+                with self.assertRaises(custody.CeremonyError) as raised:
+                    custody.derive_public_recipient(
+                        custody.AgeCommands("age", "age-keygen"),
+                        encrypted,
+                    )
+
+            self.assertEqual(
+                raised.exception.reason_code,
+                "copy-recovery-verification-failed",
             )
 
 

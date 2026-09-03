@@ -81,7 +81,7 @@ def validate_locations(
     *,
     repository_root: Path = ROOT,
 ) -> tuple[Path, Path]:
-    """Return validated output paths without disclosing their directories."""
+    """Return validated paths; validation errors contain only stable codes."""
     primary = _resolve_directory(primary_directory, "primary-directory-invalid")
     recovery = _resolve_directory(
         recovery_directory,
@@ -129,6 +129,21 @@ def _open_exclusive_binary(path: Path) -> BinaryIO:
         raise
 
 
+def _terminate_process_best_effort(process: subprocess.Popen[bytes]) -> None:
+    """Stop an unfinished child without masking the operation's first error."""
+    try:
+        if process.poll() is not None:
+            return
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+
 def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
     """Pipe a new identity directly into passphrase encryption."""
     keygen: subprocess.Popen[bytes] | None = None
@@ -173,9 +188,8 @@ def generate_encrypted_identity(commands: AgeCommands, output: Path) -> None:
     finally:
         if keygen is not None and keygen.stdout is not None:
             keygen.stdout.close()
-        if keygen is not None and keygen.poll() is None:
-            keygen.terminate()
-            keygen.wait()
+        if keygen is not None:
+            _terminate_process_best_effort(keygen)
 
 
 def derive_public_recipient(commands: AgeCommands, encrypted: Path) -> str:
@@ -204,9 +218,8 @@ def derive_public_recipient(commands: AgeCommands, encrypted: Path) -> str:
     finally:
         if decryption is not None and decryption.stdout is not None:
             decryption.stdout.close()
-        if decryption is not None and decryption.poll() is None:
-            decryption.terminate()
-            decryption.wait()
+        if decryption is not None:
+            _terminate_process_best_effort(decryption)
 
     if derivation.returncode != 0 or decryption_status != 0:
         raise CeremonyError("copy-recovery-verification-failed")
