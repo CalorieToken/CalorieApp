@@ -27,6 +27,13 @@ The shortcode owns the Xaman modal, QR/deep link, payload WebSocket, and secure
 message exchange with the embedded CalorieApp. Do not paste a second iframe or
 the old XUMM return URL beside it.
 
+The standalone Render page exposes an explicit same-tab link to this canonical
+WordPress page; it does not start Xaman itself. While an iframe is waiting for
+the authenticated parent handshake, its sign-in control remains disabled and
+cannot navigate the iframe into a nested WordPress page. On the canonical page,
+the bridge suppresses only an unsigned legacy XUMM Login `xl-signin` card so
+there is one unambiguous Xaman entry point.
+
 Pending status checks begin at five-second intervals, slow to ten seconds after
 30 seconds and to twenty seconds after 90 seconds. Transient failures back off
 to at most 30 seconds and bounded `Retry-After` guidance is respected. Focus and

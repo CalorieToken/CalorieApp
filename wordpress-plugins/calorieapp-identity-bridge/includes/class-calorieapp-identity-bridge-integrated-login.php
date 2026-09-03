@@ -77,7 +77,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.0';
+            : '0.3.1';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -162,7 +162,7 @@ class IntegratedLogin {
                     <h2 id="<?php echo esc_attr($instance_id); ?>-title">Sign in with Xaman</h2>
                     <p class="calorieapp-login-status" role="status" aria-live="polite">Preparing a secure sign-in request...</p>
                     <p class="calorieapp-login-guidance">
-                        Xaman opens from this browser without a return link. After signing, use Xaman's Close or Back action to return to this same page. No second browser tab is used.
+                        Xaman cannot reliably reopen the exact mobile browser tab. After signing, close Xaman and return to this CalorieToken.net tab. It will finish automatically without a refresh or second sign-in.
                     </p>
                     <img class="calorieapp-login-qr" alt="Scan this QR code with Xaman" hidden />
                     <a class="calorieapp-login-open" href="#" hidden>Open Xaman</a>

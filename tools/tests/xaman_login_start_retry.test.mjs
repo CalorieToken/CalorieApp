@@ -12,6 +12,71 @@ const requireFromFrontend = createRequire(
   new URL("../../frontend/package.json", import.meta.url)
 );
 
+async function compiledLoginModule() {
+  const typescript = requireFromFrontend("typescript");
+  const source = await readFile(COMPONENT_PATH, "utf8");
+  return {
+    source,
+    compiled: typescript.transpileModule(source, {
+      compilerOptions: {
+        jsx: typescript.JsxEmit.ReactJSX,
+        module: typescript.ModuleKind.CommonJS,
+        target: typescript.ScriptTarget.ES2022,
+      },
+    }).outputText,
+  };
+}
+
+test("login surface fails closed until an embedded parent is trusted", async () => {
+  const { compiled, source } = await compiledLoginModule();
+  const module = { exports: {} };
+  const context = vm.createContext({
+    AbortController,
+    Error,
+    Math,
+    Number,
+    Promise,
+    URL,
+    URLSearchParams,
+    console,
+    module,
+    exports: module.exports,
+    process: { env: {} },
+    require(specifier) {
+      if (specifier === "react") {
+        return {};
+      }
+      if (specifier === "react/jsx-runtime") {
+        return { Fragment: Symbol("Fragment"), jsx() {}, jsxs() {} };
+      }
+      if (specifier.startsWith("@/components/")) {
+        return new Proxy({}, { get: () => () => {} });
+      }
+      if (specifier === "@/lib/backendRequest") {
+        return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
+          backendRequest: async () => {},
+          backendUnavailableMessage: (_error, fallback) => fallback,
+          BackendRequestTimeoutError: class extends Error {},
+          waitForBackendReady: async () => {},
+        };
+      }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
+      }
+      throw new Error(`Unexpected require: ${specifier}`);
+    },
+  });
+
+  vm.runInContext(compiled, context);
+
+  assert.equal(module.exports.resolveLoginSurfaceMode(true, true), "embedded");
+  assert.equal(module.exports.resolveLoginSurfaceMode(false, true), "checking");
+  assert.equal(module.exports.resolveLoginSurfaceMode(false, false), "standalone");
+  assert.doesNotMatch(source, /window\.location\.assign\(WORDPRESS_APP_URL\)/);
+  assert.match(source, /href=\{WORDPRESS_APP_URL\}/);
+});
+
 test("login start retries transport errors and transient responses", async () => {
   const typescript = requireFromFrontend("typescript");
   const source = await readFile(COMPONENT_PATH, "utf8");

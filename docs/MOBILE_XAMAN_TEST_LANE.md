@@ -15,7 +15,15 @@ the emulator.
 This lane does not change the Identity Bridge architecture. The WordPress page
 still creates the Xaman SignIn payload without a mobile return URL, observes its
 status and completes the WordPress and embedded CalorieApp sessions after the
-user returns with Close or Back.
+user closes Xaman and returns to the original browser page. Android and iOS
+cannot reliably reopen the exact originating browser tab, so the product does
+not promise an automatic redirect. It instead preserves one page-owned flow and
+finishes automatically when that page resumes.
+
+The standalone Render entry links explicitly to the canonical WordPress page
+in the same tab. An embedded frame cannot navigate to WordPress while its
+trusted-parent handshake is pending, and the integrated page suppresses the
+competing unsigned legacy XUMM Login card.
 
 ## Execution boundary
 
@@ -95,6 +103,8 @@ device.
 | Reject SignIn | Page reports rejection and creates no session |
 | Expired request | Page fails closed and offers a fresh request |
 | Close/Back return | Returns to the original page without depending on a new default-browser tab |
+| Competing login surfaces | Only the integrated CalorieApp Xaman entry is actionable on the CalorieApp page |
+| Iframe handshake delay | Sign-in stays disabled and cannot open WordPress inside the iframe |
 | Background/cold-start delay | Pending status safely resumes without request storms |
 | Dialog completion | “Signed in” state closes or resolves without manual refresh |
 | Evidence capture | Contains no seed, secret numbers, passcode, email or authorization code |

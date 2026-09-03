@@ -39,6 +39,13 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   const iframeWindow = { postMessage() {} };
   const iframe = element(false);
   iframe.contentWindow = iframeWindow;
+  const legacySigninCard = element(false);
+  legacySigninCard.closest = () => null;
+  const legacySigninLink = {
+    closest(selector) {
+      return selector === ".xl-card" ? legacySigninCard : null;
+    },
+  };
   const modal = element(true);
   const status = element(false);
   const qrImage = element(true);
@@ -70,8 +77,14 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     hidden: false,
     readyState: "complete",
     addEventListener() {},
-    querySelectorAll() {
-      return [root];
+    querySelectorAll(selector) {
+      if (selector === '[data-calorieapp-embed]') {
+        return [root];
+      }
+      if (selector === '.xl-card a[href*="xl-signin"]') {
+        return [legacySigninLink];
+      }
+      return [];
     },
   };
   let now = 0;
@@ -167,6 +180,13 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     fetch,
     window,
   });
+
+  assert.equal(legacySigninCard.hidden, true);
+  assert.equal(legacySigninCard["aria-hidden"], "true");
+  assert.equal(
+    legacySigninCard["data-calorieapp-superseded-login"],
+    "1"
+  );
 
   const requestId = "request-12345678";
   windowListeners.message({

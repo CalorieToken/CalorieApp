@@ -11,8 +11,13 @@ frontend renders it as `data-calorieapp-build-id` on the HTML root. Verify both
 before the integrated manual acceptance round:
 
 ```text
-python tools/deployment_smoke_test.py --backend-url <BACKEND_HTTPS_ORIGIN> --frontend-url <FRONTEND_HTTPS_ORIGIN> --expected-build-id <id>
+python tools/deployment_smoke_test.py --backend-url <BACKEND_HTTPS_ORIGIN> --frontend-url <FRONTEND_HTTPS_ORIGIN> --wordpress-url <CANONICAL_WORDPRESS_CALORIEAPP_URL> --expected-build-id <id> --expected-plugin-version <version>
 ```
+
+This read-only check also requires exactly one integrated CalorieApp iframe,
+the exact Identity Bridge JavaScript/CSS version, the same-tab Xaman launch,
+the mobile lifecycle return listeners and suppression of the competing legacy
+`xl-signin` card. It creates no Xaman payload and changes no user data.
 
 Build the deterministic Identity Bridge archive first, then create the
 non-secret V2 deployment manifest with:

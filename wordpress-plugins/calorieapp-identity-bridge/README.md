@@ -38,6 +38,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.1 removes the competing unsigned XUMM Login card from pages that
+render the integrated CalorieApp bridge, keeps the standalone Render entry as
+an explicit same-tab link to the canonical WordPress page, and blocks iframe
+navigation while the trusted parent handshake is still being established.
 Version 0.3.0 adds the deployable copy and pure resolver for the shared,
 versioned eleven-locale CalorieApp registry. It does not yet alter public
 copy or automatically publish translations. Unsupported input falls back
