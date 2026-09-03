@@ -149,7 +149,7 @@ Still required before using the project:
 3. Generate the offline `age` identity, verify both encrypted offline copies,
    store the passphrase separately and configure only the public recipient.
 
-`python -m app.synthetic_provider_use_preflight` evaluates those four control
+`python -m app.synthetic_provider_use_preflight` evaluates those three control
 groups from the versioned contract without contacting Neon. It exits `40` and
 prints only low-cardinality blocker codes while any group is incomplete. Stale,
 missing or broadened safety policy exits `50`. Exit `0` means only that the

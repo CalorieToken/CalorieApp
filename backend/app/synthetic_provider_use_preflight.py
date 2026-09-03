@@ -26,6 +26,21 @@ _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"
 _EXPECTED_REGION = "aws-eu-central-1"
+_EXPECTED_DPA_RECORD_KEYS = frozenset(
+    {
+        "confirmed_on",
+        "agreement",
+        "signing_channel",
+        "completion_certificate_privately_archived",
+        "signed_agreement_or_certificate_in_public_repository",
+    }
+)
+_EXPECTED_SUBPROCESSOR_RECORD_KEYS = frozenset(
+    {
+        "confirmed_on",
+        "recipient_address_recorded_in_public_repository",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -118,6 +133,14 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("subprocessor notification confirmation missing")
     dpa_record = data_processing["dpa_execution_record"]
     subprocessor_record = data_processing["subprocessor_notification_record"]
+    if not isinstance(dpa_record, Mapping) or set(dpa_record) != (
+        _EXPECTED_DPA_RECORD_KEYS
+    ):
+        raise ValueError("unexpected DPA evidence fields")
+    if not isinstance(subprocessor_record, Mapping) or set(subprocessor_record) != (
+        _EXPECTED_SUBPROCESSOR_RECORD_KEYS
+    ):
+        raise ValueError("unexpected subprocessor evidence fields")
     if date.fromisoformat(dpa_record["confirmed_on"]) > today:
         raise ValueError("DPA evidence is dated in the future")
     if date.fromisoformat(subprocessor_record["confirmed_on"]) > today:
@@ -166,7 +189,6 @@ def evaluate_synthetic_provider_use_preflight(
     try:
         _validate_safe_boundary(contract, today or datetime.now(UTC).date())
         review = contract["preconfiguration_review"]
-        data_processing = review["data_processing"]
         billing = review["billing_and_quota"]
         capacity = contract["capacity_policy"]
         backup = review["portable_backup"]

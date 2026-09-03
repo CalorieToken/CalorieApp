@@ -126,6 +126,24 @@ def test_complete_controls_require_separate_operation_approval() -> None:
             ),
             True,
         ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_record",
+                "envelope_identifier",
+            ),
+            "private-envelope-id",
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_record",
+                "recipient_address",
+            ),
+            "private@example.test",
+        ),
     ],
 )
 def test_unsafe_policy_expansion_is_invalid(
