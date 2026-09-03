@@ -165,4 +165,5 @@ def test_frontend_exposes_a_non_secret_build_identifier():
 
     assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID" in layout_source
     assert "data-calorieapp-build-id" in layout_source
+    assert "throw new Error" in layout_source
     assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID=development" in env_example

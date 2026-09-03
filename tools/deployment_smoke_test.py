@@ -30,6 +30,15 @@ def build_identifier(value: str) -> str:
     return candidate
 
 
+def frontend_build_identifier_matches(html: str, expected: str) -> bool:
+    escaped = re.escape(expected)
+    attribute = re.compile(
+        rf"\b(?i:data-calorieapp-build-id)\s*=\s*"
+        rf"(?:(?P<quote>[\"']){escaped}(?P=quote)|{escaped}(?=[\s>]))"
+    )
+    return attribute.search(html) is not None
+
+
 def request(url: str, *, method: str = "GET", headers: dict[str, str] | None = None):
     req = Request(url, method=method, headers=headers or {})
     with urlopen(req, timeout=30) as response:  # noqa: S310 - validated HTTPS origins only
@@ -68,11 +77,13 @@ def main() -> int:
         html = body.decode("utf-8", errors="replace")
         checks.append(("frontend page", status == 200 and "Calorie" in html, f"HTTP {status}, {len(body)} bytes"))
         if args.expected_build_id:
-            build_attribute = f'data-calorieapp-build-id="{args.expected_build_id}"'
             checks.append(
                 (
                     "frontend build id",
-                    build_attribute in html,
+                    frontend_build_identifier_matches(
+                        html,
+                        args.expected_build_id,
+                    ),
                     args.expected_build_id,
                 )
             )

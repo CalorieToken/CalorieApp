@@ -31,6 +31,34 @@ class DeploymentSmokeTests(unittest.TestCase):
                 with self.assertRaises(argparse.ArgumentTypeError):
                     smoke.build_identifier(candidate)
 
+    def test_frontend_build_identifier_match_accepts_valid_html_quoting(self) -> None:
+        commit = "a" * 40
+        for attribute in (
+            f'data-calorieapp-build-id="{commit}"',
+            f"data-calorieapp-build-id='{commit}'",
+            f"DATA-CALORIEAPP-BUILD-ID={commit}",
+        ):
+            with self.subTest(attribute=attribute):
+                self.assertTrue(
+                    smoke.frontend_build_identifier_matches(
+                        f"<html {attribute}>",
+                        commit,
+                    )
+                )
+
+        self.assertFalse(
+            smoke.frontend_build_identifier_matches(
+                f'<html data-calorieapp-build-id="{commit}extra">',
+                commit,
+            )
+        )
+        self.assertFalse(
+            smoke.frontend_build_identifier_matches(
+                f"<html data-calorieapp-build-id='{commit}\">",
+                commit,
+            )
+        )
+
     def test_smoke_requires_matching_backend_and_frontend_build_ids(self) -> None:
         commit = "a" * 40
         responses = (

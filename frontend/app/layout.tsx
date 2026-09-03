@@ -7,10 +7,15 @@ export const metadata: Metadata = {
 };
 
 const configuredBuildId = process.env.NEXT_PUBLIC_CALORIEAPP_BUILD_ID?.trim();
-const buildId =
-  configuredBuildId && /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(configuredBuildId)
-    ? configuredBuildId
-    : "development";
+if (
+  configuredBuildId &&
+  !/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(configuredBuildId)
+) {
+  throw new Error(
+    "NEXT_PUBLIC_CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, underscores or hyphens"
+  );
+}
+const buildId = configuredBuildId || "development";
 
 export default function RootLayout({
   children,
