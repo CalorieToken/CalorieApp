@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tools import check_tracked_secret_patterns as guard
 
@@ -15,7 +16,7 @@ class TrackedSecretPatternTests(unittest.TestCase):
                 path = root / relative_path
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(content)
-            return guard.scan_tracked_files(root, files)
+            return guard.scan_tracked_files(root, files.keys())
 
     def test_age_private_identity_is_rejected_without_echoing_it(self) -> None:
         identity = b"AGE-" + b"SECRET-KEY-1SYNTHETICFIXTURE"
@@ -105,6 +106,24 @@ class TrackedSecretPatternTests(unittest.TestCase):
                     "backup/export.pgdump", "forbidden-secret-artifact-path"
                 ),
             ],
+        )
+
+    def test_provider_backup_artifact_contents_are_not_read(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifact = root / "backup.dump"
+            artifact.write_bytes(b"content-must-not-be-read")
+
+            with mock.patch.object(
+                Path,
+                "read_bytes",
+                side_effect=AssertionError("blocked artifact was read"),
+            ):
+                findings = guard.scan_tracked_files(root, ["backup.dump"])
+
+        self.assertEqual(
+            findings,
+            [guard.Finding("backup.dump", "forbidden-secret-artifact-path")],
         )
 
     def test_duplicate_paths_and_findings_are_deterministic(self) -> None:

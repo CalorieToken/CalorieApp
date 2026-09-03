@@ -89,6 +89,7 @@ def scan_tracked_files(root: Path, relative_paths: Iterable[str]) -> list[Findin
     for normalized in normalized_paths:
         if normalized.lower().endswith(_BLOCKED_SUFFIXES):
             findings.append(Finding(normalized, "forbidden-secret-artifact-path"))
+            continue
 
         path = root / normalized
         try:
