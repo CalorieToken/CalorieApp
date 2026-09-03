@@ -87,6 +87,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Step "Tracked artifact boundary"
+& $pythonExe (Join-Path $Root "tools\check_tracked_secret_patterns.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "Tracked provider-secret boundary failed"
+}
+
 $trackedFiles = @(git -C $Root ls-files)
 if ($LASTEXITCODE -ne 0) {
     throw "Unable to inspect tracked files"

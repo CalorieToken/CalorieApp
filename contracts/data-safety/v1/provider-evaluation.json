@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
-  "contract_version": "1.6.0",
+  "contract_version": "1.7.0",
   "evidence_reviewed_on": "2026-09-02",
   "evidence_revalidate_by": "2026-12-01",
   "decision_state": "neon-synthetic-staging-project-created-use-blocked",
@@ -134,7 +134,12 @@
       "artifact_upload_implemented_or_performed": false,
       "real_user_or_production_data_allowed": false,
       "production_backup_destination_selected": false,
-      "credentials_or_keys_may_be_committed": false
+      "credentials_or_keys_may_be_committed": false,
+      "repository_secret_pattern_guard": "tools/check_tracked_secret_patterns.py",
+      "tracked_private_age_identity_allowed": false,
+      "tracked_neon_api_key_allowed": false,
+      "tracked_neon_database_url_allowed": false,
+      "tracked_provider_backup_artifact_allowed": false
     },
     "provider_exit": {
       "standard_pg_dump_pg_restore_path_documented": true,

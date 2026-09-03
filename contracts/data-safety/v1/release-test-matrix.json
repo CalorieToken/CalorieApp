@@ -153,6 +153,8 @@
         "backend/tests/test_provider_evaluation_contract.py",
         "backend/app/synthetic_provider_use_preflight.py",
         "backend/tests/test_synthetic_provider_use_preflight.py",
+        "tools/check_tracked_secret_patterns.py",
+        "tools/tests/test_tracked_secret_patterns.py",
         "backend/app/capacity.py",
         "backend/app/capacity_probe.py",
         "backend/tests/test_capacity.py",

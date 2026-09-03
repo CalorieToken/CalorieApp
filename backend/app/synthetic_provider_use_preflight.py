@@ -21,7 +21,7 @@ EXIT_BLOCKED = 40
 EXIT_INVALID = 50
 
 _EXPECTED_CONTRACT_ID = "calorieapp.zero-additional-cost-provider-evaluation"
-_EXPECTED_CONTRACT_VERSION = "1.6.0"
+_EXPECTED_CONTRACT_VERSION = "1.7.0"
 _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"

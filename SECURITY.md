@@ -27,6 +27,13 @@ Never include real secrets, credentials, private keys, seed phrases, database
 contents, authorization codes, session cookies, or unnecessary personal data
 in a report. Redact logs and screenshots.
 
+Repository checks reject tracked private `age` identities, literal Neon API-key
+assignments, credential-bearing Neon database URLs and provider backup
+artifacts. Only the approved public `age` recipient may later be committed.
+These pattern checks supplement provider-side secret scanning; they do not make
+the repository an approved place to generate, decrypt or temporarily store a
+private identity.
+
 ## Permission boundary
 
 This policy does not grant permission for destructive testing, denial of

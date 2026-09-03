@@ -1406,6 +1406,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert "backend/tests/test_synthetic_provider_use_preflight.py" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
+    assert "tools/check_tracked_secret_patterns.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
+    assert "tools/tests/test_tracked_secret_patterns.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
     assert gates["user_data_export"]["status"] == "partial"
     assert (
         "contracts/data-safety/v1/account-data-import-receipt-disclosure.json"

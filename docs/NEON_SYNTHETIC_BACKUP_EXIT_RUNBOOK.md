@@ -47,6 +47,12 @@ offline copies. Loss of both copies or their separate passphrase makes every
 artifact for that recipient unrecoverable. A recovery-copy verification is
 therefore mandatory before the recipient is accepted.
 
+The repository release gate also scans every tracked file for private `age`
+identity material, literal Neon API-secret assignments, credential-bearing Neon
+database URLs and provider backup artifacts. Findings expose only the path and
+a stable rule name. This is a final leak-prevention boundary, not permission to
+generate or handle the offline identity inside a repository workspace.
+
 ## Gates before implementation
 
 The workflow must not be added or run until all of these are true:
