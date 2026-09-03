@@ -300,11 +300,6 @@ def _compare_pair(
     upstream_lines = upstream_fingerprint["line_digests"]
     assert isinstance(bridge_lines, list)
     assert isinstance(upstream_lines, list)
-    matcher = SequenceMatcher(None, bridge_lines, upstream_lines, autojunk=False)
-    longest_line_block = max(
-        (block.size for block in matcher.get_matching_blocks()), default=0
-    )
-
     bridge_line_set = bridge_fingerprint["line_digest_set"]
     upstream_line_set = upstream_fingerprint["line_digest_set"]
     bridge_shingles = bridge_fingerprint["token_shingles"]
@@ -318,8 +313,14 @@ def _compare_pair(
     shingle_union = len(bridge_shingles | upstream_shingles)
     shingle_jaccard = shared_shingles / shingle_union if shingle_union else 0.0
 
-    if not shared_lines and not shared_shingles and not longest_line_block:
+    if not shared_lines and not shared_shingles:
         return None
+    longest_line_block = 0
+    if shared_lines:
+        matcher = SequenceMatcher(None, bridge_lines, upstream_lines, autojunk=False)
+        longest_line_block = max(
+            (block.size for block in matcher.get_matching_blocks()), default=0
+        )
     smallest_line_set = min(len(bridge_line_set), len(upstream_line_set))
     line_overlap = shared_lines / smallest_line_set if smallest_line_set else 0.0
     score = max(line_overlap, shingle_jaccard)

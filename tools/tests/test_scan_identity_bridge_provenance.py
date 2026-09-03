@@ -200,6 +200,45 @@ add_action('init', 'xummlogin_start_session', 1);
                         "Similarity evidence review_boundary",
                     )
 
+    def test_compare_pair_skips_sequence_matcher_without_shared_lines(self) -> None:
+        bridge_fingerprint = {
+            "line_digests": ["bridge-line"],
+            "line_digest_set": {"bridge-line"},
+            "token_shingles": {"shared-shingle"},
+        }
+        upstream_fingerprint = {
+            "line_digests": ["upstream-line"],
+            "line_digest_set": {"upstream-line"},
+            "token_shingles": {"shared-shingle"},
+        }
+        with mock.patch.object(
+            scan,
+            "SequenceMatcher",
+            side_effect=AssertionError("SequenceMatcher must not be constructed"),
+        ):
+            finding = scan._compare_pair(
+                "bridge.js",
+                bridge_fingerprint,
+                "upstream.js",
+                upstream_fingerprint,
+            )
+            no_overlap = scan._compare_pair(
+                "bridge.js",
+                bridge_fingerprint,
+                "unrelated.js",
+                {
+                    **upstream_fingerprint,
+                    "token_shingles": {"unrelated-shingle"},
+                },
+            )
+
+        self.assertIsNotNone(finding)
+        self.assertIsNone(no_overlap)
+        assert finding is not None
+        self.assertEqual(finding["shared_normalized_line_count"], 0)
+        self.assertEqual(finding["longest_contiguous_normalized_line_block"], 0)
+        self.assertEqual(finding["shared_token_shingle_count"], 1)
+
     def test_committed_preliminary_report_is_bound_to_current_bridge(self) -> None:
         report = json.loads(
             (
