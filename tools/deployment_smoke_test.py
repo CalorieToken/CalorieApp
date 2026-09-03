@@ -142,7 +142,7 @@ def inspect_wordpress_embed(
     )
     script_url = (
         urljoin(wordpress_url, inspection.script_sources[0])
-        if len(inspection.script_sources) == 1
+        if script_ok
         else None
     )
     detail = (

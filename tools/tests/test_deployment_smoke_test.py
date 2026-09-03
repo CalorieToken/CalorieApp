@@ -148,13 +148,30 @@ class DeploymentSmokeTests(unittest.TestCase):
             )
         )
 
-        wrong_version, _, _ = smoke.inspect_wordpress_embed(
-            html,
-            "https://www.example.test/index.php/calorieapp/",
-            "https://app.example",
-            "0.3.2",
+        wrong_version, wrong_version_script_url, _ = (
+            smoke.inspect_wordpress_embed(
+                html,
+                "https://www.example.test/index.php/calorieapp/",
+                "https://app.example",
+                "0.3.2",
+            )
         )
         self.assertFalse(wrong_version)
+        self.assertIsNone(wrong_version_script_url)
+
+        off_origin_html = html.replace(
+            "/wp-content/plugins/calorieapp-identity-bridge/assets/"
+            "calorieapp-embed.js?ver=0.3.1",
+            "https://untrusted.example/calorieapp-embed.js?ver=0.3.1",
+        )
+        off_origin, off_origin_script_url, _ = smoke.inspect_wordpress_embed(
+            off_origin_html,
+            "https://www.example.test/index.php/calorieapp/",
+            "https://app.example",
+            "0.3.1",
+        )
+        self.assertFalse(off_origin)
+        self.assertIsNone(off_origin_script_url)
 
     def test_frontend_build_identifier_match_accepts_valid_html_quoting(self) -> None:
         commit = "a" * 40
@@ -282,6 +299,59 @@ class DeploymentSmokeTests(unittest.TestCase):
             mock.patch("sys.stdout", new_callable=io.StringIO),
         ):
             self.assertEqual(smoke.main(), 1)
+
+    def test_smoke_never_fetches_an_unvalidated_wordpress_script(self) -> None:
+        commit = "a" * 40
+        wordpress_html = _wordpress_html(
+            "https://app.example", "0.3.1"
+        ).replace(
+            b"/wp-content/plugins/calorieapp-identity-bridge/assets/"
+            b"calorieapp-embed.js?ver=0.3.1",
+            b'https://untrusted.example/calorieapp-embed.js?ver=0.3.1',
+        )
+        responses = (
+            _Response(
+                200,
+                {},
+                ('{"status":"ok","build_id":"' + commit + '"}').encode(),
+            ),
+            _Response(
+                200,
+                {"Access-Control-Allow-Origin": "https://app.example"},
+                b"",
+            ),
+            _Response(
+                200,
+                {},
+                (
+                    '<html data-calorieapp-build-id="'
+                    + commit
+                    + '"><title>CalorieApp</title></html>'
+                ).encode(),
+            ),
+            _Response(200, {}, wordpress_html),
+        )
+        argv = [
+            "deployment_smoke_test.py",
+            "--backend-url",
+            "https://api.example",
+            "--frontend-url",
+            "https://app.example",
+            "--wordpress-url",
+            "https://www.example.test/index.php/calorieapp/",
+            "--expected-build-id",
+            commit,
+            "--expected-plugin-version",
+            "0.3.1",
+        ]
+        with (
+            mock.patch.object(smoke, "urlopen", side_effect=responses) as mocked_open,
+            mock.patch.object(sys, "argv", argv),
+            mock.patch("sys.stdout", new_callable=io.StringIO),
+        ):
+            self.assertEqual(smoke.main(), 1)
+
+        self.assertEqual(mocked_open.call_count, 4)
 
 
 if __name__ == "__main__":
