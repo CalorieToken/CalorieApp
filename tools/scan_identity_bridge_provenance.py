@@ -17,6 +17,7 @@ import zipfile
 from datetime import date
 from difflib import SequenceMatcher
 from pathlib import Path, PurePosixPath
+from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +31,7 @@ MAX_SOURCE_FILE_BYTES = 2 * 1024 * 1024
 MAX_TOTAL_SOURCE_BYTES = 16 * 1024 * 1024
 MAX_ARCHIVE_FILE_BYTES = 16 * 1024 * 1024
 MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
+MAX_ARCHIVE_MEMBERS = 5_000
 MAX_FINDINGS = 200
 MIN_LINE_LENGTH = 24
 MAX_NORMALIZED_LINES_PER_FILE = 100_000
@@ -48,6 +50,31 @@ TOKEN_PATTERN = re.compile(
     r"[A-Za-z_][A-Za-z0-9_]*|[0-9]+(?:\.[0-9]+)?|"
     r"===|!==|==|!=|<=|>=|=>|::|->|&&|\|\||[{}()[\].,;:+*/%!?<>=&|^-]"
 )
+CREDENTIAL_REFERENCE_PATTERNS = (
+    re.compile(
+        r"\b(?:authorization|proxy-authorization|x-api-key|api-key|cookie|set-cookie)"
+        r"\s*[:=]",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"(?:^|[?&;,\s])(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|"
+        r"api[_-]?key|client[_-]?secret|password|passwd|secret|signature|sig|"
+        r"credential)\s*[:=]",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:basic|bearer)\s+\S+|"
+        r"\b(?:github_pat_|gh[pousr]_|xox[baprs]-|sk-[a-z0-9_-]{12,}|"
+        r"akia[a-z0-9]{16})|"
+        r"\beyj[a-z0-9_-]{8,}\.[a-z0-9_-]{8,}\."
+        r"|-----begin [^-\r\n]*private key-----",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b[a-z][a-z0-9+.-]*://[^/?#@\s]+:[^/?#@\s]+@",
+        re.IGNORECASE,
+    ),
+)
 
 
 def _sha256(data: bytes) -> str:
@@ -60,6 +87,23 @@ def _validate_reference(value: str) -> str:
         character in normalized for character in "\r\n\0"
     ):
         raise ValueError("source reference must be a single non-empty line")
+
+    candidates = [normalized]
+    decoded = normalized
+    for _ in range(2):
+        decoded_once = unquote(decoded)
+        if decoded_once == decoded:
+            break
+        candidates.append(decoded_once)
+        decoded = decoded_once
+    if any(
+        pattern.search(candidate)
+        for candidate in candidates
+        for pattern in CREDENTIAL_REFERENCE_PATTERNS
+    ):
+        raise ValueError(
+            "source reference must not contain credentials or secret-bearing parameters"
+        )
     return normalized
 
 
@@ -188,6 +232,11 @@ def _verified_package_archive(
     }
     with zipfile.ZipFile(archive) as bundle:
         infos = bundle.infolist()
+        if len(infos) > MAX_ARCHIVE_MEMBERS:
+            raise ValueError(
+                "XUMM Login package archive contains too many members "
+                f"(limit {MAX_ARCHIVE_MEMBERS})"
+            )
         if len(infos) != len({info.filename for info in infos}):
             raise ValueError("XUMM Login package archive contains duplicate paths")
         total_size = 0

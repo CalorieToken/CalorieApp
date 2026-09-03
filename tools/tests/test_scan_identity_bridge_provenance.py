@@ -107,6 +107,32 @@ add_action('init', 'xummlogin_start_session', 1);
                     review_date="2026-02-31",
                 )
 
+    def test_source_reference_rejects_obvious_credentials(self) -> None:
+        unsafe_references = {
+            "authorization header": "Authorization: Bearer not-a-real-token",
+            "api key header": "X-Api-Key: not-a-real-token",
+            "cookie header": "Cookie: session=not-a-real-token",
+            "URL credentials": (
+                "https://user:not-a-real-token@example.test/xummlogin.zip"
+            ),
+            "token query parameter": (
+                "https://example.test/xummlogin.zip?access_token=not-a-real-token"
+            ),
+            "encoded token query parameter": (
+                "https://example.test/xummlogin.zip?"
+                "access%255Ftoken=not-a-real-token"
+            ),
+            "prefixed token": "github_pat_not-a-real-token",
+        }
+        for label, reference in unsafe_references.items():
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "must not contain credentials or secret-bearing parameters",
+                ) as raised:
+                    scan._validate_reference(reference)
+                self.assertNotIn("not-a-real-token", str(raised.exception))
+
     def test_bridge_contract_root_must_be_an_object(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             contract = Path(temporary) / "code-provenance.json"
@@ -179,6 +205,23 @@ add_action('init', 'xummlogin_start_session', 1);
                     review_date="2026-09-03",
                     package_archive=archive,
                 )
+
+    def test_package_archive_member_count_is_bounded(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = self._source_tree(root)
+            archive = root / "too-many-members.zip"
+            with zipfile.ZipFile(archive, "w") as bundle:
+                for index in range(3):
+                    bundle.writestr(f"member-{index}.txt", b"")
+
+            with mock.patch.object(scan, "MAX_ARCHIVE_MEMBERS", 2):
+                with self.assertRaisesRegex(ValueError, "contains too many members"):
+                    scan._verified_package_archive(
+                        archive,
+                        source,
+                        scan._external_code_files(source),
+                    )
 
     def test_evidence_writer_refuses_to_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
