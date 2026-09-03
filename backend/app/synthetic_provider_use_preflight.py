@@ -330,7 +330,7 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
     ):
         raise ValueError("unexpected database capacity limit")
     if capacity["alert_delivery_configured"] is not False:
-        raise ValueError("continuous alert delivery is not configured")
+        raise ValueError("continuous alert delivery must remain unconfigured")
     if capacity["synthetic_operation_pre_post_observation_required"] is not True:
         raise ValueError("synthetic observations are required")
     if capacity["continuous_alert_delivery_required_for_public_release"] is not True:
