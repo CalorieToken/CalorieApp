@@ -1,0 +1,293 @@
+{
+  "bridge": {
+    "code_file_count": 11,
+    "tree_sha256": "e1e43d66dbd9a0667ee50e3b01daf69e1befee20c739482b02a4cb417ed8b43e",
+    "version": "0.3.1"
+  },
+  "comparison": {
+    "algorithm": {
+      "normalized_line_minimum_characters": 24,
+      "source_contents_included_in_report": false,
+      "token_shingle_size": 8
+    },
+    "file_pair_count": 693,
+    "finding_count": 28,
+    "findings": [
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.16666667,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 0,
+        "token_shingle_jaccard": 0.0,
+        "upstream_path": "includes/class-xummlogin-messaging.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.02173913,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 0,
+        "token_shingle_jaccard": 0.0,
+        "upstream_path": "includes/class-xummlogin-loader.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.01265823,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 0,
+        "token_shingle_jaccard": 0.0,
+        "upstream_path": "includes/class-xummlogin-xumm.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.01265823,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 0,
+        "token_shingle_jaccard": 0.0,
+        "upstream_path": "includes/class-xummlogin.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-rest.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.00719424,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 5,
+        "token_shingle_jaccard": 0.00076959,
+        "upstream_path": "admin/class-xummlogin-admin.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-rest.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.00719424,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 7,
+        "token_shingle_jaccard": 0.0016185,
+        "upstream_path": "includes/class-xummlogin-utils.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.00706714,
+        "shared_normalized_line_count": 2,
+        "shared_token_shingle_count": 11,
+        "token_shingle_jaccard": 0.00142783,
+        "upstream_path": "includes/class-xummlogin-xumm.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.00606061,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 17,
+        "token_shingle_jaccard": 0.00262914,
+        "upstream_path": "includes/class-xummlogin-utils.php"
+      },
+      {
+        "bridge_path": "calorieapp-identity-bridge.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00334169,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 12,
+        "token_shingle_jaccard": 0.00334169,
+        "upstream_path": "xummlogin.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+        "longest_contiguous_normalized_line_block": 1,
+        "review_priority_score": 0.00328947,
+        "shared_normalized_line_count": 1,
+        "shared_token_shingle_count": 2,
+        "token_shingle_jaccard": 0.00023119,
+        "upstream_path": "admin/class-xummlogin-admin.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00285919,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 4,
+        "token_shingle_jaccard": 0.00285919,
+        "upstream_path": "admin/partials/xummlogin-admin-display.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00273598,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 4,
+        "token_shingle_jaccard": 0.00273598,
+        "upstream_path": "admin/partials/xummlogin-voting-admin-display.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.0021692,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 12,
+        "token_shingle_jaccard": 0.0021692,
+        "upstream_path": "_cron/_xummlogin_sync.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00204708,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 12,
+        "token_shingle_jaccard": 0.00204708,
+        "upstream_path": "admin/class-xummlogin-admin.php"
+      },
+      {
+        "bridge_path": "assets/calorieapp-embed.css",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00134318,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 2,
+        "token_shingle_jaccard": 0.00134318,
+        "upstream_path": "public/css/xummlogin-public.css"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00120265,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 4,
+        "token_shingle_jaccard": 0.00120265,
+        "upstream_path": "admin/partials/xummlogin-shortcodes-admin-display.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00081103,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 4,
+        "token_shingle_jaccard": 0.00081103,
+        "upstream_path": "includes/class-xummlogin-xumm.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-locale-registry.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00062208,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 2,
+        "token_shingle_jaccard": 0.00062208,
+        "upstream_path": "vendor/composer/ClassLoader.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00056085,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00056085,
+        "upstream_path": "vendor/arthurkushman/php-wss/src/Components/ServerConfig.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00055991,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00055991,
+        "upstream_path": "vendor/arthurkushman/php-wss/src/Components/ClientConfig.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-rest.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00035958,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 2,
+        "token_shingle_jaccard": 0.00035958,
+        "upstream_path": "includes/class-xummlogin-xumm.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-locale-registry.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00033795,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00033795,
+        "upstream_path": "vendor/arthurkushman/php-wss/src/WebSocketServer.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-storage.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00032616,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00032616,
+        "upstream_path": "vendor/arthurkushman/php-wss/src/Components/WscMain.php"
+      },
+      {
+        "bridge_path": "assets/calorieapp-embed.js",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00030211,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00030211,
+        "upstream_path": "admin/js/xummlogin-admin.js"
+      },
+      {
+        "bridge_path": "assets/calorieapp-embed.js",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00026295,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00026295,
+        "upstream_path": "public/js/xummlogin-public.js"
+      },
+      {
+        "bridge_path": "assets/calorieapp-embed.js",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00020141,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00020141,
+        "upstream_path": "vendor/composer/InstalledVersions.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00019416,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 2,
+        "token_shingle_jaccard": 0.00019416,
+        "upstream_path": "includes/class-xummlogin-shortcodes.php"
+      },
+      {
+        "bridge_path": "includes/class-calorieapp-identity-bridge-admin.php",
+        "longest_contiguous_normalized_line_block": 0,
+        "review_priority_score": 0.00013293,
+        "shared_normalized_line_count": 0,
+        "shared_token_shingle_count": 1,
+        "token_shingle_jaccard": 0.00013293,
+        "upstream_path": "includes/class-xummlogin-shortcodes.php"
+      }
+    ],
+    "findings_truncated": false,
+    "reported_finding_count": 28
+  },
+  "report_id": "calorieapp.identity-bridge.source-similarity",
+  "report_version": "1.0.0",
+  "review_boundary": {
+    "automated_similarity_scan_proves_authorship": false,
+    "automated_similarity_scan_proves_no_adaptation": false,
+    "clears_public_distribution": false,
+    "exact_live_package_required_for_clearance": true,
+    "human_review_required": true,
+    "rights_administrator_approval_required": true
+  },
+  "review_date": "2026-09-03",
+  "upstream": {
+    "code_file_count": 63,
+    "name": "XUMM Login",
+    "package_code_matches_scanned_tree": null,
+    "package_member_count": null,
+    "package_sha256": null,
+    "source_reference": "github.com/xrpfactchecker/xummlogin@a2f00fb5065f613a8f74cbd9ca42020b92f2f1a6",
+    "tree_sha256": "abbf7b1cdbad83432793bab16499aa6062fb7b3ba7489677e0717a2d70680eff",
+    "version": "1.3.0"
+  }
+}

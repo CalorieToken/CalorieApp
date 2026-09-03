@@ -58,6 +58,7 @@ jobs:
         run: |
           python -m unittest tools.tests.test_mobile_xaman_preflight
           python -m unittest tools.tests.test_build_v2_release_manifest
+          python -m unittest tools.tests.test_scan_identity_bridge_provenance
           python -m unittest tools.tests.test_deployment_smoke_test
           python -m unittest tools.tests.test_offline_age_custody
           python -m unittest tools.tests.test_tracked_secret_patterns
