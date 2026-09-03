@@ -3,18 +3,21 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import httpx
 from sqlalchemy import text
 from sqlalchemy.engine import make_url
 from sqlmodel import Session, create_engine
 
 import pytest
 
+from app import synthetic_staging_acceptance as acceptance_module
 from app.models import FoodLogDB
 from app.synthetic_staging_acceptance import (
     RESTORE_DATABASE,
     SCHEMA_VERSION,
     SYNTHETIC_PRODUCT,
     SyntheticStagingSafetyError,
+    _wait_until_ready,
     migrate_and_seed,
     validate_approval_reference,
     validate_restore_url,
@@ -33,6 +36,170 @@ _NEON_TEST_URL = (
     f"postgresql://synthetic:test-password@{_NEON_TEST_HOST}/"
     "neondb?sslmode=require&channel_binding=require"
 )
+
+
+class _RunningProcess:
+    def poll(self) -> int | None:
+        return None
+
+
+class _FakeResponse:
+    def __init__(
+        self,
+        status_code: int,
+        payload: dict[str, str],
+        *,
+        error: httpx.HTTPError | None = None,
+    ) -> None:
+        self.status_code = status_code
+        self._payload = payload
+        self._error = error
+
+    def json(self) -> dict[str, str]:
+        return self._payload
+
+    def raise_for_status(self) -> None:
+        if self._error is not None:
+            raise self._error
+        response = httpx.Response(
+            self.status_code,
+            request=httpx.Request("GET", "http://synthetic.test"),
+        )
+        response.raise_for_status()
+
+
+class _ReadinessClient:
+    def __init__(
+        self,
+        health_responses: list[_FakeResponse | httpx.HTTPError],
+        ready_response: _FakeResponse | httpx.HTTPError,
+    ) -> None:
+        self.health_responses = health_responses
+        self.ready_response = ready_response
+        self.calls: list[tuple[str, float | None]] = []
+
+    def __enter__(self) -> _ReadinessClient:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+    def get(self, url: str, *, timeout: float | None = None) -> _FakeResponse:
+        self.calls.append((url, timeout))
+        response: _FakeResponse | httpx.HTTPError
+        if url.endswith("/health"):
+            response = self.health_responses.pop(0)
+        else:
+            response = self.ready_response
+        if isinstance(response, httpx.HTTPError):
+            raise response
+        return response
+
+
+def _install_readiness_client(
+    monkeypatch: pytest.MonkeyPatch,
+    client: _ReadinessClient,
+) -> dict[str, object]:
+    options: dict[str, object] = {}
+
+    def client_factory(**kwargs: object) -> _ReadinessClient:
+        options.update(kwargs)
+        return client
+
+    monkeypatch.setattr(acceptance_module.httpx, "Client", client_factory)
+    monkeypatch.setattr(acceptance_module.time, "sleep", lambda _seconds: None)
+    return options
+
+
+def test_readiness_waits_for_health_then_checks_database_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _ReadinessClient(
+        [
+            httpx.ConnectError("not listening"),
+            _FakeResponse(503, {"status": "starting"}),
+            _FakeResponse(
+                200,
+                {"status": "ok", "service": "calorieapp-backend"},
+            ),
+        ],
+        _FakeResponse(
+            200,
+            {
+                "status": "ready",
+                "service": "calorieapp-backend",
+                "database_revision": acceptance_module.SCHEMA_HEAD,
+            },
+        ),
+    )
+    options = _install_readiness_client(monkeypatch, client)
+
+    _wait_until_ready(_RunningProcess(), "http://127.0.0.1:12345")
+
+    assert options == {
+        "timeout": acceptance_module._BACKEND_HEALTH_REQUEST_TIMEOUT_SECONDS,
+        "trust_env": False,
+    }
+    assert client.calls == [
+        ("http://127.0.0.1:12345/health", None),
+        ("http://127.0.0.1:12345/health", None),
+        ("http://127.0.0.1:12345/health", None),
+        (
+            "http://127.0.0.1:12345/ready",
+            acceptance_module._BACKEND_READY_REQUEST_TIMEOUT_SECONDS,
+        ),
+    ]
+
+
+def test_readiness_rejects_wrong_schema_without_retrying_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _ReadinessClient(
+        [
+            _FakeResponse(
+                200,
+                {"status": "ok", "service": "calorieapp-backend"},
+            )
+        ],
+        _FakeResponse(
+            200,
+            {
+                "status": "ready",
+                "service": "calorieapp-backend",
+                "database_revision": "unexpected",
+            },
+        ),
+    )
+    _install_readiness_client(monkeypatch, client)
+
+    with pytest.raises(SyntheticStagingSafetyError, match="unexpected readiness"):
+        _wait_until_ready(_RunningProcess(), "http://127.0.0.1:12345")
+
+    assert [url for url, _timeout in client.calls].count(
+        "http://127.0.0.1:12345/ready"
+    ) == 1
+
+
+def test_readiness_timeout_fails_closed_without_retrying_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _ReadinessClient(
+        [
+            _FakeResponse(
+                200,
+                {"status": "ok", "service": "calorieapp-backend"},
+            )
+        ],
+        httpx.ReadTimeout("database validation timed out"),
+    )
+    _install_readiness_client(monkeypatch, client)
+
+    with pytest.raises(SyntheticStagingSafetyError, match="readiness check failed"):
+        _wait_until_ready(_RunningProcess(), "http://127.0.0.1:12345")
+
+    assert [url for url, _timeout in client.calls].count(
+        "http://127.0.0.1:12345/ready"
+    ) == 1
 
 
 @pytest.mark.parametrize(
@@ -168,6 +335,7 @@ def test_workflow_is_manual_main_only_review_gated_and_encrypted() -> None:
     ]
 
     assert "workflow_dispatch:" in workflow
+    assert "timeout-minutes: 40" in workflow
     assert "pull_request:" not in workflow
     assert "\n  push:" not in workflow
     assert "if: github.ref == 'refs/heads/main'" in workflow
