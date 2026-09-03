@@ -175,7 +175,7 @@ jobs:
         working-directory: backend
         run: python -m pytest -q -W error::DeprecationWarning
 
-      - name: Verify synthetic provider use remains fail closed
+      - name: Verify synthetic provider controls require separate operation approval
         working-directory: backend
         shell: bash
         run: |
@@ -184,7 +184,7 @@ jobs:
           python -m app.synthetic_provider_use_preflight > "${output_file}"
           preflight_status=$?
           set -e
-          test "${preflight_status}" -eq 40
+          test "${preflight_status}" -eq 0
           python - "${output_file}" <<'PY'
           import json
           import sys
@@ -193,15 +193,15 @@ jobs:
           payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
           expected = {
               "schema_version": "calorieapp.synthetic-provider-use-preflight.v1",
-              "status": "blocked",
-              "ready": False,
+              "status": "controls-ready",
+              "ready": True,
               "provider": "neon_free",
               "scope": "isolated-synthetic-staging-only",
-              "blocked_gate_codes": ["offline-age-custody"],
-              "action": "keep-provider-unused-complete-blocked-controls",
+              "blocked_gate_codes": [],
+              "action": "request-separate-synthetic-operation-approval",
           }
           if payload != expected:
-              raise SystemExit("synthetic provider-use preflight did not stay blocked")
+              raise SystemExit("synthetic provider-use preflight boundary changed")
           PY
 
       - name: Compile backend Python

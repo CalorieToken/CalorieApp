@@ -1,7 +1,7 @@
 # Neon synthetic backup and provider-exit runbook
 
-Status: operator-selected backup, exit and offline key-custody design; no key,
-secret, workflow or provider account is configured or executed.
+Status: offline key custody and the protected manual workflow are prepared. No
+temporary secret, provider migration, backup upload or restore has executed.
 
 ## Approved scope
 
@@ -36,11 +36,20 @@ synthetic experiment:
   temporary secret of the protected `neon-synthetic-restore` environment, then
   delete that secret after the run whether the restore succeeds or fails.
 
-The environment must be created and inspected before any workflow exists. It
-allows `main` only, requires a reviewer, disables administrator bypass and may
-be used only by a manually dispatched restore. Pull-request workflows must
-never receive the identity. This prevents GitHub's implicit creation of an
-unprotected environment from becoming an accidental fallback.
+The `neon-synthetic-restore` environment was created and inspected before the
+workflow was added. It allows `main` only, requires a reviewer, disables
+administrator bypass and may be used only by a manually dispatched restore.
+Pull-request workflows never receive the identity. This prevents GitHub's
+implicit creation of an unprotected environment from becoming an accidental
+fallback.
+
+On 2026-09-03 the operator completed the local ceremony. Independent recovery
+of both passphrase-encrypted offline copies produced the same canonical public
+recipient:
+
+`age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m`
+
+No passphrase, private identity or physical storage location is recorded here.
 
 The public repository must not name the physical or account locations of the
 offline copies. Loss of both copies or their separate passphrase makes every
@@ -82,15 +91,15 @@ directory arguments, passphrase, encrypted copies or any terminal transcript
 in the repository. A blocked result invalidates the ceremony; investigate
 locally and start again with empty target locations.
 
-## Gates before implementation
+## Gates before execution
 
-The workflow must not be added or run until all of these are true:
+The workflow may run only while all of these remain true:
 
 1. The live Neon console confirms the selected EU region, Free-plan billing
    boundary, quota signals and absence of automatic paid upgrade.
 2. DPA acceptance or execution and subprocessor-change handling are confirmed.
 3. The offline identity is generated, both encrypted offline copies are
-   recoverable, and only the derived public recipient is configured. The
+   recoverable, and only the derived public recipient is committed. The
    private identity must never be committed, placed in an artifact, printed in
    a log, kept as a permanent GitHub secret or sent through a workflow input.
 4. The workflow admits only the named synthetic staging project and rejects
@@ -100,27 +109,31 @@ The workflow must not be added or run until all of these are true:
 
 ## Fail-closed execution order
 
-1. Require a manual approval reference and the exact reviewed commit.
-2. Verify the source is the isolated synthetic Neon project and contains no
-   real identity or food-history records.
-3. Run `pg_dump --format=custom --no-owner --no-privileges` into temporary
+1. Require a manual approval reference, the exact reviewed `main` commit, a
+   pre-run console observation and the protected-environment reviewer.
+2. Verify the source is the isolated empty synthetic Neon database, then apply
+   the schema and only the fixed synthetic acceptance records.
+3. Write through one CalorieApp process, replace it fully, read through the
+   replacement, cross the configured scale-to-zero window and reconnect.
+4. Run `pg_dump --format=custom --no-owner --no-privileges` into temporary
    runner storage.
-4. Encrypt the archive client-side to the approved recipient.
-5. Verify the encrypted output is non-empty, then securely remove the plaintext
+5. Encrypt the archive client-side to the approved recipient.
+6. Verify the encrypted output is non-empty, then securely remove the plaintext
    temporary archive before upload.
-6. Upload only the encrypted archive with 30-day artifact retention.
-7. Before a separately approved restore job, an authorized operator retrieves
+7. Upload only the encrypted archive with 30-day artifact retention.
+8. Before the approved job, an authorized operator retrieves
    and decrypts the offline identity locally, places it only in the temporary
    `CALORIEAPP_SYNTHETIC_AGE_IDENTITY` environment secret, and confirms that the
    required reviewer and no-bypass rules gate access.
-8. After approval, decrypt into temporary runner storage, restore into a clean
+9. After approval, decrypt into temporary runner storage, restore into a clean
    PostgreSQL 16 service outside Neon and validate the schema head, record
    counts and owner bindings.
-9. Remove plaintext and decrypted temporary files even when verification fails.
-10. Delete the temporary identity secret after every run. The drill remains
-    failed and no further run is allowed while deletion is unconfirmed.
-11. Record the workflow run, artifact expiry and outcome without recording data,
-    credentials, passphrases, offline locations or key material.
+10. Remove plaintext and decrypted temporary files even when verification fails.
+11. Delete both temporary environment secrets after every run. The drill
+    remains failed and no further run is allowed while deletion is unconfirmed.
+12. Observe the Neon console after execution and record the workflow run,
+    artifact expiry and outcome without recording data, credentials,
+    passphrases, offline locations or key material.
 
 Any failed identity, encryption, retention, size or restore check stops the
 workflow. It may not fall back to plaintext upload, a paid upgrade, a production

@@ -1,0 +1,276 @@
+name: Neon synthetic acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_commit:
+        description: Exact reviewed main commit to execute
+        required: true
+        type: string
+      approval_reference:
+        description: STEP1-SYNTHETIC-ACCEPTANCE-YYYY-MM-DD
+        required: true
+        type: string
+      synthetic_only_confirmation:
+        description: Enter SYNTHETIC-ONLY-NO-REAL-DATA
+        required: true
+        type: string
+      pre_run_console_observed:
+        description: Free plan, no payment method, and usage checked immediately before dispatch
+        required: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neon-synthetic-acceptance
+  cancel-in-progress: false
+
+env:
+  CALORIEAPP_SYNTHETIC_AGE_RECIPIENT: age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m
+  CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES: "500000000"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  migrate-backup-restore:
+    name: Approved synthetic migration, backup and exit restore
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: neon-synthetic-restore
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: calorieapp_synthetic
+          POSTGRES_PASSWORD: synthetic_exit_only
+          POSTGRES_DB: calorieapp_synthetic_exit
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U calorieapp_synthetic -d calorieapp_synthetic_exit"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Check out the exact reviewed commit
+        uses: actions/checkout@v7
+
+      - name: Validate manual approval boundary
+        shell: bash
+        env:
+          REVIEWED_COMMIT: ${{ inputs.reviewed_commit }}
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+          SYNTHETIC_ONLY_CONFIRMATION: ${{ inputs.synthetic_only_confirmation }}
+          PRE_RUN_CONSOLE_OBSERVED: ${{ inputs.pre_run_console_observed }}
+        run: |
+          set -Eeuo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${REVIEWED_COMMIT}" = "${GITHUB_SHA}"
+          [[ "${APPROVAL_REFERENCE}" =~ ^STEP1-SYNTHETIC-ACCEPTANCE-20[0-9]{2}-[0-9]{2}-[0-9]{2}$ ]]
+          test "${SYNTHETIC_ONLY_CONFIRMATION}" = "SYNTHETIC-ONLY-NO-REAL-DATA"
+          test "${PRE_RUN_CONSOLE_OBSERVED}" = "true"
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install reviewed database and encryption tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes age postgresql-client
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+          age --version
+          pg_dump --version
+          pg_restore --version
+
+      - name: Verify controls and temporary secrets are ready
+        working-directory: backend
+        shell: bash
+        env:
+          CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+          CALORIEAPP_SYNTHETIC_AGE_IDENTITY: ${{ secrets.CALORIEAPP_SYNTHETIC_AGE_IDENTITY }}
+        run: |
+          set -Eeuo pipefail
+          test -n "${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL:-}"
+          test -n "${CALORIEAPP_SYNTHETIC_AGE_IDENTITY:-}"
+          python -m app.synthetic_provider_use_preflight > "${RUNNER_TEMP}/provider-preflight.json"
+          python - "${RUNNER_TEMP}/provider-preflight.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = {
+              "schema_version": "calorieapp.synthetic-provider-use-preflight.v1",
+              "status": "controls-ready",
+              "ready": True,
+              "provider": "neon_free",
+              "scope": "isolated-synthetic-staging-only",
+              "blocked_gate_codes": [],
+              "action": "request-separate-synthetic-operation-approval",
+          }
+          if payload != expected:
+              raise SystemExit("synthetic provider controls are not ready")
+          PY
+          python - <<'PY'
+          import os
+
+          from app.synthetic_staging_acceptance import validate_source_url
+
+          validate_source_url(os.environ["CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL"])
+          PY
+
+      - name: Measure, migrate and seed fixed synthetic rows
+        working-directory: backend
+        shell: bash
+        env:
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+          CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+          CALORIEAPP_ENV: staging
+          DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+        run: |
+          set -Eeuo pipefail
+          python -m app.capacity_probe > "${RUNNER_TEMP}/capacity-before.json"
+          python -m app.synthetic_staging_acceptance migrate-seed \
+            --approval-reference "${APPROVAL_REFERENCE}"
+          python -m app.synthetic_staging_acceptance process-replacement
+          set +e
+          CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES=1 \
+            python -m app.capacity_probe > "${RUNNER_TEMP}/capacity-pause-exercise.json"
+          pause_status=$?
+          set -e
+          test "${pause_status}" -eq 30
+          python - "${RUNNER_TEMP}/capacity-pause-exercise.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if payload.get("level") != "pause" or payload.get("onboarding_paused") is not True:
+              raise SystemExit("synthetic onboarding-pause exercise did not fail closed")
+          PY
+          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            psql --no-psqlrc --tuples-only --no-align \
+              --command='SELECT EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint' \
+              > "${RUNNER_TEMP}/provider-start-before"
+
+      - name: Cross the configured provider restart window
+        shell: bash
+        run: sleep 420
+
+      - name: Verify provider restart and source through a new process
+        working-directory: backend
+        shell: bash
+        env:
+          CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+          CALORIEAPP_ENV: staging
+          DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+        run: |
+          set -Eeuo pipefail
+          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            psql --no-psqlrc --tuples-only --no-align \
+              --command='SELECT EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint' \
+              > "${RUNNER_TEMP}/provider-start-after"
+          test "$(<"${RUNNER_TEMP}/provider-start-before")" != \
+            "$(<"${RUNNER_TEMP}/provider-start-after")"
+          python -m app.synthetic_staging_acceptance verify-source
+          python -m app.capacity_probe > "${RUNNER_TEMP}/capacity-after.json"
+
+      - name: Create encrypted provider backup and remove plaintext
+        working-directory: backend
+        shell: bash
+        env:
+          CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          plaintext="${RUNNER_TEMP}/calorieapp-synthetic-neon.dump"
+          encrypted="${RUNNER_TEMP}/calorieapp-synthetic-neon.dump.age"
+          cleanup_plaintext() {
+            if [[ -f "${plaintext}" ]]; then
+              shred --force --remove "${plaintext}"
+            fi
+          }
+          trap cleanup_plaintext EXIT
+          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            pg_dump --format=custom --no-owner --no-privileges --file="${plaintext}"
+          test -s "${plaintext}"
+          age --encrypt \
+            --recipient "${CALORIEAPP_SYNTHETIC_AGE_RECIPIENT}" \
+            --output "${encrypted}" \
+            "${plaintext}"
+          test -s "${encrypted}"
+          test "$(stat --format=%s "${encrypted}")" -le 50000000
+          cleanup_plaintext
+          trap - EXIT
+
+      - name: Upload encrypted artifact only
+        uses: actions/upload-artifact@v6
+        with:
+          name: calorieapp-synthetic-neon-exit-${{ github.run_id }}
+          path: ${{ runner.temp }}/calorieapp-synthetic-neon.dump.age
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Decrypt, restore outside Neon and verify
+        working-directory: backend
+        shell: bash
+        env:
+          CALORIEAPP_SYNTHETIC_AGE_IDENTITY: ${{ secrets.CALORIEAPP_SYNTHETIC_AGE_IDENTITY }}
+          CALORIEAPP_SYNTHETIC_EXIT_RESTORE_URL: postgresql://calorieapp_synthetic:synthetic_exit_only@127.0.0.1:5432/calorieapp_synthetic_exit
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          encrypted="${RUNNER_TEMP}/calorieapp-synthetic-neon.dump.age"
+          restored="${RUNNER_TEMP}/calorieapp-synthetic-neon-restored.dump"
+          cleanup_restored() {
+            if [[ -f "${restored}" ]]; then
+              shred --force --remove "${restored}"
+            fi
+          }
+          trap cleanup_restored EXIT
+          test -s "${encrypted}"
+          printf '%s\n' "${CALORIEAPP_SYNTHETIC_AGE_IDENTITY}" \
+            | age --decrypt --identity - --output "${restored}" "${encrypted}"
+          test -s "${restored}"
+          pg_restore \
+            --exit-on-error \
+            --no-owner \
+            --no-privileges \
+            --dbname="${CALORIEAPP_SYNTHETIC_EXIT_RESTORE_URL}" \
+            "${restored}"
+          python -m app.synthetic_staging_acceptance verify-restore
+          cleanup_restored
+          trap - EXIT
+
+      - name: Record safe completion summary
+        shell: bash
+        run: |
+          {
+            echo '## Synthetic acceptance operation completed'
+            echo
+            echo '- Fixed synthetic rows migrated and independently reconnected.'
+            echo '- Client-side encrypted artifact retained for 30 days.'
+            echo '- Restore verified on disposable PostgreSQL 16 outside Neon.'
+            echo '- Post-run Neon console observation and deletion of both temporary environment secrets remain mandatory.'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Remove runner artifact copy
+        if: always()
+        shell: bash
+        run: |
+          encrypted="${RUNNER_TEMP}/calorieapp-synthetic-neon.dump.age"
+          if [[ -f "${encrypted}" ]]; then
+            shred --force --remove "${encrypted}"
+          fi

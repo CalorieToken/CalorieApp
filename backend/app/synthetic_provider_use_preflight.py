@@ -21,11 +21,14 @@ EXIT_BLOCKED = 40
 EXIT_INVALID = 50
 
 _EXPECTED_CONTRACT_ID = "calorieapp.zero-additional-cost-provider-evaluation"
-_EXPECTED_CONTRACT_VERSION = "1.10.0"
+_EXPECTED_CONTRACT_VERSION = "1.11.0"
 _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"
 _EXPECTED_REGION = "aws-eu-central-1"
+_EXPECTED_AGE_RECIPIENT = (
+    "age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m"
+)
 _EXPECTED_DPA_RECORD_KEYS = frozenset(
     {
         "confirmed_on",
@@ -342,12 +345,45 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("plaintext artifacts are forbidden")
     if backup["permanent_github_private_key_secret_allowed"] is not False:
         raise ValueError("permanent private key is forbidden")
+    recipient_configured = backup["client_side_encryption_recipient_configured"]
+    if recipient_configured is not True and recipient_configured is not False:
+        raise ValueError("invalid public encryption recipient state")
+    if backup["encryption_public_recipient"] != _EXPECTED_AGE_RECIPIENT:
+        raise ValueError("unexpected public encryption recipient")
+    if backup["restore_environment"] != "neon-synthetic-restore":
+        raise ValueError("unexpected protected restore environment")
+    if backup["restore_environment_precreated_and_protected"] is not True:
+        raise ValueError("protected restore environment is not ready")
+    if backup["restore_environment_branch_policy"] != "main-only":
+        raise ValueError("restore environment must be main-only")
+    if backup["restore_environment_required_reviewer"] is not True:
+        raise ValueError("restore environment must require review")
+    if backup["restore_environment_admin_bypass_allowed"] is not False:
+        raise ValueError("restore environment administrator bypass is forbidden")
+    if backup["restore_workflow_trigger"] != "workflow-dispatch-only":
+        raise ValueError("restore workflow must be manually dispatched")
+    if backup["pull_request_workflow_identity_access_allowed"] is not False:
+        raise ValueError("pull request identity access is forbidden")
+    if backup["synthetic_acceptance_workflow"] != (
+        ".github/workflows/neon-synthetic-acceptance.yml"
+    ):
+        raise ValueError("unexpected synthetic acceptance workflow")
+    if backup["synthetic_acceptance_workflow_implemented"] is not True:
+        raise ValueError("synthetic acceptance workflow is not implemented")
+    if backup["artifact_upload_implemented"] is not True:
+        raise ValueError("encrypted artifact upload is not implemented")
+    if backup["artifact_upload_performed"] is not False:
+        raise ValueError("synthetic artifact was already uploaded")
     if backup["credentials_or_keys_may_be_committed"] is not False:
         raise ValueError("committed credentials are forbidden")
     if backup["real_user_or_production_data_allowed"] is not False:
         raise ValueError("real data is forbidden")
     if provider_exit["target_is_outside_neon"] is not True:
         raise ValueError("provider-exit target must be independent")
+    if provider_exit["provider_exit_restore_implemented"] is not True:
+        raise ValueError("provider-exit restore is not implemented")
+    if provider_exit["provider_exit_restore_performed"] is not False:
+        raise ValueError("provider-exit restore was already performed")
     if provider_exit["real_user_or_production_data_allowed"] is not False:
         raise ValueError("real data is forbidden")
 

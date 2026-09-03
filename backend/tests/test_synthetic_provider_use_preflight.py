@@ -23,33 +23,40 @@ def _contract() -> dict:
 
 
 def _ready_contract() -> dict:
-    contract = copy.deepcopy(_contract())
-    review = contract["preconfiguration_review"]
-    review["data_processing"]["dpa_execution_or_account_acceptance_confirmed"] = True
-    review["data_processing"]["subprocessor_notification_subscription_confirmed"] = True
-    backup = review["portable_backup"]
-    backup["private_key_generated_or_configured"] = True
-    backup["offline_primary_copy_recovery_verified"] = True
-    backup["offline_recovery_copy_recovery_verified"] = True
-    backup["client_side_encryption_recipient_configured"] = True
-    return contract
+    return copy.deepcopy(_contract())
 
 
-def test_current_provider_controls_are_blocked_only_on_offline_custody() -> None:
+def test_current_provider_controls_are_ready_for_separate_operation_approval() -> None:
     result = evaluate_synthetic_provider_use_preflight(
         _contract(), today=date(2026, 9, 3)
     )
 
-    assert result.exit_code == EXIT_BLOCKED
+    assert result.exit_code == EXIT_READY
     assert result.payload == {
         "schema_version": PREFLIGHT_SCHEMA_VERSION,
-        "status": "blocked",
-        "ready": False,
+        "status": "controls-ready",
+        "ready": True,
         "provider": "neon_free",
         "scope": "isolated-synthetic-staging-only",
-        "blocked_gate_codes": ["offline-age-custody"],
-        "action": "keep-provider-unused-complete-blocked-controls",
+        "blocked_gate_codes": [],
+        "action": "request-separate-synthetic-operation-approval",
     }
+
+
+def test_incomplete_offline_custody_remains_blocked() -> None:
+    contract = _ready_contract()
+    backup = contract["preconfiguration_review"]["portable_backup"]
+    backup["private_key_generated_or_configured"] = False
+    backup["offline_primary_copy_recovery_verified"] = False
+    backup["offline_recovery_copy_recovery_verified"] = False
+    backup["client_side_encryption_recipient_configured"] = False
+
+    result = evaluate_synthetic_provider_use_preflight(
+        contract, today=date(2026, 9, 3)
+    )
+
+    assert result.exit_code == EXIT_BLOCKED
+    assert result.payload["blocked_gate_codes"] == ["offline-age-custody"]
 
 
 def test_complete_controls_require_separate_operation_approval() -> None:
@@ -255,11 +262,11 @@ def test_cli_emits_only_the_stable_low_cardinality_payload(
     contract_path.write_text(json.dumps(_contract()), encoding="utf-8")
     monkeypatch.setattr(preflight_module, "CONTRACT_PATH", contract_path)
 
-    assert preflight_module.main() == EXIT_BLOCKED
+    assert preflight_module.main() == EXIT_READY
 
     payload = json.loads(capsys.readouterr().out)
     assert payload["schema_version"] == PREFLIGHT_SCHEMA_VERSION
-    assert payload["status"] == "blocked"
+    assert payload["status"] == "controls-ready"
     assert set(payload) == {
         "schema_version",
         "status",

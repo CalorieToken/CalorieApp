@@ -60,21 +60,27 @@ the external alert-delivery gate for public onboarding.
 No provider key, private provider identifier, database connection, migration or
 deployment was created or approved by this review.
 
-## Remaining blocks
+## Prepared execution boundary
 
-The project must remain unused until all of the following are complete:
+The offline custody ceremony completed on 2026-09-03. Both encrypted offline
+copies independently recovered the same public recipient, and the protected
+`neon-synthetic-restore` GitHub environment was verified as main-only with a
+required reviewer and administrator bypass disabled. The repository now
+contains a manual, synthetic-only workflow, but no temporary credentials have
+been stored and the workflow has not run.
 
-1. generate and verify both encrypted offline `age` identity copies, while
-   recording only the public recipient in Git; and
-2. approve and run the synthetic migration, restart, redeploy, encrypted backup,
-   restore and provider-exit drills separately.
+The only remaining block before the synthetic operation is its separate,
+explicit approval. Immediately before dispatch, the Free-plan console state and
+usage must be observed again and the two temporary environment secrets must be
+created without exposing their values. They must be deleted after the run.
 
 Real user data, production use, automatic paid upgrades and payment methods
 remain prohibited.
 
-The repository's offline `synthetic_provider_use_preflight` now makes this
-blocked state executable in CI. It reads only the versioned evidence contract,
-does not connect to Neon and cannot authorize a live operation.
+The repository's offline `synthetic_provider_use_preflight` now reports that the
+documented controls are ready and requests separate operation approval. It
+reads only the versioned evidence contract, does not connect to Neon and cannot
+authorize a live operation.
 
 ## Primary sources
 
