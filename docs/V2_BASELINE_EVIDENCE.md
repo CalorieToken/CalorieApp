@@ -38,8 +38,13 @@ round after the Identity Bridge and durable-data work is complete.
 
 ## Remaining provenance gate
 
-V2 needs a non-secret build identifier in both frontend and backend plus a
-release manifest recording the source commit, dependency-lock digests, WordPress
-plugin artifact digest and deployment time. Until an observed runtime identifier
-matches that manifest, `v2_deployment_provenance` remains a partial,
-release-blocking gate.
+The repository now exposes one validated non-secret build identifier in the
+backend health response and frontend HTML. It also contains a tested manifest
+builder that binds the source commit, dependency-lock digests, exact WordPress
+plugin artifact digest and deployment time without recording private
+configuration.
+
+An actual manifest has deliberately not been created yet because no current V2
+release candidate has been deployed. Until both observed runtime identifiers
+match one freshly generated manifest, `v2_deployment_provenance` remains a
+partial, release-blocking gate.

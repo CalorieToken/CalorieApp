@@ -153,3 +153,16 @@ def test_account_erasure_ui_is_hidden_fail_closed_and_proxy_allowlisted():
     assert "ACCOUNT_ERASURE_ENABLED=false" in backend_env
     assert 'pattern: /^api\\/identity\\/account$/' in proxy_source
     assert "isTrustedAccountErasureRequest(path, request)" in proxy_source
+
+
+def test_frontend_exposes_a_non_secret_build_identifier():
+    layout_source = (REPO_ROOT / "frontend" / "app" / "layout.tsx").read_text(
+        encoding="utf-8"
+    )
+    env_example = (REPO_ROOT / "frontend" / ".env.example").read_text(
+        encoding="utf-8"
+    )
+
+    assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID" in layout_source
+    assert "data-calorieapp-build-id" in layout_source
+    assert "NEXT_PUBLIC_CALORIEAPP_BUILD_ID=development" in env_example

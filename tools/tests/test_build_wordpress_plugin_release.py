@@ -70,6 +70,17 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "plugin header declares"):
                 release.build(Path(output), "9.9.9")
 
+    def test_artifact_display_path_supports_internal_and_external_outputs(self) -> None:
+        internal = release.ROOT / "dist" / "identity-bridge.zip"
+        self.assertEqual(
+            release.display_path(internal),
+            Path("dist/identity-bridge.zip"),
+        )
+
+        with tempfile.TemporaryDirectory() as output:
+            external = Path(output) / "identity-bridge.zip"
+            self.assertEqual(release.display_path(external), external.resolve())
+
     def test_embed_waits_for_calorieapp_state_before_exposing_xaman(self) -> None:
         source = (
             release.PLUGIN_DIR / "assets" / "calorieapp-embed.js"

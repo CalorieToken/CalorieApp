@@ -58,6 +58,7 @@ def test_health_response_schema(client: TestClient) -> None:
     data = client.get("/health").json()
     assert data["status"] == "ok"
     assert data["service"] == "calorieapp-backend"
+    assert data["build_id"] == "development"
 
 
 def test_readiness_checks_database_revision(client: TestClient) -> None:

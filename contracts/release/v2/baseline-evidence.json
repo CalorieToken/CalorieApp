@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.v2-baseline-evidence",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "observation_time_utc": "2026-08-30T05:58:26Z",
   "observation_kind": "read-only-and-non-authenticated-live-smoke",
   "repository_references": {
@@ -52,9 +52,19 @@
     "production-backup-and-restore",
     "privacy-security-or-regulatory-certification"
   ],
+  "repository_release_identification": {
+    "backend_build_identifier_implemented": true,
+    "frontend_build_identifier_implemented": true,
+    "deployment_smoke_expected_build_identifier_check_implemented": true,
+    "release_manifest_builder_implemented": true,
+    "release_manifest_schema": "calorieapp.v2-release-manifest.v1",
+    "actual_release_manifest_created": false,
+    "deployed_runtime_matches_release_manifest": false
+  },
   "closeout_requirements": [
-    "expose-a-non-secret-build-identifier-in-frontend-and-backend",
-    "record-source-commit-lockfile-digests-plugin-artifact-digest-and-deployment-time",
+    "configure-the-same-reviewed-source-commit-as-frontend-and-backend-build-id",
+    "generate-the-release-manifest-with-lockfile-plugin-and-deployment-digests",
+    "verify-both-live-runtime-identifiers-match-the-release-manifest",
     "archive-redacted-deployment-shape-and-dated-smoke-output",
     "run-the-prepared-integrated-identity-and-personal-history-acceptance-test",
     "approve-release-notes-and-version-tag-without-automatic-publication"

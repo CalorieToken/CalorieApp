@@ -1328,7 +1328,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.22.0"
+    assert matrix["contract_version"] == "1.23.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1336,6 +1336,9 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     assert gates["production_sqlite_fail_closed"]["status"] == "verified"
     assert gates["formal_schema_migrations"]["status"] == "verified"
     assert gates["v2_deployment_provenance"]["status"] == "partial"
+    assert "tools/build_v2_release_manifest.py" in gates[
+        "v2_deployment_provenance"
+    ]["evidence"]
     assert gates["abuse_capacity_and_mutation_controls"]["status"] == "partial"
     assert "backend/app/postgresql_privileges.py" in gates[
         "abuse_capacity_and_mutation_controls"

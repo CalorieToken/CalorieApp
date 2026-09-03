@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-release-gates",
-  "contract_version": "1.22.0",
+  "contract_version": "1.23.0",
   "release_state": "blocked",
   "statuses": ["verified", "partial", "not_started", "decision_required", "research_only"],
   "gates": [
@@ -10,7 +10,13 @@
       "release_blocking": true,
       "evidence": [
         "contracts/release/v2/baseline-evidence.json",
-        "docs/V2_BASELINE_EVIDENCE.md"
+        "docs/V2_BASELINE_EVIDENCE.md",
+        "docs/public/deployment.md",
+        "backend/app/main.py",
+        "frontend/app/layout.tsx",
+        "tools/deployment_smoke_test.py",
+        "tools/build_v2_release_manifest.py",
+        "tools/tests/test_build_v2_release_manifest.py"
       ]
     },
     {
