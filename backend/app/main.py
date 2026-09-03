@@ -115,6 +115,19 @@ SESSION_ABSOLUTE_LIFETIME_SECONDS = 8 * 60 * 60
 SESSION_IDLE_LIFETIME_SECONDS = 30 * 60
 BRIDGE_STATE_VALIDATE_CONTEXT = "login_state_validate"
 
+
+def _build_identifier(value: str | None) -> str:
+    candidate = value.strip() if value else ""
+    if not candidate:
+        return "development"
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", candidate) is None:
+        raise RuntimeError(
+            "CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, "
+            "underscores or hyphens"
+        )
+    return candidate
+
+
 # Read configuration from environment
 _CORS_ORIGINS_STR = os.getenv("CORS_ORIGINS", "http://localhost:3000")
 _CORS_ORIGINS = [origin.strip() for origin in _CORS_ORIGINS_STR.split(",") if origin.strip()]
@@ -136,7 +149,7 @@ _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {
 _SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").strip().lower()
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
 _CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
-_CALORIEAPP_BUILD_ID = os.getenv("CALORIEAPP_BUILD_ID", "development").strip()
+_CALORIEAPP_BUILD_ID = _build_identifier(os.getenv("CALORIEAPP_BUILD_ID"))
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
 _BRIDGE_AUTH_MAX_FUTURE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_FUTURE_SECONDS", "30"))
 _BRIDGE_NONCE_RETENTION_SECONDS = int(
@@ -163,11 +176,6 @@ _CALORIEAPP_RELEASE_COMMIT_SHA = os.getenv(
     "",
 ).strip()
 _IDENTITY_PROVIDER = "wordpress_xumm"
-
-if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", _CALORIEAPP_BUILD_ID):
-    raise RuntimeError(
-        "CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, underscores or hyphens"
-    )
 
 if not _WORDPRESS_BRIDGE_SECRET:
     logger.warning(

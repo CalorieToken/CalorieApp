@@ -79,6 +79,21 @@ class V2ReleaseManifestTests(unittest.TestCase):
                     plugin_archive=archive,
                 )
 
+    def test_manifest_normalizes_missing_repository_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, archive = self._fixture(directory)
+            missing_root = root / "missing"
+            with self.assertRaisesRegex(
+                release.ReleaseManifestError,
+                "repository root is unavailable",
+            ):
+                release.build_manifest(
+                    missing_root,
+                    commit="a" * 40,
+                    deployment_time="2026-09-03T12:34:56Z",
+                    plugin_archive=archive,
+                )
+
     def test_manifest_write_is_exclusive(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "release.json"

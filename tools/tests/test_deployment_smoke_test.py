@@ -2,6 +2,7 @@ import argparse
 import io
 import sys
 import unittest
+from pathlib import Path
 from unittest import mock
 
 from tools import deployment_smoke_test as smoke
@@ -24,6 +25,20 @@ class _Response:
 
 
 class DeploymentSmokeTests(unittest.TestCase):
+    def test_documented_command_includes_every_required_argument(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        guide = (root / "docs" / "public" / "deployment.md").read_text(
+            encoding="utf-8"
+        )
+        command = next(
+            line
+            for line in guide.splitlines()
+            if "tools/deployment_smoke_test.py" in line
+        )
+        self.assertIn("--backend-url", command)
+        self.assertIn("--frontend-url", command)
+        self.assertIn("--expected-build-id", command)
+
     def test_build_identifier_accepts_only_safe_bounded_values(self) -> None:
         self.assertEqual(smoke.build_identifier("a" * 40), "a" * 40)
         for candidate in ("", "contains space", "../release", "a" * 65):

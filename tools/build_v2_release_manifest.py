@@ -61,7 +61,10 @@ def _sha256(path: Path) -> str:
 
 
 def _required_file(root: Path, relative: Path) -> Path:
-    root = root.resolve(strict=True)
+    try:
+        root = root.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise ReleaseManifestError("repository root is unavailable") from exc
     candidate = root / relative
     if candidate.is_symlink():
         raise ReleaseManifestError(f"release input must not be a symlink: {relative}")
@@ -88,7 +91,10 @@ def build_manifest(
     except argparse.ArgumentTypeError as exc:
         raise ReleaseManifestError(str(exc)) from exc
 
-    resolved_root = root.resolve(strict=True)
+    try:
+        resolved_root = root.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise ReleaseManifestError("repository root is unavailable") from exc
     if not resolved_root.is_dir():
         raise ReleaseManifestError("repository root is not a directory")
 
