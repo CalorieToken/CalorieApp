@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Sequence
 
@@ -240,6 +240,7 @@ def migrate_and_seed(engine: Engine, approval_reference: str) -> SyntheticSnapsh
         raise SyntheticStagingSafetyError("synthetic schema contains pre-existing rows")
 
     fixed_time = datetime(2026, 9, 3, 12, 0, 0)
+    session_time = datetime.now(UTC).replace(tzinfo=None)
     with Session(engine) as session:
         session.add(
             CalorieAppUserDB(
@@ -268,7 +269,7 @@ def migrate_and_seed(engine: Engine, approval_reference: str) -> SyntheticSnapsh
                     SYNTHETIC_SESSION_TOKEN.encode("utf-8")
                 ).hexdigest(),
                 created_at=fixed_time,
-                last_seen_at=fixed_time,
+                last_seen_at=session_time,
                 expires_at=fixed_time + timedelta(days=36500),
             )
         )
