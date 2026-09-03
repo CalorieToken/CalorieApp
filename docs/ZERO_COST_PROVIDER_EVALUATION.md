@@ -138,6 +138,13 @@ Still required before using the project:
 4. Generate the offline `age` identity, verify both encrypted offline copies,
    store the passphrase separately and configure only the public recipient.
 
+`python -m app.synthetic_provider_use_preflight` evaluates those four control
+groups from the versioned contract without contacting Neon. It exits `40` and
+prints only low-cardinality blocker codes while any group is incomplete. Stale,
+missing or broadened safety policy exits `50`. Exit `0` means only that the
+documented controls are ready; every migration, restart, redeploy, backup or
+restore still needs its own explicit approval.
+
 Only then may the project be used. The first live tests remain separately
 approved and synthetic: migration/readiness, restart, actual provider redeploy,
 encrypted restore, provider-exit restore and capacity/onboarding-pause. Real

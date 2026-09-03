@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.5.0"
+    assert contract["contract_version"] == "1.6.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-project-created-use-blocked"
     )
@@ -160,6 +160,8 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert billing["usage_based_consumption_api_documented_for_free_plan"] is False
     assert billing["configurable_hard_quota_requires_api_key"] is True
     assert billing["project_scoped_api_key_is_least_privilege_available"] is True
+    assert billing["provider_measurement_path_approved"] is False
+    assert billing["provider_measurement_path_configured"] is False
     assert billing["organization_api_key_present"] is False
     assert billing["personal_api_key_present"] is False
     assert billing["project_scoped_api_key_created"] is False
@@ -184,6 +186,8 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert backup["identity_passphrase_stored_separately_from_encrypted_identity"] is True
     assert backup["public_recipient_may_be_committed"] is True
     assert backup["private_key_generated_or_configured"] is False
+    assert backup["offline_primary_copy_recovery_verified"] is False
+    assert backup["offline_recovery_copy_recovery_verified"] is False
     assert backup["permanent_github_private_key_secret_allowed"] is False
     assert backup["restore_identity_transfer"] == (
         "temporary-github-environment-secret-after-required-review"
