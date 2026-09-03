@@ -53,6 +53,33 @@ database URLs and provider backup artifacts. Findings expose only the path and
 a stable rule name. This is a final leak-prevention boundary, not permission to
 generate or handle the offline identity inside a repository workspace.
 
+### Local custody ceremony helper
+
+`tools/offline_age_custody.py` prepares the approved copies on the operator's
+local offline system. It refuses locations inside the repository, nested or
+identical locations, existing output files, missing `age` tools, and either
+missing custody confirmation. It pipes the private identity directly from
+`age-keygen` into passphrase encryption, copies only the encrypted artifact,
+and independently decrypts both copies through a pipe to derive the same public
+recipient. No plaintext identity file is created.
+
+Before running it, mount two separately stored offline media, install `age`,
+and choose how the passphrase will be held apart from both copies. Do not use a
+repository checkout, synced folder, shell transcript, CI runner or remote
+support session for the ceremony. From a local checkout, run:
+
+```text
+python tools/offline_age_custody.py --primary-directory <PRIMARY_OFFLINE_DIRECTORY> --recovery-directory <RECOVERY_OFFLINE_DIRECTORY> --confirm-separate-offline-storage --confirm-passphrase-separated
+```
+
+The command prompts locally for the passphrase during creation and once for
+each recovery check. A successful result contains only a stable status, a
+copy-match boolean and the public `age` recipient. Record only that public
+recipient in repository configuration. Do not record the command's directory
+arguments, passphrase, encrypted copies or any terminal transcript in the
+repository. A blocked result invalidates the ceremony; investigate locally and
+start again with empty target locations.
+
 ## Gates before implementation
 
 The workflow must not be added or run until all of these are true:

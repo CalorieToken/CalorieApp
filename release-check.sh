@@ -34,6 +34,7 @@ step "Identity Bridge contracts, provenance and release builder"
 "$python_bin" -m unittest \
     tools.tests.test_identity_contracts \
     tools.tests.test_build_wordpress_plugin_release \
+    tools.tests.test_offline_age_custody \
     tools.tests.test_tracked_secret_patterns
 
 step "Schema migration smoke test"

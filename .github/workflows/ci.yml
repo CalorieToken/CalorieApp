@@ -54,9 +54,10 @@ jobs:
           python -m unittest tools.tests.test_identity_contracts
           python -m unittest tools.tests.test_localization_contracts
 
-      - name: Test mobile Xaman preflight and tracked-secret guard
+      - name: Test mobile, offline custody and tracked-secret guards
         run: |
           python -m unittest tools.tests.test_mobile_xaman_preflight
+          python -m unittest tools.tests.test_offline_age_custody
           python -m unittest tools.tests.test_tracked_secret_patterns
 
   wordpress-plugin-release-check:
