@@ -159,8 +159,8 @@ jobs:
           if payload.get("level") != "pause" or payload.get("onboarding_paused") is not True:
               raise SystemExit("synthetic onboarding-pause exercise did not fail closed")
           PY
-          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
-            psql --no-psqlrc --tuples-only --no-align \
+          psql --dbname="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            --no-psqlrc --tuples-only --no-align \
               --command='SELECT EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint' \
               > "${RUNNER_TEMP}/provider-start-before"
 
@@ -177,8 +177,8 @@ jobs:
           DATABASE_URL: ${{ secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL }}
         run: |
           set -Eeuo pipefail
-          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
-            psql --no-psqlrc --tuples-only --no-align \
+          psql --dbname="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            --no-psqlrc --tuples-only --no-align \
               --command='SELECT EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint' \
               > "${RUNNER_TEMP}/provider-start-after"
           test "$(<"${RUNNER_TEMP}/provider-start-before")" != \
@@ -202,8 +202,8 @@ jobs:
             fi
           }
           trap cleanup_plaintext EXIT
-          PGDATABASE="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
-            pg_dump --format=custom --no-owner --no-privileges --file="${plaintext}"
+          pg_dump --dbname="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}" \
+            --format=custom --no-owner --no-privileges --file="${plaintext}"
           test -s "${plaintext}"
           age --encrypt \
             --recipient "${CALORIEAPP_SYNTHETIC_AGE_RECIPIENT}" \

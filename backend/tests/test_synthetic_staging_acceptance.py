@@ -177,7 +177,12 @@ def test_workflow_is_manual_main_only_review_gated_and_encrypted() -> None:
     assert "secrets.CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL" in workflow
     assert "secrets.CALORIEAPP_SYNTHETIC_AGE_IDENTITY" in workflow
     assert f"CALORIEAPP_SYNTHETIC_AGE_RECIPIENT: {recipient}" in workflow
-    assert "pg_dump --format=custom --no-owner --no-privileges" in workflow
+    assert workflow.count(
+        'psql --dbname="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}"'
+    ) == 2
+    assert 'pg_dump --dbname="${CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL}"' in workflow
+    assert "--format=custom --no-owner --no-privileges" in workflow
+    assert "PGDATABASE=" not in workflow
     assert "age --encrypt" in workflow
     assert "shred --force --remove" in workflow
     assert "path: ${{ runner.temp }}/calorieapp-synthetic-neon.dump.age" in workflow
