@@ -30,7 +30,7 @@ _EXPECTED_REGION = "aws-eu-central-1"
 
 @dataclass(frozen=True)
 class SyntheticProviderUsePreflightResult:
-    """Stable result that contains no provider identifiers or credentials."""
+    """Stable result without provider account/project identifiers or credentials."""
 
     payload: dict[str, str | bool | list[str]]
     exit_code: int
