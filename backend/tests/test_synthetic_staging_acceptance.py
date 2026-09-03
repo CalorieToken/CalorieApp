@@ -12,12 +12,14 @@ import pytest
 
 from app import main as main_module
 from app import synthetic_staging_acceptance as acceptance_module
-from app.models import FoodLogDB
+from app.models import FoodLogDB, RouteRateEventDB
 from app.synthetic_staging_acceptance import (
     RESTORE_DATABASE,
     SCHEMA_VERSION,
     SYNTHETIC_PRODUCT,
+    SYNTHETIC_REDEPLOY_PRODUCT,
     SYNTHETIC_SESSION_TOKEN,
+    SYNTHETIC_USER_ID,
     SyntheticStagingSafetyError,
     _wait_until_ready,
     migrate_and_seed,
@@ -333,6 +335,57 @@ def test_verification_rejects_extra_application_data(tmp_path) -> None:
             session.commit()
         with pytest.raises(SyntheticStagingSafetyError, match="unexpected"):
             verify_synthetic_snapshot(engine, expected_food_log_count=1)
+    finally:
+        engine.dispose()
+
+
+def test_verification_accepts_only_expected_route_admission_history(tmp_path) -> None:
+    engine = create_engine(f"sqlite:///{tmp_path / 'route-events.sqlite'}")
+    try:
+        migrate_and_seed(engine, "STEP1-SYNTHETIC-ACCEPTANCE-2026-09-03")
+        with Session(engine) as session:
+            session.add(
+                FoodLogDB(
+                    owner_id=SYNTHETIC_USER_ID,
+                    product_name=SYNTHETIC_REDEPLOY_PRODUCT,
+                    calories=71.0,
+                    protein=1.0,
+                    fat=0.2,
+                    carbohydrates=18.0,
+                )
+            )
+            session.add(RouteRateEventDB(route_key="food_log_create"))
+            session.add(RouteRateEventDB(route_key="food_log_list"))
+            session.commit()
+
+        verified = verify_synthetic_snapshot(engine)
+    finally:
+        engine.dispose()
+
+    assert verified.food_log_count == 2
+
+
+def test_verification_rejects_unexpected_route_admission_history(tmp_path) -> None:
+    engine = create_engine(f"sqlite:///{tmp_path / 'bad-route-events.sqlite'}")
+    try:
+        migrate_and_seed(engine, "STEP1-SYNTHETIC-ACCEPTANCE-2026-09-03")
+        with Session(engine) as session:
+            session.add(
+                FoodLogDB(
+                    owner_id=SYNTHETIC_USER_ID,
+                    product_name=SYNTHETIC_REDEPLOY_PRODUCT,
+                    calories=71.0,
+                    protein=1.0,
+                    fat=0.2,
+                    carbohydrates=18.0,
+                )
+            )
+            session.add(RouteRateEventDB(route_key="food_log_create"))
+            session.add(RouteRateEventDB(route_key="unexpected_route"))
+            session.commit()
+
+        with pytest.raises(SyntheticStagingSafetyError, match="route admission"):
+            verify_synthetic_snapshot(engine)
     finally:
         engine.dispose()
 
