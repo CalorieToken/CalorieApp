@@ -49,16 +49,18 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--backend-url", required=True, type=origin)
     parser.add_argument("--frontend-url", required=True, type=origin)
-    parser.add_argument("--expected-build-id", type=build_identifier)
+    parser.add_argument("--expected-build-id", required=True, type=build_identifier)
     args = parser.parse_args()
 
     checks: list[tuple[str, bool, str]] = []
     try:
         status, _, body = request(f"{args.backend_url}/health")
         payload = json.loads(body)
-        backend_ready = status == 200 and payload.get("status") == "ok"
-        if args.expected_build_id:
-            backend_ready = backend_ready and payload.get("build_id") == args.expected_build_id
+        backend_ready = (
+            status == 200
+            and payload.get("status") == "ok"
+            and payload.get("build_id") == args.expected_build_id
+        )
         checks.append(("backend health", backend_ready, str(payload)))
 
         status, headers, _ = request(
@@ -76,17 +78,16 @@ def main() -> int:
         status, _, body = request(args.frontend_url)
         html = body.decode("utf-8", errors="replace")
         checks.append(("frontend page", status == 200 and "Calorie" in html, f"HTTP {status}, {len(body)} bytes"))
-        if args.expected_build_id:
-            checks.append(
-                (
-                    "frontend build id",
-                    frontend_build_identifier_matches(
-                        html,
-                        args.expected_build_id,
-                    ),
+        checks.append(
+            (
+                "frontend build id",
+                frontend_build_identifier_matches(
+                    html,
                     args.expected_build_id,
-                )
+                ),
+                args.expected_build_id,
             )
+        )
     except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
         print(f"[FAIL] deployment request failed: {exc}", file=sys.stderr)
         return 1

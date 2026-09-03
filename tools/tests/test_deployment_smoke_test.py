@@ -39,6 +39,34 @@ class DeploymentSmokeTests(unittest.TestCase):
         self.assertIn("--frontend-url", command)
         self.assertIn("--expected-build-id", command)
 
+    def test_workflow_requires_and_passes_expected_build_id(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / ".github" / "workflows" / "deployment-smoke.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("expected_build_id:", workflow)
+        self.assertIn("CALORIEAPP_SMOKE_EXPECTED_BUILD_ID", workflow)
+        self.assertIn(
+            '--expected-build-id "$CALORIEAPP_SMOKE_EXPECTED_BUILD_ID"',
+            workflow,
+        )
+
+    def test_cli_requires_expected_build_id(self) -> None:
+        argv = [
+            "deployment_smoke_test.py",
+            "--backend-url",
+            "https://api.example",
+            "--frontend-url",
+            "https://app.example",
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch("sys.stderr", new_callable=io.StringIO),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            smoke.main()
+        self.assertEqual(raised.exception.code, 2)
+
     def test_build_identifier_accepts_only_safe_bounded_values(self) -> None:
         self.assertEqual(smoke.build_identifier("a" * 40), "a" * 40)
         for candidate in ("", "contains space", "../release", "a" * 65):
