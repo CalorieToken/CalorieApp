@@ -38,7 +38,9 @@ def test_v2_completion_builds_on_proven_baseline_without_readiness_claim() -> No
 def test_v2_live_baseline_is_evidence_without_guessing_deployed_commit() -> None:
     baseline = _load_baseline()
     refs = baseline["repository_references"]
+    release_identification = baseline["repository_release_identification"]
 
+    assert baseline["contract_version"] == "1.1.0"
     assert baseline["observation_kind"] == "read-only-and-non-authenticated-live-smoke"
     assert refs["known_working_checkpoint"] == {
         "commit": "c6cdf49e23e93d227667ef179c8832e9e2b23e20",
@@ -58,6 +60,15 @@ def test_v2_live_baseline_is_evidence_without_guessing_deployed_commit() -> None
     assert "exact-deployed-source-commit-or-build-artifact" in baseline[
         "not_proven_by_this_observation"
     ]
+    assert release_identification == {
+        "backend_build_identifier_implemented": True,
+        "frontend_build_identifier_implemented": True,
+        "deployment_smoke_expected_build_identifier_check_implemented": True,
+        "release_manifest_builder_implemented": True,
+        "release_manifest_schema": "calorieapp.v2-release-manifest.v1",
+        "actual_release_manifest_created": False,
+        "deployed_runtime_matches_release_manifest": False,
+    }
     assert baseline["release_gate_status"] == "partial"
 
 

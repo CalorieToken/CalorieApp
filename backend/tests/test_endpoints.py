@@ -3,6 +3,7 @@ Automated backend tests for CalorieApp API endpoints.
 Run from the backend directory: pytest
 """
 import hashlib
+import re
 from datetime import UTC, datetime, timedelta
 from secrets import token_urlsafe
 from unittest.mock import AsyncMock, patch
@@ -14,7 +15,7 @@ from sqlmodel.pool import StaticPool
 
 import app.database as db_module
 from app.database import init_db
-from app.main import _ROUTE_RATE_LIMITER, app
+from app.main import _ROUTE_RATE_LIMITER, _build_identifier, app
 from app.models import AuthSessionDB, CalorieAppUserDB, FoodLogDB
 from app.schemas import FoodSearchResult
 from app.route_rate_limiter import RouteRateLimitRejected
@@ -58,6 +59,17 @@ def test_health_response_schema(client: TestClient) -> None:
     data = client.get("/health").json()
     assert data["status"] == "ok"
     assert data["service"] == "calorieapp-backend"
+    assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", data["build_id"])
+
+
+@pytest.mark.parametrize("value", [None, "", "   "])
+def test_blank_build_identifier_uses_local_default(value: str | None) -> None:
+    assert _build_identifier(value) == "development"
+
+
+def test_invalid_build_identifier_fails_closed() -> None:
+    with pytest.raises(RuntimeError, match="CALORIEAPP_BUILD_ID"):
+        _build_identifier("invalid build id")
 
 
 def test_readiness_checks_database_revision(client: TestClient) -> None:

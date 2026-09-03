@@ -11,6 +11,10 @@ on:
         description: Public HTTPS frontend origin
         required: true
         type: string
+      expected_build_id:
+        description: Exact deployed build identifier
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -28,7 +32,9 @@ jobs:
         env:
           CALORIEAPP_SMOKE_BACKEND_URL: ${{ inputs.backend_url }}
           CALORIEAPP_SMOKE_FRONTEND_URL: ${{ inputs.frontend_url }}
+          CALORIEAPP_SMOKE_EXPECTED_BUILD_ID: ${{ inputs.expected_build_id }}
         run: |
           python tools/deployment_smoke_test.py \
             --backend-url "$CALORIEAPP_SMOKE_BACKEND_URL" \
-            --frontend-url "$CALORIEAPP_SMOKE_FRONTEND_URL"
+            --frontend-url "$CALORIEAPP_SMOKE_FRONTEND_URL" \
+            --expected-build-id "$CALORIEAPP_SMOKE_EXPECTED_BUILD_ID"

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
@@ -20,6 +21,24 @@ def origin(value: str) -> str:
     return f"https://{parsed.netloc}"
 
 
+def build_identifier(value: str) -> str:
+    candidate = value.strip()
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", candidate):
+        raise argparse.ArgumentTypeError(
+            "build id must be 1-64 letters, digits, dots, underscores or hyphens"
+        )
+    return candidate
+
+
+def frontend_build_identifier_matches(html: str, expected: str) -> bool:
+    escaped = re.escape(expected)
+    attribute = re.compile(
+        rf"\b(?i:data-calorieapp-build-id)\s*=\s*"
+        rf"(?:(?P<quote>[\"']){escaped}(?P=quote)|{escaped}(?=[\s>]))"
+    )
+    return attribute.search(html) is not None
+
+
 def request(url: str, *, method: str = "GET", headers: dict[str, str] | None = None):
     req = Request(url, method=method, headers=headers or {})
     with urlopen(req, timeout=30) as response:  # noqa: S310 - validated HTTPS origins only
@@ -30,13 +49,19 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--backend-url", required=True, type=origin)
     parser.add_argument("--frontend-url", required=True, type=origin)
+    parser.add_argument("--expected-build-id", required=True, type=build_identifier)
     args = parser.parse_args()
 
     checks: list[tuple[str, bool, str]] = []
     try:
         status, _, body = request(f"{args.backend_url}/health")
         payload = json.loads(body)
-        checks.append(("backend health", status == 200 and payload.get("status") == "ok", str(payload)))
+        backend_ready = (
+            status == 200
+            and payload.get("status") == "ok"
+            and payload.get("build_id") == args.expected_build_id
+        )
+        checks.append(("backend health", backend_ready, str(payload)))
 
         status, headers, _ = request(
             f"{args.backend_url}/health",
@@ -53,6 +78,16 @@ def main() -> int:
         status, _, body = request(args.frontend_url)
         html = body.decode("utf-8", errors="replace")
         checks.append(("frontend page", status == 200 and "Calorie" in html, f"HTTP {status}, {len(body)} bytes"))
+        checks.append(
+            (
+                "frontend build id",
+                frontend_build_identifier_matches(
+                    html,
+                    args.expected_build_id,
+                ),
+                args.expected_build_id,
+            )
+        )
     except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
         print(f"[FAIL] deployment request failed: {exc}", file=sys.stderr)
         return 1

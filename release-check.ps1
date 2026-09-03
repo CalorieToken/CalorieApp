@@ -56,10 +56,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 Pop-Location
 
-Write-Step "Offline age custody tests"
-& $pythonExe -m unittest tools.tests.test_offline_age_custody
+Write-Step "Offline custody and release-evidence tests"
+& $pythonExe -m unittest tools.tests.test_offline_age_custody tools.tests.test_build_v2_release_manifest tools.tests.test_deployment_smoke_test
 if ($LASTEXITCODE -ne 0) {
-    throw "Offline age custody tests failed"
+    throw "Offline custody or release-evidence tests failed"
 }
 
 Write-Step "Frontend lint"
