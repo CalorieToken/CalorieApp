@@ -1106,6 +1106,12 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
     assert cost["provider_evaluation_contract"] == (
         "contracts/data-safety/v1/provider-evaluation.json"
     )
+    assert cost["synthetic_provider_use_preflight"] == (
+        "backend/app/synthetic_provider_use_preflight.py"
+    )
+    assert cost["synthetic_provider_use_preflight_status"] == (
+        "blocked-four-control-groups-no-provider-contact"
+    )
     assert cost["provider_selected"] is True
     assert cost["selected_provider"] == "neon_free"
     assert cost["provider_selection_scope"] == "isolated-synthetic-staging-only"
@@ -1393,6 +1399,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     ]["evidence"]
     assert "docs/ACCOUNT_ERASURE_REPLAY_PROOF.md" in gates[
         "backup_restore_drill"
+    ]["evidence"]
+    assert "backend/app/synthetic_provider_use_preflight.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
+    assert "backend/tests/test_synthetic_provider_use_preflight.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
     assert gates["user_data_export"]["status"] == "partial"
     assert (

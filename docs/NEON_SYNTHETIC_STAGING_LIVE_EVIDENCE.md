@@ -59,6 +59,10 @@ The project must remain unused until all of the following are complete:
 Real user data, production use, automatic paid upgrades and payment methods
 remain prohibited.
 
+The repository's offline `synthetic_provider_use_preflight` now makes this
+blocked state executable in CI. It reads only the versioned evidence contract,
+does not connect to Neon and cannot authorize a live operation.
+
 ## Primary sources
 
 - [Neon plans](https://neon.com/docs/introduction/plans)

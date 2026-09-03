@@ -167,6 +167,40 @@ jobs:
         working-directory: backend
         run: python -m pytest -q -W error::DeprecationWarning
 
+      - name: Verify synthetic provider use remains fail closed
+        working-directory: backend
+        shell: bash
+        run: |
+          output_file="${RUNNER_TEMP}/synthetic-provider-use-preflight.json"
+          set +e
+          python -m app.synthetic_provider_use_preflight > "${output_file}"
+          preflight_status=$?
+          set -e
+          test "${preflight_status}" -eq 40
+          python - "${output_file}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = {
+              "schema_version": "calorieapp.synthetic-provider-use-preflight.v1",
+              "status": "blocked",
+              "ready": False,
+              "provider": "neon_free",
+              "scope": "isolated-synthetic-staging-only",
+              "blocked_gate_codes": [
+                  "data-processing-controls",
+                  "provider-measurement-controls",
+                  "provider-capacity-controls",
+                  "offline-age-custody",
+              ],
+              "action": "keep-provider-unused-complete-blocked-controls",
+          }
+          if payload != expected:
+              raise SystemExit("synthetic provider-use preflight did not stay blocked")
+          PY
+
       - name: Compile backend Python
         run: python -m compileall -q backend/app
 
