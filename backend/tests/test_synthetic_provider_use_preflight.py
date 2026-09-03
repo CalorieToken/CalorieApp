@@ -27,17 +27,6 @@ def _ready_contract() -> dict:
     review = contract["preconfiguration_review"]
     review["data_processing"]["dpa_execution_or_account_acceptance_confirmed"] = True
     review["data_processing"]["subprocessor_notification_subscription_confirmed"] = True
-    billing = review["billing_and_quota"]
-    billing["provider_measurement_path_approved"] = True
-    billing["provider_measurement_path_configured"] = True
-    measurement = billing["provider_measurement_review"]
-    measurement["decision_state"] = (
-        "complete-measurement-path-approved-and-configured"
-    )
-    measurement["complete_measurement_path_selected"] = True
-    measurement["complete_measurement_path_configuration_verified"] = True
-    contract["capacity_policy"]["exact_provider_quota_configured"] = True
-    contract["capacity_policy"]["alert_delivery_configured"] = True
     backup = review["portable_backup"]
     backup["private_key_generated_or_configured"] = True
     backup["offline_primary_copy_recovery_verified"] = True
@@ -46,7 +35,7 @@ def _ready_contract() -> dict:
     return contract
 
 
-def test_current_provider_controls_remain_blocked_without_contacting_neon() -> None:
+def test_current_provider_controls_are_blocked_only_on_offline_custody() -> None:
     result = evaluate_synthetic_provider_use_preflight(
         _contract(), today=date(2026, 9, 3)
     )
@@ -58,11 +47,7 @@ def test_current_provider_controls_remain_blocked_without_contacting_neon() -> N
         "ready": False,
         "provider": "neon_free",
         "scope": "isolated-synthetic-staging-only",
-        "blocked_gate_codes": [
-            "provider-measurement-controls",
-            "provider-capacity-controls",
-            "offline-age-custody",
-        ],
+        "blocked_gate_codes": ["offline-age-custody"],
         "action": "keep-provider-unused-complete-blocked-controls",
     }
 
@@ -164,6 +149,24 @@ def test_complete_controls_require_separate_operation_approval() -> None:
             (
                 "preconfiguration_review",
                 "billing_and_quota",
+                "free_plan_native_hard_limits",
+                "overage_billing_on_free_plan",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
+                "synthetic_staging_measurement_path",
+                "provider_api_key_required",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
                 "provider_measurement_review",
                 "console_only_monitoring_counts_as_complete",
             ),
@@ -232,7 +235,7 @@ def test_expired_evidence_is_invalid() -> None:
 def test_missing_control_is_invalid_instead_of_assumed_false() -> None:
     contract = _ready_contract()
     del contract["preconfiguration_review"]["billing_and_quota"][
-        "provider_measurement_path_configured"
+        "synthetic_provider_measurement_path_configured"
     ]
 
     result = evaluate_synthetic_provider_use_preflight(

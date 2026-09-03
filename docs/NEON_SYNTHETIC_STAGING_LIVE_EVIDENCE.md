@@ -41,40 +41,32 @@ public repository.
 Completion does not approve real personal data, production use, a database
 connection, API key, migration or deployment.
 
-## Capacity finding
+## Capacity finding and synthetic-only decision
 
 The Free console exposes aggregate compute, storage, history and network
-transfer usage. This is useful operator evidence but does not satisfy the
-automated 70/85/95-percent alert gate by itself.
+transfer usage. Neon's current official Free-plan documentation also defines
+native hard limits of 100 CU-hours per project per month, 0.5 GB storage per
+project and 5 GB public network transfer per month. Compute or transfer
+exhaustion suspends compute; storage exhaustion blocks growth. Free-plan
+overages are not billed and limit exhaustion does not delete stored data.
 
-Neon's current documentation describes customer-set project quotas that suspend
-compute after a configured threshold. Configuration requires the Neon API. The
-current usage-based consumption API documentation lists Launch, Scale, Agent
-and Enterprise availability, not Free; the legacy consumption API starts at
-Scale. The existing read-only `pg_database_size(current_database())` signal
-covers database size, not compute or network-transfer allowances. It therefore
-cannot complete the provider measurement gate by itself, and console-only
-review does not count as an automated alert path. Free-plan quota-configuration
-API availability has not been confirmed on this account.
-
-The least-privilege available credential is a project-scoped API key. It still
-has persistent Editor access to the project, remains valid until revoked and is
-shown only once when created. No key was created during this review. Creating,
-storing and using one requires a separate approved secret-custody design and
-action-time confirmation.
+For this isolated, manually dispatched synthetic experiment only, those native
+limits are the cost boundary. Each approved run must inspect the console before
+and after execution and run CalorieApp's read-only database-size probe with a
+500,000,000-byte budget. No provider API key is needed or permitted. Because
+Free consumption APIs do not provide continuous metrics, this does not satisfy
+the external alert-delivery gate for public onboarding.
 
 No provider key, private provider identifier, database connection, migration or
-deployment was created or approved by this documentation review.
+deployment was created or approved by this review.
 
 ## Remaining blocks
 
 The project must remain unused until all of the following are complete:
 
-1. approve a least-privilege provider measurement path without exposing a key;
-2. configure exact provider limits and prove fail-closed suspension behavior;
-3. generate and verify both encrypted offline `age` identity copies, while
+1. generate and verify both encrypted offline `age` identity copies, while
    recording only the public recipient in Git; and
-4. approve and run the synthetic migration, restart, redeploy, encrypted backup,
+2. approve and run the synthetic migration, restart, redeploy, encrypted backup,
    restore and provider-exit drills separately.
 
 Real user data, production use, automatic paid upgrades and payment methods

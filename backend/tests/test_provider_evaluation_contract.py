@@ -26,9 +26,9 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.9.0"
+    assert contract["contract_version"] == "1.10.0"
     assert contract["decision_state"] == (
-        "neon-synthetic-staging-project-created-use-blocked"
+        "neon-synthetic-staging-native-limits-approved-offline-custody-blocked"
     )
     assert 1 <= (revalidate_by - reviewed_on).days <= 92
     assert date.today() <= revalidate_by, (
@@ -99,8 +99,14 @@ def test_non_negotiable_cost_durability_and_privacy_boundaries_remain() -> None:
         "docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md"
     )
     assert capacity["configured_measurement_failure_pauses_new_onboarding"] is True
-    assert capacity["exact_provider_quota_configured"] is False
+    assert capacity["exact_provider_quota_configured"] is True
+    assert capacity["exact_provider_quota_source"] == "free-plan-native-hard-limits"
+    assert capacity[
+        "approved_database_capacity_limit_bytes_for_synthetic_staging"
+    ] == 500_000_000
     assert capacity["alert_delivery_configured"] is False
+    assert capacity["synthetic_operation_pre_post_observation_required"] is True
+    assert capacity["continuous_alert_delivery_required_for_public_release"] is True
     assert capacity["free_console_usage_metrics_confirmed_live"] is True
     assert capacity["persistent_provider_api_key_created"] is False
     assert capacity[
@@ -117,7 +123,7 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     review = contract["preconfiguration_review"]
 
     assert review["status"] == (
-        "free-frankfurt-project-created-provider-use-and-recipient-configuration-blocked"
+        "free-frankfurt-project-native-limits-approved-offline-custody-blocked"
     )
     live_evidence = ROOT / review["live_evidence_document"]
     assert live_evidence.is_file()
@@ -171,12 +177,22 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
         "network_transfer_gb",
     ]
     assert billing["free_console_usage_was_zero_at_review"] is True
+    assert billing["free_native_limit_behavior_reviewed_on"] == "2026-09-03"
+    assert billing["free_plan_native_hard_limits"] == {
+        "compute_cu_hours_per_project_month": 100,
+        "storage_bytes_per_project": 500_000_000,
+        "public_network_transfer_bytes_per_month": 5_000_000_000,
+        "compute_or_network_exhaustion_suspends_compute": True,
+        "storage_exhaustion_blocks_growth": True,
+        "overage_billing_on_free_plan": False,
+        "limit_exhaustion_deletes_stored_data": False,
+    }
     assert billing["usage_based_consumption_api_documented_for_free_plan"] is False
     assert billing["configurable_hard_quota_requires_api_key"] is True
     assert billing["project_scoped_api_key_is_least_privilege_available"] is True
     assert billing["provider_measurement_review"] == {
         "reviewed_on": "2026-09-03",
-        "decision_state": "blocked-no-documented-free-plan-consumption-api",
+        "decision_state": "synthetic-native-limit-observation-path-approved-and-configured",
         "database_native_storage_signal": "pg_database_size(current_database())",
         "database_native_signal_read_only": True,
         "database_native_signal_covers_all_free_plan_allowances": False,
@@ -185,12 +201,22 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
         "quota_configuration_api_availability_on_live_free_plan_confirmed": False,
         "console_only_monitoring_counts_as_complete": False,
         "persistent_provider_api_key_creation_approved": False,
-        "complete_measurement_path_selected": False,
-        "complete_measurement_path_configuration_verified": False,
+        "synthetic_measurement_path_selected": True,
+        "synthetic_measurement_path_configuration_verified": True,
         "private_provider_identifiers_or_credentials_in_public_repository": False,
     }
-    assert billing["provider_measurement_path_approved"] is False
-    assert billing["provider_measurement_path_configured"] is False
+    assert billing["synthetic_staging_measurement_path"] == {
+        "scope": "isolated-synthetic-staging-only",
+        "provider_native_hard_limits_are_cost_boundary": True,
+        "provider_console_observation_required_before_and_after_each_run": True,
+        "database_size_probe_required_before_and_after_each_run": True,
+        "database_capacity_limit_bytes": 500_000_000,
+        "continuous_external_alert_delivery_required_for_synthetic_run": False,
+        "continuous_external_alert_delivery_required_for_public_release": True,
+        "provider_api_key_required": False,
+    }
+    assert billing["synthetic_provider_measurement_path_approved"] is True
+    assert billing["synthetic_provider_measurement_path_configured"] is True
     assert billing["organization_api_key_present"] is False
     assert billing["personal_api_key_present"] is False
     assert billing["project_scoped_api_key_created"] is False
@@ -351,10 +377,8 @@ def test_real_provider_work_remains_release_blocked() -> None:
         "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
         in blockers
     )
-    assert (
-        "approve and configure a least-privilege provider measurement path without exposing a persistent API key"
-        in blockers
-    )
+    assert not any("provider measurement path" in item for item in blockers)
+    assert not any("provider quota values" in item for item in blockers)
     assert not any("approve an encrypted off-provider backup destination" in item for item in blockers)
     assert not any("approve a distinct PostgreSQL provider-exit target" in item for item in blockers)
     assert "human review before any real user data" in contract[
@@ -388,7 +412,10 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "neon-free-frankfurt-synthetic-staging-project-created-use-blocked"
+        "neon-free-synthetic-native-limits-approved-offline-custody-blocked"
+    )
+    assert cost["synthetic_provider_use_preflight_status"] == (
+        "blocked-offline-age-custody-only-no-provider-contact"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"

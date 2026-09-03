@@ -21,7 +21,7 @@ EXIT_BLOCKED = 40
 EXIT_INVALID = 50
 
 _EXPECTED_CONTRACT_ID = "calorieapp.zero-additional-cost-provider-evaluation"
-_EXPECTED_CONTRACT_VERSION = "1.9.0"
+_EXPECTED_CONTRACT_VERSION = "1.10.0"
 _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"
@@ -53,9 +53,32 @@ _EXPECTED_PROVIDER_MEASUREMENT_REVIEW_KEYS = frozenset(
         "quota_configuration_api_availability_on_live_free_plan_confirmed",
         "console_only_monitoring_counts_as_complete",
         "persistent_provider_api_key_creation_approved",
-        "complete_measurement_path_selected",
-        "complete_measurement_path_configuration_verified",
+        "synthetic_measurement_path_selected",
+        "synthetic_measurement_path_configuration_verified",
         "private_provider_identifiers_or_credentials_in_public_repository",
+    }
+)
+_EXPECTED_NATIVE_LIMIT_KEYS = frozenset(
+    {
+        "compute_cu_hours_per_project_month",
+        "storage_bytes_per_project",
+        "public_network_transfer_bytes_per_month",
+        "compute_or_network_exhaustion_suspends_compute",
+        "storage_exhaustion_blocks_growth",
+        "overage_billing_on_free_plan",
+        "limit_exhaustion_deletes_stored_data",
+    }
+)
+_EXPECTED_SYNTHETIC_MEASUREMENT_KEYS = frozenset(
+    {
+        "scope",
+        "provider_native_hard_limits_are_cost_boundary",
+        "provider_console_observation_required_before_and_after_each_run",
+        "database_size_probe_required_before_and_after_each_run",
+        "database_capacity_limit_bytes",
+        "continuous_external_alert_delivery_required_for_synthetic_run",
+        "continuous_external_alert_delivery_required_for_public_release",
+        "provider_api_key_required",
     }
 )
 
@@ -223,8 +246,10 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         is not False
     ):
         raise ValueError("private provider metadata must not be public")
-    measurement_approved = billing["provider_measurement_path_approved"]
-    measurement_configured = billing["provider_measurement_path_configured"]
+    measurement_approved = billing["synthetic_provider_measurement_path_approved"]
+    measurement_configured = billing[
+        "synthetic_provider_measurement_path_configured"
+    ]
     if measurement_approved is not True and measurement_approved is not False:
         raise ValueError("invalid provider measurement approval state")
     if measurement_configured is not True and measurement_configured is not False:
@@ -232,17 +257,17 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
     if measurement_configured and not measurement_approved:
         raise ValueError("provider measurement cannot be configured before approval")
     if (
-        measurement_review["complete_measurement_path_selected"]
+        measurement_review["synthetic_measurement_path_selected"]
         is not measurement_approved
     ):
         raise ValueError("provider measurement selection evidence is inconsistent")
     if (
-        measurement_review["complete_measurement_path_configuration_verified"]
+        measurement_review["synthetic_measurement_path_configuration_verified"]
         is not measurement_configured
     ):
         raise ValueError("provider measurement configuration evidence is inconsistent")
     expected_measurement_state = (
-        "complete-measurement-path-approved-and-configured"
+        "synthetic-native-limit-observation-path-approved-and-configured"
         if measurement_configured
         else (
             "measurement-path-approved-configuration-blocked"
@@ -252,6 +277,37 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
     )
     if measurement_review["decision_state"] != expected_measurement_state:
         raise ValueError("unexpected provider measurement decision state")
+    native_limits = billing["free_plan_native_hard_limits"]
+    if not isinstance(native_limits, Mapping) or set(native_limits) != (
+        _EXPECTED_NATIVE_LIMIT_KEYS
+    ):
+        raise ValueError("unexpected Free plan native-limit evidence")
+    if native_limits != {
+        "compute_cu_hours_per_project_month": 100,
+        "storage_bytes_per_project": 500_000_000,
+        "public_network_transfer_bytes_per_month": 5_000_000_000,
+        "compute_or_network_exhaustion_suspends_compute": True,
+        "storage_exhaustion_blocks_growth": True,
+        "overage_billing_on_free_plan": False,
+        "limit_exhaustion_deletes_stored_data": False,
+    }:
+        raise ValueError("unexpected Free plan native limits")
+    synthetic_measurement = billing["synthetic_staging_measurement_path"]
+    if not isinstance(synthetic_measurement, Mapping) or set(
+        synthetic_measurement
+    ) != _EXPECTED_SYNTHETIC_MEASUREMENT_KEYS:
+        raise ValueError("unexpected synthetic measurement path")
+    if synthetic_measurement != {
+        "scope": _EXPECTED_SCOPE,
+        "provider_native_hard_limits_are_cost_boundary": True,
+        "provider_console_observation_required_before_and_after_each_run": True,
+        "database_size_probe_required_before_and_after_each_run": True,
+        "database_capacity_limit_bytes": 500_000_000,
+        "continuous_external_alert_delivery_required_for_synthetic_run": False,
+        "continuous_external_alert_delivery_required_for_public_release": True,
+        "provider_api_key_required": False,
+    }:
+        raise ValueError("unsafe synthetic measurement path")
     if billing["live_plan"] != "Free" or billing["live_price_usd_per_month"] != 0:
         raise ValueError("unexpected plan")
     if billing["live_project_count"] != 1:
@@ -264,6 +320,21 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("automatic paid upgrade not disabled")
     if capacity["persistent_provider_api_key_created"] is not False:
         raise ValueError("persistent provider API keys are forbidden")
+    if capacity["exact_provider_quota_configured"] is not True:
+        raise ValueError("Free plan native hard limits are not confirmed")
+    if capacity["exact_provider_quota_source"] != "free-plan-native-hard-limits":
+        raise ValueError("unexpected provider quota source")
+    if (
+        capacity["approved_database_capacity_limit_bytes_for_synthetic_staging"]
+        != 500_000_000
+    ):
+        raise ValueError("unexpected database capacity limit")
+    if capacity["alert_delivery_configured"] is not False:
+        raise ValueError("continuous alert delivery must remain unconfigured")
+    if capacity["synthetic_operation_pre_post_observation_required"] is not True:
+        raise ValueError("synthetic observations are required")
+    if capacity["continuous_alert_delivery_required_for_public_release"] is not True:
+        raise ValueError("public-release alert boundary is missing")
 
     if backup["selection_scope"] != "isolated-synthetic-neon-staging-only":
         raise ValueError("unexpected backup scope")
@@ -296,13 +367,13 @@ def evaluate_synthetic_provider_use_preflight(
 
         blocked_gate_codes: list[str] = []
         if not (
-            billing["provider_measurement_path_approved"]
-            and billing["provider_measurement_path_configured"]
+            billing["synthetic_provider_measurement_path_approved"]
+            and billing["synthetic_provider_measurement_path_configured"]
         ):
             blocked_gate_codes.append("provider-measurement-controls")
         if not (
             capacity["exact_provider_quota_configured"]
-            and capacity["alert_delivery_configured"]
+            and capacity["synthetic_operation_pre_post_observation_required"]
         ):
             blocked_gate_codes.append("provider-capacity-controls")
         if not (

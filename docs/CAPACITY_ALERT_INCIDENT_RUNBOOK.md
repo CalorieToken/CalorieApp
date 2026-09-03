@@ -1,8 +1,13 @@
 # Capacity alert incident runbook
 
 Status: provider-neutral response contract and synthetic CI proof complete.
-External alert destination, chosen-provider quota and live delivery proof remain
-release-blocking.
+External alert destination and live delivery proof remain release-blocking for
+public onboarding.
+
+For isolated Neon synthetic staging only, current provider-native Free hard
+limits plus mandatory console and database-probe observations before and after
+each manual run form the approved zero-cost boundary. This is not continuous
+alerting and does not remove the public-onboarding block.
 
 ## Probe contract
 

@@ -197,11 +197,7 @@ jobs:
               "ready": False,
               "provider": "neon_free",
               "scope": "isolated-synthetic-staging-only",
-              "blocked_gate_codes": [
-                  "provider-measurement-controls",
-                  "provider-capacity-controls",
-                  "offline-age-custody",
-              ],
+              "blocked_gate_codes": ["offline-age-custody"],
               "action": "keep-provider-unused-complete-blocked-controls",
           }
           if payload != expected:
