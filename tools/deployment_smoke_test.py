@@ -153,15 +153,30 @@ def inspect_wordpress_embed(
 
 
 def mobile_return_contract_matches(script: str) -> bool:
-    required = (
-        "function suppressLegacySigninSurfaces()",
-        'openLink.target = "_self";',
-        'document.addEventListener("visibilitychange", checkAfterReturn);',
-        'window.addEventListener("focus", checkAfterReturn);',
-        'window.addEventListener("pageshow", checkAfterReturn);',
-        'card.setAttribute("data-calorieapp-superseded-login", "1");',
+    required_patterns = (
+        re.compile(r"\bfunction\s+suppressLegacySigninSurfaces\s*\(\s*\)"),
+        re.compile(r"\bopenLink\s*\.\s*target\s*=\s*([\"'])_self\1\s*;?"),
+        re.compile(
+            r"\bdocument\s*\.\s*addEventListener\s*\(\s*([\"'])"
+            r"visibilitychange\1\s*,\s*checkAfterReturn\s*\)\s*;?"
+        ),
+        re.compile(
+            r"\bwindow\s*\.\s*addEventListener\s*\(\s*([\"'])"
+            r"focus\1\s*,\s*checkAfterReturn\s*\)\s*;?"
+        ),
+        re.compile(
+            r"\bwindow\s*\.\s*addEventListener\s*\(\s*([\"'])"
+            r"pageshow\1\s*,\s*checkAfterReturn\s*\)\s*;?"
+        ),
+        re.compile(
+            r"\bcard\s*\.\s*setAttribute\s*\(\s*([\"'])"
+            r"data-calorieapp-superseded-login\1\s*,\s*([\"'])1\2\s*\)\s*;?"
+        ),
     )
-    return all(marker in script for marker in required) and "return_url" not in script
+    return (
+        all(pattern.search(script) for pattern in required_patterns)
+        and "return_url" not in script
+    )
 
 
 def frontend_build_identifier_matches(html: str, expected: str) -> bool:

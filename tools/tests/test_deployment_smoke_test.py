@@ -33,6 +33,17 @@ def _mobile_return_script() -> bytes:
     )
 
 
+def _reformatted_mobile_return_script() -> bytes:
+    return (
+        b"function  suppressLegacySigninSurfaces ( ){}"
+        b"openLink . target='_self'"
+        b";document.addEventListener('visibilitychange',checkAfterReturn)"
+        b';window.addEventListener("focus",checkAfterReturn)'
+        b";window.addEventListener('pageshow',checkAfterReturn)"
+        b';card.setAttribute("data-calorieapp-superseded-login",\'1\')'
+    )
+
+
 class _Response:
     def __init__(self, status: int, headers: dict[str, str], body: bytes) -> None:
         self.status = status
@@ -142,11 +153,28 @@ class DeploymentSmokeTests(unittest.TestCase):
         self.assertTrue(
             smoke.mobile_return_contract_matches(_mobile_return_script().decode())
         )
+        self.assertTrue(
+            smoke.mobile_return_contract_matches(
+                _reformatted_mobile_return_script().decode()
+            )
+        )
         self.assertFalse(
             smoke.mobile_return_contract_matches(
                 _mobile_return_script().decode() + "\nreturn_url"
             )
         )
+        required_lines = _mobile_return_script().decode().splitlines()
+        for missing_index in range(len(required_lines)):
+            with self.subTest(missing_contract_line=missing_index):
+                self.assertFalse(
+                    smoke.mobile_return_contract_matches(
+                        "\n".join(
+                            line
+                            for index, line in enumerate(required_lines)
+                            if index != missing_index
+                        )
+                    )
+                )
 
         wrong_version, wrong_version_script_url, _ = (
             smoke.inspect_wordpress_embed(
