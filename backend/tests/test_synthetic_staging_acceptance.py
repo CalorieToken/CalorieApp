@@ -10,12 +10,14 @@ from sqlmodel import Session, create_engine
 
 import pytest
 
+from app import main as main_module
 from app import synthetic_staging_acceptance as acceptance_module
 from app.models import FoodLogDB
 from app.synthetic_staging_acceptance import (
     RESTORE_DATABASE,
     SCHEMA_VERSION,
     SYNTHETIC_PRODUCT,
+    SYNTHETIC_SESSION_TOKEN,
     SyntheticStagingSafetyError,
     _wait_until_ready,
     migrate_and_seed,
@@ -279,10 +281,18 @@ def test_migration_seed_and_independent_verification_use_only_fixed_synthetic_ro
             engine,
             "STEP1-SYNTHETIC-ACCEPTANCE-2026-09-03",
         )
+        with Session(engine) as session:
+            user, auth_session, reason = main_module._resolve_auth_session(
+                session,
+                SYNTHETIC_SESSION_TOKEN,
+            )
         verified = verify_synthetic_snapshot(engine, expected_food_log_count=1)
     finally:
         engine.dispose()
 
+    assert reason == "ok"
+    assert user is not None
+    assert auth_session is not None
     assert snapshot == verified
     assert snapshot.payload("verified") == {
         "schema_version": SCHEMA_VERSION,
