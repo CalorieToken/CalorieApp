@@ -1,9 +1,10 @@
 # Database capacity onboarding guard
 
 Status: provider-neutral guard, alert-adapter interface and synthetic proof
-complete; a complete chosen-provider measurement path, exact quota
-configuration, external alert destination and live exercise remain
-release-blocking.
+complete. The 500,000,000-byte Neon Free database budget and keyless pre/post
+observation path are approved for isolated synthetic staging only. External
+alert delivery and a live pause exercise remain release-blocking for public
+onboarding.
 
 ## Safety outcome
 
@@ -21,10 +22,11 @@ quota, provider or account detail.
 ## Configuration and fail-closed behavior
 
 `CALORIEAPP_DATABASE_CAPACITY_LIMIT_BYTES` is the hard, operator-approved byte
-budget. It is deliberately absent by default because the selected provider's
-exact live quota and complete measurement path have not been verified. Absence
-preserves the current non-public development baseline but does not satisfy the
-public-release gate.
+budget. Isolated Neon synthetic staging uses `500000000`, matching the current
+Free-plan storage limit. It remains absent by default and must be supplied only
+to the separately approved staging operation or a later reviewed deployment.
+Absence preserves the current non-public development baseline but does not
+satisfy the public-release gate.
 
 When set, the value must be a positive integer. A malformed value fails
 application startup. If a configured deployment cannot read its database-size
@@ -57,9 +59,9 @@ policy level, crossed threshold, onboarding state and required action—not exac
 bytes, utilization or user/request content. Operational response is defined in
 `CAPACITY_ALERT_INCIDENT_RUNBOOK.md`.
 
-This does not claim that any shortlisted free plan is durable or sufficient.
-Before activation, a human must recheck provider terms, select the synthetic
-staging candidate, set the exact verified quota, connect the probe to an
-approved alert destination and prove delivery plus the pause exercise against
-that isolated provider project. No real user data is allowed until that evidence
-is reviewed.
+This does not claim that the Free plan is durable or sufficient for public use.
+The synthetic staging operation must run the probe and inspect provider counters
+before and after every approved execution. Before public activation, a human
+must recheck provider terms, connect the probe to an approved external alert
+destination and prove delivery plus the pause exercise against the isolated
+provider project. No real user data is allowed until that evidence is reviewed.

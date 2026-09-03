@@ -1,9 +1,9 @@
 {
   "contract_id": "calorieapp.zero-additional-cost-provider-evaluation",
-  "contract_version": "1.9.0",
+  "contract_version": "1.10.0",
   "evidence_reviewed_on": "2026-09-03",
   "evidence_revalidate_by": "2026-12-01",
-  "decision_state": "neon-synthetic-staging-project-created-use-blocked",
+  "decision_state": "neon-synthetic-staging-native-limits-approved-offline-custody-blocked",
   "provider_selected": true,
   "provider_selection_scope": "isolated-synthetic-staging-only",
   "provider_selected_for_public_release": false,
@@ -37,7 +37,7 @@
   },
   "preconfiguration_review": {
     "reviewed_on": "2026-09-03",
-    "status": "free-frankfurt-project-created-provider-use-and-recipient-configuration-blocked",
+    "status": "free-frankfurt-project-native-limits-approved-offline-custody-blocked",
     "live_evidence_document": "docs/NEON_SYNTHETIC_STAGING_LIVE_EVIDENCE.md",
     "eu_region": {
       "documented_candidate": "aws-eu-central-1",
@@ -95,12 +95,22 @@
         "network_transfer_gb"
       ],
       "free_console_usage_was_zero_at_review": true,
+      "free_native_limit_behavior_reviewed_on": "2026-09-03",
+      "free_plan_native_hard_limits": {
+        "compute_cu_hours_per_project_month": 100,
+        "storage_bytes_per_project": 500000000,
+        "public_network_transfer_bytes_per_month": 5000000000,
+        "compute_or_network_exhaustion_suspends_compute": true,
+        "storage_exhaustion_blocks_growth": true,
+        "overage_billing_on_free_plan": false,
+        "limit_exhaustion_deletes_stored_data": false
+      },
       "usage_based_consumption_api_documented_for_free_plan": false,
       "configurable_hard_quota_requires_api_key": true,
       "project_scoped_api_key_is_least_privilege_available": true,
       "provider_measurement_review": {
         "reviewed_on": "2026-09-03",
-        "decision_state": "blocked-no-documented-free-plan-consumption-api",
+        "decision_state": "synthetic-native-limit-observation-path-approved-and-configured",
         "database_native_storage_signal": "pg_database_size(current_database())",
         "database_native_signal_read_only": true,
         "database_native_signal_covers_all_free_plan_allowances": false,
@@ -109,12 +119,22 @@
         "quota_configuration_api_availability_on_live_free_plan_confirmed": false,
         "console_only_monitoring_counts_as_complete": false,
         "persistent_provider_api_key_creation_approved": false,
-        "complete_measurement_path_selected": false,
-        "complete_measurement_path_configuration_verified": false,
+        "synthetic_measurement_path_selected": true,
+        "synthetic_measurement_path_configuration_verified": true,
         "private_provider_identifiers_or_credentials_in_public_repository": false
       },
-      "provider_measurement_path_approved": false,
-      "provider_measurement_path_configured": false,
+      "synthetic_staging_measurement_path": {
+        "scope": "isolated-synthetic-staging-only",
+        "provider_native_hard_limits_are_cost_boundary": true,
+        "provider_console_observation_required_before_and_after_each_run": true,
+        "database_size_probe_required_before_and_after_each_run": true,
+        "database_capacity_limit_bytes": 500000000,
+        "continuous_external_alert_delivery_required_for_synthetic_run": false,
+        "continuous_external_alert_delivery_required_for_public_release": true,
+        "provider_api_key_required": false
+      },
+      "synthetic_provider_measurement_path_approved": true,
+      "synthetic_provider_measurement_path_configured": true,
       "organization_api_key_present": false,
       "personal_api_key_present": false,
       "project_scoped_api_key_created": false,
@@ -221,8 +241,12 @@
     "alert_adapter_schema_version": "calorieapp.capacity-probe.v1",
     "capacity_incident_runbook": "docs/CAPACITY_ALERT_INCIDENT_RUNBOOK.md",
     "configured_measurement_failure_pauses_new_onboarding": true,
-    "exact_provider_quota_configured": false,
+    "exact_provider_quota_configured": true,
+    "exact_provider_quota_source": "free-plan-native-hard-limits",
+    "approved_database_capacity_limit_bytes_for_synthetic_staging": 500000000,
     "alert_delivery_configured": false,
+    "synthetic_operation_pre_post_observation_required": true,
+    "continuous_alert_delivery_required_for_public_release": true,
     "free_console_usage_metrics_confirmed_live": true,
     "persistent_provider_api_key_created": false,
     "existing_user_read_export_and_erasure_access_preserved_while_paused": true,
@@ -249,7 +273,7 @@
         "cold start after scale to zero",
         "short provider restore window is not an independent backup",
         "free-plan terms can change",
-        "EU region, zero-cost account boundary, DPA execution and subprocessor notifications are confirmed; API quota enforcement and independent backup still require proof"
+        "EU region, zero-cost account boundary, DPA execution, subprocessor notifications and Free-plan native hard-limit behavior are confirmed; continuous public-release alerting and independent backup still require proof"
       ],
       "official_sources": [
         "https://neon.com/pricing",
@@ -336,8 +360,6 @@
   "release_blocking_before_provider_selection": [],
   "release_blocking_before_provider_configuration": [],
   "release_blocking_before_synthetic_provider_use": [
-    "approve and configure a least-privilege provider measurement path without exposing a persistent API key",
-    "configure exact provider quota values and prove fail-closed suspension behavior",
     "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
   ],
   "release_blocking_after_provider_selection": [

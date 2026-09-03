@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.36.0",
+  "contract_version": "1.37.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -14,7 +14,7 @@
   "purpose": "Keep authenticated food history durable, private, portable, exportable and deletable before public user onboarding.",
   "architecture": {
     "primary_live_store": "postgresql",
-    "provider_selection": "neon-free-frankfurt-synthetic-staging-project-created-use-blocked",
+    "provider_selection": "neon-free-synthetic-native-limits-approved-offline-custody-blocked",
     "provider_neutral_configuration": "DATABASE_URL",
     "sqlite_allowed_environments": ["local", "test"],
     "sqlite_allowed_for_public_live_history": false,
@@ -620,7 +620,7 @@
       "staging-or-production-runtime-role-privilege-application",
       "production-readiness"
     ],
-    "provider_selection_status": "neon-synthetic-staging-project-created-use-blocked"
+    "provider_selection_status": "neon-synthetic-native-limits-approved-offline-custody-blocked"
   },
   "postgresql_redeploy_ci_proof": {
     "status": "synthetic-two-process-proof-configured-provider-proof-pending",
@@ -875,8 +875,8 @@
     "no_additional_cost_exit_plan_required_before_public_onboarding": true,
     "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
     "synthetic_provider_use_preflight": "backend/app/synthetic_provider_use_preflight.py",
-    "synthetic_provider_use_preflight_status": "blocked-three-control-groups-no-provider-contact",
-    "provider_shortlist_status": "neon-free-frankfurt-synthetic-staging-project-created-use-blocked",
+    "synthetic_provider_use_preflight_status": "blocked-offline-age-custody-only-no-provider-contact",
+    "provider_shortlist_status": "neon-free-synthetic-native-limits-approved-offline-custody-blocked",
     "provider_evidence_reviewed_on": "2026-09-03",
     "provider_evidence_revalidate_by": "2026-12-01",
     "provider_selected": true,

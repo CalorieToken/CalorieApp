@@ -75,7 +75,7 @@ until the durable-data and privacy gates pass.
 | PostgreSQL support | Ephemeral PostgreSQL 16 CI gate configured | Require successful migration, identity isolation and restart checks for every merge candidate |
 | Schema changes | Versioned forward-only baseline with model-drift tests | Verified locally; prove on PostgreSQL staging next |
 | Production SQLite guard | SQLite rejected outside local/test | Verified locally |
-| Zero-additional-cost operation | One Neon Free PostgreSQL 16 project exists in Frankfurt for isolated synthetic staging; billing is $0, no payment method or API key exists, DPA execution and subprocessor notifications are confirmed, and no application data operation has run | Complete least-privilege measurement, exact quota, encrypted backup and exit proofs before project use |
+| Zero-additional-cost operation | One Neon Free PostgreSQL 16 project exists in Frankfurt for isolated synthetic staging; billing is $0, no payment method or API key exists, DPA execution, subprocessor notifications, native hard limits and the keyless synthetic observation path are confirmed, and no application data operation has run | Complete offline encryption custody, then run the separately approved synthetic migration, encrypted backup and exit proofs before any real data |
 | Operator succession | Open technical contracts exist; handover is incomplete | Test restore, import and confidential role transfer |
 | Durable-host tests | Engine restart plus separate backend-process replacement are tested on ephemeral PostgreSQL | Still prove chosen-provider restart and real redeploy persistence |
 | Backup and restore | Synthetic logical restore is automated in CI | Select encrypted storage and complete a staging drill |

@@ -20,11 +20,11 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.36.0"
+    assert contract["contract_version"] == "1.37.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
-        "neon-free-frankfurt-synthetic-staging-project-created-use-blocked"
+        "neon-free-synthetic-native-limits-approved-offline-custody-blocked"
     )
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
     assert contract["architecture"]["sqlite_allowed_for_public_live_history"] is False
@@ -85,7 +85,7 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
         "does_not_prove"
     ]
     assert proof["provider_selection_status"] == (
-        "neon-synthetic-staging-project-created-use-blocked"
+        "neon-synthetic-native-limits-approved-offline-custody-blocked"
     )
 
 
@@ -1110,7 +1110,7 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
         "backend/app/synthetic_provider_use_preflight.py"
     )
     assert cost["synthetic_provider_use_preflight_status"] == (
-        "blocked-three-control-groups-no-provider-contact"
+        "blocked-offline-age-custody-only-no-provider-contact"
     )
     assert cost["provider_selected"] is True
     assert cost["selected_provider"] == "neon_free"

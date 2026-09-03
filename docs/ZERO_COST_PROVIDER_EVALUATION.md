@@ -1,9 +1,11 @@
 # Zero-additional-cost provider evaluation
 
 Status: one Neon Free project was created on 2026-09-02 in Frankfurt for an
-isolated synthetic staging experiment only. Provider use, every live drill and
-any public-release decision remain blocked. Revalidate official terms by
-2026-12-01.
+isolated synthetic staging experiment only. Its provider-native hard limits and
+a keyless bounded-observation path are approved for that synthetic scope. Use
+remains blocked on offline encryption-key custody, and every live drill and any
+public-release decision still require separate approval. Revalidate official
+terms by 2026-12-01.
 
 ## Outcome
 
@@ -24,7 +26,7 @@ retention.
 
 | Candidate | Snapshot | Evaluation |
 |---|---|---|
-| Neon Free | $0; 0.5 GB storage per project; finite compute and egress; scale-to-zero; six-hour restore window | One Frankfurt synthetic project exists; the zero-cost boundary, region, executed DPA and subprocessor notification subscription are confirmed, while automated quota enforcement and independent backup remain unproven |
+| Neon Free | $0; 0.5 GB storage, 100 CU-hours and 5 GB public transfer per project/month as applicable; scale-to-zero; six-hour restore window; native hard limits stop growth or compute without overage billing | One Frankfurt synthetic project exists; the zero-cost boundary, region, executed DPA, subprocessor subscription and native-limit behavior are confirmed, while independent backup and continuous public-release alerting remain unproven |
 | Supabase Free | $0; 500 MB database; 5 GB egress; low-activity projects can pause after seven days; no automatic Free-plan backups | Conditional alternative; a paused project can be resumed within the documented one-year window, but pause behavior adds operational risk |
 | Render Free PostgreSQL | $0; 1 GB; fixed 30-day expiry; 14-day paid-upgrade grace; deletion after grace; no backups | Rejected for durable personal history |
 | Existing Render Free web service | 750 workspace hours monthly; spins down after 15 idle minutes; ephemeral filesystem | Conditional runtime only; all durable history must live in external PostgreSQL |
@@ -44,23 +46,27 @@ time-bounded decision, never a promise that a provider remains free forever.
 
 ## Capacity and no-surprise-cost gate
 
-The selected provider must expose enough usage evidence to trigger alerts at
-70, 85 and 95 percent of every relevant quota. New onboarding pauses at or
-before the final threshold. Existing users retain read, export and erasure
-access; existing history is neither deleted nor shortened to remain free.
+The selected provider must keep the synthetic experiment within a verified
+zero-cost boundary. Neon Free currently provides provider-native hard limits of
+100 CU-hours per project per month, 0.5 GB storage per project and 5 GB public
+network transfer per month. Its current official documentation states that
+compute or transfer exhaustion suspends compute, storage exhaustion blocks
+growth, Free has no overage billing, and reaching a limit does not delete stored
+data.
 
 No automatic paid upgrade is allowed. At account setup the operator must verify
 quota-exhaustion behavior and whether adding a payment method can enable
 overages. If a provider requires automatic billing or cannot prevent it, the
 experiment stops.
 
-Provider dashboards alone do not complete the monitoring gate. CalorieApp still
-has a provider-neutral, machine-readable database-size signal, tested onboarding
-guard and low-cardinality alert-adapter interface. It still needs an approved
-external alert destination, a chosen-provider live pause exercise and any
-additional compute or egress signal required by that plan.
-Exact byte and compute thresholds are set only after the chosen plan's live
-account limits match the current official terms.
+For the isolated, manually dispatched synthetic experiment, the approved
+keyless path combines those native limits with mandatory console observation
+before and after each run and the read-only CalorieApp database-size probe using
+an exact 500,000,000-byte budget. It creates no persistent provider API key.
+This is sufficient only to remove the measurement prerequisite for synthetic
+staging. Dashboard observation is not represented as continuous monitoring, and
+an external alert destination plus live pause exercise remain required before
+public onboarding.
 
 ## Recorded decision and remaining gate before provider use
 
@@ -106,24 +112,20 @@ This completes only the contractual data-processing and notification control.
 It does not approve real personal data, production use, a provider credential,
 database access, migration or deployment.
 
-The Free plan is listed at $0/month with finite allowances. The live console
-confirmed the plan, cost boundary, absence of a payment method and aggregate
-compute, storage, history and network-transfer counters. Paid plans require a
-separate plan-selection action. Neon documents configurable hard quotas that
-suspend project compute until the next billing period, with metrics updated
-every 15 minutes and potentially delayed by one hour.
+The Free plan is listed at $0/month with finite native allowances. The live
+console confirmed the plan, cost boundary, absence of a payment method and
+aggregate compute, storage, history and network-transfer counters. Paid plans
+require a separate plan-selection action. The current official Free-plan limits
+state that exhaustion suspends compute or blocks storage growth without overage
+billing or stored-data deletion.
 
-That does not complete the alert gate. Hard-quota configuration requires an API
-key, and neither current consumption API is documented for Free: the usage-based
-API starts at Launch and the legacy API starts at Scale. The existing read-only
-`pg_database_size(current_database())` signal covers database size, not compute
-or network-transfer allowances, so it cannot complete the provider measurement
-gate by itself. Console-only checks also do not count as an automated alert
-path. No persistent key was created or approved. A project-scoped key is the
-least-privilege available option, but remains valid until revoked, grants Editor
-access and exposes its secret only once. Free-plan quota-configuration API
-availability, credential custody, exact counters and the 70/85/95-percent
-delivery path therefore remain blocked pending separate evidence and approval.
+On 2026-09-03, the operator-approved synthetic path was therefore narrowed to
+provider-native hard limits, mandatory pre/post console observation and the
+existing read-only `pg_database_size(current_database())` probe. The database
+budget is fixed at 500,000,000 bytes, with CalorieApp's existing 70/85/95-percent
+classification and onboarding pause. No provider API key is required, approved
+or created. The Free consumption APIs remain unavailable, so this decision does
+not claim continuous compute/transfer alerting or public-release readiness.
 
 Neon also documents portable `pg_dump` export and PostgreSQL restore. CalorieApp
 will encrypt a dump on the client side before it leaves the controlled runner;
@@ -148,18 +150,16 @@ in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
 Still required before using the project:
 
 1. Recheck the official terms again if the evidence date has expired or the
-   account screen differs from the recorded snapshot.
-2. Approve a least-privilege provider measurement path, configure exact hard
-   limits and prove the alert and suspension behavior without exposing a key.
-3. Generate the offline `age` identity, verify both encrypted offline copies,
+   account screen differs materially from the recorded snapshot.
+2. Generate the offline `age` identity, verify both encrypted offline copies,
    store the passphrase separately and configure only the public recipient.
 
-`python -m app.synthetic_provider_use_preflight` evaluates those three control
-groups from the versioned contract without contacting Neon. It exits `40` and
-prints only low-cardinality blocker codes while any group is incomplete. Stale,
-missing or broadened safety policy exits `50`. Exit `0` means only that the
-documented controls are ready; every migration, restart, redeploy, backup or
-restore still needs its own explicit approval.
+`python -m app.synthetic_provider_use_preflight` evaluates the versioned
+controls without contacting Neon. It exits `40` while offline custody is
+incomplete and prints only a low-cardinality blocker code. Stale, missing or
+broadened safety policy exits `50`. Exit `0` means only that the documented
+controls are ready; every migration, restart, redeploy, backup or restore still
+needs its own explicit approval and mandatory pre/post observations.
 
 Only then may the project be used. The first live tests remain separately
 approved and synthetic: migration/readiness, restart, actual provider redeploy,
