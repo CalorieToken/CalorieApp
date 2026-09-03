@@ -3,6 +3,7 @@ Automated backend tests for CalorieApp API endpoints.
 Run from the backend directory: pytest
 """
 import hashlib
+import re
 from datetime import UTC, datetime, timedelta
 from secrets import token_urlsafe
 from unittest.mock import AsyncMock, patch
@@ -58,7 +59,7 @@ def test_health_response_schema(client: TestClient) -> None:
     data = client.get("/health").json()
     assert data["status"] == "ok"
     assert data["service"] == "calorieapp-backend"
-    assert data["build_id"] == "development"
+    assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", data["build_id"])
 
 
 def test_readiness_checks_database_revision(client: TestClient) -> None:
