@@ -77,6 +77,8 @@ def test_complete_controls_require_separate_operation_approval() -> None:
     ("path", "unsafe_value"),
     [
         (("contract_version",), "unexpected-version"),
+        (("provider_account_created",), False),
+        (("provider_project_created",), False),
         (("payment_method_added",), True),
         (("provider_selected_for_public_release",), True),
         (

@@ -61,6 +61,10 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("unexpected scope")
     if contract["provider_selected"] is not True:
         raise ValueError("provider not selected")
+    if contract["provider_account_created"] is not True:
+        raise ValueError("provider account creation evidence missing")
+    if contract["provider_project_created"] is not True:
+        raise ValueError("provider project creation evidence missing")
     if contract["provider_selected_for_public_release"] is not False:
         raise ValueError("public release is outside this preflight")
     if contract["payment_method_added"] is not False:
