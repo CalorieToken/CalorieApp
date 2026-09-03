@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+[data-calorieapp-superseded-login="1"] {
+  display: none !important;
+}
+
 .calorieapp-embed-frame {
   display: block;
   width: 100%;

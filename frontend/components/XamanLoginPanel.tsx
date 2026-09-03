@@ -81,6 +81,8 @@ type ParentBridgeMessage = {
   locale?: unknown;
 };
 
+type LoginSurfaceMode = "checking" | "embedded" | "standalone";
+
 function initialLocale(): string {
   if (typeof window === "undefined") {
     return "en";
@@ -121,6 +123,27 @@ function trustedParentOrigin(): string | null {
   }
 }
 
+function expectsEmbeddedBridge(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return (
+    window.parent !== window ||
+    new URLSearchParams(window.location.search).get("embedded") === "1"
+  );
+}
+
+export function resolveLoginSurfaceMode(
+  bridgeInitialized: boolean,
+  embeddedBridgeExpected: boolean
+): LoginSurfaceMode {
+  if (bridgeInitialized) {
+    return "embedded";
+  }
+  return embeddedBridgeExpected ? "checking" : "standalone";
+}
+
 function createBrowserRequestId(): string {
   if (typeof window.crypto.randomUUID === "function") {
     return window.crypto.randomUUID();
@@ -131,35 +154,8 @@ function createBrowserRequestId(): string {
   return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
-function isAllowedWordPressSigninUrl(value: string): boolean {
-  try {
-    const target = new URL(value);
-    return (
-      target.protocol === "https:" &&
-      target.hostname === "calorietoken.net" &&
-      target.searchParams.has("xl-signin")
-    );
-  } catch {
-    return false;
-  }
-}
-
 function clearPendingLogin() {
   window.sessionStorage.removeItem(PENDING_LOGIN_STORAGE_KEY);
-}
-
-function storePendingLogin(data: LoginStartResponse) {
-  const pendingLogin: PendingLogin = {
-    state: data.state,
-    expiresAt: data.expires_at,
-    browserHandoffToken: data.browser_handoff_token,
-    locale: data.locale,
-  };
-
-  window.sessionStorage.setItem(
-    PENDING_LOGIN_STORAGE_KEY,
-    JSON.stringify(pendingLogin)
-  );
 }
 
 function readPendingLogin(): PendingLogin | null {
@@ -436,7 +432,8 @@ export function XamanLoginPanel() {
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
-  const [isEmbedded, setIsEmbedded] = useState(false);
+  const [loginSurfaceMode, setLoginSurfaceMode] =
+    useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
   const loginAbortController = useRef<AbortController | null>(null);
   const parentOrigin = useRef<string | null>(null);
@@ -549,7 +546,9 @@ export function XamanLoginPanel() {
     const bridgeController = new AbortController();
     let origin = trustedParentOrigin();
     parentOrigin.current = origin;
-    setIsEmbedded(origin !== null);
+    setLoginSurfaceMode(
+      resolveLoginSurfaceMode(false, expectsEmbeddedBridge())
+    );
 
     const postHeight = () => {
       if (!origin) {
@@ -588,7 +587,7 @@ export function XamanLoginPanel() {
         );
         activeLocale.current = nextLocale;
         setDisplayLocale(nextLocale);
-        setIsEmbedded(true);
+        setLoginSurfaceMode(resolveLoginSurfaceMode(true, true));
         postHeight();
         return;
       }
@@ -721,8 +720,6 @@ export function XamanLoginPanel() {
 
   async function handleLogin() {
     const controller = new AbortController();
-    let startupNoticeTimer: number | null = null;
-    let xamanNavigationStarted = false;
     loginAbortController.current?.abort();
     loginAbortController.current = controller;
 
@@ -730,7 +727,7 @@ export function XamanLoginPanel() {
     setSuccessNotice(null);
     setIsLoading(true);
 
-    if (isEmbedded && parentOrigin.current) {
+    if (loginSurfaceMode === "embedded" && parentOrigin.current) {
       const embeddedParentOrigin = parentOrigin.current;
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
@@ -816,105 +813,10 @@ export function XamanLoginPanel() {
       return;
     }
 
-    if (!isEmbedded) {
-      setLoginStatus("Opening the secure CalorieApp page on CalorieToken.net...");
-      window.location.assign(WORDPRESS_APP_URL);
-      return;
-    }
-
-    setLoginStatus(
-      "Preparing Xaman in this tab. Please wait without refreshing."
-    );
-
-    try {
-      startupNoticeTimer = window.setTimeout(() => {
-        if (!controller.signal.aborted) {
-          setLoginStatus(
-            "Starting the secure CalorieApp service. A first request can take about a minute and will continue automatically."
-          );
-        }
-      }, 8_000);
-
-      // Wake Render directly from the browser. Requests relayed from the
-      // frontend Render service can be rate-limited without starting the
-      // sleeping backend; the health probe is public and sends no credentials.
-      await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
-      window.clearTimeout(startupNoticeTimer);
-      startupNoticeTimer = null;
-      setLoginStatus("Service ready. Opening Xaman...");
-
-      const data = await startLoginWithRetry(
-        controller.signal,
-        () => {
-          setLoginStatus(
-            "CalorieApp is temporarily busy. Waiting safely before opening Xaman..."
-          );
-        },
-        LOGIN_START_RETRY_WINDOW_MS,
-        activeLocale.current
-      );
-      if (
-        data.state.length < 32 ||
-        data.browser_handoff_token.length < 32 ||
-        !Number.isFinite(Date.parse(data.expires_at)) ||
-        Date.parse(data.expires_at) <= Date.now() ||
-        data.locale !== activeLocale.current ||
-        !isAllowedWordPressSigninUrl(data.wordpress_signin_url)
-      ) {
-        throw new Error("Missing signin handoff data");
-      }
-
-      storePendingLogin(data);
-      setLoginStatus("Opening Xaman from this tab...");
-      xamanNavigationStarted = true;
-      window.location.assign(data.wordpress_signin_url);
-
-      // Some mobile browsers keep this document alive while Xaman opens and
-      // later return the callback through the configured default browser. Keep
-      // claiming the secure handoff here so this initiating tab signs in as
-      // soon as the callback finishes, without requiring a refresh.
-      setLoginStatus(
-        "Waiting for Xaman sign-in to finish. This tab will sign in automatically."
-      );
-      await waitForOriginLogin(
-        data.state,
-        data.browser_handoff_token,
-        data.expires_at,
-        controller.signal,
-        data.locale
-      );
-      clearPendingLogin();
-
-      const restoredUser = await refreshCurrentUser(controller.signal);
-      if (!restoredUser) {
-        throw new Error("Restored session was unavailable");
-      }
-      setSuccessNotice(
-        "Sign-in completed. This original CalorieApp tab is signed in too."
-      );
-      setLoginStatus(null);
-      setIsLoading(false);
-    } catch (requestError) {
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      clearPendingLogin();
-      setError(
-        backendUnavailableMessage(
-          requestError,
-          xamanNavigationStarted
-            ? "Xaman sign-in did not finish in this tab. Please try again."
-            : "Xaman could not be opened from this tab. Please try again."
-        )
-      );
-      setLoginStatus(null);
-      setIsLoading(false);
-    } finally {
-      if (startupNoticeTimer !== null) {
-        window.clearTimeout(startupNoticeTimer);
-      }
-    }
+    // An embedded-looking document must never navigate itself to WordPress.
+    // Until a trusted parent handshake exists, keep the control inert. The
+    // standalone surface uses an explicit same-tab link rendered below.
+    setIsLoading(false);
   }
 
   async function handleLogout() {
@@ -964,9 +866,11 @@ export function XamanLoginPanel() {
         className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
       >
         <span className="font-semibold">Phone browser notice:</span>{" "}
-        {isEmbedded
-          ? "Xaman opens without a browser return link. After signing, use Close or Back to return to this same page; WordPress and CalorieApp will then sign in together."
-          : "Secure Xaman sign-in is completed on CalorieToken.net so WordPress and CalorieApp can sign in together in the same browser."}
+        {loginSurfaceMode === "embedded"
+          ? "Mobile operating systems cannot reliably reopen the exact browser tab. After signing, close Xaman and return to this CalorieToken.net tab; WordPress and CalorieApp will finish automatically without a refresh."
+          : loginSurfaceMode === "standalone"
+            ? "Secure Xaman sign-in starts on CalorieToken.net so WordPress and CalorieApp can sign in together in one browser flow."
+            : "Connecting this CalorieApp view to its secure CalorieToken.net sign-in page. Xaman cannot open until that connection is verified."}
       </div>
 
       {currentUser ? (
@@ -1021,18 +925,25 @@ export function XamanLoginPanel() {
             />
           ) : null}
         </div>
+      ) : loginSurfaceMode === "standalone" ? (
+        <a
+          href={WORDPRESS_APP_URL}
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          Continue on CalorieToken.net
+        </a>
       ) : (
         <button
           type="button"
           onClick={handleLogin}
-          disabled={isLoading}
+          disabled={isLoading || loginSurfaceMode === "checking"}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isLoading
             ? "Preparing Xaman..."
-            : isEmbedded
-              ? "Continue in Xaman"
-              : "Open secure sign-in"}
+            : loginSurfaceMode === "checking"
+              ? "Connecting secure sign-in..."
+              : "Continue in Xaman"}
         </button>
       )}
 

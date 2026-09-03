@@ -37,6 +37,25 @@
     });
   }
 
+  function suppressLegacySigninSurfaces() {
+    document
+      .querySelectorAll('.xl-card a[href*="xl-signin"]')
+      .forEach(function (signinLink) {
+        if (typeof signinLink.closest !== "function") {
+          return;
+        }
+
+        var card = signinLink.closest(".xl-card");
+        if (!card || card.closest("[data-calorieapp-embed]")) {
+          return;
+        }
+
+        card.hidden = true;
+        card.setAttribute("aria-hidden", "true");
+        card.setAttribute("data-calorieapp-superseded-login", "1");
+      });
+  }
+
   function apiRequest(url, body) {
     return fetch(url, {
       method: "POST",
@@ -504,7 +523,7 @@
     openLink.addEventListener("click", function () {
       markXamanStarted();
       setStatus(
-        "Opening Xaman. After signing, use Close or Back to return to this same page."
+        "Opening Xaman. After signing, close Xaman and return to this CalorieToken.net tab; sign-in will finish automatically."
       );
     });
 
@@ -637,7 +656,18 @@
   }
 
   function initAll() {
-    document.querySelectorAll("[data-calorieapp-embed]").forEach(init);
+    var roots = document.querySelectorAll("[data-calorieapp-embed]");
+    if (roots.length === 0) {
+      return;
+    }
+
+    // The old XUMM Login card starts a separate callback flow and can reopen a
+    // device's default browser. On a page that owns the integrated CalorieApp
+    // bridge it is a competing, misleading sign-in entry, so retire only cards
+    // that still expose that legacy xl-signin link. Signed-in account cards and
+    // XUMM surfaces on pages without the CalorieApp embed remain untouched.
+    suppressLegacySigninSurfaces();
+    roots.forEach(init);
   }
 
   if (document.readyState === "loading") {

@@ -30,8 +30,15 @@ Default callback must also be on that allowlist.
 
 The embedded login does not send a Xaman `return_url.app` or
 `return_url.web`. Xaman therefore cannot open the device's configured default
-browser after signing. The user returns to the original page with Close or
-Back, and the page resumes the verified flow.
+browser after signing. Mobile operating systems cannot guarantee an automatic
+return to the exact originating browser tab. The user closes Xaman and returns
+to the original CalorieToken.net page; its WebSocket/lifecycle handling resumes
+the verified flow without a refresh or second sign-in.
+
+On a page containing the integrated bridge, its script hides only an unsigned
+legacy XUMM Login card that links to `xl-signin`. That prevents a competing
+return-URL flow from bypassing the page-owned bridge. Signed-in account cards
+and XUMM Login surfaces on other pages are not changed.
 
 The Xaman deep link, QR URL, and payload WebSocket URL are accepted only on the
 exact `xumm.app` host. The browser WebSocket is a completion trigger only; the
