@@ -7,6 +7,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from tools import check_legal_boundaries as legal_boundaries
 from tools import scan_identity_bridge_provenance as scan
 
 
@@ -28,15 +29,15 @@ add_action('init', 'xummlogin_start_session', 1);
         )
         public = source / "public"
         public.mkdir()
-        bridge_line = next(
-            line
-            for line in (
-                scan.PLUGIN_DIR / "assets" / "calorieapp-embed.js"
-            ).read_text(encoding="utf-8").splitlines()
-            if len(line.strip()) >= scan.MIN_LINE_LENGTH
+        bridge_tokens = scan.TOKEN_PATTERN.findall(
+            (scan.PLUGIN_DIR / "assets" / "calorieapp-embed.js").read_text(
+                encoding="utf-8"
+            )
         )
+        self.assertGreaterEqual(len(bridge_tokens), scan.TOKEN_SHINGLE_SIZE)
+        bridge_shingle = " ".join(bridge_tokens[: scan.TOKEN_SHINGLE_SIZE])
         (public / "xummlogin-public.js").write_text(
-            f"function upstreamExample() {{\n{bridge_line}\n}}\n",
+            f"{bridge_shingle}\nfunction upstreamExample() {{}}\n",
             encoding="utf-8",
         )
         return source
@@ -144,6 +145,19 @@ add_action('init', 'xummlogin_start_session', 1);
             scan.write_report({"first": True}, output)
             with self.assertRaisesRegex(ValueError, "refusing to overwrite"):
                 scan.write_report({"second": True}, output)
+
+    def test_legal_boundary_json_objects_fail_closed(self) -> None:
+        malformed_values = (None, [], "not-an-object", 1)
+        for malformed in malformed_values:
+            with self.subTest(malformed=malformed):
+                with self.assertRaisesRegex(
+                    SystemExit,
+                    "Similarity evidence review_boundary must be a JSON object",
+                ):
+                    legal_boundaries.require_json_object(
+                        malformed,
+                        "Similarity evidence review_boundary",
+                    )
 
     def test_committed_preliminary_report_is_bound_to_current_bridge(self) -> None:
         report = json.loads(

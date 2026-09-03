@@ -9,6 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def require_json_object(value: object, label: str) -> dict[str, object]:
+    if not isinstance(value, dict):
+        raise SystemExit(f"{label} must be a JSON object")
+    return value
+
+
 def require_text(path: str, fragments: tuple[str, ...]) -> None:
     content = (ROOT / path).read_text(encoding="utf-8")
     missing = [fragment for fragment in fragments if fragment not in content]
@@ -51,10 +57,17 @@ def main() -> None:
         "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         ("License: GPL-2.0-or-later",),
     )
-    provenance = json.loads(
-        (
-            ROOT / "contracts" / "identity-bridge" / "v1" / "code-provenance.json"
-        ).read_text(encoding="utf-8")
+    provenance = require_json_object(
+        json.loads(
+            (
+                ROOT
+                / "contracts"
+                / "identity-bridge"
+                / "v1"
+                / "code-provenance.json"
+            ).read_text(encoding="utf-8")
+        ),
+        "Identity Bridge provenance",
     )
     if provenance.get("distribution_clearance_status") != "blocked-pending-source-clearance":
         raise SystemExit(
@@ -62,17 +75,23 @@ def main() -> None:
         )
     if provenance.get("release_expansion_allowed") is not False:
         raise SystemExit("Identity Bridge release expansion must remain blocked")
-    similarity_report = json.loads(
-        (
-            ROOT
-            / "contracts"
-            / "identity-bridge"
-            / "v1"
-            / "evidence"
-            / "xummlogin-public-1.3.0-similarity.json"
-        ).read_text(encoding="utf-8")
+    similarity_report = require_json_object(
+        json.loads(
+            (
+                ROOT
+                / "contracts"
+                / "identity-bridge"
+                / "v1"
+                / "evidence"
+                / "xummlogin-public-1.3.0-similarity.json"
+            ).read_text(encoding="utf-8")
+        ),
+        "Identity Bridge similarity evidence",
     )
-    review_boundary = similarity_report.get("review_boundary", {})
+    review_boundary = require_json_object(
+        similarity_report.get("review_boundary"),
+        "Identity Bridge similarity evidence review_boundary",
+    )
     if review_boundary.get("clears_public_distribution") is not False:
         raise SystemExit("A similarity scan must not claim distribution clearance")
     if review_boundary.get("exact_live_package_required_for_clearance") is not True:
