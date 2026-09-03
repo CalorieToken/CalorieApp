@@ -92,6 +92,8 @@ def _version_from_file(path: Path, label: str) -> str:
 
 def _bridge_code_files() -> list[Path]:
     contract = json.loads(PROVENANCE_CONTRACT.read_text(encoding="utf-8"))
+    if not isinstance(contract, dict):
+        raise ValueError("Identity Bridge provenance root must be a JSON object")
     entries = contract.get("release_files")
     if not isinstance(entries, list):
         raise ValueError("Identity Bridge provenance release_files must be a list")
@@ -242,14 +244,14 @@ def _verified_package_archive(
 
     if set(archive_content) != set(source_content):
         raise ValueError(
-            "XUMM Login extracted code files differ from the supplied package archive"
+            "XUMM Login package archive code paths differ from the scanned source tree"
         )
     mismatches = [
         path for path in archive_content if archive_content[path] != source_content[path]
     ]
     if mismatches:
         raise ValueError(
-            "XUMM Login extracted code content differs from the supplied package archive"
+            "XUMM Login package archive code content differs from the scanned source tree"
         )
     return _sha256(archive.read_bytes()), len(infos)
 

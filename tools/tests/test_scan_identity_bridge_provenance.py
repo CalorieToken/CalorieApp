@@ -6,6 +6,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 from tools import check_legal_boundaries as legal_boundaries
 from tools import scan_identity_bridge_provenance as scan
@@ -106,6 +107,22 @@ add_action('init', 'xummlogin_start_session', 1);
                     review_date="2026-02-31",
                 )
 
+    def test_bridge_contract_root_must_be_an_object(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            contract = Path(temporary) / "code-provenance.json"
+            for malformed in (None, []):
+                with self.subTest(malformed=malformed):
+                    contract.write_text(
+                        json.dumps(malformed) + "\n",
+                        encoding="utf-8",
+                    )
+                    with mock.patch.object(scan, "PROVENANCE_CONTRACT", contract):
+                        with self.assertRaisesRegex(
+                            ValueError,
+                            "provenance root must be a JSON object",
+                        ):
+                            scan._bridge_code_files()
+
     def test_symlinked_source_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -130,7 +147,31 @@ add_action('init', 'xummlogin_start_session', 1);
             (source / "public" / "xummlogin-public.js").write_text(
                 "changed after packaging\n", encoding="utf-8"
             )
-            with self.assertRaisesRegex(ValueError, "content differs"):
+            with self.assertRaisesRegex(
+                ValueError,
+                "package archive code content differs from the scanned source tree",
+            ):
+                scan.build_report(
+                    source,
+                    expected_xummlogin_version="1.3.1",
+                    source_reference="live-export:test-fixture",
+                    review_date="2026-09-03",
+                    package_archive=archive,
+                )
+
+    def test_package_archive_code_paths_must_match_scanned_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = self._source_tree(root)
+            archive = self._package_archive(root, source)
+            (source / "added-after-packaging.js").write_text(
+                "function addedAfterPackaging() {}\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                ValueError,
+                "package archive code paths differ from the scanned source tree",
+            ):
                 scan.build_report(
                     source,
                     expected_xummlogin_version="1.3.1",
