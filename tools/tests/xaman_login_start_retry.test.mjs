@@ -73,6 +73,11 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.equal(module.exports.resolveLoginSurfaceMode(true, true), "embedded");
   assert.equal(module.exports.resolveLoginSurfaceMode(false, true), "checking");
   assert.equal(module.exports.resolveLoginSurfaceMode(false, false), "standalone");
+  assert.match(
+    source,
+    /resolveLoginSurfaceMode\(\s*false,\s*expectsEmbeddedBridge\(\)\s*\)/
+  );
+  assert.doesNotMatch(source, /resolveLoginSurfaceMode\(origin !== null/);
   assert.doesNotMatch(source, /window\.location\.assign\(WORDPRESS_APP_URL\)/);
   assert.match(source, /href=\{WORDPRESS_APP_URL\}/);
 });

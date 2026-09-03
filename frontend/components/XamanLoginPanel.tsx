@@ -135,10 +135,10 @@ function expectsEmbeddedBridge(): boolean {
 }
 
 export function resolveLoginSurfaceMode(
-  hasTrustedParentOrigin: boolean,
+  bridgeInitialized: boolean,
   embeddedBridgeExpected: boolean
 ): LoginSurfaceMode {
-  if (hasTrustedParentOrigin) {
+  if (bridgeInitialized) {
     return "embedded";
   }
   return embeddedBridgeExpected ? "checking" : "standalone";
@@ -547,7 +547,7 @@ export function XamanLoginPanel() {
     let origin = trustedParentOrigin();
     parentOrigin.current = origin;
     setLoginSurfaceMode(
-      resolveLoginSurfaceMode(origin !== null, expectsEmbeddedBridge())
+      resolveLoginSurfaceMode(false, expectsEmbeddedBridge())
     );
 
     const postHeight = () => {
@@ -587,7 +587,7 @@ export function XamanLoginPanel() {
         );
         activeLocale.current = nextLocale;
         setDisplayLocale(nextLocale);
-        setLoginSurfaceMode("embedded");
+        setLoginSurfaceMode(resolveLoginSurfaceMode(true, true));
         postHeight();
         return;
       }
