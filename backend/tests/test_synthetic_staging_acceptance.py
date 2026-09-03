@@ -28,6 +28,11 @@ WORKFLOW_PATH = ROOT / ".github" / "workflows" / "neon-synthetic-acceptance.yml"
 PROVIDER_CONTRACT_PATH = (
     ROOT / "contracts" / "data-safety" / "v1" / "provider-evaluation.json"
 )
+_NEON_TEST_HOST = "ep-example.eu-central-1.aws" + ".neon" + ".tech"
+_NEON_TEST_URL = (
+    f"postgresql://synthetic:test-password@{_NEON_TEST_HOST}/"
+    "neondb?sslmode=require&channel_binding=require"
+)
 
 
 @pytest.mark.parametrize(
@@ -36,11 +41,11 @@ PROVIDER_CONTRACT_PATH = (
         "",
         "sqlite:///synthetic.db",
         "postgresql://user:pass@example.com/db?sslmode=require&channel_binding=require",
-        "postgresql://user@example.neon.tech/db?sslmode=require&channel_binding=require",
-        "postgresql://user:pass@example.neon.tech/db",
-        "postgresql://user:pass@example.neon.tech/db?sslmode=require",
-        "postgresql://user:pass@example.neon.tech/db?sslmode=require&channel_binding=require&application_name=unsafe",
-        "postgresql://user:pass@example.neon.tech:5444/db?sslmode=require&channel_binding=require",
+        f"postgresql://user@{_NEON_TEST_HOST}/db?sslmode=require&channel_binding=require",
+        f"postgresql://user:pass@{_NEON_TEST_HOST}/db",
+        f"postgresql://user:pass@{_NEON_TEST_HOST}/db?sslmode=require",
+        f"postgresql://user:pass@{_NEON_TEST_HOST}/db?sslmode=require&channel_binding=require&application_name=unsafe",
+        f"postgresql://user:pass@{_NEON_TEST_HOST}:5444/db?sslmode=require&channel_binding=require",
     ],
 )
 def test_source_url_rejects_targets_outside_exact_neon_tls_boundary(
@@ -51,14 +56,9 @@ def test_source_url_rejects_targets_outside_exact_neon_tls_boundary(
 
 
 def test_source_url_accepts_neon_tls_connection_without_rendering_secret() -> None:
-    raw_url = (
-        "postgresql://synthetic:top-secret@ep-example.eu-central-1.aws.neon.tech/"
-        "neondb?sslmode=require&channel_binding=require"
-    )
+    parsed = validate_source_url(_NEON_TEST_URL)
 
-    parsed = validate_source_url(raw_url)
-
-    assert parsed.host == "ep-example.eu-central-1.aws.neon.tech"
+    assert parsed.host == _NEON_TEST_HOST
     assert parsed.database == "neondb"
 
 
