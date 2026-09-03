@@ -54,7 +54,7 @@ jobs:
           python -m unittest tools.tests.test_identity_contracts
           python -m unittest tools.tests.test_localization_contracts
 
-      - name: Test mobile Xaman preflight logic
+      - name: Test mobile Xaman preflight and tracked-secret guard
         run: |
           python -m unittest tools.tests.test_mobile_xaman_preflight
           python -m unittest tools.tests.test_tracked_secret_patterns
