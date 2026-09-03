@@ -56,6 +56,12 @@ if ($LASTEXITCODE -ne 0) {
 }
 Pop-Location
 
+Write-Step "Offline age custody tests"
+& $pythonExe -m unittest tools.tests.test_offline_age_custody
+if ($LASTEXITCODE -ne 0) {
+    throw "Offline age custody tests failed"
+}
+
 Write-Step "Frontend lint"
 Push-Location $FrontendDir
 npm run lint
