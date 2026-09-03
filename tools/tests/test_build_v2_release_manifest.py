@@ -67,7 +67,8 @@ class V2ReleaseManifestTests(unittest.TestCase):
     def test_manifest_rejects_missing_or_non_zip_plugin_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root, archive = self._fixture(directory)
-            archive.rename(archive.with_suffix(".bin"))
+            non_zip_archive = archive.with_suffix(".bin")
+            archive.rename(non_zip_archive)
             with self.assertRaisesRegex(
                 release.ReleaseManifestError,
                 "plugin archive is unavailable",
@@ -77,6 +78,16 @@ class V2ReleaseManifestTests(unittest.TestCase):
                     commit="a" * 40,
                     deployment_time="2026-09-03T12:34:56Z",
                     plugin_archive=archive,
+                )
+            with self.assertRaisesRegex(
+                release.ReleaseManifestError,
+                "plugin archive must be a ZIP file",
+            ):
+                release.build_manifest(
+                    root,
+                    commit="a" * 40,
+                    deployment_time="2026-09-03T12:34:56Z",
+                    plugin_archive=non_zip_archive,
                 )
 
     def test_manifest_normalizes_missing_repository_root(self) -> None:

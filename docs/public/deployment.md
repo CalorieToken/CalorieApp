@@ -6,7 +6,7 @@ Never commit production credentials, database contents, cookies, authorization c
 
 Set `CALORIEAPP_BUILD_ID` on the backend and
 `NEXT_PUBLIC_CALORIEAPP_BUILD_ID` on the frontend to the same non-secret release
-commit or manifest identifier. The backend exposes it through `/health`; the
+source commit identifier. The backend exposes it through `/health`; the
 frontend renders it as `data-calorieapp-build-id` on the HTML root. Verify both
 before the integrated manual acceptance round:
 
