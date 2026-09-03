@@ -114,6 +114,7 @@ class DeploymentSmokeTests(unittest.TestCase):
         for candidate in (
             "http://example.test/app",
             "https://user:pass@example.test/app",
+            "https://example.test/app?preview=true",
             "https://example.test/app#fragment",
         ):
             with self.subTest(candidate=candidate):

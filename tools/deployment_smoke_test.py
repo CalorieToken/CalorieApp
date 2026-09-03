@@ -38,9 +38,12 @@ def public_https_url(value: str) -> str:
         or not parsed.netloc
         or parsed.username
         or parsed.password
+        or parsed.query
         or parsed.fragment
     ):
-        raise argparse.ArgumentTypeError("URL must be public HTTPS without credentials or fragment")
+        raise argparse.ArgumentTypeError(
+            "URL must be public HTTPS without credentials, query, or fragment"
+        )
     return value.strip()
 
 
