@@ -109,6 +109,13 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("unexpected PostgreSQL version")
     if data_processing["approved_for_real_personal_data"] is not False:
         raise ValueError("real personal data is outside this preflight")
+    if data_processing["dpa_execution_or_account_acceptance_confirmed"] is not True:
+        raise ValueError("DPA execution confirmation missing")
+    if (
+        data_processing["subprocessor_notification_subscription_confirmed"]
+        is not True
+    ):
+        raise ValueError("subprocessor notification confirmation missing")
     dpa_record = data_processing["dpa_execution_record"]
     subprocessor_record = data_processing["subprocessor_notification_record"]
     if date.fromisoformat(dpa_record["confirmed_on"]) > today:
@@ -165,11 +172,6 @@ def evaluate_synthetic_provider_use_preflight(
         backup = review["portable_backup"]
 
         blocked_gate_codes: list[str] = []
-        if not (
-            data_processing["dpa_execution_or_account_acceptance_confirmed"]
-            and data_processing["subprocessor_notification_subscription_confirmed"]
-        ):
-            blocked_gate_codes.append("data-processing-controls")
         if not (
             billing["provider_measurement_path_approved"]
             and billing["provider_measurement_path_configured"]

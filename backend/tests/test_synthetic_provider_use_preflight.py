@@ -81,6 +81,22 @@ def test_complete_controls_require_separate_operation_approval() -> None:
         (("payment_method_added",), True),
         (("provider_selected_for_public_release",), True),
         (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_or_account_acceptance_confirmed",
+            ),
+            False,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_subscription_confirmed",
+            ),
+            False,
+        ),
+        (
             ("project_creation_record", "real_user_or_production_data_approved"),
             True,
         ),
