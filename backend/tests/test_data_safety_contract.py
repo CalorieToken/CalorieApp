@@ -20,11 +20,11 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.37.0"
+    assert contract["contract_version"] == "1.38.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
-        "neon-free-synthetic-native-limits-approved-offline-custody-blocked"
+        "neon-free-synthetic-controls-ready-operation-unperformed"
     )
     assert contract["architecture"]["sqlite_allowed_environments"] == ["local", "test"]
     assert contract["architecture"]["sqlite_allowed_for_public_live_history"] is False
@@ -85,7 +85,7 @@ def test_postgresql_ci_proof_is_synthetic_guarded_and_not_provider_proof() -> No
         "does_not_prove"
     ]
     assert proof["provider_selection_status"] == (
-        "neon-synthetic-native-limits-approved-offline-custody-blocked"
+        "neon-synthetic-controls-ready-operation-unperformed"
     )
 
 
@@ -1110,7 +1110,7 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
         "backend/app/synthetic_provider_use_preflight.py"
     )
     assert cost["synthetic_provider_use_preflight_status"] == (
-        "blocked-offline-age-custody-only-no-provider-contact"
+        "controls-ready-separate-operation-approval-required-no-provider-contact"
     )
     assert cost["provider_selected"] is True
     assert cost["selected_provider"] == "neon_free"
@@ -1328,7 +1328,7 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
     }
 
     assert matrix["contract_id"] == "calorieapp.durable-data-release-gates"
-    assert matrix["contract_version"] == "1.23.0"
+    assert matrix["contract_version"] == "1.24.0"
     assert set(gates) == expected
     assert all(gate["release_blocking"] is True for gate in gates.values())
     assert all(gate["status"] in matrix["statuses"] for gate in gates.values())
@@ -1407,6 +1407,12 @@ def test_all_required_durable_data_release_gates_are_explicit_and_blocking() -> 
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
     assert "backend/tests/test_synthetic_provider_use_preflight.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
+    assert "backend/app/synthetic_staging_acceptance.py" in gates[
+        "zero_additional_cost_capacity_and_exit_plan"
+    ]["evidence"]
+    assert ".github/workflows/neon-synthetic-acceptance.yml" in gates[
         "zero_additional_cost_capacity_and_exit_plan"
     ]["evidence"]
     assert "tools/check_tracked_secret_patterns.py" in gates[
@@ -1628,19 +1634,30 @@ def test_backup_restore_proof_is_synthetic_partial_and_fail_closed() -> None:
         ),
         "encryption_format": "age",
         "key_custody_mode": "passphrase-encrypted-age-identity-offline",
-        "public_recipient_configured": False,
-        "private_key_generated_or_configured": False,
+        "public_recipient_configured": True,
+        "public_recipient": (
+            "age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m"
+        ),
+        "private_key_generated_or_configured": True,
+        "offline_primary_copy_recovery_verified": True,
+        "offline_recovery_copy_recovery_verified": True,
+        "offline_custody_completed_on": "2026-09-03",
         "permanent_github_private_key_secret_allowed": False,
         "temporary_review_gated_restore_secret_required": True,
         "restore_environment": "neon-synthetic-restore",
         "restore_environment_must_be_precreated_and_protected": True,
+        "restore_environment_precreated_and_protected": True,
         "restore_environment_branch_policy": "main-only",
         "restore_environment_required_reviewer": True,
         "restore_environment_admin_bypass_allowed": False,
         "restore_workflow_trigger": "workflow-dispatch-only",
         "pull_request_workflow_identity_access_allowed": False,
         "restore_identity_secret_deleted_after_every_run": True,
-        "implemented_or_performed": False,
+        "synthetic_acceptance_workflow": (
+            ".github/workflows/neon-synthetic-acceptance.yml"
+        ),
+        "workflow_implemented": True,
+        "operation_performed": False,
         "real_user_or_production_data_allowed": False,
     }
     assert backup["encrypted_production_backup_selected"] is False

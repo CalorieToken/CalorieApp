@@ -1,6 +1,6 @@
 {
   "contract_id": "calorieapp.durable-data-safety",
-  "contract_version": "1.37.0",
+  "contract_version": "1.38.0",
   "release_state": "blocked",
   "product_version_track": {
     "contract": "contracts/release/v2/completion-boundary.json",
@@ -14,7 +14,7 @@
   "purpose": "Keep authenticated food history durable, private, portable, exportable and deletable before public user onboarding.",
   "architecture": {
     "primary_live_store": "postgresql",
-    "provider_selection": "neon-free-synthetic-native-limits-approved-offline-custody-blocked",
+    "provider_selection": "neon-free-synthetic-controls-ready-operation-unperformed",
     "provider_neutral_configuration": "DATABASE_URL",
     "sqlite_allowed_environments": ["local", "test"],
     "sqlite_allowed_for_public_live_history": false,
@@ -527,19 +527,26 @@
       "key_custody_approval_reference": "operator-decision-2026-09-01-offline-age-key-custody",
       "encryption_format": "age",
       "key_custody_mode": "passphrase-encrypted-age-identity-offline",
-      "public_recipient_configured": false,
-      "private_key_generated_or_configured": false,
+      "public_recipient_configured": true,
+      "public_recipient": "age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m",
+      "private_key_generated_or_configured": true,
+      "offline_primary_copy_recovery_verified": true,
+      "offline_recovery_copy_recovery_verified": true,
+      "offline_custody_completed_on": "2026-09-03",
       "permanent_github_private_key_secret_allowed": false,
       "temporary_review_gated_restore_secret_required": true,
       "restore_environment": "neon-synthetic-restore",
       "restore_environment_must_be_precreated_and_protected": true,
+      "restore_environment_precreated_and_protected": true,
       "restore_environment_branch_policy": "main-only",
       "restore_environment_required_reviewer": true,
       "restore_environment_admin_bypass_allowed": false,
       "restore_workflow_trigger": "workflow-dispatch-only",
       "pull_request_workflow_identity_access_allowed": false,
       "restore_identity_secret_deleted_after_every_run": true,
-      "implemented_or_performed": false,
+      "synthetic_acceptance_workflow": ".github/workflows/neon-synthetic-acceptance.yml",
+      "workflow_implemented": true,
+      "operation_performed": false,
       "real_user_or_production_data_allowed": false
     },
     "erasure_replay_proof": {
@@ -620,7 +627,7 @@
       "staging-or-production-runtime-role-privilege-application",
       "production-readiness"
     ],
-    "provider_selection_status": "neon-synthetic-native-limits-approved-offline-custody-blocked"
+    "provider_selection_status": "neon-synthetic-controls-ready-operation-unperformed"
   },
   "postgresql_redeploy_ci_proof": {
     "status": "synthetic-two-process-proof-configured-provider-proof-pending",
@@ -875,8 +882,8 @@
     "no_additional_cost_exit_plan_required_before_public_onboarding": true,
     "provider_evaluation_contract": "contracts/data-safety/v1/provider-evaluation.json",
     "synthetic_provider_use_preflight": "backend/app/synthetic_provider_use_preflight.py",
-    "synthetic_provider_use_preflight_status": "blocked-offline-age-custody-only-no-provider-contact",
-    "provider_shortlist_status": "neon-free-synthetic-native-limits-approved-offline-custody-blocked",
+    "synthetic_provider_use_preflight_status": "controls-ready-separate-operation-approval-required-no-provider-contact",
+    "provider_shortlist_status": "neon-free-synthetic-controls-ready-operation-unperformed",
     "provider_evidence_reviewed_on": "2026-09-03",
     "provider_evidence_revalidate_by": "2026-12-01",
     "provider_selected": true,

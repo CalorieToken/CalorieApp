@@ -3,6 +3,14 @@
 Status: automated synthetic CI proof configured. The production backup and
 recovery gate remains blocked.
 
+The protected manual Neon synthetic workflow is prepared but has not run. It
+will create a custom-format dump containing only fixed synthetic records,
+encrypt it client-side to the verified offline-custody recipient, upload only
+the encrypted artifact for 30 days, restore into disposable PostgreSQL 16
+outside Neon and independently verify schema plus ownership. This staging and
+provider-exit proof remains incomplete until the workflow passes and both
+temporary environment secrets are deleted.
+
 ## Proven boundary
 
 Every merge candidate runs a provider-neutral PostgreSQL custom-format logical

@@ -2,10 +2,10 @@
 
 Status: one Neon Free project was created on 2026-09-02 in Frankfurt for an
 isolated synthetic staging experiment only. Its provider-native hard limits and
-a keyless bounded-observation path are approved for that synthetic scope. Use
-remains blocked on offline encryption-key custody, and every live drill and any
-public-release decision still require separate approval. Revalidate official
-terms by 2026-12-01.
+a keyless bounded-observation path are approved for that synthetic scope.
+Offline encryption custody and the protected workflow are now prepared; the
+single live synthetic operation and any public-release decision still require
+separate approval. Revalidate official terms by 2026-12-01.
 
 ## Outcome
 
@@ -137,7 +137,7 @@ uses the existing repository automation and creates no second database account.
 The selection applies only to isolated synthetic staging. It does not select a
 production backup destination or a durable alternate production provider.
 
-No artifact or key was created by this selection. On 2026-09-01, the operator
+No artifact was created by this selection. On 2026-09-01, the operator
 approved `age` encryption with a passphrase-encrypted private identity held in
 separate offline primary and recovery copies. Only the public recipient may be
 recorded in repository configuration. For an approved synthetic restore, the
@@ -145,26 +145,31 @@ decrypted identity may exist only as a temporary, required-reviewer-gated
 environment secret and must be deleted after every run. It may not be a
 permanent GitHub secret or workflow input. Plaintext upload is forbidden and no
 credential, private key or dump may enter Git. The exact procedure is recorded
-in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`.
+in `docs/NEON_SYNTHETIC_BACKUP_EXIT_RUNBOOK.md`. On 2026-09-03 the local
+ceremony generated the identity, independently verified both encrypted offline
+copies and recorded only their shared public recipient. The main-only protected
+GitHub environment is also configured, while both temporary secrets remain
+absent.
 
 Still required before using the project:
 
 1. Recheck the official terms again if the evidence date has expired or the
    account screen differs materially from the recorded snapshot.
-2. Generate the offline `age` identity, verify both encrypted offline copies,
-   store the passphrase separately and configure only the public recipient.
+2. Explicitly approve the one synthetic operation, observe the Free-plan
+   console immediately before it, create both temporary environment secrets
+   without exposing their values, and approve the protected environment job.
 
 `python -m app.synthetic_provider_use_preflight` evaluates the versioned
-controls without contacting Neon. It exits `40` while offline custody is
-incomplete and prints only a low-cardinality blocker code. Stale, missing or
-broadened safety policy exits `50`. Exit `0` means only that the documented
-controls are ready; every migration, restart, redeploy, backup or restore still
-needs its own explicit approval and mandatory pre/post observations.
+controls without contacting Neon. It now exits `0`, meaning only that the
+documented controls are ready and the separate synthetic operation approval may
+be requested. Stale, missing or broadened safety policy exits `50`; incomplete
+custody exits `40` with a low-cardinality blocker code. Mandatory pre/post
+observations and secret deletion still apply.
 
-Only then may the project be used. The first live tests remain separately
-approved and synthetic: migration/readiness, restart, actual provider redeploy,
-encrypted restore, provider-exit restore and capacity/onboarding-pause. Real
-user or production data remains blocked.
+Only then may the single protected workflow bundle the synthetic
+migration/readiness, two-process replacement, provider restart, encrypted
+backup, provider-exit restore and capacity checks into one approved operation.
+Real user or production data remains blocked.
 
 Additional primary sources reviewed for this preconfiguration boundary:
 

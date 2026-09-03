@@ -26,9 +26,9 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.10.0"
+    assert contract["contract_version"] == "1.11.0"
     assert contract["decision_state"] == (
-        "neon-synthetic-staging-native-limits-approved-offline-custody-blocked"
+        "neon-synthetic-staging-controls-ready-operation-unperformed"
     )
     assert 1 <= (revalidate_by - reviewed_on).days <= 92
     assert date.today() <= revalidate_by, (
@@ -123,7 +123,7 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     review = contract["preconfiguration_review"]
 
     assert review["status"] == (
-        "free-frankfurt-project-native-limits-approved-offline-custody-blocked"
+        "free-frankfurt-project-controls-ready-operation-unperformed"
     )
     live_evidence = ROOT / review["live_evidence_document"]
     assert live_evidence.is_file()
@@ -226,7 +226,10 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert backup["selected_destination"] == "github_actions_artifact"
     assert backup["selection_scope"] == "isolated-synthetic-neon-staging-only"
     assert backup["artifact_retention_days"] == 30
-    assert backup["client_side_encryption_recipient_configured"] is False
+    assert backup["client_side_encryption_recipient_configured"] is True
+    assert backup["encryption_public_recipient"] == (
+        "age1s3p3hcasyphsp5ph8emrkxx27yh4s0fpru92t5mncj09uu6ny9ts2y6w0m"
+    )
     assert backup["private_decryption_key_custody_approved"] is True
     assert backup["key_custody_selection_date"] == "2026-09-01"
     assert backup["key_custody_approval_reference"] == (
@@ -240,15 +243,21 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert backup["offline_copy_locations_recorded_in_public_repository"] is False
     assert backup["identity_passphrase_stored_separately_from_encrypted_identity"] is True
     assert backup["public_recipient_may_be_committed"] is True
-    assert backup["private_key_generated_or_configured"] is False
-    assert backup["offline_primary_copy_recovery_verified"] is False
-    assert backup["offline_recovery_copy_recovery_verified"] is False
+    assert backup["private_key_generated_or_configured"] is True
+    assert backup["offline_primary_copy_recovery_verified"] is True
+    assert backup["offline_recovery_copy_recovery_verified"] is True
+    assert backup["offline_custody_completed_on"] == "2026-09-03"
+    assert backup["offline_custody_verification_status"] == (
+        "both-encrypted-copies-match-public-recipient"
+    )
     assert backup["permanent_github_private_key_secret_allowed"] is False
     assert backup["restore_identity_transfer"] == (
         "temporary-github-environment-secret-after-required-review"
     )
     assert backup["restore_environment"] == "neon-synthetic-restore"
     assert backup["restore_environment_must_be_precreated_and_protected"] is True
+    assert backup["restore_environment_precreated_and_protected"] is True
+    assert backup["restore_environment_configuration_verified_on"] == "2026-09-03"
     assert backup["restore_environment_branch_policy"] == "main-only"
     assert backup["restore_environment_required_reviewer"] is True
     assert backup["restore_environment_admin_bypass_allowed"] is False
@@ -259,9 +268,20 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     )
     assert backup["restore_identity_secret_created_only_for_approved_run"] is True
     assert backup["restore_identity_secret_deleted_after_every_run"] is True
+    assert backup["temporary_restore_secrets_present_at_review"] is False
+    assert backup["synthetic_database_url_secret_name"] == (
+        "CALORIEAPP_SYNTHETIC_NEON_DATABASE_URL"
+    )
+    assert backup["synthetic_database_url_secret_created_only_for_approved_run"] is True
+    assert backup["synthetic_database_url_secret_deleted_after_every_run"] is True
     assert backup["unreviewed_workflow_input_for_identity_allowed"] is False
     assert backup["plaintext_artifact_upload_allowed"] is False
-    assert backup["artifact_upload_implemented_or_performed"] is False
+    assert backup["synthetic_acceptance_workflow"] == (
+        ".github/workflows/neon-synthetic-acceptance.yml"
+    )
+    assert backup["synthetic_acceptance_workflow_implemented"] is True
+    assert backup["artifact_upload_implemented"] is True
+    assert backup["artifact_upload_performed"] is False
     assert backup["real_user_or_production_data_allowed"] is False
     assert backup["production_backup_destination_selected"] is False
     assert review["portable_backup"]["credentials_or_keys_may_be_committed"] is False
@@ -278,7 +298,8 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert provider_exit["target_is_outside_neon"] is True
     assert provider_exit["target_is_ephemeral"] is True
     assert provider_exit["synthetic_restore_runbook_approved"] is True
-    assert provider_exit["provider_exit_restore_implemented_or_performed"] is False
+    assert provider_exit["provider_exit_restore_implemented"] is True
+    assert provider_exit["provider_exit_restore_performed"] is False
     assert provider_exit["real_user_or_production_data_allowed"] is False
     assert provider_exit["production_exit_target_selected"] is False
 
@@ -369,18 +390,8 @@ def test_real_provider_work_remains_release_blocked() -> None:
 
     assert contract["release_blocking_before_provider_selection"] == []
     assert contract["release_blocking_before_provider_configuration"] == []
-    assert contract["release_blocking_before_synthetic_provider_use"]
+    assert contract["release_blocking_before_synthetic_provider_use"] == []
     assert contract["release_blocking_after_provider_selection"]
-    blockers = contract["release_blocking_before_synthetic_provider_use"]
-    assert not any("DPA execution" in item for item in blockers)
-    assert (
-        "generate the offline age identity, record only its public recipient, and verify the encrypted recovery copy without committing key material"
-        in blockers
-    )
-    assert not any("provider measurement path" in item for item in blockers)
-    assert not any("provider quota values" in item for item in blockers)
-    assert not any("approve an encrypted off-provider backup destination" in item for item in blockers)
-    assert not any("approve a distinct PostgreSQL provider-exit target" in item for item in blockers)
     assert "human review before any real user data" in contract[
         "release_blocking_after_provider_selection"
     ]
@@ -412,10 +423,10 @@ def test_release_matrix_and_central_contract_reference_the_shortlist() -> None:
         "contracts/data-safety/v1/provider-evaluation.json"
     )
     assert cost["provider_shortlist_status"] == (
-        "neon-free-synthetic-native-limits-approved-offline-custody-blocked"
+        "neon-free-synthetic-controls-ready-operation-unperformed"
     )
     assert cost["synthetic_provider_use_preflight_status"] == (
-        "blocked-offline-age-custody-only-no-provider-contact"
+        "controls-ready-separate-operation-approval-required-no-provider-contact"
     )
     assert cost["provider_evidence_reviewed_on"] == contract[
         "evidence_reviewed_on"

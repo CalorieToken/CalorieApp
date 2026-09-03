@@ -4,6 +4,14 @@ Status: automated partial evidence configured. A successful GitHub Actions check
 is required for every merge candidate. Public onboarding and production
 deployment remain blocked.
 
+The protected, manually dispatched Neon synthetic acceptance workflow is now
+prepared to repeat the process-replacement proof against the selected provider:
+one CalorieApp process writes a fixed synthetic record, is fully stopped, and a
+replacement process reads both fixed records from the same Neon database. It
+then waits beyond the configured scale-to-zero window and reconnects in another
+process. This provider proof is not complete until that workflow passes and its
+post-run console evidence is recorded.
+
 ## What the drill proves
 
 The CI job uses synthetic data in the existing ephemeral PostgreSQL 16 service.
