@@ -234,7 +234,7 @@ def _assert_only_expected_rows(
     }
     if actual_food != expected_food:
         raise SyntheticStagingSafetyError("unexpected synthetic food history")
-    if sorted(event.route_key for event in route_events) != expected_route_keys:
+    if sorted(event.route_key for event in route_events) != sorted(expected_route_keys):
         raise SyntheticStagingSafetyError(
             "unexpected synthetic route admission history"
         )
