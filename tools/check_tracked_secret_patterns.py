@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -16,6 +17,8 @@ _BLOCKED_SUFFIXES = (".age", ".backup", ".dump", ".pgdump")
 _AGE_IDENTITY_MARKER = b"AGE-" + b"SECRET-KEY-1"
 _NEON_HOST_SUFFIX = b".neon." + b"tech"
 _AGE_IDENTITY_ENV = b"CALORIEAPP_SYNTHETIC_" + b"AGE_IDENTITY"
+
+_AGE_IDENTITY = re.compile(re.escape(_AGE_IDENTITY_MARKER), re.IGNORECASE)
 
 _NEON_DSN = re.compile(
     rb"postgres(?:ql)?(?:\+[a-z0-9_]+)?://"
@@ -68,7 +71,7 @@ def _assignment_contains_literal_secret(match: re.Match[bytes]) -> bool:
 
 def _content_findings(relative_path: str, content: bytes) -> list[Finding]:
     findings: list[Finding] = []
-    if _AGE_IDENTITY_MARKER in content.upper():
+    if _AGE_IDENTITY.search(content):
         findings.append(Finding(relative_path, "age-private-identity"))
     if _NEON_DSN.search(content):
         findings.append(Finding(relative_path, "neon-database-url"))
@@ -80,6 +83,11 @@ def _content_findings(relative_path: str, content: bytes) -> list[Finding]:
     return findings
 
 
+def _is_blocked_artifact_path(relative_path: str) -> bool:
+    filename = relative_path.rsplit("/", 1)[-1].lower()
+    return filename.endswith(_BLOCKED_SUFFIXES) or ".dump." in filename
+
+
 def scan_tracked_files(root: Path, relative_paths: Iterable[str]) -> list[Finding]:
     """Scan the supplied tracked paths without revealing matched bytes."""
     findings: list[Finding] = []
@@ -87,7 +95,7 @@ def scan_tracked_files(root: Path, relative_paths: Iterable[str]) -> list[Findin
         {relative_path.replace("\\", "/") for relative_path in relative_paths}
     )
     for normalized in normalized_paths:
-        if normalized.lower().endswith(_BLOCKED_SUFFIXES):
+        if _is_blocked_artifact_path(normalized):
             findings.append(Finding(normalized, "forbidden-secret-artifact-path"))
             continue
 
@@ -120,7 +128,10 @@ def tracked_paths(root: Path) -> list[str]:
 
 def render_findings(findings: Iterable[Finding]) -> str:
     """Render only file paths and stable rule names."""
-    return "\n".join(f"{finding.path}: {finding.rule}" for finding in findings)
+    return "\n".join(
+        f"path={json.dumps(finding.path, ensure_ascii=True)} rule={finding.rule}"
+        for finding in findings
+    )
 
 
 def main() -> int:

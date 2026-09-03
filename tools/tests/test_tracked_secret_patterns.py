@@ -19,7 +19,7 @@ class TrackedSecretPatternTests(unittest.TestCase):
             return guard.scan_tracked_files(root, files.keys())
 
     def test_age_private_identity_is_rejected_without_echoing_it(self) -> None:
-        identity = b"AGE-" + b"SECRET-KEY-1SYNTHETICFIXTURE"
+        identity = b"age-" + b"secret-key-1syntheticfixture"
 
         findings = self._scan({"notes.txt": identity})
 
@@ -86,6 +86,7 @@ class TrackedSecretPatternTests(unittest.TestCase):
                 "backup/export.age": b"encrypted",
                 "backup/export.backup": b"archive",
                 "backup/export.dump": b"archive",
+                "backup/export.dump.gz": b"compressed archive",
                 "backup/export.pgdump": b"archive",
             }
         )
@@ -103,6 +104,9 @@ class TrackedSecretPatternTests(unittest.TestCase):
                     "backup/export.dump", "forbidden-secret-artifact-path"
                 ),
                 guard.Finding(
+                    "backup/export.dump.gz", "forbidden-secret-artifact-path"
+                ),
+                guard.Finding(
                     "backup/export.pgdump", "forbidden-secret-artifact-path"
                 ),
             ],
@@ -112,19 +116,47 @@ class TrackedSecretPatternTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             artifact = root / "backup.dump"
+            compressed_artifact = root / "backup.dump.gz"
             artifact.write_bytes(b"content-must-not-be-read")
+            compressed_artifact.write_bytes(b"compressed-content-must-not-be-read")
 
             with mock.patch.object(
                 Path,
                 "read_bytes",
                 side_effect=AssertionError("blocked artifact was read"),
             ):
-                findings = guard.scan_tracked_files(root, ["backup.dump"])
+                findings = guard.scan_tracked_files(
+                    root,
+                    ["backup.dump", "backup.dump.gz"],
+                )
 
         self.assertEqual(
             findings,
-            [guard.Finding("backup.dump", "forbidden-secret-artifact-path")],
+            [
+                guard.Finding("backup.dump", "forbidden-secret-artifact-path"),
+                guard.Finding(
+                    "backup.dump.gz", "forbidden-secret-artifact-path"
+                ),
+            ],
         )
+
+    def test_rendered_paths_cannot_inject_additional_log_lines(self) -> None:
+        rendered = guard.render_findings(
+            [
+                guard.Finding(
+                    "safe\n::error title=forged::path\t.txt",
+                    "tracked-file-unreadable",
+                )
+            ]
+        )
+
+        self.assertEqual(
+            rendered,
+            'path="safe\\n::error title=forged::path\\t.txt" '
+            "rule=tracked-file-unreadable",
+        )
+        self.assertEqual(rendered.count("\n"), 0)
+        self.assertFalse(rendered.startswith("::"))
 
     def test_duplicate_paths_and_findings_are_deterministic(self) -> None:
         identity = b"AGE-" + b"SECRET-KEY-1SYNTHETICFIXTURE"
