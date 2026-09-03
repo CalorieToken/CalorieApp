@@ -21,7 +21,7 @@ EXIT_BLOCKED = 40
 EXIT_INVALID = 50
 
 _EXPECTED_CONTRACT_ID = "calorieapp.zero-additional-cost-provider-evaluation"
-_EXPECTED_CONTRACT_VERSION = "1.8.0"
+_EXPECTED_CONTRACT_VERSION = "1.9.0"
 _EXPECTED_PROVIDER = "neon_free"
 _EXPECTED_SCOPE = "isolated-synthetic-staging-only"
 _EXPECTED_PROJECT = "calorieapp-synthetic-staging"
@@ -39,6 +39,23 @@ _EXPECTED_SUBPROCESSOR_RECORD_KEYS = frozenset(
     {
         "confirmed_on",
         "recipient_address_recorded_in_public_repository",
+    }
+)
+_EXPECTED_PROVIDER_MEASUREMENT_REVIEW_KEYS = frozenset(
+    {
+        "reviewed_on",
+        "decision_state",
+        "database_native_storage_signal",
+        "database_native_signal_read_only",
+        "database_native_signal_covers_all_free_plan_allowances",
+        "usage_based_consumption_api_documented_for_live_free_plan",
+        "legacy_consumption_api_documented_for_live_free_plan",
+        "quota_configuration_api_availability_on_live_free_plan_confirmed",
+        "console_only_monitoring_counts_as_complete",
+        "persistent_provider_api_key_creation_approved",
+        "complete_measurement_path_selected",
+        "complete_measurement_path_configuration_verified",
+        "private_provider_identifiers_or_credentials_in_public_repository",
     }
 )
 
@@ -151,6 +168,90 @@ def _validate_safe_boundary(contract: Mapping[str, Any], today: date) -> None:
         raise ValueError("private DPA evidence must not be public")
     if subprocessor_record["recipient_address_recorded_in_public_repository"] is not False:
         raise ValueError("subprocessor recipient must not be public")
+    measurement_review = billing["provider_measurement_review"]
+    if not isinstance(measurement_review, Mapping) or set(measurement_review) != (
+        _EXPECTED_PROVIDER_MEASUREMENT_REVIEW_KEYS
+    ):
+        raise ValueError("unexpected provider measurement review fields")
+    if date.fromisoformat(measurement_review["reviewed_on"]) > today:
+        raise ValueError("provider measurement review is dated in the future")
+    if measurement_review["database_native_storage_signal"] != (
+        "pg_database_size(current_database())"
+    ):
+        raise ValueError("unexpected database-native capacity signal")
+    if measurement_review["database_native_signal_read_only"] is not True:
+        raise ValueError("database-native capacity signal must be read-only")
+    if (
+        measurement_review[
+            "database_native_signal_covers_all_free_plan_allowances"
+        ]
+        is not False
+    ):
+        raise ValueError("database-native signal cannot represent all provider limits")
+    if billing["usage_based_consumption_api_documented_for_free_plan"] is not False:
+        raise ValueError("unexpected Free plan consumption API claim")
+    if (
+        measurement_review[
+            "usage_based_consumption_api_documented_for_live_free_plan"
+        ]
+        is not False
+    ):
+        raise ValueError("usage-based consumption API is not documented for Free")
+    if (
+        measurement_review["legacy_consumption_api_documented_for_live_free_plan"]
+        is not False
+    ):
+        raise ValueError("legacy consumption API is not documented for Free")
+    if (
+        measurement_review[
+            "quota_configuration_api_availability_on_live_free_plan_confirmed"
+        ]
+        is not False
+    ):
+        raise ValueError("Free plan quota API availability is not confirmed")
+    if measurement_review["console_only_monitoring_counts_as_complete"] is not False:
+        raise ValueError("console-only monitoring cannot complete the measurement gate")
+    if (
+        measurement_review["persistent_provider_api_key_creation_approved"]
+        is not False
+    ):
+        raise ValueError("persistent provider API key creation is not approved")
+    if (
+        measurement_review[
+            "private_provider_identifiers_or_credentials_in_public_repository"
+        ]
+        is not False
+    ):
+        raise ValueError("private provider metadata must not be public")
+    measurement_approved = billing["provider_measurement_path_approved"]
+    measurement_configured = billing["provider_measurement_path_configured"]
+    if measurement_approved is not True and measurement_approved is not False:
+        raise ValueError("invalid provider measurement approval state")
+    if measurement_configured is not True and measurement_configured is not False:
+        raise ValueError("invalid provider measurement configuration state")
+    if measurement_configured and not measurement_approved:
+        raise ValueError("provider measurement cannot be configured before approval")
+    if (
+        measurement_review["complete_measurement_path_selected"]
+        is not measurement_approved
+    ):
+        raise ValueError("provider measurement selection evidence is inconsistent")
+    if (
+        measurement_review["complete_measurement_path_configuration_verified"]
+        is not measurement_configured
+    ):
+        raise ValueError("provider measurement configuration evidence is inconsistent")
+    expected_measurement_state = (
+        "complete-measurement-path-approved-and-configured"
+        if measurement_configured
+        else (
+            "measurement-path-approved-configuration-blocked"
+            if measurement_approved
+            else "blocked-no-documented-free-plan-consumption-api"
+        )
+    )
+    if measurement_review["decision_state"] != expected_measurement_state:
+        raise ValueError("unexpected provider measurement decision state")
     if billing["live_plan"] != "Free" or billing["live_price_usd_per_month"] != 0:
         raise ValueError("unexpected plan")
     if billing["live_project_count"] != 1:

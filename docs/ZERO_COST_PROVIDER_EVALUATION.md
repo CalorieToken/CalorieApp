@@ -114,11 +114,16 @@ suspend project compute until the next billing period, with metrics updated
 every 15 minutes and potentially delayed by one hour.
 
 That does not complete the alert gate. Hard-quota configuration requires an API
-key, the usage-based metrics API is not documented for Free, and no persistent
-key was created. A project-scoped key is the least-privilege available option,
-but still grants lasting Editor access and exposes its secret only once. The
-credential custody, exact counters and 70/85/95-percent delivery path therefore
-remain blocked pending separate approval.
+key, and neither current consumption API is documented for Free: the usage-based
+API starts at Launch and the legacy API starts at Scale. The existing read-only
+`pg_database_size(current_database())` signal covers database size, not compute
+or network-transfer allowances, so it cannot complete the provider measurement
+gate by itself. Console-only checks also do not count as an automated alert
+path. No persistent key was created or approved. A project-scoped key is the
+least-privilege available option, but remains valid until revoked, grants Editor
+access and exposes its secret only once. Free-plan quota-configuration API
+availability, credential custody, exact counters and the 70/85/95-percent
+delivery path therefore remain blocked pending separate evidence and approval.
 
 Neon also documents portable `pg_dump` export and PostgreSQL restore. CalorieApp
 will encrypt a dump on the client side before it leaves the controlled runner;
@@ -167,6 +172,7 @@ Additional primary sources reviewed for this preconfiguration boundary:
 - [Databricks Data Processing Addendum](https://www.databricks.com/legal/databricks-data-processing-addendum)
 - [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
+- [Neon legacy consumption metrics](https://neon.com/docs/guides/consumption-metrics-legacy)
 - [Neon API keys](https://neon.com/docs/manage/api-keys)
 - [Neon `pg_dump` backups](https://neon.com/docs/manage/backup-pg-dump)
 - [Neon subprocessor updates](https://neon.com/subscribe-to-subprocessors)

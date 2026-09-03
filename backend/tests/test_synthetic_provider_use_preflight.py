@@ -27,8 +27,15 @@ def _ready_contract() -> dict:
     review = contract["preconfiguration_review"]
     review["data_processing"]["dpa_execution_or_account_acceptance_confirmed"] = True
     review["data_processing"]["subprocessor_notification_subscription_confirmed"] = True
-    review["billing_and_quota"]["provider_measurement_path_approved"] = True
-    review["billing_and_quota"]["provider_measurement_path_configured"] = True
+    billing = review["billing_and_quota"]
+    billing["provider_measurement_path_approved"] = True
+    billing["provider_measurement_path_configured"] = True
+    measurement = billing["provider_measurement_review"]
+    measurement["decision_state"] = (
+        "complete-measurement-path-approved-and-configured"
+    )
+    measurement["complete_measurement_path_selected"] = True
+    measurement["complete_measurement_path_configuration_verified"] = True
     contract["capacity_policy"]["exact_provider_quota_configured"] = True
     contract["capacity_policy"]["alert_delivery_configured"] = True
     backup = review["portable_backup"]
@@ -143,6 +150,42 @@ def test_complete_controls_require_separate_operation_approval() -> None:
                 "recipient_address",
             ),
             "private@example.test",
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
+                "provider_measurement_review",
+                "database_native_signal_covers_all_free_plan_allowances",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
+                "provider_measurement_review",
+                "console_only_monitoring_counts_as_complete",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
+                "provider_measurement_review",
+                "persistent_provider_api_key_creation_approved",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "billing_and_quota",
+                "provider_measurement_review",
+                "private_provider_identifiers_or_credentials_in_public_repository",
+            ),
+            True,
         ),
     ],
 )

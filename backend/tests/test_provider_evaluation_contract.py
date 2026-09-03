@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.8.0"
+    assert contract["contract_version"] == "1.9.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-project-created-use-blocked"
     )
@@ -174,6 +174,21 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert billing["usage_based_consumption_api_documented_for_free_plan"] is False
     assert billing["configurable_hard_quota_requires_api_key"] is True
     assert billing["project_scoped_api_key_is_least_privilege_available"] is True
+    assert billing["provider_measurement_review"] == {
+        "reviewed_on": "2026-09-03",
+        "decision_state": "blocked-no-documented-free-plan-consumption-api",
+        "database_native_storage_signal": "pg_database_size(current_database())",
+        "database_native_signal_read_only": True,
+        "database_native_signal_covers_all_free_plan_allowances": False,
+        "usage_based_consumption_api_documented_for_live_free_plan": False,
+        "legacy_consumption_api_documented_for_live_free_plan": False,
+        "quota_configuration_api_availability_on_live_free_plan_confirmed": False,
+        "console_only_monitoring_counts_as_complete": False,
+        "persistent_provider_api_key_creation_approved": False,
+        "complete_measurement_path_selected": False,
+        "complete_measurement_path_configuration_verified": False,
+        "private_provider_identifiers_or_credentials_in_public_repository": False,
+    }
     assert billing["provider_measurement_path_approved"] is False
     assert billing["provider_measurement_path_configured"] is False
     assert billing["organization_api_key_present"] is False

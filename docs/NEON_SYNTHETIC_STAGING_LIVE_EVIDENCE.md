@@ -50,15 +50,21 @@ automated 70/85/95-percent alert gate by itself.
 Neon's current documentation describes customer-set project quotas that suspend
 compute after a configured threshold. Configuration requires the Neon API. The
 current usage-based consumption API documentation lists Launch, Scale, Agent
-and Enterprise availability, not Free. A project details API path may still be
-usable for selected project counters, but that has not been tested on this Free
-account.
+and Enterprise availability, not Free; the legacy consumption API starts at
+Scale. The existing read-only `pg_database_size(current_database())` signal
+covers database size, not compute or network-transfer allowances. It therefore
+cannot complete the provider measurement gate by itself, and console-only
+review does not count as an automated alert path. Free-plan quota-configuration
+API availability has not been confirmed on this account.
 
 The least-privilege available credential is a project-scoped API key. It still
 has persistent Editor access to the project, remains valid until revoked and is
 shown only once when created. No key was created during this review. Creating,
 storing and using one requires a separate approved secret-custody design and
 action-time confirmation.
+
+No provider key, private provider identifier, database connection, migration or
+deployment was created or approved by this documentation review.
 
 ## Remaining blocks
 
@@ -84,6 +90,7 @@ does not connect to Neon and cannot authorize a live operation.
 - [Neon regions](https://neon.com/docs/introduction/regions)
 - [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
+- [Neon legacy consumption metrics](https://neon.com/docs/guides/consumption-metrics-legacy)
 - [Neon API keys](https://neon.com/docs/manage/api-keys)
 - [Neon DPA](https://neon.com/pdf/DPA.pdf)
 - [Databricks DPA](https://www.databricks.com/legal/databricks-data-processing-addendum)
