@@ -83,12 +83,14 @@ def _content_findings(relative_path: str, content: bytes) -> list[Finding]:
 def scan_tracked_files(root: Path, relative_paths: Iterable[str]) -> list[Finding]:
     """Scan the supplied tracked paths without revealing matched bytes."""
     findings: list[Finding] = []
-    for relative_path in sorted(set(relative_paths)):
-        normalized = relative_path.replace("\\", "/")
+    normalized_paths = sorted(
+        {relative_path.replace("\\", "/") for relative_path in relative_paths}
+    )
+    for normalized in normalized_paths:
         if normalized.lower().endswith(_BLOCKED_SUFFIXES):
             findings.append(Finding(normalized, "forbidden-secret-artifact-path"))
 
-        path = root / relative_path
+        path = root / normalized
         try:
             if path.is_symlink():
                 content = os.readlink(path).encode("utf-8", errors="surrogateescape")

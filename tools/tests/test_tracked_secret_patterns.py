@@ -30,7 +30,9 @@ class TrackedSecretPatternTests(unittest.TestCase):
 
     def test_neon_database_url_is_rejected_without_echoing_it(self) -> None:
         host = b"example.eu-central-1.aws." + b"neon.tech"
-        database_url = b"postgresql://account:private-fixture@" + host + b"/app"
+        scheme = b"postgres" + b"ql://"
+        userinfo = b"fixture-user" + b":" + b"fixture-password" + b"@"
+        database_url = scheme + userinfo + host + b"/app"
 
         findings = self._scan({"config.txt": database_url})
 
@@ -116,6 +118,24 @@ class TrackedSecretPatternTests(unittest.TestCase):
         self.assertEqual(
             findings,
             [guard.Finding("z.txt", "age-private-identity")],
+        )
+
+    def test_windows_style_paths_are_normalized_before_read_and_dedup(self) -> None:
+        identity = b"AGE-" + b"SECRET-KEY-1SYNTHETICFIXTURE"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "nested" / "secret.txt"
+            path.parent.mkdir()
+            path.write_bytes(identity)
+
+            findings = guard.scan_tracked_files(
+                root,
+                ["nested\\secret.txt", "nested/secret.txt"],
+            )
+
+        self.assertEqual(
+            findings,
+            [guard.Finding("nested/secret.txt", "age-private-identity")],
         )
 
 
