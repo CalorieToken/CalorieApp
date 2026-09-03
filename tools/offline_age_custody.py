@@ -23,7 +23,9 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_NAME = "calorieapp-synthetic-age-identity.age"
 SCHEMA_VERSION = "calorieapp.offline-age-custody.v1"
 
-_RECIPIENT = re.compile(r"age1[023456789acdefghjklmnpqrstuvwxyz]+")
+_CLASSIC_RECIPIENT = re.compile(
+    r"age1[023456789acdefghjklmnpqrstuvwxyz]{58}"
+)
 
 
 class CeremonyError(Exception):
@@ -233,8 +235,7 @@ def derive_public_recipient(commands: AgeCommands, encrypted: Path) -> str:
         raise CeremonyError("public-recipient-invalid") from exc
     if (
         len(recipients) != 1
-        or len(recipients[0]) > 4096
-        or _RECIPIENT.fullmatch(recipients[0]) is None
+        or _CLASSIC_RECIPIENT.fullmatch(recipients[0]) is None
     ):
         raise CeremonyError("public-recipient-invalid")
     return recipients[0]

@@ -354,6 +354,45 @@ class OfflineAgeCustodyTests(unittest.TestCase):
                 "public-recipient-invalid",
             )
 
+    def test_derivation_rejects_noncanonical_recipient_lengths(self) -> None:
+        for recipient in (
+            "age1" + ("q" * 57),
+            "age1" + ("q" * 59),
+        ):
+            with self.subTest(
+                length=len(recipient)
+            ), tempfile.TemporaryDirectory() as directory:
+                encrypted = Path(directory) / custody.ARTIFACT_NAME
+                encrypted.write_bytes(b"encrypted-identity-fixture")
+                decryption = mock.Mock(stdout=mock.Mock())
+                decryption.wait.return_value = 0
+                decryption.poll.return_value = 0
+                derivation = subprocess.CompletedProcess(
+                    [],
+                    0,
+                    stdout=(recipient + "\n").encode("ascii"),
+                )
+
+                with mock.patch.object(
+                    custody.subprocess,
+                    "Popen",
+                    return_value=decryption,
+                ), mock.patch.object(
+                    custody.subprocess,
+                    "run",
+                    return_value=derivation,
+                ):
+                    with self.assertRaises(custody.CeremonyError) as raised:
+                        custody.derive_public_recipient(
+                            custody.AgeCommands("age", "age-keygen"),
+                            encrypted,
+                        )
+
+                self.assertEqual(
+                    raised.exception.reason_code,
+                    "public-recipient-invalid",
+                )
+
     def test_derivation_cleanup_does_not_mask_the_original_failure(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             encrypted = Path(directory) / custody.ARTIFACT_NAME
