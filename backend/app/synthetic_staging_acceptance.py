@@ -42,6 +42,10 @@ _NEON_HOST_SUFFIX = ".neon.tech"
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 _BACKEND_HOST = "127.0.0.1"
 _BACKEND_ROOT = Path(__file__).resolve().parents[1]
+_BACKEND_STARTUP_TIMEOUT_SECONDS = 180.0
+_BACKEND_HEALTH_REQUEST_TIMEOUT_SECONDS = 1.0
+_BACKEND_READY_REQUEST_TIMEOUT_SECONDS = 180.0
+_BACKEND_HEALTH_POLL_INTERVAL_SECONDS = 0.5
 _APPROVAL_REFERENCE = re.compile(
     r"STEP1-SYNTHETIC-ACCEPTANCE-20[0-9]{2}-[0-9]{2}-[0-9]{2}"
 )
@@ -335,21 +339,56 @@ def _start_backend(raw_url: str) -> tuple[subprocess.Popen[bytes], str]:
 
 
 def _wait_until_ready(process: subprocess.Popen[bytes], base_url: str) -> None:
-    deadline = time.monotonic() + 20
-    with httpx.Client(timeout=1.0, trust_env=False) as client:
+    deadline = time.monotonic() + _BACKEND_STARTUP_TIMEOUT_SECONDS
+    with httpx.Client(
+        timeout=_BACKEND_HEALTH_REQUEST_TIMEOUT_SECONDS,
+        trust_env=False,
+    ) as client:
         while time.monotonic() < deadline:
             if process.poll() is not None:
                 raise SyntheticStagingSafetyError(
                     "synthetic backend stopped before readiness"
                 )
             try:
-                response = client.get(f"{base_url}/ready")
+                response = client.get(f"{base_url}/health")
                 if response.status_code == 200:
-                    return
-            except httpx.HTTPError:
+                    payload = response.json()
+                    if (
+                        payload.get("status") == "ok"
+                        and payload.get("service") == "calorieapp-backend"
+                    ):
+                        break
+            except (httpx.HTTPError, ValueError):
                 pass
-            time.sleep(0.2)
-    raise SyntheticStagingSafetyError("synthetic backend did not become ready")
+            time.sleep(_BACKEND_HEALTH_POLL_INTERVAL_SECONDS)
+        else:
+            raise SyntheticStagingSafetyError(
+                "synthetic backend did not start before deadline"
+            )
+
+        if process.poll() is not None:
+            raise SyntheticStagingSafetyError(
+                "synthetic backend stopped before readiness"
+            )
+        try:
+            response = client.get(
+                f"{base_url}/ready",
+                timeout=_BACKEND_READY_REQUEST_TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError) as exc:
+            raise SyntheticStagingSafetyError(
+                "synthetic backend readiness check failed"
+            ) from exc
+        if (
+            payload.get("status") != "ready"
+            or payload.get("service") != "calorieapp-backend"
+            or payload.get("database_revision") != SCHEMA_HEAD
+        ):
+            raise SyntheticStagingSafetyError(
+                "synthetic backend reported unexpected readiness state"
+            )
 
 
 def _stop_backend(process: subprocess.Popen[bytes]) -> None:
