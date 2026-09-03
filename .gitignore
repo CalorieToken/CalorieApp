@@ -13,6 +13,9 @@
 *.sqlite3
 *.dump
 *.dump.*
+*.backup
+*.pgdump
+*.age
 backend/calorieapp.db
 backend/calorieapp.db.*
 

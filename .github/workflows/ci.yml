@@ -42,6 +42,9 @@ jobs:
             exit 1
           fi
 
+      - name: Reject tracked provider credentials and backup keys
+        run: python tools/check_tracked_secret_patterns.py
+
       - name: Enforce legal and licensing boundaries
         run: python tools/check_legal_boundaries.py
 
@@ -51,8 +54,10 @@ jobs:
           python -m unittest tools.tests.test_identity_contracts
           python -m unittest tools.tests.test_localization_contracts
 
-      - name: Test mobile Xaman preflight logic
-        run: python -m unittest tools.tests.test_mobile_xaman_preflight
+      - name: Test mobile Xaman preflight and tracked-secret guard
+        run: |
+          python -m unittest tools.tests.test_mobile_xaman_preflight
+          python -m unittest tools.tests.test_tracked_secret_patterns
 
   wordpress-plugin-release-check:
     name: WordPress plugin release check

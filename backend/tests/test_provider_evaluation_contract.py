@@ -26,7 +26,7 @@ def test_provider_evidence_and_synthetic_selection_are_time_bounded() -> None:
     assert contract["contract_id"] == (
         "calorieapp.zero-additional-cost-provider-evaluation"
     )
-    assert contract["contract_version"] == "1.6.0"
+    assert contract["contract_version"] == "1.7.0"
     assert contract["decision_state"] == (
         "neon-synthetic-staging-project-created-use-blocked"
     )
@@ -210,6 +210,13 @@ def test_live_configuration_authorizes_no_provider_use_or_real_data() -> None:
     assert backup["real_user_or_production_data_allowed"] is False
     assert backup["production_backup_destination_selected"] is False
     assert review["portable_backup"]["credentials_or_keys_may_be_committed"] is False
+    assert backup["repository_secret_pattern_guard"] == (
+        "tools/check_tracked_secret_patterns.py"
+    )
+    assert backup["tracked_private_age_identity_allowed"] is False
+    assert backup["tracked_neon_api_key_allowed"] is False
+    assert backup["tracked_neon_database_url_allowed"] is False
+    assert backup["tracked_provider_backup_artifact_allowed"] is False
     provider_exit = review["provider_exit"]
     assert provider_exit["distinct_postgresql_target_selected"] is True
     assert provider_exit["selected_target"] == "github_hosted_runner_postgresql_16"

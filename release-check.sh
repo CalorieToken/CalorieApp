@@ -33,7 +33,8 @@ step "Identity Bridge contracts, provenance and release builder"
 "$python_bin" "$repo_root/tools/sync_identity_contracts.py" --check
 "$python_bin" -m unittest \
     tools.tests.test_identity_contracts \
-    tools.tests.test_build_wordpress_plugin_release
+    tools.tests.test_build_wordpress_plugin_release \
+    tools.tests.test_tracked_secret_patterns
 
 step "Schema migration smoke test"
 (
@@ -85,6 +86,7 @@ step "Legal and licensing boundary"
 "$python_bin" "$repo_root/tools/check_legal_boundaries.py"
 
 step "Tracked artifact boundary"
+"$python_bin" "$repo_root/tools/check_tracked_secret_patterns.py"
 tracked_forbidden="$(
     git -C "$repo_root" ls-files \
         | grep -E '(^|/)(\.env($|\.)|node_modules/|\.next/|\.venv/|__pycache__/|[^/]+\.(db|sqlite|sqlite3)$)' \
