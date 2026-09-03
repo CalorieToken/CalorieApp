@@ -1,6 +1,6 @@
 # Neon synthetic staging live evidence
 
-Evidence date: 2026-09-02
+Evidence date: 2026-09-03 (data-processing evidence); live account review 2026-09-02
 Scope: one isolated synthetic staging project only
 
 ## Verified live state
@@ -25,6 +25,22 @@ The review did not open or copy a database connection string, password or API
 key. It did not run SQL, apply a schema migration, connect an application,
 deploy a service or add real or synthetic application records.
 
+## Data-processing evidence
+
+On 2026-09-03, the official Ironclad and DocuSign workflow completed a
+Databricks Data Processing Addendum for the customer. The completion status and
+certificate were verified, and the original agreement package was archived
+privately. Subscription to provider subprocessor-change notifications was also
+confirmed.
+
+This evidence record contains only these low-sensitivity completion facts. This
+change does not add the signed agreement, certificate, signature, recipient
+address, envelope identifier, access code or other private audit metadata to the
+public repository.
+
+Completion does not approve real personal data, production use, a database
+connection, API key, migration or deployment.
+
 ## Capacity finding
 
 The Free console exposes aggregate compute, storage, history and network
@@ -48,12 +64,11 @@ action-time confirmation.
 
 The project must remain unused until all of the following are complete:
 
-1. confirm DPA execution or account acceptance and subprocessor-change handling;
-2. approve a least-privilege provider measurement path without exposing a key;
-3. configure exact provider limits and prove fail-closed suspension behavior;
-4. generate and verify both encrypted offline `age` identity copies, while
+1. approve a least-privilege provider measurement path without exposing a key;
+2. configure exact provider limits and prove fail-closed suspension behavior;
+3. generate and verify both encrypted offline `age` identity copies, while
    recording only the public recipient in Git; and
-5. approve and run the synthetic migration, restart, redeploy, encrypted backup,
+4. approve and run the synthetic migration, restart, redeploy, encrypted backup,
    restore and provider-exit drills separately.
 
 Real user data, production use, automatic paid upgrades and payment methods
@@ -71,4 +86,5 @@ does not connect to Neon and cannot authorize a live operation.
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
 - [Neon API keys](https://neon.com/docs/manage/api-keys)
 - [Neon DPA](https://neon.com/pdf/DPA.pdf)
+- [Databricks DPA](https://www.databricks.com/legal/databricks-data-processing-addendum)
 - [Neon subprocessor updates](https://neon.com/subscribe-to-subprocessors)

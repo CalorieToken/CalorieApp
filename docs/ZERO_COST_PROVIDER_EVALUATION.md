@@ -24,7 +24,7 @@ retention.
 
 | Candidate | Snapshot | Evaluation |
 |---|---|---|
-| Neon Free | $0; 0.5 GB storage per project; finite compute and egress; scale-to-zero; six-hour restore window | One Frankfurt synthetic project exists; the zero-cost boundary and region are live-confirmed, while DPA acceptance, automated quota enforcement and independent backup remain unproven |
+| Neon Free | $0; 0.5 GB storage per project; finite compute and egress; scale-to-zero; six-hour restore window | One Frankfurt synthetic project exists; the zero-cost boundary, region, executed DPA and subprocessor notification subscription are confirmed, while automated quota enforcement and independent backup remain unproven |
 | Supabase Free | $0; 500 MB database; 5 GB egress; low-activity projects can pause after seven days; no automatic Free-plan backups | Conditional alternative; a paused project can be resumed within the documented one-year window, but pause behavior adds operational risk |
 | Render Free PostgreSQL | $0; 1 GB; fixed 30-day expiry; 14-day paid-upgrade grace; deletion after grace; no backups | Rejected for durable personal history |
 | Existing Render Free web service | 750 workspace hours monthly; spins down after 15 idle minutes; ephemeral filesystem | Conditional runtime only; all durable history must live in external PostgreSQL |
@@ -90,8 +90,21 @@ documents an EU project region (`aws-eu-central-1`), with the region fixed when
 the project is created. Its published DPA describes Neon as processor and the
 customer as controller for European data, allows global processing subject to
 the stated transfer mechanisms, and leaves lawful use, secure operation and
-export before account deletion with the customer. This records facts, not legal
-approval or confirmation that the DPA has been executed for a Free account.
+export before account deletion with the customer.
+
+Completed on 2026-09-03:
+
+- the official Ironclad flow produced a Databricks DPA for electronic signing;
+- the customer signature and DocuSign completion certificate were confirmed;
+- the signed agreement and completion certificate were archived privately;
+- subscription to provider subprocessor-change notifications was confirmed;
+  and
+- no signature, contact address, envelope identifier or private evidence was
+  added to the public repository.
+
+This completes only the contractual data-processing and notification control.
+It does not approve real personal data, production use, a provider credential,
+database access, migration or deployment.
 
 The Free plan is listed at $0/month with finite allowances. The live console
 confirmed the plan, cost boundary, absence of a payment method and aggregate
@@ -131,14 +144,12 @@ Still required before using the project:
 
 1. Recheck the official terms again if the evidence date has expired or the
    account screen differs from the recorded snapshot.
-2. Confirm DPA execution or account acceptance and subscribe to subprocessor
-   changes.
-3. Approve a least-privilege provider measurement path, configure exact hard
+2. Approve a least-privilege provider measurement path, configure exact hard
    limits and prove the alert and suspension behavior without exposing a key.
-4. Generate the offline `age` identity, verify both encrypted offline copies,
+3. Generate the offline `age` identity, verify both encrypted offline copies,
    store the passphrase separately and configure only the public recipient.
 
-`python -m app.synthetic_provider_use_preflight` evaluates those four control
+`python -m app.synthetic_provider_use_preflight` evaluates those three control
 groups from the versioned contract without contacting Neon. It exits `40` and
 prints only low-cardinality blocker codes while any group is incomplete. Stale,
 missing or broadened safety policy exits `50`. Exit `0` means only that the
@@ -153,6 +164,7 @@ user or production data remains blocked.
 Additional primary sources reviewed for this preconfiguration boundary:
 
 - [Neon Data Processing Agreement](https://neon.com/pdf/DPA.pdf)
+- [Databricks Data Processing Addendum](https://www.databricks.com/legal/databricks-data-processing-addendum)
 - [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
 - [Neon consumption metrics](https://neon.com/docs/guides/consumption-metrics)
 - [Neon API keys](https://neon.com/docs/manage/api-keys)

@@ -41,7 +41,7 @@ def _ready_contract() -> dict:
 
 def test_current_provider_controls_remain_blocked_without_contacting_neon() -> None:
     result = evaluate_synthetic_provider_use_preflight(
-        _contract(), today=date(2026, 9, 2)
+        _contract(), today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_BLOCKED
@@ -52,7 +52,6 @@ def test_current_provider_controls_remain_blocked_without_contacting_neon() -> N
         "provider": "neon_free",
         "scope": "isolated-synthetic-staging-only",
         "blocked_gate_codes": [
-            "data-processing-controls",
             "provider-measurement-controls",
             "provider-capacity-controls",
             "offline-age-custody",
@@ -63,7 +62,7 @@ def test_current_provider_controls_remain_blocked_without_contacting_neon() -> N
 
 def test_complete_controls_require_separate_operation_approval() -> None:
     result = evaluate_synthetic_provider_use_preflight(
-        _ready_contract(), today=date(2026, 9, 2)
+        _ready_contract(), today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_READY
@@ -82,6 +81,22 @@ def test_complete_controls_require_separate_operation_approval() -> None:
         (("payment_method_added",), True),
         (("provider_selected_for_public_release",), True),
         (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_or_account_acceptance_confirmed",
+            ),
+            False,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_subscription_confirmed",
+            ),
+            False,
+        ),
+        (
             ("project_creation_record", "real_user_or_production_data_approved"),
             True,
         ),
@@ -92,6 +107,42 @@ def test_complete_controls_require_separate_operation_approval() -> None:
                 "plaintext_artifact_upload_allowed",
             ),
             True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_record",
+                "signed_agreement_or_certificate_in_public_repository",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_record",
+                "recipient_address_recorded_in_public_repository",
+            ),
+            True,
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "dpa_execution_record",
+                "envelope_identifier",
+            ),
+            "private-envelope-id",
+        ),
+        (
+            (
+                "preconfiguration_review",
+                "data_processing",
+                "subprocessor_notification_record",
+                "recipient_address",
+            ),
+            "private@example.test",
         ),
     ],
 )
@@ -105,7 +156,7 @@ def test_unsafe_policy_expansion_is_invalid(
     target[path[-1]] = unsafe_value
 
     result = evaluate_synthetic_provider_use_preflight(
-        contract, today=date(2026, 9, 2)
+        contract, today=date(2026, 9, 3)
     )
 
     assert result.exit_code == EXIT_INVALID

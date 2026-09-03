@@ -20,7 +20,7 @@ def test_data_safety_contract_keeps_live_history_off_sqlite() -> None:
     contract = _load_json("data-safety.json")
 
     assert contract["contract_id"] == "calorieapp.durable-data-safety"
-    assert contract["contract_version"] == "1.34.0"
+    assert contract["contract_version"] == "1.35.0"
     assert contract["release_state"] == "blocked"
     assert contract["architecture"]["primary_live_store"] == "postgresql"
     assert contract["architecture"]["provider_selection"] == (
@@ -1110,7 +1110,7 @@ def test_core_stays_free_while_separate_value_added_services_remain_possible() -
         "backend/app/synthetic_provider_use_preflight.py"
     )
     assert cost["synthetic_provider_use_preflight_status"] == (
-        "blocked-four-control-groups-no-provider-contact"
+        "blocked-three-control-groups-no-provider-contact"
     )
     assert cost["provider_selected"] is True
     assert cost["selected_provider"] == "neon_free"

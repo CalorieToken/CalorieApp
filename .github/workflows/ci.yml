@@ -195,7 +195,6 @@ jobs:
               "provider": "neon_free",
               "scope": "isolated-synthetic-staging-only",
               "blocked_gate_codes": [
-                  "data-processing-controls",
                   "provider-measurement-controls",
                   "provider-capacity-controls",
                   "offline-age-custody",
