@@ -116,7 +116,21 @@
     var startUrl = root.dataset.startUrl || "";
     var finishUrl = root.dataset.finishUrl || "";
     var authorizeUrl = root.dataset.authorizeUrl || "";
-    var siteReturnUrl = root.dataset.siteReturnUrl || "";
+    var currentLocationOrigin =
+      window.location && typeof window.location.origin === "string"
+        ? window.location.origin
+        : "";
+    var currentLocationPath =
+      window.location &&
+      typeof window.location.pathname === "string" &&
+      window.location.pathname.charAt(0) === "/"
+        ? window.location.pathname
+        : "";
+    var siteReturnUrl =
+      root.dataset.siteReturnUrl ||
+      (currentLocationOrigin && currentLocationPath
+        ? currentLocationOrigin + currentLocationPath
+        : "");
     var configuredLocale = root.dataset.locale || "en";
 
     if (

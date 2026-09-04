@@ -80,7 +80,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       startUrl: "/start",
       finishUrl: "/finish",
       authorizeUrl: "/authorize",
-      siteReturnUrl: "https://calorietoken.net/index.php/calorieapp/",
+      // Deliberately omit siteReturnUrl to cover cached pre-0.3.2 markup.
       locale: "nl",
     },
     querySelector(selector) {
@@ -122,6 +122,8 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       return timerId;
     },
     location: {
+      origin: "https://calorietoken.net",
+      pathname: "/index.php/calorieapp/",
       assign(value) {
         assignedLocation = value;
       },
