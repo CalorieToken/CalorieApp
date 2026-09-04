@@ -276,13 +276,19 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(fetchCalls, ["/start"]);
 
+  // Desktop/QR flows do not hide this page. A signed WebSocket event must start
+  // WordPress completion without waiting for a visibility lifecycle event.
+  lastSocket.onmessage({ data: JSON.stringify({ signed: true }) });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start", "/finish"]);
+  assert.match(status.textContent, /Waiting for the Xaman signature/);
+
   document.hidden = true;
   documentListeners.visibilitychange();
   document.hidden = false;
   documentListeners.visibilitychange();
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(fetchCalls, ["/start", "/finish"]);
-  assert.match(status.textContent, /Waiting for the Xaman signature/);
   windowListeners.focus();
   windowListeners.pageshow();
   await new Promise((resolve) => setImmediate(resolve));

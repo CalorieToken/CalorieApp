@@ -336,6 +336,7 @@
           if (payload.signed) {
             markXamanStarted();
             setStatus("Signature received. Returning to CalorieToken.net...");
+            finishWordPress();
           } else {
             fail("The Xaman sign-in request was rejected.");
           }
