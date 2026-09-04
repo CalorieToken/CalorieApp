@@ -226,11 +226,8 @@ export async function waitForBackendReady(
         timeoutMs
       ),
     ]);
-  } catch (error) {
+  } catch {
     throwIfAborted(signal);
-    if (error instanceof BackendRequestTimeoutError) {
-      throw error;
-    }
     throw new BackendRequestTimeoutError();
   } finally {
     abortBoth();
