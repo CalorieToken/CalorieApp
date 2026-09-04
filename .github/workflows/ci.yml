@@ -312,12 +312,14 @@ jobs:
       - name: Test embedded login and private account controls
         run: >-
           node --test
+          tools/tests/auth_callback_return.test.mjs
           tools/tests/account_data_import_ui.test.mjs
           tools/tests/account_data_export_validation.test.mjs
           tools/tests/account_erasure_ui.test.mjs
           tools/tests/account_privacy_locales.test.mjs
           tools/tests/calorieapp_embed_readiness.test.mjs
           tools/tests/identity_locales.test.mjs
+          tools/tests/xaman_logout_request.test.mjs
           tools/tests/xaman_login_start_retry.test.mjs
 
       - name: Build frontend

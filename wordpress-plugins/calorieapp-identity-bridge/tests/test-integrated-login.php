@@ -8,6 +8,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
     private string $identifier = '';
     private bool $resolved = false;
     private string $backend_locale = 'en';
+    private string $xaman_return_url = '';
     private ?bool $remember_auth_cookie = null;
 
     public function setUp(): void {
@@ -55,7 +56,18 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             $this->identifier = (string) ($body['custom_meta']['identifier'] ?? '');
 
             $this->assertSame('SignIn', $body['txjson']['TransactionType']);
-            $this->assertArrayNotHasKey('return_url', $body['options']);
+            $this->assertArrayHasKey('return_url', $body['options']);
+            $this->assertSame(
+                $body['options']['return_url']['app'],
+                $body['options']['return_url']['web']
+            );
+            $this->xaman_return_url = (string) $body['options']['return_url']['web'];
+            $this->assertStringContainsString(
+                '/wp-json/calorieapp/v1/integrated-login/return?',
+                $this->xaman_return_url
+            );
+            $this->assertStringContainsString('flow_id=', $this->xaman_return_url);
+            $this->assertStringContainsString('return_token=', $this->xaman_return_url);
             $this->assertMatchesRegularExpression('/^calapp_[a-f0-9]{32}$/', $this->identifier);
             $this->assertLessThanOrEqual(40, strlen($this->identifier));
             $headers = array_change_key_case((array) ($request['headers'] ?? []), CASE_LOWER);
@@ -130,6 +142,21 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertArrayHasKey('websocket_url', $data);
         $this->assertSame('en', $data['locale']);
         $this->assertStringNotContainsString('test-xaman-secret', wp_json_encode($data));
+        $this->assertStringNotContainsString('return_token', wp_json_encode($data));
+    }
+
+    public function test_start_rejects_a_foreign_site_return_url(): void {
+        $request = $this->same_origin_request(
+            'POST',
+            '/calorieapp/v1/integrated-login/start'
+        );
+        $request->set_param('locale', 'en');
+        $request->set_param('state', $this->state());
+        $request->set_param('return_url', 'https://evil.example/after-login');
+
+        $response = rest_do_request($request);
+        $this->assertSame(400, $response->get_status());
+        $this->assertSame('invalid_return_url', $response->get_data()['code']);
     }
 
     public function test_start_resolves_locale_alias_into_flow_context(): void {
@@ -161,6 +188,40 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             get_user_meta(get_current_user_id(), 'xrpl-r-address', true)
         );
         $this->assertFalse($this->remember_auth_cookie);
+    }
+
+    public function test_xaman_return_authenticates_both_apps_and_redirects_to_site_origin(): void {
+        $flow = $this->start_flow()->get_data();
+        $this->resolved = true;
+
+        $query = [];
+        parse_str((string) wp_parse_url($this->xaman_return_url, PHP_URL_QUERY), $query);
+        $request = new WP_REST_Request(
+            'GET',
+            '/calorieapp/v1/integrated-login/return'
+        );
+        $request->set_param('flow_id', (string) ($query['flow_id'] ?? ''));
+        $request->set_param('return_token', (string) ($query['return_token'] ?? ''));
+
+        $response = rest_do_request($request);
+        $this->assertSame(302, $response->get_status());
+        $headers = $response->get_headers();
+        $location = (string) ($headers['Location'] ?? $headers['location'] ?? '');
+        $this->assertStringContainsString('code=', $location);
+        $this->assertStringContainsString('state=', $location);
+        $callback_query = [];
+        parse_str((string) wp_parse_url($location, PHP_URL_QUERY), $callback_query);
+        $this->assertSame('wordpress', $callback_query['return_to']);
+        $this->assertSame(
+            home_url('/index.php/calorieapp/'),
+            $callback_query['site_return']
+        );
+        $this->assertGreaterThan(0, get_current_user_id());
+
+        $replay = rest_do_request($request);
+        $this->assertSame(409, $replay->get_status());
+        $this->assertSame('return_already_used', $replay->get_data()['code']);
+        $this->assertNotEmpty($flow['flow_id']);
     }
 
     public function test_completed_flow_issues_calorieapp_code_for_same_user(): void {
@@ -232,8 +293,27 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
 
         $this->assertStringContainsString('embedded=1', $html);
         $this->assertStringContainsString('data-calorieapp-embed', $html);
+        $this->assertStringContainsString(
+            'data-site-return-url="' . esc_url(home_url('/')),
+            $html
+        );
+        $this->assertStringNotContainsString('calorieapp-site-logout', $html);
         $this->assertStringNotContainsString('test-xaman-key', $html);
         $this->assertStringNotContainsString('test-xaman-secret', $html);
+    }
+
+    public function test_shortcode_renders_joint_site_logout_for_authenticated_users(): void {
+        $user_id = self::factory()->user->create();
+        wp_set_current_user($user_id);
+
+        $html = do_shortcode('[calorieapp_embed]');
+
+        $this->assertStringContainsString('class="calorieapp-site-logout"', $html);
+        $this->assertStringContainsString('action=logout', $html);
+        $this->assertStringContainsString(
+            'Log out of website and CalorieApp',
+            $html
+        );
     }
 
     public function test_shortcode_resolves_locale_alias_into_embed_context(): void {
@@ -263,6 +343,8 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             '/calorieapp/v1/integrated-login/start'
         );
         $request->set_param('locale', $locale);
+        $request->set_param('state', $this->state());
+        $request->set_param('return_url', home_url('/index.php/calorieapp/'));
         $response = rest_do_request($request);
         $this->assertInstanceOf(WP_REST_Response::class, $response);
         return $response;

@@ -3,8 +3,35 @@
   width: 100%;
 }
 
-[data-calorieapp-superseded-login="1"] {
-  display: none !important;
+.calorieapp-site-session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.calorieapp-site-logout {
+  min-height: 42px;
+  border: 1px solid #079447;
+  border-radius: 999px;
+  padding: 9px 18px;
+  background: #fff;
+  color: #079447;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calorieapp-site-logout:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.calorieapp-site-logout-status {
+  color: #a52626;
+  font-size: 14px;
 }
 
 .calorieapp-embed-frame {

@@ -299,7 +299,7 @@ add_action('init', 'xummlogin_start_session', 1);
             report["bridge"]["tree_sha256"],
             scan._tree_digest(scan.PLUGIN_DIR, bridge_files),
         )
-        self.assertEqual(report["bridge"]["version"], "0.3.1")
+        self.assertEqual(report["bridge"]["version"], "0.3.2")
         self.assertEqual(report["upstream"]["version"], "1.3.0")
         self.assertIsNone(report["upstream"]["package_sha256"])
         self.assertFalse(report["review_boundary"]["clears_public_distribution"])
@@ -321,7 +321,7 @@ add_action('init', 'xummlogin_start_session', 1);
             report["bridge"]["tree_sha256"],
             scan._tree_digest(scan.PLUGIN_DIR, bridge_files),
         )
-        self.assertEqual(report["bridge"]["version"], "0.3.1")
+        self.assertEqual(report["bridge"]["version"], "0.3.2")
         self.assertEqual(report["upstream"]["version"], "1.3.1")
         self.assertEqual(
             report["upstream"]["package_sha256"],

@@ -12,7 +12,8 @@ def _wordpress_html(frontend: str, version: str) -> bytes:
     return (
         '<html><link id="calorieapp-identity-bridge-embed-css" '
         f'href="/wp-content/plugins/calorieapp-identity-bridge/assets/calorieapp-embed.css?ver={version}">'
-        '<div data-calorieapp-embed>'
+        '<div data-calorieapp-embed '
+        'data-site-return-url="https://www.example.test/index.php/calorieapp/">'
         f'<iframe class="calorieapp-embed-frame" src="{frontend}?embedded=1&amp;locale=en"></iframe>'
         '</div><script id="calorieapp-identity-bridge-embed-js" '
         f'src="/wp-content/plugins/calorieapp-identity-bridge/assets/calorieapp-embed.js?ver={version}"></script>'
@@ -23,24 +24,34 @@ def _wordpress_html(frontend: str, version: str) -> bytes:
 def _mobile_return_script() -> bytes:
     return b"\n".join(
         (
-            b"function suppressLegacySigninSurfaces() {}",
+            b"function unifyLegacySigninSurfaces(triggerLogin) {}",
             b'openLink.target = "_self";',
-            b'document.addEventListener("visibilitychange", checkAfterReturn);',
+            b'document.addEventListener("visibilitychange", trackXamanVisibility);',
             b'window.addEventListener("focus", checkAfterReturn);',
             b'window.addEventListener("pageshow", checkAfterReturn);',
-            b'card.setAttribute("data-calorieapp-superseded-login", "1");',
+            b'signinLink.setAttribute("data-calorieapp-unified-login", "1");',
+            b"return_url: siteReturnUrl,",
+            b"event.preventDefault();",
+            b'MESSAGE_PREFIX + "bridge:initialized";',
+            b'MESSAGE_PREFIX + "logout";',
+            b"window.location.assign(siteLogoutButton.dataset.logoutUrl);",
         )
     )
 
 
 def _reformatted_mobile_return_script() -> bytes:
     return (
-        b"function  suppressLegacySigninSurfaces ( ){}"
+        b"function  unifyLegacySigninSurfaces ( triggerLogin ){}"
         b"openLink . target='_self'"
-        b";document.addEventListener('visibilitychange',checkAfterReturn)"
+        b";document.addEventListener('visibilitychange',trackXamanVisibility)"
         b';window.addEventListener("focus",checkAfterReturn)'
         b";window.addEventListener('pageshow',checkAfterReturn)"
-        b';card.setAttribute("data-calorieapp-superseded-login",\'1\')'
+        b';signinLink.setAttribute("data-calorieapp-unified-login",\'1\')'
+        b";return_url : siteReturnUrl"
+        b";event.preventDefault()"
+        b";MESSAGE_PREFIX+'bridge:initialized'"
+        b';MESSAGE_PREFIX+"logout"'
+        b";window.location.assign(siteLogoutButton.dataset.logoutUrl)"
     )
 
 
@@ -156,11 +167,6 @@ class DeploymentSmokeTests(unittest.TestCase):
         self.assertTrue(
             smoke.mobile_return_contract_matches(
                 _reformatted_mobile_return_script().decode()
-            )
-        )
-        self.assertFalse(
-            smoke.mobile_return_contract_matches(
-                _mobile_return_script().decode() + "\nreturn_url"
             )
         )
         required_lines = _mobile_return_script().decode().splitlines()

@@ -26,6 +26,9 @@ function element(hidden = true) {
     removeAttribute(name) {
       this[name] = "";
     },
+    getAttribute(name) {
+      return this[name] ?? null;
+    },
     setAttribute(name, value) {
       this[name] = value;
     },
@@ -36,22 +39,30 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   const source = await readFile(SCRIPT_PATH, "utf8");
   const appOrigin = "https://calorieapp-frontend.onrender.com";
   const windowListeners = {};
-  const iframeWindow = { postMessage() {} };
+  const documentListeners = {};
+  const iframePosts = [];
+  const iframeWindow = { postMessage(message) { iframePosts.push(message); } };
   const iframe = element(false);
   iframe.contentWindow = iframeWindow;
   const legacySigninCard = element(false);
   legacySigninCard.closest = () => null;
-  const legacySigninLink = {
-    closest(selector) {
-      return selector === ".xl-card" ? legacySigninCard : null;
-    },
-  };
+  const legacySigninLink = element(false);
+  legacySigninLink.closest = (selector) =>
+    selector === ".xl-card" ? legacySigninCard : null;
   const modal = element(true);
   const status = element(false);
   const qrImage = element(true);
   const openLink = element(true);
   const retryButton = element(true);
   const closeButton = element(false);
+  const siteLogoutButton = element(false);
+  siteLogoutButton.dataset = {
+    logoutUrl:
+      "https://calorietoken.net/wp-login.php?action=logout&redirect_to=calorieapp",
+    idleLabel: "Log out of website and CalorieApp",
+  };
+  siteLogoutButton.textContent = siteLogoutButton.dataset.idleLabel;
+  const siteLogoutStatus = element(true);
   const selectors = new Map([
     [".calorieapp-embed-frame", iframe],
     [".calorieapp-login-modal", modal],
@@ -60,6 +71,8 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     [".calorieapp-login-open", openLink],
     [".calorieapp-login-retry", retryButton],
     [".calorieapp-login-close", closeButton],
+    [".calorieapp-site-logout", siteLogoutButton],
+    [".calorieapp-site-logout-status", siteLogoutStatus],
   ]);
   const root = {
     dataset: {
@@ -67,6 +80,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       startUrl: "/start",
       finishUrl: "/finish",
       authorizeUrl: "/authorize",
+      siteReturnUrl: "https://calorietoken.net/index.php/calorieapp/",
       locale: "nl",
     },
     querySelector(selector) {
@@ -76,7 +90,9 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   const document = {
     hidden: false,
     readyState: "complete",
-    addEventListener() {},
+    addEventListener(type, listener) {
+      documentListeners[type] = listener;
+    },
     querySelectorAll(selector) {
       if (selector === '[data-calorieapp-embed]') {
         return [root];
@@ -89,6 +105,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   };
   let now = 0;
   let timerId = 0;
+  let assignedLocation = "";
   const timers = new Map();
   const scheduledDelays = [];
   const window = {
@@ -103,6 +120,11 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       timers.set(timerId, { callback, delay });
       scheduledDelays.push(delay);
       return timerId;
+    },
+    location: {
+      assign(value) {
+        assignedLocation = value;
+      },
     },
   };
   let websocketCount = 0;
@@ -181,30 +203,52 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     window,
   });
 
-  assert.equal(legacySigninCard.hidden, true);
-  assert.equal(legacySigninCard["aria-hidden"], "true");
+  assert.equal(legacySigninCard.hidden, false);
   assert.equal(
-    legacySigninCard["data-calorieapp-superseded-login"],
+    legacySigninLink["data-calorieapp-unified-login"],
     "1"
   );
+  let preventedLegacyNavigation = false;
+  legacySigninLink.dispatch("click", {
+    preventDefault() {
+      preventedLegacyNavigation = true;
+    },
+  });
+  assert.equal(preventedLegacyNavigation, true);
+  assert.equal(modal.hidden, false);
+  assert.equal(
+    iframePosts.filter((message) => message.type === "calorieapp:login:trigger")
+      .length,
+    0
+  );
+
+  windowListeners.message({
+    data: { type: "calorieapp:bridge:ready", locale: "nl" },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  assert.notEqual(iframePosts.at(-1).type, "calorieapp:login:trigger");
+  windowListeners.message({
+    data: { type: "calorieapp:bridge:initialized", locale: "nl" },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  assert.equal(iframePosts.at(-1).type, "calorieapp:login:trigger");
+  assert.equal(iframePosts.at(-1).locale, "nl");
 
   const requestId = "request-12345678";
   windowListeners.message({
-    data: { type: "calorieapp:login:start", requestId, locale: "nl" },
+    data: {
+      type: "calorieapp:login:start",
+      requestId,
+      locale: "nl",
+    },
     origin: appOrigin,
     source: iframeWindow,
   });
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.equal(modal.hidden, false);
-  assert.equal(openLink.hidden, true);
-  assert.equal(qrImage.hidden, true);
-  assert.equal(websocketCount, 0);
-  assert.match(status.textContent, /Starting CalorieApp securely/);
-  windowListeners.focus();
-  await new Promise((resolve) => setImmediate(resolve));
-  assert.deepEqual(fetchCalls, ["/start"]);
-
+  assert.deepEqual(fetchCalls, []);
   windowListeners.message({
     data: {
       type: "calorieapp:login:state",
@@ -215,7 +259,9 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     origin: appOrigin,
     source: iframeWindow,
   });
+  await new Promise((resolve) => setImmediate(resolve));
 
+  assert.equal(modal.hidden, false);
   assert.equal(openLink.hidden, false);
   assert.equal(qrImage.hidden, false);
   assert.equal(openLink.href, "https://xumm.app/sign/payload");
@@ -227,6 +273,13 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
 
   openLink.dispatch("click");
   windowListeners.focus();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(fetchCalls, ["/start"]);
+
+  document.hidden = true;
+  documentListeners.visibilitychange();
+  document.hidden = false;
+  documentListeners.visibilitychange();
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(fetchCalls, ["/start", "/finish"]);
   assert.match(status.textContent, /Waiting for the Xaman signature/);
@@ -263,10 +316,15 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   finishCanComplete = true;
   lastSocket.onmessage({ data: JSON.stringify({ signed: true }) });
   await new Promise((resolve) => setImmediate(resolve));
+  await runNextTimer();
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
   assert.equal(fetchCalls.at(-1), "/authorize");
-  assert.deepEqual(fetchBodies[0], { locale: "nl" });
+  assert.deepEqual(fetchBodies[0], {
+    locale: "nl",
+    state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    return_url: "https://calorietoken.net/index.php/calorieapp/",
+  });
   assert.deepEqual(fetchBodies.at(-1), {
     flow_id: "flow-id",
     flow_proof: "flow-proof",
@@ -309,4 +367,16 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
   assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
+
+  siteLogoutButton.dispatch("click");
+  assert.equal(siteLogoutButton.disabled, true);
+  assert.equal(siteLogoutButton.textContent, "Logging out...");
+  assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
+
+  windowListeners.message({
+    data: { type: "calorieapp:logout:complete", locale: "nl" },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  assert.equal(assignedLocation, siteLogoutButton.dataset.logoutUrl);
 });

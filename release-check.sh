@@ -69,11 +69,13 @@ step "Frontend lint"
 
 step "Frontend account and locale contract tests"
 node --test \
+    "$repo_root/tools/tests/auth_callback_return.test.mjs" \
     "$repo_root/tools/tests/account_data_export_validation.test.mjs" \
     "$repo_root/tools/tests/account_erasure_ui.test.mjs" \
     "$repo_root/tools/tests/account_privacy_locales.test.mjs" \
     "$repo_root/tools/tests/calorieapp_embed_readiness.test.mjs" \
     "$repo_root/tools/tests/identity_locales.test.mjs" \
+    "$repo_root/tools/tests/xaman_logout_request.test.mjs" \
     "$repo_root/tools/tests/xaman_login_start_retry.test.mjs"
 
 step "Frontend production build"

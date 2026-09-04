@@ -37,7 +37,7 @@
     });
   }
 
-  function suppressLegacySigninSurfaces() {
+  function unifyLegacySigninSurfaces(triggerLogin) {
     document
       .querySelectorAll('.xl-card a[href*="xl-signin"]')
       .forEach(function (signinLink) {
@@ -50,9 +50,14 @@
           return;
         }
 
-        card.hidden = true;
-        card.setAttribute("aria-hidden", "true");
-        card.setAttribute("data-calorieapp-superseded-login", "1");
+        if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
+          return;
+        }
+        signinLink.setAttribute("data-calorieapp-unified-login", "1");
+        signinLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          triggerLogin();
+        });
       });
   }
 
@@ -105,10 +110,13 @@
     var openLink = root.querySelector(".calorieapp-login-open");
     var retryButton = root.querySelector(".calorieapp-login-retry");
     var closeButton = root.querySelector(".calorieapp-login-close");
+    var siteLogoutButton = root.querySelector(".calorieapp-site-logout");
+    var siteLogoutStatus = root.querySelector(".calorieapp-site-logout-status");
     var appOrigin = root.dataset.appOrigin || "";
     var startUrl = root.dataset.startUrl || "";
     var finishUrl = root.dataset.finishUrl || "";
     var authorizeUrl = root.dataset.authorizeUrl || "";
+    var siteReturnUrl = root.dataset.siteReturnUrl || "";
     var configuredLocale = root.dataset.locale || "en";
 
     if (
@@ -122,7 +130,8 @@
       !appOrigin ||
       !startUrl ||
       !finishUrl ||
-      !authorizeUrl
+      !authorizeUrl ||
+      !siteReturnUrl
     ) {
       return;
     }
@@ -136,6 +145,7 @@
     var flowFailed = false;
     var wordpressAuthenticated = false;
     var websocket = null;
+    var startInFlight = false;
     var finishInFlight = false;
     var finishRetryTimer = null;
     var finishPollStartedAt = null;
@@ -143,6 +153,11 @@
     var authorizeInFlight = false;
     var authorizeRetryTimer = null;
     var lastStartMessage = null;
+    var xamanPageWasHidden = false;
+    var bridgeReady = false;
+    var loginTriggerPending = false;
+    var logoutInFlight = false;
+    var logoutTriggerPending = false;
 
     function postToApp(type, detail) {
       if (!iframe.contentWindow) {
@@ -170,6 +185,46 @@
         { type: MESSAGE_PREFIX + "bridge:init", locale: configuredLocale },
         appOrigin
       );
+    }
+
+    function sendLogoutToApp() {
+      if (!iframe.contentWindow) {
+        return;
+      }
+      iframe.contentWindow.postMessage(
+        { type: MESSAGE_PREFIX + "logout", locale: configuredLocale },
+        appOrigin
+      );
+    }
+
+    function setLogoutStatus(message) {
+      if (!siteLogoutStatus) {
+        return;
+      }
+      siteLogoutStatus.textContent = message;
+      siteLogoutStatus.hidden = message === "";
+    }
+
+    function requestJointLogout() {
+      if (!siteLogoutButton || logoutInFlight) {
+        return;
+      }
+      if (!(siteLogoutButton.dataset.logoutUrl || "")) {
+        return;
+      }
+
+      logoutInFlight = true;
+      loginTriggerPending = false;
+      siteLogoutButton.disabled = true;
+      siteLogoutButton.textContent = "Logging out...";
+      setLogoutStatus("");
+
+      if (!bridgeReady) {
+        logoutTriggerPending = true;
+        initializeBridge();
+        return;
+      }
+      sendLogoutToApp();
     }
 
     function setStatus(message, isError) {
@@ -212,8 +267,10 @@
       xamanLaunch = null;
       xamanLaunchVisible = false;
       xamanLaunchStarted = false;
+      xamanPageWasHidden = false;
       flowFailed = false;
       wordpressAuthenticated = false;
+      startInFlight = false;
       finishInFlight = false;
       authorizeInFlight = false;
       qrImage.hidden = true;
@@ -278,13 +335,7 @@
         if (typeof payload.signed === "boolean") {
           if (payload.signed) {
             markXamanStarted();
-            setStatus("Signature received. Signing in WordPress...");
-            if (finishRetryTimer !== null) {
-              window.clearTimeout(finishRetryTimer);
-              finishRetryTimer = null;
-            }
-            finishTransientFailures = 0;
-            finishWordPress();
+            setStatus("Signature received. Returning to CalorieToken.net...");
           } else {
             fail("The Xaman sign-in request was rejected.");
           }
@@ -317,18 +368,20 @@
       connectWebsocket(xamanLaunch.websocketUrl);
     }
 
-    function startLogin(message) {
-      lastStartMessage = message;
-      requestId = message.requestId;
-      resetFlow();
-      modal.hidden = false;
-      if (message.locale !== configuredLocale) {
-        fail("CalorieApp returned a different language context.");
+    function startWordPressFlow() {
+      if (flowFailed || flow || startInFlight || !backendState) {
         return;
       }
+
+      startInFlight = true;
       setStatus("Preparing a secure Xaman sign-in request...");
 
-      apiRequest(startUrl, { locale: configuredLocale }).then(function (result) {
+      apiRequest(startUrl, {
+        locale: configuredLocale,
+        state: backendState,
+        return_url: siteReturnUrl,
+      }).then(function (result) {
+        startInFlight = false;
         var payload = result.payload;
         if (
           typeof payload.flow_id !== "string" ||
@@ -353,8 +406,33 @@
         };
         revealXamanWhenReady();
       }).catch(function (error) {
+        startInFlight = false;
         fail(error.message || "Xaman sign-in could not be prepared.");
       });
+    }
+
+    function startLogin(message) {
+      lastStartMessage = message;
+      requestId = message.requestId;
+      resetFlow();
+      modal.hidden = false;
+      if (message.locale !== configuredLocale) {
+        fail("CalorieApp returned a different language context.");
+        return;
+      }
+      if (
+        typeof message.state !== "undefined" &&
+        (typeof message.state !== "string" || message.state.length < 32)
+      ) {
+        fail("CalorieApp returned an invalid login state.");
+        return;
+      }
+      if (typeof message.state === "string") {
+        backendState = message.state;
+        startWordPressFlow();
+        return;
+      }
+      setStatus("Starting CalorieApp securely before opening Xaman...");
     }
 
     function finishWordPress() {
@@ -523,9 +601,13 @@
     openLink.addEventListener("click", function () {
       markXamanStarted();
       setStatus(
-        "Opening Xaman. After signing, close Xaman and return to this CalorieToken.net tab; sign-in will finish automatically."
+        "Opening Xaman. After signing, use its return button to come back to CalorieToken.net."
       );
     });
+
+    if (siteLogoutButton) {
+      siteLogoutButton.addEventListener("click", requestJointLogout);
+    }
 
     retryButton.addEventListener("click", function () {
       if (lastStartMessage) {
@@ -550,6 +632,49 @@
       var message = event.data;
       if (message.type === MESSAGE_PREFIX + "bridge:ready") {
         initializeBridge();
+        return;
+      }
+
+      if (message.type === MESSAGE_PREFIX + "bridge:initialized") {
+        bridgeReady = true;
+        if (logoutTriggerPending) {
+          logoutTriggerPending = false;
+          sendLogoutToApp();
+        }
+        if (loginTriggerPending && iframe.contentWindow) {
+          loginTriggerPending = false;
+          iframe.contentWindow.postMessage(
+            { type: MESSAGE_PREFIX + "login:trigger", locale: configuredLocale },
+            appOrigin
+          );
+        }
+        return;
+      }
+
+      if (
+        message.type === MESSAGE_PREFIX + "logout:complete" &&
+        logoutInFlight &&
+        siteLogoutButton
+      ) {
+        window.location.assign(siteLogoutButton.dataset.logoutUrl);
+        return;
+      }
+
+      if (
+        message.type === MESSAGE_PREFIX + "logout:error" &&
+        logoutInFlight &&
+        siteLogoutButton
+      ) {
+        logoutInFlight = false;
+        logoutTriggerPending = false;
+        siteLogoutButton.disabled = false;
+        siteLogoutButton.textContent =
+          siteLogoutButton.dataset.idleLabel || "Log out";
+        setLogoutStatus(
+          typeof message.message === "string"
+            ? message.message
+            : "Could not log out of both sessions. Please try again."
+        );
         return;
       }
 
@@ -578,16 +703,13 @@
           typeof message.state !== "string" ||
           message.state.length < 32 ||
           message.locale !== configuredLocale ||
-          !flow ||
-          flow.locale !== configuredLocale
+          (backendState && message.state !== backendState)
         ) {
           fail("CalorieApp returned an invalid login state.");
           return;
         }
         backendState = message.state;
-        if (!flow || !xamanLaunch) {
-          setStatus("CalorieApp is ready. Preparing the secure Xaman request...");
-        }
+        startWordPressFlow();
         revealXamanWhenReady();
         maybeAuthorizeCalorieApp();
         return;
@@ -642,6 +764,7 @@
       if (
         flow &&
         xamanLaunchStarted &&
+        xamanPageWasHidden &&
         !flowFailed &&
         !wordpressAuthenticated &&
         !document.hidden
@@ -650,9 +773,34 @@
       }
     }
 
-    document.addEventListener("visibilitychange", checkAfterReturn);
+    function trackXamanVisibility() {
+      if (document.hidden && xamanLaunchStarted) {
+        xamanPageWasHidden = true;
+        return;
+      }
+      checkAfterReturn();
+    }
+
+    document.addEventListener("visibilitychange", trackXamanVisibility);
     window.addEventListener("focus", checkAfterReturn);
     window.addEventListener("pageshow", checkAfterReturn);
+
+    return function () {
+      if (!iframe.contentWindow) {
+        return;
+      }
+      if (!bridgeReady) {
+        loginTriggerPending = true;
+        modal.hidden = false;
+        status.textContent = "Connecting the secure CalorieApp sign-in...";
+        initializeBridge();
+        return;
+      }
+      iframe.contentWindow.postMessage(
+        { type: MESSAGE_PREFIX + "login:trigger", locale: configuredLocale },
+        appOrigin
+      );
+    };
   }
 
   function initAll() {
@@ -661,13 +809,18 @@
       return;
     }
 
-    // The old XUMM Login card starts a separate callback flow and can reopen a
-    // device's default browser. On a page that owns the integrated CalorieApp
-    // bridge it is a competing, misleading sign-in entry, so retire only cards
-    // that still expose that legacy xl-signin link. Signed-in account cards and
-    // XUMM surfaces on pages without the CalorieApp embed remain untouched.
-    suppressLegacySigninSurfaces();
-    roots.forEach(init);
+    var loginTriggers = [];
+    roots.forEach(function (root) {
+      var trigger = init(root);
+      if (typeof trigger === "function") {
+        loginTriggers.push(trigger);
+      }
+    });
+    if (loginTriggers.length > 0) {
+      // Both visible login entries use the same bridge-owned flow, so either
+      // one authenticates WordPress and CalorieApp and returns to this page.
+      unifyLegacySigninSurfaces(loginTriggers[0]);
+    }
   }
 
   if (document.readyState === "loading") {
