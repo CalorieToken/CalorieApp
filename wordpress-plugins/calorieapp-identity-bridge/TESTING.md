@@ -49,10 +49,12 @@ Covered scenarios:
 40. mixed state/locale authorization is rejected
 41. the CalorieApp state is hash-bound when the Xaman flow is created
 42. WebSocket and page-lifecycle completion retain the originating browser
-43. authenticated shortcode output contains the website-level joint logout
+43. successful joint login reloads the originating page once to refresh the
+    server-rendered website account state
+44. authenticated shortcode output contains the XUMM-widget joint session
     control and WordPress nonce-protected logout URL
-44. the website logout waits for the trusted CalorieApp frame before navigating
-    to WordPress logout
+45. both the XUMM account card and embedded CalorieApp trigger the same bounded
+    joint logout flow
 
 ## Files
 

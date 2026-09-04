@@ -40,11 +40,14 @@ the device's default browser after signing. The user returns with Xaman's Close
 or Back action, and the page that launched Xaman finishes both sessions through
 its payload-status and lifecycle handlers.
 
-For an authenticated WordPress user, the shortcode renders a logout control in
-the WordPress page above the iframe. It first asks the trusted embedded app to
-clear its CalorieApp session. Only after that succeeds (or the app confirms that
-no session exists) does the same tab follow WordPress's nonce-protected logout
-URL and return to the page.
+For an authenticated WordPress user, the shortcode renders a joint session
+control in the XUMM account card and the embedded app renders the same action
+in its connected-account panel. Either control first asks the trusted embedded
+app to clear its CalorieApp session. Only after that succeeds (or the app
+confirms that no session exists) does the same tab follow WordPress's
+nonce-protected logout URL and return to the page. After joint login, the page
+reloads once so the server-rendered XUMM widget immediately shows the new
+website session without requiring a manual refresh.
 
 Pending status checks begin at five-second intervals, slow to ten seconds after
 30 seconds and to twenty seconds after 90 seconds. Transient failures back off

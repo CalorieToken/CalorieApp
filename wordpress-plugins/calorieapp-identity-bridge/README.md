@@ -41,9 +41,12 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-Version 0.3.3 removes the mobile HTTPS return callback that could reopen the
-flow in a different default browser. One Xaman signature is now completed by
-the originating WordPress page through its WebSocket and lifecycle handlers.
+Version 0.3.4 refreshes the originating page once after both sessions are
+confirmed, integrates the joint session control into the XUMM account card,
+and lets the embedded CalorieApp use that same sign-out-everywhere flow.
+Version 0.3.3 removed the mobile HTTPS return callback that could reopen the
+flow in a different default browser. One Xaman signature is completed by the
+originating WordPress page through its WebSocket and lifecycle handlers.
 Version 0.3.2 routes both visible login controls through one joint flow, added a
 website-level joint logout button, and preserved the original-page lifecycle
 fallback. Version 0.3.1 removed the competing unsigned XUMM Login card from

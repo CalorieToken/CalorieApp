@@ -972,7 +972,19 @@ export function XamanLoginPanel() {
 
   async function handleLogout() {
     setError(null);
+    setSuccessNotice(null);
     setIsLoggingOut(true);
+
+    if (parentOrigin.current) {
+      window.parent.postMessage(
+        {
+          type: "calorieapp:logout:request",
+          locale: activeLocale.current,
+        },
+        parentOrigin.current
+      );
+      return;
+    }
 
     try {
       await clearCalorieAppSession();
@@ -989,77 +1001,133 @@ export function XamanLoginPanel() {
   }
 
   return (
-    <section className="rounded-2xl border border-brand-secondary/20 bg-brand-primary/5 p-4 sm:p-5">
-      <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-secondary/70">
-        Optional account access
-      </p>
-      <h2 className="mt-1 text-base font-semibold text-brand-primary">Sign in with Xaman</h2>
-      <p className="mt-1 text-sm text-brand-secondary/90">
-        Sign in securely to save, review, and manage your personal food log.
-      </p>
-      <div
-        role="note"
-        className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
-      >
-        <span className="font-semibold">Phone browser notice:</span>{" "}
-        {loginSurfaceMode === "embedded"
-          ? "Sign once in Xaman, then tap Close or use Back to return to this browser. Keep this page open; WordPress and CalorieApp finish sign-in here automatically."
-          : loginSurfaceMode === "standalone"
-            ? "Secure Xaman sign-in starts on CalorieToken.net so WordPress and CalorieApp can sign in together in one browser flow."
-            : "Connecting this CalorieApp view to its secure CalorieToken.net sign-in page. Xaman cannot open until that connection is verified."}
+    <section
+      className={`rounded-3xl border p-4 shadow-sm sm:p-5 ${
+        currentUser
+          ? "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white"
+          : "border-brand-secondary/20 bg-brand-primary/5"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-lg font-extrabold shadow-sm ${
+            currentUser
+              ? "bg-emerald-600 text-white"
+              : "bg-brand-primary text-white"
+          }`}
+        >
+          {currentUser ? "✓" : "X"}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/70">
+            {currentUser ? "Connected account" : "Optional account access"}
+          </p>
+          <h2 className="mt-0.5 text-base font-bold text-brand-primary">
+            {currentUser ? "You’re signed in" : "Sign in with Xaman"}
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-brand-secondary/90">
+            {currentUser
+              ? loginSurfaceMode === "embedded"
+                ? "Your website and CalorieApp sessions are connected in this browser."
+                : "Your CalorieApp session is active in this browser."
+              : "Connect securely to save, review, and manage your personal food log."}
+          </p>
+        </div>
+        {currentUser ? (
+          <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-700 sm:inline-flex">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-500" />
+            Connected
+          </span>
+        ) : null}
       </div>
 
+      {!currentUser ? (
+        <div
+          role="note"
+          className="mt-4 rounded-2xl border border-amber-300/80 bg-amber-50 px-3.5 py-3 text-xs leading-relaxed text-amber-950"
+        >
+          <span className="font-semibold">On your phone:</span>{" "}
+          {loginSurfaceMode === "embedded"
+            ? "Sign once in Xaman, then tap Close or use Back. This page finishes both sign-ins automatically."
+            : loginSurfaceMode === "standalone"
+              ? "Continue on CalorieToken.net to sign in to the website and CalorieApp together."
+              : "Connecting this view to the secure CalorieToken.net sign-in page."}
+        </div>
+      ) : null}
+
       {currentUser ? (
-        <div className="mt-4 space-y-3">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-brand-primary">
-              Signed in to CalorieApp
-            </p>
+        <div className="mt-5 space-y-4">
+          <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200/80 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold text-brand-primary">
+                {loginSurfaceMode === "embedded"
+                  ? "Website + CalorieApp"
+                  : "CalorieApp session"}
+              </p>
+              <p className="mt-0.5 text-xs leading-relaxed text-brand-secondary/75">
+                {loginSurfaceMode === "embedded"
+                  ? "One button safely ends both sessions."
+                  : "Sign out on this device when you’re finished."}
+              </p>
+            </div>
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="inline-flex items-center justify-center rounded-full border border-brand-primary px-5 py-2 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isLoggingOut ? "Logging out..." : "Logout"}
+              {isLoggingOut
+                ? "Signing out..."
+                : loginSurfaceMode === "embedded"
+                  ? "Sign out everywhere"
+                  : "Sign out"}
             </button>
           </div>
-          <AccountDataExportButton
-            locale={displayLocale}
-            onAuthenticationLost={(message) => {
-              setCurrentUser(null);
-              announceAuthState(false);
-              setError(message);
-            }}
-          />
-          {ACCOUNT_DATA_IMPORT_UI_ENABLED ? (
-            <AccountDataImportPanel
-              userId={currentUser.user_id}
-              locale={displayLocale}
-              onAuthenticationLost={(message) => {
-                setCurrentUser(null);
-                announceAuthState(false);
-                setError(message);
-              }}
-            />
-          ) : null}
-          {ACCOUNT_ERASURE_UI_ENABLED ? (
-            <AccountErasurePanel
-              userId={currentUser.user_id}
-              locale={displayLocale}
-              onAuthenticationLost={(message) => {
-                setCurrentUser(null);
-                announceAuthState(false);
-                setError(message);
-              }}
-              onErased={(message) => {
-                setCurrentUser(null);
-                announceAuthState(false);
-                setError(null);
-                setSuccessNotice(message);
-              }}
-            />
-          ) : null}
+
+          <div className="border-t border-brand-secondary/10 pt-4">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/60">
+              Account tools
+            </p>
+            <div className="space-y-3">
+              <AccountDataExportButton
+                locale={displayLocale}
+                onAuthenticationLost={(message) => {
+                  setCurrentUser(null);
+                  announceAuthState(false);
+                  setError(message);
+                }}
+              />
+              {ACCOUNT_DATA_IMPORT_UI_ENABLED ? (
+                <AccountDataImportPanel
+                  userId={currentUser.user_id}
+                  locale={displayLocale}
+                  onAuthenticationLost={(message) => {
+                    setCurrentUser(null);
+                    announceAuthState(false);
+                    setError(message);
+                  }}
+                />
+              ) : null}
+              {ACCOUNT_ERASURE_UI_ENABLED ? (
+                <AccountErasurePanel
+                  userId={currentUser.user_id}
+                  locale={displayLocale}
+                  onAuthenticationLost={(message) => {
+                    setCurrentUser(null);
+                    announceAuthState(false);
+                    setError(message);
+                  }}
+                  onErased={(message) => {
+                    setCurrentUser(null);
+                    announceAuthState(false);
+                    setError(null);
+                    setSuccessNotice(message);
+                  }}
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
       ) : loginSurfaceMode === "standalone" ? (
         <a

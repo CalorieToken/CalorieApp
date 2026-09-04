@@ -4,24 +4,79 @@
 }
 
 .calorieapp-site-session-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin: 0 0 14px;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 16px;
+  border: 1px solid rgba(7, 148, 71, 0.2);
+  border-radius: 18px;
+  padding: 12px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f2fbf5 0%, #ffffff 100%);
+  box-shadow: 0 8px 24px rgba(24, 78, 48, 0.08);
+}
+
+.calorieapp-identity-card .calorieapp-site-session-actions {
+  margin: 16px 0 0;
+}
+
+.calorieapp-session-indicator {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #079447;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(7, 148, 71, 0.22);
+}
+
+.calorieapp-session-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  color: #183b2a;
+  line-height: 1.25;
+}
+
+.calorieapp-session-copy strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.calorieapp-session-copy span {
+  color: #577064;
+  font-size: 12px;
 }
 
 .calorieapp-site-logout {
   min-height: 42px;
-  border: 1px solid #079447;
+  border: 1px solid #173f2c;
   border-radius: 999px;
-  padding: 9px 18px;
-  background: #fff;
-  color: #079447;
+  padding: 9px 16px;
+  background: #173f2c;
+  color: #fff;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.calorieapp-site-logout:hover {
+  background: #079447;
+  box-shadow: 0 6px 14px rgba(7, 148, 71, 0.2);
+  transform: translateY(-1px);
+}
+
+.calorieapp-site-logout:focus-visible {
+  outline: 3px solid rgba(7, 148, 71, 0.25);
+  outline-offset: 2px;
 }
 
 .calorieapp-site-logout:disabled {
@@ -30,6 +85,7 @@
 }
 
 .calorieapp-site-logout-status {
+  grid-column: 1 / -1;
   color: #a52626;
   font-size: 14px;
 }
@@ -153,6 +209,15 @@
 }
 
 @media (max-width: 768px) {
+  .calorieapp-site-session-actions {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .calorieapp-site-logout {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
   .calorieapp-login-modal {
     align-items: flex-start;
     padding: 12px;

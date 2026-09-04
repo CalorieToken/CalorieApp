@@ -10,13 +10,28 @@ const SCRIPT_PATH = new URL(
 
 function element(hidden = true) {
   const listeners = {};
+  const classes = new Set();
   return {
+    children: [],
     hidden,
     href: "",
+    parentElement: null,
     src: "",
     style: {},
     textContent: "",
-    classList: { toggle() {} },
+    classList: {
+      add(value) {
+        classes.add(value);
+      },
+      contains(value) {
+        return classes.has(value);
+      },
+      toggle() {},
+    },
+    appendChild(child) {
+      child.parentElement = this;
+      this.children.push(child);
+    },
     addEventListener(type, listener) {
       listeners[type] = listener;
     },
@@ -35,7 +50,7 @@ function element(hidden = true) {
   };
 }
 
-test("Xaman waits for CalorieApp readiness and completion closes the dialog", async () => {
+test("Xaman waits for readiness and refreshes the joint account state", async () => {
   const source = await readFile(SCRIPT_PATH, "utf8");
   const appOrigin = "https://calorieapp-frontend.onrender.com";
   const windowListeners = {};
@@ -55,11 +70,12 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   const openLink = element(true);
   const retryButton = element(true);
   const closeButton = element(false);
+  const siteSessionActions = element(false);
   const siteLogoutButton = element(false);
   siteLogoutButton.dataset = {
     logoutUrl:
       "https://calorietoken.net/wp-login.php?action=logout&redirect_to=calorieapp",
-    idleLabel: "Log out of website and CalorieApp",
+    idleLabel: "Sign out everywhere",
   };
   siteLogoutButton.textContent = siteLogoutButton.dataset.idleLabel;
   const siteLogoutStatus = element(true);
@@ -71,6 +87,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     [".calorieapp-login-open", openLink],
     [".calorieapp-login-retry", retryButton],
     [".calorieapp-login-close", closeButton],
+    [".calorieapp-site-session-actions", siteSessionActions],
     [".calorieapp-site-logout", siteLogoutButton],
     [".calorieapp-site-logout-status", siteLogoutStatus],
   ]);
@@ -99,12 +116,16 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       if (selector === '.xl-card a[href*="xl-signin"]') {
         return [legacySigninLink];
       }
+      if (selector === ".xl-card") {
+        return [legacySigninCard];
+      }
       return [];
     },
   };
   let now = 0;
   let timerId = 0;
   let assignedLocation = "";
+  let reloadCount = 0;
   const timers = new Map();
   const scheduledDelays = [];
   const window = {
@@ -125,6 +146,9 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       pathname: "/index.php/calorieapp/",
       assign(value) {
         assignedLocation = value;
+      },
+      reload() {
+        reloadCount += 1;
       },
     },
   };
@@ -205,6 +229,11 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   });
 
   assert.equal(legacySigninCard.hidden, false);
+  assert.equal(siteSessionActions.parentElement, legacySigninCard);
+  assert.equal(
+    legacySigninCard.classList.contains("calorieapp-identity-card"),
+    true
+  );
   assert.equal(
     legacySigninLink["data-calorieapp-unified-login"],
     "1"
@@ -354,6 +383,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.ok(closeDialog, "successful joint sign-in schedules the dialog close");
   closeDialog.callback();
   assert.equal(modal.hidden, true);
+  assert.equal(reloadCount, 1);
 
   windowListeners.message({
     data: {
@@ -374,7 +404,11 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
 
-  siteLogoutButton.dispatch("click");
+  windowListeners.message({
+    data: { type: "calorieapp:logout:request", locale: "nl" },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
   assert.equal(siteLogoutButton.disabled, true);
   assert.equal(siteLogoutButton.textContent, "Logging out...");
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
