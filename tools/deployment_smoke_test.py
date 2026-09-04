@@ -193,7 +193,7 @@ def mobile_return_contract_matches(script: str) -> bool:
             r"\bsigninLink\s*\.\s*setAttribute\s*\(\s*([\"'])"
             r"data-calorieapp-unified-login\1\s*,\s*([\"'])1\2\s*\)\s*;?"
         ),
-        re.compile(r"\breturn_url\s*:\s*siteReturnUrl\b"),
+        re.compile(r"Sign once, then tap Close or use Back to return to this browser"),
         re.compile(r"\bevent\s*\.\s*preventDefault\s*\(\s*\)\s*;?"),
         re.compile(
             r"\bMESSAGE_PREFIX\s*\+\s*([\"'])bridge:initialized\1"
@@ -207,7 +207,11 @@ def mobile_return_contract_matches(script: str) -> bool:
             r"siteLogoutButton\s*\.\s*dataset\s*\.\s*logoutUrl\s*\)"
         ),
     )
-    return all(pattern.search(script) for pattern in required_patterns)
+    forbidden_return_url = re.compile(r"\breturn_url\s*:")
+    return (
+        all(pattern.search(script) for pattern in required_patterns)
+        and forbidden_return_url.search(script) is None
+    )
 
 
 def frontend_build_identifier_matches(html: str, expected: str) -> bool:

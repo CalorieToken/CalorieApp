@@ -151,21 +151,18 @@ forwards only supported CalorieApp endpoints to the configured backend and
 keeps CalorieApp cookies first-party to the frontend origin.
 
 Production Xaman sign-in is owned by the WordPress page rendered through the
-`[calorieapp_embed]` shortcode. WordPress creates a SignIn payload with the same
-short-lived return endpoint for Xaman's `app` and `web` return URLs. After the
-signature, that endpoint verifies the full payload server-side, establishes the
-WordPress session, issues the CalorieApp authorization code, and returns the
-browser to the WordPress page that started the flow. The callback completes the
-CalorieApp session before that final return. The payload WebSocket and page
-lifecycle handling remain a fallback when the original page is resumed instead.
+`[calorieapp_embed]` shortcode. WordPress creates a SignIn payload without a
+Xaman return URL so a mobile operating system cannot move the flow into a
+different default browser. The originating page stays open, observes payload
+status, verifies the full payload server-side, establishes the WordPress
+session, and issues the CalorieApp authorization code in that same browser.
 The Render backend wakes before Xaman is exposed, so a cold start does not strand
 the user outside the site. Once signed in, the WordPress page also renders its
 own logout button; it clears the CalorieApp session first and then the WordPress
 session in the same tab.
 
-This design follows Xaman's identical `app`/`web` return guidance while retaining
-payload status updates because mobile platforms cannot guarantee which browser
-surface will resume:
+This follows Xaman's guidance for returning to the launching webpage: omit the
+payload return URL and use payload status updates in the origin page:
 [return URLs](https://docs.xaman.dev/concepts/payloads-sign-requests/payload-return-url),
 [WebSocket status](https://docs.xaman.dev/concepts/payloads-sign-requests/status-updates/websocket).
 

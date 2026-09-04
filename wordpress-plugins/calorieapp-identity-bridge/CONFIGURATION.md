@@ -35,10 +35,10 @@ the bridge keeps an unsigned legacy XUMM Login `xl-signin` card visible but
 intercepts its link so both visible controls start the same joint
 WordPress/CalorieApp flow.
 
-The plain page permalink, without a query string or fragment, is bound into the
-flow as a same-origin return destination.
-Xaman receives one short-lived WordPress endpoint as both its `app` and `web`
-return URL. The endpoint never accepts an arbitrary external destination.
+Xaman receives no payload return URL. This prevents Android or iOS from opening
+the device's default browser after signing. The user returns with Xaman's Close
+or Back action, and the page that launched Xaman finishes both sessions through
+its payload-status and lifecycle handlers.
 
 For an authenticated WordPress user, the shortcode renders a logout control in
 the WordPress page above the iframe. It first asks the trusted embedded app to

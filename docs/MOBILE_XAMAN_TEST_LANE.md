@@ -12,13 +12,12 @@ physical Android device becomes the primary lane when Xaman, device-integrity,
 deep-link, backgrounding or browser-return behaviour is unsupported or flaky on
 the emulator.
 
-This lane exercises the Identity Bridge return architecture. The WordPress page
-creates the Xaman SignIn payload with identical `app` and `web` return URLs.
-After signing, the short-lived WordPress endpoint verifies the payload,
-completes the WordPress and CalorieApp sessions and returns to the page that
-started the flow. Android and iOS still control which browser surface resumes,
-so the page-owned WebSocket/lifecycle path remains a fallback when Xaman resumes
-the original page instead of opening the endpoint.
+This lane exercises the Identity Bridge origin-browser architecture. The
+WordPress page creates the Xaman SignIn payload without a return URL. After one
+signature, the user closes Xaman or uses Back and the page-owned WebSocket and
+lifecycle handlers verify the payload and complete both sessions in the browser
+that started the flow. This avoids Android or iOS reopening a different default
+browser.
 
 The standalone Render entry links explicitly to the canonical WordPress page
 in the same tab. An embedded frame cannot navigate to WordPress while its
@@ -100,11 +99,11 @@ device.
 | Testnet mode | Clearly shows XRPL Testnet before account import or signing |
 | Manual test identity import | Address matches the separately recorded public test address |
 | WordPress `Open Xaman` | Opens Xaman from the originating mobile browser page |
-| Approve SignIn | Return endpoint completes WordPress and CalorieApp sessions, then restores the originating page |
+| Approve SignIn | Originating page completes WordPress and CalorieApp sessions after one signature |
 | Reject SignIn | Page reports rejection and creates no session |
 | Expired request | Page fails closed and offers a fresh request |
-| App/web return | Xaman returns to CalorieToken.net; if it reuses the active origin browser, that browser tab is redirected |
-| Default-browser fallback | When the origin browser is unavailable, the selected browser still reaches the site with both sessions completed |
+| Origin-browser return | Xaman shows Close or allows Back; the browser that launched Xaman resumes |
+| Non-default browser | Starting in Brave does not open Chrome or move either session into Chrome |
 | Competing login surfaces | Both visible page controls start the same integrated flow |
 | Iframe handshake delay | Sign-in stays disabled and cannot open WordPress inside the iframe |
 | Background/cold-start delay | Pending status safely resumes without request storms |

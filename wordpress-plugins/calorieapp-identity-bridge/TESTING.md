@@ -32,8 +32,7 @@ Covered scenarios:
 24. the current footer remains unchanged when the filter runs repeatedly
 25. unrelated rendered HTML remains unchanged
 26. embedded login start rejects a foreign Origin
-27. Xaman SignIn payload contains identical app/web return URLs bound to a
-    short-lived WordPress endpoint
+27. Xaman SignIn payload deliberately omits app/web return URLs
 28. browser response never exposes Xaman credentials
 29. unresolved Xaman payload remains pending
 30. resolved SignIn authenticates the matching WordPress user
@@ -48,18 +47,11 @@ Covered scenarios:
 38. all eleven canonical locales can start a backend login flow
 39. iframe, WordPress flow, backend state, callback and status retain one locale
 40. mixed state/locale authorization is rejected
-41. Xaman return authenticates WordPress, issues the CalorieApp callback and
-    returns to the same-origin page
-42. foreign site-return destinations are rejected
-43. site-return destinations containing a query string or fragment are rejected
-44. the CalorieApp state is hash-bound when the Xaman flow is created
-45. incomplete stored Xaman return context is rejected as expired
-46. concurrent Xaman return handling is serialized by a database mutex
-47. return-token consumption is stored before an authorization code is issued
-48. a completed Xaman return token cannot be replayed
-49. authenticated shortcode output contains the website-level joint logout
+41. the CalorieApp state is hash-bound when the Xaman flow is created
+42. WebSocket and page-lifecycle completion retain the originating browser
+43. authenticated shortcode output contains the website-level joint logout
     control and WordPress nonce-protected logout URL
-50. the website logout waits for the trusted CalorieApp frame before navigating
+44. the website logout waits for the trusted CalorieApp frame before navigating
     to WordPress logout
 
 ## Files

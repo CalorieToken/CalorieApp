@@ -1003,7 +1003,7 @@ export function XamanLoginPanel() {
       >
         <span className="font-semibold">Phone browser notice:</span>{" "}
         {loginSurfaceMode === "embedded"
-          ? "After signing, Xaman returns you to CalorieToken.net. WordPress and CalorieApp then finish sign-in automatically in that browser."
+          ? "Sign once in Xaman, then tap Close or use Back to return to this browser. Keep this page open; WordPress and CalorieApp finish sign-in here automatically."
           : loginSurfaceMode === "standalone"
             ? "Secure Xaman sign-in starts on CalorieToken.net so WordPress and CalorieApp can sign in together in one browser flow."
             : "Connecting this CalorieApp view to its secure CalorieToken.net sign-in page. Xaman cannot open until that connection is verified."}
