@@ -403,6 +403,19 @@ class IntegratedLogin {
             );
         }
 
+        $lock_name = $this->acquire_return_lock($flow_id);
+        if ($lock_name instanceof WP_Error) {
+            return $lock_name;
+        }
+
+        try {
+            return $this->complete_xaman_return($flow_id, $return_token);
+        } finally {
+            $this->release_return_lock($lock_name);
+        }
+    }
+
+    private function complete_xaman_return(string $flow_id, string $return_token) {
         $flow = get_transient($this->flow_key($flow_id));
         if (
             !is_array($flow)
@@ -921,6 +934,43 @@ class IntegratedLogin {
 
     private function remaining_flow_ttl(array $flow): int {
         return max(1, (int) ($flow['expires_at'] ?? 0) - time());
+    }
+
+    private function acquire_return_lock(string $flow_id) {
+        global $wpdb;
+
+        $lock_name = 'calorieapp_xaman_return_' . substr(
+            hash_hmac('sha256', $flow_id, wp_salt('auth')),
+            0,
+            40
+        );
+        $acquired = $wpdb->get_var(
+            $wpdb->prepare('SELECT GET_LOCK(%s, 0)', $lock_name)
+        );
+        if ((string) $acquired === '0') {
+            return new WP_Error(
+                'return_in_progress',
+                'The Xaman return request is already being completed.',
+                ['status' => 409]
+            );
+        }
+        if ((string) $acquired !== '1') {
+            return new WP_Error(
+                'flow_storage_failed',
+                'The secure sign-in return could not be locked.',
+                ['status' => 500]
+            );
+        }
+
+        return $lock_name;
+    }
+
+    private function release_return_lock(string $lock_name): void {
+        global $wpdb;
+
+        $wpdb->get_var(
+            $wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name)
+        );
     }
 
     private function url_origin(string $url): string {

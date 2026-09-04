@@ -124,6 +124,29 @@ class IdentityContractTests(unittest.TestCase):
             },
         )
 
+    def test_xaman_return_is_state_bound_and_atomically_serialized(self) -> None:
+        plugin = (
+            contracts.ROOT
+            / "wordpress-plugins"
+            / "calorieapp-identity-bridge"
+            / "includes"
+            / "class-calorieapp-identity-bridge-integrated-login.php"
+        ).read_text(encoding="utf-8")
+        return_handler = plugin[
+            plugin.index("public function return_from_xaman") :
+            plugin.index("public function authorize_calorieapp")
+        ]
+
+        self.assertIn(
+            "'backend_state_hash' => hash('sha256', $backend_state)",
+            plugin,
+        )
+        self.assertIn("$this->acquire_return_lock($flow_id)", return_handler)
+        self.assertIn("finally", return_handler)
+        self.assertIn("$this->release_return_lock($lock_name)", return_handler)
+        self.assertIn("SELECT GET_LOCK(%s, 0)", plugin)
+        self.assertIn("SELECT RELEASE_LOCK(%s)", plugin)
+
 
 if __name__ == "__main__":
     unittest.main()
