@@ -11,6 +11,7 @@
   var STATUS_POLL_MIDDLE_PHASE_AFTER = 30000;
   var STATUS_POLL_LONG_PHASE_AFTER = 90000;
   var STATUS_POLL_MAX_RETRY_AFTER = 60000;
+  var JOINT_LOGOUT_TIMEOUT = 30000;
 
   function retryAfterMilliseconds(response) {
     var value = response.headers && response.headers.get("retry-after");
@@ -172,6 +173,7 @@
     var loginTriggerPending = false;
     var logoutInFlight = false;
     var logoutTriggerPending = false;
+    var logoutTimeoutTimer = null;
 
     function postToApp(type, detail) {
       if (!iframe.contentWindow) {
@@ -219,6 +221,26 @@
       siteLogoutStatus.hidden = message === "";
     }
 
+    function clearLogoutTimeout() {
+      if (logoutTimeoutTimer !== null) {
+        window.clearTimeout(logoutTimeoutTimer);
+        logoutTimeoutTimer = null;
+      }
+    }
+
+    function restoreLogoutButton(message) {
+      clearLogoutTimeout();
+      logoutInFlight = false;
+      logoutTriggerPending = false;
+      if (!siteLogoutButton) {
+        return;
+      }
+      siteLogoutButton.disabled = false;
+      siteLogoutButton.textContent =
+        siteLogoutButton.dataset.idleLabel || "Log out";
+      setLogoutStatus(message);
+    }
+
     function requestJointLogout() {
       if (!siteLogoutButton || logoutInFlight) {
         return;
@@ -232,6 +254,16 @@
       siteLogoutButton.disabled = true;
       siteLogoutButton.textContent = "Logging out...";
       setLogoutStatus("");
+      clearLogoutTimeout();
+      logoutTimeoutTimer = window.setTimeout(function () {
+        logoutTimeoutTimer = null;
+        if (!logoutInFlight) {
+          return;
+        }
+        restoreLogoutButton(
+          "CalorieApp did not respond. Please try logging out again."
+        );
+      }, JOINT_LOGOUT_TIMEOUT);
 
       if (!bridgeReady) {
         logoutTriggerPending = true;
@@ -671,6 +703,7 @@
         logoutInFlight &&
         siteLogoutButton
       ) {
+        clearLogoutTimeout();
         window.location.assign(siteLogoutButton.dataset.logoutUrl);
         return;
       }
@@ -680,12 +713,7 @@
         logoutInFlight &&
         siteLogoutButton
       ) {
-        logoutInFlight = false;
-        logoutTriggerPending = false;
-        siteLogoutButton.disabled = false;
-        siteLogoutButton.textContent =
-          siteLogoutButton.dataset.idleLabel || "Log out";
-        setLogoutStatus(
+        restoreLogoutButton(
           typeof message.message === "string"
             ? message.message
             : "Could not log out of both sessions. Please try again."

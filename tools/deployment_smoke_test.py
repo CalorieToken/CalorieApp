@@ -200,6 +200,9 @@ def mobile_return_contract_matches(script: str) -> bool:
         ),
         re.compile(r"\bMESSAGE_PREFIX\s*\+\s*([\"'])logout\1"),
         re.compile(
+            r"\blogoutTimeoutTimer\s*=\s*window\s*\.\s*setTimeout\s*\("
+        ),
+        re.compile(
             r"\bwindow\s*\.\s*location\s*\.\s*assign\s*\(\s*"
             r"siteLogoutButton\s*\.\s*dataset\s*\.\s*logoutUrl\s*\)"
         ),

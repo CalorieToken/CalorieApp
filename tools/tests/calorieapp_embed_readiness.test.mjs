@@ -381,10 +381,32 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.equal(siteLogoutButton.textContent, "Logging out...");
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
 
+  const logoutTimeoutEntry = [...timers.entries()].find(
+    ([, { delay }]) => delay === 30000
+  );
+  assert.ok(logoutTimeoutEntry, "joint logout has a bounded response timeout");
+  timers.delete(logoutTimeoutEntry[0]);
+  logoutTimeoutEntry[1].callback();
+  assert.equal(siteLogoutButton.disabled, false);
+  assert.equal(
+    siteLogoutButton.textContent,
+    siteLogoutButton.dataset.idleLabel
+  );
+  assert.equal(siteLogoutStatus.hidden, false);
+  assert.match(siteLogoutStatus.textContent, /did not respond/);
+
+  siteLogoutButton.dispatch("click");
+  assert.equal(siteLogoutButton.disabled, true);
+  assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
+
   windowListeners.message({
     data: { type: "calorieapp:logout:complete", locale: "nl" },
     origin: appOrigin,
     source: iframeWindow,
   });
   assert.equal(assignedLocation, siteLogoutButton.dataset.logoutUrl);
+  assert.equal(
+    [...timers.values()].filter(({ delay }) => delay === 30000).length,
+    0
+  );
 });
