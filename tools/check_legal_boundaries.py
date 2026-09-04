@@ -61,6 +61,7 @@ def main() -> None:
         "contracts/identity-bridge/v1/evidence/xummlogin-live-1.3.1-similarity.json",
         "docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md",
         "docs/IDENTITY_BRIDGE_SOURCE_DECLARATION_TEMPLATE.md",
+        "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         "wordpress-plugins/calorieapp-identity-bridge/THIRD_PARTY_NOTICES.md",
     )
     missing = [path for path in required_files if not (ROOT / path).is_file()]
