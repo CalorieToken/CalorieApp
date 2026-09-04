@@ -2,9 +2,9 @@ export const DEFAULT_BACKEND_TIMEOUT_MS = 20_000;
 export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 180_000;
 
 // Render may not wake one free service from another free service's proxy
-// request. In production this public URL lets the browser wake the backend
-// directly with the unauthenticated health probe; all application requests
-// continue to use the same-origin proxy.
+// request. In production this public URL is raced with the browser-safe
+// same-origin health route; all application requests continue to use the
+// same-origin proxy.
 export const BACKEND_WAKE_BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_WAKE_URL?.trim() || "/api/backend";
 
@@ -125,7 +125,7 @@ async function discardResponseBody(response: Response) {
  * Probe the same-origin health route until the backend returns the expected
  * JSON response, so callers do not fail on Render's temporary loading page.
  */
-export async function waitForBackendReady(
+async function waitForBackendReadyAt(
   backendBaseUrl: string,
   signal?: AbortSignal,
   timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS
@@ -183,6 +183,59 @@ export async function waitForBackendReady(
 
   throwIfAborted(signal);
   throw new BackendRequestTimeoutError();
+}
+
+/**
+ * Wake the backend through both browser-safe same-origin routing and the
+ * optional public Render origin. Privacy-focused browsers can block the
+ * cross-origin probe, while Render can occasionally fail to wake one free
+ * service from another. Whichever path becomes ready first wins.
+ */
+export async function waitForBackendReady(
+  backendBaseUrl: string,
+  signal?: AbortSignal,
+  timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS
+) {
+  const sameOriginBaseUrl = "/api/backend";
+  const normalizedBaseUrl = backendBaseUrl.replace(/\/$/, "");
+
+  if (normalizedBaseUrl === sameOriginBaseUrl) {
+    return waitForBackendReadyAt(sameOriginBaseUrl, signal, timeoutMs);
+  }
+
+  throwIfAborted(signal);
+  const directController = new AbortController();
+  const sameOriginController = new AbortController();
+  const abortBoth = () => {
+    directController.abort(signal?.reason);
+    sameOriginController.abort(signal?.reason);
+  };
+
+  signal?.addEventListener("abort", abortBoth, { once: true });
+
+  try {
+    await Promise.any([
+      waitForBackendReadyAt(
+        normalizedBaseUrl,
+        directController.signal,
+        timeoutMs
+      ),
+      waitForBackendReadyAt(
+        sameOriginBaseUrl,
+        sameOriginController.signal,
+        timeoutMs
+      ),
+    ]);
+  } catch (error) {
+    throwIfAborted(signal);
+    if (error instanceof BackendRequestTimeoutError) {
+      throw error;
+    }
+    throw new BackendRequestTimeoutError();
+  } finally {
+    abortBoth();
+    signal?.removeEventListener("abort", abortBoth);
+  }
 }
 
 export function backendUnavailableMessage(
