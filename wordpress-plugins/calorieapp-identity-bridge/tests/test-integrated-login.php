@@ -63,10 +63,32 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
                 $body['options']['return_url']['web']
             );
             $this->xaman_return_url = (string) $body['options']['return_url']['web'];
-            $this->assertStringContainsString(
-                '/wp-json/calorieapp/v1/integrated-login/return?',
-                $this->xaman_return_url
+            $expected_return_parts = wp_parse_url(
+                rest_url('calorieapp/v1/integrated-login/return')
             );
+            $actual_return_parts = wp_parse_url($this->xaman_return_url);
+            $this->assertIsArray($expected_return_parts);
+            $this->assertIsArray($actual_return_parts);
+            foreach (['scheme', 'host', 'port', 'path'] as $part) {
+                $this->assertSame(
+                    $expected_return_parts[$part] ?? null,
+                    $actual_return_parts[$part] ?? null,
+                    $part
+                );
+            }
+            $expected_return_query = [];
+            $actual_return_query = [];
+            parse_str(
+                (string) ($expected_return_parts['query'] ?? ''),
+                $expected_return_query
+            );
+            parse_str(
+                (string) ($actual_return_parts['query'] ?? ''),
+                $actual_return_query
+            );
+            foreach ($expected_return_query as $key => $value) {
+                $this->assertSame($value, $actual_return_query[$key] ?? null, $key);
+            }
             $this->assertStringContainsString('flow_id=', $this->xaman_return_url);
             $this->assertStringContainsString('return_token=', $this->xaman_return_url);
             $this->assertMatchesRegularExpression('/^calapp_[a-f0-9]{32}$/', $this->identifier);
