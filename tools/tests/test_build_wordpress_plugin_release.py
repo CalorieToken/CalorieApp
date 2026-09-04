@@ -56,6 +56,21 @@ class WordPressPluginReleaseTests(unittest.TestCase):
         self.assertFalse(
             contract["claims"]["current_review_is_a_legal_clearance_conclusion"]
         )
+        evidence = contract["preliminary_similarity_evidence"]
+        self.assertTrue(evidence)
+        self.assertTrue(
+            all("is_exact_live_package" in entry for entry in evidence)
+        )
+        self.assertTrue(
+            all(
+                entry["satisfies_exact_live_package_clearance"] is False
+                for entry in evidence
+            )
+        )
+        self.assertEqual(
+            sum(entry["is_exact_live_package"] is True for entry in evidence),
+            1,
+        )
 
     def test_public_distribution_requires_cleared_code_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as output:

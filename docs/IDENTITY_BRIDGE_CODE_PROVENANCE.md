@@ -13,9 +13,16 @@ or a finding of exclusive authorship.
 - Runtime code calls WordPress core APIs and the Xaman Platform API directly.
 - The bridge reads three `xummlogin_*` WordPress options from the installed XUMM
   Login integration, but no XUMM Login source file is present in the archive.
-- The live public page exposed XUMM Login JavaScript and CSS assets labelled
-  `1.3.1` on 2026-09-03. This identifies the runtime label, not the exact PHP
-  package contents or their integrity.
+- The exact installed XUMM Login directory was exported on 2026-09-04 through
+  a temporary server archive. The verified archive contains 105 members,
+  declares version `1.3.1`, and has SHA-256
+  `8a0ec7531f536033a403196e934680882e7cde53a66dd4df453e81927b203806`.
+  The temporary server archive was deleted after the local download passed its
+  integrity and path-safety checks; the raw third-party package is not committed
+  to this repository.
+- The content-safe exact-package report binds all 63 PHP, JavaScript and CSS
+  files in that archive to the scanned tree. It contains paths, hashes and
+  overlap metrics only, not source lines, tokens or credentials.
 - Repository history attributes plugin-path commits to the `xrpbanks` account
   and Codex. Commit attribution does not prove who authored every expression or
   whether a fragment was adapted from another source.
@@ -55,18 +62,32 @@ review as complete.
 
 The current implementation directly reads option names owned operationally by
 another installed plugin. That may be a compatibility interface rather than
-copied code, but the repository does not contain the exact upstream package
-needed to verify the distinction. Depending on undocumented internal option
-names is also a maintenance and security risk.
+copied code. The exact live package has now been compared without committing
+its raw source to this repository, but every reported finding still needs human
+review. Depending on undocumented internal option names is also a maintenance
+and security risk.
 
-The live assets identify XUMM Login `1.3.1`. The candidate public repository is
-`xrpfactchecker/xummlogin`, whose recorded history moves from `1.3.0` at commit
+The exact export identifies XUMM Login `1.3.1` and includes a
+`CALORIEAPP-PATCH.md` note describing it as a CalorieApp cross-browser return
+patch based on `1.3.0`. The patch note describes a return-URL handoff, whereas
+Identity Bridge `0.3.1` deliberately omits Xaman return URLs and completes in
+the browser tab that started the flow. This architectural difference is useful
+technical evidence, not proof of independent authorship or permission.
+
+After line-ending normalization, 75 of 79 paths shared with the public `1.3.0`
+tree are identical. The four changed code files are
+`includes/class-xummlogin-utils.php`, `includes/class-xummlogin-xumm.php`,
+`public/js/xummlogin-public.js` and `xummlogin.php`. The exact package also adds
+the patch note and two `.gitignore` files. This narrows the custom-patch origin
+review without reproducing third-party source content.
+
+The candidate public repository is `xrpfactchecker/xummlogin`, whose recorded
+history moves from `1.3.0` at commit
 `a2f00fb5065f613a8f74cbd9ca42020b92f2f1a6` to `1.5.0` at commit
 `0a692dd91de44f7e7e4c2dcb44d7c210596e9fa2`; it has no public `1.3.1` tag.
-The `1.3.0` plugin header declares GPL-2.0-or-later while its included `LICENSE`
-is GPLv3 text. Consequently, the public repository can identify a candidate
-licensing boundary but cannot substitute for an export of the installed
-package and its actual notices.
+The exact `1.3.1` header declares `GPL-2.0+`, while its `LICENSE` is GPLv3 text
+and its separate `LICENSE.txt` is GPLv2 text. The exact source URL and the
+intended relationship between those licence statements remain unresolved.
 
 The recommended target is bridge-owned Xaman application credentials and an
 explicit, documented migration from the existing XUMM Login configuration. No
@@ -76,10 +97,16 @@ silently changed.
 
 ## Clearance work before another public release
 
-1. Export the exact installed XUMM Login plugin package without credentials.
-2. Record its name, version, source URL, licence and required notices.
-3. Compare its PHP, JavaScript and CSS against every Identity Bridge release
-   file using a reproducible similarity/provenance scan plus human review.
+1. **Completed for local inspection:** export and integrity-check the exact
+   installed XUMM Login package without a database dump or configuration
+   credentials. Preserve the raw package in a controlled private legal archive
+   before deleting the local working copy.
+2. **Partially completed:** record its name, version, package hash and licence
+   files. The exact source URL and conflicting licence signals still require
+   resolution.
+3. **Automated comparison completed; human review pending:** compare its PHP,
+   JavaScript and CSS against every Identity Bridge release file using the
+   reproducible similarity/provenance scan and review every generated finding.
 4. Obtain source and AI-assistance declarations for the initial plugin import
    and later material changes; record any external snippets and permissions.
 5. Review Xaman API/service terms for the intended official and ecosystem use.
@@ -118,6 +145,15 @@ uses the adjacent public `1.3.0` commit. Across 693 file pairs, its longest exac
 normalized block is one line. Human review classified the exact-line matches as
 ordinary WordPress/PHP API expressions or the explicitly declared compatibility
 identifiers. This is useful negative evidence, but it cannot clear `1.3.1`.
+
+The exact-package report is stored at
+`contracts/identity-bridge/v1/evidence/xummlogin-live-1.3.1-similarity.json`.
+It verifies the package hash and source-tree match and compares 693 file pairs.
+It reports 29 low-overlap pairs, no exact normalized block longer than one line,
+and a maximum token-shingle Jaccard score of `0.00334169`. Relative to the
+public `1.3.0` scan, the exact package adds one token-only finding with no shared
+normalized line and removes none. These results show no multi-line copy signal,
+but they do not replace the required human source and rights review.
 
 Every generated finding still needs human review. The report explicitly records
 that an automated similarity scan cannot prove authorship, absence of adaptation

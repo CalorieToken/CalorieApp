@@ -304,6 +304,38 @@ add_action('init', 'xummlogin_start_session', 1);
         self.assertIsNone(report["upstream"]["package_sha256"])
         self.assertFalse(report["review_boundary"]["clears_public_distribution"])
 
+    def test_committed_exact_live_report_is_bound_and_content_safe(self) -> None:
+        report = json.loads(
+            (
+                scan.ROOT
+                / "contracts"
+                / "identity-bridge"
+                / "v1"
+                / "evidence"
+                / "xummlogin-live-1.3.1-similarity.json"
+            ).read_text(encoding="utf-8")
+        )
+        bridge_files = scan._bridge_code_files()
+
+        self.assertEqual(
+            report["bridge"]["tree_sha256"],
+            scan._tree_digest(scan.PLUGIN_DIR, bridge_files),
+        )
+        self.assertEqual(report["bridge"]["version"], "0.3.1")
+        self.assertEqual(report["upstream"]["version"], "1.3.1")
+        self.assertEqual(
+            report["upstream"]["package_sha256"],
+            "8a0ec7531f536033a403196e934680882"
+            "e7cde53a66dd4df453e81927b203806",
+        )
+        self.assertEqual(report["upstream"]["package_member_count"], 105)
+        self.assertTrue(report["upstream"]["package_code_matches_scanned_tree"])
+        self.assertFalse(
+            report["comparison"]["algorithm"]["source_contents_included_in_report"]
+        )
+        self.assertFalse(report["review_boundary"]["clears_public_distribution"])
+        self.assertTrue(report["review_boundary"]["human_review_required"])
+
 
 if __name__ == "__main__":
     unittest.main()
