@@ -258,9 +258,11 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertStringContainsString('class="calorieapp-site-logout"', $html);
         $this->assertStringContainsString('action=logout', $html);
         $this->assertStringContainsString(
-            'Log out of website and CalorieApp',
+            'Sign out everywhere',
             $html
         );
+        $this->assertStringContainsString('Account connected', $html);
+        $this->assertStringContainsString('Website + CalorieApp', $html);
     }
 
     public function test_shortcode_resolves_locale_alias_into_embed_context(): void {

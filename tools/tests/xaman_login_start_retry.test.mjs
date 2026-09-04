@@ -86,6 +86,8 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   );
   assert.match(source, /type:\s*"calorieapp:bridge:initialized"/);
   assert.match(source, /event\.data\?\.type === "calorieapp:logout"/);
+  assert.match(source, /type:\s*"calorieapp:logout:request"/);
+  assert.match(source, /Sign out everywhere/);
   assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 

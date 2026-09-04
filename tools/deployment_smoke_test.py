@@ -174,7 +174,7 @@ def mobile_return_contract_matches(script: str) -> bool:
     required_patterns = (
         re.compile(
             r"\bfunction\s+unifyLegacySigninSurfaces\s*\(\s*"
-            r"triggerLogin\s*\)"
+            r"triggerLogin\s*,\s*sessionActions\s*\)"
         ),
         re.compile(r"\bopenLink\s*\.\s*target\s*=\s*([\"'])_self\1\s*;?"),
         re.compile(
@@ -199,6 +199,11 @@ def mobile_return_contract_matches(script: str) -> bool:
             r"\bMESSAGE_PREFIX\s*\+\s*([\"'])bridge:initialized\1"
         ),
         re.compile(r"\bMESSAGE_PREFIX\s*\+\s*([\"'])logout\1"),
+        re.compile(r"\bMESSAGE_PREFIX\s*\+\s*([\"'])logout:request\1"),
+        re.compile(
+            r"\bidentityCard\s*\.\s*appendChild\s*\(\s*sessionActions\s*\)"
+        ),
+        re.compile(r"\bwindow\s*\.\s*location\s*\.\s*reload\s*\(\s*\)"),
         re.compile(
             r"\blogoutTimeoutTimer\s*=\s*window\s*\.\s*setTimeout\s*\("
         ),

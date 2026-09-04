@@ -12,6 +12,7 @@
   var STATUS_POLL_LONG_PHASE_AFTER = 90000;
   var STATUS_POLL_MAX_RETRY_AFTER = 60000;
   var JOINT_LOGOUT_TIMEOUT = 30000;
+  var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
 
   function retryAfterMilliseconds(response) {
     var value = response.headers && response.headers.get("retry-after");
@@ -38,7 +39,9 @@
     });
   }
 
-  function unifyLegacySigninSurfaces(triggerLogin) {
+  function unifyLegacySigninSurfaces(triggerLogin, sessionActions) {
+    var identityCard = null;
+
     document
       .querySelectorAll('.xl-card a[href*="xl-signin"]')
       .forEach(function (signinLink) {
@@ -50,6 +53,9 @@
         if (!card || card.closest("[data-calorieapp-embed]")) {
           return;
         }
+        if (!identityCard) {
+          identityCard = card;
+        }
 
         if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
           return;
@@ -60,6 +66,28 @@
           triggerLogin();
         });
       });
+
+    if (!identityCard) {
+      document.querySelectorAll(".xl-card").forEach(function (card) {
+        if (!identityCard && !card.closest("[data-calorieapp-embed]")) {
+          identityCard = card;
+        }
+      });
+    }
+
+    if (!identityCard) {
+      return;
+    }
+    if (identityCard.classList && typeof identityCard.classList.add === "function") {
+      identityCard.classList.add("calorieapp-identity-card");
+    }
+    if (
+      sessionActions &&
+      typeof identityCard.appendChild === "function" &&
+      sessionActions.parentElement !== identityCard
+    ) {
+      identityCard.appendChild(sessionActions);
+    }
   }
 
   function apiRequest(url, body) {
@@ -682,6 +710,14 @@
       }
 
       if (
+        message.type === MESSAGE_PREFIX + "logout:request" &&
+        message.locale === configuredLocale
+      ) {
+        requestJointLogout();
+        return;
+      }
+
+      if (
         message.type === MESSAGE_PREFIX + "logout:complete" &&
         logoutInFlight &&
         siteLogoutButton
@@ -757,10 +793,13 @@
           window.clearTimeout(authorizeRetryTimer);
           authorizeRetryTimer = null;
         }
-        setStatus("Signed in to WordPress and CalorieApp in this browser.");
+        setStatus(
+          "Signed in to WordPress and CalorieApp. Updating your account controls..."
+        );
         window.setTimeout(function () {
           modal.hidden = true;
-        }, 1400);
+          window.location.reload();
+        }, LOGIN_COMPLETE_RELOAD_DELAY);
         return;
       }
 
@@ -845,7 +884,10 @@
     if (loginTriggers.length > 0) {
       // Both visible login entries use the same bridge-owned flow, so either
       // one authenticates WordPress and CalorieApp and returns to this page.
-      unifyLegacySigninSurfaces(loginTriggers[0]);
+      var sessionActions = roots[0].querySelector(
+        ".calorieapp-site-session-actions"
+      );
+      unifyLegacySigninSurfaces(loginTriggers[0], sessionActions);
     }
   }
 

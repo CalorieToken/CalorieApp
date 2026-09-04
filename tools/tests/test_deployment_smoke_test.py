@@ -24,7 +24,7 @@ def _wordpress_html(frontend: str, version: str) -> bytes:
 def _mobile_return_script() -> bytes:
     return b"\n".join(
         (
-            b"function unifyLegacySigninSurfaces(triggerLogin) {}",
+            b"function unifyLegacySigninSurfaces(triggerLogin, sessionActions) {}",
             b'openLink.target = "_self";',
             b'document.addEventListener("visibilitychange", trackXamanVisibility);',
             b'window.addEventListener("focus", checkAfterReturn);',
@@ -34,6 +34,9 @@ def _mobile_return_script() -> bytes:
             b"event.preventDefault();",
             b'MESSAGE_PREFIX + "bridge:initialized";',
             b'MESSAGE_PREFIX + "logout";',
+            b'MESSAGE_PREFIX + "logout:request";',
+            b"identityCard.appendChild(sessionActions);",
+            b"window.location.reload();",
             b"logoutTimeoutTimer = window.setTimeout(function () {}, JOINT_LOGOUT_TIMEOUT);",
             b"window.location.assign(siteLogoutButton.dataset.logoutUrl);",
         )
@@ -42,7 +45,7 @@ def _mobile_return_script() -> bytes:
 
 def _reformatted_mobile_return_script() -> bytes:
     return (
-        b"function  unifyLegacySigninSurfaces ( triggerLogin ){}"
+        b"function  unifyLegacySigninSurfaces ( triggerLogin,sessionActions ){}"
         b"openLink . target='_self'"
         b";document.addEventListener('visibilitychange',trackXamanVisibility)"
         b';window.addEventListener("focus",checkAfterReturn)'
@@ -52,6 +55,9 @@ def _reformatted_mobile_return_script() -> bytes:
         b";event.preventDefault()"
         b";MESSAGE_PREFIX+'bridge:initialized'"
         b';MESSAGE_PREFIX+"logout"'
+        b';MESSAGE_PREFIX+"logout:request"'
+        b";identityCard . appendChild(sessionActions)"
+        b";window.location.reload()"
         b";logoutTimeoutTimer=window . setTimeout(function(){},JOINT_LOGOUT_TIMEOUT)"
         b";window.location.assign(siteLogoutButton.dataset.logoutUrl)"
     )
