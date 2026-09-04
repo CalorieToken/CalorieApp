@@ -224,6 +224,42 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertNotEmpty($flow['flow_id']);
     }
 
+    public function test_xaman_return_rejects_incomplete_flow_context(): void {
+        $this->start_flow();
+        $query = [];
+        parse_str((string) wp_parse_url($this->xaman_return_url, PHP_URL_QUERY), $query);
+        $flow_id = (string) ($query['flow_id'] ?? '');
+        $flow_key = 'calorieapp_xaman_' . str_replace('-', '', strtolower($flow_id));
+        $stored_flow = get_transient($flow_key);
+        $this->assertIsArray($stored_flow);
+
+        foreach (
+            [
+                'backend_state',
+                'site_return_url',
+                'locale',
+                'payload_uuid',
+                'identifier',
+                'return_consumed',
+            ] as $missing_field
+        ) {
+            $incomplete_flow = $stored_flow;
+            unset($incomplete_flow[$missing_field]);
+            set_transient($flow_key, $incomplete_flow, 10 * MINUTE_IN_SECONDS);
+
+            $request = new WP_REST_Request(
+                'GET',
+                '/calorieapp/v1/integrated-login/return'
+            );
+            $request->set_param('flow_id', $flow_id);
+            $request->set_param('return_token', (string) ($query['return_token'] ?? ''));
+
+            $response = rest_do_request($request);
+            $this->assertSame(404, $response->get_status(), $missing_field);
+            $this->assertSame('return_not_found', $response->get_data()['code']);
+        }
+    }
+
     public function test_completed_flow_issues_calorieapp_code_for_same_user(): void {
         $flow = $this->start_flow()->get_data();
         $this->resolved = true;

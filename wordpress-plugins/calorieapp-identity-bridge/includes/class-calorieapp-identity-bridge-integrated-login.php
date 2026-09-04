@@ -406,7 +406,16 @@ class IntegratedLogin {
         $flow = get_transient($this->flow_key($flow_id));
         if (
             !is_array($flow)
-            || !isset($flow['return_token_hash'], $flow['expires_at'])
+            || !isset(
+                $flow['return_token_hash'],
+                $flow['expires_at'],
+                $flow['backend_state'],
+                $flow['site_return_url'],
+                $flow['locale'],
+                $flow['payload_uuid'],
+                $flow['identifier'],
+                $flow['return_consumed']
+            )
             || (int) $flow['expires_at'] < time()
             || !hash_equals(
                 (string) $flow['return_token_hash'],
@@ -426,6 +435,8 @@ class IntegratedLogin {
                 ['status' => 409]
             );
         }
+
+        $site_return_url = (string) $flow['site_return_url'];
 
         $user_id = $this->authenticate_signed_flow($flow_id, $flow);
         if ($user_id instanceof WP_Error) {
@@ -464,7 +475,7 @@ class IntegratedLogin {
         $redirect_url = add_query_arg(
             [
                 'return_to' => 'wordpress',
-                'site_return' => (string) $flow['site_return_url'],
+                'site_return' => $site_return_url,
             ],
             (string) $result['redirect_url']
         );

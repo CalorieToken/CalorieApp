@@ -1,7 +1,7 @@
 {
   "bridge": {
     "code_file_count": 11,
-    "tree_sha256": "c6efc6f107b1c4aa706929162d06356434ed28c49b112d02f086addd3dde002d",
+    "tree_sha256": "b2d06c16da88ff868f8a56770516b469b6ac6079aef8312e29d282a0ade0fe87",
     "version": "0.3.2"
   },
   "comparison": {
@@ -73,7 +73,7 @@
         "review_priority_score": 0.00706714,
         "shared_normalized_line_count": 2,
         "shared_token_shingle_count": 11,
-        "token_shingle_jaccard": 0.00128896,
+        "token_shingle_jaccard": 0.00128355,
         "upstream_path": "includes/class-xummlogin-xumm.php"
       },
       {
@@ -82,7 +82,7 @@
         "review_priority_score": 0.00606061,
         "shared_normalized_line_count": 1,
         "shared_token_shingle_count": 21,
-        "token_shingle_jaccard": 0.00287987,
+        "token_shingle_jaccard": 0.00286572,
         "upstream_path": "includes/class-xummlogin-utils.php"
       },
       {
@@ -115,10 +115,10 @@
       {
         "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
         "longest_contiguous_normalized_line_block": 1,
-        "review_priority_score": 0.00271739,
+        "review_priority_score": 0.00269542,
         "shared_normalized_line_count": 1,
         "shared_token_shingle_count": 2,
-        "token_shingle_jaccard": 0.00021095,
+        "token_shingle_jaccard": 0.00021015,
         "upstream_path": "admin/class-xummlogin-admin.php"
       },
       {
@@ -133,10 +133,10 @@
       {
         "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
         "longest_contiguous_normalized_line_block": 0,
-        "review_priority_score": 0.0018862,
+        "review_priority_score": 0.00187559,
         "shared_normalized_line_count": 0,
         "shared_token_shingle_count": 12,
-        "token_shingle_jaccard": 0.0018862,
+        "token_shingle_jaccard": 0.00187559,
         "upstream_path": "_cron/_xummlogin_sync.php"
       },
       {
@@ -241,10 +241,10 @@
       {
         "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
         "longest_contiguous_normalized_line_block": 0,
-        "review_priority_score": 0.00017968,
+        "review_priority_score": 0.0001791,
         "shared_normalized_line_count": 0,
         "shared_token_shingle_count": 2,
-        "token_shingle_jaccard": 0.00017968,
+        "token_shingle_jaccard": 0.0001791,
         "upstream_path": "includes/class-xummlogin-shortcodes.php"
       },
       {
