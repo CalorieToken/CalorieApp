@@ -1,7 +1,7 @@
 {
   "contract_id": "calorieapp.identity-bridge.code-provenance",
-  "contract_version": "1.1.0",
-  "review_date": "2026-09-03",
+  "contract_version": "1.2.0",
+  "review_date": "2026-09-04",
   "plugin_version_reviewed": "0.3.1",
   "distribution_clearance_status": "blocked-pending-source-clearance",
   "release_expansion_allowed": false,
@@ -33,17 +33,28 @@
     {
       "id": "installed-xumm-login-plugin",
       "relationship": "reads-xummlogin-api-key-secret-and-create-user-options",
-      "source": "exact-installed-package-not-yet-preserved-in-repository",
+      "source": "live-wordpress-installation-export-no-public-1.3.1-source-url-identified",
       "live_observation_date": "2026-09-03",
       "live_asset_reported_version": "1.3.1",
       "live_asset_evidence": [
         "https://calorietoken.net/wp-content/plugins/xummlogin/public/js/xummlogin-public.js?ver=1.3.1",
         "https://calorietoken.net/wp-content/plugins/xummlogin/public/css/xummlogin-public.css?ver=1.3.1"
       ],
+      "exact_package_export_date": "2026-09-04",
+      "exact_package_archive_name": "xummlogin-exact-1.3.1-review.zip",
+      "exact_package_sha256": "8a0ec7531f536033a403196e934680882e7cde53a66dd4df453e81927b203806",
+      "exact_package_member_count": 105,
+      "exact_package_code_file_count": 63,
+      "exact_package_code_tree_sha256": "65d0c0050777fd34504b8fea49d564577f9bdcaf34279b63c59b35b98fb8eaab",
+      "exact_package_code_matches_scanned_tree": true,
+      "exact_package_raw_archive_committed_to_repository": false,
+      "temporary_server_archive_removed_after_verified_download": true,
+      "exact_package_patch_note_observation": "CALORIEAPP-PATCH.md-identifies-a-CalorieApp-cross-browser-return-patch-based-on-1.3.0",
+      "exact_package_licence_observation": "plugin-header-declares-GPL-2.0-plus-LICENSE-is-GPL-3.0-text-and-LICENSE.txt-is-GPL-2.0-text-reconciliation-required",
       "candidate_public_repository": "https://github.com/xrpfactchecker/xummlogin",
       "candidate_public_repository_observation": "history-records-1.3.0-at-a2f00fb5065f613a8f74cbd9ca42020b92f2f1a6-then-1.5.0-at-0a692dd91de44f7e7e4c2dcb44d7c210596e9fa2-with-no-1.3.1-tag",
       "candidate_public_repository_licence_observation": "1.3.0-plugin-header-declares-GPL-2.0-plus-and-included-LICENSE-is-GPL-3.0-text-exact-live-1.3.1-package-still-required",
-      "review_status": "source-version-licence-and-similarity-review-required"
+      "review_status": "exact-package-and-automated-similarity-recorded-human-source-licence-and-rights-review-required"
     }
   ],
   "preliminary_similarity_evidence": [
@@ -53,7 +64,19 @@
       "xumm_login_commit": "a2f00fb5065f613a8f74cbd9ca42020b92f2f1a6",
       "report": "contracts/identity-bridge/v1/evidence/xummlogin-public-1.3.0-similarity.json",
       "human_review_status": "common-wordpress-api-and-declared-compatibility-identifiers-observed-no-multi-line-exact-block",
+      "is_exact_live_package": false,
       "satisfies_exact_live_package_clearance": false
+    },
+    {
+      "source": "exact-live-wordpress-package-export",
+      "xumm_login_version": "1.3.1",
+      "package_sha256": "8a0ec7531f536033a403196e934680882e7cde53a66dd4df453e81927b203806",
+      "package_member_count": 105,
+      "report": "contracts/identity-bridge/v1/evidence/xummlogin-live-1.3.1-similarity.json",
+      "automated_observation": "29-findings-no-multi-line-exact-block-maximum-token-shingle-jaccard-0.00334169",
+      "human_review_status": "pending-exact-package-findings-and-custom-patch-origin-review",
+      "is_exact_live_package": true,
+      "clears_public_distribution": false
     }
   ],
   "contributor_declaration_template": "docs/IDENTITY_BRIDGE_SOURCE_DECLARATION_TEMPLATE.md",
@@ -184,9 +207,16 @@
       "clearance_status": "contributor-source-and-similarity-review-pending"
     }
   ],
+  "completed_evidence_actions": [
+    "exported-and-integrity-checked-exact-live-xumm-login-1.3.1-package",
+    "recorded-content-safe-package-and-code-tree-fingerprints",
+    "ran-reproducible-similarity-scan-against-every-identity-bridge-code-file",
+    "removed-temporary-server-archive-after-verified-local-download"
+  ],
   "blocking_actions": [
-    "preserve-exact-installed-xumm-login-package-version-source-licence-and-notices",
-    "run-reproducible-code-similarity-scan-and-human-review-against-that-package",
+    "preserve-exact-installed-package-in-a-controlled-private-legal-archive",
+    "complete-human-review-of-exact-1.3.1-findings-and-custom-patch-origin",
+    "resolve-exact-1.3.1-source-url-and-dual-licence-text-observation",
     "obtain-contributor-source-and-ai-assistance-declarations",
     "review-xaman-api-service-terms-for-official-and-ecosystem-use",
     "decide-and-test-bridge-owned-xaman-credential-migration",
