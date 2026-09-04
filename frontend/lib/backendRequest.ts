@@ -122,8 +122,8 @@ async function discardResponseBody(response: Response) {
 
 /**
  * Render free services can take 50 seconds or more to wake after inactivity.
- * Probe the same-origin health route until the backend returns the expected
- * JSON response, so callers do not fail on Render's temporary loading page.
+ * Probe one health route until the backend returns the expected JSON response,
+ * so callers do not fail on Render's temporary loading page.
  */
 async function waitForBackendReadyAt(
   backendBaseUrl: string,
