@@ -80,7 +80,6 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       startUrl: "/start",
       finishUrl: "/finish",
       authorizeUrl: "/authorize",
-      // Deliberately omit siteReturnUrl to cover cached pre-0.3.2 markup.
       locale: "nl",
     },
     querySelector(selector) {
@@ -331,7 +330,6 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.deepEqual(fetchBodies[0], {
     locale: "nl",
     state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-    return_url: "https://calorietoken.net/index.php/calorieapp/",
   });
   assert.deepEqual(fetchBodies.at(-1), {
     flow_id: "flow-id",

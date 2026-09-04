@@ -14,13 +14,12 @@ if (!defined('ABSPATH')) {
 /**
  * WordPress-owned Xaman login for the embedded CalorieApp.
  *
- * The flow gives Xaman identical app and web return URLs. Xaman can therefore
- * redirect the active originating browser when possible and otherwise opens a
- * short-lived WordPress return endpoint in the device's selected browser. The
- * endpoint verifies the resolved payload server-side, authenticates WordPress,
- * completes CalorieApp authorization and returns to the originating site page.
- * The payload WebSocket remains a fallback when a mobile platform only resumes
- * the original page.
+ * The flow deliberately omits Xaman return URLs. Mobile operating systems
+ * cannot reliably reopen the browser tab that launched a sign request and may
+ * otherwise move the session into the device's default browser. The original
+ * WordPress page remains open, observes the payload-specific WebSocket and
+ * verifies the resolved payload server-side before authenticating WordPress
+ * and CalorieApp in that originating browser.
  */
 class IntegratedLogin {
     private const REST_NAMESPACE = 'calorieapp/v1';
@@ -73,22 +72,13 @@ class IntegratedLogin {
             ]
         );
 
-        register_rest_route(
-            self::REST_NAMESPACE,
-            '/integrated-login/return',
-            [
-                'methods' => 'GET',
-                'callback' => [$this, 'return_from_xaman'],
-                'permission_callback' => '__return_true',
-            ]
-        );
     }
 
     public function register_assets(): void {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.2';
+            : '0.3.3';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -193,7 +183,7 @@ class IntegratedLogin {
                     <h2 id="<?php echo esc_attr($instance_id); ?>-title">Sign in with Xaman</h2>
                     <p class="calorieapp-login-status" role="status" aria-live="polite">Preparing a secure sign-in request...</p>
                     <p class="calorieapp-login-guidance">
-                        Sign in with Xaman, then use its return button. You will return to CalorieToken.net signed in to both the website and CalorieApp. If your phone resumes this page instead, sign-in finishes here automatically.
+                        Sign once in Xaman, then tap Close or use Back to return to this same browser. Keep this page open; WordPress and CalorieApp finish signing in here automatically.
                     </p>
                     <img class="calorieapp-login-qr" alt="Scan this QR code with Xaman" hidden />
                     <a class="calorieapp-login-open" href="#" hidden>Open Xaman</a>
@@ -226,17 +216,6 @@ class IntegratedLogin {
             );
         }
 
-        $site_return_url = $this->sanitize_site_return_url(
-            (string) $request->get_param('return_url')
-        );
-        if ($site_return_url === '') {
-            return new WP_Error(
-                'invalid_return_url',
-                'The site return URL is invalid.',
-                ['status' => 400]
-            );
-        }
-
         $credentials = $this->xaman_credentials();
         if ($credentials instanceof WP_Error) {
             return $credentials;
@@ -244,17 +223,9 @@ class IntegratedLogin {
 
         $flow_id = wp_generate_uuid4();
         $proof = $this->random_token();
-        $return_token = $this->random_token();
         // Xaman limits custom payload identifiers to 40 characters. Keep the
         // full 128-bit UUID while using a short, recognizable prefix.
         $identifier = 'calapp_' . str_replace('-', '', $flow_id);
-        $return_url = add_query_arg(
-            [
-                'flow_id' => $flow_id,
-                'return_token' => $return_token,
-            ],
-            rest_url(self::REST_NAMESPACE . '/integrated-login/return')
-        );
 
         $response = wp_remote_post(
             self::XAMAN_API_BASE . '/payload',
@@ -268,13 +239,7 @@ class IntegratedLogin {
                 'body' => wp_json_encode(
                     [
                         'txjson' => ['TransactionType' => 'SignIn'],
-                        'options' => [
-                            'submit' => true,
-                            'return_url' => [
-                                'app' => $return_url,
-                                'web' => $return_url,
-                            ],
-                        ],
+                        'options' => ['submit' => true],
                         'custom_meta' => [
                             'identifier' => $identifier,
                             'instruction' => 'Sign in to CalorieApp and CalorieToken.net',
@@ -330,15 +295,12 @@ class IntegratedLogin {
         $expires_at = time() + self::FLOW_TTL_SECONDS;
         $flow = [
             'proof_hash' => $this->hash_proof($proof),
-            'return_token_hash' => $this->hash_proof($return_token),
             'payload_uuid' => $payload_uuid,
             'identifier' => $identifier,
             'status' => 'pending',
             'wp_user_id' => 0,
             'backend_state_hash' => hash('sha256', $backend_state),
             'backend_state' => $backend_state,
-            'site_return_url' => $site_return_url,
-            'return_consumed' => false,
             'locale' => $locale,
             'expires_at' => $expires_at,
         ];
@@ -390,126 +352,6 @@ class IntegratedLogin {
                 'wp_user_id' => $user_id,
             ]
         );
-    }
-
-    public function return_from_xaman(WP_REST_Request $request) {
-        $flow_id = trim((string) $request->get_param('flow_id'));
-        $return_token = trim((string) $request->get_param('return_token'));
-        if (!$this->is_uuid($flow_id) || !$this->is_token($return_token)) {
-            return new WP_Error(
-                'invalid_return',
-                'The Xaman return request is invalid.',
-                ['status' => 400]
-            );
-        }
-
-        $lock_name = $this->acquire_return_lock($flow_id);
-        if ($lock_name instanceof WP_Error) {
-            return $lock_name;
-        }
-
-        try {
-            return $this->complete_xaman_return($flow_id, $return_token);
-        } finally {
-            $this->release_return_lock($lock_name);
-        }
-    }
-
-    private function complete_xaman_return(string $flow_id, string $return_token) {
-        $flow = get_transient($this->flow_key($flow_id));
-        if (
-            !is_array($flow)
-            || !isset(
-                $flow['return_token_hash'],
-                $flow['expires_at'],
-                $flow['backend_state'],
-                $flow['site_return_url'],
-                $flow['locale'],
-                $flow['payload_uuid'],
-                $flow['identifier'],
-                $flow['return_consumed']
-            )
-            || (int) $flow['expires_at'] < time()
-            || !hash_equals(
-                (string) $flow['return_token_hash'],
-                $this->hash_proof($return_token)
-            )
-        ) {
-            return new WP_Error(
-                'return_not_found',
-                'The Xaman return request expired or was not found.',
-                ['status' => 404]
-            );
-        }
-        if (($flow['return_consumed'] ?? false) === true) {
-            return new WP_Error(
-                'return_already_used',
-                'The Xaman return request was already used.',
-                ['status' => 409]
-            );
-        }
-
-        $site_return_url = (string) $flow['site_return_url'];
-
-        $user_id = $this->authenticate_signed_flow($flow_id, $flow);
-        if ($user_id instanceof WP_Error) {
-            return $user_id;
-        }
-
-        $state = trim((string) ($flow['backend_state'] ?? ''));
-        $locale = LocaleRegistry::resolve((string) ($flow['locale'] ?? 'en'));
-        if (!$this->is_valid_state($state)) {
-            return new WP_Error(
-                'invalid_state',
-                'CalorieApp state is invalid.',
-                ['status' => 400]
-            );
-        }
-
-        $flow['backend_state_hash'] = hash('sha256', $state);
-        $flow['return_consumed'] = true;
-        if (!set_transient(
-            $this->flow_key($flow_id),
-            $flow,
-            $this->remaining_flow_ttl($flow)
-        )) {
-            return new WP_Error(
-                'flow_storage_failed',
-                'The secure sign-in return could not be finalized.',
-                ['status' => 500]
-            );
-        }
-
-        $result = $this->rest_api->authorize_current_user($user_id, $state, '', $locale);
-        if ($result instanceof WP_Error) {
-            $flow['return_consumed'] = false;
-            if (!set_transient(
-                $this->flow_key($flow_id),
-                $flow,
-                $this->remaining_flow_ttl($flow)
-            )) {
-                return new WP_Error(
-                    'flow_storage_failed',
-                    'The secure sign-in return could not be recovered.',
-                    ['status' => 500]
-                );
-            }
-            return $result;
-        }
-
-        $redirect_url = add_query_arg(
-            [
-                'return_to' => 'wordpress',
-                'site_return' => $site_return_url,
-            ],
-            (string) $result['redirect_url']
-        );
-        $response = new WP_REST_Response(null, 302);
-        $response->header('Location', $redirect_url);
-        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-        $response->header('Pragma', 'no-cache');
-        $response->header('Referrer-Policy', 'no-referrer');
-        return $response;
     }
 
     public function authorize_calorieapp(WP_REST_Request $request) {
@@ -880,29 +722,6 @@ class IntegratedLogin {
         return $response;
     }
 
-    private function sanitize_site_return_url(string $value): string {
-        $value = trim($value);
-        if ($value === '' || strlen($value) > 2048) {
-            return '';
-        }
-
-        $url = esc_url_raw($value, ['http', 'https']);
-        $parts = wp_parse_url($url);
-        if (
-            $url === ''
-            || !is_array($parts)
-            || isset($parts['user'])
-            || isset($parts['pass'])
-            || isset($parts['query'])
-            || isset($parts['fragment'])
-            || !hash_equals($this->url_origin(home_url('/')), $this->url_origin($url))
-        ) {
-            return '';
-        }
-
-        return $url;
-    }
-
     private function sanitize_frontend_url(string $value): string {
         $value = trim($value);
         $url = esc_url_raw($value, ['https']);
@@ -948,43 +767,6 @@ class IntegratedLogin {
 
     private function remaining_flow_ttl(array $flow): int {
         return max(1, (int) ($flow['expires_at'] ?? 0) - time());
-    }
-
-    private function acquire_return_lock(string $flow_id) {
-        global $wpdb;
-
-        $lock_name = 'calorieapp_xaman_return_' . substr(
-            hash_hmac('sha256', $flow_id, wp_salt('auth')),
-            0,
-            40
-        );
-        $acquired = $wpdb->get_var(
-            $wpdb->prepare('SELECT GET_LOCK(%s, 0)', $lock_name)
-        );
-        if ((string) $acquired === '0') {
-            return new WP_Error(
-                'return_in_progress',
-                'The Xaman return request is already being completed.',
-                ['status' => 409]
-            );
-        }
-        if ((string) $acquired !== '1') {
-            return new WP_Error(
-                'flow_storage_failed',
-                'The secure sign-in return could not be locked.',
-                ['status' => 500]
-            );
-        }
-
-        return $lock_name;
-    }
-
-    private function release_return_lock(string $lock_name): void {
-        global $wpdb;
-
-        $wpdb->get_var(
-            $wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name)
-        );
     }
 
     private function url_origin(string $url): string {

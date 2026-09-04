@@ -28,16 +28,12 @@ No arbitrary redirects are accepted.
 Authorize endpoint accepts only callback URLs from explicit allowlist.
 Default callback must also be on that allowlist.
 
-The embedded login sends the same expiring WordPress return endpoint as Xaman's
-`return_url.app` and `return_url.web`. The endpoint carries a random one-time
-return token whose HMAC is stored server-side; neither that token nor the Xaman
-credentials are returned by the browser-facing start API. The endpoint accepts
-only the same-origin page permalink stored when the flow starts, verifies the
-resolved payload server-side, completes both sessions, and redirects back to
-that page. Query strings and fragments are rejected so the return cannot chain
-through a same-origin redirect endpoint. Mobile operating systems still decide
-which browser surface resumes.
-The original page's WebSocket/lifecycle handling remains a fallback.
+The embedded login deliberately omits `return_url.app` and `return_url.web`.
+Mobile operating systems cannot reliably reopen the browser tab that launched
+a sign request and may otherwise open the device's default browser. The
+launching page observes the payload-specific WebSocket and lifecycle events,
+then verifies the resolved payload server-side and completes both sessions in
+that original browser. No Xaman return token or browser callback is exposed.
 
 On a page containing the integrated bridge, its script leaves the unsigned
 legacy XUMM Login card visible but intercepts its `xl-signin` link. Both visible
@@ -82,11 +78,9 @@ Plugin does not log plaintext authorization codes or secrets.
 
 - POST requests must carry the canonical WordPress Origin header.
 - Each flow has a random 256-bit proof; only its HMAC hash is stored.
-- Each Xaman browser return has a separate random 256-bit token; only its HMAC
-  hash is stored. A per-flow database mutex serializes verification and
-  consumption. Consumption is persisted before a CalorieApp authorization code
-  is issued and rolled back after an ordinary authorization failure, so
-  concurrent requests and storage failures cannot issue replayable codes.
+- Payload completion is accepted only once. The flow is deleted before a
+  CalorieApp authorization code is returned, so the same verified signature
+  cannot be replayed through the bridge.
 - Flow proofs expire after ten minutes and are never placed in URLs.
 - The Xaman custom identifier is checked with the resolved payload.
 - The XRPL address is read only from the verified Xaman API response.

@@ -17,11 +17,11 @@ code for CalorieApp backend exchange.
 - Enforces expiration (default 60 seconds)
 - Enforces single-use redemption
 - Provides minimal identity claims on successful server-to-server exchange
-- Sends identical, short-lived Xaman `app` and `web` return URLs
+- Omits Xaman return URLs so mobile sign-in stays with the launching browser
 - Uses the payload WebSocket as a completion trigger and verifies the full
   payload server-side
-- Authenticates WordPress and CalorieApp before returning to the originating
-  WordPress page
+- Authenticates WordPress and CalorieApp when the user returns to the
+  originating WordPress page
 - Renders a WordPress-page logout button that clears CalorieApp and WordPress
   sessions together
 - Provides the `[calorieapp_embed]` shortcode for the WordPress page
@@ -36,16 +36,17 @@ code for CalorieApp backend exchange.
 - Embedded start: POST `/calorieapp/v1/integrated-login/start`
 - Embedded WordPress finish: POST `/calorieapp/v1/integrated-login/finish`
 - Embedded CalorieApp authorization: POST `/calorieapp/v1/integrated-login/authorize`
-- Xaman browser return: GET `/calorieapp/v1/integrated-login/return`
 
 The browser endpoint is intentionally not REST. XUMM Login establishes a normal WordPress browser session, and that session is available to the standard WordPress request lifecycle without weakening WordPress REST authentication.
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-Version 0.3.2 routes both visible login controls through one joint flow, adds an
-expiring one-time Xaman return endpoint, completes both sessions before returning
-to the originating WordPress page, provides a website-level joint logout button,
-and preserves the original-page lifecycle fallback. Version 0.3.1 removed the competing unsigned XUMM Login card from
+Version 0.3.3 removes the mobile HTTPS return callback that could reopen the
+flow in a different default browser. One Xaman signature is now completed by
+the originating WordPress page through its WebSocket and lifecycle handlers.
+Version 0.3.2 routes both visible login controls through one joint flow, added a
+website-level joint logout button, and preserved the original-page lifecycle
+fallback. Version 0.3.1 removed the competing unsigned XUMM Login card from
 pages that render the integrated CalorieApp bridge, kept the standalone Render
 entry as an explicit same-tab link to the canonical WordPress page, and blocked
 iframe navigation while the trusted parent handshake was still being

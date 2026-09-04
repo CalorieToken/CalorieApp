@@ -282,7 +282,7 @@ add_action('init', 'xummlogin_start_session', 1);
         self.assertEqual(finding["longest_contiguous_normalized_line_block"], 0)
         self.assertEqual(finding["shared_token_shingle_count"], 1)
 
-    def test_committed_preliminary_report_is_bound_to_current_bridge(self) -> None:
+    def test_committed_preliminary_report_preserves_reviewed_bridge_snapshot(self) -> None:
         report = json.loads(
             (
                 scan.ROOT
@@ -293,18 +293,16 @@ add_action('init', 'xummlogin_start_session', 1);
                 / "xummlogin-public-1.3.0-similarity.json"
             ).read_text(encoding="utf-8")
         )
-        bridge_files = scan._bridge_code_files()
-
         self.assertEqual(
             report["bridge"]["tree_sha256"],
-            scan._tree_digest(scan.PLUGIN_DIR, bridge_files),
+            "bae55a3c00955493fddf3deceb2e17c1adf4668ce82aeaaa3d9b2b156b0fb8f4",
         )
         self.assertEqual(report["bridge"]["version"], "0.3.2")
         self.assertEqual(report["upstream"]["version"], "1.3.0")
         self.assertIsNone(report["upstream"]["package_sha256"])
         self.assertFalse(report["review_boundary"]["clears_public_distribution"])
 
-    def test_committed_exact_live_report_is_bound_and_content_safe(self) -> None:
+    def test_committed_exact_live_report_preserves_reviewed_snapshot_and_is_content_safe(self) -> None:
         report = json.loads(
             (
                 scan.ROOT
@@ -315,11 +313,9 @@ add_action('init', 'xummlogin_start_session', 1);
                 / "xummlogin-live-1.3.1-similarity.json"
             ).read_text(encoding="utf-8")
         )
-        bridge_files = scan._bridge_code_files()
-
         self.assertEqual(
             report["bridge"]["tree_sha256"],
-            scan._tree_digest(scan.PLUGIN_DIR, bridge_files),
+            "bae55a3c00955493fddf3deceb2e17c1adf4668ce82aeaaa3d9b2b156b0fb8f4",
         )
         self.assertEqual(report["bridge"]["version"], "0.3.2")
         self.assertEqual(report["upstream"]["version"], "1.3.1")

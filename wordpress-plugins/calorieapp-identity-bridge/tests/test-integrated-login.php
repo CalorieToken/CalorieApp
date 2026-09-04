@@ -8,7 +8,6 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
     private string $identifier = '';
     private bool $resolved = false;
     private string $backend_locale = 'en';
-    private string $xaman_return_url = '';
     private string $started_state = '';
     private ?bool $remember_auth_cookie = null;
 
@@ -57,40 +56,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             $this->identifier = (string) ($body['custom_meta']['identifier'] ?? '');
 
             $this->assertSame('SignIn', $body['txjson']['TransactionType']);
-            $this->assertArrayHasKey('return_url', $body['options']);
-            $this->assertSame(
-                $body['options']['return_url']['app'],
-                $body['options']['return_url']['web']
-            );
-            $this->xaman_return_url = (string) $body['options']['return_url']['web'];
-            $expected_return_parts = wp_parse_url(
-                rest_url('calorieapp/v1/integrated-login/return')
-            );
-            $actual_return_parts = wp_parse_url($this->xaman_return_url);
-            $this->assertIsArray($expected_return_parts);
-            $this->assertIsArray($actual_return_parts);
-            foreach (['scheme', 'host', 'port', 'path'] as $part) {
-                $this->assertSame(
-                    $expected_return_parts[$part] ?? null,
-                    $actual_return_parts[$part] ?? null,
-                    $part
-                );
-            }
-            $expected_return_query = [];
-            $actual_return_query = [];
-            parse_str(
-                (string) ($expected_return_parts['query'] ?? ''),
-                $expected_return_query
-            );
-            parse_str(
-                (string) ($actual_return_parts['query'] ?? ''),
-                $actual_return_query
-            );
-            foreach ($expected_return_query as $key => $value) {
-                $this->assertSame($value, $actual_return_query[$key] ?? null, $key);
-            }
-            $this->assertStringContainsString('flow_id=', $this->xaman_return_url);
-            $this->assertStringContainsString('return_token=', $this->xaman_return_url);
+            $this->assertArrayNotHasKey('return_url', $body['options']);
             $this->assertMatchesRegularExpression('/^calapp_[a-f0-9]{32}$/', $this->identifier);
             $this->assertLessThanOrEqual(40, strlen($this->identifier));
             $headers = array_change_key_case((array) ($request['headers'] ?? []), CASE_LOWER);
@@ -168,45 +134,6 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertStringNotContainsString('return_token', wp_json_encode($data));
     }
 
-    public function test_start_rejects_a_foreign_site_return_url(): void {
-        $request = $this->same_origin_request(
-            'POST',
-            '/calorieapp/v1/integrated-login/start'
-        );
-        $request->set_param('locale', 'en');
-        $request->set_param('state', $this->state());
-        $request->set_param('return_url', 'https://evil.example/after-login');
-
-        $response = rest_do_request($request);
-        $this->assertSame(400, $response->get_status());
-        $this->assertSame('invalid_return_url', $response->get_data()['code']);
-    }
-
-    public function test_start_rejects_site_return_query_or_fragment(): void {
-        foreach (
-            [
-                home_url('/wp-login.php?redirect_to=https://evil.example'),
-                home_url('/index.php/calorieapp/#after-login'),
-            ] as $return_url
-        ) {
-            $request = $this->same_origin_request(
-                'POST',
-                '/calorieapp/v1/integrated-login/start'
-            );
-            $request->set_param('locale', 'en');
-            $request->set_param('state', $this->state());
-            $request->set_param('return_url', $return_url);
-
-            $response = rest_do_request($request);
-            $this->assertSame(400, $response->get_status(), $return_url);
-            $this->assertSame(
-                'invalid_return_url',
-                $response->get_data()['code'],
-                $return_url
-            );
-        }
-    }
-
     public function test_start_resolves_locale_alias_into_flow_context(): void {
         $response = $this->start_flow('nl-NL');
 
@@ -236,76 +163,6 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             get_user_meta(get_current_user_id(), 'xrpl-r-address', true)
         );
         $this->assertFalse($this->remember_auth_cookie);
-    }
-
-    public function test_xaman_return_authenticates_both_apps_and_redirects_to_site_origin(): void {
-        $flow = $this->start_flow()->get_data();
-        $this->resolved = true;
-
-        $query = [];
-        parse_str((string) wp_parse_url($this->xaman_return_url, PHP_URL_QUERY), $query);
-        $request = new WP_REST_Request(
-            'GET',
-            '/calorieapp/v1/integrated-login/return'
-        );
-        $request->set_param('flow_id', (string) ($query['flow_id'] ?? ''));
-        $request->set_param('return_token', (string) ($query['return_token'] ?? ''));
-
-        $response = rest_do_request($request);
-        $this->assertSame(302, $response->get_status());
-        $headers = $response->get_headers();
-        $location = (string) ($headers['Location'] ?? $headers['location'] ?? '');
-        $this->assertStringContainsString('code=', $location);
-        $this->assertStringContainsString('state=', $location);
-        $callback_query = [];
-        parse_str((string) wp_parse_url($location, PHP_URL_QUERY), $callback_query);
-        $this->assertSame('wordpress', $callback_query['return_to']);
-        $this->assertSame(
-            home_url('/index.php/calorieapp/'),
-            $callback_query['site_return']
-        );
-        $this->assertGreaterThan(0, get_current_user_id());
-
-        $replay = rest_do_request($request);
-        $this->assertSame(409, $replay->get_status());
-        $this->assertSame('return_already_used', $replay->get_data()['code']);
-        $this->assertNotEmpty($flow['flow_id']);
-    }
-
-    public function test_xaman_return_rejects_incomplete_flow_context(): void {
-        $this->start_flow();
-        $query = [];
-        parse_str((string) wp_parse_url($this->xaman_return_url, PHP_URL_QUERY), $query);
-        $flow_id = (string) ($query['flow_id'] ?? '');
-        $flow_key = 'calorieapp_xaman_' . str_replace('-', '', strtolower($flow_id));
-        $stored_flow = get_transient($flow_key);
-        $this->assertIsArray($stored_flow);
-
-        foreach (
-            [
-                'backend_state',
-                'site_return_url',
-                'locale',
-                'payload_uuid',
-                'identifier',
-                'return_consumed',
-            ] as $missing_field
-        ) {
-            $incomplete_flow = $stored_flow;
-            unset($incomplete_flow[$missing_field]);
-            set_transient($flow_key, $incomplete_flow, 10 * MINUTE_IN_SECONDS);
-
-            $request = new WP_REST_Request(
-                'GET',
-                '/calorieapp/v1/integrated-login/return'
-            );
-            $request->set_param('flow_id', $flow_id);
-            $request->set_param('return_token', (string) ($query['return_token'] ?? ''));
-
-            $response = rest_do_request($request);
-            $this->assertSame(404, $response->get_status(), $missing_field);
-            $this->assertSame('return_not_found', $response->get_data()['code']);
-        }
     }
 
     public function test_completed_flow_issues_calorieapp_code_for_same_user(): void {
@@ -435,7 +292,6 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $request->set_param('locale', $locale);
         $this->started_state = $this->state();
         $request->set_param('state', $this->started_state);
-        $request->set_param('return_url', home_url('/index.php/calorieapp/'));
         $response = rest_do_request($request);
         $this->assertInstanceOf(WP_REST_Response::class, $response);
         return $response;

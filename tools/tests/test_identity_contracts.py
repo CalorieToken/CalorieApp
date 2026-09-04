@@ -124,7 +124,7 @@ class IdentityContractTests(unittest.TestCase):
             },
         )
 
-    def test_xaman_return_is_state_bound_and_atomically_serialized(self) -> None:
+    def test_xaman_origin_browser_flow_is_state_bound_without_a_return_url(self) -> None:
         plugin = (
             contracts.ROOT
             / "wordpress-plugins"
@@ -132,45 +132,18 @@ class IdentityContractTests(unittest.TestCase):
             / "includes"
             / "class-calorieapp-identity-bridge-integrated-login.php"
         ).read_text(encoding="utf-8")
-        return_handler = plugin[
-            plugin.index("public function return_from_xaman") :
-            plugin.index("public function authorize_calorieapp")
+        start_handler = plugin[
+            plugin.index("public function start") :
+            plugin.index("public function finish")
         ]
 
         self.assertIn(
             "'backend_state_hash' => hash('sha256', $backend_state)",
-            plugin,
+            start_handler,
         )
-        self.assertIn("$this->acquire_return_lock($flow_id)", return_handler)
-        self.assertIn("finally", return_handler)
-        self.assertIn("$this->release_return_lock($lock_name)", return_handler)
-        self.assertIn("SELECT GET_LOCK(%s, 0)", plugin)
-        self.assertIn("SELECT RELEASE_LOCK(%s)", plugin)
-        complete_return = return_handler[
-            return_handler.index("private function complete_xaman_return") :
-        ]
-        self.assertLess(
-            complete_return.index("$flow['return_consumed'] = true"),
-            complete_return.index("$this->rest_api->authorize_current_user"),
-        )
-        self.assertIn("$flow['return_consumed'] = false", complete_return)
-
-    def test_xaman_site_return_is_a_plain_same_origin_permalink(self) -> None:
-        plugin = (
-            contracts.ROOT
-            / "wordpress-plugins"
-            / "calorieapp-identity-bridge"
-            / "includes"
-            / "class-calorieapp-identity-bridge-integrated-login.php"
-        ).read_text(encoding="utf-8")
-        sanitizer = plugin[
-            plugin.index("private function sanitize_site_return_url") :
-            plugin.index("private function sanitize_frontend_url")
-        ]
-
-        self.assertIn("isset($parts['query'])", sanitizer)
-        self.assertIn("isset($parts['fragment'])", sanitizer)
-        self.assertIn("$this->url_origin(home_url('/'))", sanitizer)
+        self.assertIn("'options' => ['submit' => true]", start_handler)
+        self.assertNotIn("'return_url'", start_handler)
+        self.assertNotIn("integrated-login/return", plugin)
 
 
 if __name__ == "__main__":

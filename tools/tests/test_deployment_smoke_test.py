@@ -30,7 +30,7 @@ def _mobile_return_script() -> bytes:
             b'window.addEventListener("focus", checkAfterReturn);',
             b'window.addEventListener("pageshow", checkAfterReturn);',
             b'signinLink.setAttribute("data-calorieapp-unified-login", "1");',
-            b"return_url: siteReturnUrl,",
+            b'"Opening Xaman. Sign once, then tap Close or use Back to return to this browser; sign-in will finish automatically.",',
             b"event.preventDefault();",
             b'MESSAGE_PREFIX + "bridge:initialized";',
             b'MESSAGE_PREFIX + "logout";',
@@ -48,7 +48,7 @@ def _reformatted_mobile_return_script() -> bytes:
         b';window.addEventListener("focus",checkAfterReturn)'
         b";window.addEventListener('pageshow',checkAfterReturn)"
         b';signinLink.setAttribute("data-calorieapp-unified-login",\'1\')'
-        b";return_url : siteReturnUrl"
+        b';"Opening Xaman. Sign once, then tap Close or use Back to return to this browser; sign-in will finish automatically."'
         b";event.preventDefault()"
         b";MESSAGE_PREFIX+'bridge:initialized'"
         b';MESSAGE_PREFIX+"logout"'
@@ -169,6 +169,11 @@ class DeploymentSmokeTests(unittest.TestCase):
         self.assertTrue(
             smoke.mobile_return_contract_matches(
                 _reformatted_mobile_return_script().decode()
+            )
+        )
+        self.assertFalse(
+            smoke.mobile_return_contract_matches(
+                _mobile_return_script().decode() + "\nreturn_url: siteReturnUrl,"
             )
         )
         required_lines = _mobile_return_script().decode().splitlines()

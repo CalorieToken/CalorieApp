@@ -117,21 +117,6 @@
     var startUrl = root.dataset.startUrl || "";
     var finishUrl = root.dataset.finishUrl || "";
     var authorizeUrl = root.dataset.authorizeUrl || "";
-    var currentLocationOrigin =
-      window.location && typeof window.location.origin === "string"
-        ? window.location.origin
-        : "";
-    var currentLocationPath =
-      window.location &&
-      typeof window.location.pathname === "string" &&
-      window.location.pathname.charAt(0) === "/"
-        ? window.location.pathname
-        : "";
-    var siteReturnUrl =
-      root.dataset.siteReturnUrl ||
-      (currentLocationOrigin && currentLocationPath
-        ? currentLocationOrigin + currentLocationPath
-        : "");
     var configuredLocale = root.dataset.locale || "en";
 
     if (
@@ -145,8 +130,7 @@
       !appOrigin ||
       !startUrl ||
       !finishUrl ||
-      !authorizeUrl ||
-      !siteReturnUrl
+      !authorizeUrl
     ) {
       return;
     }
@@ -381,7 +365,7 @@
         if (typeof payload.signed === "boolean") {
           if (payload.signed) {
             markXamanStarted();
-            setStatus("Signature received. Returning to CalorieToken.net...");
+            setStatus("Signature received. Finishing sign-in in this browser...");
             finishWordPress();
           } else {
             fail("The Xaman sign-in request was rejected.");
@@ -426,7 +410,6 @@
       apiRequest(startUrl, {
         locale: configuredLocale,
         state: backendState,
-        return_url: siteReturnUrl,
       }).then(function (result) {
         startInFlight = false;
         var payload = result.payload;
@@ -648,7 +631,7 @@
     openLink.addEventListener("click", function () {
       markXamanStarted();
       setStatus(
-        "Opening Xaman. After signing, use its return button to come back to CalorieToken.net."
+        "Opening Xaman. Sign once, then tap Close or use Back to return to this browser; sign-in will finish automatically."
       );
     });
 
