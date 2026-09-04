@@ -91,6 +91,64 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 
+test("logout accepts a confirmed signed-out session after an interrupted response", async () => {
+  const { compiled } = await compiledLoginModule();
+  const module = { exports: {} };
+  const requestedUrls = [];
+  const responses = [
+    { ok: false, status: 504 },
+    { ok: false, status: 401 },
+  ];
+  const context = vm.createContext({
+    AbortController,
+    Error,
+    Math,
+    Number,
+    Promise,
+    URL,
+    URLSearchParams,
+    console,
+    module,
+    exports: module.exports,
+    process: { env: {} },
+    require(specifier) {
+      if (specifier === "react") {
+        return {};
+      }
+      if (specifier === "react/jsx-runtime") {
+        return { Fragment: Symbol("Fragment"), jsx() {}, jsxs() {} };
+      }
+      if (specifier.startsWith("@/components/")) {
+        return new Proxy({}, { get: () => () => {} });
+      }
+      if (specifier === "@/lib/backendRequest") {
+        return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
+          backendRequest: async (url) => {
+            requestedUrls.push(url);
+            return responses.shift();
+          },
+          backendUnavailableMessage: (_error, fallback) => fallback,
+          BackendRequestTimeoutError: class extends Error {},
+          waitForBackendReady: async () => {},
+        };
+      }
+      if (specifier === "@/lib/locales") {
+        return { resolveLocale: (value) => value || "en" };
+      }
+      throw new Error(`Unexpected require: ${specifier}`);
+    },
+  });
+
+  vm.runInContext(compiled, context);
+  await module.exports.requestCalorieAppLogout();
+
+  assert.deepEqual(requestedUrls, [
+    "/api/backend/api/identity/logout",
+    "/api/backend/api/identity/me",
+  ]);
+});
+
 test("login start retries transport errors and transient responses", async () => {
   const typescript = requireFromFrontend("typescript");
   const source = await readFile(COMPONENT_PATH, "utf8");

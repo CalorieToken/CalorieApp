@@ -7,6 +7,10 @@ const SCRIPT_PATH = new URL(
   "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.js",
   import.meta.url
 );
+const STYLE_PATH = new URL(
+  "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.css",
+  import.meta.url
+);
 
 function element(hidden = true) {
   const listeners = {};
@@ -49,6 +53,19 @@ function element(hidden = true) {
     },
   };
 }
+
+test("mobile joint-session control stays compact and viewport-bounded", async () => {
+  const source = await readFile(STYLE_PATH, "utf8");
+  const mobileRules = source.slice(source.indexOf("@media (max-width: 768px)"));
+
+  assert.match(mobileRules, /width:\s*min\(240px, calc\(100vw - 20px\)\)/);
+  assert.match(
+    mobileRules,
+    /grid-template-columns:\s*26px minmax\(0, 1fr\) auto/
+  );
+  assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
+  assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
+});
 
 test("Xaman waits for readiness and refreshes the joint account state", async () => {
   const source = await readFile(SCRIPT_PATH, "utf8");

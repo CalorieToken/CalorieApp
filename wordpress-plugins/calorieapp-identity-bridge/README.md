@@ -44,6 +44,9 @@ Details are in SECURITY.md and CONFIGURATION.md.
 Version 0.3.4 refreshes the originating page once after both sessions are
 confirmed, integrates the joint session control into the XUMM account card,
 and lets the embedded CalorieApp use that same sign-out-everywhere flow.
+Version 0.3.5 keeps that login flow unchanged, makes the added XUMM-widget
+session row compact on mobile, and confirms the CalorieApp session state after
+an interrupted logout response before continuing to WordPress logout.
 Version 0.3.3 removed the mobile HTTPS return callback that could reopen the
 flow in a different default browser. One Xaman signature is completed by the
 originating WordPress page through its WebSocket and lifecycle handlers.
