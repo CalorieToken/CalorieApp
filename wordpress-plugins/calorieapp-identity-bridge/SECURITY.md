@@ -34,7 +34,9 @@ return token whose HMAC is stored server-side; neither that token nor the Xaman
 credentials are returned by the browser-facing start API. The endpoint accepts
 only the same-origin page permalink stored when the flow starts, verifies the
 resolved payload server-side, completes both sessions, and redirects back to
-that page. Mobile operating systems still decide which browser surface resumes.
+that page. Query strings and fragments are rejected so the return cannot chain
+through a same-origin redirect endpoint. Mobile operating systems still decide
+which browser surface resumes.
 The original page's WebSocket/lifecycle handling remains a fallback.
 
 On a page containing the integrated bridge, its script leaves the unsigned

@@ -35,7 +35,8 @@ the bridge keeps an unsigned legacy XUMM Login `xl-signin` card visible but
 intercepts its link so both visible controls start the same joint
 WordPress/CalorieApp flow.
 
-The page permalink is bound into the flow as a same-origin return destination.
+The plain page permalink, without a query string or fragment, is bound into the
+flow as a same-origin return destination.
 Xaman receives one short-lived WordPress endpoint as both its `app` and `web`
 return URL. The endpoint never accepts an arbitrary external destination.
 

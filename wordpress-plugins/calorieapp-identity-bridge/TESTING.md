@@ -51,14 +51,15 @@ Covered scenarios:
 41. Xaman return authenticates WordPress, issues the CalorieApp callback and
     returns to the same-origin page
 42. foreign site-return destinations are rejected
-43. the CalorieApp state is hash-bound when the Xaman flow is created
-44. incomplete stored Xaman return context is rejected as expired
-45. concurrent Xaman return handling is serialized by a database mutex
-46. return-token consumption is stored before an authorization code is issued
-47. a completed Xaman return token cannot be replayed
-48. authenticated shortcode output contains the website-level joint logout
+43. site-return destinations containing a query string or fragment are rejected
+44. the CalorieApp state is hash-bound when the Xaman flow is created
+45. incomplete stored Xaman return context is rejected as expired
+46. concurrent Xaman return handling is serialized by a database mutex
+47. return-token consumption is stored before an authorization code is issued
+48. a completed Xaman return token cannot be replayed
+49. authenticated shortcode output contains the website-level joint logout
     control and WordPress nonce-protected logout URL
-49. the website logout waits for the trusted CalorieApp frame before navigating
+50. the website logout waits for the trusted CalorieApp frame before navigating
     to WordPress logout
 
 ## Files

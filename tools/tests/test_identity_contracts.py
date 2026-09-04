@@ -155,6 +155,23 @@ class IdentityContractTests(unittest.TestCase):
         )
         self.assertIn("$flow['return_consumed'] = false", complete_return)
 
+    def test_xaman_site_return_is_a_plain_same_origin_permalink(self) -> None:
+        plugin = (
+            contracts.ROOT
+            / "wordpress-plugins"
+            / "calorieapp-identity-bridge"
+            / "includes"
+            / "class-calorieapp-identity-bridge-integrated-login.php"
+        ).read_text(encoding="utf-8")
+        sanitizer = plugin[
+            plugin.index("private function sanitize_site_return_url") :
+            plugin.index("private function sanitize_frontend_url")
+        ]
+
+        self.assertIn("isset($parts['query'])", sanitizer)
+        self.assertIn("isset($parts['fragment'])", sanitizer)
+        self.assertIn("$this->url_origin(home_url('/'))", sanitizer)
+
 
 if __name__ == "__main__":
     unittest.main()

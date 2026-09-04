@@ -160,6 +160,31 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertSame('invalid_return_url', $response->get_data()['code']);
     }
 
+    public function test_start_rejects_site_return_query_or_fragment(): void {
+        foreach (
+            [
+                home_url('/wp-login.php?redirect_to=https://evil.example'),
+                home_url('/index.php/calorieapp/#after-login'),
+            ] as $return_url
+        ) {
+            $request = $this->same_origin_request(
+                'POST',
+                '/calorieapp/v1/integrated-login/start'
+            );
+            $request->set_param('locale', 'en');
+            $request->set_param('state', $this->state());
+            $request->set_param('return_url', $return_url);
+
+            $response = rest_do_request($request);
+            $this->assertSame(400, $response->get_status(), $return_url);
+            $this->assertSame(
+                'invalid_return_url',
+                $response->get_data()['code'],
+                $return_url
+            );
+        }
+    }
+
     public function test_start_resolves_locale_alias_into_flow_context(): void {
         $response = $this->start_flow('nl-NL');
 

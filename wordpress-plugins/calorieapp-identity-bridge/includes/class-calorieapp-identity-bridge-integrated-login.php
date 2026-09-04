@@ -893,6 +893,8 @@ class IntegratedLogin {
             || !is_array($parts)
             || isset($parts['user'])
             || isset($parts['pass'])
+            || isset($parts['query'])
+            || isset($parts['fragment'])
             || !hash_equals($this->url_origin(home_url('/')), $this->url_origin($url))
         ) {
             return '';

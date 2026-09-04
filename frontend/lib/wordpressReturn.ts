@@ -21,7 +21,9 @@ export function safeWordPressReturn(value: unknown): string {
         ) &&
         (target.port === "" || target.port === "443") &&
         !target.username &&
-        !target.password
+        !target.password &&
+        target.search === "" &&
+        target.hash === ""
       ) {
         return target.toString();
       }

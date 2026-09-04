@@ -49,12 +49,6 @@ test("WordPress callback return accepts only approved HTTPS site origins", async
   );
 
   assert.equal(
-    callback.safeWordPressReturn(
-      "https://calorietoken.net/index.php/calorieapp/?from=xaman#complete"
-    ),
-    "https://calorietoken.net/index.php/calorieapp/?from=xaman#complete"
-  );
-  assert.equal(
     callback.safeWordPressReturn("https://www.calorietoken.net/calorieapp/"),
     "https://www.calorietoken.net/calorieapp/"
   );
@@ -64,6 +58,8 @@ test("WordPress callback return accepts only approved HTTPS site origins", async
     "https://calorietoken.net.evil.example/",
     "https://user:pass@calorietoken.net/",
     "https://calorietoken.net:8443/",
+    "https://calorietoken.net/wp-login.php?redirect_to=https://evil.example",
+    "https://calorietoken.net/index.php/calorieapp/#complete",
     "/index.php/calorieapp/",
     "not a URL",
   ]) {
