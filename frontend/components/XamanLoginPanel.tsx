@@ -68,6 +68,8 @@ const LOGIN_START_RATE_LIMIT_DELAY_MS = 30_000;
 const LOGIN_START_REQUEST_TIMEOUT_MS = 75_000;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
+const BRIDGE_STATE_ALREADY_CONSUMED_MESSAGE =
+  "State is unknown, expired, or already used";
 const WORDPRESS_APP_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_APP_URL?.trim() ||
   "https://calorietoken.net/index.php/calorieapp/";
@@ -700,6 +702,65 @@ export function XamanLoginPanel() {
 
       if (event.data.type === "calorieapp:login:error") {
         if (typeof event.data.message === "string") {
+          const pending = embeddedLoginStart.current;
+          if (
+            pending &&
+            event.data.message === BRIDGE_STATE_ALREADY_CONSUMED_MESSAGE
+          ) {
+            setError(null);
+            setLoginStatus(
+              "WordPress signed in. Restoring CalorieApp in this browser..."
+            );
+
+            try {
+              await waitForOriginLogin(
+                pending.state,
+                pending.browser_handoff_token,
+                pending.expires_at,
+                bridgeController.signal,
+                pending.locale
+              );
+              const restoredUser = await refreshCurrentUser(
+                bridgeController.signal
+              );
+              if (!restoredUser) {
+                throw new Error("Restored session was unavailable");
+              }
+
+              embeddedLoginStart.current = null;
+              clearPendingLogin();
+              setLoginStatus(null);
+              setIsLoading(false);
+              setSuccessNotice(
+                "Signed in to WordPress and CalorieApp in this browser."
+              );
+              window.parent.postMessage(
+                {
+                  type: "calorieapp:login:complete",
+                  requestId: embeddedRequestId.current,
+                  locale: pending.locale,
+                },
+                origin
+              );
+              return;
+            } catch (requestError) {
+              if (bridgeController.signal.aborted) {
+                return;
+              }
+              setError(
+                backendUnavailableMessage(
+                  requestError,
+                  "WordPress is signed in, but CalorieApp could not finish. Please try again."
+                )
+              );
+              embeddedLoginStart.current = null;
+              clearPendingLogin();
+              setLoginStatus(null);
+              setIsLoading(false);
+              return;
+            }
+          }
+
           embeddedLoginStart.current = null;
           clearPendingLogin();
           setError(event.data.message);
