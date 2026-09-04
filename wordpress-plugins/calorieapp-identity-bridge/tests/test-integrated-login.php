@@ -9,6 +9,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
     private bool $resolved = false;
     private string $backend_locale = 'en';
     private string $xaman_return_url = '';
+    private string $started_state = '';
     private ?bool $remember_auth_cookie = null;
 
     public function setUp(): void {
@@ -274,6 +275,12 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $request->set_param('state', $this->state());
         $request->set_param('locale', 'en');
 
+        $mismatch_response = rest_do_request($request);
+        $this->assertSame(409, $mismatch_response->get_status());
+        $this->assertSame('state_mismatch', $mismatch_response->get_data()['code']);
+
+        $request->set_param('state', $this->started_state);
+
         $response = rest_do_request($request);
         $this->assertSame(200, $response->get_status());
         $this->assertSame('authorized', $response->get_data()['status']);
@@ -306,7 +313,7 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         );
         $request->set_param('flow_id', $flow['flow_id']);
         $request->set_param('flow_proof', $flow['flow_proof']);
-        $request->set_param('state', $this->state());
+        $request->set_param('state', $this->started_state);
 
         $response = rest_do_request($request);
         $this->assertSame(200, $response->get_status());
@@ -379,7 +386,8 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             '/calorieapp/v1/integrated-login/start'
         );
         $request->set_param('locale', $locale);
-        $request->set_param('state', $this->state());
+        $this->started_state = $this->state();
+        $request->set_param('state', $this->started_state);
         $request->set_param('return_url', home_url('/index.php/calorieapp/'));
         $response = rest_do_request($request);
         $this->assertInstanceOf(WP_REST_Response::class, $response);

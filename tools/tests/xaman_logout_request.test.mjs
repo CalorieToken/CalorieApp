@@ -79,7 +79,7 @@ test("joint logout accepts an absent app session and rejects backend failure", a
 
   await login.requestCalorieAppLogout();
   await login.requestCalorieAppLogout();
-  await assert.rejects(login.requestCalorieAppLogout(), /Unable to logout/);
+  await assert.rejects(login.requestCalorieAppLogout(), /Unable to log out/);
 
   assert.equal(calls.length, 3);
   assert.equal(calls[0].url, "/api/backend/api/identity/logout");

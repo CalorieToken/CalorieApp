@@ -335,7 +335,7 @@ class IntegratedLogin {
             'identifier' => $identifier,
             'status' => 'pending',
             'wp_user_id' => 0,
-            'backend_state_hash' => '',
+            'backend_state_hash' => hash('sha256', $backend_state),
             'backend_state' => $backend_state,
             'site_return_url' => $site_return_url,
             'return_consumed' => false,

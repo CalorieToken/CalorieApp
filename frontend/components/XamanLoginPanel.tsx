@@ -443,7 +443,7 @@ export async function requestCalorieAppLogout(): Promise<void> {
     method: "POST",
   });
   if (response.status !== 401 && !response.ok) {
-    throw new Error("Unable to logout");
+    throw new Error("Unable to log out");
   }
 }
 
@@ -919,7 +919,7 @@ export function XamanLoginPanel() {
       setError(
         backendUnavailableMessage(
           requestError,
-          "Unable to logout right now. Please try again."
+          "Unable to log out right now. Please try again."
         )
       );
     } finally {
