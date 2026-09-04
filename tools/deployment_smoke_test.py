@@ -61,12 +61,14 @@ class WordPressEmbedInspection(HTMLParser):
         self.iframe_sources: list[str] = []
         self.script_sources: list[str] = []
         self.style_sources: list[str] = []
+        self.site_return_urls: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
         classes = set((values.get("class") or "").split())
         if "data-calorieapp-embed" in values:
             self.embed_count += 1
+            self.site_return_urls.append(values.get("data-site-return-url") or "")
         if tag == "iframe" and "calorieapp-embed-frame" in classes:
             self.iframe_sources.append(values.get("src") or "")
         if tag == "script" and values.get("id") == "calorieapp-identity-bridge-embed-js":
@@ -134,11 +136,26 @@ def inspect_wordpress_embed(
             expected_plugin_version,
         )
     )
+    site_return_ok = False
+    if len(inspection.site_return_urls) == 1:
+        resolved_return = urlsplit(
+            urljoin(wordpress_url, inspection.site_return_urls[0])
+        )
+        expected_return = urlsplit(wordpress_url)
+        site_return_ok = (
+            (resolved_return.scheme, resolved_return.netloc, resolved_return.path)
+            == (expected_return.scheme, expected_return.netloc, expected_return.path)
+            and not resolved_return.query
+            and not resolved_return.fragment
+            and not resolved_return.username
+            and not resolved_return.password
+        )
     passed = (
         inspection.embed_count == 1
         and iframe_ok
         and script_ok
         and style_ok
+        and site_return_ok
     )
     script_url = (
         urljoin(wordpress_url, inspection.script_sources[0])
@@ -147,18 +164,22 @@ def inspect_wordpress_embed(
     )
     detail = (
         f"embeds={inspection.embed_count}, iframes={len(inspection.iframe_sources)}, "
-        f"script_version={script_ok}, style_version={style_ok}"
+        f"script_version={script_ok}, style_version={style_ok}, "
+        f"site_return={site_return_ok}"
     )
     return passed, script_url, detail
 
 
 def mobile_return_contract_matches(script: str) -> bool:
     required_patterns = (
-        re.compile(r"\bfunction\s+suppressLegacySigninSurfaces\s*\(\s*\)"),
+        re.compile(
+            r"\bfunction\s+unifyLegacySigninSurfaces\s*\(\s*"
+            r"triggerLogin\s*\)"
+        ),
         re.compile(r"\bopenLink\s*\.\s*target\s*=\s*([\"'])_self\1\s*;?"),
         re.compile(
             r"\bdocument\s*\.\s*addEventListener\s*\(\s*([\"'])"
-            r"visibilitychange\1\s*,\s*checkAfterReturn\s*\)\s*;?"
+            r"visibilitychange\1\s*,\s*trackXamanVisibility\s*\)\s*;?"
         ),
         re.compile(
             r"\bwindow\s*\.\s*addEventListener\s*\(\s*([\"'])"
@@ -169,14 +190,24 @@ def mobile_return_contract_matches(script: str) -> bool:
             r"pageshow\1\s*,\s*checkAfterReturn\s*\)\s*;?"
         ),
         re.compile(
-            r"\bcard\s*\.\s*setAttribute\s*\(\s*([\"'])"
-            r"data-calorieapp-superseded-login\1\s*,\s*([\"'])1\2\s*\)\s*;?"
+            r"\bsigninLink\s*\.\s*setAttribute\s*\(\s*([\"'])"
+            r"data-calorieapp-unified-login\1\s*,\s*([\"'])1\2\s*\)\s*;?"
+        ),
+        re.compile(r"\breturn_url\s*:\s*siteReturnUrl\b"),
+        re.compile(r"\bevent\s*\.\s*preventDefault\s*\(\s*\)\s*;?"),
+        re.compile(
+            r"\bMESSAGE_PREFIX\s*\+\s*([\"'])bridge:initialized\1"
+        ),
+        re.compile(r"\bMESSAGE_PREFIX\s*\+\s*([\"'])logout\1"),
+        re.compile(
+            r"\blogoutTimeoutTimer\s*=\s*window\s*\.\s*setTimeout\s*\("
+        ),
+        re.compile(
+            r"\bwindow\s*\.\s*location\s*\.\s*assign\s*\(\s*"
+            r"siteLogoutButton\s*\.\s*dataset\s*\.\s*logoutUrl\s*\)"
         ),
     )
-    return (
-        all(pattern.search(script) for pattern in required_patterns)
-        and "return_url" not in script
-    )
+    return all(pattern.search(script) for pattern in required_patterns)
 
 
 def frontend_build_identifier_matches(html: str, expected: str) -> bool:

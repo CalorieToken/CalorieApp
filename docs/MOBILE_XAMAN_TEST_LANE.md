@@ -12,18 +12,19 @@ physical Android device becomes the primary lane when Xaman, device-integrity,
 deep-link, backgrounding or browser-return behaviour is unsupported or flaky on
 the emulator.
 
-This lane does not change the Identity Bridge architecture. The WordPress page
-still creates the Xaman SignIn payload without a mobile return URL, observes its
-status and completes the WordPress and embedded CalorieApp sessions after the
-user closes Xaman and returns to the original browser page. Android and iOS
-cannot reliably reopen the exact originating browser tab, so the product does
-not promise an automatic redirect. It instead preserves one page-owned flow and
-finishes automatically when that page resumes.
+This lane exercises the Identity Bridge return architecture. The WordPress page
+creates the Xaman SignIn payload with identical `app` and `web` return URLs.
+After signing, the short-lived WordPress endpoint verifies the payload,
+completes the WordPress and CalorieApp sessions and returns to the page that
+started the flow. Android and iOS still control which browser surface resumes,
+so the page-owned WebSocket/lifecycle path remains a fallback when Xaman resumes
+the original page instead of opening the endpoint.
 
 The standalone Render entry links explicitly to the canonical WordPress page
 in the same tab. An embedded frame cannot navigate to WordPress while its
 trusted-parent handshake is pending, and the integrated page suppresses the
-competing unsigned legacy XUMM Login card.
+competing unsigned legacy XUMM Login callback by routing its visible link through
+the same joint flow.
 
 ## Execution boundary
 
@@ -99,14 +100,16 @@ device.
 | Testnet mode | Clearly shows XRPL Testnet before account import or signing |
 | Manual test identity import | Address matches the separately recorded public test address |
 | WordPress `Open Xaman` | Opens Xaman from the originating mobile browser page |
-| Approve SignIn | Original page completes WordPress and embedded CalorieApp sessions |
+| Approve SignIn | Return endpoint completes WordPress and CalorieApp sessions, then restores the originating page |
 | Reject SignIn | Page reports rejection and creates no session |
 | Expired request | Page fails closed and offers a fresh request |
-| Close/Back return | Returns to the original page without depending on a new default-browser tab |
-| Competing login surfaces | Only the integrated CalorieApp Xaman entry is actionable on the CalorieApp page |
+| App/web return | Xaman returns to CalorieToken.net; if it reuses the active origin browser, that browser tab is redirected |
+| Default-browser fallback | When the origin browser is unavailable, the selected browser still reaches the site with both sessions completed |
+| Competing login surfaces | Both visible page controls start the same integrated flow |
 | Iframe handshake delay | Sign-in stays disabled and cannot open WordPress inside the iframe |
 | Background/cold-start delay | Pending status safely resumes without request storms |
 | Dialog completion | “Signed in” state closes or resolves without manual refresh |
+| Website logout | WordPress-page button clears CalorieApp, logs out WordPress and returns to the public page |
 | Evidence capture | Contains no seed, secret numbers, passcode, email or authorization code |
 
 ## Automation progression

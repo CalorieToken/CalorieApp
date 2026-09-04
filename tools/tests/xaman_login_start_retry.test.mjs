@@ -80,6 +80,13 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.doesNotMatch(source, /resolveLoginSurfaceMode\(origin !== null/);
   assert.doesNotMatch(source, /window\.location\.assign\(WORDPRESS_APP_URL\)/);
   assert.match(source, /href=\{WORDPRESS_APP_URL\}/);
+  assert.match(
+    source,
+    /type:\s*"calorieapp:login:start"[\s\S]*type:\s*"calorieapp:login:state"/
+  );
+  assert.match(source, /type:\s*"calorieapp:bridge:initialized"/);
+  assert.match(source, /event\.data\?\.type === "calorieapp:logout"/);
+  assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 
 test("login start retries transport errors and transient responses", async () => {

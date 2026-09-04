@@ -70,9 +70,10 @@ and security risk.
 The exact export identifies XUMM Login `1.3.1` and includes a
 `CALORIEAPP-PATCH.md` note describing it as a CalorieApp cross-browser return
 patch based on `1.3.0`. The patch note describes a return-URL handoff, whereas
-Identity Bridge `0.3.1` deliberately omits Xaman return URLs and completes in
-the browser tab that started the flow. This architectural difference is useful
-technical evidence, not proof of independent authorship or permission.
+Identity Bridge `0.3.2` now independently implements a bridge-owned,
+single-use return endpoint after earlier versions deliberately omitted Xaman
+return URLs. The updated similarity reports remain technical evidence only and
+do not prove independent authorship or permission.
 
 After line-ending normalization, 75 of 79 paths shared with the public `1.3.0`
 tree are identical. The four changed code files are

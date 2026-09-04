@@ -24,15 +24,27 @@ current Render frontend. After configuring the Render custom domain, prefer:
 ```
 
 The shortcode owns the Xaman modal, QR/deep link, payload WebSocket, and secure
-message exchange with the embedded CalorieApp. Do not paste a second iframe or
-the old XUMM return URL beside it.
+message exchange with the embedded CalorieApp. Do not paste a second iframe
+beside it.
 
 The standalone Render page exposes an explicit same-tab link to this canonical
 WordPress page; it does not start Xaman itself. While an iframe is waiting for
 the authenticated parent handshake, its sign-in control remains disabled and
 cannot navigate the iframe into a nested WordPress page. On the canonical page,
-the bridge suppresses only an unsigned legacy XUMM Login `xl-signin` card so
-there is one unambiguous Xaman entry point.
+the bridge keeps an unsigned legacy XUMM Login `xl-signin` card visible but
+intercepts its link so both visible controls start the same joint
+WordPress/CalorieApp flow.
+
+The plain page permalink, without a query string or fragment, is bound into the
+flow as a same-origin return destination.
+Xaman receives one short-lived WordPress endpoint as both its `app` and `web`
+return URL. The endpoint never accepts an arbitrary external destination.
+
+For an authenticated WordPress user, the shortcode renders a logout control in
+the WordPress page above the iframe. It first asks the trusted embedded app to
+clear its CalorieApp session. Only after that succeeds (or the app confirms that
+no session exists) does the same tab follow WordPress's nonce-protected logout
+URL and return to the page.
 
 Pending status checks begin at five-second intervals, slow to ten seconds after
 30 seconds and to twenty seconds after 90 seconds. Transient failures back off

@@ -28,16 +28,20 @@ No arbitrary redirects are accepted.
 Authorize endpoint accepts only callback URLs from explicit allowlist.
 Default callback must also be on that allowlist.
 
-The embedded login does not send a Xaman `return_url.app` or
-`return_url.web`. Xaman therefore cannot open the device's configured default
-browser after signing. Mobile operating systems cannot guarantee an automatic
-return to the exact originating browser tab. The user closes Xaman and returns
-to the original CalorieToken.net page; its WebSocket/lifecycle handling resumes
-the verified flow without a refresh or second sign-in.
+The embedded login sends the same expiring WordPress return endpoint as Xaman's
+`return_url.app` and `return_url.web`. The endpoint carries a random one-time
+return token whose HMAC is stored server-side; neither that token nor the Xaman
+credentials are returned by the browser-facing start API. The endpoint accepts
+only the same-origin page permalink stored when the flow starts, verifies the
+resolved payload server-side, completes both sessions, and redirects back to
+that page. Query strings and fragments are rejected so the return cannot chain
+through a same-origin redirect endpoint. Mobile operating systems still decide
+which browser surface resumes.
+The original page's WebSocket/lifecycle handling remains a fallback.
 
-On a page containing the integrated bridge, its script hides only an unsigned
-legacy XUMM Login card that links to `xl-signin`. That prevents a competing
-return-URL flow from bypassing the page-owned bridge. Signed-in account cards
+On a page containing the integrated bridge, its script leaves the unsigned
+legacy XUMM Login card visible but intercepts its `xl-signin` link. Both visible
+login controls therefore use the page-owned joint flow. Signed-in account cards
 and XUMM Login surfaces on other pages are not changed.
 
 The Xaman deep link, QR URL, and payload WebSocket URL are accepted only on the
@@ -78,10 +82,18 @@ Plugin does not log plaintext authorization codes or secrets.
 
 - POST requests must carry the canonical WordPress Origin header.
 - Each flow has a random 256-bit proof; only its HMAC hash is stored.
+- Each Xaman browser return has a separate random 256-bit token; only its HMAC
+  hash is stored. A per-flow database mutex serializes verification and
+  consumption. Consumption is persisted before a CalorieApp authorization code
+  is issued and rolled back after an ordinary authorization failure, so
+  concurrent requests and storage failures cannot issue replayable codes.
 - Flow proofs expire after ten minutes and are never placed in URLs.
 - The Xaman custom identifier is checked with the resolved payload.
 - The XRPL address is read only from the verified Xaman API response.
 - A completed flow is bound to one CalorieApp backend state.
 - Xaman payload creation is rate-limited per source address.
 - Cross-frame messages validate both the exact origin and source window.
+- Website logout waits for a success response from the trusted iframe before
+  following WordPress's nonce-protected logout URL; a CalorieApp logout failure
+  leaves the WordPress session intact and exposes a retry message.
 - The shortcode accepts only the Render production origin and `https://app.calorietoken.net` by default. Deployments may extend this list with the `calorieapp_identity_bridge_allowed_frontend_origins` filter.

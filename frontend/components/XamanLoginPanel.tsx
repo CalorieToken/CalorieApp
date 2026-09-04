@@ -158,6 +158,19 @@ function clearPendingLogin() {
   window.sessionStorage.removeItem(PENDING_LOGIN_STORAGE_KEY);
 }
 
+function storePendingLogin(data: LoginStartResponse) {
+  const pendingLogin: PendingLogin = {
+    state: data.state,
+    expiresAt: data.expires_at,
+    browserHandoffToken: data.browser_handoff_token,
+    locale: data.locale,
+  };
+  window.sessionStorage.setItem(
+    PENDING_LOGIN_STORAGE_KEY,
+    JSON.stringify(pendingLogin)
+  );
+}
+
 function readPendingLogin(): PendingLogin | null {
   const stored = window.sessionStorage.getItem(PENDING_LOGIN_STORAGE_KEY);
   if (!stored) {
@@ -425,6 +438,15 @@ export async function prepareEmbeddedLogin(
   return startLoginWithRetry(signal, onProgress, retryWindowMs, locale);
 }
 
+export async function requestCalorieAppLogout(): Promise<void> {
+  const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
+    method: "POST",
+  });
+  if (response.status !== 401 && !response.ok) {
+    throw new Error("Unable to log out");
+  }
+}
+
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -439,6 +461,7 @@ export function XamanLoginPanel() {
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
+  const beginLoginRef = useRef<() => void>(() => {});
   const activeLocale = useRef(displayLocale);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
@@ -465,6 +488,12 @@ export function XamanLoginPanel() {
       setCurrentUser(null);
       return null;
     }
+  }, []);
+
+  const clearCalorieAppSession = useCallback(async () => {
+    await requestCalorieAppLogout();
+    setCurrentUser(null);
+    announceAuthState(false);
   }, []);
 
   useEffect(() => {
@@ -588,7 +617,56 @@ export function XamanLoginPanel() {
         activeLocale.current = nextLocale;
         setDisplayLocale(nextLocale);
         setLoginSurfaceMode(resolveLoginSurfaceMode(true, true));
+        window.parent.postMessage(
+          { type: "calorieapp:bridge:initialized", locale: nextLocale },
+          event.origin
+        );
         postHeight();
+        return;
+      }
+
+      if (
+        origin &&
+        event.origin === origin &&
+        event.source === window.parent &&
+        event.data?.type === "calorieapp:login:trigger"
+      ) {
+        beginLoginRef.current();
+        return;
+      }
+
+      if (
+        origin &&
+        event.origin === origin &&
+        event.source === window.parent &&
+        event.data?.type === "calorieapp:logout"
+      ) {
+        setError(null);
+        setSuccessNotice(null);
+        setIsLoggingOut(true);
+        try {
+          await clearCalorieAppSession();
+          window.parent.postMessage(
+            { type: "calorieapp:logout:complete", locale: activeLocale.current },
+            origin
+          );
+        } catch (requestError) {
+          const message = backendUnavailableMessage(
+            requestError,
+            "Could not log out of both sessions. Please try again."
+          );
+          setError(message);
+          window.parent.postMessage(
+            {
+              type: "calorieapp:logout:error",
+              message,
+              locale: activeLocale.current,
+            },
+            origin
+          );
+        } finally {
+          setIsLoggingOut(false);
+        }
         return;
       }
 
@@ -622,6 +700,8 @@ export function XamanLoginPanel() {
 
       if (event.data.type === "calorieapp:login:error") {
         if (typeof event.data.message === "string") {
+          embeddedLoginStart.current = null;
+          clearPendingLogin();
           setError(event.data.message);
           setLoginStatus(null);
           setIsLoading(false);
@@ -672,6 +752,7 @@ export function XamanLoginPanel() {
         }
 
         embeddedLoginStart.current = null;
+        clearPendingLogin();
         setError(null);
         setLoginStatus(null);
         setIsLoading(false);
@@ -716,7 +797,7 @@ export function XamanLoginPanel() {
       resizeObserver?.disconnect();
       window.removeEventListener("message", handleParentMessage);
     };
-  }, [refreshCurrentUser]);
+  }, [clearCalorieAppSession, refreshCurrentUser]);
 
   async function handleLogin() {
     const controller = new AbortController();
@@ -727,22 +808,13 @@ export function XamanLoginPanel() {
     setSuccessNotice(null);
     setIsLoading(true);
 
-    if (loginSurfaceMode === "embedded" && parentOrigin.current) {
+    if (parentOrigin.current) {
       const embeddedParentOrigin = parentOrigin.current;
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
       embeddedLoginStart.current = null;
       setLoginStatus(
         "Preparing Xaman and starting CalorieApp securely in the background..."
-      );
-
-      window.parent.postMessage(
-        {
-          type: "calorieapp:login:start",
-          requestId,
-          locale: activeLocale.current,
-        },
-        embeddedParentOrigin
       );
 
       try {
@@ -779,7 +851,19 @@ export function XamanLoginPanel() {
           throw new Error("Missing CalorieApp login state");
         }
 
+        storePendingLogin(data);
         embeddedLoginStart.current = data;
+        window.parent.postMessage(
+          {
+            type: "calorieapp:login:start",
+            requestId,
+            state: data.state,
+            locale: data.locale,
+          },
+          embeddedParentOrigin
+        );
+        // Keep one transition release compatible with the previous parent
+        // bridge, which receives the prepared state as a follow-up message.
         window.parent.postMessage(
           {
             type: "calorieapp:login:state",
@@ -819,32 +903,23 @@ export function XamanLoginPanel() {
     setIsLoading(false);
   }
 
+  beginLoginRef.current = () => {
+    if (!isLoading && parentOrigin.current) {
+      void handleLogin();
+    }
+  };
+
   async function handleLogout() {
     setError(null);
     setIsLoggingOut(true);
 
     try {
-      const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
-        method: "POST",
-      });
-
-      if (response.status === 401) {
-        setCurrentUser(null);
-        announceAuthState(false);
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error("Unable to logout");
-      }
-
-      setCurrentUser(null);
-      announceAuthState(false);
+      await clearCalorieAppSession();
     } catch (requestError) {
       setError(
         backendUnavailableMessage(
           requestError,
-          "Unable to logout right now. Please try again."
+          "Unable to log out right now. Please try again."
         )
       );
     } finally {
@@ -867,7 +942,7 @@ export function XamanLoginPanel() {
       >
         <span className="font-semibold">Phone browser notice:</span>{" "}
         {loginSurfaceMode === "embedded"
-          ? "Mobile operating systems cannot reliably reopen the exact browser tab. After signing, close Xaman and return to this CalorieToken.net tab; WordPress and CalorieApp will finish automatically without a refresh."
+          ? "After signing, Xaman returns you to CalorieToken.net. WordPress and CalorieApp then finish sign-in automatically in that browser."
           : loginSurfaceMode === "standalone"
             ? "Secure Xaman sign-in starts on CalorieToken.net so WordPress and CalorieApp can sign in together in one browser flow."
             : "Connecting this CalorieApp view to its secure CalorieToken.net sign-in page. Xaman cannot open until that connection is verified."}

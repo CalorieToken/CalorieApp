@@ -7,6 +7,7 @@ import {
   backendRequest,
   backendUnavailableMessage,
 } from "@/lib/backendRequest";
+import { safeWordPressReturn } from "@/lib/wordpressReturn";
 
 const BACKEND_BASE_URL = "/api/backend";
 
@@ -96,6 +97,14 @@ function AuthCallbackContent() {
 
   const code = useMemo(() => params.get("code") ?? "", [params]);
   const state = useMemo(() => params.get("state") ?? "", [params]);
+  const returnToWordPress = useMemo(
+    () => params.get("return_to") === "wordpress",
+    [params]
+  );
+  const siteReturn = useMemo(
+    () => safeWordPressReturn(params.get("site_return")),
+    [params]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -117,6 +126,10 @@ function AuthCallbackContent() {
             "calorieapp-login-return",
             "default-browser"
           );
+          if (returnToWordPress) {
+            window.location.replace(siteReturn);
+            return;
+          }
           const redirectTo = safeLocalRedirect(payload.redirect_to);
           router.replace(
             `/auth/complete?next=${encodeURIComponent(redirectTo)}`
@@ -147,7 +160,7 @@ function AuthCallbackContent() {
        */
       cancelled = true;
     };
-  }, [code, state, router]);
+  }, [code, state, returnToWordPress, router, siteReturn]);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-4 py-16">
@@ -155,12 +168,6 @@ function AuthCallbackContent() {
         <h1 className="text-xl font-semibold text-brand-primary">
           Returning to CalorieApp
         </h1>
-
-        <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-          Phone browser notice: mobile systems may return from Xaman through
-          your configured default browser instead of the tab where you started.
-          This page completes your CalorieApp session in the browser shown now.
-        </p>
 
         <p
           className="mt-4 text-sm text-brand-secondary/90"
@@ -197,12 +204,6 @@ export default function AuthCallbackPage() {
             <h1 className="text-xl font-semibold text-brand-primary">
               CalorieApp Sign-In
             </h1>
-
-            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-              Phone browser notice: mobile systems may return from Xaman
-              through your configured default browser. CalorieApp itself does
-              not open an extra tab.
-            </p>
 
             <p
               className="mt-4 text-sm text-brand-secondary/90"

@@ -2,7 +2,7 @@
   "contract_id": "calorieapp.identity-bridge.code-provenance",
   "contract_version": "1.2.0",
   "review_date": "2026-09-04",
-  "plugin_version_reviewed": "0.3.1",
+  "plugin_version_reviewed": "0.3.2",
   "distribution_clearance_status": "blocked-pending-source-clearance",
   "release_expansion_allowed": false,
   "local_build_and_test_allowed": true,
