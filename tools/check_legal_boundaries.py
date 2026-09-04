@@ -166,6 +166,30 @@ def main() -> None:
         "tree_sha256"
     ):
         raise SystemExit("Installed XUMM Login tree hash differs from exact evidence")
+    similarity_entries = provenance.get("preliminary_similarity_evidence")
+    if not isinstance(similarity_entries, list):
+        raise SystemExit("Identity Bridge similarity evidence must be a JSON array")
+    exact_entries = []
+    for index, value in enumerate(similarity_entries):
+        entry = require_json_object(
+            value, f"Identity Bridge similarity evidence entry {index}"
+        )
+        if not isinstance(entry.get("is_exact_live_package"), bool):
+            raise SystemExit("Similarity evidence must identify exact-package status")
+        if entry.get("satisfies_exact_live_package_clearance") is not False:
+            raise SystemExit("Similarity evidence must not claim exact-package clearance")
+        if entry["is_exact_live_package"]:
+            exact_entries.append(entry)
+    if len(exact_entries) != 1:
+        raise SystemExit("Exactly one exact live-package evidence entry is required")
+    exact_entry = exact_entries[0]
+    if exact_entry.get("package_sha256") != expected_package_sha256:
+        raise SystemExit("Exact live-package evidence entry hash drifted")
+    if exact_entry.get("report") != (
+        "contracts/identity-bridge/v1/evidence/"
+        "xummlogin-live-1.3.1-similarity.json"
+    ):
+        raise SystemExit("Exact live-package evidence entry report path drifted")
 
     package = json.loads((ROOT / "frontend/package.json").read_text(encoding="utf-8"))
     lock = json.loads((ROOT / "frontend/package-lock.json").read_text(encoding="utf-8"))

@@ -76,7 +76,7 @@
       "automated_observation": "29-findings-no-multi-line-exact-block-maximum-token-shingle-jaccard-0.00334169",
       "human_review_status": "pending-exact-package-findings-and-custom-patch-origin-review",
       "is_exact_live_package": true,
-      "clears_public_distribution": false
+      "satisfies_exact_live_package_clearance": false
     }
   ],
   "contributor_declaration_template": "docs/IDENTITY_BRIDGE_SOURCE_DECLARATION_TEMPLATE.md",
