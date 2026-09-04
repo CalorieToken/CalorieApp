@@ -146,6 +146,14 @@ class IdentityContractTests(unittest.TestCase):
         self.assertIn("$this->release_return_lock($lock_name)", return_handler)
         self.assertIn("SELECT GET_LOCK(%s, 0)", plugin)
         self.assertIn("SELECT RELEASE_LOCK(%s)", plugin)
+        complete_return = return_handler[
+            return_handler.index("private function complete_xaman_return") :
+        ]
+        self.assertLess(
+            complete_return.index("$flow['return_consumed'] = true"),
+            complete_return.index("$this->rest_api->authorize_current_user"),
+        )
+        self.assertIn("$flow['return_consumed'] = false", complete_return)
 
 
 if __name__ == "__main__":

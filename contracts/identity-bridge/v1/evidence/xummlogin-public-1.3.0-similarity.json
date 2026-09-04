@@ -1,7 +1,7 @@
 {
   "bridge": {
     "code_file_count": 11,
-    "tree_sha256": "49e72b4aff37b15cef3424de18242522186cc821b84bf29176b8aa866bc3978b",
+    "tree_sha256": "722fb6e526a29f40de58c1f09143b82ea99a9220ea8b829653ee33b8a7190c38",
     "version": "0.3.2"
   },
   "comparison": {
@@ -73,7 +73,7 @@
         "review_priority_score": 0.00706714,
         "shared_normalized_line_count": 2,
         "shared_token_shingle_count": 11,
-        "token_shingle_jaccard": 0.00125256,
+        "token_shingle_jaccard": 0.00124858,
         "upstream_path": "includes/class-xummlogin-xumm.php"
       },
       {
@@ -82,7 +82,7 @@
         "review_priority_score": 0.00606061,
         "shared_normalized_line_count": 1,
         "shared_token_shingle_count": 21,
-        "token_shingle_jaccard": 0.00278515,
+        "token_shingle_jaccard": 0.00277484,
         "upstream_path": "includes/class-xummlogin-utils.php"
       },
       {
@@ -118,7 +118,7 @@
         "review_priority_score": 0.00268097,
         "shared_normalized_line_count": 1,
         "shared_token_shingle_count": 2,
-        "token_shingle_jaccard": 0.00020557,
+        "token_shingle_jaccard": 0.00020498,
         "upstream_path": "admin/class-xummlogin-admin.php"
       },
       {
@@ -133,10 +133,10 @@
       {
         "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
         "longest_contiguous_normalized_line_block": 0,
-        "review_priority_score": 0.00181543,
+        "review_priority_score": 0.00180777,
         "shared_normalized_line_count": 0,
         "shared_token_shingle_count": 12,
-        "token_shingle_jaccard": 0.00181543,
+        "token_shingle_jaccard": 0.00180777,
         "upstream_path": "_cron/_xummlogin_sync.php"
       },
       {
@@ -250,10 +250,10 @@
       {
         "bridge_path": "includes/class-calorieapp-identity-bridge-integrated-login.php",
         "longest_contiguous_normalized_line_block": 0,
-        "review_priority_score": 0.00017576,
+        "review_priority_score": 0.00017533,
         "shared_normalized_line_count": 0,
         "shared_token_shingle_count": 2,
-        "token_shingle_jaccard": 0.00017576,
+        "token_shingle_jaccard": 0.00017533,
         "upstream_path": "includes/class-xummlogin-shortcodes.php"
       },
       {

@@ -82,8 +82,9 @@ Plugin does not log plaintext authorization codes or secrets.
 - Each flow has a random 256-bit proof; only its HMAC hash is stored.
 - Each Xaman browser return has a separate random 256-bit token; only its HMAC
   hash is stored. A per-flow database mutex serializes verification and
-  consumption, so concurrent requests cannot issue multiple authorization
-  codes and a completed return cannot be replayed.
+  consumption. Consumption is persisted before a CalorieApp authorization code
+  is issued and rolled back after an ordinary authorization failure, so
+  concurrent requests and storage failures cannot issue replayable codes.
 - Flow proofs expire after ten minutes and are never placed in URLs.
 - The Xaman custom identifier is checked with the resolved payload.
 - The XRPL address is read only from the verified Xaman API response.

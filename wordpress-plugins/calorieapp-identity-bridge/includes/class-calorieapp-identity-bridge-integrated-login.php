@@ -466,11 +466,6 @@ class IntegratedLogin {
             );
         }
 
-        $result = $this->rest_api->authorize_current_user($user_id, $state, '', $locale);
-        if ($result instanceof WP_Error) {
-            return $result;
-        }
-
         $flow['backend_state_hash'] = hash('sha256', $state);
         $flow['return_consumed'] = true;
         if (!set_transient(
@@ -483,6 +478,23 @@ class IntegratedLogin {
                 'The secure sign-in return could not be finalized.',
                 ['status' => 500]
             );
+        }
+
+        $result = $this->rest_api->authorize_current_user($user_id, $state, '', $locale);
+        if ($result instanceof WP_Error) {
+            $flow['return_consumed'] = false;
+            if (!set_transient(
+                $this->flow_key($flow_id),
+                $flow,
+                $this->remaining_flow_ttl($flow)
+            )) {
+                return new WP_Error(
+                    'flow_storage_failed',
+                    'The secure sign-in return could not be recovered.',
+                    ['status' => 500]
+                );
+            }
+            return $result;
         }
 
         $redirect_url = add_query_arg(
