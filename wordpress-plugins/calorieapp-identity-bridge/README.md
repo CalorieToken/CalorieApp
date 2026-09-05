@@ -48,10 +48,11 @@ Version 0.3.5 keeps that login flow unchanged, makes the added XUMM-widget
 session row compact on mobile, and confirms the CalorieApp session state after
 an interrupted logout response before continuing to WordPress logout.
 Version 0.3.7 keeps Brizy's opened mobile navigation above the XUMM account
-card and lets the active frontend clear its first-party CalorieApp cookie even
-when the backend is asleep. Backend session revocation is still attempted, but
-joint logout no longer waits through a cold start. The successful Xaman login
-and browser-return flow remains unchanged. Version 0.3.6 woke the idle Render
+card and lets the frontend clear its first-party CalorieApp cookie as soon as
+that frontend wakes, even while the backend remains asleep. Backend session
+revocation is attempted in the background, and one bounded request retry covers
+the free frontend's own cold start. The successful Xaman login and browser-return
+flow remains unchanged. Version 0.3.6 woke the idle Render
 backend before logout and gave the mobile XUMM card enough bounded horizontal
 space for its shorter joint-session labels.
 Version 0.3.3 removed the mobile HTTPS return callback that could reopen the

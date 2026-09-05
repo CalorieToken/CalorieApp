@@ -90,6 +90,6 @@ Plugin does not log plaintext authorization codes or secrets.
 - Website logout waits for a success response from the trusted iframe before
   following WordPress's nonce-protected logout URL. The same-origin frontend
   clears the HttpOnly CalorieApp cookie even if the backend is temporarily
-  asleep; backend revocation is attempted first and unrevoked idle sessions
+  asleep; backend revocation is attempted in the background and unrevoked sessions
   remain subject to the 30-minute idle and eight-hour absolute expiry limits.
 - The shortcode accepts only the Render production origin and `https://app.calorietoken.net` by default. Deployments may extend this list with the `calorieapp_identity_bridge_allowed_frontend_origins` filter.

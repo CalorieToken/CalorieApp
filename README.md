@@ -159,8 +159,8 @@ session, and issues the CalorieApp authorization code in that same browser.
 The Render backend wakes before Xaman is exposed, so a cold start does not strand
 the user outside the site. Once signed in, the WordPress page also renders its
 own logout button; the active frontend clears the first-party CalorieApp cookie
-and attempts backend revocation before WordPress ends its session in the same
-tab. Logout therefore remains usable while the backend is waking.
+and starts best-effort backend revocation while WordPress ends its session in
+the same tab. Logout therefore remains usable while the backend is waking.
 
 This follows Xaman's guidance for returning to the launching webpage: omit the
 payload return URL and use payload status updates in the origin page:

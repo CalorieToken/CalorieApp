@@ -439,7 +439,7 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
 
   const logoutTimeoutEntry = [...timers.entries()].find(
-    ([, { delay }]) => delay === 30000
+    ([, { delay }]) => delay === 100000
   );
   assert.ok(logoutTimeoutEntry, "joint logout has a bounded response timeout");
   timers.delete(logoutTimeoutEntry[0]);
@@ -464,6 +464,10 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(assignedLocation, siteLogoutButton.dataset.logoutUrl);
   assert.equal(
     [...timers.values()].filter(({ delay }) => delay === 30000).length,
+    0
+  );
+  assert.equal(
+    [...timers.values()].filter(({ delay }) => delay === 100000).length,
     0
   );
 });

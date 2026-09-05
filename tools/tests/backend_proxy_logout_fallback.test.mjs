@@ -54,7 +54,7 @@ async function loadRoute(fetchImpl) {
     Promise,
     Response,
     URL,
-    clearTimeout,
+    clearTimeout() {},
     console,
     fetch: fetchImpl,
     module,
@@ -82,7 +82,9 @@ async function loadRoute(fetchImpl) {
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },
-    setTimeout,
+    setTimeout() {
+      return 1;
+    },
   });
 
   vm.runInContext(compiled, context);
@@ -131,10 +133,12 @@ test("logout clears the browser session when the backend cannot be reached", asy
   assertSessionCookieCleared(response);
 });
 
-test("logout normalizes an upstream failure after clearing the browser session", async () => {
-  const route = await loadRoute(async () =>
-    new Response("backend failure", { status: 503 })
-  );
+test("logout does not wait for backend revocation before clearing the cookie", async () => {
+  let revocationStarted = false;
+  const route = await loadRoute(() => {
+    revocationStarted = true;
+    return new Promise(() => {});
+  });
 
   const response = await route.POST(
     proxyRequest("api/identity/logout"),
@@ -142,11 +146,12 @@ test("logout normalizes an upstream failure after clearing the browser session",
   );
 
   assert.equal(response.status, 200);
+  assert.equal(revocationStarted, true);
   assert.deepEqual(await response.json(), { message: "Logged out locally" });
   assertSessionCookieCleared(response);
 });
 
-test("logout also clears an invalid or expired upstream session cookie", async () => {
+test("logout response stays local while an expired upstream session is discarded", async () => {
   const route = await loadRoute(async () =>
     new Response(JSON.stringify({ detail: "Not authenticated" }), {
       status: 401,
@@ -159,7 +164,8 @@ test("logout also clears an invalid or expired upstream session cookie", async (
     logoutContext
   );
 
-  assert.equal(response.status, 401);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { message: "Logged out locally" });
   assertSessionCookieCleared(response);
 });
 

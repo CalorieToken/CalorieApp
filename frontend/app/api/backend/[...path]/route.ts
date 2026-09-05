@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
 const COLD_START_UPSTREAM_TIMEOUT_MS = 70_000;
 const ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS = 60_000;
-const LOGOUT_UPSTREAM_TIMEOUT_MS = 8_000;
+const LOGOUT_REVOCATION_TIMEOUT_MS = 8_000;
 const IDENTITY_LOGOUT_PATH = "api/identity/logout";
 const SESSION_COOKIE_NAME = "calorieapp_session";
 
@@ -102,6 +102,27 @@ function localLogoutResponse(request: NextRequest): NextResponse {
   );
 }
 
+function attemptLogoutRevocation(target: URL, headers: Headers): void {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    LOGOUT_REVOCATION_TIMEOUT_MS
+  );
+
+  void fetch(target, {
+    method: "POST",
+    headers: new Headers(headers),
+    cache: "no-store",
+    redirect: "manual",
+    signal: controller.signal,
+  })
+    .then(async (response) => {
+      await response.body?.cancel().catch(() => undefined);
+    })
+    .catch(() => undefined)
+    .finally(() => clearTimeout(timeoutId));
+}
+
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   const path = context.params.path.join("/");
   if (!isAllowedRoute(path, request.method)) {
@@ -119,6 +140,9 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
 
   const backendUrl = configuredBackendUrl();
   if (!backendUrl) {
+    if (path === IDENTITY_LOGOUT_PATH) {
+      return localLogoutResponse(request);
+    }
     return NextResponse.json(
       { detail: "CalorieApp backend is not configured" },
       { status: 503 }
@@ -149,6 +173,14 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
     }
   }
 
+  if (path === IDENTITY_LOGOUT_PATH) {
+    // The browser must not retain an authenticated cookie merely because the
+    // separate backend service is asleep. Return the deletion immediately
+    // after this frontend wakes and revoke the database session best effort.
+    attemptLogoutRevocation(target, headers);
+    return localLogoutResponse(request);
+  }
+
   const controller = new AbortController();
   // A sleeping Render backend can need well over the ordinary request timeout
   // before its health endpoint answers. Keep only this readiness probe alive
@@ -157,8 +189,6 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   const upstreamTimeoutMs =
     path === ACCOUNT_IMPORT_PATH
       ? ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS
-      : path === IDENTITY_LOGOUT_PATH
-      ? LOGOUT_UPSTREAM_TIMEOUT_MS
       : [
           "health",
           "api/identity/login/start",
@@ -204,22 +234,11 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       responseHeaders.set("cache-control", "no-store");
     }
 
-    if (path === IDENTITY_LOGOUT_PATH && !upstream.ok && upstream.status !== 401) {
-      await upstream.body?.cancel().catch(() => undefined);
-      return localLogoutResponse(request);
-    }
-
-    const response = new NextResponse(upstream.body, {
+    return new NextResponse(upstream.body, {
       status: upstream.status,
       headers: responseHeaders,
     });
-    return path === IDENTITY_LOGOUT_PATH
-      ? clearLocalSessionCookie(response, request)
-      : response;
   } catch (error) {
-    if (path === IDENTITY_LOGOUT_PATH) {
-      return localLogoutResponse(request);
-    }
     const timedOut = error instanceof Error && error.name === "AbortError";
     return NextResponse.json(
       {
