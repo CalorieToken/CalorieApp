@@ -83,6 +83,16 @@
     if (identityCard.classList && typeof identityCard.classList.add === "function") {
       identityCard.classList.add("calorieapp-identity-card");
     }
+    if (typeof identityCard.closest === "function") {
+      var identityWrapper = identityCard.closest(".brz-wrapper");
+      if (
+        identityWrapper &&
+        identityWrapper.classList &&
+        typeof identityWrapper.classList.add === "function"
+      ) {
+        identityWrapper.classList.add("calorieapp-identity-wrapper");
+      }
+    }
     if (
       sessionActions &&
       typeof identityCard.appendChild === "function" &&

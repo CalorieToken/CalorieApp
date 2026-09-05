@@ -58,10 +58,13 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   const source = await readFile(STYLE_PATH, "utf8");
   const mobileRules = source.slice(source.indexOf("@media (max-width: 768px)"));
 
-  assert.match(mobileRules, /width:\s*min\(280px, calc\(100vw - 20px\)\)/);
   assert.match(
     mobileRules,
-    /grid-template-columns:\s*26px minmax\(0, 1fr\) auto/
+    /\.brz \.calorieapp-identity-wrapper\s*\{[^}]*right:\s*50%\s*!important;[^}]*width:\s*min\(250px, calc\(100vw - 24px\)\)\s*!important;[^}]*transform:\s*translateX\(50%\);/s
+  );
+  assert.match(
+    mobileRules,
+    /grid-template-columns:\s*22px minmax\(0, 1fr\) auto/
   );
   assert.match(
     mobileRules,
@@ -69,7 +72,11 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.match(
     mobileRules,
-    /\.calorieapp-identity-card\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s
+    /\.calorieapp-identity-card\s*\{[^}]*min-height:\s*0\s*!important;[^}]*max-width:\s*100%\s*!important;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.brz:has\(\.brz-menu-simple \.brz-input:checked\)[^{]*\.calorieapp-identity-wrapper\s*\{[^}]*visibility:\s*hidden;[^}]*opacity:\s*0;[^}]*pointer-events:\s*none;/s
   );
   assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
@@ -84,8 +91,10 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   const iframeWindow = { postMessage(message) { iframePosts.push(message); } };
   const iframe = element(false);
   iframe.contentWindow = iframeWindow;
+  const legacySigninWrapper = element(false);
   const legacySigninCard = element(false);
-  legacySigninCard.closest = () => null;
+  legacySigninCard.closest = (selector) =>
+    selector === ".brz-wrapper" ? legacySigninWrapper : null;
   const legacySigninLink = element(false);
   legacySigninLink.closest = (selector) =>
     selector === ".xl-card" ? legacySigninCard : null;
@@ -257,6 +266,10 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(siteSessionActions.parentElement, legacySigninCard);
   assert.equal(
     legacySigninCard.classList.contains("calorieapp-identity-card"),
+    true
+  );
+  assert.equal(
+    legacySigninWrapper.classList.contains("calorieapp-identity-wrapper"),
     true
   );
   assert.equal(
