@@ -87,15 +87,20 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.match(
     mobileRules,
+    /\.brz \.calorieapp-brizy-menu-column,[^{]*\.brz \.brz-columns:has\(\.brz-menu-simple\)\s*\{[^}]*margin-top:\s*24px\s*!important;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-identity-wrapper \.brz-wp-shortcode\s*\{[^}]*width:\s*100%\s*!important;[^}]*max-width:\s*100%\s*!important;/s
+  );
+  assert.match(
+    mobileRules,
     /\.calorieapp-identity-card\s*\{[^}]*min-height:\s*0\s*!important;[^}]*max-width:\s*100%\s*!important;/s
   );
-  assert.match(
+  assert.doesNotMatch(mobileRules, /calorieapp-brizy-nav-open/);
+  assert.doesNotMatch(
     mobileRules,
-    /\.brz:has\(\.brz-menu-simple \.brz-input:checked\)[^{]*\.calorieapp-identity-wrapper\s*\{[^}]*visibility:\s*hidden;[^}]*opacity:\s*0;[^}]*pointer-events:\s*none;/s
-  );
-  assert.match(
-    mobileRules,
-    /\.calorieapp-brizy-nav-open \.calorieapp-identity-wrapper/
+    /\.calorieapp-identity-wrapper\s*\{[^}]*visibility:\s*hidden/s
   );
   assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
@@ -111,8 +116,10 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   const iframe = element(false);
   iframe.contentWindow = iframeWindow;
   const documentElement = element(false);
-  const legacyMenuInput = element(false);
-  legacyMenuInput.checked = false;
+  const legacyMenuColumn = element(false);
+  const legacyMenuSurface = element(false);
+  legacyMenuSurface.closest = (selector) =>
+    selector === ".brz-columns" ? legacyMenuColumn : null;
   const legacySigninWrapper = element(false);
   const legacySigninCard = element(false);
   legacySigninCard.closest = (selector) =>
@@ -176,8 +183,8 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
       if (selector === ".xl-card") {
         return [legacySigninCard];
       }
-      if (selector === '.brz-menu-simple .brz-input[type="checkbox"]') {
-        return [legacyMenuInput];
+      if (selector === ".brz-menu-simple") {
+        return [legacyMenuSurface];
       }
       return [];
     },
@@ -299,20 +306,8 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
     true
   );
   assert.equal(
-    legacyMenuInput["data-calorieapp-menu-watch"],
-    "1"
-  );
-  legacyMenuInput.checked = true;
-  legacyMenuInput.dispatch("change");
-  assert.equal(
-    documentElement.classList.contains("calorieapp-brizy-nav-open"),
+    legacyMenuColumn.classList.contains("calorieapp-brizy-menu-column"),
     true
-  );
-  legacyMenuInput.checked = false;
-  legacyMenuInput.dispatch("change");
-  assert.equal(
-    documentElement.classList.contains("calorieapp-brizy-nav-open"),
-    false
   );
   assert.equal(
     legacySigninLink["data-calorieapp-unified-login"],

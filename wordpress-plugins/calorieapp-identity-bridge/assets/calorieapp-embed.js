@@ -41,38 +41,21 @@
     });
   }
 
-  function bindLegacyMobileMenuVisibility() {
-    var page = document.documentElement;
-    var menuInputs = document.querySelectorAll(
-      '.brz-menu-simple .brz-input[type="checkbox"]'
-    );
-    if (
-      !page ||
-      !page.classList ||
-      typeof page.classList.toggle !== "function" ||
-      menuInputs.length === 0
-    ) {
-      return;
-    }
-
-    function syncMenuState() {
-      var menuOpen = false;
-      menuInputs.forEach(function (input) {
-        if (input.checked) {
-          menuOpen = true;
-        }
-      });
-      page.classList.toggle("calorieapp-brizy-nav-open", menuOpen);
-    }
-
-    menuInputs.forEach(function (input) {
-      if (input.getAttribute("data-calorieapp-menu-watch") === "1") {
+  function markLegacyMobileMenuColumn() {
+    var menuSurfaces = document.querySelectorAll(".brz-menu-simple");
+    menuSurfaces.forEach(function (menuSurface) {
+      if (typeof menuSurface.closest !== "function") {
         return;
       }
-      input.setAttribute("data-calorieapp-menu-watch", "1");
-      input.addEventListener("change", syncMenuState);
+      var menuColumn = menuSurface.closest(".brz-columns");
+      if (
+        menuColumn &&
+        menuColumn.classList &&
+        typeof menuColumn.classList.add === "function"
+      ) {
+        menuColumn.classList.add("calorieapp-brizy-menu-column");
+      }
     });
-    syncMenuState();
   }
 
   function unifyLegacySigninSurfaces(triggerLogin, sessionActions) {
@@ -127,7 +110,7 @@
         identityWrapper.classList.add("calorieapp-identity-wrapper");
       }
     }
-    bindLegacyMobileMenuVisibility();
+    markLegacyMobileMenuColumn();
     if (
       sessionActions &&
       typeof identityCard.appendChild === "function" &&

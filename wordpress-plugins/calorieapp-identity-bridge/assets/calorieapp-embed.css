@@ -210,11 +210,16 @@
 
 @media (max-width: 768px) {
   /* The Brizy header fixes the XUMM shortcode above its normal mobile flow.
-     Keep the account card compact enough to leave the menu toggle clear, and
-     temporarily remove that fixed card while the navigation is open. */
+     Keep the account card compact and move the complete navigation column
+     below it so both controls remain visible in the open and closed states. */
   .brz .brz-menu-simple {
     position: relative;
     z-index: 20;
+  }
+
+  .brz .calorieapp-brizy-menu-column,
+  .brz .brz-columns:has(.brz-menu-simple) {
+    margin-top: 24px !important;
   }
 
   .brz .calorieapp-identity-wrapper {
@@ -227,6 +232,11 @@
     padding: 0 !important;
     transform: translateX(50%);
     transition: opacity 120ms ease, visibility 120ms ease;
+  }
+
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .calorieapp-identity-card {
@@ -312,13 +322,6 @@
   .calorieapp-site-logout-status {
     font-size: 10px;
     line-height: 1.25;
-  }
-
-  .calorieapp-brizy-nav-open .calorieapp-identity-wrapper,
-  .brz:has(.brz-menu-simple .brz-input:checked) .calorieapp-identity-wrapper {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
   }
 
   .calorieapp-login-modal {

@@ -41,6 +41,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.9 keeps the XUMM account card visible in both Brizy menu states,
+overrides Brizy's mobile 11% shortcode width, and moves the complete Brizy menu
+column down to prevent overlap. The established Xaman login, browser return,
+and joint logout request flows remain unchanged.
 Version 0.3.8 fixes the actual Brizy mobile-header collision: the fixed XUMM
 account card is centred and shortened without removing its joint-session
 control, and it yields completely while the navigation is open. This change is
