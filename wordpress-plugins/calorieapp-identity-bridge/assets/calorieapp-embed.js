@@ -334,7 +334,7 @@
       // Only replace Brizy's compact shortcut. Text links remain untouched so
       // a later content review can handle them with their surrounding copy.
       var icon = link.querySelector(".brz-icon");
-      if (!icon || !logoMarkup) {
+      if (!icon) {
         return;
       }
 
@@ -344,9 +344,11 @@
       if (link.classList && typeof link.classList.add === "function") {
         link.classList.add("calorieapp-page-tool-link");
       }
-      icon.innerHTML = logoMarkup;
-      if (icon.classList && typeof icon.classList.add === "function") {
-        icon.classList.add("calorieapp-page-tool-logo-frame");
+      if (logoMarkup) {
+        icon.innerHTML = logoMarkup;
+        if (icon.classList && typeof icon.classList.add === "function") {
+          icon.classList.add("calorieapp-page-tool-logo-frame");
+        }
       }
     });
 

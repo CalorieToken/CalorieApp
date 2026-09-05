@@ -432,7 +432,7 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     true
   );
   assert.match(icon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
-  assert.match(icon.innerHTML, new RegExp(`src="${bundledLogoUrl}"`));
+  assert.ok(icon.innerHTML.includes(`src="${bundledLogoUrl}"`));
   assert.doesNotMatch(icon.innerHTML, /app\.calorietoken\.net\/logo\.png/);
   assert.match(icon.innerHTML, /width="48" height="48"/);
   assert.doesNotMatch(icon.innerHTML, /<svg/);
@@ -446,6 +446,40 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   );
   assert.match(slashlessIcon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
   assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("legacy shortcut keeps navigating to CalorieApp without logo config", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const icon = element(false);
+  icon.innerHTML = '<svg class="old-exchange-icon"></svg>';
+  const iconLink = element(false);
+  iconLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange/";
+  iconLink.querySelector = (selector) =>
+    selector === ".brz-icon" ? icon : null;
+  const document = {
+    readyState: "complete",
+    querySelector() {
+      return null;
+    },
+    querySelectorAll(selector) {
+      return selector === "a[href]" ? [iconLink] : [];
+    },
+  };
+  const window = {
+    location: {
+      href: "https://calorietoken.net/index.php/whitepaper/",
+      origin: "https://calorietoken.net",
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, URL, window });
+
+  assert.equal(
+    iconLink.href,
+    "https://calorietoken.net/index.php/calorieapp/"
+  );
+  assert.equal(icon.innerHTML, '<svg class="old-exchange-icon"></svg>');
 });
 
 test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
