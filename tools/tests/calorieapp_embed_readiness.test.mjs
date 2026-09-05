@@ -79,7 +79,7 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
 
   assert.match(
     mobileRules,
-    /\.brz \.calorieapp-identity-wrapper\s*\{[^}]*right:\s*50%\s*!important;[^}]*width:\s*min\(250px, calc\(100vw - 24px\)\)\s*!important;[^}]*transform:\s*translateX\(50%\);/s
+    /\.brz \.calorieapp-identity-wrapper\s*\{[^}]*right:\s*auto\s*!important;[^}]*left:\s*50vw\s*!important;[^}]*width:\s*min\(250px, calc\(100vw - 24px\)\)\s*!important;[^}]*transform:\s*translateX\(-50%\);/s
   );
   assert.match(
     mobileRules,
