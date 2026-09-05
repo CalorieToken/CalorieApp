@@ -41,13 +41,13 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-Version 0.3.10 keeps the site-wide XUMM account card visible in both Brizy menu
+Version 0.3.11 keeps the site-wide XUMM account card visible in both Brizy menu
 states, overrides Brizy's mobile 11% shortcode width, centres the card against
-the mobile viewport, and moves the complete Brizy menu column down on every
-public page to prevent overlap. The layout hooks load site-wide, while bridge
-requests still initialize only on pages with `[calorieapp_embed]`. The
-established Xaman login, browser return, and joint logout request flows remain
-unchanged.
+the mobile viewport including Brizy's narrower inner shortcode container, and
+moves the complete Brizy menu column down on every public page to prevent
+overlap. The layout hooks load site-wide, while bridge requests still initialize
+only on pages with `[calorieapp_embed]`. The established Xaman login, browser
+return, and joint logout request flows remain unchanged.
 Version 0.3.8 fixes the actual Brizy mobile-header collision: the fixed XUMM
 account card is centred and shortened without removing its joint-session
 control, and it yields completely while the navigation is open. This change is
