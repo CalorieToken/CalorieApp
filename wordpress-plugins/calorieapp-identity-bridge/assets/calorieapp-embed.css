@@ -211,7 +211,7 @@
 @media (max-width: 768px) {
   .calorieapp-identity-card {
     box-sizing: border-box;
-    width: min(240px, calc(100vw - 20px)) !important;
+    width: min(280px, calc(100vw - 20px)) !important;
     max-width: calc(100vw - 20px);
   }
 
@@ -249,6 +249,11 @@
     font-size: 11px;
     line-height: 1.1;
     white-space: nowrap;
+  }
+
+  .calorieapp-site-logout-status {
+    font-size: 11px;
+    line-height: 1.25;
   }
 
   .calorieapp-login-modal {

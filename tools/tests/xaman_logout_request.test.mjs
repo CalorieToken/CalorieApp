@@ -12,7 +12,10 @@ const requireFromFrontend = createRequire(
   new URL("../../frontend/package.json", import.meta.url)
 );
 
-async function loadModule(backendRequest) {
+async function loadModule(
+  backendRequest,
+  waitForBackendReady = async () => {}
+) {
   const typescript = requireFromFrontend("typescript");
   const source = await readFile(COMPONENT_PATH, "utf8");
   const compiled = typescript.transpileModule(source, {
@@ -51,7 +54,7 @@ async function loadModule(backendRequest) {
           backendRequest,
           backendUnavailableMessage: (_error, fallback) => fallback,
           BackendRequestTimeoutError: class extends Error {},
-          waitForBackendReady: async () => {},
+          waitForBackendReady,
         };
       }
       if (specifier === "@/lib/locales") {
@@ -64,6 +67,26 @@ async function loadModule(backendRequest) {
   vm.runInContext(compiled, context);
   return module.exports;
 }
+
+test("joint logout wakes the backend before revoking the session", async () => {
+  const events = [];
+  const login = await loadModule(
+    async (url) => {
+      events.push(`request:${url}`);
+      return { status: 204, ok: true };
+    },
+    async (url, signal, timeoutMs) => {
+      events.push(`wake:${url}:${String(signal)}:${timeoutMs}`);
+    }
+  );
+
+  await login.requestCalorieAppLogout();
+
+  assert.deepEqual(events, [
+    "wake:https://backend.example:undefined:90000",
+    "request:/api/backend/api/identity/logout",
+  ]);
+});
 
 test("joint logout accepts an absent app session and rejects backend failure", async () => {
   const responses = [

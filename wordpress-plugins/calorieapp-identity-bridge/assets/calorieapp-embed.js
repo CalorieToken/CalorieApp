@@ -11,7 +11,9 @@
   var STATUS_POLL_MIDDLE_PHASE_AFTER = 30000;
   var STATUS_POLL_LONG_PHASE_AFTER = 90000;
   var STATUS_POLL_MAX_RETRY_AFTER = 60000;
-  var JOINT_LOGOUT_TIMEOUT = 30000;
+  // Allow the embedded app to wake a sleeping Render Free backend before the
+  // WordPress page treats the joint logout as unresponsive.
+  var JOINT_LOGOUT_TIMEOUT = 105000;
   var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
 
   function retryAfterMilliseconds(response) {
