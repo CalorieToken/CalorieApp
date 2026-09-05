@@ -15,6 +15,10 @@ const PLUGIN_PATH = new URL(
   "../../wordpress-plugins/calorieapp-identity-bridge/includes/class-calorieapp-identity-bridge-integrated-login.php",
   import.meta.url
 );
+const MAIN_PLUGIN_PATH = new URL(
+  "../../wordpress-plugins/calorieapp-identity-bridge/includes/class-calorieapp-identity-bridge.php",
+  import.meta.url
+);
 
 function element(hidden = true) {
   const listeners = {};
@@ -412,6 +416,7 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     true
   );
   assert.match(icon.innerHTML, /calorieapp-page-tool-logo/);
+  assert.match(icon.innerHTML, /width="1em" height="1em"/);
   assert.equal(
     textLink.href,
     "https://calorietoken.net/index.php/integrated-exchange/"
@@ -422,6 +427,35 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   );
   assert.match(slashlessIcon.innerHTML, /calorieapp-page-tool-logo/);
   assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("site chrome replaces legacy market cards with XPMarket data", async () => {
+  const [scriptSource, styleSource, pluginSource] = await Promise.all([
+    readFile(SCRIPT_PATH, "utf8"),
+    readFile(
+      new URL(
+        "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.css",
+        import.meta.url
+      ),
+      "utf8"
+    ),
+    readFile(MAIN_PLUGIN_PATH, "utf8"),
+  ]);
+
+  assert.match(scriptSource, /\.livecoinwatch-widget-1/);
+  assert.match(scriptSource, /calorieapp-xpmarket-widget/);
+  assert.match(scriptSource, /xpMarketWidgetUrl/);
+  assert.match(scriptSource, /View CAL on XPMarket/);
+  assert.match(styleSource, /\.calorieapp-xpmarket-widget\s*\{/);
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool-logo\s*\{[\s\S]*width:\s*1em;/
+  );
+  assert.doesNotMatch(styleSource, /\.calorieapp-page-tool-link \.brz-icon/);
+  assert.match(
+    pluginSource,
+    /class MarketWidget/
+  );
 });
 
 test("shared footer uses the current WordPress year and translatable copy", async () => {

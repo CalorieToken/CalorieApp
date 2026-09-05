@@ -36,11 +36,19 @@ code for CalorieApp backend exchange.
 - Embedded start: POST `/calorieapp/v1/integrated-login/start`
 - Embedded WordPress finish: POST `/calorieapp/v1/integrated-login/finish`
 - Embedded CalorieApp authorization: POST `/calorieapp/v1/integrated-login/authorize`
+- Cached public CAL market card: GET `/calorieapp/v1/xpmarket-widget`
 
 The browser endpoint is intentionally not REST. XUMM Login establishes a normal WordPress browser session, and that session is available to the standard WordPress request lifecycle without weakening WordPress REST authentication.
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.15 leaves the proven login and joint logout flow unchanged. It
+keeps the existing Brizy shortcut at its original size and position while
+replacing only its obsolete exchange glyph with the CalorieApp mark, gives the
+CalorieApp page a footer matching the established homepage treatment, and
+replaces legacy LiveCoinWatch cards site-wide with a compact card backed by
+XPMarket's public CAL feed. CalorieApp account tools are collapsed by default
+so the primary app remains prominent on mobile.
 Version 0.3.14 keeps the proven 0.3.13 login, centring, and joint logout
 behavior unchanged. It replaces only Brizy's obsolete Integrated Exchange icon
 shortcut with a CalorieApp logo link and gives pages that render

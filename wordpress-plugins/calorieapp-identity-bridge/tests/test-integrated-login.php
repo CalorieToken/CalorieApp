@@ -367,6 +367,11 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             $html
         );
         $this->assertStringContainsString('calorieapp-page-tool-logo', $html);
+        $this->assertStringContainsString('width="1em" height="1em"', $html);
+        $this->assertStringContainsString('data-calorieapp-social-carousel', $html);
+        $this->assertStringContainsString('calorieapp-shared-social-track', $html);
+        $this->assertStringContainsString('facebook.svg#fa_icon', $html);
+        $this->assertStringContainsString('instagram-square.svg#fa_icon', $html);
         $this->assertStringContainsString('Operator: ICTHendrikse · KVK 73774693', $html);
         $this->assertStringContainsString(
             '© ' . wp_date('Y') . ' ICTHendrikse (owned content only)',

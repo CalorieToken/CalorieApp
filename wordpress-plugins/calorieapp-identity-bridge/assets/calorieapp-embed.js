@@ -24,7 +24,7 @@
     "/integrated-exchange/",
   ];
   var CALORIEAPP_LOGO_MARKUP =
-    '<svg class="calorieapp-page-tool-logo" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
+    '<svg class="calorieapp-page-tool-logo" width="1em" height="1em" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
     '<circle cx="100" cy="100" r="95" fill="none" stroke="#505ba9" stroke-width="16"></circle>' +
     '<circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" opacity=".8"></circle>' +
     '<circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8"></circle>' +
@@ -32,6 +32,213 @@
     '<g transform="translate(50 85)"><rect width="8" height="35" rx="4" fill="#1a1a1a"></rect><rect x="2" y="35" width="4" height="10" rx="2" fill="#1a1a1a"></rect></g>' +
     "</svg>";
   var legacyIdentityCenterFrame = null;
+  var xpMarketWidgetRequest = null;
+
+  function formatCompactNumber(value) {
+    var number = Number(value);
+    if (!Number.isFinite(number)) {
+      return "—";
+    }
+    try {
+      return new Intl.NumberFormat(undefined, {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }).format(number);
+    } catch (_error) {
+      return String(Math.round(number));
+    }
+  }
+
+  function formatSmallPrice(value, prefix, suffix) {
+    var number = Number(value);
+    if (!Number.isFinite(number) || number < 0) {
+      return "—";
+    }
+    var formatted;
+    if (number === 0) {
+      formatted = "0";
+    } else if (number < 0.01) {
+      formatted = number.toFixed(10).replace(/0+$/, "").replace(/\.$/, "");
+    } else {
+      formatted = number.toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+      });
+    }
+    return (prefix || "") + formatted + (suffix || "");
+  }
+
+  function renderXpMarketWidget(widget, payload) {
+    var data = payload && payload.data;
+    if (!data || !widget) {
+      throw new Error("XPMarket widget payload is incomplete");
+    }
+
+    var setText = function (selector, value) {
+      var target = widget.querySelector(selector);
+      if (target) {
+        target.textContent = value;
+      }
+    };
+    var logo = widget.querySelector(".calorieapp-xpmarket-logo");
+    if (logo && typeof data.logo === "string") {
+      logo.setAttribute("src", data.logo);
+    }
+    setText(".calorieapp-xpmarket-title", data.title || "Calorie Token");
+    setText(
+      ".calorieapp-xpmarket-price",
+      formatSmallPrice(data.price_usd, "$")
+    );
+    setText(
+      ".calorieapp-xpmarket-xrp",
+      formatSmallPrice(data.price_xrp, "", " XRP")
+    );
+    setText(
+      ".calorieapp-xpmarket-market-cap",
+      "$" + formatCompactNumber(data.market_cap_usd)
+    );
+    setText(".calorieapp-xpmarket-rank", "#" + String(data.rank));
+    setText(
+      ".calorieapp-xpmarket-holders",
+      formatCompactNumber(data.holders)
+    );
+    setText(".calorieapp-xpmarket-state", "Live data");
+    widget.setAttribute("data-state", "ready");
+  }
+
+  function enhanceXpMarketPriceWidgets() {
+    if (typeof document.querySelectorAll !== "function") {
+      return;
+    }
+
+    var config = window.calorieappIdentityBridgeChrome || {};
+    var endpoint = config.xpMarketWidgetUrl || "";
+    var tokenUrl =
+      config.xpMarketTokenUrl ||
+      "https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY";
+    var widgets = document.querySelectorAll(
+      ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
+    );
+    if (!widgets.length) {
+      return;
+    }
+
+    document
+      .querySelectorAll('script[src*="livecoinwatch.com/static/lcw-widget"]')
+      .forEach(function (script) {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      });
+
+    widgets.forEach(function (widget) {
+      if (widget.getAttribute("data-calorieapp-xpmarket-widget") === "1") {
+        return;
+      }
+      widget.setAttribute("data-calorieapp-xpmarket-widget", "1");
+      widget.setAttribute("data-state", "loading");
+      widget.removeAttribute("style");
+      if (widget.classList) {
+        widget.classList.remove("livecoinwatch-widget-1");
+        widget.classList.add("calorieapp-xpmarket-widget");
+      }
+      widget.innerHTML =
+        '<a class="calorieapp-xpmarket-link" rel="noopener noreferrer">' +
+        '<span class="calorieapp-xpmarket-heading">' +
+        '<img class="calorieapp-xpmarket-logo" alt="" width="48" height="48">' +
+        '<span><strong class="calorieapp-xpmarket-title">Calorie Token</strong>' +
+        '<small>CAL · XPMarket</small></span>' +
+        '<span class="calorieapp-xpmarket-state" aria-live="polite">Loading…</span>' +
+        "</span>" +
+        '<span class="calorieapp-xpmarket-prices">' +
+        '<strong class="calorieapp-xpmarket-price">—</strong>' +
+        '<small class="calorieapp-xpmarket-xrp">—</small>' +
+        "</span>" +
+        '<span class="calorieapp-xpmarket-stats">' +
+        '<span><small>Market cap</small><strong class="calorieapp-xpmarket-market-cap">—</strong></span>' +
+        '<span><small>Rank</small><strong class="calorieapp-xpmarket-rank">—</strong></span>' +
+        '<span><small>Holders</small><strong class="calorieapp-xpmarket-holders">—</strong></span>' +
+        "</span>" +
+        '<span class="calorieapp-xpmarket-cta">View CAL on XPMarket <span aria-hidden="true">→</span></span>' +
+        "</a>";
+
+      var link = widget.querySelector(".calorieapp-xpmarket-link");
+      if (link) {
+        link.setAttribute("href", tokenUrl);
+        link.setAttribute("aria-label", "View live Calorie Token data on XPMarket");
+      }
+    });
+
+    if (!endpoint || typeof window.fetch !== "function") {
+      widgets.forEach(function (widget) {
+        var status = widget.querySelector(".calorieapp-xpmarket-state");
+        if (status) {
+          status.textContent = "Open XPMarket";
+        }
+        widget.setAttribute("data-state", "fallback");
+      });
+      return;
+    }
+
+    if (!xpMarketWidgetRequest) {
+      xpMarketWidgetRequest = window
+        .fetch(endpoint, {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("XPMarket widget request failed");
+          }
+          return response.json();
+        });
+    }
+
+    xpMarketWidgetRequest
+      .then(function (payload) {
+        widgets.forEach(function (widget) {
+          renderXpMarketWidget(widget, payload);
+        });
+      })
+      .catch(function () {
+        widgets.forEach(function (widget) {
+          var status = widget.querySelector(".calorieapp-xpmarket-state");
+          if (status) {
+            status.textContent = "Open XPMarket";
+          }
+          widget.setAttribute("data-state", "fallback");
+        });
+      });
+  }
+
+  function enhanceSharedFooterCarousels() {
+    document
+      .querySelectorAll("[data-calorieapp-social-carousel]")
+      .forEach(function (carousel) {
+        if (carousel.getAttribute("data-carousel-ready") === "1") {
+          return;
+        }
+        var track = carousel.querySelector(".calorieapp-shared-social-track");
+        if (!track) {
+          return;
+        }
+        carousel.setAttribute("data-carousel-ready", "1");
+        carousel
+          .querySelectorAll("[data-calorieapp-carousel-direction]")
+          .forEach(function (button) {
+            button.addEventListener("click", function () {
+              var direction = Number(
+                button.getAttribute("data-calorieapp-carousel-direction")
+              );
+              var item = track.querySelector("a");
+              var step = item ? item.getBoundingClientRect().width : track.clientWidth;
+              track.scrollBy({
+                left: (direction < 0 ? -1 : 1) * step,
+                behavior: "smooth",
+              });
+            });
+          });
+      });
+  }
 
   function enhanceSharedPageShortcuts() {
     if (
@@ -1264,6 +1471,8 @@
 
   function initAll() {
     enhanceSharedPageShortcuts();
+    enhanceXpMarketPriceWidgets();
+    enhanceSharedFooterCarousels();
     var identityCard = markLegacyPageLayout();
     keepLegacyIdentityCardCentered(identityCard);
     var roots = document.querySelectorAll("[data-calorieapp-embed]");

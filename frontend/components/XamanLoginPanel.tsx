@@ -1109,11 +1109,24 @@ export function XamanLoginPanel() {
             </button>
           </div>
 
-          <div className="border-t border-brand-secondary/10 pt-4">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/60">
-              Account tools
-            </p>
-            <div className="space-y-3">
+          <details className="group border-t border-brand-secondary/10 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30 [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/60">
+                  Account tools
+                </span>
+                <span className="mt-0.5 block text-xs text-brand-secondary/75">
+                  Export and privacy options
+                </span>
+              </span>
+              <span
+                aria-hidden="true"
+                className="shrink-0 text-xl leading-none text-brand-secondary/70 transition group-open:rotate-180"
+              >
+                ⌄
+              </span>
+            </summary>
+            <div className="mt-3 space-y-3">
               <AccountDataExportButton
                 locale={displayLocale}
                 onAuthenticationLost={(message) => {
@@ -1151,7 +1164,7 @@ export function XamanLoginPanel() {
                 />
               ) : null}
             </div>
-          </div>
+          </details>
         </div>
       ) : loginSurfaceMode === "standalone" ? (
         <a
