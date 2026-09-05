@@ -179,6 +179,7 @@ class IntegratedLogin {
         $this->page_ending_rendered = true;
         $home_url = home_url('/');
         $calorieapp_url = home_url('/index.php/calorieapp/');
+        $copyright_year = wp_date('Y');
         $social_links = [
             'Telegram' => 'https://t.me/+7YxaKdQYWNA0NDA0',
             'GitHub' => 'https://github.com/CalorieToken',
@@ -232,8 +233,15 @@ class IntegratedLogin {
                         <a href="<?php echo esc_url($url); ?>" rel="noopener"><?php echo esc_html($label); ?></a>
                     <?php endforeach; ?>
                 </nav>
-                <p>Operator: ICTHendrikse · KVK 73774693</p>
-                <p>© 2026 ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse</p>
+                <p><?php echo esc_html__('Operator: ICTHendrikse · KVK 73774693', 'calorieapp-identity-bridge'); ?></p>
+                <p>
+                    <?php
+                    printf(
+                        esc_html__('© %s ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse', 'calorieapp-identity-bridge'),
+                        esc_html($copyright_year)
+                    );
+                    ?>
+                </p>
                 <p class="calorieapp-shared-legal-links">
                     <a href="<?php echo esc_url(home_url('/index.php/privacy-policy/')); ?>"><?php echo esc_html__('Privacy Policy', 'calorieapp-identity-bridge'); ?></a>
                     <a href="<?php echo esc_url(home_url('/index.php/terms-conditions/')); ?>"><?php echo esc_html__('Terms & Conditions', 'calorieapp-identity-bridge'); ?></a>

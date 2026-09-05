@@ -366,6 +366,14 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   textLink.href =
     "https://calorietoken.net/index.php/integrated-exchange/";
   textLink.querySelector = () => null;
+  const unrelatedLink = element(false);
+  unrelatedLink.href = "https://calorietoken.net/index.php/whitepaper/";
+  unrelatedLink.querySelector = () => null;
+  const parsedUrls = [];
+  function TrackingURL(value, base) {
+    parsedUrls.push(String(value));
+    return new URL(value, base);
+  }
   const document = {
     readyState: "complete",
     querySelector() {
@@ -373,7 +381,7 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     },
     querySelectorAll(selector) {
       if (selector === "a[href]") {
-        return [iconLink, textLink];
+        return [iconLink, textLink, unrelatedLink];
       }
       return [];
     },
@@ -385,7 +393,7 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     },
   };
 
-  vm.runInNewContext(scriptSource, { document, URL, window });
+  vm.runInNewContext(scriptSource, { document, URL: TrackingURL, window });
 
   assert.equal(
     iconLink.href,
@@ -401,6 +409,18 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   assert.equal(
     textLink.href,
     "https://calorietoken.net/index.php/integrated-exchange/"
+  );
+  assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("shared footer uses the current WordPress year and translatable copy", async () => {
+  const source = await readFile(PLUGIN_PATH, "utf8");
+
+  assert.match(source, /\$copyright_year\s*=\s*wp_date\('Y'\);/);
+  assert.doesNotMatch(source, /© 2026/);
+  assert.match(
+    source,
+    /esc_html__\('Operator: ICTHendrikse · KVK 73774693'/
   );
 });
 

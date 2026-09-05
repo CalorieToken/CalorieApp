@@ -57,6 +57,9 @@
       }
 
       var href = link.getAttribute("href") || "";
+      if (href.indexOf("integrated-exchange") === -1) {
+        return;
+      }
       var target;
       try {
         target = new URL(href, window.location.href || window.location.origin);

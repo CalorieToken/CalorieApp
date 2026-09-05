@@ -368,6 +368,10 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         );
         $this->assertStringContainsString('calorieapp-page-tool-logo', $html);
         $this->assertStringContainsString('Operator: ICTHendrikse · KVK 73774693', $html);
+        $this->assertStringContainsString(
+            '© ' . wp_date('Y') . ' ICTHendrikse (owned content only)',
+            $html
+        );
         $this->assertStringContainsString('Privacy Policy', $html);
         $this->assertStringContainsString('Terms &amp; Conditions', $html);
         $this->assertStringContainsString('https://github.com/CalorieToken', $html);
