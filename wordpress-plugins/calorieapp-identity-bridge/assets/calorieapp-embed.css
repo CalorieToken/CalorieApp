@@ -209,34 +209,83 @@
 }
 
 @media (max-width: 768px) {
-  /* Brizy renders the navigation before the XUMM card. Give its positioned
-     mobile surface an explicit higher layer so an open menu stays clickable. */
+  /* The Brizy header fixes the XUMM shortcode above its normal mobile flow.
+     Keep the account card compact enough to leave the menu toggle clear, and
+     temporarily remove that fixed card while the navigation is open. */
   .brz .brz-menu-simple {
     position: relative;
     z-index: 20;
+  }
+
+  .brz .calorieapp-identity-wrapper {
+    top: 15px !important;
+    right: 50% !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: min(250px, calc(100vw - 24px)) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateX(50%);
+    transition: opacity 120ms ease, visibility 120ms ease;
   }
 
   .calorieapp-identity-card {
     position: relative;
     z-index: 1;
     box-sizing: border-box;
-    width: min(280px, calc(100vw - 20px)) !important;
-    max-width: calc(100vw - 20px);
+    width: 100% !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: 11px;
+  }
+
+  .calorieapp-identity-card .xl-card-header {
+    overflow: hidden;
+    padding: 2px 8px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calorieapp-identity-card .xl-card-wallet {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calorieapp-identity-card .xl-card-body {
+    min-height: 52px;
+    padding: 4px 8px;
+  }
+
+  .calorieapp-identity-card .xl-card-body div {
+    line-height: 13px;
+  }
+
+  .calorieapp-identity-card .xl-card-body > .xl-card-avatar {
+    width: 52px;
+    margin-right: 7px;
+  }
+
+  .calorieapp-identity-card .xl-card-avatar img {
+    width: 100%;
+    margin-right: 0;
   }
 
   .calorieapp-site-session-actions {
-    grid-template-columns: 26px minmax(0, 1fr) auto;
-    gap: 6px;
-    margin-top: 8px !important;
-    border-radius: 12px;
-    padding: 7px;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 4px;
+    margin: 4px 0 0 !important;
+    border-radius: 9px;
+    padding: 3px 5px;
   }
 
   .calorieapp-session-indicator {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    font-size: 13px;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    font-size: 11px;
   }
 
   .calorieapp-session-copy {
@@ -245,7 +294,7 @@
   }
 
   .calorieapp-session-copy strong {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .calorieapp-session-copy span {
@@ -253,16 +302,23 @@
   }
 
   .calorieapp-site-logout {
-    min-height: 34px;
-    padding: 6px 8px;
-    font-size: 11px;
+    min-height: 28px;
+    padding: 4px 7px;
+    font-size: 10px;
     line-height: 1.1;
     white-space: nowrap;
   }
 
   .calorieapp-site-logout-status {
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.25;
+  }
+
+  .calorieapp-brizy-nav-open .calorieapp-identity-wrapper,
+  .brz:has(.brz-menu-simple .brz-input:checked) .calorieapp-identity-wrapper {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .calorieapp-login-modal {

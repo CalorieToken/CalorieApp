@@ -41,6 +41,11 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.8 fixes the actual Brizy mobile-header collision: the fixed XUMM
+account card is centred and shortened without removing its joint-session
+control, and it yields completely while the navigation is open. This change is
+limited to mobile layout and leaves the successful Xaman login, browser return,
+and joint logout request flows unchanged.
 Version 0.3.4 refreshes the originating page once after both sessions are
 confirmed, integrates the joint session control into the XUMM account card,
 and lets the embedded CalorieApp use that same sign-out-everywhere flow.
