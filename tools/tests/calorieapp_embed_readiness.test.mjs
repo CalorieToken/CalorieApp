@@ -139,7 +139,7 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
 });
 
-test("mobile identity card corrects Brizys residual rendered offset", async () => {
+test("mobile identity card corrects Brizy's residual rendered offset", async () => {
   const scriptSource = await readFile(SCRIPT_PATH, "utf8");
   const identityWrapper = element(false);
   const identityCard = element(false);
