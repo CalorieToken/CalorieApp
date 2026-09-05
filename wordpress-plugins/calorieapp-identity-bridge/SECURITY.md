@@ -88,6 +88,8 @@ Plugin does not log plaintext authorization codes or secrets.
 - Xaman payload creation is rate-limited per source address.
 - Cross-frame messages validate both the exact origin and source window.
 - Website logout waits for a success response from the trusted iframe before
-  following WordPress's nonce-protected logout URL; a CalorieApp logout failure
-  leaves the WordPress session intact and exposes a retry message.
+  following WordPress's nonce-protected logout URL. The same-origin frontend
+  clears the HttpOnly CalorieApp cookie even if the backend is temporarily
+  asleep; backend revocation is attempted first and unrevoked idle sessions
+  remain subject to the 30-minute idle and eight-hour absolute expiry limits.
 - The shortcode accepts only the Render production origin and `https://app.calorietoken.net` by default. Deployments may extend this list with the `calorieapp_identity_bridge_allowed_frontend_origins` filter.

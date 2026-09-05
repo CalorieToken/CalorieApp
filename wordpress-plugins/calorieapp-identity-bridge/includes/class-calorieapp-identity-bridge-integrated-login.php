@@ -78,7 +78,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.6';
+            : '0.3.7';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',

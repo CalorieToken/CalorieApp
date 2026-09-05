@@ -15,6 +15,9 @@ export const dynamic = "force-dynamic";
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
 const COLD_START_UPSTREAM_TIMEOUT_MS = 70_000;
 const ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS = 60_000;
+const LOGOUT_UPSTREAM_TIMEOUT_MS = 8_000;
+const IDENTITY_LOGOUT_PATH = "api/identity/logout";
+const SESSION_COOKIE_NAME = "calorieapp_session";
 
 const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^health$/, methods: new Set(["GET"]) },
@@ -72,6 +75,33 @@ function isTrustedMutationRequest(request: NextRequest): boolean {
   return !fetchSite || fetchSite === "same-origin" || fetchSite === "none";
 }
 
+function clearLocalSessionCookie(
+  response: NextResponse,
+  request: NextRequest
+): NextResponse {
+  response.cookies.set({
+    name: SESSION_COOKIE_NAME,
+    value: "",
+    path: "/",
+    expires: new Date(0),
+    maxAge: 0,
+    httpOnly: true,
+    secure: request.nextUrl.protocol === "https:",
+    sameSite: "lax",
+  });
+  return response;
+}
+
+function localLogoutResponse(request: NextRequest): NextResponse {
+  return clearLocalSessionCookie(
+    NextResponse.json(
+      { message: "Logged out locally" },
+      { status: 200, headers: { "cache-control": "no-store" } }
+    ),
+    request
+  );
+}
+
 async function proxyRequest(request: NextRequest, context: RouteContext) {
   const path = context.params.path.join("/");
   if (!isAllowedRoute(path, request.method)) {
@@ -127,6 +157,8 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   const upstreamTimeoutMs =
     path === ACCOUNT_IMPORT_PATH
       ? ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS
+      : path === IDENTITY_LOGOUT_PATH
+      ? LOGOUT_UPSTREAM_TIMEOUT_MS
       : [
           "health",
           "api/identity/login/start",
@@ -172,11 +204,22 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       responseHeaders.set("cache-control", "no-store");
     }
 
-    return new NextResponse(upstream.body, {
+    if (path === IDENTITY_LOGOUT_PATH && !upstream.ok && upstream.status !== 401) {
+      await upstream.body?.cancel().catch(() => undefined);
+      return localLogoutResponse(request);
+    }
+
+    const response = new NextResponse(upstream.body, {
       status: upstream.status,
       headers: responseHeaders,
     });
+    return path === IDENTITY_LOGOUT_PATH
+      ? clearLocalSessionCookie(response, request)
+      : response;
   } catch (error) {
+    if (path === IDENTITY_LOGOUT_PATH) {
+      return localLogoutResponse(request);
+    }
     const timedOut = error instanceof Error && error.name === "AbortError";
     return NextResponse.json(
       {

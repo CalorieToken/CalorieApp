@@ -63,6 +63,14 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
     mobileRules,
     /grid-template-columns:\s*26px minmax\(0, 1fr\) auto/
   );
+  assert.match(
+    mobileRules,
+    /\.brz \.brz-menu-simple\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*20;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-identity-card\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s
+  );
   assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
 });
@@ -431,7 +439,7 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
 
   const logoutTimeoutEntry = [...timers.entries()].find(
-    ([, { delay }]) => delay === 105000
+    ([, { delay }]) => delay === 30000
   );
   assert.ok(logoutTimeoutEntry, "joint logout has a bounded response timeout");
   timers.delete(logoutTimeoutEntry[0]);
@@ -456,10 +464,6 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(assignedLocation, siteLogoutButton.dataset.logoutUrl);
   assert.equal(
     [...timers.values()].filter(({ delay }) => delay === 30000).length,
-    0
-  );
-  assert.equal(
-    [...timers.values()].filter(({ delay }) => delay === 105000).length,
     0
   );
 });
