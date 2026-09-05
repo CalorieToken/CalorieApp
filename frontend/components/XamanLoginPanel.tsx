@@ -416,6 +416,7 @@ export async function waitForAuthenticatedUserAfterLogin(
     }
 
     if (![429, 502, 503, 504].includes(response.status)) {
+      await discardLoginResponse(response);
       throw new Error(`CalorieApp session check failed with ${response.status}`);
     }
 
@@ -475,6 +476,7 @@ export async function completeEmbeddedLogin(
     // before the one-time callback handler runs, so only this status is safe
     // to replay automatically.
     if (response.status !== 429) {
+      await discardLoginResponse(response);
       throw new Error(`Callback failed with ${response.status}`);
     }
 

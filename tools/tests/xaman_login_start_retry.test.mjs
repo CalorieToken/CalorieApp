@@ -612,11 +612,17 @@ test("embedded completion retries rate limits and confirms the browser session",
   const requests = [];
   const scheduledDelays = [];
   const attempts = { callback: 0, status: 0, me: 0 };
+  let cancelledResponseBodies = 0;
   let forceAmbiguousCallbackFailure = false;
+  let forcePermanentMeFailure = false;
   const response = (status, payload = null, retryAfter = null) => ({
     ok: status >= 200 && status < 300,
     status,
-    body: { async cancel() {} },
+    body: {
+      async cancel() {
+        cancelledResponseBodies += 1;
+      },
+    },
     headers: { get: () => retryAfter },
     json: async () => payload,
   });
@@ -639,6 +645,9 @@ test("embedded completion retries rate limits and confirms the browser session",
     }
     if (url.endsWith("/api/identity/me")) {
       attempts.me += 1;
+      if (forcePermanentMeFailure) {
+        return response(401);
+      }
       return attempts.me === 1
         ? response(503)
         : response(200, {
@@ -731,6 +740,7 @@ test("embedded completion retries rate limits and confirms the browser session",
     { url: "/api/backend/api/identity/me", method: "GET" },
   ]);
   assert.deepEqual(scheduledDelays, [30000, 15000, 5000]);
+  assert.equal(cancelledResponseBodies, 2);
 
   const requestCountAfterSuccess = requests.length;
   await assert.rejects(
@@ -769,4 +779,17 @@ test("embedded completion retries rate limits and confirms the browser session",
     /Callback failed with 502/
   );
   assert.equal(requests.length, requestCountAfterSuccess + 1);
+  assert.equal(cancelledResponseBodies, 3);
+
+  forceAmbiguousCallbackFailure = false;
+  forcePermanentMeFailure = true;
+  await assert.rejects(
+    module.exports.waitForAuthenticatedUserAfterLogin(
+      new AbortController().signal,
+      120_000
+    ),
+    /session check failed with 401/
+  );
+  assert.equal(requests.length, requestCountAfterSuccess + 2);
+  assert.equal(cancelledResponseBodies, 4);
 });
