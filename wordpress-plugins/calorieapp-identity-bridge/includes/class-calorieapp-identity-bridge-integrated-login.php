@@ -78,7 +78,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.8';
+            : '0.3.9';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -93,6 +93,12 @@ class IntegratedLogin {
             $version,
             true
         );
+
+        // The XUMM account card is part of the shared Brizy header on every
+        // public page. Load the lightweight layout hooks site-wide; bridge
+        // requests still initialize only where [calorieapp_embed] is present.
+        wp_enqueue_style('calorieapp-identity-bridge-embed');
+        wp_enqueue_script('calorieapp-identity-bridge-embed');
     }
 
     public function render_shortcode($attributes = []): string {

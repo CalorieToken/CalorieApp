@@ -41,79 +41,34 @@
     });
   }
 
-  function bindLegacyMobileMenuVisibility() {
-    var page = document.documentElement;
-    var menuInputs = document.querySelectorAll(
-      '.brz-menu-simple .brz-input[type="checkbox"]'
-    );
-    if (
-      !page ||
-      !page.classList ||
-      typeof page.classList.toggle !== "function" ||
-      menuInputs.length === 0
-    ) {
-      return;
-    }
-
-    function syncMenuState() {
-      var menuOpen = false;
-      menuInputs.forEach(function (input) {
-        if (input.checked) {
-          menuOpen = true;
-        }
-      });
-      page.classList.toggle("calorieapp-brizy-nav-open", menuOpen);
-    }
-
-    menuInputs.forEach(function (input) {
-      if (input.getAttribute("data-calorieapp-menu-watch") === "1") {
+  function markLegacyMobileMenuColumn() {
+    var menuSurfaces = document.querySelectorAll(".brz-menu-simple");
+    menuSurfaces.forEach(function (menuSurface) {
+      if (typeof menuSurface.closest !== "function") {
         return;
       }
-      input.setAttribute("data-calorieapp-menu-watch", "1");
-      input.addEventListener("change", syncMenuState);
+      var menuColumn = menuSurface.closest(".brz-columns");
+      if (
+        menuColumn &&
+        menuColumn.classList &&
+        typeof menuColumn.classList.add === "function"
+      ) {
+        menuColumn.classList.add("calorieapp-brizy-menu-column");
+      }
     });
-    syncMenuState();
   }
 
-  function unifyLegacySigninSurfaces(triggerLogin, sessionActions) {
+  function markLegacyPageLayout() {
     var identityCard = null;
-
-    document
-      .querySelectorAll('.xl-card a[href*="xl-signin"]')
-      .forEach(function (signinLink) {
-        if (typeof signinLink.closest !== "function") {
-          return;
-        }
-
-        var card = signinLink.closest(".xl-card");
-        if (!card || card.closest("[data-calorieapp-embed]")) {
-          return;
-        }
-        if (!identityCard) {
-          identityCard = card;
-        }
-
-        if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
-          return;
-        }
-        signinLink.setAttribute("data-calorieapp-unified-login", "1");
-        signinLink.addEventListener("click", function (event) {
-          event.preventDefault();
-          triggerLogin();
-        });
-      });
-
+    document.querySelectorAll(".xl-card").forEach(function (card) {
+      if (!identityCard && !card.closest("[data-calorieapp-embed]")) {
+        identityCard = card;
+      }
+    });
     if (!identityCard) {
-      document.querySelectorAll(".xl-card").forEach(function (card) {
-        if (!identityCard && !card.closest("[data-calorieapp-embed]")) {
-          identityCard = card;
-        }
-      });
+      return null;
     }
 
-    if (!identityCard) {
-      return;
-    }
     if (identityCard.classList && typeof identityCard.classList.add === "function") {
       identityCard.classList.add("calorieapp-identity-card");
     }
@@ -127,7 +82,36 @@
         identityWrapper.classList.add("calorieapp-identity-wrapper");
       }
     }
-    bindLegacyMobileMenuVisibility();
+    markLegacyMobileMenuColumn();
+    return identityCard;
+  }
+
+  function unifyLegacySigninSurfaces(triggerLogin, sessionActions, identityCard) {
+    document
+      .querySelectorAll('.xl-card a[href*="xl-signin"]')
+      .forEach(function (signinLink) {
+        if (typeof signinLink.closest !== "function") {
+          return;
+        }
+
+        var card = signinLink.closest(".xl-card");
+        if (!card || card.closest("[data-calorieapp-embed]")) {
+          return;
+        }
+
+        if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
+          return;
+        }
+        signinLink.setAttribute("data-calorieapp-unified-login", "1");
+        signinLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          triggerLogin();
+        });
+      });
+
+    if (!identityCard) {
+      return;
+    }
     if (
       sessionActions &&
       typeof identityCard.appendChild === "function" &&
@@ -916,6 +900,7 @@
   }
 
   function initAll() {
+    var identityCard = markLegacyPageLayout();
     var roots = document.querySelectorAll("[data-calorieapp-embed]");
     if (roots.length === 0) {
       return;
@@ -934,7 +919,7 @@
       var sessionActions = roots[0].querySelector(
         ".calorieapp-site-session-actions"
       );
-      unifyLegacySigninSurfaces(loginTriggers[0], sessionActions);
+      unifyLegacySigninSurfaces(loginTriggers[0], sessionActions, identityCard);
     }
   }
 
