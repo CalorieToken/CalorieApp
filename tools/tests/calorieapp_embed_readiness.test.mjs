@@ -48,6 +48,9 @@ function element(hidden = true) {
       add(value) {
         classes.add(value);
       },
+      remove(value) {
+        classes.delete(value);
+      },
       contains(value) {
         return classes.has(value);
       },
@@ -415,8 +418,13 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     iconLink.classList.contains("calorieapp-page-tool-link"),
     true
   );
-  assert.match(icon.innerHTML, /calorieapp-page-tool-logo/);
-  assert.match(icon.innerHTML, /width="1em" height="1em"/);
+  assert.match(icon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
+  assert.match(
+    icon.innerHTML,
+    /src="https:\/\/app\.calorietoken\.net\/logo\.png"/
+  );
+  assert.match(icon.innerHTML, /width="48" height="48"/);
+  assert.doesNotMatch(icon.innerHTML, /<svg/);
   assert.equal(
     textLink.href,
     "https://calorietoken.net/index.php/integrated-exchange/"
@@ -425,8 +433,239 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     slashlessIconLink.href,
     "https://calorietoken.net/index.php/calorieapp/"
   );
-  assert.match(slashlessIcon.innerHTML, /calorieapp-page-tool-logo/);
+  assert.match(slashlessIcon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
   assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
+  const [styleSource, pluginSource] = await Promise.all([
+    readFile(STYLE_PATH, "utf8"),
+    readFile(PLUGIN_PATH, "utf8"),
+  ]);
+
+  assert.equal(
+    (
+      pluginSource.match(
+        /class="calorieapp-page-tool-position calorieapp-page-tool-position-/g
+      ) || []
+    ).length,
+    3
+  );
+  assert.match(pluginSource, /home-minimal\.svg#nc_icon/);
+  assert.match(pluginSource, /square-upload\.svg#nc_icon/);
+  assert.match(
+    pluginSource,
+    /\$calorieapp_logo_url\s*=\s*'https:\/\/app\.calorietoken\.net\/logo\.png';/
+  );
+  assert.match(
+    pluginSource,
+    /<img class="calorieapp-page-tool-logo" src="<\?php echo esc_url\(\$calorieapp_logo_url\); \?>"/
+  );
+  assert.match(
+    pluginSource,
+    /\$brizy_glyph_base_url\s*=\s*content_url\(\s*'\/plugins\/brizy\/public\/editor-build\/prod\/editor\/icons\/glyph\/'\s*\);/
+  );
+  assert.match(
+    pluginSource,
+    /href="<\?php echo esc_url\(\$brizy_glyph_base_url \. 'home-minimal\.svg#nc_icon'\); \?>"/
+  );
+  assert.match(
+    pluginSource,
+    /href="<\?php echo esc_url\(\$brizy_glyph_base_url \. 'square-upload\.svg#nc_icon'\); \?>"/
+  );
+
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tools\s*\{[^}]*display:\s*block;/s
+  );
+  assert.doesNotMatch(
+    styleSource,
+    /\.calorieapp-page-tools\s*\{[^}]*display:\s*contents;/s
+  );
+
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool-position\s*\{[^}]*position:\s*fixed;[^}]*width:\s*30%;[^}]*right:\s*81px;[^}]*pointer-events:\s*none;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool\s*\{[^}]*pointer-events:\s*auto;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool:focus-visible\s*\{[^}]*outline:\s*3px solid rgba\(7,\s*148,\s*71,\s*0\.24\);[^}]*outline-offset:\s*2px;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool-position-home\s*\{[^}]*bottom:\s*12px;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool-position-app\s*\{[^}]*bottom:\s*66px;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool-position-top\s*\{[^}]*bottom:\s*120px;/s
+  );
+
+  const mobileRules = styleSource.slice(styleSource.indexOf("@media (max-width: 767px)"));
+  assert.match(
+    mobileRules,
+    /\.calorieapp-page-tool-position\s*\{[^}]*right:\s*-35px;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-page-tool-position-home\s*\{[^}]*bottom:\s*-8px;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-page-tool-position-app\s*\{[^}]*bottom:\s*25px;/s
+  );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-page-tool-position-top\s*\{[^}]*bottom:\s*60px;/s
+  );
+});
+
+test("XPMarket card normalizes its legacy Brizy host without reserved height", async () => {
+  const [scriptSource, styleSource] = await Promise.all([
+    readFile(SCRIPT_PATH, "utf8"),
+    readFile(STYLE_PATH, "utf8"),
+  ]);
+  const brizyWrapper = element(false);
+  const shortcodeHost = element(false);
+  shortcodeHost.closest = (selector) =>
+    selector === ".brz-wrapper" ? brizyWrapper : null;
+  const widget = element(false);
+  widget.closest = (selector) =>
+    selector === ".brz-wp-shortcode" ? shortcodeHost : null;
+  widget.querySelector = () => null;
+  const document = {
+    readyState: "complete",
+    querySelector() {
+      return null;
+    },
+    querySelectorAll(selector) {
+      if (
+        selector ===
+        ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
+      ) {
+        return [widget];
+      }
+      return [];
+    },
+  };
+  const window = { calorieappIdentityBridgeChrome: {} };
+
+  vm.runInNewContext(scriptSource, { document, window });
+
+  assert.equal(
+    shortcodeHost.classList.contains("calorieapp-xpmarket-host"),
+    true
+  );
+  assert.equal(
+    brizyWrapper.classList.contains("calorieapp-xpmarket-brizy-wrapper"),
+    true
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-xpmarket-brizy-wrapper\s*\{[^}]*width:\s*100%\s*!important;[^}]*min-height:\s*0\s*!important;[^}]*height:\s*auto\s*!important;[^}]*margin:\s*0\s*!important;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-xpmarket-host\s*,[^{]*\.calorieapp-xpmarket-host\s*>\s*div\s*\{[^}]*min-height:\s*0\s*!important;[^}]*height:\s*auto\s*!important;/s
+  );
+  assert.doesNotMatch(
+    styleSource,
+    /\.calorieapp-xpmarket-widget\s*\{[^}]*min-height:\s*200px;/s
+  );
+  assert.doesNotMatch(
+    styleSource,
+    /\.calorieapp-xpmarket-link\s*\{[^}]*min-height:\s*190px;/s
+  );
+});
+
+test("phase A layout contract holds at 360, 412, and 1440 px", async () => {
+  const styleSource = await readFile(STYLE_PATH, "utf8");
+  const block = (source, selector) => {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const match = source.match(new RegExp(escaped + "\\s*\\{([^}]*)\\}"));
+    assert.ok(match, `Missing CSS block for ${selector}`);
+    return match[1];
+  };
+  const number = (source, property, unit = "px") => {
+    const match = source.match(
+      new RegExp(property + ":\\s*(-?[0-9.]+)" + unit.replace("%", "\\%"))
+    );
+    assert.ok(match, `Missing ${property} in ${source}`);
+    return Number(match[1]);
+  };
+  const closeTo = (actual, expected, label) => {
+    assert.ok(
+      Math.abs(actual - expected) < 0.01,
+      `${label}: expected ${expected}, received ${actual}`
+    );
+  };
+
+  const position = block(styleSource, ".calorieapp-page-tool-position");
+  const mobileSource = styleSource.slice(
+    styleSource.indexOf("@media (max-width: 767px)")
+  );
+  const mobilePosition = block(
+    mobileSource,
+    ".calorieapp-page-tool-position"
+  );
+  const icon = block(styleSource, ".calorieapp-brizy-tool-icon");
+  const wrapperPercent = number(position, "width", "%");
+  const desktopRight = number(position, "right");
+  const mobileRight = number(mobilePosition, "right");
+  const iconWidth = number(icon, "width");
+  const marketDimensions = styleSource.match(
+    /\.calorieapp-xpmarket-widget\s*\{[^}]*width:\s*min\(([0-9.]+)px,\s*calc\(100%\s*-\s*([0-9.]+)px\)\)/s
+  );
+  assert.ok(marketDimensions);
+  const marketMaximum = Number(marketDimensions[1]);
+  const marketGutter = Number(marketDimensions[2]);
+  const expected = {
+    360: { shortcutLeft: 317, marketLeft: 20, marketWidth: 320 },
+    412: { shortcutLeft: 361.2, marketLeft: 20, marketWidth: 372 },
+    1440: { shortcutLeft: 1119, marketLeft: 530, marketWidth: 380 },
+  };
+
+  for (const viewportWidth of [360, 412, 1440]) {
+    const mobile = viewportWidth <= 767;
+    const right = mobile ? mobileRight : desktopRight;
+    const shortcutLeft =
+      viewportWidth -
+      right -
+      (viewportWidth * wrapperPercent) / 100 / 2 -
+      iconWidth / 2;
+    const brizyHostWidth =
+      viewportWidth >= 1200 ? 1140 : viewportWidth - 30;
+    const marketWidth = Math.min(
+      marketMaximum,
+      brizyHostWidth - marketGutter
+    );
+    const marketLeft = (viewportWidth - marketWidth) / 2;
+
+    closeTo(
+      shortcutLeft,
+      expected[viewportWidth].shortcutLeft,
+      `${viewportWidth}px shortcut position`
+    );
+    closeTo(
+      marketWidth,
+      expected[viewportWidth].marketWidth,
+      `${viewportWidth}px market width`
+    );
+    closeTo(
+      marketLeft,
+      expected[viewportWidth].marketLeft,
+      `${viewportWidth}px market centring`
+    );
+    assert.ok(marketLeft >= 0);
+    assert.ok(marketLeft + marketWidth <= viewportWidth);
+  }
 });
 
 test("site chrome replaces legacy market cards with XPMarket data", async () => {

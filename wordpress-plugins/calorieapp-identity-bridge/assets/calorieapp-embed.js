@@ -24,13 +24,7 @@
     "/integrated-exchange/",
   ];
   var CALORIEAPP_LOGO_MARKUP =
-    '<svg class="calorieapp-page-tool-logo" width="1em" height="1em" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
-    '<circle cx="100" cy="100" r="95" fill="none" stroke="#505ba9" stroke-width="16"></circle>' +
-    '<circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" opacity=".8"></circle>' +
-    '<circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8"></circle>' +
-    '<g transform="translate(80 100)"><line x1="0" y1="-20" x2="0" y2="20" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"></line><line x1="-12" y1="-15" x2="-12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"></line><line x1="12" y1="-15" x2="12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"></line><rect x="-16" y="18" width="32" height="8" rx="4" fill="#1a1a1a"></rect></g>' +
-    '<g transform="translate(50 85)"><rect width="8" height="35" rx="4" fill="#1a1a1a"></rect><rect x="2" y="35" width="4" height="10" rx="2" fill="#1a1a1a"></rect></g>' +
-    "</svg>";
+    '<img class="calorieapp-page-tool-logo" src="https://app.calorietoken.net/logo.png" alt="" width="48" height="48" aria-hidden="true" decoding="async">';
   var legacyIdentityCenterFrame = null;
   var xpMarketWidgetRequest = null;
 
@@ -65,6 +59,26 @@
       });
     }
     return (prefix || "") + formatted + (suffix || "");
+  }
+
+  function normalizeXpMarketBrizyLayout(widget) {
+    if (!widget || typeof widget.closest !== "function") {
+      return;
+    }
+
+    var shortcodeHost = widget.closest(".brz-wp-shortcode");
+    if (!shortcodeHost || !shortcodeHost.classList) {
+      return;
+    }
+    shortcodeHost.classList.add("calorieapp-xpmarket-host");
+
+    if (typeof shortcodeHost.closest !== "function") {
+      return;
+    }
+    var brizyWrapper = shortcodeHost.closest(".brz-wrapper");
+    if (brizyWrapper && brizyWrapper.classList) {
+      brizyWrapper.classList.add("calorieapp-xpmarket-brizy-wrapper");
+    }
   }
 
   function renderXpMarketWidget(widget, payload) {
@@ -131,6 +145,7 @@
       });
 
     widgets.forEach(function (widget) {
+      normalizeXpMarketBrizyLayout(widget);
       if (widget.getAttribute("data-calorieapp-xpmarket-widget") === "1") {
         return;
       }
@@ -296,6 +311,9 @@
         link.classList.add("calorieapp-page-tool-link");
       }
       icon.innerHTML = CALORIEAPP_LOGO_MARKUP;
+      if (icon.classList && typeof icon.classList.add === "function") {
+        icon.classList.add("calorieapp-page-tool-logo-frame");
+      }
     });
 
     document.querySelectorAll(".calorieapp-page-top").forEach(function (link) {
