@@ -41,6 +41,10 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.12 preserves the working compact widget and menu layout from 0.3.11,
+then measures the rendered mobile account card and corrects only Brizy's
+remaining horizontal container offset. It recalculates after viewport changes
+without changing the login, redirect, or logout flows.
 Version 0.3.11 keeps the site-wide XUMM account card visible in both Brizy menu
 states, overrides Brizy's mobile 11% shortcode width, centres the card against
 the mobile viewport including Brizy's narrower inner shortcode container, and

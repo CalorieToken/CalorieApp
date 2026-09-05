@@ -250,6 +250,7 @@
   }
 
   .calorieapp-identity-card {
+    --calorieapp-identity-center-shift: 0px;
     position: relative;
     z-index: 1;
     box-sizing: border-box;
@@ -258,6 +259,7 @@
     max-width: 100% !important;
     margin: 0 !important;
     font-size: 11px;
+    transform: translateX(var(--calorieapp-identity-center-shift)) !important;
   }
 
   .calorieapp-identity-card .xl-card-header {
