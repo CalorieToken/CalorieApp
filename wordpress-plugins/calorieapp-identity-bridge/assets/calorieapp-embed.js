@@ -16,7 +16,96 @@
   var JOINT_LOGOUT_TIMEOUT = 100000;
   var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
   var MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
+  var CALORIEAPP_PAGE_PATH = "/index.php/calorieapp/";
+  var LEGACY_EXCHANGE_PATHS = [
+    "/index.php/integrated-exchange/",
+    "/integrated-exchange/",
+  ];
+  var CALORIEAPP_LOGO_MARKUP =
+    '<svg class="calorieapp-page-tool-logo" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
+    '<circle cx="100" cy="100" r="95" fill="none" stroke="#505ba9" stroke-width="16"></circle>' +
+    '<circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" opacity=".8"></circle>' +
+    '<circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8"></circle>' +
+    '<g transform="translate(80 100)"><line x1="0" y1="-20" x2="0" y2="20" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"></line><line x1="-12" y1="-15" x2="-12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"></line><line x1="12" y1="-15" x2="12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"></line><rect x="-16" y="18" width="32" height="8" rx="4" fill="#1a1a1a"></rect></g>' +
+    '<g transform="translate(50 85)"><rect width="8" height="35" rx="4" fill="#1a1a1a"></rect><rect x="2" y="35" width="4" height="10" rx="2" fill="#1a1a1a"></rect></g>' +
+    "</svg>";
   var legacyIdentityCenterFrame = null;
+
+  function enhanceSharedPageShortcuts() {
+    if (
+      !window.location ||
+      !window.location.origin ||
+      typeof document.querySelectorAll !== "function"
+    ) {
+      return;
+    }
+
+    var calorieAppUrl;
+    try {
+      calorieAppUrl = new URL(CALORIEAPP_PAGE_PATH, window.location.origin).href;
+    } catch (_error) {
+      return;
+    }
+
+    document.querySelectorAll("a[href]").forEach(function (link) {
+      if (
+        !link ||
+        typeof link.getAttribute !== "function" ||
+        typeof link.querySelector !== "function"
+      ) {
+        return;
+      }
+
+      var href = link.getAttribute("href") || "";
+      var target;
+      try {
+        target = new URL(href, window.location.href || window.location.origin);
+      } catch (_error) {
+        return;
+      }
+      if (
+        target.origin !== window.location.origin ||
+        LEGACY_EXCHANGE_PATHS.indexOf(target.pathname) === -1
+      ) {
+        return;
+      }
+
+      // Only replace Brizy's compact shortcut. Text links remain untouched so
+      // a later content review can handle them with their surrounding copy.
+      var icon = link.querySelector(".brz-icon");
+      if (!icon) {
+        return;
+      }
+
+      link.setAttribute("href", calorieAppUrl);
+      link.setAttribute("aria-label", "CalorieApp");
+      link.setAttribute("title", "CalorieApp");
+      if (link.classList && typeof link.classList.add === "function") {
+        link.classList.add("calorieapp-page-tool-link");
+      }
+      icon.innerHTML = CALORIEAPP_LOGO_MARKUP;
+    });
+
+    document.querySelectorAll(".calorieapp-page-top").forEach(function (link) {
+      if (
+        !link ||
+        typeof link.addEventListener !== "function" ||
+        (typeof link.getAttribute === "function" &&
+          link.getAttribute("data-calorieapp-top-ready") === "1")
+      ) {
+        return;
+      }
+      link.setAttribute("data-calorieapp-top-ready", "1");
+      link.addEventListener("click", function (event) {
+        if (event && typeof event.preventDefault === "function") {
+          event.preventDefault();
+        }
+        if (typeof window.scrollTo === "function") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    });
+  }
 
   function retryAfterMilliseconds(response) {
     var value = response.headers && response.headers.get("retry-after");
@@ -1169,6 +1258,7 @@
   }
 
   function initAll() {
+    enhanceSharedPageShortcuts();
     var identityCard = markLegacyPageLayout();
     keepLegacyIdentityCardCentered(identityCard);
     var roots = document.querySelectorAll("[data-calorieapp-embed]");

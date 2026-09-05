@@ -343,6 +343,40 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertStringContainsString('data-app-origin="https://app.calorietoken.net"', $html);
     }
 
+    public function test_calorieapp_page_ending_renders_once_after_shortcode(): void {
+        $integrated_login = new IntegratedLogin(new RestApi(new Storage()));
+
+        ob_start();
+        $integrated_login->render_calorieapp_page_ending();
+        $this->assertSame('', (string) ob_get_clean());
+
+        $integrated_login->render_shortcode(
+            ['src' => 'https://app.calorietoken.net']
+        );
+
+        ob_start();
+        $integrated_login->render_calorieapp_page_ending();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString(
+            'data-calorieapp-shared-page-ending',
+            $html
+        );
+        $this->assertStringContainsString(
+            esc_url(home_url('/index.php/calorieapp/')),
+            $html
+        );
+        $this->assertStringContainsString('calorieapp-page-tool-logo', $html);
+        $this->assertStringContainsString('Operator: ICTHendrikse · KVK 73774693', $html);
+        $this->assertStringContainsString('Privacy Policy', $html);
+        $this->assertStringContainsString('Terms &amp; Conditions', $html);
+        $this->assertStringContainsString('https://github.com/CalorieToken', $html);
+
+        ob_start();
+        $integrated_login->render_calorieapp_page_ending();
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
     private function start_flow(string $locale = 'en'): WP_REST_Response {
         $request = $this->same_origin_request(
             'POST',
