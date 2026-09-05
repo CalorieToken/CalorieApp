@@ -314,8 +314,8 @@
     line-height: 1.25;
   }
 
-  .brz:has(.brz-menu-simple .brz-input:checked)
-    .calorieapp-identity-wrapper {
+  .calorieapp-brizy-nav-open .calorieapp-identity-wrapper,
+  .brz:has(.brz-menu-simple .brz-input:checked) .calorieapp-identity-wrapper {
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
