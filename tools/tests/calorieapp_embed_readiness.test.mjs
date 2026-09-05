@@ -353,6 +353,88 @@ test("site-wide header layout loads without starting the CalorieApp bridge", asy
   );
 });
 
+test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const icon = element(false);
+  icon.innerHTML = '<svg class="old-exchange-icon"></svg>';
+  const iconLink = element(false);
+  iconLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange/";
+  iconLink.querySelector = (selector) =>
+    selector === ".brz-icon" ? icon : null;
+  const textLink = element(false);
+  textLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange/";
+  textLink.querySelector = () => null;
+  const slashlessIcon = element(false);
+  const slashlessIconLink = element(false);
+  slashlessIconLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange";
+  slashlessIconLink.querySelector = (selector) =>
+    selector === ".brz-icon" ? slashlessIcon : null;
+  const unrelatedLink = element(false);
+  unrelatedLink.href = "https://calorietoken.net/index.php/whitepaper/";
+  unrelatedLink.querySelector = () => null;
+  const parsedUrls = [];
+  function TrackingURL(value, base) {
+    parsedUrls.push(String(value));
+    return new URL(value, base);
+  }
+  const document = {
+    readyState: "complete",
+    querySelector() {
+      return null;
+    },
+    querySelectorAll(selector) {
+      if (selector === "a[href]") {
+        return [iconLink, textLink, slashlessIconLink, unrelatedLink];
+      }
+      return [];
+    },
+  };
+  const window = {
+    location: {
+      href: "https://calorietoken.net/index.php/whitepaper/",
+      origin: "https://calorietoken.net",
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, URL: TrackingURL, window });
+
+  assert.equal(
+    iconLink.href,
+    "https://calorietoken.net/index.php/calorieapp/"
+  );
+  assert.equal(iconLink["aria-label"], "CalorieApp");
+  assert.equal(iconLink.title, "CalorieApp");
+  assert.equal(
+    iconLink.classList.contains("calorieapp-page-tool-link"),
+    true
+  );
+  assert.match(icon.innerHTML, /calorieapp-page-tool-logo/);
+  assert.equal(
+    textLink.href,
+    "https://calorietoken.net/index.php/integrated-exchange/"
+  );
+  assert.equal(
+    slashlessIconLink.href,
+    "https://calorietoken.net/index.php/calorieapp/"
+  );
+  assert.match(slashlessIcon.innerHTML, /calorieapp-page-tool-logo/);
+  assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("shared footer uses the current WordPress year and translatable copy", async () => {
+  const source = await readFile(PLUGIN_PATH, "utf8");
+
+  assert.match(source, /\$copyright_year\s*=\s*wp_date\('Y'\);/);
+  assert.doesNotMatch(source, /© 2026/);
+  assert.match(
+    source,
+    /esc_html__\('Operator: ICTHendrikse · KVK 73774693'/
+  );
+});
+
 test("Xaman waits for readiness and refreshes the joint account state", async () => {
   const source = await readFile(SCRIPT_PATH, "utf8");
   const appOrigin = "https://calorieapp-frontend.onrender.com";

@@ -31,6 +31,10 @@ class IntegratedLogin {
 
     private RestApi $rest_api;
 
+    private bool $shortcode_rendered = false;
+
+    private bool $page_ending_rendered = false;
+
     public function __construct(RestApi $rest_api) {
         $this->rest_api = $rest_api;
     }
@@ -39,6 +43,7 @@ class IntegratedLogin {
         add_action('rest_api_init', [$this, 'register_routes']);
         add_action('wp_enqueue_scripts', [$this, 'register_assets']);
         add_action('wp_footer', [$this, 'render_sitewide_session_actions']);
+        add_action('wp_footer', [$this, 'render_calorieapp_page_ending'], 20);
         add_shortcode('calorieapp_embed', [$this, 'render_shortcode']);
     }
 
@@ -79,7 +84,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.13';
+            : '0.3.14';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -159,6 +164,93 @@ class IntegratedLogin {
         <?php
     }
 
+    /**
+     * Add the shared site ending only to a page that rendered CalorieApp.
+     *
+     * Brizy already owns the other public page layouts. Keeping this outside
+     * stored Brizy content avoids rewriting those pages and fills only the one
+     * missing footer/shortcut surface.
+     */
+    public function render_calorieapp_page_ending(): void {
+        if (!$this->shortcode_rendered || $this->page_ending_rendered) {
+            return;
+        }
+
+        $this->page_ending_rendered = true;
+        $home_url = home_url('/');
+        $calorieapp_url = home_url('/index.php/calorieapp/');
+        $copyright_year = wp_date('Y');
+        $social_links = [
+            'Telegram' => 'https://t.me/+7YxaKdQYWNA0NDA0',
+            'GitHub' => 'https://github.com/CalorieToken',
+            'X' => 'https://twitter.com/CalorieToken',
+            'Facebook' => 'https://www.facebook.com/CalorieToken-100422882407878',
+            'YouTube' => 'https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA',
+            'LinkedIn' => 'https://www.linkedin.com/company/calorie-token/',
+            'Instagram' => 'https://www.instagram.com/calorietoken/',
+        ];
+        ?>
+        <section class="calorieapp-shared-page-ending" data-calorieapp-shared-page-ending>
+            <nav class="calorieapp-page-tools" aria-label="<?php echo esc_attr__('Page shortcuts', 'calorieapp-identity-bridge'); ?>">
+                <a
+                    class="calorieapp-page-tool"
+                    href="<?php echo esc_url($home_url); ?>"
+                    aria-label="<?php echo esc_attr__('Home', 'calorieapp-identity-bridge'); ?>"
+                    title="<?php echo esc_attr__('Home', 'calorieapp-identity-bridge'); ?>"
+                ><span aria-hidden="true">&#8962;</span></a>
+                <a
+                    class="calorieapp-page-tool calorieapp-page-tool-link"
+                    href="<?php echo esc_url($calorieapp_url); ?>"
+                    aria-label="<?php echo esc_attr__('CalorieApp', 'calorieapp-identity-bridge'); ?>"
+                    title="<?php echo esc_attr__('CalorieApp', 'calorieapp-identity-bridge'); ?>"
+                >
+                    <svg class="calorieapp-page-tool-logo" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+                        <circle cx="100" cy="100" r="95" fill="none" stroke="#505ba9" stroke-width="16" />
+                        <circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" opacity=".8" />
+                        <circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8" />
+                        <g transform="translate(80 100)">
+                            <line x1="0" y1="-20" x2="0" y2="20" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round" />
+                            <line x1="-12" y1="-15" x2="-12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round" />
+                            <line x1="12" y1="-15" x2="12" y2="15" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round" />
+                            <rect x="-16" y="18" width="32" height="8" rx="4" fill="#1a1a1a" />
+                        </g>
+                        <g transform="translate(50 85)">
+                            <rect width="8" height="35" rx="4" fill="#1a1a1a" />
+                            <rect x="2" y="35" width="4" height="10" rx="2" fill="#1a1a1a" />
+                        </g>
+                    </svg>
+                </a>
+                <a
+                    class="calorieapp-page-tool calorieapp-page-top"
+                    href="#"
+                    aria-label="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>"
+                    title="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>"
+                ><span aria-hidden="true">&#8593;</span></a>
+            </nav>
+            <footer class="calorieapp-shared-footer">
+                <nav class="calorieapp-shared-socials" aria-label="<?php echo esc_attr__('CalorieToken social channels', 'calorieapp-identity-bridge'); ?>">
+                    <?php foreach ($social_links as $label => $url) : ?>
+                        <a href="<?php echo esc_url($url); ?>" rel="noopener"><?php echo esc_html($label); ?></a>
+                    <?php endforeach; ?>
+                </nav>
+                <p><?php echo esc_html__('Operator: ICTHendrikse · KVK 73774693', 'calorieapp-identity-bridge'); ?></p>
+                <p>
+                    <?php
+                    printf(
+                        esc_html__('© %s ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse', 'calorieapp-identity-bridge'),
+                        esc_html($copyright_year)
+                    );
+                    ?>
+                </p>
+                <p class="calorieapp-shared-legal-links">
+                    <a href="<?php echo esc_url(home_url('/index.php/privacy-policy/')); ?>"><?php echo esc_html__('Privacy Policy', 'calorieapp-identity-bridge'); ?></a>
+                    <a href="<?php echo esc_url(home_url('/index.php/terms-conditions/')); ?>"><?php echo esc_html__('Terms & Conditions', 'calorieapp-identity-bridge'); ?></a>
+                </p>
+            </footer>
+        </section>
+        <?php
+    }
+
     public function render_shortcode($attributes = []): string {
         $attributes = shortcode_atts(
             [
@@ -174,6 +266,8 @@ class IntegratedLogin {
         if ($src === '') {
             return '<p>CalorieApp embed URL is invalid.</p>';
         }
+
+        $this->shortcode_rendered = true;
 
         $height = max(700, min(4000, (int) $attributes['height']));
         $requested_locale = trim((string) $attributes['locale']);
