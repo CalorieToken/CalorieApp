@@ -485,18 +485,21 @@ test("login status polling slows down by age, failures, and Retry-After", async 
 
   let now = 0;
   const scheduledDelays = [];
+  let cancelledResponseBodies = 0;
+  const retryableResponse = (status) => ({
+    ok: false,
+    status,
+    body: {
+      async cancel() {
+        cancelledResponseBodies += 1;
+      },
+    },
+    headers: { get: () => "25" },
+  });
   const responses = [
     new Error("synthetic transport failure"),
-    {
-      ok: false,
-      status: 503,
-      headers: { get: () => "25" },
-    },
-    {
-      ok: false,
-      status: 429,
-      headers: { get: () => "25" },
-    },
+    retryableResponse(503),
+    retryableResponse(429),
     {
       ok: true,
       status: 200,
@@ -604,4 +607,195 @@ test("login status polling slows down by age, failures, and Retry-After", async 
 
   assert.equal(requestCount, 5);
   assert.deepEqual(scheduledDelays, [5000, 10000, 25000, 30000, 10000]);
+  assert.equal(cancelledResponseBodies, 2);
+});
+
+test("embedded completion retries rate limits and confirms the browser session", async () => {
+  const { compiled } = await compiledLoginModule();
+  let now = 0;
+  const requests = [];
+  const scheduledDelays = [];
+  const attempts = { callback: 0, status: 0, me: 0 };
+  let cancelledResponseBodies = 0;
+  let forceAmbiguousCallbackFailure = false;
+  let forcePermanentMeFailure = false;
+  const response = (status, payload = null, retryAfter = null) => ({
+    ok: status >= 200 && status < 300,
+    status,
+    body: {
+      async cancel() {
+        cancelledResponseBodies += 1;
+      },
+    },
+    headers: { get: () => retryAfter },
+    json: async () => payload,
+  });
+  const backendRequest = async (url, options = {}) => {
+    requests.push({ url, method: options.method || "GET" });
+    if (url.endsWith("/api/identity/callback")) {
+      attempts.callback += 1;
+      if (forceAmbiguousCallbackFailure) {
+        return response(502);
+      }
+      return attempts.callback === 1
+        ? response(429)
+        : response(200, { locale: "en-US" });
+    }
+    if (url.endsWith("/api/identity/login/status")) {
+      attempts.status += 1;
+      return attempts.status === 1
+        ? response(429)
+        : response(200, { status: "authenticated", locale: "en" });
+    }
+    if (url.endsWith("/api/identity/me")) {
+      attempts.me += 1;
+      if (forcePermanentMeFailure) {
+        return response(401);
+      }
+      return attempts.me === 1
+        ? response(503)
+        : response(200, {
+            user_id: "calorieapp-user",
+            created_at: "2026-09-05T00:00:00Z",
+          });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  class TestBackendRequestTimeoutError extends Error {}
+  const module = { exports: {} };
+  const context = vm.createContext({
+    AbortController,
+    Date: {
+      now: () => now,
+      parse: Date.parse,
+    },
+    Error,
+    Math,
+    Number,
+    Promise,
+    URL,
+    clearImmediate,
+    console,
+    module,
+    exports: module.exports,
+    process: { env: {} },
+    require(specifier) {
+      if (specifier === "react") {
+        return {};
+      }
+      if (specifier === "react/jsx-runtime") {
+        return { Fragment: Symbol("Fragment"), jsx() {}, jsxs() {} };
+      }
+      if (specifier.startsWith("@/components/")) {
+        return new Proxy({}, { get: () => () => {} });
+      }
+      if (specifier === "@/lib/backendRequest") {
+        return {
+          BACKEND_WAKE_BASE_URL: "https://backend.example",
+          backendRequest,
+          backendUnavailableMessage: (_error, fallback) => fallback,
+          BackendRequestTimeoutError: TestBackendRequestTimeoutError,
+          waitForBackendReady: async () => {},
+        };
+      }
+      if (specifier === "@/lib/locales") {
+        return {
+          resolveLocale: (value) => (value === "en-US" ? "en" : value || "en"),
+        };
+      }
+      throw new Error(`Unexpected require: ${specifier}`);
+    },
+    setImmediate,
+    window: {
+      clearTimeout(timer) {
+        clearImmediate(timer);
+      },
+      setTimeout(callback, delay) {
+        scheduledDelays.push(delay);
+        return setImmediate(() => {
+          now += delay;
+          callback();
+        });
+      },
+    },
+  });
+
+  vm.runInContext(compiled, context);
+  const user = await module.exports.completeEmbeddedLogin(
+    {
+      state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      expires_at: "2099-01-01T00:00:00Z",
+      wordpress_signin_url: "https://calorietoken.net/",
+      browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "en",
+    },
+    "authorization-code",
+    "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    new AbortController().signal,
+    120_000
+  );
+
+  assert.equal(user.user_id, "calorieapp-user");
+  assert.deepEqual(requests, [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+  assert.deepEqual(scheduledDelays, [30000, 15000, 5000]);
+  assert.equal(cancelledResponseBodies, 3);
+
+  const requestCountAfterSuccess = requests.length;
+  await assert.rejects(
+    module.exports.completeEmbeddedLogin(
+      {
+        state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+        expires_at: "2099-01-01T00:00:00Z",
+        wordpress_signin_url: "https://calorietoken.net/",
+        browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+        locale: "en",
+      },
+      "authorization-code",
+      "different-state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      new AbortController().signal,
+      120_000
+    ),
+    /state did not match/
+  );
+  assert.equal(requests.length, requestCountAfterSuccess);
+
+  forceAmbiguousCallbackFailure = true;
+  await assert.rejects(
+    module.exports.completeEmbeddedLogin(
+      {
+        state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+        expires_at: "2099-01-01T00:00:00Z",
+        wordpress_signin_url: "https://calorietoken.net/",
+        browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+        locale: "en",
+      },
+      "authorization-code",
+      "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      new AbortController().signal,
+      120_000
+    ),
+    /Callback failed with 502/
+  );
+  assert.equal(requests.length, requestCountAfterSuccess + 1);
+  assert.equal(cancelledResponseBodies, 4);
+
+  forceAmbiguousCallbackFailure = false;
+  forcePermanentMeFailure = true;
+  await assert.rejects(
+    module.exports.waitForAuthenticatedUserAfterLogin(
+      new AbortController().signal,
+      120_000
+    ),
+    /session check failed with 401/
+  );
+  assert.equal(requests.length, requestCountAfterSuccess + 2);
+  assert.equal(cancelledResponseBodies, 5);
 });
