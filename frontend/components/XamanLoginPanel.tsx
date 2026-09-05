@@ -441,12 +441,37 @@ export async function prepareEmbeddedLogin(
 }
 
 export async function requestCalorieAppLogout(): Promise<void> {
-  const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
-    method: "POST",
-  });
-  if (response.status !== 401 && !response.ok) {
-    throw new Error("Unable to log out");
+  let logoutFailure: unknown = null;
+
+  try {
+    const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
+      method: "POST",
+    });
+    if (response.status === 401 || response.ok) {
+      return;
+    }
+    logoutFailure = new Error("Unable to log out");
+  } catch (error) {
+    logoutFailure = error;
   }
+
+  // Revocation can succeed even when its response is interrupted. Confirm the
+  // resulting state before blocking the matching WordPress logout.
+  try {
+    const verification = await backendRequest(
+      `${BACKEND_BASE_URL}/api/identity/me`,
+      { cache: "no-store" }
+    );
+    if (verification.status === 401) {
+      return;
+    }
+  } catch {
+    // Preserve the original failure when the session state is unavailable.
+  }
+
+  throw logoutFailure instanceof Error
+    ? logoutFailure
+    : new Error("Unable to log out");
 }
 
 export function XamanLoginPanel() {

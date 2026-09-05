@@ -209,13 +209,46 @@
 }
 
 @media (max-width: 768px) {
+  .calorieapp-identity-card {
+    box-sizing: border-box;
+    width: min(240px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px);
+  }
+
   .calorieapp-site-session-actions {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 6px;
+    margin-top: 8px !important;
+    border-radius: 12px;
+    padding: 7px;
+  }
+
+  .calorieapp-session-indicator {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .calorieapp-session-copy {
+    gap: 0;
+    line-height: 1.1;
+  }
+
+  .calorieapp-session-copy strong {
+    font-size: 11px;
+  }
+
+  .calorieapp-session-copy span {
+    display: none;
   }
 
   .calorieapp-site-logout {
-    grid-column: 1 / -1;
-    width: 100%;
+    min-height: 34px;
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.1;
+    white-space: nowrap;
   }
 
   .calorieapp-login-modal {
