@@ -485,18 +485,21 @@ test("login status polling slows down by age, failures, and Retry-After", async 
 
   let now = 0;
   const scheduledDelays = [];
+  let cancelledResponseBodies = 0;
+  const retryableResponse = (status) => ({
+    ok: false,
+    status,
+    body: {
+      async cancel() {
+        cancelledResponseBodies += 1;
+      },
+    },
+    headers: { get: () => "25" },
+  });
   const responses = [
     new Error("synthetic transport failure"),
-    {
-      ok: false,
-      status: 503,
-      headers: { get: () => "25" },
-    },
-    {
-      ok: false,
-      status: 429,
-      headers: { get: () => "25" },
-    },
+    retryableResponse(503),
+    retryableResponse(429),
     {
       ok: true,
       status: 200,
@@ -604,6 +607,7 @@ test("login status polling slows down by age, failures, and Retry-After", async 
 
   assert.equal(requestCount, 5);
   assert.deepEqual(scheduledDelays, [5000, 10000, 25000, 30000, 10000]);
+  assert.equal(cancelledResponseBodies, 2);
 });
 
 test("embedded completion retries rate limits and confirms the browser session", async () => {
@@ -635,7 +639,7 @@ test("embedded completion retries rate limits and confirms the browser session",
       }
       return attempts.callback === 1
         ? response(429)
-        : response(200, { locale: "en" });
+        : response(200, { locale: "en-US" });
     }
     if (url.endsWith("/api/identity/login/status")) {
       attempts.status += 1;
@@ -696,7 +700,9 @@ test("embedded completion retries rate limits and confirms the browser session",
         };
       }
       if (specifier === "@/lib/locales") {
-        return { resolveLocale: (value) => value || "en" };
+        return {
+          resolveLocale: (value) => (value === "en-US" ? "en" : value || "en"),
+        };
       }
       throw new Error(`Unexpected require: ${specifier}`);
     },
@@ -740,7 +746,7 @@ test("embedded completion retries rate limits and confirms the browser session",
     { url: "/api/backend/api/identity/me", method: "GET" },
   ]);
   assert.deepEqual(scheduledDelays, [30000, 15000, 5000]);
-  assert.equal(cancelledResponseBodies, 2);
+  assert.equal(cancelledResponseBodies, 3);
 
   const requestCountAfterSuccess = requests.length;
   await assert.rejects(
@@ -779,7 +785,7 @@ test("embedded completion retries rate limits and confirms the browser session",
     /Callback failed with 502/
   );
   assert.equal(requests.length, requestCountAfterSuccess + 1);
-  assert.equal(cancelledResponseBodies, 3);
+  assert.equal(cancelledResponseBodies, 4);
 
   forceAmbiguousCallbackFailure = false;
   forcePermanentMeFailure = true;
@@ -791,5 +797,5 @@ test("embedded completion retries rate limits and confirms the browser session",
     /session check failed with 401/
   );
   assert.equal(requests.length, requestCountAfterSuccess + 2);
-  assert.equal(cancelledResponseBodies, 4);
+  assert.equal(cancelledResponseBodies, 5);
 });

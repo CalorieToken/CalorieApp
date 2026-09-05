@@ -312,6 +312,7 @@ export async function waitForOriginLogin(
         ),
         retryAfterMilliseconds(response, LOGIN_STATUS_RATE_LIMIT_DELAY_MS)
       );
+      await discardLoginResponse(response);
       continue;
     }
     if ([502, 503, 504].includes(response.status)) {
@@ -323,9 +324,11 @@ export async function waitForOriginLogin(
         ),
         retryAfterMilliseconds(response, 0)
       );
+      await discardLoginResponse(response);
       continue;
     }
     if (!response.ok) {
+      await discardLoginResponse(response);
       throw new Error(`Login status failed with ${response.status}`);
     }
 
@@ -494,7 +497,7 @@ export async function completeEmbeddedLogin(
   if (!callback) {
     throw new BackendRequestTimeoutError();
   }
-  if (callback.locale !== pending.locale) {
+  if (resolveLocale(callback.locale) !== resolveLocale(pending.locale)) {
     throw new Error("Callback language context did not match");
   }
 
