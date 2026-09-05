@@ -23,6 +23,11 @@ five-minute backend handoff produces roughly 22 scheduled checks instead of up
 to 60. Browser timer throttling and request duration may reduce that number
 further.
 
+After a successful CalorieApp callback, the initiating browser performs one
+immediate handoff claim instead of waiting five seconds. At that point the
+handoff has already completed; ordinary pending and restoration flows retain
+the schedule above.
+
 ## Failures and provider guidance
 
 Consecutive transport or retryable HTTP failures use delays of 10, 20 and then

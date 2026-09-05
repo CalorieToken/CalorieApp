@@ -68,6 +68,10 @@ const EMBEDDED_LOGIN_START_RETRY_WINDOW_MS = 5 * 60_000;
 const LOGIN_START_RETRY_DELAY_MS = 15_000;
 const LOGIN_START_RATE_LIMIT_DELAY_MS = 30_000;
 const LOGIN_START_REQUEST_TIMEOUT_MS = 75_000;
+const LOGIN_CALLBACK_REQUEST_TIMEOUT_MS = 70_000;
+const LOGIN_COMPLETION_RETRY_WINDOW_MS = 2 * 60_000;
+const LOGIN_COMPLETION_RETRY_DELAY_MS = 5_000;
+const LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS = 30_000;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
 const BRIDGE_STATE_ALREADY_CONSUMED_MESSAGE =
@@ -251,7 +255,8 @@ export async function waitForOriginLogin(
   browserHandoffToken: string,
   expiresAt: string,
   signal: AbortSignal,
-  expectedLocale = "en"
+  expectedLocale = "en",
+  initialDelayMs = LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS
 ) {
   const parsedExpiry = Date.parse(expiresAt);
   const deadline = Number.isFinite(parsedExpiry)
@@ -259,13 +264,15 @@ export async function waitForOriginLogin(
     : Date.now() + LOGIN_STATUS_FALLBACK_LIFETIME_MS;
   const pollingStartedAt = Date.now();
   let consecutiveTransientFailures = 0;
-  let nextPollDelayMs = loginStatusPollDelayMs(0);
+  let nextPollDelayMs = Math.max(0, initialDelayMs);
 
   while (Date.now() < deadline) {
-    await delay(
-      Math.min(nextPollDelayMs, Math.max(0, deadline - Date.now())),
-      signal
-    );
+    if (nextPollDelayMs > 0) {
+      await delay(
+        Math.min(nextPollDelayMs, Math.max(0, deadline - Date.now())),
+        signal
+      );
+    }
     if (Date.now() >= deadline) {
       break;
     }
@@ -361,6 +368,148 @@ function retryAfterMilliseconds(
   return Math.min(
     Math.max(0, retryAt - Date.now()),
     LOGIN_STATUS_MAX_RETRY_AFTER_MS
+  );
+}
+
+async function discardLoginResponse(response: Response) {
+  try {
+    await response.body?.cancel();
+  } catch {
+    // The small error body may already have been consumed by the runtime.
+  }
+}
+
+export async function waitForAuthenticatedUserAfterLogin(
+  signal: AbortSignal,
+  retryWindowMs = LOGIN_COMPLETION_RETRY_WINDOW_MS
+): Promise<MeResponse> {
+  const deadline = Date.now() + retryWindowMs;
+  let nextRetryDelayMs = 0;
+
+  while (Date.now() < deadline) {
+    if (nextRetryDelayMs > 0) {
+      await delay(
+        Math.min(nextRetryDelayMs, Math.max(0, deadline - Date.now())),
+        signal
+      );
+    }
+    if (Date.now() >= deadline) {
+      break;
+    }
+
+    let response: Response;
+    try {
+      response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/me`,
+        { signal }
+      );
+    } catch (requestError) {
+      if (signal.aborted) {
+        throw signal.reason ?? requestError;
+      }
+      nextRetryDelayMs = LOGIN_COMPLETION_RETRY_DELAY_MS;
+      continue;
+    }
+
+    if (response.ok) {
+      return (await response.json()) as MeResponse;
+    }
+
+    if (![429, 502, 503, 504].includes(response.status)) {
+      throw new Error(`CalorieApp session check failed with ${response.status}`);
+    }
+
+    nextRetryDelayMs =
+      response.status === 429
+        ? retryAfterMilliseconds(
+            response,
+            LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
+          )
+        : LOGIN_COMPLETION_RETRY_DELAY_MS;
+    await discardLoginResponse(response);
+  }
+
+  throw new BackendRequestTimeoutError();
+}
+
+export async function completeEmbeddedLogin(
+  pending: LoginStartResponse,
+  code: string,
+  state: string,
+  signal: AbortSignal,
+  retryWindowMs = LOGIN_COMPLETION_RETRY_WINDOW_MS
+): Promise<MeResponse> {
+  if (state !== pending.state) {
+    throw new Error("WordPress callback state did not match this browser");
+  }
+
+  const parsedExpiry = Date.parse(pending.expires_at);
+  const deadline = Math.min(
+    Number.isFinite(parsedExpiry)
+      ? parsedExpiry
+      : Date.now() + retryWindowMs,
+    Date.now() + retryWindowMs
+  );
+  let callback: LoginCallbackResponse | null = null;
+
+  while (Date.now() < deadline) {
+    const response = await backendRequest(
+      `${BACKEND_BASE_URL}/api/identity/callback`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, state }),
+        signal,
+      },
+      Math.max(
+        1,
+        Math.min(LOGIN_CALLBACK_REQUEST_TIMEOUT_MS, deadline - Date.now())
+      )
+    );
+
+    if (response.ok) {
+      callback = (await response.json()) as LoginCallbackResponse;
+      break;
+    }
+    // A 429 is rejected by the shared admission layer (or Render's edge)
+    // before the one-time callback handler runs, so only this status is safe
+    // to replay automatically.
+    if (response.status !== 429) {
+      throw new Error(`Callback failed with ${response.status}`);
+    }
+
+    const retryDelayMs = retryAfterMilliseconds(
+      response,
+      LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
+    );
+    await discardLoginResponse(response);
+    await delay(
+      Math.min(retryDelayMs, Math.max(0, deadline - Date.now())),
+      signal
+    );
+  }
+
+  if (!callback) {
+    throw new BackendRequestTimeoutError();
+  }
+  if (callback.locale !== pending.locale) {
+    throw new Error("Callback language context did not match");
+  }
+
+  // Claim the completed handoff in this exact browser as well. This recovers
+  // when the callback succeeded but its first session cookie was interrupted.
+  await waitForOriginLogin(
+    pending.state,
+    pending.browser_handoff_token,
+    pending.expires_at,
+    signal,
+    pending.locale,
+    0
+  );
+
+  return waitForAuthenticatedUserAfterLogin(
+    signal,
+    Math.max(1, deadline - Date.now())
   );
 }
 
@@ -563,13 +712,14 @@ export function XamanLoginPanel() {
         );
         clearPendingLogin();
 
-        const restoredUser = await refreshCurrentUser(controller.signal);
-        if (!restoredUser) {
-          throw new Error("Restored session was unavailable");
-        }
+        const restoredUser = await waitForAuthenticatedUserAfterLogin(
+          controller.signal
+        );
         if (cancelled) {
           return;
         }
+        setCurrentUser(restoredUser);
+        announceAuthState(true);
         setSuccessNotice(
           "Sign-in completed. Your session was restored in this browser."
         );
@@ -744,12 +894,11 @@ export function XamanLoginPanel() {
                 bridgeController.signal,
                 pending.locale
               );
-              const restoredUser = await refreshCurrentUser(
+              const restoredUser = await waitForAuthenticatedUserAfterLogin(
                 bridgeController.signal
               );
-              if (!restoredUser) {
-                throw new Error("Restored session was unavailable");
-              }
+              setCurrentUser(restoredUser);
+              announceAuthState(true);
 
               embeddedLoginStart.current = null;
               clearPendingLogin();
@@ -814,30 +963,17 @@ export function XamanLoginPanel() {
 
       try {
         setLoginStatus("Activating CalorieApp in this browser...");
-        const response = await backendRequest(
-          `${BACKEND_BASE_URL}/api/identity/callback`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: event.data.code, state: event.data.state }),
-          },
-          70_000
+        const restoredUser = await completeEmbeddedLogin(
+          pending,
+          event.data.code,
+          event.data.state,
+          bridgeController.signal
         );
-        if (!response.ok) {
-          throw new Error(`Callback failed with ${response.status}`);
-        }
-        const callback = (await response.json()) as LoginCallbackResponse;
-        if (callback.locale !== pending.locale) {
-          throw new Error("Callback language context did not match");
-        }
-
-        const restoredUser = await refreshCurrentUser(bridgeController.signal);
-        if (!restoredUser) {
-          throw new Error("CalorieApp session was unavailable");
-        }
 
         embeddedLoginStart.current = null;
         clearPendingLogin();
+        setCurrentUser(restoredUser);
+        announceAuthState(true);
         setError(null);
         setLoginStatus(null);
         setIsLoading(false);
