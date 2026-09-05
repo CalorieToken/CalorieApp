@@ -107,6 +107,10 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.match(
     mobileRules,
+    /\.calorieapp-identity-wrapper \.brz-wp-shortcode > div\s*\{[^}]*margin-right:\s*auto\s*!important;[^}]*margin-left:\s*auto\s*!important;/s
+  );
+  assert.match(
+    mobileRules,
     /\.calorieapp-identity-card\s*\{[^}]*min-height:\s*0\s*!important;[^}]*max-width:\s*100%\s*!important;/s
   );
   assert.doesNotMatch(mobileRules, /calorieapp-brizy-nav-open/);

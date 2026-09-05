@@ -244,6 +244,11 @@
     max-width: 100% !important;
   }
 
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode > div {
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+
   .calorieapp-identity-card {
     position: relative;
     z-index: 1;
