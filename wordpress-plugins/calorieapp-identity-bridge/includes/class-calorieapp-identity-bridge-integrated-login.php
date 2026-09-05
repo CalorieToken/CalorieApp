@@ -84,7 +84,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.14';
+            : '0.3.15';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -181,13 +181,13 @@ class IntegratedLogin {
         $calorieapp_url = home_url('/index.php/calorieapp/');
         $copyright_year = wp_date('Y');
         $social_links = [
-            'Telegram' => 'https://t.me/+7YxaKdQYWNA0NDA0',
-            'GitHub' => 'https://github.com/CalorieToken',
-            'X' => 'https://twitter.com/CalorieToken',
-            'Facebook' => 'https://www.facebook.com/CalorieToken-100422882407878',
-            'YouTube' => 'https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA',
-            'LinkedIn' => 'https://www.linkedin.com/company/calorie-token/',
-            'Instagram' => 'https://www.instagram.com/calorietoken/',
+            ['label' => 'Telegram', 'url' => 'https://t.me/+7YxaKdQYWNA0NDA0', 'icon' => 'telegram.svg'],
+            ['label' => 'GitHub', 'url' => 'https://github.com/CalorieToken', 'icon' => 'github-square.svg'],
+            ['label' => 'X', 'url' => 'https://twitter.com/CalorieToken', 'icon' => 'twitter.svg'],
+            ['label' => 'Facebook', 'url' => 'https://www.facebook.com/CalorieToken-100422882407878', 'icon' => 'facebook.svg'],
+            ['label' => 'YouTube', 'url' => 'https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA', 'icon' => 'youtube.svg'],
+            ['label' => 'LinkedIn', 'url' => 'https://www.linkedin.com/company/calorie-token/', 'icon' => 'linkedin.svg'],
+            ['label' => 'Instagram', 'url' => 'https://www.instagram.com/calorietoken/', 'icon' => 'instagram-square.svg'],
         ];
         ?>
         <section class="calorieapp-shared-page-ending" data-calorieapp-shared-page-ending>
@@ -204,7 +204,7 @@ class IntegratedLogin {
                     aria-label="<?php echo esc_attr__('CalorieApp', 'calorieapp-identity-bridge'); ?>"
                     title="<?php echo esc_attr__('CalorieApp', 'calorieapp-identity-bridge'); ?>"
                 >
-                    <svg class="calorieapp-page-tool-logo" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+                    <svg class="calorieapp-page-tool-logo" width="1em" height="1em" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
                         <circle cx="100" cy="100" r="95" fill="none" stroke="#505ba9" stroke-width="16" />
                         <circle cx="100" cy="100" r="95" fill="none" stroke="#1a1a1a" stroke-width="16" stroke-dasharray="150 300" opacity=".8" />
                         <circle cx="100" cy="100" r="75" fill="none" stroke="#1a1a1a" stroke-width="8" />
@@ -228,24 +228,56 @@ class IntegratedLogin {
                 ><span aria-hidden="true">&#8593;</span></a>
             </nav>
             <footer class="calorieapp-shared-footer">
-                <nav class="calorieapp-shared-socials" aria-label="<?php echo esc_attr__('CalorieToken social channels', 'calorieapp-identity-bridge'); ?>">
-                    <?php foreach ($social_links as $label => $url) : ?>
-                        <a href="<?php echo esc_url($url); ?>" rel="noopener"><?php echo esc_html($label); ?></a>
-                    <?php endforeach; ?>
+                <nav
+                    class="calorieapp-shared-socials"
+                    aria-label="<?php echo esc_attr__('CalorieToken social channels', 'calorieapp-identity-bridge'); ?>"
+                    data-calorieapp-social-carousel
+                >
+                    <button
+                        type="button"
+                        class="calorieapp-shared-social-arrow"
+                        data-calorieapp-carousel-direction="-1"
+                        aria-label="<?php echo esc_attr__('Previous social channel', 'calorieapp-identity-bridge'); ?>"
+                    >&#8249;</button>
+                    <div class="calorieapp-shared-social-window">
+                        <div class="calorieapp-shared-social-track">
+                            <?php foreach ($social_links as $social) : ?>
+                                <a
+                                    class="calorieapp-shared-social"
+                                    href="<?php echo esc_url($social['url']); ?>"
+                                    rel="noopener"
+                                    aria-label="<?php echo esc_attr($social['label']); ?>"
+                                    title="<?php echo esc_attr($social['label']); ?>"
+                                >
+                                    <svg class="calorieapp-shared-social-icon" aria-hidden="true" focusable="false">
+                                        <use href="<?php echo esc_url('/wp-content/plugins/brizy/public/editor-build/prod/editor/icons/fa/' . $social['icon'] . '#fa_icon'); ?>"></use>
+                                    </svg>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        class="calorieapp-shared-social-arrow"
+                        data-calorieapp-carousel-direction="1"
+                        aria-label="<?php echo esc_attr__('Next social channel', 'calorieapp-identity-bridge'); ?>"
+                    >&#8250;</button>
                 </nav>
-                <p><?php echo esc_html__('Operator: ICTHendrikse · KVK 73774693', 'calorieapp-identity-bridge'); ?></p>
-                <p>
-                    <?php
-                    printf(
-                        esc_html__('© %s ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse', 'calorieapp-identity-bridge'),
-                        esc_html($copyright_year)
-                    );
-                    ?>
-                </p>
-                <p class="calorieapp-shared-legal-links">
-                    <a href="<?php echo esc_url(home_url('/index.php/privacy-policy/')); ?>"><?php echo esc_html__('Privacy Policy', 'calorieapp-identity-bridge'); ?></a>
-                    <a href="<?php echo esc_url(home_url('/index.php/terms-conditions/')); ?>"><?php echo esc_html__('Terms & Conditions', 'calorieapp-identity-bridge'); ?></a>
-                </p>
+                <div class="calorieapp-shared-legal">
+                    <p><?php echo esc_html__('Operator: ICTHendrikse · KVK 73774693', 'calorieapp-identity-bridge'); ?></p>
+                    <p>
+                        <?php
+                        printf(
+                            esc_html__('© %s ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse', 'calorieapp-identity-bridge'),
+                            esc_html($copyright_year)
+                        );
+                        ?>
+                    </p>
+                    <p class="calorieapp-shared-legal-links">
+                        <a href="<?php echo esc_url(home_url('/index.php/privacy-policy/')); ?>"><?php echo esc_html__('Privacy Policy', 'calorieapp-identity-bridge'); ?></a>
+                        <a href="<?php echo esc_url(home_url('/index.php/terms-conditions/')); ?>"><?php echo esc_html__('Terms & Conditions', 'calorieapp-identity-bridge'); ?></a>
+                    </p>
+                </div>
             </footer>
         </section>
         <?php

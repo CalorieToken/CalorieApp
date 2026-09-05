@@ -334,3 +334,16 @@ test("account erasure UI is doubly disabled and sends no confirmation elsewhere"
   );
   assert.equal(envExample.includes("NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED=false"), true);
 });
+
+test("account tools stay available but collapsed below the primary app", async () => {
+  const panel = await readFile(PANEL_PATH, "utf8");
+
+  assert.match(panel, /<details className="group border-t/);
+  assert.match(panel, /<summary className=/);
+  assert.match(panel, /Account tools/);
+  assert.match(panel, /Export and privacy options/);
+  assert.match(panel, /<AccountDataExportButton/);
+  assert.match(panel, /<AccountDataImportPanel/);
+  assert.match(panel, /<AccountErasurePanel/);
+  assert.doesNotMatch(panel, /<details\s+open/);
+});
