@@ -11,6 +11,10 @@ const STYLE_PATH = new URL(
   "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.css",
   import.meta.url
 );
+const PLUGIN_PATH = new URL(
+  "../../wordpress-plugins/calorieapp-identity-bridge/includes/class-calorieapp-identity-bridge-integrated-login.php",
+  import.meta.url
+);
 
 function element(hidden = true) {
   const listeners = {};
@@ -104,6 +108,58 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
+});
+
+test("site-wide header layout loads without starting the CalorieApp bridge", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const pluginSource = await readFile(PLUGIN_PATH, "utf8");
+  const registerAssetsSource = pluginSource.slice(
+    pluginSource.indexOf("public function register_assets"),
+    pluginSource.indexOf("public function render_shortcode")
+  );
+  const identityWrapper = element(false);
+  const identityCard = element(false);
+  identityCard.closest = (selector) => {
+    if (selector === ".brz-wrapper") {
+      return identityWrapper;
+    }
+    return null;
+  };
+  const menuColumn = element(false);
+  const menuSurface = element(false);
+  menuSurface.closest = (selector) =>
+    selector === ".brz-columns" ? menuColumn : null;
+  const document = {
+    readyState: "complete",
+    querySelectorAll(selector) {
+      if (selector === ".xl-card") {
+        return [identityCard];
+      }
+      if (selector === ".brz-menu-simple") {
+        return [menuSurface];
+      }
+      return [];
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, window: {} });
+
+  assert.equal(
+    identityCard.classList.contains("calorieapp-identity-card"),
+    true
+  );
+  assert.equal(
+    identityWrapper.classList.contains("calorieapp-identity-wrapper"),
+    true
+  );
+  assert.equal(
+    menuColumn.classList.contains("calorieapp-brizy-menu-column"),
+    true
+  );
+  assert.match(
+    registerAssetsSource,
+    /wp_enqueue_style\('calorieapp-identity-bridge-embed'\);[\s\S]*wp_enqueue_script\('calorieapp-identity-bridge-embed'\);/
+  );
 });
 
 test("Xaman waits for readiness and refreshes the joint account state", async () => {

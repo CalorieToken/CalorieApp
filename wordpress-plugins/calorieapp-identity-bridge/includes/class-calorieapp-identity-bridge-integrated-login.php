@@ -93,6 +93,12 @@ class IntegratedLogin {
             $version,
             true
         );
+
+        // The XUMM account card is part of the shared Brizy header on every
+        // public page. Load the lightweight layout hooks site-wide; bridge
+        // requests still initialize only where [calorieapp_embed] is present.
+        wp_enqueue_style('calorieapp-identity-bridge-embed');
+        wp_enqueue_script('calorieapp-identity-bridge-embed');
     }
 
     public function render_shortcode($attributes = []): string {

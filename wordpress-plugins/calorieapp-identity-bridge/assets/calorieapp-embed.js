@@ -58,45 +58,17 @@
     });
   }
 
-  function unifyLegacySigninSurfaces(triggerLogin, sessionActions) {
+  function markLegacyPageLayout() {
     var identityCard = null;
-
-    document
-      .querySelectorAll('.xl-card a[href*="xl-signin"]')
-      .forEach(function (signinLink) {
-        if (typeof signinLink.closest !== "function") {
-          return;
-        }
-
-        var card = signinLink.closest(".xl-card");
-        if (!card || card.closest("[data-calorieapp-embed]")) {
-          return;
-        }
-        if (!identityCard) {
-          identityCard = card;
-        }
-
-        if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
-          return;
-        }
-        signinLink.setAttribute("data-calorieapp-unified-login", "1");
-        signinLink.addEventListener("click", function (event) {
-          event.preventDefault();
-          triggerLogin();
-        });
-      });
-
+    document.querySelectorAll(".xl-card").forEach(function (card) {
+      if (!identityCard && !card.closest("[data-calorieapp-embed]")) {
+        identityCard = card;
+      }
+    });
     if (!identityCard) {
-      document.querySelectorAll(".xl-card").forEach(function (card) {
-        if (!identityCard && !card.closest("[data-calorieapp-embed]")) {
-          identityCard = card;
-        }
-      });
+      return null;
     }
 
-    if (!identityCard) {
-      return;
-    }
     if (identityCard.classList && typeof identityCard.classList.add === "function") {
       identityCard.classList.add("calorieapp-identity-card");
     }
@@ -111,6 +83,35 @@
       }
     }
     markLegacyMobileMenuColumn();
+    return identityCard;
+  }
+
+  function unifyLegacySigninSurfaces(triggerLogin, sessionActions, identityCard) {
+    document
+      .querySelectorAll('.xl-card a[href*="xl-signin"]')
+      .forEach(function (signinLink) {
+        if (typeof signinLink.closest !== "function") {
+          return;
+        }
+
+        var card = signinLink.closest(".xl-card");
+        if (!card || card.closest("[data-calorieapp-embed]")) {
+          return;
+        }
+
+        if (signinLink.getAttribute("data-calorieapp-unified-login") === "1") {
+          return;
+        }
+        signinLink.setAttribute("data-calorieapp-unified-login", "1");
+        signinLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          triggerLogin();
+        });
+      });
+
+    if (!identityCard) {
+      return;
+    }
     if (
       sessionActions &&
       typeof identityCard.appendChild === "function" &&
@@ -899,6 +900,7 @@
   }
 
   function initAll() {
+    var identityCard = markLegacyPageLayout();
     var roots = document.querySelectorAll("[data-calorieapp-embed]");
     if (roots.length === 0) {
       return;
@@ -917,7 +919,7 @@
       var sessionActions = roots[0].querySelector(
         ".calorieapp-site-session-actions"
       );
-      unifyLegacySigninSurfaces(loginTriggers[0], sessionActions);
+      unifyLegacySigninSurfaces(loginTriggers[0], sessionActions, identityCard);
     }
   }
 
