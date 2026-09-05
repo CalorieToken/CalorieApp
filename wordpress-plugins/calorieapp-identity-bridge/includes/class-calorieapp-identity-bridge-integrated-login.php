@@ -78,7 +78,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.5';
+            : '0.3.6';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -160,15 +160,15 @@ class IntegratedLogin {
                 <div class="calorieapp-site-session-actions">
                     <span class="calorieapp-session-indicator" aria-hidden="true">&#10003;</span>
                     <span class="calorieapp-session-copy">
-                        <strong><?php echo esc_html__('Account connected', 'calorieapp-identity-bridge'); ?></strong>
+                        <strong><?php echo esc_html__('Connected', 'calorieapp-identity-bridge'); ?></strong>
                         <span><?php echo esc_html__('Website + CalorieApp', 'calorieapp-identity-bridge'); ?></span>
                     </span>
                     <button
                         type="button"
                         class="calorieapp-site-logout"
                         data-logout-url="<?php echo esc_url($logout_url); ?>"
-                        data-idle-label="<?php echo esc_attr__('Sign out everywhere', 'calorieapp-identity-bridge'); ?>"
-                    ><?php echo esc_html__('Sign out everywhere', 'calorieapp-identity-bridge'); ?></button>
+                        data-idle-label="<?php echo esc_attr__('Sign out both', 'calorieapp-identity-bridge'); ?>"
+                    ><?php echo esc_html__('Sign out both', 'calorieapp-identity-bridge'); ?></button>
                     <span class="calorieapp-site-logout-status" role="status" aria-live="polite" hidden></span>
                 </div>
             <?php endif; ?>

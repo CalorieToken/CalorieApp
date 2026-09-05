@@ -58,7 +58,7 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   const source = await readFile(STYLE_PATH, "utf8");
   const mobileRules = source.slice(source.indexOf("@media (max-width: 768px)"));
 
-  assert.match(mobileRules, /width:\s*min\(240px, calc\(100vw - 20px\)\)/);
+  assert.match(mobileRules, /width:\s*min\(280px, calc\(100vw - 20px\)\)/);
   assert.match(
     mobileRules,
     /grid-template-columns:\s*26px minmax\(0, 1fr\) auto/
@@ -92,7 +92,7 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   siteLogoutButton.dataset = {
     logoutUrl:
       "https://calorietoken.net/wp-login.php?action=logout&redirect_to=calorieapp",
-    idleLabel: "Sign out everywhere",
+    idleLabel: "Sign out both",
   };
   siteLogoutButton.textContent = siteLogoutButton.dataset.idleLabel;
   const siteLogoutStatus = element(true);
@@ -431,7 +431,7 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");
 
   const logoutTimeoutEntry = [...timers.entries()].find(
-    ([, { delay }]) => delay === 30000
+    ([, { delay }]) => delay === 105000
   );
   assert.ok(logoutTimeoutEntry, "joint logout has a bounded response timeout");
   timers.delete(logoutTimeoutEntry[0]);
@@ -456,6 +456,10 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(assignedLocation, siteLogoutButton.dataset.logoutUrl);
   assert.equal(
     [...timers.values()].filter(({ delay }) => delay === 30000).length,
+    0
+  );
+  assert.equal(
+    [...timers.values()].filter(({ delay }) => delay === 105000).length,
     0
   );
 });

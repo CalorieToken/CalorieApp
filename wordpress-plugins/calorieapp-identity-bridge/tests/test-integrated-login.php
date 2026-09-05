@@ -258,10 +258,10 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         $this->assertStringContainsString('class="calorieapp-site-logout"', $html);
         $this->assertStringContainsString('action=logout', $html);
         $this->assertStringContainsString(
-            'Sign out everywhere',
+            'Sign out both',
             $html
         );
-        $this->assertStringContainsString('Account connected', $html);
+        $this->assertStringContainsString('Connected', $html);
         $this->assertStringContainsString('Website + CalorieApp', $html);
     }
 
