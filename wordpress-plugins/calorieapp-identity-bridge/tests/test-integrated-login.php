@@ -1,5 +1,6 @@
 <?php
 
+use CalorieApp\IdentityBridge\IntegratedLogin;
 use CalorieApp\IdentityBridge\Plugin;
 use CalorieApp\IdentityBridge\RestApi;
 use CalorieApp\IdentityBridge\Storage;
@@ -263,6 +264,62 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         );
         $this->assertStringContainsString('Connected', $html);
         $this->assertStringContainsString('Website + CalorieApp', $html);
+    }
+
+    public function test_sitewide_widget_renders_joint_logout_for_authenticated_users(): void {
+        $user_id = self::factory()->user->create();
+        wp_set_current_user($user_id);
+        $integrated_login = new IntegratedLogin(new RestApi(new Storage()));
+
+        ob_start();
+        $integrated_login->render_sitewide_session_actions();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString(
+            'data-calorieapp-sitewide-session-actions',
+            $html
+        );
+        $this->assertStringContainsString(
+            'data-app-origin="https://app.calorietoken.net"',
+            $html
+        );
+        $this->assertStringContainsString('embedded=1', $html);
+        $this->assertStringContainsString('class="calorieapp-site-logout"', $html);
+        $this->assertStringContainsString('Sign out both', $html);
+        $this->assertStringContainsString('action=logout', $html);
+    }
+
+    public function test_sitewide_widget_omits_logout_for_signed_out_visitors(): void {
+        $integrated_login = new IntegratedLogin(new RestApi(new Storage()));
+
+        ob_start();
+        $integrated_login->render_sitewide_session_actions();
+        $html = (string) ob_get_clean();
+
+        $this->assertSame('', $html);
+    }
+
+    public function test_sitewide_logout_returns_to_the_queried_page_not_the_loop_post(): void {
+        $user_id = self::factory()->user->create();
+        wp_set_current_user($user_id);
+        $queried_page_id = self::factory()->post->create(['post_type' => 'page']);
+        $loop_post_id = self::factory()->post->create();
+        $this->go_to(get_permalink($queried_page_id));
+        $GLOBALS['post'] = get_post($loop_post_id);
+        $integrated_login = new IntegratedLogin(new RestApi(new Storage()));
+
+        ob_start();
+        $integrated_login->render_sitewide_session_actions();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString(
+            esc_url(wp_logout_url(get_permalink($queried_page_id))),
+            $html
+        );
+        $this->assertStringNotContainsString(
+            rawurlencode(get_permalink($loop_post_id)),
+            $html
+        );
     }
 
     public function test_shortcode_resolves_locale_alias_into_embed_context(): void {

@@ -194,6 +194,113 @@ test("mobile identity card corrects Brizy's residual rendered offset", async () 
   );
 });
 
+test("site-wide widget clears CalorieApp before WordPress logout", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const identityWrapper = element(false);
+  const identityCard = element(false);
+  identityCard.closest = (selector) =>
+    selector === ".brz-wrapper" ? identityWrapper : null;
+
+  const logoutButton = element(false);
+  logoutButton.dataset = {
+    idleLabel: "Sign out both",
+    logoutUrl: "https://calorietoken.net/wp-login.php?action=logout&_wpnonce=test",
+  };
+  const logoutStatus = element(true);
+  const sessionActions = element(true);
+  sessionActions.dataset = {
+    appOrigin: "https://app.calorietoken.net",
+    frameSrc: "https://app.calorietoken.net/?embedded=1&locale=en",
+    locale: "en",
+  };
+  sessionActions.querySelector = (selector) => {
+    if (selector === ".calorieapp-site-logout") {
+      return logoutButton;
+    }
+    if (selector === ".calorieapp-site-logout-status") {
+      return logoutStatus;
+    }
+    return null;
+  };
+
+  const iframePosts = [];
+  const iframeWindow = {
+    postMessage(message, origin) {
+      iframePosts.push({ message, origin });
+    },
+  };
+  const logoutFrame = element(false);
+  logoutFrame.contentWindow = iframeWindow;
+  logoutFrame.remove = () => {
+    logoutFrame.parentElement = null;
+  };
+  const body = element(false);
+  const document = {
+    body,
+    readyState: "complete",
+    createElement(tagName) {
+      assert.equal(tagName, "iframe");
+      return logoutFrame;
+    },
+    querySelector(selector) {
+      return selector === "[data-calorieapp-sitewide-session-actions]"
+        ? sessionActions
+        : null;
+    },
+    querySelectorAll(selector) {
+      if (selector === ".xl-card") {
+        return [identityCard];
+      }
+      return [];
+    },
+  };
+  const windowListeners = {};
+  let assignedLocation = "";
+  const window = {
+    addEventListener(type, listener) {
+      windowListeners[type] = listener;
+    },
+    clearTimeout() {},
+    location: {
+      assign(value) {
+        assignedLocation = value;
+      },
+    },
+    setTimeout() {
+      return 1;
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, URL, window });
+
+  assert.equal(sessionActions.parentElement, identityCard);
+  assert.equal(sessionActions.hidden, false);
+  logoutButton.dispatch("click");
+  assert.equal(body.children.at(-1), logoutFrame);
+  assert.equal(logoutButton.disabled, true);
+  assert.equal(logoutButton.textContent, "Logging out...");
+  assert.equal(iframePosts.length, 0);
+
+  windowListeners.message({
+    data: { type: "calorieapp:bridge:ready", locale: "en" },
+    origin: "https://app.calorietoken.net",
+    source: iframeWindow,
+  });
+  assert.equal(iframePosts.at(-1).message.type, "calorieapp:bridge:init");
+  windowListeners.message({
+    data: { type: "calorieapp:bridge:initialized", locale: "en" },
+    origin: "https://app.calorietoken.net",
+    source: iframeWindow,
+  });
+  assert.equal(iframePosts.at(-1).message.type, "calorieapp:logout");
+  windowListeners.message({
+    data: { type: "calorieapp:logout:complete", locale: "en" },
+    origin: "https://app.calorietoken.net",
+    source: iframeWindow,
+  });
+  assert.equal(assignedLocation, logoutButton.dataset.logoutUrl);
+});
+
 test("site-wide header layout loads without starting the CalorieApp bridge", async () => {
   const scriptSource = await readFile(SCRIPT_PATH, "utf8");
   const pluginSource = await readFile(PLUGIN_PATH, "utf8");

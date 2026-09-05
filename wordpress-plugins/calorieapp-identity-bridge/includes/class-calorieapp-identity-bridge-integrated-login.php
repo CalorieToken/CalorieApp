@@ -38,6 +38,7 @@ class IntegratedLogin {
     public function register_hooks(): void {
         add_action('rest_api_init', [$this, 'register_routes']);
         add_action('wp_enqueue_scripts', [$this, 'register_assets']);
+        add_action('wp_footer', [$this, 'render_sitewide_session_actions']);
         add_shortcode('calorieapp_embed', [$this, 'render_shortcode']);
     }
 
@@ -78,7 +79,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.12';
+            : '0.3.13';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -99,6 +100,63 @@ class IntegratedLogin {
         // requests still initialize only where [calorieapp_embed] is present.
         wp_enqueue_style('calorieapp-identity-bridge-embed');
         wp_enqueue_script('calorieapp-identity-bridge-embed');
+    }
+
+    public function render_sitewide_session_actions(): void {
+        if (!is_user_logged_in()) {
+            return;
+        }
+
+        $frontend_url = $this->sanitize_frontend_url(
+            (string) apply_filters(
+                'calorieapp_identity_bridge_sitewide_frontend_url',
+                'https://app.calorietoken.net'
+            )
+        );
+        if ($frontend_url === '') {
+            return;
+        }
+
+        $site_return_url = home_url('/');
+        $queried_object_id = (int) get_queried_object_id();
+        if ($queried_object_id > 0 && (is_singular() || is_front_page())) {
+            $queried_permalink = get_permalink($queried_object_id);
+            if (is_string($queried_permalink) && $queried_permalink !== '') {
+                $site_return_url = $queried_permalink;
+            }
+        }
+        $logout_url = wp_logout_url($site_return_url);
+        $locale = LocaleRegistry::resolve(determine_locale());
+        $frame_src = add_query_arg(
+            [
+                'embedded' => '1',
+                'locale' => $locale,
+            ],
+            $frontend_url
+        );
+        ?>
+        <div
+            class="calorieapp-site-session-actions"
+            data-calorieapp-sitewide-session-actions
+            data-app-origin="<?php echo esc_attr($this->url_origin($frontend_url)); ?>"
+            data-frame-src="<?php echo esc_url($frame_src); ?>"
+            data-locale="<?php echo esc_attr($locale); ?>"
+            hidden
+        >
+            <span class="calorieapp-session-indicator" aria-hidden="true">&#10003;</span>
+            <span class="calorieapp-session-copy">
+                <strong><?php echo esc_html__('Connected', 'calorieapp-identity-bridge'); ?></strong>
+                <span><?php echo esc_html__('Website + CalorieApp', 'calorieapp-identity-bridge'); ?></span>
+            </span>
+            <button
+                type="button"
+                class="calorieapp-site-logout"
+                data-logout-url="<?php echo esc_url($logout_url); ?>"
+                data-idle-label="<?php echo esc_attr__('Sign out both', 'calorieapp-identity-bridge'); ?>"
+            ><?php echo esc_html__('Sign out both', 'calorieapp-identity-bridge'); ?></button>
+            <span class="calorieapp-site-logout-status" role="status" aria-live="polite" hidden></span>
+        </div>
+        <?php
     }
 
     public function render_shortcode($attributes = []): string {

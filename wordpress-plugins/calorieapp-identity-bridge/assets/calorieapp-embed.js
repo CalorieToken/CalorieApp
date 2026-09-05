@@ -152,6 +152,164 @@
     }
   }
 
+  function initSitewideLogout(sessionActions) {
+    if (
+      !sessionActions ||
+      sessionActions.dataset.calorieappLogoutReady === "1"
+    ) {
+      return;
+    }
+
+    var logoutButton = sessionActions.querySelector(
+      ".calorieapp-site-logout"
+    );
+    var logoutStatus = sessionActions.querySelector(
+      ".calorieapp-site-logout-status"
+    );
+    var appOrigin = sessionActions.dataset.appOrigin || "";
+    var frameSrc = sessionActions.dataset.frameSrc || "";
+    if (!logoutButton || !logoutStatus || !appOrigin || !frameSrc) {
+      return;
+    }
+
+    try {
+      if (new URL(frameSrc).origin !== appOrigin) {
+        return;
+      }
+    } catch (_error) {
+      return;
+    }
+
+    sessionActions.dataset.calorieappLogoutReady = "1";
+    var logoutFrame = null;
+    var logoutTimeout = null;
+    var logoutInFlight = false;
+    var logoutSent = false;
+
+    function setLogoutStatus(message) {
+      logoutStatus.textContent = message;
+      logoutStatus.hidden = message === "";
+    }
+
+    function removeLogoutFrame() {
+      if (logoutFrame && typeof logoutFrame.remove === "function") {
+        logoutFrame.remove();
+      }
+      logoutFrame = null;
+    }
+
+    function clearLogoutTimeout() {
+      if (logoutTimeout !== null) {
+        window.clearTimeout(logoutTimeout);
+        logoutTimeout = null;
+      }
+    }
+
+    function restoreLogoutButton(message) {
+      clearLogoutTimeout();
+      removeLogoutFrame();
+      logoutInFlight = false;
+      logoutSent = false;
+      logoutButton.disabled = false;
+      logoutButton.textContent =
+        logoutButton.dataset.idleLabel || "Sign out both";
+      setLogoutStatus(message);
+    }
+
+    function postToLogoutFrame(type) {
+      if (!logoutFrame || !logoutFrame.contentWindow) {
+        return;
+      }
+      logoutFrame.contentWindow.postMessage(
+        {
+          type: MESSAGE_PREFIX + type,
+          locale: sessionActions.dataset.locale || "en",
+        },
+        appOrigin
+      );
+    }
+
+    function handleLogoutMessage(event) {
+      if (
+        !logoutFrame ||
+        event.origin !== appOrigin ||
+        event.source !== logoutFrame.contentWindow ||
+        !event.data ||
+        typeof event.data.type !== "string"
+      ) {
+        return;
+      }
+
+      if (event.data.type === MESSAGE_PREFIX + "bridge:ready") {
+        postToLogoutFrame("bridge:init");
+        return;
+      }
+      if (
+        event.data.type === MESSAGE_PREFIX + "bridge:initialized" &&
+        !logoutSent
+      ) {
+        logoutSent = true;
+        postToLogoutFrame("logout");
+        return;
+      }
+      if (event.data.type === MESSAGE_PREFIX + "logout:complete") {
+        clearLogoutTimeout();
+        removeLogoutFrame();
+        window.location.assign(logoutButton.dataset.logoutUrl);
+        return;
+      }
+      if (event.data.type === MESSAGE_PREFIX + "logout:error") {
+        restoreLogoutButton(
+          typeof event.data.message === "string"
+            ? event.data.message
+            : "Could not log out of both sessions. Please try again."
+        );
+      }
+    }
+
+    window.addEventListener("message", handleLogoutMessage);
+    logoutButton.addEventListener("click", function () {
+      if (logoutInFlight || !(logoutButton.dataset.logoutUrl || "")) {
+        return;
+      }
+
+      logoutInFlight = true;
+      logoutSent = false;
+      logoutButton.disabled = true;
+      logoutButton.textContent = "Logging out...";
+      setLogoutStatus("");
+
+      logoutFrame = document.createElement("iframe");
+      logoutFrame.className = "calorieapp-sitewide-logout-frame";
+      logoutFrame.title = "CalorieApp sign-out bridge";
+      logoutFrame.src = frameSrc;
+      logoutFrame.setAttribute("aria-hidden", "true");
+      logoutFrame.setAttribute("tabindex", "-1");
+      document.body.appendChild(logoutFrame);
+
+      logoutTimeout = window.setTimeout(function () {
+        restoreLogoutButton(
+          "CalorieApp did not respond. Please try logging out again."
+        );
+      }, JOINT_LOGOUT_TIMEOUT);
+    });
+  }
+
+  function attachSitewideSessionActions(identityCard) {
+    if (!identityCard || typeof document.querySelector !== "function") {
+      return;
+    }
+    var sessionActions = document.querySelector(
+      "[data-calorieapp-sitewide-session-actions]"
+    );
+    if (!sessionActions) {
+      return;
+    }
+    identityCard.appendChild(sessionActions);
+    sessionActions.hidden = false;
+    initSitewideLogout(sessionActions);
+  }
+
   function markLegacyMobileMenuColumn() {
     var menuSurfaces = document.querySelectorAll(".brz-menu-simple");
     menuSurfaces.forEach(function (menuSurface) {
@@ -1015,6 +1173,7 @@
     keepLegacyIdentityCardCentered(identityCard);
     var roots = document.querySelectorAll("[data-calorieapp-embed]");
     if (roots.length === 0) {
+      attachSitewideSessionActions(identityCard);
       return;
     }
 

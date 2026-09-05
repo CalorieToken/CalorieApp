@@ -41,6 +41,11 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.13 adds the same joint-session row to the shared XUMM account widget
+on every authenticated public page. Non-CalorieApp pages load a hidden app
+bridge only after the user presses `Sign out both`, so one action clears the
+CalorieApp session before completing WordPress logout without adding normal
+page-load work. The 0.3.12 centring and menu layout remain unchanged.
 Version 0.3.12 preserves the working compact widget and menu layout from 0.3.11,
 then measures the rendered mobile account card and corrects only Brizy's
 remaining horizontal container offset. It recalculates after viewport changes
