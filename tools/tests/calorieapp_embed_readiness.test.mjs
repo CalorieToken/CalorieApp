@@ -91,7 +91,15 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.match(
     mobileRules,
-    /\.brz \.calorieapp-brizy-menu-column,[^{]*\.brz \.brz-columns:has\(\.brz-menu-simple\)\s*\{[^}]*margin-top:\s*24px\s*!important;/s
+    /\.brz \.calorieapp-brizy-menu-column\s*\{[^}]*margin-top:\s*24px\s*!important;/s
+  );
+  assert.match(
+    mobileRules,
+    /@supports selector\(:has\(\*\)\)\s*\{\s*\.brz \.brz-columns:has\(\.brz-menu-simple\)\s*\{[^}]*margin-top:\s*24px\s*!important;/s
+  );
+  assert.doesNotMatch(
+    mobileRules,
+    /\.calorieapp-brizy-menu-column\s*,[^\{]*:has\(/
   );
   assert.match(
     mobileRules,

@@ -217,9 +217,14 @@
     z-index: 20;
   }
 
-  .brz .calorieapp-brizy-menu-column,
-  .brz .brz-columns:has(.brz-menu-simple) {
+  .brz .calorieapp-brizy-menu-column {
     margin-top: 24px !important;
+  }
+
+  @supports selector(:has(*)) {
+    .brz .brz-columns:has(.brz-menu-simple) {
+      margin-top: 24px !important;
+    }
   }
 
   .brz .calorieapp-identity-wrapper {
