@@ -19,13 +19,26 @@ const PLUGIN_PATH = new URL(
 function element(hidden = true) {
   const listeners = {};
   const classes = new Set();
+  const styleValues = new Map();
   return {
     children: [],
     hidden,
     href: "",
     parentElement: null,
     src: "",
-    style: {},
+    style: {
+      getPropertyValue(name) {
+        return styleValues.get(name) ?? "";
+      },
+      removeProperty(name) {
+        const value = styleValues.get(name) ?? "";
+        styleValues.delete(name);
+        return value;
+      },
+      setProperty(name, value) {
+        styleValues.set(name, value);
+      },
+    },
     textContent: "",
     classList: {
       add(value) {
@@ -113,6 +126,10 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
     mobileRules,
     /\.calorieapp-identity-card\s*\{[^}]*min-height:\s*0\s*!important;[^}]*max-width:\s*100%\s*!important;/s
   );
+  assert.match(
+    mobileRules,
+    /\.calorieapp-identity-card\s*\{[^}]*--calorieapp-identity-center-shift:\s*0px;[^}]*transform:\s*translateX\(var\(--calorieapp-identity-center-shift\)\)\s*!important;/s
+  );
   assert.doesNotMatch(mobileRules, /calorieapp-brizy-nav-open/);
   assert.doesNotMatch(
     mobileRules,
@@ -120,6 +137,61 @@ test("mobile joint-session control stays compact and viewport-bounded", async ()
   );
   assert.doesNotMatch(mobileRules, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(mobileRules, /\.calorieapp-site-logout\s*\{[^}]*width:\s*100%/s);
+});
+
+test("mobile identity card corrects Brizys residual rendered offset", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const identityWrapper = element(false);
+  const identityCard = element(false);
+  identityCard.closest = (selector) =>
+    selector === ".brz-wrapper" ? identityWrapper : null;
+  identityCard.getBoundingClientRect = () => {
+    const shift = Number.parseFloat(
+      identityCard.style.getPropertyValue(
+        "--calorieapp-identity-center-shift"
+      )
+    ) || 0;
+    return { left: 53 + shift, width: 250 };
+  };
+  const document = {
+    documentElement: { clientWidth: 390 },
+    readyState: "complete",
+    querySelectorAll(selector) {
+      if (selector === ".xl-card") {
+        return [identityCard];
+      }
+      return [];
+    },
+  };
+  const windowListeners = {};
+  const window = {
+    addEventListener(type, listener) {
+      windowListeners[type] = listener;
+    },
+    matchMedia() {
+      return { matches: true };
+    },
+    requestAnimationFrame(callback) {
+      callback();
+      return 1;
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, window });
+
+  assert.equal(
+    identityCard.style.getPropertyValue(
+      "--calorieapp-identity-center-shift"
+    ),
+    "17px"
+  );
+  windowListeners.resize();
+  assert.equal(
+    identityCard.style.getPropertyValue(
+      "--calorieapp-identity-center-shift"
+    ),
+    "17px"
+  );
 });
 
 test("site-wide header layout loads without starting the CalorieApp bridge", async () => {

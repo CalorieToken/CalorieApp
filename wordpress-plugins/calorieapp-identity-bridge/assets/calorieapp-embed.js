@@ -15,6 +15,8 @@
   // sleeping backend, while retaining a bounded window for bridge delivery.
   var JOINT_LOGOUT_TIMEOUT = 100000;
   var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
+  var MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
+  var legacyIdentityCenterFrame = null;
 
   function retryAfterMilliseconds(response) {
     var value = response.headers && response.headers.get("retry-after");
@@ -39,6 +41,115 @@
     return response.json().catch(function () {
       return {};
     });
+  }
+
+  function mobileViewportWidth() {
+    var documentWidth = Number(
+      document.documentElement && document.documentElement.clientWidth
+    );
+    if (Number.isFinite(documentWidth) && documentWidth > 0) {
+      return documentWidth;
+    }
+    var windowWidth = Number(window.innerWidth);
+    return Number.isFinite(windowWidth) && windowWidth > 0 ? windowWidth : 0;
+  }
+
+  function isMobileLayout() {
+    if (typeof window.matchMedia === "function") {
+      return window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
+    }
+    var viewportWidth = mobileViewportWidth();
+    return viewportWidth > 0 && viewportWidth <= 768;
+  }
+
+  function centerLegacyIdentityCard(identityCard) {
+    if (
+      !identityCard ||
+      !identityCard.style ||
+      typeof identityCard.style.setProperty !== "function" ||
+      typeof identityCard.getBoundingClientRect !== "function"
+    ) {
+      return;
+    }
+
+    if (!isMobileLayout()) {
+      if (typeof identityCard.style.removeProperty === "function") {
+        identityCard.style.removeProperty("--calorieapp-identity-center-shift");
+      }
+      return;
+    }
+
+    var viewportWidth = mobileViewportWidth();
+    var cardBounds = identityCard.getBoundingClientRect();
+    if (
+      viewportWidth <= 0 ||
+      !cardBounds ||
+      !Number.isFinite(cardBounds.left) ||
+      !Number.isFinite(cardBounds.width) ||
+      cardBounds.width <= 0
+    ) {
+      return;
+    }
+
+    var currentShift = Number.parseFloat(
+      typeof identityCard.style.getPropertyValue === "function"
+        ? identityCard.style.getPropertyValue(
+            "--calorieapp-identity-center-shift"
+          )
+        : ""
+    );
+    if (!Number.isFinite(currentShift)) {
+      currentShift = 0;
+    }
+
+    var correction =
+      viewportWidth / 2 - (cardBounds.left + cardBounds.width / 2);
+    if (!Number.isFinite(correction) || Math.abs(correction) < 0.5) {
+      return;
+    }
+
+    var nextShift = Math.round((currentShift + correction) * 100) / 100;
+    identityCard.style.setProperty(
+      "--calorieapp-identity-center-shift",
+      nextShift + "px"
+    );
+  }
+
+  function scheduleLegacyIdentityCardCentering(identityCard) {
+    if (!identityCard) {
+      return;
+    }
+
+    var run = function () {
+      legacyIdentityCenterFrame = null;
+      centerLegacyIdentityCard(identityCard);
+    };
+    if (typeof window.requestAnimationFrame !== "function") {
+      run();
+      return;
+    }
+    if (
+      legacyIdentityCenterFrame !== null &&
+      typeof window.cancelAnimationFrame === "function"
+    ) {
+      window.cancelAnimationFrame(legacyIdentityCenterFrame);
+    }
+    legacyIdentityCenterFrame = window.requestAnimationFrame(run);
+  }
+
+  function keepLegacyIdentityCardCentered(identityCard) {
+    if (!identityCard) {
+      return;
+    }
+    scheduleLegacyIdentityCardCentering(identityCard);
+    if (typeof window.addEventListener === "function") {
+      window.addEventListener("load", function () {
+        scheduleLegacyIdentityCardCentering(identityCard);
+      });
+      window.addEventListener("resize", function () {
+        scheduleLegacyIdentityCardCentering(identityCard);
+      });
+    }
   }
 
   function markLegacyMobileMenuColumn() {
@@ -901,6 +1012,7 @@
 
   function initAll() {
     var identityCard = markLegacyPageLayout();
+    keepLegacyIdentityCardCentered(identityCard);
     var roots = document.querySelectorAll("[data-calorieapp-embed]");
     if (roots.length === 0) {
       return;
