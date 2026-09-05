@@ -392,7 +392,13 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
             $html
         );
         $this->assertStringContainsString('<img class="calorieapp-page-tool-logo"', $html);
-        $this->assertStringContainsString('https://app.calorietoken.net/logo.png', $html);
+        $this->assertStringContainsString(
+            esc_url(
+                plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE)
+                . 'assets/calorieapp-logo.png'
+            ),
+            $html
+        );
         $this->assertStringContainsString('width="48" height="48"', $html);
         $this->assertStringContainsString('data-calorieapp-social-carousel', $html);
         $this->assertStringContainsString('calorieapp-shared-social-track', $html);

@@ -26,6 +26,7 @@ RELEASE_FILES = (
     "README.md",
     "SECURITY.md",
     "THIRD_PARTY_NOTICES.md",
+    "assets/calorieapp-logo.png",
     f"{PLUGIN_SLUG}.php",
 )
 RELEASE_GLOBS = ("includes/*.php", "assets/*.css", "assets/*.js", "config/*.json")
