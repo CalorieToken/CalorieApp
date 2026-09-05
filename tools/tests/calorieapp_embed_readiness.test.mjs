@@ -455,12 +455,20 @@ test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
   assert.match(pluginSource, /square-upload\.svg#nc_icon/);
   assert.match(
     pluginSource,
-    /<img[\s\S]*class="calorieapp-page-tool-logo"[\s\S]*https:\/\/app\.calorietoken\.net\/logo\.png/
+    /\$calorieapp_logo_url\s*=\s*'https:\/\/app\.calorietoken\.net\/logo\.png';/
+  );
+  assert.match(
+    pluginSource,
+    /<img class="calorieapp-page-tool-logo" src="<\?php echo esc_url\(\$calorieapp_logo_url\); \?>"/
   );
 
   assert.match(
     styleSource,
-    /\.calorieapp-page-tool-position\s*\{[^}]*position:\s*fixed;[^}]*width:\s*30%;[^}]*right:\s*81px;/s
+    /\.calorieapp-page-tool-position\s*\{[^}]*position:\s*fixed;[^}]*width:\s*30%;[^}]*right:\s*81px;[^}]*pointer-events:\s*none;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool\s*\{[^}]*pointer-events:\s*auto;/s
   );
   assert.match(
     styleSource,

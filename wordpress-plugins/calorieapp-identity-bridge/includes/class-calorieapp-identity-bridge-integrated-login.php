@@ -179,6 +179,7 @@ class IntegratedLogin {
         $this->page_ending_rendered = true;
         $home_url = home_url('/');
         $calorieapp_url = home_url('/index.php/calorieapp/');
+        $calorieapp_logo_url = 'https://app.calorietoken.net/logo.png';
         $copyright_year = wp_date('Y');
         $social_links = [
             ['label' => 'Telegram', 'url' => 'https://t.me/+7YxaKdQYWNA0NDA0', 'icon' => 'telegram.svg'],
@@ -212,7 +213,7 @@ class IntegratedLogin {
                         title="<?php echo esc_attr__('CalorieApp', 'calorieapp-identity-bridge'); ?>"
                     >
                         <span class="brz-icon brz-span calorieapp-brizy-tool-icon calorieapp-page-tool-logo-frame">
-                            <img class="calorieapp-page-tool-logo" src="https://app.calorietoken.net/logo.png" alt="" width="48" height="48" aria-hidden="true" decoding="async">
+                            <img class="calorieapp-page-tool-logo" src="<?php echo esc_url($calorieapp_logo_url); ?>" alt="" width="48" height="48" aria-hidden="true" decoding="async">
                         </span>
                     </a>
                 </div>
