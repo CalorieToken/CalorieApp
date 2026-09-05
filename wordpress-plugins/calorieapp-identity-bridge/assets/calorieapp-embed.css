@@ -18,6 +18,10 @@
   box-shadow: 0 8px 24px rgba(24, 78, 48, 0.08);
 }
 
+.calorieapp-site-session-actions[hidden] {
+  display: none !important;
+}
+
 .calorieapp-identity-card .calorieapp-site-session-actions {
   margin: 16px 0 0;
 }
@@ -88,6 +92,17 @@
   grid-column: 1 / -1;
   color: #a52626;
   font-size: 14px;
+}
+
+.calorieapp-sitewide-logout-frame {
+  position: fixed !important;
+  top: 0;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .calorieapp-embed-frame {
