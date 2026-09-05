@@ -13,7 +13,7 @@
   var STATUS_POLL_MAX_RETRY_AFTER = 60000;
   // The frontend clears its first-party session cookie without waiting for a
   // sleeping backend, while retaining a bounded window for bridge delivery.
-  var JOINT_LOGOUT_TIMEOUT = 30000;
+  var JOINT_LOGOUT_TIMEOUT = 100000;
   var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
 
   function retryAfterMilliseconds(response) {

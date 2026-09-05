@@ -56,7 +56,8 @@ const LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_MIDDLE_POLL_INTERVAL_MS = 10_000;
 const LOGIN_STATUS_LONG_POLL_INTERVAL_MS = 20_000;
 const LOGIN_STATUS_TRANSIENT_MAX_DELAY_MS = 30_000;
-const LOGOUT_STATE_VERIFICATION_TIMEOUT_MS = 5_000;
+const LOGOUT_REQUEST_TIMEOUT_MS = 75_000;
+const LOGOUT_RETRY_TIMEOUT_MS = 15_000;
 const LOGIN_STATUS_MIDDLE_PHASE_AFTER_MS = 30_000;
 const LOGIN_STATUS_LONG_PHASE_AFTER_MS = 90_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
@@ -444,31 +445,27 @@ export async function prepareEmbeddedLogin(
 export async function requestCalorieAppLogout(): Promise<void> {
   let logoutFailure: unknown = null;
 
-  try {
-    const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
-      method: "POST",
-    });
-    if (response.status === 401 || response.ok) {
-      return;
+  for (const timeoutMs of [
+    LOGOUT_REQUEST_TIMEOUT_MS,
+    LOGOUT_RETRY_TIMEOUT_MS,
+  ]) {
+    try {
+      const response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/logout`,
+        { method: "POST" },
+        timeoutMs
+      );
+      if (response.status === 401 || response.ok) {
+        return;
+      }
+      logoutFailure = new Error("Unable to log out");
+      break;
+    } catch (error) {
+      // The first request can time out while the free frontend wakes. Retrying
+      // the same cookie-clearing endpoint is stronger than probing /me: it
+      // completes logout even when the separate backend remains asleep.
+      logoutFailure = error;
     }
-    logoutFailure = new Error("Unable to log out");
-  } catch (error) {
-    logoutFailure = error;
-  }
-
-  // Revocation can succeed even when its response is interrupted. Confirm the
-  // resulting state before blocking the matching WordPress logout.
-  try {
-    const verification = await backendRequest(
-      `${BACKEND_BASE_URL}/api/identity/me`,
-      { cache: "no-store" },
-      LOGOUT_STATE_VERIFICATION_TIMEOUT_MS
-    );
-    if (verification.status === 401) {
-      return;
-    }
-  } catch {
-    // Preserve the original failure when the session state is unavailable.
   }
 
   throw logoutFailure instanceof Error

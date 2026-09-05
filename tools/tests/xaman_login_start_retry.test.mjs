@@ -91,14 +91,10 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 
-test("logout accepts a confirmed signed-out session after an interrupted response", async () => {
+test("logout retries the cookie-clearing endpoint after an interrupted response", async () => {
   const { compiled } = await compiledLoginModule();
   const module = { exports: {} };
-  const requestedUrls = [];
-  const responses = [
-    { ok: false, status: 504 },
-    { ok: false, status: 401 },
-  ];
+  const requests = [];
   const context = vm.createContext({
     AbortController,
     Error,
@@ -124,9 +120,12 @@ test("logout accepts a confirmed signed-out session after an interrupted respons
       if (specifier === "@/lib/backendRequest") {
         return {
           BACKEND_WAKE_BASE_URL: "https://backend.example",
-          backendRequest: async (url) => {
-            requestedUrls.push(url);
-            return responses.shift();
+          backendRequest: async (url, _options, timeoutMs) => {
+            requests.push({ url, timeoutMs });
+            if (requests.length === 1) {
+              throw new Error("response interrupted");
+            }
+            return { ok: true, status: 200 };
           },
           backendUnavailableMessage: (_error, fallback) => fallback,
           BackendRequestTimeoutError: class extends Error {},
@@ -143,9 +142,9 @@ test("logout accepts a confirmed signed-out session after an interrupted respons
   vm.runInContext(compiled, context);
   await module.exports.requestCalorieAppLogout();
 
-  assert.deepEqual(requestedUrls, [
-    "/api/backend/api/identity/logout",
-    "/api/backend/api/identity/me",
+  assert.deepEqual(requests, [
+    { url: "/api/backend/api/identity/logout", timeoutMs: 75000 },
+    { url: "/api/backend/api/identity/logout", timeoutMs: 15000 },
   ]);
 });
 
