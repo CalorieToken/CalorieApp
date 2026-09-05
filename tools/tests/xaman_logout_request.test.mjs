@@ -68,24 +68,21 @@ async function loadModule(
   return module.exports;
 }
 
-test("joint logout wakes the backend before revoking the session", async () => {
+test("joint logout uses the same-origin proxy without a readiness wait", async () => {
   const events = [];
   const login = await loadModule(
     async (url) => {
       events.push(`request:${url}`);
       return { status: 204, ok: true };
     },
-    async (url, signal, timeoutMs) => {
-      events.push(`wake:${url}:${String(signal)}:${timeoutMs}`);
+    async () => {
+      throw new Error("logout must not wait for backend readiness");
     }
   );
 
   await login.requestCalorieAppLogout();
 
-  assert.deepEqual(events, [
-    "wake:https://backend.example:undefined:90000",
-    "request:/api/backend/api/identity/logout",
-  ]);
+  assert.deepEqual(events, ["request:/api/backend/api/identity/logout"]);
 });
 
 test("joint logout accepts an absent app session and rejects backend failure", async () => {
@@ -96,8 +93,8 @@ test("joint logout accepts an absent app session and rejects backend failure", a
     { status: 200, ok: true },
   ];
   const calls = [];
-  const login = await loadModule(async (url, options) => {
-    calls.push({ url, options });
+  const login = await loadModule(async (url, options, timeoutMs) => {
+    calls.push({ url, options, timeoutMs });
     return responses.shift();
   });
 
@@ -110,4 +107,5 @@ test("joint logout accepts an absent app session and rejects backend failure", a
   assert.equal(calls[0].options.method, "POST");
   assert.equal(calls[3].url, "/api/backend/api/identity/me");
   assert.equal(calls[3].options.cache, "no-store");
+  assert.equal(calls[3].timeoutMs, 5000);
 });

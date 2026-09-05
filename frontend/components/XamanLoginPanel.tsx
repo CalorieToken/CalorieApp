@@ -56,7 +56,7 @@ const LOGIN_STATUS_INITIAL_POLL_INTERVAL_MS = 5_000;
 const LOGIN_STATUS_MIDDLE_POLL_INTERVAL_MS = 10_000;
 const LOGIN_STATUS_LONG_POLL_INTERVAL_MS = 20_000;
 const LOGIN_STATUS_TRANSIENT_MAX_DELAY_MS = 30_000;
-const LOGOUT_BACKEND_WARMUP_TIMEOUT_MS = 90_000;
+const LOGOUT_STATE_VERIFICATION_TIMEOUT_MS = 5_000;
 const LOGIN_STATUS_MIDDLE_PHASE_AFTER_MS = 30_000;
 const LOGIN_STATUS_LONG_PHASE_AFTER_MS = 90_000;
 const LOGIN_STATUS_FALLBACK_LIFETIME_MS = 5 * 60_000;
@@ -445,13 +445,6 @@ export async function requestCalorieAppLogout(): Promise<void> {
   let logoutFailure: unknown = null;
 
   try {
-    // Logout can be the first backend request after a long idle period. Wake
-    // the Render Free backend before revoking the session, just as login does.
-    await waitForBackendReady(
-      BACKEND_WAKE_BASE_URL,
-      undefined,
-      LOGOUT_BACKEND_WARMUP_TIMEOUT_MS
-    );
     const response = await backendRequest(`${BACKEND_BASE_URL}/api/identity/logout`, {
       method: "POST",
     });
@@ -468,7 +461,8 @@ export async function requestCalorieAppLogout(): Promise<void> {
   try {
     const verification = await backendRequest(
       `${BACKEND_BASE_URL}/api/identity/me`,
-      { cache: "no-store" }
+      { cache: "no-store" },
+      LOGOUT_STATE_VERIFICATION_TIMEOUT_MS
     );
     if (verification.status === 401) {
       return;

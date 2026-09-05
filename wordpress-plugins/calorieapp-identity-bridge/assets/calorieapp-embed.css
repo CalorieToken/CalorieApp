@@ -209,7 +209,16 @@
 }
 
 @media (max-width: 768px) {
+  /* Brizy renders the navigation before the XUMM card. Give its positioned
+     mobile surface an explicit higher layer so an open menu stays clickable. */
+  .brz .brz-menu-simple {
+    position: relative;
+    z-index: 20;
+  }
+
   .calorieapp-identity-card {
+    position: relative;
+    z-index: 1;
     box-sizing: border-box;
     width: min(280px, calc(100vw - 20px)) !important;
     max-width: calc(100vw - 20px);
