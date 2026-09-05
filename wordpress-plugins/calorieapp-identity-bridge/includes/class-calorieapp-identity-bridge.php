@@ -61,6 +61,8 @@ class MarketWidget {
             [
                 'xpMarketWidgetUrl' => rest_url(self::REST_NAMESPACE . self::REST_ROUTE),
                 'xpMarketTokenUrl' => self::TOKEN_PAGE,
+                'logoUrl' => plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE)
+                    . 'assets/calorieapp-logo.png',
             ]
         );
     }

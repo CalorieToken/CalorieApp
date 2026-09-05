@@ -43,10 +43,11 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 Details are in SECURITY.md and CONFIGURATION.md.
 
 Version 0.3.16 keeps login, joint logout, footer, and stored page content
-unchanged. It uses the established CalorieApp image mark inside the existing
-Brizy shortcut without changing that shortcut's size or position, mirrors the
-three fixed Brizy shortcuts on the CalorieApp page, and removes the legacy
-shortcode sizing that displaced the XPMarket card or reserved empty height.
+unchanged. It bundles the established CalorieApp image mark with the plugin and
+uses it inside the existing Brizy shortcut without changing that shortcut's
+size or position, mirrors the three fixed Brizy shortcuts on the CalorieApp
+page, and removes the legacy shortcode sizing that displaced the XPMarket card
+or reserved empty height.
 Version 0.3.15 leaves the proven login and joint logout flow unchanged. It
 keeps the existing Brizy shortcut at its original size and position while
 replacing only its obsolete exchange glyph with the CalorieApp mark, gives the
@@ -162,6 +163,7 @@ recommended for production browser-cookie reliability.
 - includes/class-calorieapp-identity-bridge-admin.php
 - assets/calorieapp-embed.js
 - assets/calorieapp-embed.css
+- assets/calorieapp-logo.png
 - config/locales.json
 - tests/bootstrap.php
 - tests/test-identity-bridge-rest.php

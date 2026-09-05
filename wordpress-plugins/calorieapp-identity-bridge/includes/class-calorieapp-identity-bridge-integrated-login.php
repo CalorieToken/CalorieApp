@@ -179,7 +179,8 @@ class IntegratedLogin {
         $this->page_ending_rendered = true;
         $home_url = home_url('/');
         $calorieapp_url = home_url('/index.php/calorieapp/');
-        $calorieapp_logo_url = 'https://app.calorietoken.net/logo.png';
+        $calorieapp_logo_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE)
+            . 'assets/calorieapp-logo.png';
         $brizy_glyph_base_url = content_url(
             '/plugins/brizy/public/editor-build/prod/editor/icons/glyph/'
         );

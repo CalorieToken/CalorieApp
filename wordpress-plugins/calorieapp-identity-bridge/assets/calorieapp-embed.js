@@ -23,10 +23,43 @@
     "/integrated-exchange",
     "/integrated-exchange/",
   ];
-  var CALORIEAPP_LOGO_MARKUP =
-    '<img class="calorieapp-page-tool-logo" src="https://app.calorietoken.net/logo.png" alt="" width="48" height="48" aria-hidden="true" decoding="async">';
   var legacyIdentityCenterFrame = null;
   var xpMarketWidgetRequest = null;
+
+  function escapeHtmlAttribute(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function calorieAppLogoMarkup() {
+    var config = window.calorieappIdentityBridgeChrome || {};
+    var logoUrl = typeof config.logoUrl === "string" ? config.logoUrl.trim() : "";
+    if (!logoUrl) {
+      return "";
+    }
+
+    var parsedLogoUrl;
+    try {
+      parsedLogoUrl = new URL(logoUrl, window.location.origin);
+    } catch (_error) {
+      return "";
+    }
+    if (
+      parsedLogoUrl.protocol !== "https:" &&
+      parsedLogoUrl.protocol !== "http:"
+    ) {
+      return "";
+    }
+
+    return (
+      '<img class="calorieapp-page-tool-logo" src="' +
+      escapeHtmlAttribute(parsedLogoUrl.href) +
+      '" alt="" width="48" height="48" aria-hidden="true" decoding="async">'
+    );
+  }
 
   function formatCompactNumber(value) {
     var number = Number(value);
@@ -270,6 +303,7 @@
     } catch (_error) {
       return;
     }
+    var logoMarkup = calorieAppLogoMarkup();
 
     document.querySelectorAll("a[href]").forEach(function (link) {
       if (
@@ -310,9 +344,11 @@
       if (link.classList && typeof link.classList.add === "function") {
         link.classList.add("calorieapp-page-tool-link");
       }
-      icon.innerHTML = CALORIEAPP_LOGO_MARKUP;
-      if (icon.classList && typeof icon.classList.add === "function") {
-        icon.classList.add("calorieapp-page-tool-logo-frame");
+      if (logoMarkup) {
+        icon.innerHTML = logoMarkup;
+        if (icon.classList && typeof icon.classList.add === "function") {
+          icon.classList.add("calorieapp-page-tool-logo-frame");
+        }
       }
     });
 

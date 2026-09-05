@@ -19,6 +19,14 @@ const MAIN_PLUGIN_PATH = new URL(
   "../../wordpress-plugins/calorieapp-identity-bridge/includes/class-calorieapp-identity-bridge.php",
   import.meta.url
 );
+const FRONTEND_LOGO_PATH = new URL(
+  "../../frontend/public/logo.png",
+  import.meta.url
+);
+const BUNDLED_LOGO_PATH = new URL(
+  "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-logo.png",
+  import.meta.url
+);
 
 function element(hidden = true) {
   const listeners = {};
@@ -362,6 +370,8 @@ test("site-wide header layout loads without starting the CalorieApp bridge", asy
 
 test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async () => {
   const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const bundledLogoUrl =
+    "https://calorietoken.net/wp-content/plugins/calorieapp-identity-bridge/assets/calorieapp-logo.png";
   const icon = element(false);
   icon.innerHTML = '<svg class="old-exchange-icon"></svg>';
   const iconLink = element(false);
@@ -400,6 +410,9 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     },
   };
   const window = {
+    calorieappIdentityBridgeChrome: {
+      logoUrl: bundledLogoUrl,
+    },
     location: {
       href: "https://calorietoken.net/index.php/whitepaper/",
       origin: "https://calorietoken.net",
@@ -419,10 +432,8 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     true
   );
   assert.match(icon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
-  assert.match(
-    icon.innerHTML,
-    /src="https:\/\/app\.calorietoken\.net\/logo\.png"/
-  );
+  assert.ok(icon.innerHTML.includes(`src="${bundledLogoUrl}"`));
+  assert.doesNotMatch(icon.innerHTML, /app\.calorietoken\.net\/logo\.png/);
   assert.match(icon.innerHTML, /width="48" height="48"/);
   assert.doesNotMatch(icon.innerHTML, /<svg/);
   assert.equal(
@@ -435,6 +446,40 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   );
   assert.match(slashlessIcon.innerHTML, /<img class="calorieapp-page-tool-logo"/);
   assert.equal(parsedUrls.includes(unrelatedLink.href), false);
+});
+
+test("legacy shortcut keeps navigating to CalorieApp without logo config", async () => {
+  const scriptSource = await readFile(SCRIPT_PATH, "utf8");
+  const icon = element(false);
+  icon.innerHTML = '<svg class="old-exchange-icon"></svg>';
+  const iconLink = element(false);
+  iconLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange/";
+  iconLink.querySelector = (selector) =>
+    selector === ".brz-icon" ? icon : null;
+  const document = {
+    readyState: "complete",
+    querySelector() {
+      return null;
+    },
+    querySelectorAll(selector) {
+      return selector === "a[href]" ? [iconLink] : [];
+    },
+  };
+  const window = {
+    location: {
+      href: "https://calorietoken.net/index.php/whitepaper/",
+      origin: "https://calorietoken.net",
+    },
+  };
+
+  vm.runInNewContext(scriptSource, { document, URL, window });
+
+  assert.equal(
+    iconLink.href,
+    "https://calorietoken.net/index.php/calorieapp/"
+  );
+  assert.equal(icon.innerHTML, '<svg class="old-exchange-icon"></svg>');
 });
 
 test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
@@ -455,7 +500,7 @@ test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
   assert.match(pluginSource, /square-upload\.svg#nc_icon/);
   assert.match(
     pluginSource,
-    /\$calorieapp_logo_url\s*=\s*'https:\/\/app\.calorietoken\.net\/logo\.png';/
+    /\$calorieapp_logo_url\s*=\s*plugin_dir_url\(CALORIEAPP_IDENTITY_BRIDGE_FILE\)\s*\.\s*'assets\/calorieapp-logo\.png';/
   );
   assert.match(
     pluginSource,
@@ -524,6 +569,32 @@ test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
   assert.match(
     mobileRules,
     /\.calorieapp-page-tool-position-top\s*\{[^}]*bottom:\s*60px;/s
+  );
+});
+
+test("WordPress plugin bundles the exact existing CalorieApp logo", async () => {
+  const [sourceLogo, bundledLogo, scriptSource, pageSource, mainPluginSource] =
+    await Promise.all([
+      readFile(FRONTEND_LOGO_PATH),
+      readFile(BUNDLED_LOGO_PATH),
+      readFile(SCRIPT_PATH, "utf8"),
+      readFile(PLUGIN_PATH, "utf8"),
+      readFile(MAIN_PLUGIN_PATH, "utf8"),
+    ]);
+
+  assert.deepEqual(bundledLogo, sourceLogo);
+  assert.match(
+    mainPluginSource,
+    /'logoUrl'\s*=>\s*plugin_dir_url\(CALORIEAPP_IDENTITY_BRIDGE_FILE\)\s*\.\s*'assets\/calorieapp-logo\.png'/s
+  );
+  assert.match(scriptSource, /logoUrl/);
+  assert.doesNotMatch(
+    scriptSource,
+    /https:\/\/app\.calorietoken\.net\/logo\.png/
+  );
+  assert.doesNotMatch(
+    pageSource,
+    /https:\/\/app\.calorietoken\.net\/logo\.png/
   );
 });
 

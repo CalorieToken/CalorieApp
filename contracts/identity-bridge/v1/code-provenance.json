@@ -136,6 +136,16 @@
       "clearance_status": "contributor-source-and-similarity-review-pending"
     },
     {
+      "path": "assets/calorieapp-logo.png",
+      "origin_class": "project-repository-brand-asset-byte-copy",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "CalorieApp-project-context-only-no-general-logo-licence",
+      "clearance_status": "source-creator-permission-and-copyright-chain-review-pending",
+      "source": "frontend/public/logo.png",
+      "source_repository_first_add_commit": "941559c9372e1c8065d06ba7fcbe982bd03acb7b",
+      "sha256": "9a10fc5fbbc36335035e703eeac40b290d3a3f1f1191b8d9f0d57d18fbc78047"
+    },
+    {
       "path": "calorieapp-identity-bridge.php",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",

@@ -36,12 +36,19 @@ class WordPressPluginReleaseTests(unittest.TestCase):
 
             with zipfile.ZipFile(first_archive) as bundle:
                 names = bundle.namelist()
+                bundled_logo = bundle.read(
+                    f"{release.PLUGIN_SLUG}/assets/calorieapp-logo.png"
+                )
             self.assertTrue(names)
             self.assertTrue(all(name.startswith(f"{release.PLUGIN_SLUG}/") for name in names))
             self.assertFalse(any("tests/" in name for name in names))
             self.assertFalse(any(name.endswith(".zip") for name in names))
             self.assertIn(f"{release.PLUGIN_SLUG}/LICENSE", names)
             self.assertIn(f"{release.PLUGIN_SLUG}/THIRD_PARTY_NOTICES.md", names)
+            self.assertEqual(
+                bundled_logo,
+                (release.ROOT / "frontend" / "public" / "logo.png").read_bytes(),
+            )
             self.assertIn(f"{release.PLUGIN_SLUG}/config/locales.json", names)
 
     def test_release_allowlist_has_exact_code_provenance_inventory(self) -> None:
