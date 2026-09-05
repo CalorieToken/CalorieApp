@@ -117,9 +117,13 @@ class IntegratedLogin {
             return;
         }
 
-        $site_return_url = get_permalink();
-        if (!is_string($site_return_url) || $site_return_url === '') {
-            $site_return_url = home_url('/');
+        $site_return_url = home_url('/');
+        $queried_object_id = (int) get_queried_object_id();
+        if ($queried_object_id > 0 && (is_singular() || is_front_page())) {
+            $queried_permalink = get_permalink($queried_object_id);
+            if (is_string($queried_permalink) && $queried_permalink !== '') {
+                $site_return_url = $queried_permalink;
+            }
         }
         $logout_url = wp_logout_url($site_return_url);
         $locale = LocaleRegistry::resolve(determine_locale());

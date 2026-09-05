@@ -279,6 +279,7 @@ test("site-wide widget clears CalorieApp before WordPress logout", async () => {
   assert.equal(body.children.at(-1), logoutFrame);
   assert.equal(logoutButton.disabled, true);
   assert.equal(logoutButton.textContent, "Logging out...");
+  assert.equal(iframePosts.length, 0);
 
   windowListeners.message({
     data: { type: "calorieapp:bridge:ready", locale: "en" },

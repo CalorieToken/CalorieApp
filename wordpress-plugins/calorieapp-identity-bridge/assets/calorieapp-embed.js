@@ -285,9 +285,6 @@
       logoutFrame.src = frameSrc;
       logoutFrame.setAttribute("aria-hidden", "true");
       logoutFrame.setAttribute("tabindex", "-1");
-      logoutFrame.addEventListener("load", function () {
-        postToLogoutFrame("bridge:init");
-      });
       document.body.appendChild(logoutFrame);
 
       logoutTimeout = window.setTimeout(function () {
