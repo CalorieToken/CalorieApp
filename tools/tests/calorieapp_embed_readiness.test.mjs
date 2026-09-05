@@ -366,6 +366,12 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
   textLink.href =
     "https://calorietoken.net/index.php/integrated-exchange/";
   textLink.querySelector = () => null;
+  const slashlessIcon = element(false);
+  const slashlessIconLink = element(false);
+  slashlessIconLink.href =
+    "https://calorietoken.net/index.php/integrated-exchange";
+  slashlessIconLink.querySelector = (selector) =>
+    selector === ".brz-icon" ? slashlessIcon : null;
   const unrelatedLink = element(false);
   unrelatedLink.href = "https://calorietoken.net/index.php/whitepaper/";
   unrelatedLink.querySelector = () => null;
@@ -381,7 +387,7 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     },
     querySelectorAll(selector) {
       if (selector === "a[href]") {
-        return [iconLink, textLink, unrelatedLink];
+        return [iconLink, textLink, slashlessIconLink, unrelatedLink];
       }
       return [];
     },
@@ -410,6 +416,11 @@ test("legacy Brizy exchange shortcut becomes the CalorieApp logo link", async ()
     textLink.href,
     "https://calorietoken.net/index.php/integrated-exchange/"
   );
+  assert.equal(
+    slashlessIconLink.href,
+    "https://calorietoken.net/index.php/calorieapp/"
+  );
+  assert.match(slashlessIcon.innerHTML, /calorieapp-page-tool-logo/);
   assert.equal(parsedUrls.includes(unrelatedLink.href), false);
 });
 

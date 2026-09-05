@@ -18,7 +18,9 @@
   var MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
   var CALORIEAPP_PAGE_PATH = "/index.php/calorieapp/";
   var LEGACY_EXCHANGE_PATHS = [
+    "/index.php/integrated-exchange",
     "/index.php/integrated-exchange/",
+    "/integrated-exchange",
     "/integrated-exchange/",
   ];
   var CALORIEAPP_LOGO_MARKUP =
