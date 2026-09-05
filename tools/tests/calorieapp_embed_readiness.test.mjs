@@ -461,6 +461,27 @@ test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
     pluginSource,
     /<img class="calorieapp-page-tool-logo" src="<\?php echo esc_url\(\$calorieapp_logo_url\); \?>"/
   );
+  assert.match(
+    pluginSource,
+    /\$brizy_glyph_base_url\s*=\s*content_url\(\s*'\/plugins\/brizy\/public\/editor-build\/prod\/editor\/icons\/glyph\/'\s*\);/
+  );
+  assert.match(
+    pluginSource,
+    /href="<\?php echo esc_url\(\$brizy_glyph_base_url \. 'home-minimal\.svg#nc_icon'\); \?>"/
+  );
+  assert.match(
+    pluginSource,
+    /href="<\?php echo esc_url\(\$brizy_glyph_base_url \. 'square-upload\.svg#nc_icon'\); \?>"/
+  );
+
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tools\s*\{[^}]*display:\s*block;/s
+  );
+  assert.doesNotMatch(
+    styleSource,
+    /\.calorieapp-page-tools\s*\{[^}]*display:\s*contents;/s
+  );
 
   assert.match(
     styleSource,
@@ -469,6 +490,10 @@ test("CalorieApp page uses the same fixed Brizy shortcut stack", async () => {
   assert.match(
     styleSource,
     /\.calorieapp-page-tool\s*\{[^}]*pointer-events:\s*auto;/s
+  );
+  assert.match(
+    styleSource,
+    /\.calorieapp-page-tool:focus-visible\s*\{[^}]*outline:\s*3px solid rgba\(7,\s*148,\s*71,\s*0\.24\);[^}]*outline-offset:\s*2px;/s
   );
   assert.match(
     styleSource,

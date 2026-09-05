@@ -180,6 +180,9 @@ class IntegratedLogin {
         $home_url = home_url('/');
         $calorieapp_url = home_url('/index.php/calorieapp/');
         $calorieapp_logo_url = 'https://app.calorietoken.net/logo.png';
+        $brizy_glyph_base_url = content_url(
+            '/plugins/brizy/public/editor-build/prod/editor/icons/glyph/'
+        );
         $copyright_year = wp_date('Y');
         $social_links = [
             ['label' => 'Telegram', 'url' => 'https://t.me/+7YxaKdQYWNA0NDA0', 'icon' => 'telegram.svg'],
@@ -201,7 +204,7 @@ class IntegratedLogin {
                         title="<?php echo esc_attr__('Home', 'calorieapp-identity-bridge'); ?>"
                     >
                         <span class="brz-icon brz-span calorieapp-brizy-tool-icon" aria-hidden="true">
-                            <svg class="brz-icon-svg"><use href="/wp-content/plugins/brizy/public/editor-build/prod/editor/icons/glyph/home-minimal.svg#nc_icon"></use></svg>
+                            <svg class="brz-icon-svg"><use href="<?php echo esc_url($brizy_glyph_base_url . 'home-minimal.svg#nc_icon'); ?>"></use></svg>
                         </span>
                     </a>
                 </div>
@@ -225,7 +228,7 @@ class IntegratedLogin {
                         title="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>"
                     >
                         <span class="brz-icon brz-span calorieapp-brizy-tool-icon" aria-hidden="true">
-                            <svg class="brz-icon-svg"><use href="/wp-content/plugins/brizy/public/editor-build/prod/editor/icons/glyph/square-upload.svg#nc_icon"></use></svg>
+                            <svg class="brz-icon-svg"><use href="<?php echo esc_url($brizy_glyph_base_url . 'square-upload.svg#nc_icon'); ?>"></use></svg>
                         </span>
                     </a>
                 </div>

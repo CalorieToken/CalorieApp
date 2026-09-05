@@ -375,6 +375,22 @@ class Test_CalorieApp_Integrated_Login extends WP_UnitTestCase {
         );
         $this->assertStringContainsString('home-minimal.svg#nc_icon', $html);
         $this->assertStringContainsString('square-upload.svg#nc_icon', $html);
+        $this->assertStringContainsString(
+            esc_url(
+                content_url(
+                    '/plugins/brizy/public/editor-build/prod/editor/icons/glyph/home-minimal.svg#nc_icon'
+                )
+            ),
+            $html
+        );
+        $this->assertStringContainsString(
+            esc_url(
+                content_url(
+                    '/plugins/brizy/public/editor-build/prod/editor/icons/glyph/square-upload.svg#nc_icon'
+                )
+            ),
+            $html
+        );
         $this->assertStringContainsString('<img class="calorieapp-page-tool-logo"', $html);
         $this->assertStringContainsString('https://app.calorietoken.net/logo.png', $html);
         $this->assertStringContainsString('width="48" height="48"', $html);

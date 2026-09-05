@@ -27,7 +27,7 @@
 }
 
 .calorieapp-page-tools {
-  display: contents;
+  display: block;
 }
 
 .calorieapp-page-tool-position {
@@ -66,6 +66,11 @@
   padding: 0;
   pointer-events: auto;
   text-decoration: none !important;
+}
+
+.calorieapp-page-tool:focus-visible {
+  outline: 3px solid rgba(7, 148, 71, 0.24);
+  outline-offset: 2px;
 }
 
 .calorieapp-brizy-tool-icon {
