@@ -41,6 +41,16 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.22 moves the embedded page's existing joint-logout button into the
+XUMM account card after the embed controller initializes. Both website controls
+use the short label “Log out”, with an accessible explanation of the sessions
+ended on this device. The existing embed controller and its logout handshake
+are unchanged. Floating Brizy shortcuts omit the current page and use the
+original CalorieApp phone mark as a transparent SVG. The former floating
+Integrated Exchange shortcut now opens CalorieApp. Inline content links and
+other floating icons are unchanged. The app's own button wording and Open Food
+Facts contribution footer are prepared separately against app main.
+
 Version 0.3.21 starts the website refinement on the accepted 0.3.20 maintenance
 line. Separate presentation assets compact and centre the Brizy/XUMM header
 card at widths up to 768px. The card moves with the mobile header, so it no

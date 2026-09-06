@@ -48,6 +48,18 @@ and an approved user-provisioning setting.
 `contracts/identity-bridge/v1/locales.json` in the CalorieApp repository. Its
 presence must stay synchronized by the contract tooling.
 
+## CalorieApp project mark
+
+`assets/calorieapp-logo.svg` contains the existing CalorieApp phone mark,
+extracted from the project's `calorieappdraft3.ai` Illustrator design in the
+CalorieToken Google Drive. The original vector paths and colours are retained;
+the surrounding artboard and button border are omitted for transparency.
+This is an existing project brand asset, not a newly drawn logo. Use of the mark
+on this project website was requested by the project owner; no broader rights
+to the mark are granted by the plugin's software licence.
+
+Source: https://drive.google.com/file/d/1FMepF9HinYi9Pd5AuR7BSOO6peY5gIPu/view
+
 ## Source and contribution limitation
 
 Repository history currently contains commits attributed to the `xrpbanks`

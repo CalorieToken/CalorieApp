@@ -38,7 +38,7 @@ function harness({ embedded = false, signedIn = false, storage = new Map(), stor
   const card = element();
   const body = element();
   const button = element();
-  button.dataset = { logoutUrl: `${site}/wp-login.php?action=logout&_wpnonce=test`, idleLabel: "Sign out both" };
+  button.dataset = { logoutUrl: `${site}/wp-login.php?action=logout&_wpnonce=test`, idleLabel: "Log out" };
   const status = element();
   status.hidden = true;
   const actions = element();
@@ -51,13 +51,20 @@ function harness({ embedded = false, signedIn = false, storage = new Map(), stor
     return item;
   }
   const appFrame = frame();
-  const root = { dataset: { appOrigin: app, locale: "en" }, querySelector: () => appFrame };
+  const root = {
+    dataset: { appOrigin: app, locale: "en" },
+    querySelector(selector) {
+      if (selector === ".calorieapp-embed-frame") return appFrame;
+      if (selector === ".calorieapp-site-session-actions") return signedIn ? actions : null;
+      return null;
+    },
+  };
   const document = {
     body, readyState: "complete",
     querySelector(selector) {
       if (selector === "[data-calorieapp-site-integration]") return config;
       if (selector === "[data-calorieapp-embed]") return embedded ? root : null;
-      if (selector === "[data-calorieapp-sitewide-session-actions]") return signedIn ? actions : null;
+      if (selector === "[data-calorieapp-sitewide-session-actions]") return signedIn && !embedded ? actions : null;
       if (selector === ".xl-card") return card;
       return null;
     },

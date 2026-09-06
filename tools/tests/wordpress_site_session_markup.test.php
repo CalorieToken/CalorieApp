@@ -57,6 +57,8 @@ $html = render($bridge);
 check($enqueued_scripts === ['calorieapp-identity-bridge-site-session'], 'The footer queues only the smaller site controller on ordinary pages.');
 check(str_contains($html, 'data-calorieapp-site-integration'), 'Anonymous pages need the common sign-in navigation.');
 check(str_contains($html, 'data-locale="en"'), 'The renderer resolves the canonical locale.');
+check(str_contains($html, 'data-home-page="https://calorietoken.net/"'), 'Floating navigation uses the configured website home.');
+check(str_contains($html, 'assets/calorieapp-logo.svg'), 'Floating navigation receives the bundled original vector logo.');
 check(str_contains($html, 'https://calorieapp-backend-rvul.onrender.com/health?resume_login=true'), 'Use the existing accepted startup route.');
 check(!str_contains($html, 'data-calorieapp-sitewide-session-actions'), 'Anonymous pages must not claim a signed-in session.');
 check(!str_contains($html, '<iframe'), 'An idle website page must not load an app frame.');
@@ -65,6 +67,8 @@ $signed_in = true;
 $html = render($bridge);
 check(substr_count($html, 'data-calorieapp-sitewide-session-actions') === 1, 'Authenticated non-app pages need one joint-logout control.');
 check(str_contains($html, 'synthetic-nonce'), 'Use the nonce-protected WordPress logout URL.');
+check(str_contains($html, 'data-idle-label="Log out"'), 'Use the short, consistent visible logout label.');
+check(str_contains($html, 'Log out of CalorieToken.net and CalorieApp on this device'), 'Explain which sessions are ended on this device.');
 check(str_contains($html, rawurlencode(home_url('/index.php/about/'))), 'Logout returns to the current website page.');
 check(!str_contains($html, '<iframe'), 'The sign-out frame must be created only after a click.');
 
