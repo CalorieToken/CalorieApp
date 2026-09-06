@@ -43,7 +43,7 @@ export default function Home() {
       </div>
 
       <footer
-        className="mx-auto mt-5 flex w-full max-w-3xl flex-col gap-2 rounded-2xl border border-brand-secondary/15 bg-white/95 px-5 py-4 text-xs text-brand-secondary/80 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+        className="mx-auto mt-5 flex w-full max-w-3xl flex-col gap-2 rounded-2xl border border-brand-secondary/15 bg-white/95 px-5 py-4 text-xs leading-relaxed text-brand-secondary/80 shadow-sm"
         aria-label="Product scope and data attribution"
       >
         <p className="font-semibold text-brand-primary">
@@ -69,6 +69,20 @@ export default function Home() {
             ODbL
           </a>
         </p>
+        <div className="mt-2 flex flex-col gap-2 border-t border-brand-secondary/10 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
+          <p>
+            Thank you to the Open Food Facts community for making open food data
+            available. Want to help? Contributions are always voluntary.
+          </p>
+          <a
+            href="https://connect.openfoodfacts.org/join-the-contributor-skill-pool-open-food-facts"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1 self-start rounded-lg px-2 py-2 font-semibold text-brand-primary underline decoration-brand-primary/30 underline-offset-4 transition hover:decoration-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:self-auto"
+          >
+            Contribute to Open Food Facts <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       </footer>
     </main>
   );

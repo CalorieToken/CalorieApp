@@ -1615,8 +1615,8 @@ export function XamanLoginPanel() {
               </p>
               <p className="mt-0.5 text-xs leading-relaxed text-brand-secondary/75">
                 {loginSurfaceMode === "embedded"
-                  ? "One button safely ends both sessions."
-                  : "Sign out on this device when you’re finished."}
+                  ? "Log out of CalorieToken.net and CalorieApp on this device."
+                  : "Log out on this device when you’re finished."}
               </p>
             </div>
             <button
@@ -1625,11 +1625,7 @@ export function XamanLoginPanel() {
               disabled={isLoggingOut}
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isLoggingOut
-                ? "Signing out..."
-                : loginSurfaceMode === "embedded"
-                  ? "Sign out everywhere"
-                  : "Sign out"}
+              {isLoggingOut ? "Logging out..." : "Log out"}
             </button>
           </div>
 
