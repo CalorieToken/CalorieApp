@@ -905,6 +905,7 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   const fetchBodies = [];
   let finishCount = 0;
   let finishCanComplete = false;
+  let authorizeCount = 0;
   const fetch = async (url, options = {}) => {
     fetchCalls.push(url);
     fetchBodies.push(JSON.parse(options.body));
@@ -936,14 +937,16 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
       };
     }
     if (url === "/authorize") {
+      authorizeCount += 1;
       const body = JSON.parse(options.body);
       return {
         ok: true,
         status: 200,
         json: async () => ({
           status: "authorized",
-          code: "authorization-code",
+          code: `authorization-code-${authorizeCount}`,
           state: body.state,
+          expires_at: "2026-09-05 20:07:00",
           locale: "nl",
         }),
       };
@@ -1114,6 +1117,65 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
     state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
     locale: "nl",
   });
+  assert.deepEqual({ ...iframePosts.at(-1) }, {
+    type: "calorieapp:login:authorization",
+    requestId,
+    code: "authorization-code-1",
+    state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    expires_at: "2026-09-05 20:07:00",
+    locale: "nl",
+  });
+
+  // The frontend can request a fresh one-time code from the authenticated
+  // WordPress flow without restarting Xaman or changing the bound state.
+  windowListeners.message({
+    data: {
+      type: "calorieapp:login:state",
+      requestId,
+      state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "nl",
+      refresh: true,
+    },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(fetchCalls.filter((url) => url === "/start").length, 1);
+  assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
+  assert.equal(fetchCalls.filter((url) => url === "/authorize").length, 2);
+  assert.equal(iframePosts.at(-1).code, "authorization-code-2");
+  assert.equal(iframePosts.at(-1).expires_at, "2026-09-05 20:07:00");
+
+  windowListeners.message({
+    data: {
+      type: "calorieapp:login:state",
+      requestId,
+      state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "nl",
+      refresh: true,
+    },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(fetchCalls.filter((url) => url === "/authorize").length, 3);
+  assert.equal(iframePosts.at(-1).code, "authorization-code-3");
+
+  windowListeners.message({
+    data: {
+      type: "calorieapp:login:state",
+      requestId,
+      state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+      locale: "nl",
+      refresh: true,
+    },
+    origin: appOrigin,
+    source: iframeWindow,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(fetchCalls.filter((url) => url === "/authorize").length, 3);
+  assert.equal(iframePosts.at(-1).type, "calorieapp:login:error");
+  assert.match(iframePosts.at(-1).message, /could not be refreshed safely/);
 
   windowListeners.message({
     data: {
@@ -1151,6 +1213,19 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
   assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
+
+  const triggerCountBeforeRetry = iframePosts.filter(
+    (message) => message.type === "calorieapp:login:trigger"
+  ).length;
+  retryButton.dispatch("click");
+  assert.equal(retryButton.hidden, true);
+  assert.equal(modal.hidden, true);
+  assert.equal(iframePosts.at(-1).type, "calorieapp:login:trigger");
+  assert.equal(
+    iframePosts.filter((message) => message.type === "calorieapp:login:trigger")
+      .length,
+    triggerCountBeforeRetry + 1
+  );
 
   windowListeners.message({
     data: { type: "calorieapp:logout:request", locale: "nl" },

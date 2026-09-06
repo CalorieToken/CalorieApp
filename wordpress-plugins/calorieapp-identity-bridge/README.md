@@ -42,6 +42,13 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.18 repairs the final WordPress-to-CalorieApp session handoff without
+asking for another Xaman signature. If a callback is rate-limited or its answer
+is interrupted, the embedded app can request at most two fresh short-lived
+authorization codes from the already-authenticated WordPress flow. A failed
+manual retry now starts a completely new app state instead of reusing a spent
+state. Each issued code remains single-use, and request, state, origin, and
+locale checks remain unchanged.
 Version 0.3.16 keeps login, joint logout, footer, and stored page content
 unchanged. It bundles the established CalorieApp image mark with the plugin and
 uses it inside the existing Brizy shortcut without changing that shortcut's

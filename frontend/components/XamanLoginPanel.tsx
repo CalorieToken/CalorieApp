@@ -72,6 +72,8 @@ const LOGIN_CALLBACK_REQUEST_TIMEOUT_MS = 70_000;
 const LOGIN_COMPLETION_RETRY_WINDOW_MS = 2 * 60_000;
 const LOGIN_COMPLETION_RETRY_DELAY_MS = 5_000;
 const LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS = 30_000;
+const LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS = 10_000;
+const MAX_EMBEDDED_AUTHORIZATION_REFRESHES = 2;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
 const BRIDGE_STATE_ALREADY_CONSUMED_MESSAGE =
@@ -86,8 +88,46 @@ type ParentBridgeMessage = {
   message?: unknown;
   code?: unknown;
   state?: unknown;
+  expires_at?: unknown;
   locale?: unknown;
+  refresh?: unknown;
 };
+
+type EmbeddedAuthorizationRefreshReason =
+  | "rate-limited"
+  | "callback-uncertain";
+
+export class EmbeddedAuthorizationRefreshRequiredError extends Error {
+  constructor(
+    readonly retryAfterMs: number,
+    readonly reason: EmbeddedAuthorizationRefreshReason
+  ) {
+    super("A fresh WordPress authorization code is required");
+    this.name = "EmbeddedAuthorizationRefreshRequiredError";
+  }
+}
+
+export function embeddedAuthorizationRefreshDelayMs(
+  error: unknown,
+  completedRefreshes: number,
+  pendingExpiresAt: string,
+  nowMs = Date.now()
+): number | null {
+  if (
+    !(error instanceof EmbeddedAuthorizationRefreshRequiredError) ||
+    completedRefreshes >= MAX_EMBEDDED_AUTHORIZATION_REFRESHES
+  ) {
+    return null;
+  }
+
+  const expiresAtMs = Date.parse(pendingExpiresAt);
+  const retryAfterMs = Math.max(0, error.retryAfterMs);
+  if (!Number.isFinite(expiresAtMs) || expiresAtMs - nowMs <= retryAfterMs) {
+    return null;
+  }
+
+  return retryAfterMs;
+}
 
 type LoginSurfaceMode = "checking" | "embedded" | "standalone";
 
@@ -382,6 +422,139 @@ async function discardLoginResponse(response: Response) {
   }
 }
 
+async function waitForAuthenticatedUserBeforeHandoff(
+  signal: AbortSignal,
+  retryWindowMs = LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS
+): Promise<MeResponse | null> {
+  const deadline = Date.now() + retryWindowMs;
+  let nextRetryDelayMs = 0;
+
+  while (Date.now() < deadline) {
+    if (nextRetryDelayMs > 0) {
+      await delay(
+        Math.min(nextRetryDelayMs, Math.max(0, deadline - Date.now())),
+        signal
+      );
+    }
+    if (Date.now() >= deadline) {
+      break;
+    }
+
+    let response: Response;
+    try {
+      response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/me`,
+        { signal }
+      );
+    } catch (requestError) {
+      if (signal.aborted) {
+        throw signal.reason ?? requestError;
+      }
+      nextRetryDelayMs = LOGIN_COMPLETION_RETRY_DELAY_MS;
+      continue;
+    }
+
+    if (response.ok) {
+      return (await response.json()) as MeResponse;
+    }
+
+    if (response.status === 401) {
+      await discardLoginResponse(response);
+      return null;
+    }
+    if (![429, 502, 503, 504].includes(response.status)) {
+      await discardLoginResponse(response);
+      throw new Error(`CalorieApp session check failed with ${response.status}`);
+    }
+
+    nextRetryDelayMs =
+      response.status === 429
+        ? retryAfterMilliseconds(
+            response,
+            LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
+          )
+        : LOGIN_COMPLETION_RETRY_DELAY_MS;
+    await discardLoginResponse(response);
+  }
+
+  return null;
+}
+
+async function recoverUncertainEmbeddedCallback(
+  pending: LoginStartResponse,
+  signal: AbortSignal,
+  retryWindowMs: number
+): Promise<MeResponse | null> {
+  let response: Response;
+  try {
+    response = await backendRequest(
+      `${BACKEND_BASE_URL}/api/identity/login/status`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          state: pending.state,
+          browser_handoff_token: pending.browser_handoff_token,
+        }),
+        signal,
+      }
+    );
+  } catch (requestError) {
+    if (signal.aborted) {
+      throw signal.reason ?? requestError;
+    }
+    return null;
+  }
+
+  if ([429, 502, 503, 504].includes(response.status)) {
+    await discardLoginResponse(response);
+    return null;
+  }
+  if (!response.ok) {
+    await discardLoginResponse(response);
+    throw new Error(`Login status failed with ${response.status}`);
+  }
+
+  const payload = (await response.json()) as LoginStatusResponse;
+  if (resolveLocale(payload.locale) !== resolveLocale(pending.locale)) {
+    throw new Error("Login status language context did not match");
+  }
+  if (payload.status === "failed") {
+    throw new Error("Xaman callback failed");
+  }
+  if (payload.status !== "authenticated") {
+    return null;
+  }
+
+  try {
+    return await waitForAuthenticatedUserAfterLogin(signal, retryWindowMs);
+  } catch (sessionError) {
+    if (signal.aborted) {
+      throw signal.reason ?? sessionError;
+    }
+    return null;
+  }
+}
+
+async function recoverOrRequireFreshAuthorization(
+  pending: LoginStartResponse,
+  signal: AbortSignal,
+  deadline: number,
+  retryAfterMs: number,
+  reason: EmbeddedAuthorizationRefreshReason
+): Promise<MeResponse> {
+  const recoveredUser = await recoverUncertainEmbeddedCallback(
+    pending,
+    signal,
+    Math.max(1, deadline - Date.now())
+  );
+  if (recoveredUser) {
+    return recoveredUser;
+  }
+
+  throw new EmbeddedAuthorizationRefreshRequiredError(retryAfterMs, reason);
+}
+
 export async function waitForAuthenticatedUserAfterLogin(
   signal: AbortSignal,
   retryWindowMs = LOGIN_COMPLETION_RETRY_WINDOW_MS
@@ -454,10 +627,13 @@ export async function completeEmbeddedLogin(
       : Date.now() + retryWindowMs,
     Date.now() + retryWindowMs
   );
-  let callback: LoginCallbackResponse | null = null;
+  if (Date.now() >= deadline) {
+    throw new BackendRequestTimeoutError();
+  }
 
-  while (Date.now() < deadline) {
-    const response = await backendRequest(
+  let response: Response;
+  try {
+    response = await backendRequest(
       `${BACKEND_BASE_URL}/api/identity/callback`,
       {
         method: "POST",
@@ -470,39 +646,116 @@ export async function completeEmbeddedLogin(
         Math.min(LOGIN_CALLBACK_REQUEST_TIMEOUT_MS, deadline - Date.now())
       )
     );
-
-    if (response.ok) {
-      callback = (await response.json()) as LoginCallbackResponse;
-      break;
+  } catch (requestError) {
+    if (signal.aborted) {
+      throw signal.reason ?? requestError;
     }
-    // A 429 is rejected by the shared admission layer (or Render's edge)
-    // before the one-time callback handler runs, so only this status is safe
-    // to replay automatically.
-    if (response.status !== 429) {
-      await discardLoginResponse(response);
-      throw new Error(`Callback failed with ${response.status}`);
-    }
-
-    const retryDelayMs = retryAfterMilliseconds(
-      response,
-      LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
-    );
-    await discardLoginResponse(response);
-    await delay(
-      Math.min(retryDelayMs, Math.max(0, deadline - Date.now())),
-      signal
+    return recoverOrRequireFreshAuthorization(
+      pending,
+      signal,
+      deadline,
+      LOGIN_COMPLETION_RETRY_DELAY_MS,
+      "callback-uncertain"
     );
   }
 
-  if (!callback) {
-    throw new BackendRequestTimeoutError();
+  if (!response.ok) {
+    const callbackStatus = response.status;
+    const isRateLimited = callbackStatus === 429;
+    const isUncertain = [502, 503, 504].includes(callbackStatus);
+    const retryDelayMs =
+      isRateLimited || isUncertain
+        ? retryAfterMilliseconds(
+            response,
+            isRateLimited
+              ? LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
+              : LOGIN_COMPLETION_RETRY_DELAY_MS
+          )
+        : LOGIN_COMPLETION_RETRY_DELAY_MS;
+    await discardLoginResponse(response);
+
+    // A 400 can mean a timed-out earlier callback finished just before a fresh
+    // code arrived. Recover only when the state-bound handoff proves that
+    // earlier callback completed; otherwise keep the 400 permanent.
+    if (callbackStatus === 400) {
+      try {
+        const recoveredUser = await recoverUncertainEmbeddedCallback(
+          pending,
+          signal,
+          Math.max(1, deadline - Date.now())
+        );
+        if (recoveredUser) {
+          return recoveredUser;
+        }
+      } catch (recoveryError) {
+        if (signal.aborted) {
+          throw signal.reason ?? recoveryError;
+        }
+      }
+    }
+
+    if (isRateLimited || isUncertain) {
+      return recoverOrRequireFreshAuthorization(
+        pending,
+        signal,
+        deadline,
+        retryDelayMs,
+        isRateLimited ? "rate-limited" : "callback-uncertain"
+      );
+    }
+
+    throw new Error(`Callback failed with ${callbackStatus}`);
+  }
+
+  let callback: LoginCallbackResponse;
+  try {
+    callback = (await response.json()) as LoginCallbackResponse;
+  } catch {
+    return recoverOrRequireFreshAuthorization(
+      pending,
+      signal,
+      deadline,
+      LOGIN_COMPLETION_RETRY_DELAY_MS,
+      "callback-uncertain"
+    );
+  }
+  if (
+    typeof callback.user_id !== "string" ||
+    typeof callback.locale !== "string"
+  ) {
+    return recoverOrRequireFreshAuthorization(
+      pending,
+      signal,
+      deadline,
+      LOGIN_COMPLETION_RETRY_DELAY_MS,
+      "callback-uncertain"
+    );
   }
   if (resolveLocale(callback.locale) !== resolveLocale(pending.locale)) {
     throw new Error("Callback language context did not match");
   }
 
-  // Claim the completed handoff in this exact browser as well. This recovers
-  // when the callback succeeded but its first session cookie was interrupted.
+  // Most browsers retain the callback's same-origin session cookie directly.
+  // Avoid consuming the one-time handoff unless that cookie is unavailable.
+  const callbackUser = await waitForAuthenticatedUserBeforeHandoff(
+    signal,
+    Math.max(
+      1,
+      Math.min(
+        LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS,
+        deadline - Date.now()
+      )
+    )
+  );
+  if (callbackUser) {
+    if (callbackUser.user_id !== callback.user_id) {
+      throw new Error("Callback session user did not match");
+    }
+    return callbackUser;
+  }
+
+  // If the callback response arrived without a usable cookie, claim the
+  // browser-bound handoff as a recovery path.
   await waitForOriginLogin(
     pending.state,
     pending.browser_handoff_token,
@@ -641,6 +894,8 @@ export function XamanLoginPanel() {
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
+  const embeddedAuthorizationRefreshes = useRef(0);
+  const embeddedAuthorizationInFlight = useRef(false);
   const beginLoginRef = useRef<() => void>(() => {});
   const activeLocale = useRef(displayLocale);
 
@@ -966,6 +1221,11 @@ export function XamanLoginPanel() {
         return;
       }
 
+      if (embeddedAuthorizationInFlight.current) {
+        return;
+      }
+
+      embeddedAuthorizationInFlight.current = true;
       try {
         setLoginStatus("Activating CalorieApp in this browser...");
         const restoredUser = await completeEmbeddedLogin(
@@ -976,6 +1236,7 @@ export function XamanLoginPanel() {
         );
 
         embeddedLoginStart.current = null;
+        embeddedAuthorizationRefreshes.current = 0;
         clearPendingLogin();
         setCurrentUser(restoredUser);
         announceAuthState(true);
@@ -994,6 +1255,49 @@ export function XamanLoginPanel() {
           origin
         );
       } catch (requestError) {
+        const refreshDelayMs = embeddedAuthorizationRefreshDelayMs(
+          requestError,
+          embeddedAuthorizationRefreshes.current,
+          pending.expires_at
+        );
+        if (refreshDelayMs !== null) {
+          embeddedAuthorizationRefreshes.current += 1;
+          setError(null);
+          setLoginStatus(
+            "WordPress is signed in. Refreshing the secure CalorieApp connection automatically..."
+          );
+
+          if (refreshDelayMs > 0) {
+            try {
+              await delay(refreshDelayMs, bridgeController.signal);
+            } catch {
+              return;
+            }
+          }
+          if (
+            bridgeController.signal.aborted ||
+            embeddedLoginStart.current !== pending ||
+            embeddedRequestId.current !== event.data.requestId
+          ) {
+            return;
+          }
+
+          // Re-sending the same state asks the already-authenticated WordPress
+          // bridge for a fresh one-time code. It never reopens Xaman and remains
+          // compatible with the preceding bridge release during rollout.
+          window.parent.postMessage(
+            {
+              type: "calorieapp:login:state",
+              requestId: embeddedRequestId.current,
+              state: pending.state,
+              locale: pending.locale,
+              refresh: true,
+            },
+            origin
+          );
+          return;
+        }
+
         const message = backendUnavailableMessage(
           requestError,
           "WordPress is signed in, but CalorieApp could not finish. Please try again."
@@ -1010,6 +1314,8 @@ export function XamanLoginPanel() {
           },
           origin
         );
+      } finally {
+        embeddedAuthorizationInFlight.current = false;
       }
     };
 
@@ -1039,6 +1345,8 @@ export function XamanLoginPanel() {
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
       embeddedLoginStart.current = null;
+      embeddedAuthorizationRefreshes.current = 0;
+      embeddedAuthorizationInFlight.current = false;
       setLoginStatus(
         "Preparing Xaman and starting CalorieApp securely in the background..."
       );
