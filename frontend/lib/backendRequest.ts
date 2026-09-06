@@ -71,6 +71,23 @@ function throwIfAborted(signal?: AbortSignal) {
   }
 }
 
+function waitForRetry(delayMs: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    throwIfAborted(signal);
+
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      signal?.removeEventListener("abort", onAbort);
+      reject(signal?.reason ?? new Error("Request aborted"));
+    };
+    const timeoutId = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, delayMs);
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 function retryAfterDelayMs(response: Response): number | null {
   const value = response.headers.get("retry-after")?.trim();
   if (!value) {
@@ -147,7 +164,7 @@ async function waitForBackendReadyAt(
       deadline - Date.now()
     );
     if (cooldownMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, cooldownMs));
+      await waitForRetry(cooldownMs, signal);
       continue;
     }
 
@@ -197,7 +214,7 @@ async function waitForBackendReadyAt(
       Math.max(0, deadline - Date.now())
     );
     if (boundedRetryDelayMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, boundedRetryDelayMs));
+      await waitForRetry(boundedRetryDelayMs, signal);
       throwIfAborted(signal);
     }
   }

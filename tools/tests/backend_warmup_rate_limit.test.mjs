@@ -67,6 +67,14 @@ function warmupHarness(responses) {
 
   return {
     requests,
+    elapsed: () => now - startedAt,
+    pendingTimers: () => timers.size,
+    abortAfter(controller, delay) {
+      timers.set(++nextTimer, {
+        at: now + delay,
+        callback: () => controller.abort(new Error("Login cancelled")),
+      });
+    },
     start: (signal, timeout = 180_000, baseUrl = "/api/backend") =>
       module.exports.waitForBackendReady(baseUrl, signal, timeout),
     async settle(operation) {
@@ -159,3 +167,40 @@ for (const limitedUrl of ["/api/backend/health", "https://backend.example/health
     assert.equal(harness.requests.filter(({ url }) => url === limitedUrl).length, 2);
   });
 }
+
+test("cancelling a long retry pause immediately clears its timer", async () => {
+  const harness = warmupHarness([response(429, "120")]);
+  const controller = new AbortController();
+  harness.abortAfter(controller, 5_000);
+  await assert.rejects(harness.settle(harness.start(controller.signal)), /Login cancelled/);
+  assert.equal(harness.elapsed(), 5_000);
+  assert.equal(harness.pendingTimers(), 0);
+  assert.equal(harness.requests.length, 1);
+});
+
+test("cancelling a shared cooldown stops both wake-up paths immediately", async () => {
+  const harness = warmupHarness((url) => {
+    if (url === "/api/backend/health") return response(429, "120");
+    throw new Error("Network response unavailable");
+  });
+  const controller = new AbortController();
+  harness.abortAfter(controller, 10_000);
+  await assert.rejects(
+    harness.settle(harness.start(controller.signal, 180_000, "https://backend.example")),
+    /Login cancelled/
+  );
+  assert.equal(harness.elapsed(), 10_000);
+  assert.equal(harness.pendingTimers(), 0);
+  assert.equal(harness.requests.length, 2);
+});
+
+test("a successful route immediately cancels the other route's retry timer", async () => {
+  const harness = warmupHarness((url) => {
+    if (url === "/api/backend/health") return healthy();
+    throw new Error("Network response unavailable");
+  });
+  await harness.settle(harness.start(undefined, 180_000, "https://backend.example"));
+  assert.equal(harness.elapsed(), 0);
+  assert.equal(harness.pendingTimers(), 0);
+  assert.equal(harness.requests.length, 2);
+});
