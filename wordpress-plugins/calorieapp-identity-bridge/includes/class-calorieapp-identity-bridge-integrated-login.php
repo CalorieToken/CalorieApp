@@ -97,10 +97,10 @@ class IntegratedLogin {
             true
         );
 
-        wp_enqueue_script(
+        wp_register_script(
             'calorieapp-identity-bridge-site-session',
             $base_url . 'assets/calorieapp-site-session.js',
-            ['calorieapp-identity-bridge-embed'],
+            [],
             $version,
             true
         );
@@ -121,6 +121,10 @@ class IntegratedLogin {
         if ($frontend_url === '') {
             return;
         }
+        // The shortcode queues its full login bridge while rendering content.
+        // Queue this smaller controller afterwards, before footer scripts are
+        // printed, so ordinary pages never need to load the full embed bridge.
+        wp_enqueue_script('calorieapp-identity-bridge-site-session');
         $locale = LocaleRegistry::resolve(determine_locale());
         $app_page = home_url('/index.php/calorieapp/');
         $frame_src = add_query_arg(['embedded' => '1', 'locale' => $locale], $frontend_url);
@@ -138,7 +142,7 @@ class IntegratedLogin {
             data-app-origin="<?php echo esc_attr($this->url_origin($frontend_url)); ?>"
             data-frame-src="<?php echo esc_url($frame_src); ?>"
             data-app-page="<?php echo esc_url($app_page); ?>"
-            data-startup-url="https://calorieapp-backend-rvul.onrender.com/health?resume_login=true"
+            data-startup-url="<?php echo esc_url('https://calorieapp-backend-rvul.onrender.com/health?resume_login=true'); ?>"
             data-locale="<?php echo esc_attr($locale); ?>"
             hidden
         ></div>

@@ -2,9 +2,19 @@
 /** Exercise the real renderer using deterministic public WordPress fixtures. */
 define('ABSPATH', __DIR__);
 define('MINUTE_IN_SECONDS', 60);
+define('CALORIEAPP_IDENTITY_BRIDGE_FILE', __FILE__);
 
 $signed_in = false;
 $admin = false;
+$registered_scripts = [];
+$enqueued_scripts = [];
+function plugin_dir_url($path): string { return 'https://calorietoken.net/wp-content/plugins/calorieapp-identity-bridge/'; }
+function wp_register_style(...$args): void {}
+function wp_enqueue_style(...$args): void {}
+function wp_register_script($handle, $src, $deps, ...$args): void {
+    $GLOBALS['registered_scripts'][$handle] = ['src' => $src, 'deps' => $deps];
+}
+function wp_enqueue_script($handle): void { $GLOBALS['enqueued_scripts'][] = $handle; }
 function is_admin(): bool { return $GLOBALS['admin']; }
 function is_user_logged_in(): bool { return $GLOBALS['signed_in']; }
 function apply_filters($name, $value) { return $value; }
@@ -40,7 +50,11 @@ function check($condition, $message): void {
     if (!$condition) { throw new RuntimeException($message); }
 }
 
+$bridge->register_assets();
+check($enqueued_scripts === [], 'Asset registration must not enqueue the full login bridge on ordinary pages.');
+check($registered_scripts['calorieapp-identity-bridge-site-session']['deps'] === [], 'The site controller must not pull in the full embed script.');
 $html = render($bridge);
+check($enqueued_scripts === ['calorieapp-identity-bridge-site-session'], 'The footer queues only the smaller site controller on ordinary pages.');
 check(str_contains($html, 'data-calorieapp-site-integration'), 'Anonymous pages need the common sign-in navigation.');
 check(str_contains($html, 'data-locale="en"'), 'The renderer resolves the canonical locale.');
 check(str_contains($html, 'https://calorieapp-backend-rvul.onrender.com/health?resume_login=true'), 'Use the existing accepted startup route.');
@@ -56,7 +70,9 @@ check(!str_contains($html, '<iframe'), 'The sign-out frame must be created only 
 
 $property = $class->getProperty('shortcode_rendered');
 $property->setValue($bridge, true);
+$enqueued_scripts = ['calorieapp-identity-bridge-embed'];
 check(!str_contains(render($bridge), 'data-calorieapp-sitewide-session-actions'), 'The app page retains its existing joint-logout control without a duplicate.');
+check($enqueued_scripts === ['calorieapp-identity-bridge-embed', 'calorieapp-identity-bridge-site-session'], 'The full bridge queued by the shortcode must precede the return controller.');
 $admin = true;
 check(render($bridge) === '', 'Do not add public session controls in wp-admin.');
 echo "WordPress site-session renderer checks passed.\n";
