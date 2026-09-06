@@ -41,6 +41,15 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.21 starts the website refinement on the accepted 0.3.20 maintenance
+line. Separate presentation assets compact and centre the Brizy/XUMM header
+card at widths up to 768px. The card moves with the mobile header, so it no
+longer floats over scrolled page content. Navigation spacing accounts for the
+actual card height, including the existing joint-logout button. Desktop styling
+is unchanged. The authentication controllers, app/backend versions, and native
+Render startup route are unchanged. See `docs/STEP_3_HEADER_LAYOUT.md` in the
+repository for the review fixture and the outstanding live visual check.
+
 Version 0.3.20 completes the missing session controls on the accepted 0.3.19
 maintenance line. The embedded app's sign-out request reaches the existing
 joint-logout handler. Other authenticated website pages provide the same

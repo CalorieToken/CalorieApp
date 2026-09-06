@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Bridge header layout review</title>
+<style>
+  body { margin: 20px; font: 16px system-ui; color: #253151; background: #f2f4f7; }
+  button { padding: 12px 18px; font: inherit; cursor: pointer; }
+  #examples { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  iframe { display: block; height: 440px; border: 1px solid #aeb4c6; background: white; }
+  pre { white-space: pre-wrap; }
+</style>
+<h1>Bridge header layout review</h1>
+<p>Synthetic Brizy/XUMM compatibility fixture. No wallet, backend requests, or sign-in actions.</p>
+<p><button id="run">Run layout checks</button> <strong id="status">Ready</strong></p>
+<div id="examples"></div>
+<pre id="results"></pre>
+<template id="fixture">
+  <!doctype html><html lang="en"><meta charset="utf-8">
+  <link rel="stylesheet" href="../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-embed.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px Georgia, serif; }
+    .brz { background: #ffb92e; }
+    .header { padding: 1px 20px 28px; }
+    .identity-column { position: relative; width: 35%; height: 0; }
+    .identity-wrapper { position: fixed; top: 15px; left: 20%; width: 220px; z-index: 100; }
+    .brz-wp-shortcode { width: 11%; }
+    .xl-card { font-size: 16px; color: white; width: 220px; min-height: 108px; border: 2px solid white; border-radius: 10px; margin: 5px; background: #515ba3; overflow: hidden; box-shadow: 0 2px 6px #6b6488; }
+    .xl-card a { color: white; }
+    .xl-card-header { font-family: Courier, monospace; background: #ffb92e; padding: 3px 10px; }
+    .xl-card-wallet { white-space: nowrap; }
+    .xl-card-body { padding: 5px 10px; }
+    .xl-card-body div { line-height: 15.5px; }
+    .xl-card-avatar { float: left; width: 65px; margin-right: 10px; }
+    .avatar { display: block; height: 52px; background: #079447; text-align: center; font: 32px/52px system-ui; }
+    .navigation { margin-top: 130px; width: 100%; padding: 8px; border-radius: 30px; background: white; box-shadow: 0 8px 16px #84651d66; }
+    .brz-menu-simple { text-align: center; }
+    .brz-menu-simple button { min-width: 48px; min-height: 48px; border: 0; background: white; font-size: 24px; }
+    nav a { display: block; padding: 14px; color: #515ba3; }
+    .logo { margin: 20px 0 0; padding: 28px; border-radius: 40px; background: white; text-align: center; color: #078644; font: bold 22px system-ui; }
+    main { min-height: 1200px; padding: 28px 20px; font-family: system-ui; color: #078644; }
+    main button { padding: 12px; }
+    @media (min-width: 769px) {
+      .identity-wrapper { left: calc(50% - 140px); width: 280px; }
+      .xl-card { width: 280px; }
+      .navigation { margin-top: 210px; }
+    }
+  </style>
+  <link rel="stylesheet" href="../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-site-layout.css">
+  <div class="brz"><div class="header">
+    <div class="brz-columns identity-column"><div class="brz-wrapper identity-wrapper"><div class="brz-wp-shortcode"><div>
+      <div class="xl-card">
+        <div class="xl-card-header"><div class="xl-card-wallet"><strong>rDEMO</strong>**********************</div></div>
+        <div class="xl-card-body">
+          <div class="xl-card-avatar"><a href="#sign-in" aria-label="Sign in"><span class="avatar">X</span></a></div>
+          <div class="xl-card-balance"><strong>Balance:</strong> <span id="balance">0</span> Calorie · Trade</div>
+          <div class="xl-card-rank"><strong>Rank:</strong> ? / 100</div>
+          <div id="note">Click on QR Image to Sign In</div>
+        </div><div class="xl-card-footer"></div>
+      </div>
+    </div></div></div></div>
+    <div class="brz-columns navigation"><div class="brz-menu-simple">
+      <button id="menu" aria-label="Menu" aria-expanded="false">☰</button>
+      <nav hidden><a href="#home">Home</a><a href="#app">CalorieApp</a><a href="#faq">FAQ</a></nav>
+    </div></div>
+    <div class="logo">CalorieToken</div>
+  </div></div>
+  <main><h2>CalorieApp</h2><p>Food log content remains reachable when scrolling.</p><button id="food">Search foods</button></main>
+  <script>
+    document.querySelector('#menu').addEventListener('click', function () {
+      var open = this.getAttribute('aria-expanded') !== 'true';
+      this.setAttribute('aria-expanded', String(open));
+      document.querySelector('nav').hidden = !open;
+    });
+  </script>
+  <script src="../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-site-layout.js"></script>
+  </html>
+</template>
+<script>
+  const examples = document.querySelector('#examples');
+  const frames = [360, 412, 1440].map(width => {
+    const section = document.createElement('section');
+    const title = document.createElement('h2');
+    title.textContent = width + ' px';
+    const frame = document.createElement('iframe');
+    frame.title = 'Header at ' + width + ' px';
+    frame.style.width = width + 'px';
+    frame.srcdoc = document.querySelector('#fixture').innerHTML;
+    section.append(title, frame); examples.append(section);
+    return frame;
+  });
+  const settle = frame => new Promise(resolve => {
+    const win = frame.contentWindow;
+    win.requestAnimationFrame(() => win.requestAnimationFrame(() => win.requestAnimationFrame(resolve)));
+  });
+  document.querySelector('#run').addEventListener('click', async function () {
+    this.disabled = true;
+    const results = [];
+    const check = (condition, message) => { if (!condition) throw new Error(message); };
+    try {
+      for (const frame of frames) {
+        const doc = frame.contentDocument, win = frame.contentWindow;
+        const card = doc.querySelector('.xl-card'), wrapper = doc.querySelector('.identity-wrapper');
+        const menu = doc.querySelector('#menu'), column = doc.querySelector('.navigation');
+        const width = parseInt(frame.style.width, 10);
+        const mobile = width <= 768;
+        const signInHref = card.querySelector('a').getAttribute('href');
+        function geometry(label) {
+          const c = card.getBoundingClientRect(), m = column.getBoundingClientRect(), b = menu.getBoundingClientRect();
+          check(m.top >= c.bottom + (mobile ? 11 : 0), label + ': navigation overlaps card');
+          check(!mobile || Math.abs(c.left + c.width / 2 - doc.documentElement.clientWidth / 2) < 1, label + ': card off-center');
+          check(!mobile || (c.left >= 11 && c.right <= width - 11), label + ': card outside viewport');
+          check(doc.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2) === menu, label + ': menu is covered');
+          check(card.querySelector('a').getAttribute('href') === signInHref, label + ': sign-in link changed');
+          return { label, cardHeight: c.height, gap: Math.round(m.top - c.bottom) };
+        }
+        win.scrollTo(0, 0); await settle(frame);
+        results.push(geometry(width + ' signed out / menu closed'));
+        menu.click(); await settle(frame);
+        results.push(geometry(width + ' signed out / menu open'));
+        menu.click();
+        // Mimics the accepted site controller inserting its existing logout row.
+        const actions = doc.createElement('div'); actions.className = 'calorieapp-site-session-actions';
+        actions.innerHTML = '<button class="calorieapp-site-logout">Sign out both</button>';
+        card.append(actions); doc.querySelector('#balance').textContent = '1234567890.12';
+        doc.querySelector('#note').textContent = 'Vote: No active vote'; await settle(frame);
+        results.push(geometry(width + ' signed in / menu closed'));
+        menu.click(); await settle(frame);
+        results.push(geometry(width + ' signed in / menu open'));
+        if (mobile) {
+          check(actions.firstChild.getBoundingClientRect().height >= 44, 'Logout touch target too small');
+          actions.firstChild.textContent = 'Website en CalorieApp uitloggen'; await settle(frame);
+          results.push(geometry(width + ' longer logout label'));
+          menu.click(); await settle(frame);
+          const beforeScroll = column.getBoundingClientRect().top - card.getBoundingClientRect().bottom;
+          win.scrollTo(0, 320); win.dispatchEvent(new Event('pageshow')); await settle(frame);
+          check(Math.abs(column.getBoundingClientRect().top - card.getBoundingClientRect().bottom - beforeScroll) < 1, 'Scroll changed header gap');
+          check(card.getBoundingClientRect().bottom < 0, 'Mobile card still covers scrolled content');
+          win.scrollTo(0, 0); await settle(frame);
+          frame.style.width = '800px'; await settle(frame);
+          check(win.getComputedStyle(wrapper).position === 'fixed', 'Desktop positioning was not restored');
+          check(!column.classList.contains('calorieapp-brizy-menu-column'), 'Mobile margin leaked to desktop');
+          frame.style.width = width + 'px'; await settle(frame);
+          results.push(geometry(width + ' after breakpoint round trip'));
+          const stable = column.getBoundingClientRect().top;
+          for (let count = 0; count < 5; count++) { win.dispatchEvent(new Event('resize')); await settle(frame); }
+          check(Math.abs(column.getBoundingClientRect().top - stable) < 1, 'Spacing grows on repeated resize');
+        }
+        actions.remove(); doc.querySelector('#balance').textContent = '0';
+        doc.querySelector('#note').textContent = 'Click on QR Image to Sign In';
+        if (menu.getAttribute('aria-expanded') === 'true') menu.click();
+        await settle(frame);
+        results.push(geometry(width + ' after logout'));
+      }
+      document.querySelector('#status').textContent = 'PASS — ' + results.length + ' layout states';
+    } catch (error) {
+      document.querySelector('#status').textContent = 'FAIL — ' + error.message;
+    }
+    document.querySelector('#results').textContent = JSON.stringify(results, null, 2);
+    this.disabled = false;
+  });
+</script>
+</html>
