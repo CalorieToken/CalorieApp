@@ -47,7 +47,11 @@
         var menu = column.getBoundingClientRect();
         var margin = parseFloat(window.getComputedStyle(column).marginTop) || 0;
         var overlapsHorizontally = menu.left < bounds.right && menu.right > bounds.left;
-        var clearance = overlapsHorizontally && menu.width && menu.height
+        // Moving an earlier menu can move the following card by the same amount,
+        // adding blank space without improving clearance. Only move navigation
+        // whose top is at or below the card's top.
+        var startsBelowCard = menu.top >= bounds.top;
+        var clearance = overlapsHorizontally && startsBelowCard && menu.width && menu.height
           ? Math.max(0, bounds.bottom + 12 - menu.top) : 0;
         return { column: column, margin: margin + clearance, clearance: clearance };
       });

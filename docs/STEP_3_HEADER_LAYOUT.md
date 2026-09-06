@@ -14,6 +14,9 @@ Step 3 website work.
 - Reserve at least 12px above an overlapping menu column, measured from the
   actual card height. Re-measure on resize, card/column size changes, fonts
   loading, and restored-page display; do not accumulate previous corrections.
+- Leave navigation that starts above the card in its natural flow. The live
+  homepage and FAQ place the card column after the menu; moving that earlier
+  menu also moves the following card and only adds empty header space.
 - Keep sign-in and sign-out touch targets at least 44px high. Preserve the
   existing colour palette, text, buttons, and link destinations.
 - Remove mobile corrections when returning to desktop widths.
@@ -30,6 +33,13 @@ by the layout script. The accepted backend cold-start navigation remains.
 a deterministic DOM geometry model. Existing authentication regression tests
 remain the separate behaviour gate. The package's usual PHP and deterministic
 archive checks still apply.
+
+The continuation review observed the actual logo/menu/card column order on
+the live homepage and FAQ. A regression using that order reproduced an
+unnecessary `200px` total menu margin in the initial candidate. The correction
+now leaves that earlier menu alone. The test covers both 360px and 412px,
+card growth, restored scroll, and a desktop/mobile round trip. These modeled
+checks remain distinct from the pending rendered visual acceptance below.
 
 `tools/fixtures/bridge-mobile-layout.html` is a synthetic browser review fixture
 with 360px, 412px and 1440px frames. Its review button checks signed-in/out card

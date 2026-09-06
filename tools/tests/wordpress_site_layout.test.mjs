@@ -7,7 +7,7 @@ const source = await readFile(new URL("../../wordpress-plugins/calorieapp-identi
 
 // A deterministic DOM geometry model exercises correction/lifecycle behavior.
 // It does not substitute for rendering the CSS in a browser or in live Brizy.
-function harness({ width = 360, height = 96, present = true } = {}) {
+function harness({ width = 360, height = 96, present = true, cardAfterMenu = false } = {}) {
   const classes = () => {
     const values = new Set();
     return { add: value => values.add(value), remove: value => values.delete(value), contains: value => values.has(value) };
@@ -23,7 +23,9 @@ function harness({ width = 360, height = 96, present = true } = {}) {
     closest: selector => selector === ".brz-wrapper" ? wrapper : null,
     getBoundingClientRect() {
       const left = 7 + (parseFloat(wrapper.style.getPropertyValue("--calorieapp-identity-center-shift")) || 0);
-      const top = 12 - state.scroll;
+      const top = cardAfterMenu
+        ? navigation.getBoundingClientRect().bottom + 12
+        : 12 - state.scroll;
       return { left, right: left + 280, top, bottom: top + state.height, width: 280, height: state.height };
     },
   };
@@ -96,4 +98,21 @@ test("desktop and pages without the legacy card require no spacing changes", () 
   assert.equal(desktop.navigation.classList.contains("calorieapp-brizy-menu-column"), false);
   assert.equal(desktop.wrapper.style.getPropertyValue("--calorieapp-identity-center-shift"), "");
   assert.equal(harness({ present: false }).observed.length, 0);
+});
+
+test("a card following the menu in document flow does not push both farther down", () => {
+  // The live homepage and FAQ place the card column after the menu column.
+  // Adding a menu margin moves the following card too and creates blank space.
+  for (const width of [360, 412]) {
+    const h = harness({ width, cardAfterMenu: true });
+    const assertNaturalFlow = () => {
+      assert.equal(h.navigation.style.getPropertyValue("--calorieapp-menu-margin"), "");
+      assert.equal(h.card.getBoundingClientRect().top - h.navigation.getBoundingClientRect().bottom, 12);
+    };
+    assertNaturalFlow();
+    h.state.height = 164; h.resize(); assertNaturalFlow();
+    h.state.scroll = 400; h.event("pageshow"); assertNaturalFlow();
+    h.state.width = 1440; h.event("resize");
+    h.state.width = width; h.event("resize"); assertNaturalFlow();
+  }
 });
