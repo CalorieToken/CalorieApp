@@ -13,6 +13,7 @@ from urllib.parse import parse_qsl, quote_plus, urlencode, urlsplit, urlunsplit
 import httpx
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from httpx import HTTPError
 from pydantic import ValidationError
 from sqlalchemy import delete, update
@@ -817,8 +818,17 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
         raise HTTPException(status_code=502, detail="Bridge identity claims were malformed") from exc
 
 
-@app.get("/health")
-def health() -> dict[str, str]:
+@app.get("/health", response_model=None)
+def health(resume_login: bool = False) -> Response | dict[str, str]:
+    if resume_login:
+        # A top-level browser request can pass Render's startup page. Once
+        # this process is serving requests, return to the fixed website page.
+        # This creates no login state and accepts no caller-supplied redirect.
+        return RedirectResponse(
+            f"{_WORDPRESS_URL.rstrip('/')}/index.php/calorieapp/",
+            status_code=303,
+            headers={"Cache-Control": "no-store", "Pragma": "no-cache"},
+        )
     return {
         "status": "ok",
         "service": "calorieapp-backend",
