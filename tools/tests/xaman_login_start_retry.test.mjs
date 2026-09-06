@@ -635,7 +635,10 @@ test("embedded completion recovers safely without replaying one-time codes", asy
       if (scenario === "rate-limited") {
         return response(429, null, "30");
       }
-      if (scenario === "ambiguous-completed") {
+      if (
+        scenario === "ambiguous-completed" ||
+        scenario === "ambiguous-session-unavailable"
+      ) {
         return response(502);
       }
       if (
@@ -676,6 +679,7 @@ test("embedded completion recovers safely without replaying one-time codes", asy
       if (
         scenario === "rate-limited" ||
         scenario === "permanent-me" ||
+        scenario === "ambiguous-session-unavailable" ||
         scenarioMeAttempts === 1 &&
           scenario === "callback-handoff"
       ) {
@@ -888,6 +892,29 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     { url: "/api/backend/api/identity/me", method: "GET" },
   ]);
 
+  scenario = "ambiguous-session-unavailable";
+  scenarioMeAttempts = 0;
+  const unavailableSessionStart = requests.length;
+  await assert.rejects(
+    module.exports.completeEmbeddedLogin(
+      pending,
+      "authorization-code",
+      pending.state,
+      signal(),
+      120_000
+    ),
+    (error) => {
+      assert.equal(error.name, "EmbeddedAuthorizationRefreshRequiredError");
+      assert.equal(error.reason, "callback-uncertain");
+      return true;
+    }
+  );
+  assert.deepEqual(requests.slice(unavailableSessionStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+
   scenario = "malformed-success";
   scenarioMeAttempts = 0;
   const malformedStart = requests.length;
@@ -944,6 +971,6 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     module.exports.waitForAuthenticatedUserAfterLogin(signal(), 120_000),
     /session check failed with 401/
   );
-  assert.equal(cancelledResponseBodies, 6);
+  assert.equal(cancelledResponseBodies, 8);
   assert.deepEqual(scheduledDelays, []);
 });

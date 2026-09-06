@@ -496,7 +496,14 @@ async function recoverUncertainEmbeddedCallback(
     return null;
   }
 
-  return waitForAuthenticatedUserAfterLogin(signal, retryWindowMs);
+  try {
+    return await waitForAuthenticatedUserAfterLogin(signal, retryWindowMs);
+  } catch (sessionError) {
+    if (signal.aborted) {
+      throw signal.reason ?? sessionError;
+    }
+    return null;
+  }
 }
 
 async function recoverOrRequireFreshAuthorization(
