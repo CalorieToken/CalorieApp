@@ -757,9 +757,10 @@
           window.clearTimeout(authorizeRetryTimer);
           authorizeRetryTimer = null;
         }
-        setStatus("Signed in to WordPress and CalorieApp in this browser.");
+        setStatus("Signed in to WordPress and CalorieApp. Updating your account controls...");
         window.setTimeout(function () {
           modal.hidden = true;
+          window.location.reload();
         }, 1400);
         return;
       }

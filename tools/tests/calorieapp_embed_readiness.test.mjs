@@ -35,7 +35,7 @@ function element(hidden = true) {
   };
 }
 
-test("Xaman waits for CalorieApp readiness and completion closes the dialog", async () => {
+test("Xaman waits for CalorieApp and verified completion refreshes WordPress", async () => {
   const source = await readFile(SCRIPT_PATH, "utf8");
   const appOrigin = "https://calorieapp-frontend.onrender.com";
   const windowListeners = {};
@@ -105,6 +105,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   let now = 0;
   let timerId = 0;
   let assignedLocation = "";
+  let reloadCount = 0;
   const timers = new Map();
   const scheduledDelays = [];
   const window = {
@@ -125,6 +126,9 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
       pathname: "/index.php/calorieapp/",
       assign(value) {
         assignedLocation = value;
+      },
+      reload() {
+        reloadCount += 1;
       },
     },
   };
@@ -338,15 +342,22 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
     locale: "nl",
   });
 
-  windowListeners.message({
-    data: {
-      type: "calorieapp:login:complete",
-      requestId,
-      locale: "nl",
-    },
+  const completion = {
+    data: { type: "calorieapp:login:complete", requestId, locale: "nl" },
     origin: appOrigin,
     source: iframeWindow,
-  });
+  };
+  for (const untrusted of [
+    { ...completion, origin: "https://untrusted.example" },
+    { ...completion, source: {} },
+    { ...completion, data: { ...completion.data, requestId: "stale-request-id" } },
+  ]) {
+    windowListeners.message(untrusted);
+  }
+  assert.equal(reloadCount, 0);
+  assert.equal([...timers.values()].some(({ delay }) => delay === 1400), false);
+
+  windowListeners.message(completion);
   assert.equal(modal.hidden, false);
   assert.match(status.textContent, /Signed in to WordPress and CalorieApp/);
 
@@ -354,6 +365,7 @@ test("Xaman waits for CalorieApp readiness and completion closes the dialog", as
   assert.ok(closeDialog, "successful joint sign-in schedules the dialog close");
   closeDialog.callback();
   assert.equal(modal.hidden, true);
+  assert.equal(reloadCount, 1, "WordPress receives the new session without manual refresh");
 
   windowListeners.message({
     data: {

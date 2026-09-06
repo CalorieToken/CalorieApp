@@ -41,6 +41,13 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.19 is a maintenance build from the working 0.3.3 plugin, not a
+successor containing the intervening layout releases. It backports the existing
+automatic page refresh after verified CalorieApp login completion so the
+server-rendered WordPress account widget immediately reflects the new session.
+The original page and browser remain the return destination. PHP login logic,
+CSS, layout, content and logout behavior are unchanged from 0.3.3.
+
 Version 0.3.3 removes the mobile HTTPS return callback that could reopen the
 flow in a different default browser. One Xaman signature is now completed by
 the originating WordPress page through its WebSocket and lifecycle handlers.
