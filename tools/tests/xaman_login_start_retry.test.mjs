@@ -610,15 +610,14 @@ test("login status polling slows down by age, failures, and Retry-After", async 
   assert.equal(cancelledResponseBodies, 2);
 });
 
-test("embedded completion retries rate limits and confirms the browser session", async () => {
+test("embedded completion recovers safely without replaying one-time codes", async () => {
   const { compiled } = await compiledLoginModule();
   let now = 0;
   const requests = [];
   const scheduledDelays = [];
-  const attempts = { callback: 0, status: 0, me: 0 };
   let cancelledResponseBodies = 0;
-  let forceAmbiguousCallbackFailure = false;
-  let forcePermanentMeFailure = false;
+  let scenario = "callback-cookie";
+  let scenarioMeAttempts = 0;
   const response = (status, payload = null, retryAfter = null) => ({
     ok: status >= 200 && status < 300,
     status,
@@ -633,31 +632,59 @@ test("embedded completion retries rate limits and confirms the browser session",
   const backendRequest = async (url, options = {}) => {
     requests.push({ url, method: options.method || "GET" });
     if (url.endsWith("/api/identity/callback")) {
-      attempts.callback += 1;
-      if (forceAmbiguousCallbackFailure) {
+      if (scenario === "rate-limited") {
+        return response(429, null, "30");
+      }
+      if (scenario === "ambiguous-completed") {
         return response(502);
       }
-      return attempts.callback === 1
-        ? response(429)
-        : response(200, { locale: "en-US" });
+      if (
+        scenario === "permanent-callback" ||
+        scenario === "consumed-after-success"
+      ) {
+        return response(400);
+      }
+      if (scenario === "malformed-success") {
+        return {
+          ...response(200),
+          async json() {
+            throw new Error("synthetic interrupted response body");
+          },
+        };
+      }
+      return response(200, {
+        locale: "en-US",
+        user_id:
+          scenario === "mismatched-user"
+            ? "different-calorieapp-user"
+            : "calorieapp-user",
+      });
     }
     if (url.endsWith("/api/identity/login/status")) {
-      attempts.status += 1;
-      return attempts.status === 1
-        ? response(429)
-        : response(200, { status: "authenticated", locale: "en" });
+      return response(200, {
+        status:
+          scenario === "rate-limited"
+            ? "pending"
+            : scenario === "permanent-callback"
+            ? "failed"
+            : "authenticated",
+        locale: "en",
+      });
     }
     if (url.endsWith("/api/identity/me")) {
-      attempts.me += 1;
-      if (forcePermanentMeFailure) {
+      scenarioMeAttempts += 1;
+      if (
+        scenario === "rate-limited" ||
+        scenario === "permanent-me" ||
+        scenarioMeAttempts === 1 &&
+          scenario === "callback-handoff"
+      ) {
         return response(401);
       }
-      return attempts.me === 1
-        ? response(503)
-        : response(200, {
-            user_id: "calorieapp-user",
-            created_at: "2026-09-05T00:00:00Z",
-          });
+      return response(200, {
+        user_id: "calorieapp-user",
+        created_at: "2026-09-05T00:00:00Z",
+      });
     }
     throw new Error(`Unexpected request: ${url}`);
   };
@@ -722,80 +749,201 @@ test("embedded completion retries rate limits and confirms the browser session",
   });
 
   vm.runInContext(compiled, context);
-  const user = await module.exports.completeEmbeddedLogin(
-    {
-      state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-      expires_at: "2099-01-01T00:00:00Z",
-      wordpress_signin_url: "https://calorietoken.net/",
-      browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
-      locale: "en",
-    },
+  const refreshError = new module.exports.EmbeddedAuthorizationRefreshRequiredError(
+    30_000,
+    "rate-limited"
+  );
+  assert.equal(
+    module.exports.embeddedAuthorizationRefreshDelayMs(
+      refreshError,
+      0,
+      "2099-01-01T00:00:00Z",
+      0
+    ),
+    30_000
+  );
+  assert.equal(
+    module.exports.embeddedAuthorizationRefreshDelayMs(
+      refreshError,
+      2,
+      "2099-01-01T00:00:00Z",
+      0
+    ),
+    null
+  );
+  assert.equal(
+    module.exports.embeddedAuthorizationRefreshDelayMs(
+      refreshError,
+      0,
+      "1970-01-01T00:00:30Z",
+      0
+    ),
+    null
+  );
+  const pending = {
+    state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
+    expires_at: "2099-01-01T00:00:00Z",
+    wordpress_signin_url: "https://calorietoken.net/",
+    browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
+    locale: "en",
+  };
+  const signal = () => new AbortController().signal;
+
+  const directUser = await module.exports.completeEmbeddedLogin(
+    pending,
     "authorization-code",
-    "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-    new AbortController().signal,
+    pending.state,
+    signal(),
     120_000
   );
 
-  assert.equal(user.user_id, "calorieapp-user");
+  assert.equal(directUser.user_id, "calorieapp-user");
   assert.deepEqual(requests, [
     { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
     { url: "/api/backend/api/identity/me", method: "GET" },
   ]);
-  assert.deepEqual(scheduledDelays, [30000, 15000, 5000]);
-  assert.equal(cancelledResponseBodies, 3);
+  assert.deepEqual(scheduledDelays, []);
+  assert.equal(cancelledResponseBodies, 0);
+
+  scenario = "mismatched-user";
+  await assert.rejects(
+    module.exports.completeEmbeddedLogin(
+      pending,
+      "authorization-code",
+      pending.state,
+      signal(),
+      120_000
+    ),
+    /session user did not match/
+  );
 
   const requestCountAfterSuccess = requests.length;
   await assert.rejects(
     module.exports.completeEmbeddedLogin(
-      {
-        state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-        expires_at: "2099-01-01T00:00:00Z",
-        wordpress_signin_url: "https://calorietoken.net/",
-        browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
-        locale: "en",
-      },
+      pending,
       "authorization-code",
       "different-state-abcdefghijklmnopqrstuvwxyz-0123456789",
-      new AbortController().signal,
+      signal(),
       120_000
     ),
     /state did not match/
   );
   assert.equal(requests.length, requestCountAfterSuccess);
 
-  forceAmbiguousCallbackFailure = true;
+  scenario = "callback-handoff";
+  scenarioMeAttempts = 0;
+  const fallbackStart = requests.length;
+  const fallbackUser = await module.exports.completeEmbeddedLogin(
+    pending,
+    "authorization-code",
+    pending.state,
+    signal(),
+    120_000
+  );
+  assert.equal(fallbackUser.user_id, "calorieapp-user");
+  assert.deepEqual(requests.slice(fallbackStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+
+  scenario = "rate-limited";
+  scenarioMeAttempts = 0;
+  const rateLimitStart = requests.length;
   await assert.rejects(
     module.exports.completeEmbeddedLogin(
-      {
-        state: "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-        expires_at: "2099-01-01T00:00:00Z",
-        wordpress_signin_url: "https://calorietoken.net/",
-        browser_handoff_token: "token-abcdefghijklmnopqrstuvwxyz-0123456789",
-        locale: "en",
-      },
+      pending,
       "authorization-code",
-      "state-abcdefghijklmnopqrstuvwxyz-0123456789",
-      new AbortController().signal,
+      pending.state,
+      signal(),
       120_000
     ),
-    /Callback failed with 502/
+    (error) => {
+      assert.equal(error.name, "EmbeddedAuthorizationRefreshRequiredError");
+      assert.equal(error.reason, "rate-limited");
+      assert.equal(error.retryAfterMs, 30000);
+      return true;
+    }
   );
-  assert.equal(requests.length, requestCountAfterSuccess + 1);
-  assert.equal(cancelledResponseBodies, 4);
+  assert.deepEqual(requests.slice(rateLimitStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+  ]);
 
-  forceAmbiguousCallbackFailure = false;
-  forcePermanentMeFailure = true;
+  scenario = "ambiguous-completed";
+  scenarioMeAttempts = 0;
+  const ambiguousStart = requests.length;
+  const recoveredUser = await module.exports.completeEmbeddedLogin(
+    pending,
+    "authorization-code",
+    pending.state,
+    signal(),
+    120_000
+  );
+  assert.equal(recoveredUser.user_id, "calorieapp-user");
+  assert.deepEqual(requests.slice(ambiguousStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+
+  scenario = "malformed-success";
+  scenarioMeAttempts = 0;
+  const malformedStart = requests.length;
+  const malformedRecoveryUser = await module.exports.completeEmbeddedLogin(
+    pending,
+    "authorization-code",
+    pending.state,
+    signal(),
+    120_000
+  );
+  assert.equal(malformedRecoveryUser.user_id, "calorieapp-user");
+  assert.deepEqual(requests.slice(malformedStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+
+  scenario = "consumed-after-success";
+  scenarioMeAttempts = 0;
+  const consumedStart = requests.length;
+  const consumedRecoveryUser = await module.exports.completeEmbeddedLogin(
+    pending,
+    "fresh-authorization-code",
+    pending.state,
+    signal(),
+    120_000
+  );
+  assert.equal(consumedRecoveryUser.user_id, "calorieapp-user");
+  assert.deepEqual(requests.slice(consumedStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+
+  scenario = "permanent-callback";
+  const permanentStart = requests.length;
   await assert.rejects(
-    module.exports.waitForAuthenticatedUserAfterLogin(
-      new AbortController().signal,
+    module.exports.completeEmbeddedLogin(
+      pending,
+      "authorization-code",
+      pending.state,
+      signal(),
       120_000
     ),
+    /Callback failed with 400/
+  );
+  assert.deepEqual(requests.slice(permanentStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/login/status", method: "POST" },
+  ]);
+
+  scenario = "permanent-me";
+  await assert.rejects(
+    module.exports.waitForAuthenticatedUserAfterLogin(signal(), 120_000),
     /session check failed with 401/
   );
-  assert.equal(requests.length, requestCountAfterSuccess + 2);
-  assert.equal(cancelledResponseBodies, 5);
+  assert.equal(cancelledResponseBodies, 6);
+  assert.deepEqual(scheduledDelays, []);
 });

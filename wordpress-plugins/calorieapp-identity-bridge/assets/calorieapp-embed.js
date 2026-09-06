@@ -15,6 +15,7 @@
   // sleeping backend, while retaining a bounded window for bridge delivery.
   var JOINT_LOGOUT_TIMEOUT = 100000;
   var LOGIN_COMPLETE_RELOAD_DELAY = 1400;
+  var MAX_AUTHORIZATION_CODES_PER_FLOW = 3;
   var MOBILE_LAYOUT_QUERY = "(max-width: 768px)";
   var CALORIEAPP_PAGE_PATH = "/index.php/calorieapp/";
   var LEGACY_EXCHANGE_PATHS = [
@@ -834,6 +835,7 @@
     var finishTransientFailures = 0;
     var authorizeInFlight = false;
     var authorizeRetryTimer = null;
+    var authorizationCodeCount = 0;
     var lastStartMessage = null;
     var xamanPageWasHidden = false;
     var bridgeReady = false;
@@ -975,6 +977,7 @@
       finishPollStartedAt = null;
       finishTransientFailures = 0;
       authorizeRetryTimer = null;
+      authorizationCodeCount = 0;
       flow = null;
       backendState = "";
       xamanLaunch = null;
@@ -1269,6 +1272,10 @@
       ) {
         return;
       }
+      if (authorizationCodeCount >= MAX_AUTHORIZATION_CODES_PER_FLOW) {
+        fail("CalorieApp authorization could not be refreshed safely.");
+        return;
+      }
 
       authorizeInFlight = true;
       apiRequest(authorizeUrl, {
@@ -1281,16 +1288,19 @@
         if (
           result.payload.status !== "authorized" ||
           typeof result.payload.code !== "string" ||
+          typeof result.payload.expires_at !== "string" ||
           result.payload.state !== backendState ||
           result.payload.locale !== configuredLocale
         ) {
           throw new Error("CalorieApp authorization was incomplete.");
         }
 
+        authorizationCodeCount += 1;
         setStatus("WordPress signed in. Activating your CalorieApp session...");
         postToApp("login:authorization", {
           code: result.payload.code,
           state: result.payload.state,
+          expires_at: result.payload.expires_at,
           locale: result.payload.locale,
         });
       }).catch(function (error) {
@@ -1323,6 +1333,16 @@
     }
 
     retryButton.addEventListener("click", function () {
+      if (flowFailed) {
+        retryButton.hidden = true;
+        status.textContent = "Preparing a new secure sign-in...";
+        status.classList.toggle("is-error", false);
+        // Let the embedded card show preparation progress or an early backend
+        // error. A new valid login:start message opens this dialog again.
+        modal.hidden = true;
+        postToApp("login:trigger");
+        return;
+      }
       if (lastStartMessage) {
         startLogin(lastStartMessage);
       }
@@ -1428,6 +1448,11 @@
         backendState = message.state;
         startWordPressFlow();
         revealXamanWhenReady();
+        if (message.refresh === true && wordpressAuthenticated) {
+          setStatus(
+            "WordPress is signed in. Refreshing the secure CalorieApp connection..."
+          );
+        }
         maybeAuthorizeCalorieApp();
         return;
       }
