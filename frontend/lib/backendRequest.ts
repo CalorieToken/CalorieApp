@@ -12,7 +12,8 @@ const BACKEND_WARMUP_ATTEMPT_TIMEOUT_MS = 70_000;
 const BACKEND_WARMUP_INITIAL_RETRY_DELAY_MS = 5_000;
 const BACKEND_WARMUP_MAX_RETRY_DELAY_MS = 30_000;
 const BACKEND_WARMUP_RATE_LIMIT_DELAY_MS = 30_000;
-const BACKEND_WARMUP_MAX_RETRY_AFTER_MS = 60_000;
+
+type WarmupRateLimit = { retryAt: number };
 
 export class BackendRequestTimeoutError extends Error {
   constructor() {
@@ -82,10 +83,7 @@ function retryAfterDelayMs(response: Response): number | null {
       return null;
     }
 
-    return Math.min(
-      seconds * 1_000,
-      BACKEND_WARMUP_MAX_RETRY_AFTER_MS
-    );
+    return seconds * 1_000;
   }
 
   const retryAt = Date.parse(value);
@@ -98,12 +96,17 @@ function retryAfterDelayMs(response: Response): number | null {
     return null;
   }
 
-  return Math.min(delayMs, BACKEND_WARMUP_MAX_RETRY_AFTER_MS);
+  return delayMs;
 }
 
 function retryDelayMs(response: Response | null, retryCount: number): number {
   if (response?.status === 429) {
-    return retryAfterDelayMs(response) ?? BACKEND_WARMUP_RATE_LIMIT_DELAY_MS;
+    // Retry-After is a minimum, never a reason to retry earlier. Keep a
+    // local pause even when the edge reports zero to prevent request bursts.
+    return Math.max(
+      retryAfterDelayMs(response) ?? 0,
+      BACKEND_WARMUP_RATE_LIMIT_DELAY_MS
+    );
   }
 
   return Math.min(
@@ -128,13 +131,25 @@ async function discardResponseBody(response: Response) {
 async function waitForBackendReadyAt(
   backendBaseUrl: string,
   signal?: AbortSignal,
-  timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS
+  timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS,
+  rateLimit: WarmupRateLimit = { retryAt: 0 }
 ) {
   const deadline = Date.now() + timeoutMs;
   let retryCount = 0;
 
   while (Date.now() < deadline) {
     throwIfAborted(signal);
+
+    // Both routes reach the same backend. A visible rate limit on either
+    // route must also pause retries on the other (including CORS failures).
+    const cooldownMs = Math.min(
+      rateLimit.retryAt - Date.now(),
+      deadline - Date.now()
+    );
+    if (cooldownMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, cooldownMs));
+      continue;
+    }
 
     const remainingMs = deadline - Date.now();
     const attemptTimeoutMs = Math.max(
@@ -170,6 +185,12 @@ async function waitForBackendReadyAt(
     }
 
     const requestedDelayMs = retryDelayMs(retryResponse, retryCount);
+    if (retryResponse?.status === 429) {
+      rateLimit.retryAt = Math.max(
+        rateLimit.retryAt,
+        Date.now() + requestedDelayMs
+      );
+    }
     retryCount += 1;
     const boundedRetryDelayMs = Math.min(
       requestedDelayMs,
@@ -198,6 +219,7 @@ export async function waitForBackendReady(
 ) {
   const sameOriginBaseUrl = "/api/backend";
   const normalizedBaseUrl = backendBaseUrl.replace(/\/$/, "");
+  const rateLimit: WarmupRateLimit = { retryAt: 0 };
 
   if (normalizedBaseUrl === sameOriginBaseUrl) {
     return waitForBackendReadyAt(sameOriginBaseUrl, signal, timeoutMs);
@@ -218,12 +240,14 @@ export async function waitForBackendReady(
       waitForBackendReadyAt(
         normalizedBaseUrl,
         directController.signal,
-        timeoutMs
+        timeoutMs,
+        rateLimit
       ),
       waitForBackendReadyAt(
         sameOriginBaseUrl,
         sameOriginController.signal,
-        timeoutMs
+        timeoutMs,
+        rateLimit
       ),
     ]);
   } catch {
