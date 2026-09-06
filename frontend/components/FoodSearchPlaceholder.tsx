@@ -20,7 +20,7 @@ import {
   waitForBackendReady,
 } from "@/lib/backendRequest";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 type PortionOption = "whole" | "half" | "quarter" | "custom";
 const SIGN_IN_REQUIRED_LOG_MESSAGE =
   "Your session has expired or you are not signed in. Please sign in again to manage food logs.";
