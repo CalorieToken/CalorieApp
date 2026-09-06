@@ -27,6 +27,8 @@ jobs:
         run: php tools/tests/wordpress_site_session_markup.test.php
       - name: Exercise the preserved login and site-wide session controls
         run: node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs
+      - name: Check responsive header correction lifecycle
+        run: node --test tools/tests/wordpress_site_layout.test.mjs
       - name: Verify deterministic plugin package
         run: |
           python -m unittest tools.tests.test_build_wordpress_plugin_release
