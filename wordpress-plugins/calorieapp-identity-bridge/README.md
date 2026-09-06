@@ -41,6 +41,17 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.21 starts step 3 on the accepted 0.3.20 maintenance line. Below
+768 CSS pixels, a Brizy header row containing both navigation and the XUMM
+account card places the logo and card above a full-width menu. The card's
+old fixed positioning and narrow shortcode container no longer determine
+its placement. The card remains in normal document flow, including when
+joint logout or status text increases its height. Existing colors, images,
+fonts and card styling are retained. The CSS does not apply to the desktop
+header or rows without both components. All session JavaScript and PHP
+implementation files remain byte-identical to 0.3.20. This candidate still
+requires visual acceptance at 360, 412 and 1440 pixels before installation.
+
 Version 0.3.20 completes the missing session controls on the accepted 0.3.19
 maintenance line. The embedded app's sign-out request reaches the existing
 joint-logout handler. Other authenticated website pages provide the same

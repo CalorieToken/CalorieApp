@@ -183,3 +183,55 @@
     display: none;
   }
 }
+
+/* Step 3: keep the historical mobile header in normal document flow.
+ * Scope this to a Brizy row containing both navigation and the XUMM card.
+ * Desktop layout and the sign-in/sign-out controllers are unaffected.
+ */
+@media (max-width: 767px) {
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) > .brz-columns {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) > .brz-columns:has(.brz-menu-simple) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) > .brz-columns:has(.xl-card) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) > .brz-columns:has(.xl-card) > .brz-column__items {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) .brz-wrapper:has(.xl-card),
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) .brz-wp-shortcode:has(.xl-card) {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    justify-content: center;
+  }
+
+  .brz .brz-row:has(.brz-menu-simple):has(.xl-card) .xl-card {
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
