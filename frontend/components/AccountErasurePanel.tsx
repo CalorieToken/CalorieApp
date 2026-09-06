@@ -13,7 +13,7 @@ import {
 } from "@/lib/accountErasureRequest";
 import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 const ACCOUNT_ERASURE_ACKNOWLEDGEMENT = "delete-my-calorieapp-account";
 
 type AccountErasurePanelProps = {

@@ -47,7 +47,7 @@ type PendingLogin = {
   locale: string;
 };
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 const ACCOUNT_ERASURE_UI_ENABLED =
   process.env.NEXT_PUBLIC_ACCOUNT_ERASURE_UI_ENABLED === "true";
 const ACCOUNT_DATA_IMPORT_UI_ENABLED =

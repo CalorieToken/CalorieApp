@@ -4,9 +4,11 @@ export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 180_000;
 // Render may not wake one free service from another free service's proxy
 // request. In production this public URL is raced with the browser-safe
 // same-origin health route; all application requests continue to use the
-// same-origin proxy.
+// same-origin proxy. Keep the public browser path brand-specific: privacy
+// filters can block generic `/api/backend/*` request paths before they leave
+// the browser.
 export const BACKEND_WAKE_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_WAKE_URL?.trim() || "/api/backend";
+  process.env.NEXT_PUBLIC_BACKEND_WAKE_URL?.trim() || "/api/calorieapp";
 
 const BACKEND_WARMUP_ATTEMPT_TIMEOUT_MS = 70_000;
 const BACKEND_WARMUP_INITIAL_RETRY_DELAY_MS = 5_000;
@@ -196,7 +198,7 @@ export async function waitForBackendReady(
   signal?: AbortSignal,
   timeoutMs = DEFAULT_BACKEND_WARMUP_TIMEOUT_MS
 ) {
-  const sameOriginBaseUrl = "/api/backend";
+  const sameOriginBaseUrl = "/api/calorieapp";
   const normalizedBaseUrl = backendBaseUrl.replace(/\/$/, "");
 
   if (normalizedBaseUrl === sameOriginBaseUrl) {

@@ -9,7 +9,7 @@ import {
 } from "@/lib/backendRequest";
 import { safeWordPressReturn } from "@/lib/wordpressReturn";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 
 type CallbackResponse = {
   redirect_to: string;

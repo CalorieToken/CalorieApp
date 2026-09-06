@@ -44,7 +44,7 @@ def test_account_export_ui_is_versioned_private_and_proxy_allowlisted():
         ).read_text(encoding="utf-8")
     )["locales"]["en"]["export"]
 
-    assert '"/api/backend"' in export_source
+    assert '"/api/calorieapp"' in export_source
     assert "${BACKEND_BASE_URL}/api/identity/export" in export_source
     assert '"calorieapp-account-data-v2"' in export_source
     assert '"calorieapp-account-data-v2.json"' in export_source
