@@ -72,6 +72,7 @@ const LOGIN_CALLBACK_REQUEST_TIMEOUT_MS = 70_000;
 const LOGIN_COMPLETION_RETRY_WINDOW_MS = 2 * 60_000;
 const LOGIN_COMPLETION_RETRY_DELAY_MS = 5_000;
 const LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS = 30_000;
+const LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS = 10_000;
 const MAX_EMBEDDED_AUTHORIZATION_REFRESHES = 2;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
@@ -421,32 +422,61 @@ async function discardLoginResponse(response: Response) {
   }
 }
 
-async function readAuthenticatedUserOnce(
-  signal: AbortSignal
+async function waitForAuthenticatedUserBeforeHandoff(
+  signal: AbortSignal,
+  retryWindowMs = LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS
 ): Promise<MeResponse | null> {
-  let response: Response;
-  try {
-    response = await backendRequest(
-      `${BACKEND_BASE_URL}/api/identity/me`,
-      { signal }
-    );
-  } catch (requestError) {
-    if (signal.aborted) {
-      throw signal.reason ?? requestError;
+  const deadline = Date.now() + retryWindowMs;
+  let nextRetryDelayMs = 0;
+
+  while (Date.now() < deadline) {
+    if (nextRetryDelayMs > 0) {
+      await delay(
+        Math.min(nextRetryDelayMs, Math.max(0, deadline - Date.now())),
+        signal
+      );
     }
-    return null;
-  }
+    if (Date.now() >= deadline) {
+      break;
+    }
 
-  if (response.ok) {
-    return (await response.json()) as MeResponse;
-  }
+    let response: Response;
+    try {
+      response = await backendRequest(
+        `${BACKEND_BASE_URL}/api/identity/me`,
+        { signal }
+      );
+    } catch (requestError) {
+      if (signal.aborted) {
+        throw signal.reason ?? requestError;
+      }
+      nextRetryDelayMs = LOGIN_COMPLETION_RETRY_DELAY_MS;
+      continue;
+    }
 
-  if (![401, 429, 502, 503, 504].includes(response.status)) {
+    if (response.ok) {
+      return (await response.json()) as MeResponse;
+    }
+
+    if (response.status === 401) {
+      await discardLoginResponse(response);
+      return null;
+    }
+    if (![429, 502, 503, 504].includes(response.status)) {
+      await discardLoginResponse(response);
+      throw new Error(`CalorieApp session check failed with ${response.status}`);
+    }
+
+    nextRetryDelayMs =
+      response.status === 429
+        ? retryAfterMilliseconds(
+            response,
+            LOGIN_COMPLETION_RATE_LIMIT_DELAY_MS
+          )
+        : LOGIN_COMPLETION_RETRY_DELAY_MS;
     await discardLoginResponse(response);
-    throw new Error(`CalorieApp session check failed with ${response.status}`);
   }
 
-  await discardLoginResponse(response);
   return null;
 }
 
@@ -707,7 +737,16 @@ export async function completeEmbeddedLogin(
 
   // Most browsers retain the callback's same-origin session cookie directly.
   // Avoid consuming the one-time handoff unless that cookie is unavailable.
-  const callbackUser = await readAuthenticatedUserOnce(signal);
+  const callbackUser = await waitForAuthenticatedUserBeforeHandoff(
+    signal,
+    Math.max(
+      1,
+      Math.min(
+        LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS,
+        deadline - Date.now()
+      )
+    )
+  );
   if (callbackUser) {
     if (callbackUser.user_id !== callback.user_id) {
       throw new Error("Callback session user did not match");

@@ -680,10 +680,14 @@ test("embedded completion recovers safely without replaying one-time codes", asy
         scenario === "rate-limited" ||
         scenario === "permanent-me" ||
         scenario === "ambiguous-session-unavailable" ||
-        scenarioMeAttempts === 1 &&
-          scenario === "callback-handoff"
+        (scenario === "callback-cookie-transient" &&
+          scenarioMeAttempts === 1) ||
+        (scenarioMeAttempts === 1 &&
+          scenario === "callback-handoff")
       ) {
-        return response(401);
+        return response(
+          scenario === "callback-cookie-transient" ? 503 : 401
+        );
       }
       return response(200, {
         user_id: "calorieapp-user",
@@ -808,6 +812,24 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   ]);
   assert.deepEqual(scheduledDelays, []);
   assert.equal(cancelledResponseBodies, 0);
+
+  scenario = "callback-cookie-transient";
+  scenarioMeAttempts = 0;
+  const transientCookieStart = requests.length;
+  const transientCookieUser = await module.exports.completeEmbeddedLogin(
+    pending,
+    "authorization-code",
+    pending.state,
+    signal(),
+    120_000
+  );
+  assert.equal(transientCookieUser.user_id, "calorieapp-user");
+  assert.deepEqual(requests.slice(transientCookieStart), [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/backend/api/identity/me", method: "GET" },
+  ]);
+  assert.deepEqual(scheduledDelays, [5000]);
 
   scenario = "mismatched-user";
   await assert.rejects(
@@ -971,6 +993,6 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     module.exports.waitForAuthenticatedUserAfterLogin(signal(), 120_000),
     /session check failed with 401/
   );
-  assert.equal(cancelledResponseBodies, 8);
-  assert.deepEqual(scheduledDelays, []);
+  assert.equal(cancelledResponseBodies, 9);
+  assert.deepEqual(scheduledDelays, [5000]);
 });
