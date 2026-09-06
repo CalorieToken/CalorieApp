@@ -1,0 +1,73 @@
+/* Public-header presentation only. Desktop and authentication UI keep their
+   existing styles. On phones the account card scrolls with the header. */
+@media (max-width: 768px) {
+  .brz .calorieapp-identity-wrapper {
+    position: relative !important;
+    inset: auto !important;
+    box-sizing: border-box;
+    width: min(280px, calc(100vw - 24px)) !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 12px auto !important;
+    padding: 0 !important;
+    transform: translateX(var(--calorieapp-identity-center-shift, 0px)) !important;
+  }
+
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode > div {
+    width: 100% !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+
+  .brz .calorieapp-identity-card {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    font-size: 13px;
+  }
+
+  .calorieapp-identity-card .xl-card-header {
+    padding: 3px 8px;
+    line-height: 18px;
+  }
+
+  .calorieapp-identity-card .xl-card-wallet {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calorieapp-identity-card .xl-card-body {
+    display: flow-root;
+    min-height: 52px;
+    padding: 6px 8px;
+    overflow-wrap: anywhere;
+  }
+
+  .calorieapp-identity-card .xl-card-body div { line-height: 16px; }
+  .calorieapp-identity-card .xl-card-body > .xl-card-avatar { width: 52px; margin-right: 8px; }
+  .calorieapp-identity-card .xl-card-avatar img { width: 100%; height: auto; margin-right: 0; }
+  .calorieapp-identity-card .xl-card-avatar a { display: block; min-height: 44px; }
+
+  .brz .calorieapp-identity-card > .calorieapp-site-session-actions {
+    clear: both;
+    margin: 4px 8px 8px;
+  }
+
+  .brz .calorieapp-identity-card .calorieapp-site-logout {
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .brz .calorieapp-brizy-menu-column { margin-top: var(--calorieapp-menu-margin) !important; }
+}
