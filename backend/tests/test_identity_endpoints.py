@@ -9,6 +9,7 @@ from datetime import UTC, datetime, timedelta, timezone
 from secrets import token_urlsafe
 
 import pytest
+import httpx
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import NullPool
 from sqlalchemy.exc import SQLAlchemyError
@@ -1651,6 +1652,87 @@ class TestIdentityCallbackFlow:
             "/api/identity/callback",
             json={"code": "bridge-code", "state": state},
         )
+        assert replay.status_code == 400
+        assert "already consumed" in replay.json()["detail"]
+
+    @pytest.mark.parametrize("upstream_status", [429, 502, 503, 504])
+    def test_transient_wordpress_http_response_allows_same_login_to_finish(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+        upstream_status: int,
+    ):
+        """Exercise the real exchange adapter, not a pre-classified exception."""
+        monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "synthetic-test-secret")
+        monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", False)
+        exchange_calls = []
+
+        def wordpress_response(url, *, json, headers, timeout):
+            exchange_calls.append(dict(json))
+            if len(exchange_calls) == 1:
+                return httpx.Response(upstream_status, headers={"Retry-After": "45"})
+            return httpx.Response(200, json=self._stub_claims().model_dump(mode="json"))
+
+        monkeypatch.setattr(main_module.httpx, "post", wordpress_response)
+        start = client.post("/api/identity/login/start").json()
+        callback_payload = {"code": "synthetic-bridge-code", "state": start["state"]}
+
+        failed = client.post("/api/identity/callback", json=callback_payload)
+        assert failed.status_code == upstream_status
+        assert failed.headers["retry-after"] == "45"
+        assert SESSION_COOKIE_NAME not in failed.cookies
+        assert client.get("/api/identity/me").status_code == 401
+
+        pending = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+        assert pending.status_code == 200
+        assert pending.json()["status"] == "pending"
+
+        retried = client.post("/api/identity/callback", json=callback_payload)
+        assert retried.status_code == 200
+        assert SESSION_COOKIE_NAME in retried.cookies
+        assert client.get("/api/identity/me").status_code == 200
+        assert exchange_calls == [callback_payload, callback_payload]
+
+        replay = client.post("/api/identity/callback", json=callback_payload)
+        assert replay.status_code == 400
+        assert "already consumed" in replay.json()["detail"]
+        assert len(exchange_calls) == 2
+
+    @pytest.mark.parametrize("upstream_status", [400, 401, 403])
+    def test_permanent_wordpress_http_rejection_still_fails_closed(
+        self,
+        client: TestClient,
+        monkeypatch: pytest.MonkeyPatch,
+        upstream_status: int,
+    ):
+        monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "synthetic-test-secret")
+        monkeypatch.setattr(
+            main_module.httpx,
+            "post",
+            lambda *args, **kwargs: httpx.Response(upstream_status),
+        )
+        start = client.post("/api/identity/login/start").json()
+        callback_payload = {"code": "rejected-code", "state": start["state"]}
+
+        failed = client.post("/api/identity/callback", json=callback_payload)
+        assert failed.status_code == 400
+        assert SESSION_COOKIE_NAME not in failed.cookies
+        pending = client.post(
+            "/api/identity/login/status",
+            json={
+                "state": start["state"],
+                "browser_handoff_token": start["browser_handoff_token"],
+            },
+        )
+        assert pending.json()["status"] == "failed"
+        assert client.get("/api/identity/me").status_code == 401
+        replay = client.post("/api/identity/callback", json=callback_payload)
         assert replay.status_code == 400
         assert "already consumed" in replay.json()["detail"]
 
