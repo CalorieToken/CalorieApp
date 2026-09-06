@@ -790,6 +790,18 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
         logger.warning("WordPress bridge exchange failed (%s)", type(exc).__name__)
         raise HTTPException(status_code=502, detail="WordPress bridge exchange failed") from exc
 
+    if response.status_code in {429, 502, 503, 504}:
+        # A temporary WordPress/edge response must not consume the browser's
+        # login permanently. Keep it distinguishable from a rejected code so
+        # the callback can restore the pending state and the UI can recover.
+        logger.warning("WordPress bridge temporarily unavailable (status=%s)", response.status_code)
+        retry_after = response.headers.get("Retry-After")
+        raise HTTPException(
+            status_code=response.status_code,
+            detail="WordPress bridge temporarily unavailable",
+            headers={"Retry-After": retry_after} if retry_after else None,
+        )
+
     if response.status_code != 200:
         logger.warning("WordPress bridge rejected code exchange (status=%s)", response.status_code)
         raise HTTPException(status_code=400, detail="Authorization code exchange rejected")
@@ -973,7 +985,7 @@ def identity_callback(
     try:
         claims = _exchange_code_for_claims(code=code, state=state)
     except HTTPException as exc:
-        if exc.status_code in {502, 503, 504}:
+        if exc.status_code in {429, 502, 503, 504}:
             restored = restore_pending_login_state_after_transient_failure(session, state)
             if not restored:
                 fail_origin_login_handoff(session, state)
