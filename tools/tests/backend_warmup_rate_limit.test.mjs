@@ -33,7 +33,7 @@ function response(status, retryAfter = null, contentType = "text/plain") {
 
 const healthy = () => response(200, null, "application/json");
 
-function warmupHarness(responses, browser = {}) {
+function warmupHarness(responses) {
   let now = Date.UTC(2026, 0, 1);
   const startedAt = now;
   let nextTimer = 0;
@@ -45,12 +45,10 @@ function warmupHarness(responses, browser = {}) {
   }
   const context = vm.createContext({
     AbortController,
-    URL,
     Date: Clock,
     module,
     exports: module.exports,
     process: { env: {} },
-    ...browser,
     setTimeout(callback, delay) {
       const id = ++nextTimer;
       timers.set(id, { at: now + delay, callback });
@@ -102,91 +100,6 @@ function warmupHarness(responses, browser = {}) {
       assert.fail("Warmup exceeded the bounded test clock");
     },
   };
-}
-
-function browserDocument() {
-  const mounted = new Set();
-  const navigations = [];
-  return {
-    mounted,
-    navigations,
-    window: { location: { origin: "https://app.calorietoken.net" } },
-    document: {
-      body: {
-        appendChild(frame) {
-          mounted.add(frame);
-          navigations.push(frame);
-        },
-      },
-      createElement(tag) {
-        assert.equal(tag, "iframe");
-        return {
-          attributes: {},
-          setAttribute(name, value) { this.attributes[name] = value; },
-          remove() { mounted.delete(this); },
-        };
-      },
-    },
-  };
-}
-
-test("a document request wakes a backend that background fetches cannot wake", async () => {
-  const browser = browserDocument();
-  const harness = warmupHarness(() =>
-    browser.navigations.length && harness.elapsed() >= 45_000
-      ? healthy()
-      : response(429, "0"), browser);
-  await harness.settle(harness.start(undefined, 180_000, "https://backend.onrender.com"));
-  assert.equal(browser.navigations.length, 1);
-  assert.equal(browser.navigations[0].src, "https://backend.onrender.com/health");
-  assert.equal(browser.navigations[0].attributes.sandbox, "");
-  assert.equal(browser.navigations[0].referrerPolicy, "no-referrer");
-  assert.equal(browser.navigations[0].hidden, true);
-  assert.equal(browser.mounted.size, 0);
-  assert.equal(harness.elapsed(), 60_000);
-});
-
-test("a document load alone never counts as a healthy backend", async () => {
-  const browser = browserDocument();
-  const harness = warmupHarness(() => response(429, "0"), browser);
-  await assert.rejects(
-    harness.settle(harness.start(undefined, 180_000, "https://backend.onrender.com")),
-    { name: "BackendRequestTimeoutError" }
-  );
-  assert.equal(browser.navigations.length, 1);
-  assert.equal(browser.mounted.size, 0);
-  assert.equal(harness.pendingTimers(), 0);
-});
-
-test("cancelling startup removes its document and all retry timers", async () => {
-  const browser = browserDocument();
-  const harness = warmupHarness(() => response(429, "120"), browser);
-  const controller = new AbortController();
-  harness.abortAfter(controller, 5_000);
-  await assert.rejects(
-    harness.settle(harness.start(controller.signal, 180_000, "https://backend.onrender.com")),
-    /Login cancelled/
-  );
-  assert.equal(browser.navigations.length, 1);
-  assert.equal(browser.mounted.size, 0);
-  assert.equal(harness.pendingTimers(), 0);
-});
-
-for (const baseUrl of [
-  "/api/backend",
-  "http://backend.onrender.com",
-  "https://unrelated.example",
-  "https://backend.onrender.com.unrelated.example",
-  "https://user:password@backend.onrender.com",
-  "https://backend.onrender.com/path",
-  "https://backend.onrender.com/?query=private",
-]) {
-  test(`no startup document is opened for ${baseUrl}`, async () => {
-    const browser = browserDocument();
-    const harness = warmupHarness(() => healthy(), browser);
-    await harness.settle(harness.start(undefined, 180_000, baseUrl));
-    assert.equal(browser.navigations.length, 0);
-  });
 }
 
 test("ready backend proceeds immediately without credentials", async () => {

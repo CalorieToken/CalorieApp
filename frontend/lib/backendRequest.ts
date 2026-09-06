@@ -140,53 +140,6 @@ async function discardResponseBody(response: Response) {
   }
 }
 
-function mountBackendWakeDocument(backendBaseUrl: string): () => void {
-  const noop = () => {};
-  if (
-    typeof document === "undefined" ||
-    typeof window === "undefined" ||
-    !document.body
-  ) {
-    return noop;
-  }
-
-  let backend: URL;
-  try {
-    backend = new URL(backendBaseUrl);
-  } catch {
-    return noop;
-  }
-  if (
-    backend.protocol !== "https:" ||
-    !backend.hostname.endsWith(".onrender.com") ||
-    backend.origin === window.location.origin ||
-    backend.username || backend.password || backend.port ||
-    backend.pathname !== "/" || backend.search || backend.hash
-  ) {
-    return noop;
-  }
-
-  // A normal browser document can wake a sleeping Render service while
-  // background fetches receive startup responses. This makes one document
-  // request, with scripts and navigation disabled. Its load event is never
-  // treated as readiness: the regular health probes must still confirm JSON.
-  const frame = document.createElement("iframe");
-  frame.hidden = true;
-  frame.tabIndex = -1;
-  frame.title = "CalorieApp startup";
-  frame.referrerPolicy = "no-referrer";
-  frame.setAttribute("aria-hidden", "true");
-  frame.setAttribute("sandbox", "");
-  frame.src = `${backend.origin}/health`;
-  try {
-    document.body.appendChild(frame);
-  } catch {
-    frame.remove();
-    return noop;
-  }
-  return () => frame.remove();
-}
-
 /**
  * Render free services can take 50 seconds or more to wake after inactivity.
  * Probe one health route until the backend returns the expected JSON response,
@@ -290,7 +243,6 @@ export async function waitForBackendReady(
   }
 
   throwIfAborted(signal);
-  const removeWakeDocument = mountBackendWakeDocument(normalizedBaseUrl);
   const directController = new AbortController();
   const sameOriginController = new AbortController();
   const abortBoth = () => {
@@ -320,7 +272,6 @@ export async function waitForBackendReady(
     throw new BackendRequestTimeoutError();
   } finally {
     abortBoth();
-    removeWakeDocument();
     signal?.removeEventListener("abort", abortBoth);
   }
 }

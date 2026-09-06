@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AccountDataExportButton } from "@/components/AccountDataExportButton";
 import { AccountDataImportPanel } from "@/components/AccountDataImportPanel";
 import { AccountErasurePanel } from "@/components/AccountErasurePanel";
@@ -76,11 +76,70 @@ const LOGIN_COOKIE_CONFIRMATION_RETRY_WINDOW_MS = 10_000;
 const MAX_EMBEDDED_AUTHORIZATION_REFRESHES = 2;
 const PENDING_LOGIN_STORAGE_KEY = "calorieapp-pending-xaman-login";
 const LOGIN_RETURN_STORAGE_KEY = "calorieapp-login-return";
+const BACKEND_WAKE_RETURN_KEY = "calorieapp-backend-wake-return";
+const BACKEND_WAKE_RETURN_MAX_AGE_MS = 5 * 60_000;
 const BRIDGE_STATE_ALREADY_CONSUMED_MESSAGE =
   "State is unknown, expired, or already used";
 const WORDPRESS_APP_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_APP_URL?.trim() ||
   "https://calorietoken.net/index.php/calorieapp/";
+
+export function backendWakeNavigationUrl(baseUrl: string): string | null {
+  try {
+    const backend = new URL(baseUrl);
+    if (
+      backend.protocol !== "https:" ||
+      !backend.hostname.endsWith(".onrender.com") ||
+      backend.username || backend.password || backend.port ||
+      backend.pathname !== "/" || backend.search || backend.hash
+    ) {
+      return null;
+    }
+    return `${backend.origin}/health?resume_login=true`;
+  } catch {
+    return null;
+  }
+}
+
+export function rememberBackendWakeReturn(
+  parentOrigin: string,
+  locale: string
+): boolean {
+  try {
+    window.sessionStorage.setItem(BACKEND_WAKE_RETURN_KEY, JSON.stringify({
+      parentOrigin,
+      locale,
+      startedAt: Date.now(),
+    }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function consumeBackendWakeReturn(
+  parentOrigin: string,
+  locale: string
+): boolean {
+  try {
+    const raw = window.sessionStorage.getItem(BACKEND_WAKE_RETURN_KEY);
+    // Consume before validation so duplicate bridge messages cannot start
+    // another login and an expired or malformed marker cannot cause a loop.
+    window.sessionStorage.removeItem(BACKEND_WAKE_RETURN_KEY);
+    if (!raw) return false;
+    const pending = JSON.parse(raw);
+    const age = Date.now() - pending.startedAt;
+    return (
+      typeof pending.startedAt === "number" &&
+      Number.isFinite(age) && age >= 0 && age < BACKEND_WAKE_RETURN_MAX_AGE_MS &&
+      pending.parentOrigin === parentOrigin && pending.locale === locale
+    );
+  } catch {
+    return false;
+  }
+}
+
+const BACKEND_WAKE_NAVIGATION_URL = backendWakeNavigationUrl(BACKEND_WAKE_BASE_URL);
 
 type ParentBridgeMessage = {
   type?: unknown;
@@ -1058,6 +1117,9 @@ export function XamanLoginPanel() {
           event.origin
         );
         postHeight();
+        if (consumeBackendWakeReturn(event.origin, nextLocale)) {
+          beginLoginRef.current();
+        }
         return;
       }
 
@@ -1330,6 +1392,19 @@ export function XamanLoginPanel() {
       window.removeEventListener("message", handleParentMessage);
     };
   }, [clearCalorieAppSession, refreshCurrentUser]);
+
+  function handleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (
+      parentOrigin.current && BACKEND_WAKE_NAVIGATION_URL &&
+      rememberBackendWakeReturn(parentOrigin.current, activeLocale.current)
+    ) {
+      // Preserve the native, user-activated top-level navigation. A hidden
+      // document or background fetch is not equivalent on a sleeping service.
+      return;
+    }
+    event.preventDefault();
+    void handleLogin();
+  }
 
   async function handleLogin() {
     const controller = new AbortController();
@@ -1621,6 +1696,16 @@ export function XamanLoginPanel() {
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
         >
           Continue on CalorieToken.net
+        </a>
+      ) : loginSurfaceMode === "embedded" && !isLoading ? (
+        <a
+          href={BACKEND_WAKE_NAVIGATION_URL ?? "#"}
+          target="_top"
+          referrerPolicy="no-referrer"
+          onClick={handleLoginClick}
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          Continue in Xaman
         </a>
       ) : (
         <button
