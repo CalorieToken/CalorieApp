@@ -41,6 +41,21 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.20 completes the missing session controls on the accepted 0.3.19
+maintenance line. The embedded app's sign-out request reaches the existing
+joint-logout handler. Other authenticated website pages provide the same
+joint sign-out through a CalorieApp frame created only on a button press.
+The website's legacy sign-in links use the existing backend's native same-tab
+startup URL and resume the existing Xaman flow after returning to CalorieApp.
+A five-minute, one-use WordPress sessionStorage marker carries navigation intent
+only; it never authorizes a user. The visible Render loading page remains part
+of the accepted cold-start route. When browser storage is unavailable, the
+website link opens the canonical CalorieApp page for its usual sign-in control.
+The already-deployed frontend and backend stay at the accepted `f689a4a` version.
+The 0.3.19 Xaman verification, code exchange and refresh-after-success remain
+the authentication baseline. This maintenance package does not include the
+intervening website layout releases.
+
 Version 0.3.19 is a maintenance build from the working 0.3.3 plugin, not a
 successor containing the intervening layout releases. It backports the existing
 automatic page refresh after verified CalorieApp login completion so the
@@ -115,6 +130,7 @@ recommended for production browser-cookie reliability.
 - includes/class-calorieapp-identity-bridge-integrated-login.php
 - includes/class-calorieapp-identity-bridge-admin.php
 - assets/calorieapp-embed.js
+- assets/calorieapp-site-session.js
 - assets/calorieapp-embed.css
 - config/locales.json
 - tests/bootstrap.php

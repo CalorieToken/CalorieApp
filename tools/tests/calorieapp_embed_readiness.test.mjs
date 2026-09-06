@@ -386,7 +386,21 @@ test("Xaman waits for CalorieApp and verified completion refreshes WordPress", a
   assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
 
-  siteLogoutButton.dispatch("click");
+  const logoutRequest = {
+    data: { type: "calorieapp:logout:request", locale: "nl" },
+    origin: appOrigin,
+    source: iframeWindow,
+  };
+  const priorPosts = iframePosts.length;
+  for (const untrusted of [
+    { ...logoutRequest, origin: "https://untrusted.example" },
+    { ...logoutRequest, source: {} },
+    { ...logoutRequest, data: { ...logoutRequest.data, locale: "en" } },
+  ]) {
+    windowListeners.message(untrusted);
+  }
+  assert.equal(iframePosts.length, priorPosts);
+  windowListeners.message(logoutRequest);
   assert.equal(siteLogoutButton.disabled, true);
   assert.equal(siteLogoutButton.textContent, "Logging out...");
   assert.equal(iframePosts.at(-1).type, "calorieapp:logout");

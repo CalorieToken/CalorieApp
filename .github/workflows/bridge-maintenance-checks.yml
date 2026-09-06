@@ -1,0 +1,33 @@
+name: Bridge maintenance checks
+
+on:
+  pull_request:
+    branches:
+      - fix/bridge-033-status-refresh
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bridge-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+      - name: Lint plugin PHP
+        run: find wordpress-plugins/calorieapp-identity-bridge -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+      - name: Exercise WordPress page rendering
+        run: php tools/tests/wordpress_site_session_markup.test.php
+      - name: Exercise the preserved login and site-wide session controls
+        run: node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs
+      - name: Verify deterministic plugin package
+        run: |
+          python -m unittest tools.tests.test_build_wordpress_plugin_release
+          python tools/build_wordpress_plugin_release.py

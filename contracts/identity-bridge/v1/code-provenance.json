@@ -136,6 +136,13 @@
       "clearance_status": "contributor-source-and-similarity-review-pending"
     },
     {
+      "path": "assets/calorieapp-site-session.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "a6cfc7f15dd33f691a747ffe99546647e1dc846e",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
       "path": "calorieapp-identity-bridge.php",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",

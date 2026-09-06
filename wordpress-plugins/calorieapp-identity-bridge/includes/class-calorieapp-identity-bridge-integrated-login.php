@@ -31,6 +31,8 @@ class IntegratedLogin {
 
     private RestApi $rest_api;
 
+    private bool $shortcode_rendered = false;
+
     public function __construct(RestApi $rest_api) {
         $this->rest_api = $rest_api;
     }
@@ -38,6 +40,7 @@ class IntegratedLogin {
     public function register_hooks(): void {
         add_action('rest_api_init', [$this, 'register_routes']);
         add_action('wp_enqueue_scripts', [$this, 'register_assets']);
+        add_action('wp_footer', [$this, 'render_site_integration']);
         add_shortcode('calorieapp_embed', [$this, 'render_shortcode']);
     }
 
@@ -78,7 +81,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.3';
+            : '0.3.20';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -93,6 +96,68 @@ class IntegratedLogin {
             $version,
             true
         );
+
+        wp_register_script(
+            'calorieapp-identity-bridge-site-session',
+            $base_url . 'assets/calorieapp-site-session.js',
+            [],
+            $version,
+            true
+        );
+        wp_enqueue_style('calorieapp-identity-bridge-embed');
+    }
+
+    /** Public navigation data and the existing joint-logout control. */
+    public function render_site_integration(): void {
+        if (is_admin()) {
+            return;
+        }
+        $frontend_url = $this->sanitize_frontend_url(
+            (string) apply_filters(
+                'calorieapp_identity_bridge_sitewide_frontend_url',
+                'https://app.calorietoken.net'
+            )
+        );
+        if ($frontend_url === '') {
+            return;
+        }
+        // The shortcode queues its full login bridge while rendering content.
+        // Queue this smaller controller afterwards, before footer scripts are
+        // printed, so ordinary pages never need to load the full embed bridge.
+        wp_enqueue_script('calorieapp-identity-bridge-site-session');
+        $locale = LocaleRegistry::resolve(determine_locale());
+        $app_page = home_url('/index.php/calorieapp/');
+        $frame_src = add_query_arg(['embedded' => '1', 'locale' => $locale], $frontend_url);
+        $return_url = home_url('/');
+        $object_id = (int) get_queried_object_id();
+        if ($object_id > 0 && (is_singular() || is_front_page())) {
+            $permalink = get_permalink($object_id);
+            if (is_string($permalink) && $permalink !== '') {
+                $return_url = $permalink;
+            }
+        }
+        ?>
+        <div
+            data-calorieapp-site-integration
+            data-app-origin="<?php echo esc_attr($this->url_origin($frontend_url)); ?>"
+            data-frame-src="<?php echo esc_url($frame_src); ?>"
+            data-app-page="<?php echo esc_url($app_page); ?>"
+            data-startup-url="<?php echo esc_url('https://calorieapp-backend-rvul.onrender.com/health?resume_login=true'); ?>"
+            data-locale="<?php echo esc_attr($locale); ?>"
+            hidden
+        ></div>
+        <?php if (is_user_logged_in() && !$this->shortcode_rendered) : ?>
+            <div class="calorieapp-site-session-actions" data-calorieapp-sitewide-session-actions>
+                <button
+                    type="button"
+                    class="calorieapp-site-logout"
+                    data-logout-url="<?php echo esc_url(wp_logout_url($return_url)); ?>"
+                    data-idle-label="<?php echo esc_attr__('Sign out both', 'calorieapp-identity-bridge'); ?>"
+                ><?php echo esc_html__('Sign out both', 'calorieapp-identity-bridge'); ?></button>
+                <span class="calorieapp-site-logout-status" role="status" aria-live="polite" hidden></span>
+            </div>
+        <?php endif; ?>
+        <?php
     }
 
     public function render_shortcode($attributes = []): string {
@@ -110,6 +175,8 @@ class IntegratedLogin {
         if ($src === '') {
             return '<p>CalorieApp embed URL is invalid.</p>';
         }
+
+        $this->shortcode_rendered = true;
 
         $height = max(700, min(4000, (int) $attributes['height']));
         $requested_locale = trim((string) $attributes['locale']);

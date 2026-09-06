@@ -34,6 +34,18 @@
   font-size: 14px;
 }
 
+.xl-card > [data-calorieapp-sitewide-session-actions] {
+  margin: 8px 0 0;
+  max-width: 100%;
+}
+
+.xl-card > [data-calorieapp-sitewide-session-actions] .calorieapp-site-logout {
+  min-height: 32px;
+  max-width: 100%;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
 .calorieapp-embed-frame {
   display: block;
   width: 100%;
