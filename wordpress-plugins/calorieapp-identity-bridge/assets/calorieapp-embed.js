@@ -39,6 +39,14 @@
   }
 
   function unifyLegacySigninSurfaces(triggerLogin) {
+    // The site-wide controller gives the header the accepted native startup
+    // navigation. Do not attach the older background-only trigger as well.
+    if (
+      typeof document.querySelector === "function" &&
+      document.querySelector("[data-calorieapp-site-integration]")
+    ) {
+      return;
+    }
     document
       .querySelectorAll('.xl-card a[href*="xl-signin"]')
       .forEach(function (signinLink) {
@@ -677,6 +685,13 @@
             { type: MESSAGE_PREFIX + "login:trigger", locale: configuredLocale },
             appOrigin
           );
+        }
+        return;
+      }
+
+      if (message.type === MESSAGE_PREFIX + "logout:request") {
+        if (message.locale === configuredLocale) {
+          requestJointLogout();
         }
         return;
       }
