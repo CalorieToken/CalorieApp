@@ -14,7 +14,8 @@
     box-sizing: border-box;
     width: 100% !important;
     max-width: 220px !important;
-    margin: 5px auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
