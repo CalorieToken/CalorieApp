@@ -198,6 +198,9 @@ test("invalid custom portions cannot save and a new search clears the old select
   h.submit();
   await h.flush();
   assert.equal(h.requests.filter((request) => request.url.endsWith("/log-food")).length, 0);
+  assert.equal(nodes(h.controls(), (node) => node.props?.id === "portion-validation").length, 1);
+  assert.equal(nodes(h.controls(), (node) => node.type === "ErrorBanner").length, 0);
+  assert.equal((text(h.controls()).match(/Enter a valid custom percentage/g) ?? []).length, 1);
   await h.search("banana");
   assert.equal(h.controls(), null);
   assert.ok(h.cards().every((card) => !card.props.feedback));

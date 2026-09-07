@@ -471,7 +471,7 @@ export function FoodSearchPlaceholder() {
     }
 
     if (selectedPortionPercentage === null) {
-      setPortionError("Enter a valid custom percentage between 1 and 100.");
+      // The field already presents one inline validation message.
       return;
     }
 
