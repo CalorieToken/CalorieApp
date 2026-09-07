@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - fix/bridge-033-status-refresh
+      - fix/desktop-widget-column-fit
 
 permissions:
   contents: read
@@ -25,6 +26,10 @@ jobs:
         run: find wordpress-plugins/calorieapp-identity-bridge -name '*.php' -type f -print0 | xargs -0 -n1 php -l
       - name: Exercise WordPress page rendering
         run: php tools/tests/wordpress_site_session_markup.test.php
+      - name: Check the CalorieApp footer and public market data
+        run: |
+          php tools/tests/wordpress_page_ending.test.php
+          node --test tools/tests/wordpress_page_ending.test.mjs
       - name: Exercise the preserved login and site-wide session controls
         run: node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs
       - name: Check responsive header correction lifecycle

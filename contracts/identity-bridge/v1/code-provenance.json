@@ -146,6 +146,22 @@
       "adaptation": "Original phone-mark vector paths and colours retained; surrounding artboard and border omitted."
     },
     {
+      "path": "assets/calorieapp-page-ending.css",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending",
+      "source": "CalorieToken/CalorieApp@4baea3acaeaa14dacc602ae8d6154ab4c7e97836; footer and public XPMarket components only; session/layout controllers excluded"
+    },
+    {
+      "path": "assets/calorieapp-page-ending.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending",
+      "source": "CalorieToken/CalorieApp@4baea3acaeaa14dacc602ae8d6154ab4c7e97836; footer and public XPMarket components only; session/layout controllers excluded"
+    },
+    {
       "path": "assets/calorieapp-site-layout.css",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "e10428f74f1af12fee5092768ef89b6d40828d35",
@@ -222,6 +238,22 @@
       "repository_first_add_commit": "afce5b7d233dc44cb8599c50d670217c4d117391",
       "declared_distribution_licence": "GPL-2.0-or-later",
       "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-market-widget.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending",
+      "source": "CalorieToken/CalorieApp@4baea3acaeaa14dacc602ae8d6154ab4c7e97836; footer and public XPMarket components only; session/layout controllers excluded"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-page-ending.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending",
+      "source": "CalorieToken/CalorieApp@4baea3acaeaa14dacc602ae8d6154ab4c7e97836; footer and public XPMarket components only; session/layout controllers excluded"
     },
     {
       "path": "includes/class-calorieapp-identity-bridge-rest.php",

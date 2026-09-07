@@ -13,6 +13,8 @@ require_once __DIR__ . '/class-calorieapp-identity-bridge-browser-authorize.php'
 require_once __DIR__ . '/class-calorieapp-identity-bridge-integrated-login.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-admin.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-legal-footer-compatibility.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-market-widget.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-page-ending.php';
 
 class Plugin {
     public const OPTION_KEY = 'calorieapp_identity_bridge_options';
@@ -31,6 +33,10 @@ class Plugin {
 
     private LegalFooterCompatibility $legal_footer_compatibility;
 
+    private MarketWidget $market_widget;
+
+    private PageEnding $page_ending;
+
     public static function instance(): Plugin {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -46,6 +52,8 @@ class Plugin {
         $this->integrated_login = new IntegratedLogin($this->rest_api);
         $this->admin = new Admin();
         $this->legal_footer_compatibility = new LegalFooterCompatibility();
+        $this->market_widget = new MarketWidget();
+        $this->page_ending = new PageEnding();
 
         register_activation_hook(CALORIEAPP_IDENTITY_BRIDGE_FILE, [$this, 'activate']);
 
@@ -59,6 +67,8 @@ class Plugin {
         $this->integrated_login->register_hooks();
         $this->admin->register_hooks();
         $this->legal_footer_compatibility->register_hooks();
+        $this->market_widget->register_hooks();
+        $this->page_ending->register_hooks();
     }
 
     public function activate(): void {

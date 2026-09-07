@@ -41,6 +41,19 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.24 restores the missing WordPress footer and a CAL market card below
+CalorieApp, only on the `calorieapp` page. It reuses the existing footer colours,
+social destinations, and current operator/copyright copy; the privacy and terms
+links remain available without JavaScript. The XPMarket public CAL response is
+validated and cached for five minutes by WordPress. On an upstream failure the
+card keeps its direct XPMarket link and does not invent market figures.
+
+These components have separate PHP, CSS and JavaScript files. The installed
+0.3.23 header, navigation, login and logout remain the maintenance baseline.
+No stored Brizy content or global theme templates are rewritten. The old
+intervening layout releases are not part of this package. Visual verification
+on the live CalorieApp page is still required before accepting the appearance.
+
 Version 0.3.23 keeps the desktop account card within its existing Brizy column.
 The shortcode uses the available column width and the card is centred with a
 maximum width of 220px. This prevents the right edge from being clipped on
