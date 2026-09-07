@@ -38,12 +38,18 @@ class LegalFooterCompatibility {
 
     public function start_output_buffer(): void {
         $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        // The donation product/cart may render their normal page after POST.
+        // Correct that HTML footer too, without touching checkout, AJAX,
+        // REST, authentication, or the underlying donation transaction.
+        $cart_page_post = $method === 'POST'
+            && ((function_exists('is_cart') && is_cart())
+                || (function_exists('is_product') && is_product()));
 
         if (
             is_admin()
             || (defined('REST_REQUEST') && REST_REQUEST)
             || wp_doing_ajax()
-            || !in_array($method, ['GET', 'HEAD'], true)
+            || (!in_array($method, ['GET', 'HEAD'], true) && !$cart_page_post)
             || is_feed()
             || is_embed()
             || is_trackback()
@@ -51,7 +57,21 @@ class LegalFooterCompatibility {
             return;
         }
 
-        ob_start([self::class, 'replace_legacy_footer_html']);
+        ob_start([self::class, $cart_page_post ? 'replace_cart_page_footer_html' : 'replace_legacy_footer_html']);
+    }
+
+    public static function replace_cart_page_footer_html(string $html): string {
+        // Only full page documents: leave JSON, fragments and redirect bodies
+        // untouched even if a third-party handler runs on a product URL.
+        if (!preg_match('/^\s*(?:<!doctype\s+html\b|<html\b)/i', $html)) {
+            return $html;
+        }
+        foreach (headers_list() as $header) {
+            if (stripos($header, 'Content-Type:') === 0 && stripos($header, 'text/html') === false) {
+                return $html;
+            }
+        }
+        return self::replace_legacy_footer_html($html);
     }
 
     public static function replace_legacy_footer_html(string $html): string {

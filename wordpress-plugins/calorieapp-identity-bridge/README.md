@@ -41,6 +41,28 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.27 bundles the 0.3.26 candidate with the mobile screenshot findings.
+The shared header styles now apply to the actual XUMM shortcode before layout
+JavaScript runs, and a late-created account card is initialized once. Richlist
+tables receive a keyboard-accessible horizontal scroll container; their rows,
+addresses and links are preserved. Mobile donation controls, cart tables and
+terms use readable widths and spacing. Blog slider dots stay in one horizontally
+scrollable row, with every original destination retained.
+
+After WooCommerce successfully accepts the donation product's open-price POST,
+the default flow redirects to the same product's ordinary GET page. This avoids
+leaving a resubmittable product form response in history. Explicit redirects and
+the configured cart redirect remain authoritative. This hook does not calculate
+prices, create orders or alter the payment gateway. The existing legal footer
+correction also covers full product/cart HTML returned after POST, excluding
+AJAX, REST, checkout and non-page response bodies.
+
+The accepted authentication/session controllers are retained. The separate app
+PR adds its own search deadline correction, inline food logging and wallpaper;
+those changes cannot be installed through this WordPress ZIP. Native mobile
+review and the complete donation cancellation/return path are still pending.
+See `docs/STEP_3_CYCLE_1.md` in the repository for scope and acceptance checks.
+
 Version 0.3.26 corrects the remaining market and shortcut layout differences
 reported after installing 0.3.25. Dedicated market ancestors are normalized up
 to the Brizy row, stopping before any shared account or content container. This
@@ -60,7 +82,7 @@ there are no automatic reloads or new login requests. This covers the embedded
 frontend only. It cannot cover the separate top-level Render health page used
 by the accepted website sign-in route, which is deliberately unchanged.
 
-The authentication/session JavaScript and header assets are byte-identical to
+In 0.3.26, authentication/session JavaScript and header assets are byte-identical to
 0.3.25. IntegratedLogin changes only its shortcode presentation and asset-version
 fallback; server authentication methods are unchanged. No app-main changes,
 WordPress content writes, merge or deployment are included. Native desktop/mobile

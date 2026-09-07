@@ -6,7 +6,7 @@
       return !element.closest("[data-calorieapp-embed]");
     });
     var wrapper = card && card.closest(".brz-wrapper");
-    if (!wrapper) return;
+    if (!wrapper) return false;
 
     var columns = Array.from(document.querySelectorAll(".brz .brz-menu-simple"))
       .map(function (menu) { return menu.closest(".brz-columns"); })
@@ -78,8 +78,34 @@
       observer.observe(card);
       columns.forEach(function (column) { observer.observe(column); });
     }
+    return true;
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
-  else start();
+  function enhanceRichlists() {
+    document.querySelectorAll("table.xl-richlist").forEach(function (table) {
+      if (table.closest(".calorieapp-richlist-scroll")) return;
+      var region = document.createElement("div");
+      region.className = "calorieapp-richlist-scroll";
+      region.tabIndex = 0;
+      region.setAttribute("role", "region");
+      region.setAttribute("aria-label", "CalorieToken holders — scroll sideways for the full table");
+      table.parentNode.insertBefore(region, table);
+      region.appendChild(table);
+    });
+  }
+
+  function boot() {
+    enhanceRichlists();
+    window.addEventListener("load", enhanceRichlists);
+    if (start() || !window.MutationObserver) return;
+    // Brizy can insert a shortcode after DOMContentLoaded. Initialize once
+    // when the card appears, then stop watching the rest of a long Richlist.
+    var waiting = new MutationObserver(function () {
+      if (start()) waiting.disconnect();
+    });
+    waiting.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
 })();

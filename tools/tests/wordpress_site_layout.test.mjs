@@ -44,25 +44,28 @@ function harness({ width = 360, height = 96, present = true, cardAfterMenu = fal
   const navigation = column(100), footer = column(1200);
   const document = {
     readyState: "complete", documentElement: { get clientWidth() { return state.width; } },
-    querySelectorAll: selector => selector === ".brz .xl-card" ? (present ? [card] : []) : [navigation, navigation, footer].map(item => ({ closest: () => item })),
+    body: {},
+    querySelectorAll: selector => selector === "table.xl-richlist" ? [] : selector === ".brz .xl-card" ? (present ? [card] : []) : [navigation, navigation, footer].map(item => ({ closest: () => item })),
   };
   const listeners = new Map(), raf = [], observed = [];
-  let resize;
+  let resize, mutation, disconnected = false;
   const window = {
     matchMedia: () => ({ get matches() { return state.width <= 768; } }),
     getComputedStyle: () => ({ marginTop: "20px" }),
     addEventListener: (name, callback) => listeners.set(name, callback),
     requestAnimationFrame: callback => raf.push(callback),
     ResizeObserver: true,
+    MutationObserver: true,
   };
   vm.runInNewContext(source, {
     window, document,
     ResizeObserver: class { constructor(callback) { resize = callback; } observe(element) { observed.push(element); } },
+    MutationObserver: class { constructor(callback) { mutation = callback; } observe() {} disconnect() { disconnected = true; } },
     fetch() { throw new Error("The layout must not send requests"); },
   });
   function flush() { while (raf.length) raf.shift()(); }
   function event(name) { listeners.get(name)?.(); flush(); }
-  return { state, card, wrapper, navigation, footer, observed, event, resize: () => { resize(); flush(); } };
+  return { state, card, wrapper, navigation, footer, observed, event, resize: () => { resize(); flush(); }, insertCard: () => { present = true; mutation(); flush(); }, disconnected: () => disconnected };
 }
 
 test("card growth and shrinkage preserve clearance without accumulating margins", () => {
@@ -115,4 +118,33 @@ test("a card following the menu in document flow does not push both farther down
     h.state.width = 1440; h.event("resize");
     h.state.width = width; h.event("resize"); assertNaturalFlow();
   }
+});
+
+test("a late shortcode receives layout and disconnects its discovery observer", () => {
+  const h = harness({ present: false, width: 412, height: 164 });
+  assert.equal(h.observed.length, 0);
+  h.insertCard();
+  assert.equal(h.card.getBoundingClientRect().left, 66);
+  assert.equal(h.navigation.getBoundingClientRect().top - h.card.getBoundingClientRect().bottom, 12);
+  assert.equal(h.disconnected(), true);
+  h.state.height = 96; h.resize();
+  assert.equal(h.navigation.getBoundingClientRect().top - h.card.getBoundingClientRect().bottom, 12);
+});
+
+test("Richlist scrolling preserves the original table and does not duplicate wrappers", () => {
+  const wrappers = [], listeners = new Map();
+  const parent = { insertBefore(region, item) { assert.equal(item, table); wrappers.push(region); } };
+  const table = { parentNode: parent, rows: [{ balance: "unchanged" }], closest() { return this.parentNode.className === "calorieapp-richlist-scroll" ? this.parentNode : null; } };
+  const document = {
+    readyState: "complete",
+    querySelectorAll: selector => selector === "table.xl-richlist" ? [table] : [],
+    createElement: () => ({ attributes: {}, setAttribute(key, value) { this.attributes[key] = value; }, appendChild(item) { this.child = item; item.parentNode = this; } }),
+  };
+  vm.runInNewContext(source, { document, window: { addEventListener: (name, callback) => listeners.set(name, callback) } });
+  listeners.get("load")();
+  assert.equal(wrappers.length, 1);
+  assert.equal(wrappers[0].child, table);
+  assert.equal(wrappers[0].tabIndex, 0);
+  assert.equal(wrappers[0].attributes.role, "region");
+  assert.equal(table.rows[0].balance, "unchanged");
 });

@@ -1,16 +1,18 @@
+/* The shortcode selectors also apply before script initialization, preventing
+   fixed/narrow legacy cards while a large page or delayed shortcode loads. */
 /* Public-header presentation only. Keep the account card within its desktop
    column. On phones the account card scrolls with the header. */
 @media (min-width: 769px) {
-  .brz .calorieapp-identity-wrapper .brz-wp-shortcode {
+  .brz :is(.calorieapp-identity-wrapper, .brz-wrapper:has(> .brz-wp-shortcode .xl-card)) .brz-wp-shortcode {
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  .brz .calorieapp-identity-wrapper .brz-wp-shortcode > div {
+  .brz :is(.calorieapp-identity-wrapper, .brz-wrapper:has(> .brz-wp-shortcode .xl-card)) .brz-wp-shortcode > div {
     width: 100% !important;
   }
 
-  .brz .calorieapp-identity-card {
+  .brz :is(.calorieapp-identity-card, .brz-wp-shortcode .xl-card) {
     box-sizing: border-box;
     width: 100% !important;
     max-width: 220px !important;
@@ -20,7 +22,7 @@
 }
 
 @media (max-width: 768px) {
-  .brz .calorieapp-identity-wrapper {
+  .brz :is(.calorieapp-identity-wrapper, .brz-wrapper:has(> .brz-wp-shortcode .xl-card)) {
     position: relative !important;
     inset: auto !important;
     box-sizing: border-box;
@@ -33,18 +35,18 @@
     transform: translateX(var(--calorieapp-identity-center-shift, 0px)) !important;
   }
 
-  .brz .calorieapp-identity-wrapper .brz-wp-shortcode {
+  .brz :is(.calorieapp-identity-wrapper, .brz-wrapper:has(> .brz-wp-shortcode .xl-card)) .brz-wp-shortcode {
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  .brz .calorieapp-identity-wrapper .brz-wp-shortcode > div {
+  .brz :is(.calorieapp-identity-wrapper, .brz-wrapper:has(> .brz-wp-shortcode .xl-card)) .brz-wp-shortcode > div {
     width: 100% !important;
     margin-right: auto !important;
     margin-left: auto !important;
   }
 
-  .brz .calorieapp-identity-card {
+  .brz :is(.calorieapp-identity-card, .brz-wp-shortcode .xl-card) {
     box-sizing: border-box;
     width: 100% !important;
     max-width: 100% !important;
@@ -53,35 +55,35 @@
     font-size: 13px;
   }
 
-  .calorieapp-identity-card .xl-card-header {
+  .brz .xl-card .xl-card-header {
     padding: 3px 8px;
     line-height: 18px;
   }
 
-  .calorieapp-identity-card .xl-card-wallet {
+  .brz .xl-card .xl-card-wallet {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .calorieapp-identity-card .xl-card-body {
+  .brz .xl-card .xl-card-body {
     display: flow-root;
     min-height: 52px;
     padding: 6px 8px;
     overflow-wrap: anywhere;
   }
 
-  .calorieapp-identity-card .xl-card-body div { line-height: 16px; }
-  .calorieapp-identity-card .xl-card-body > .xl-card-avatar { width: 52px; margin-right: 8px; }
-  .calorieapp-identity-card .xl-card-avatar img { width: 100%; height: auto; margin-right: 0; }
-  .calorieapp-identity-card .xl-card-avatar a { display: block; min-height: 44px; }
+  .brz .xl-card .xl-card-body div { line-height: 16px; }
+  .brz .xl-card .xl-card-body > .xl-card-avatar { width: 52px; margin-right: 8px; }
+  .brz .xl-card .xl-card-avatar img { width: 100%; height: auto; margin-right: 0; }
+  .brz .xl-card .xl-card-avatar a { display: block; min-height: 44px; }
 
-  .brz .calorieapp-identity-card > .calorieapp-site-session-actions {
+  .brz :is(.calorieapp-identity-card, .brz-wp-shortcode .xl-card) > .calorieapp-site-session-actions {
     clear: both;
     margin: 4px 8px 8px;
   }
 
-  .brz .calorieapp-identity-card .calorieapp-site-logout {
+  .brz :is(.calorieapp-identity-card, .brz-wp-shortcode .xl-card) .calorieapp-site-logout {
     min-height: 44px;
     padding: 8px 12px;
     font-size: 13px;
@@ -89,4 +91,147 @@
   }
 
   .brz .calorieapp-brizy-menu-column { margin-top: var(--calorieapp-menu-margin) !important; }
+}
+
+/* Keep the complete rank, address and balance readable in a scrollable region.
+   Reuse the existing table and its links, rows and colour scheme. */
+.brz :is(.brz-columns, .brz-column__items, .brz-wrapper, .brz-wp-shortcode):has(table.xl-richlist) {
+  min-width: 0;
+  max-width: 100%;
+}
+.brz .calorieapp-richlist-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.brz .calorieapp-richlist-scroll:focus-visible {
+  outline: 2px solid #505ba9;
+  outline-offset: 2px;
+}
+.brz .calorieapp-richlist-scroll table.xl-richlist {
+  width: 100%;
+  min-width: 560px;
+  table-layout: auto;
+}
+.brz .calorieapp-richlist-scroll :is(th, td) {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  padding: 8px 10px;
+}
+.brz .calorieapp-richlist-scroll td:first-child { width: 3.5em; }
+.brz .calorieapp-richlist-scroll td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The blog's MetaSlider has many slides. Keep all native controls in one
+   horizontally scrollable row instead of dozens of wrapping rows. */
+.brz .metaslider .nivo-controlNav {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 6px 4px !important;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.brz .metaslider .nivo-controlNav a {
+  flex: 0 0 auto;
+  margin: 8px 6px !important;
+}
+
+@media (max-width: 768px) {
+  .brz .calorieapp-richlist-scroll table.xl-richlist {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .brz .brz-woo-add-to-cart,
+  .brz .brz-woo-add-to-cart > div {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .brz .brz-woo-add-to-cart form.cart:has(#wcj_open_price) {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 !important;
+  }
+  .brz #wcj_open_price {
+    box-sizing: border-box;
+    min-width: 0 !important;
+    width: 8rem !important;
+    max-width: 100% !important;
+    min-height: 44px;
+    font-size: 18px;
+  }
+  .brz form.cart:has(#wcj_open_price) .single_add_to_cart_button {
+    box-sizing: border-box;
+    flex-basis: 100%;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 44px;
+    margin: 0 !important;
+    white-space: normal !important;
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* WooCommerce owns form and payment behavior; these rules only fit its
+     existing controls and totals into the available mobile column. */
+  .brz .woocommerce :is(form.checkout, .woocommerce-cart-form, .cart-collaterals, .cart_totals, .col2-set, .col-1, .col-2) {
+    box-sizing: border-box;
+    float: none !important;
+    min-width: 0;
+    width: 100% !important;
+    max-width: 100%;
+  }
+  .brz .woocommerce :is(input.input-text, textarea, select, .select2-container) {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100% !important;
+    max-width: 100%;
+    font-size: 16px !important;
+  }
+  .brz .woocommerce table.shop_table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+  .brz .woocommerce table.shop_table :is(th, td) {
+    padding: 10px 8px !important;
+    font-size: inherit !important;
+    overflow-wrap: anywhere;
+  }
+  .brz .woocommerce table.shop_table .amount { white-space: nowrap; }
+  .brz .woocommerce table.shop_table_responsive tr td::before {
+    max-width: 42%;
+    margin-right: 12px;
+    white-space: normal;
+    font-size: inherit !important;
+  }
+  .brz .woocommerce table.shop_table_responsive tr td { display: flow-root; }
+  .brz .woocommerce :is(.woocommerce-terms-and-conditions-wrapper, .woocommerce-terms-and-conditions) {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+  }
+  .brz .woocommerce .woocommerce-terms-and-conditions :is(h1, h2, h3) {
+    font-size: 24px !important;
+    line-height: 1.3 !important;
+  }
 }
