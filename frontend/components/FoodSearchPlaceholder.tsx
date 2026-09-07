@@ -489,7 +489,6 @@ export function FoodSearchPlaceholder() {
 
     logMutationInFlightRef.current = true;
     setIsLogging(pendingLogIndex);
-    setLogError(null);
     setPortionError(null);
 
     try {

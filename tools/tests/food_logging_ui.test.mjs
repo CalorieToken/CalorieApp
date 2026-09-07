@@ -32,7 +32,7 @@ function button(tree, label) {
   return result[0];
 }
 
-async function harness(componentName = "FoodSearchPlaceholder", postResponse) {
+async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse) {
   const source = await readFile(new URL(`../../frontend/components/${componentName}.tsx`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { jsx: typescript.JsxEmit.ReactJSX, module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
@@ -101,7 +101,10 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse) {
             if (response.ok) saved.push({ ...JSON.parse(options.body), id: saved.length + 1 });
             return response;
           }
-          if (url.endsWith("/logs")) return { ok: true, json: async () => saved };
+          if (url.endsWith("/logs")) {
+            const response = logsResponse ? await logsResponse() : null;
+            return response ?? { ok: true, json: async () => saved };
+          }
           throw new Error(`Unexpected request: ${url}`);
         },
       };
@@ -144,6 +147,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse) {
     },
     choose(index) { this.cards()[index].props.onLog(); render(); },
     submit() { this.controls().props.onSubmit({ preventDefault() {} }); render(); },
+    login() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: true } }); render(); },
     logout() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: false } }); render(); },
   };
 }
@@ -241,6 +245,44 @@ test("save errors stay with the food, while an expired session gives an inline s
       assert.match(errors[0].props.message, status === 409 ? /storage limit/ : /Unable to log/);
       assert.match(text(h.controls()), /Oats 8/);
       assert.equal(button(h.controls(), "Add to food log").props.disabled, false);
+    }
+  }
+});
+
+test("saving preserves the sign-in prompt or log-loading error until the log state actually changes", async () => {
+  for (const status of [401, 503]) {
+    let finish, logLoads = 0;
+    const h = await harness(
+      "FoodSearchPlaceholder",
+      () => new Promise((resolve) => { finish = resolve; }),
+      () => ++logLoads === 1 ? { ok: false, status } : null,
+    );
+    h.login();
+    await h.flush();
+    await h.search();
+    h.choose(1);
+    const visibleLogState = () => ({
+      signIn: /Sign in to manage your food log/.test(text(h.tree)),
+      loadErrors: nodes(h.tree, (node) => node.type === "ErrorBanner")
+        .map((node) => node.props.message).filter((message) => /Unable to load logged foods/.test(message)),
+    });
+    const before = visibleLogState();
+    assert.deepEqual(before, status === 401
+      ? { signIn: true, loadErrors: [] }
+      : { signIn: false, loadErrors: ["Unable to load logged foods right now."] });
+    h.submit();
+    assert.deepEqual(visibleLogState(), before, "Saving must preserve the unrelated log section's message.");
+    assert.doesNotMatch(text(h.tree), /Recent Log Summary/, "Do not briefly show an empty summary during the save.");
+    assert.equal(h.requests.filter((request) => request.url.endsWith("/log-food")).length, 1);
+    finish(status === 401 ? { ok: false, status: 401 } : { ok: true, status: 201 });
+    await h.flush();
+    if (status === 401) {
+      assert.deepEqual(visibleLogState(), before);
+      assert.match(h.cards()[1].props.feedback.message, /Sign in with Xaman/);
+    } else {
+      assert.deepEqual(visibleLogState(), { signIn: false, loadErrors: [] });
+      assert.match(text(h.tree), /Recent Log Summary/);
+      assert.match(h.cards()[1].props.feedback.message, /Added Oats 1/);
     }
   }
 });
