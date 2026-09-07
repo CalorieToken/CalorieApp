@@ -23,7 +23,11 @@ function home_url($path = ''): string { return 'https://calorietoken.net' . $pat
 function get_queried_object_id(): int { return 42; }
 function is_singular(): bool { return true; }
 function is_front_page(): bool { return false; }
-function get_permalink($id): string { return home_url('/index.php/about/'); }
+function get_permalink($id = 0): string { return home_url('/index.php/about/'); }
+function shortcode_atts($defaults, $attributes, $name): array { return array_merge($defaults, array_intersect_key($attributes, $defaults)); }
+function wp_generate_uuid4(): string { return '00000000-0000-4000-8000-000000000001'; }
+function wp_script_is($handle, $state): bool { return isset($GLOBALS['registered_scripts'][$handle]); }
+function rest_url($path): string { return home_url('/index.php/wp-json/' . $path); }
 function wp_parse_url($url) { return parse_url($url); }
 function untrailingslashit($value): string { return rtrim($value, '/'); }
 function esc_url_raw($value, $protocols = null): string { return $value; }
@@ -79,4 +83,18 @@ check(!str_contains(render($bridge), 'data-calorieapp-sitewide-session-actions')
 check($enqueued_scripts === ['calorieapp-identity-bridge-embed', 'calorieapp-identity-bridge-site-session'], 'The full bridge queued by the shortcode must precede the return controller.');
 $admin = true;
 check(render($bridge) === '', 'Do not add public session controls in wp-admin.');
+$admin = false;
+foreach ([false, true] as $signed_in) {
+    $embed = $bridge->render_shortcode(['src' => 'https://app.calorietoken.net', 'locale' => 'nl', 'height' => '900']);
+    check(substr_count($embed, '<iframe') === 1, 'The startup cover must not add another application frame.');
+    check(substr_count($embed, 'data-calorieapp-embed-loading') === 1, 'Render one startup cover before the iframe loads.');
+    check(strpos($embed, 'data-calorieapp-embed-loading') < strpos($embed, '<iframe'), 'The startup cover is present in server-rendered markup.');
+    check(str_contains($embed, 'data-app-origin="https://app.calorietoken.net"') && str_contains($embed, 'data-locale="nl"'), 'Retain the existing origin and locale binding.');
+    check(str_contains($embed, 'height: 900px') && str_contains($embed, 'loading="eager"'), 'Retain the existing iframe sizing and loading strategy.');
+    check(str_contains($embed, '<noscript>') && str_contains($embed, 'visibility:visible!important'), 'Do not leave the cover blocking the frame when scripts are disabled.');
+    check(strpos($embed, 'calorieapp-login-modal') > strpos($embed, '</iframe>'), 'Keep the sign-in modal outside the startup cover.');
+    if ($signed_in) {
+        check(strpos($embed, 'calorieapp-site-logout') < strpos($embed, 'data-calorieapp-frame-stage'), 'Keep the working logout control outside the covered frame.');
+    }
+}
 echo "WordPress site-session renderer checks passed.\n";

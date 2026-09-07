@@ -30,6 +30,7 @@ jobs:
         run: |
           php tools/tests/wordpress_page_ending.test.php
           node --test tools/tests/wordpress_page_ending.test.mjs
+          node --test tools/tests/wordpress_embed_loading.test.mjs
       - name: Exercise the preserved login and site-wide session controls
         run: node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs
       - name: Check responsive header correction lifecycle

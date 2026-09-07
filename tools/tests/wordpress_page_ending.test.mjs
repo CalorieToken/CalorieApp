@@ -10,6 +10,12 @@ function element() {
     attrs: {}, textContent: '', hidden: false, children: new Map(), listeners: {},
     classList: { values: new Set(), add(name) { this.values.add(name); }, contains(name) { return this.values.has(name); } },
     closest(selector) { return this.ancestors?.[selector] || null; },
+    matches(selector) { return selector.split(',').some(part => this.classList.contains(part.trim().replace(/^\./, ''))); },
+    cloneNode() {
+      const node = this;
+      return { textContent: this.outsideText || '', querySelectorAll() { return []; },
+        querySelector() { return node.outsideControl ? {} : null; } };
+    },
     setAttribute(name, value) { this.attrs[name] = String(value); },
     getAttribute(name) { return this.attrs[name] ?? null; },
     querySelector(selector) { return this.children.get(selector) ?? null; },
@@ -30,21 +36,34 @@ const good = () => ({ success: true, data: {
   price_usd: 0.00000007, price_xrp: 0.00000005, market_cap_usd: 4000, rank: 300, holders: 14000,
 } });
 async function settle() { for (let i = 0; i < 10; i++) await Promise.resolve(); }
-function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, empty = false, endpoint = true, legacy = false, mixedHost = false } = {}) {
+function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, empty = false, endpoint = true, legacy = false, mixedHost = false, mixedColumn = false } = {}) {
   const widget = element();
   const widgets = [widget];
   const oldWidget = widget;
   const wrapper = element();
   const host = element();
+  const inner = element();
+  const columnItems = element();
+  const column = element();
+  const row = element();
+  const container = element();
+  host.classList.add('brz-wp-shortcode'); wrapper.classList.add('brz-wrapper');
+  columnItems.classList.add('brz-column__items'); column.classList.add('brz-columns');
+  row.classList.add('brz-row'); container.classList.add('brz-container');
+  inner.parentElement = host; host.parentElement = wrapper; wrapper.parentElement = columnItems;
+  columnItems.parentElement = column; column.parentElement = row; row.parentElement = container;
   host.ancestors = { '.brz-wrapper': wrapper };
-  if (mixedHost) host.children.set('.xl-card, [data-calorieapp-embed]', {});
+  if (mixedHost) host.outsideControl = true;
+  if (mixedColumn) columnItems.outsideText = 'Existing page heading';
   function attachLegacy(node) {
     node.nodeType = 1;
     node.classList.add('livecoinwatch-widget-1');
     node.ancestors = { '.brz-wp-shortcode': host };
+    node.parentElement = inner;
     node.matches = () => true;
     node.replaceWith = function (replacement) {
       replacement.ancestors = this.ancestors;
+      replacement.parentElement = this.parentElement;
       widgets[widgets.indexOf(this)] = replacement;
       this.detached = true;
     };
@@ -72,6 +91,7 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
     addEventListener(name, fn) { if (name === 'DOMContentLoaded') ready = fn; },
     querySelectorAll(selector) {
       if (empty) return [];
+      if (selector === '[data-calorieapp-embed]') return [];
       return selector.includes('xpmarket-widget') ? widgets : [carousel];
     },
   };
@@ -96,7 +116,7 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
   };
   vm.runInNewContext(source, { window, document, URL, Intl });
   ready();
-  return { get widget() { return widgets[0]; }, widgets, oldWidget, host, wrapper, buttons, track, requests, timers, ready,
+  return { get widget() { return widgets[0]; }, widgets, oldWidget, host, wrapper, inner, columnItems, column, row, container, buttons, track, requests, timers, ready,
     event(name) { events.get(name)?.(); },
     addLate() {
       const late = element(); attachLegacy(late); widgets.push(late);
@@ -160,7 +180,10 @@ test('legacy website cards use the same CAL renderer and keep their original slo
   assert.equal(h.widget.getAttribute('data-state'), 'ready');
   assert.equal(h.widget.querySelector('.calorieapp-xpmarket-price').textContent, '$0.00000007');
   assert.equal(h.host.classList.contains('calorieapp-xpmarket-host'), true);
-  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-brizy-wrapper'), true);
+  for (const node of [h.host, h.wrapper, h.columnItems, h.column, h.row]) {
+    assert.equal(node.classList.contains('calorieapp-xpmarket-layout'), true, 'Normalize the dedicated market column, not only its shortcode.');
+  }
+  assert.equal(h.container.classList.contains('calorieapp-xpmarket-layout'), false, 'Preserve the page section container.');
   h.oldWidget.innerHTML = '<span class="legacy">Late old provider callback</span>';
   assert.equal(h.widget.querySelector('.legacy'), null, 'An old provider callback cannot overwrite the replacement.');
 });
@@ -168,7 +191,12 @@ test('a mixed market/account shortcode keeps its account layout', async () => {
   const h = run({ legacy: true, mixedHost: true }); await settle();
   assert.equal(h.widget.getAttribute('data-state'), 'ready');
   assert.equal(h.host.classList.contains('calorieapp-xpmarket-host'), false);
-  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-brizy-wrapper'), false);
+  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-layout'), false);
+});
+test('market-only sizing stops before an ancestor with ordinary page content', async () => {
+  const h = run({legacy: true, mixedColumn: true}); await settle();
+  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-layout'), true);
+  for (const node of [h.columnItems, h.column, h.row]) assert.equal(node.classList.contains('calorieapp-xpmarket-layout'), false);
 });
 test('late-loaded market cards share the first request without duplicating existing cards', async () => {
   const h = run(); await settle();

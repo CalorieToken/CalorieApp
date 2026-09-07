@@ -263,28 +263,41 @@
   .calorieapp-shared-social-track { scroll-behavior: auto; }
 }
 
-/* Original Home shortcut geometry, captured from the existing Brizy stylesheet:
-   48px desktop icons, 32px mobile icons, original colours and fixed slots. */
+/* Original Home icons and colours in one stack: omitted slots take no space. */
 .calorieapp-page-tools[hidden],
 .calorieapp-page-tool-position[hidden] { display: none !important; }
-.calorieapp-page-tool-position {
+.calorieapp-page-tools {
   position: fixed;
   z-index: 11;
   display: flex;
-  box-sizing: border-box;
-  width: 30%;
+  flex-direction: column-reverse;
   align-items: center;
-  justify-content: center;
-  right: 81px;
-  top: auto;
-  left: auto;
-  margin: 10px 0;
+  gap: 6px;
+  width: 48px;
+  right: calc(81px + 15vw - 24px);
+  bottom: max(22px, env(safe-area-inset-bottom));
+  margin: 0;
   padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   pointer-events: none;
 }
-.calorieapp-page-tool-position-home { bottom: 12px; color: #505ba9; }
-.calorieapp-page-tool-position-app { bottom: 66px; color: #008d36; }
-.calorieapp-page-tool-position-top { bottom: 120px; color: #3dbfe8; }
+.calorieapp-page-tool-position {
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.calorieapp-page-tool-position-home { color: #505ba9; }
+.calorieapp-page-tool-position-app,
+.calorieapp-page-tool-position-top,
+.calorieapp-page-tool-position-bottom { color: #008d36; }
 .calorieapp-page-tool {
   display: block;
   margin: 0;
@@ -316,22 +329,62 @@
   .calorieapp-page-tool:hover { color: rgba(249, 178, 51, 0.8) !important; }
 }
 @media (max-width: 767px) {
-  .calorieapp-page-tool-position { right: max(-35px, calc(20px - 15vw)); }
-  .calorieapp-page-tool-position-home { bottom: -8px; }
-  .calorieapp-page-tool-position-app { bottom: 25px; }
-  .calorieapp-page-tool-position-top { bottom: 60px; }
+  .calorieapp-page-tools {
+    width: 32px;
+    gap: 2px;
+    right: max(4px, calc(15vw - 51px));
+    bottom: max(2px, env(safe-area-inset-bottom));
+  }
   .calorieapp-page-tool-icon { width: 32px; height: 32px; }
 }
-/* Release only obsolete market-shortcode sizing; account wrappers are excluded. */
-.calorieapp-xpmarket-brizy-wrapper,
-.calorieapp-xpmarket-host,
-.calorieapp-xpmarket-host > div {
-  box-sizing: border-box;
+/* Only ancestors containing market cards and decoration receive this class.
+   Home previously constrained its mobile column to 28.1% with 100px margins. */
+.calorieapp-xpmarket-layout,
+.calorieapp-xpmarket-inner {
+  box-sizing: border-box !important;
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 100% !important;
   min-height: 0 !important;
+  max-height: none !important;
   height: auto !important;
   margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
-.calorieapp-xpmarket-brizy-wrapper { justify-content: center !important; }
-.calorieapp-xpmarket-host > div { display: flex; justify-content: center; }
+.calorieapp-xpmarket-inner { display: flex; justify-content: center; }
+.calorieapp-xpmarket-layout { justify-content: center !important; }
+
+/* Presentation only: the login modal and session controls remain outside. */
+.calorieapp-frame-stage { position: relative; width: 100%; }
+.calorieapp-frame-stage[data-calorieapp-frame-loading] .calorieapp-embed-frame { visibility: hidden; }
+.calorieapp-embed-loading[hidden],
+.calorieapp-loading-actions[hidden] { display: none !important; }
+.calorieapp-embed-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(32px, 8vw, 72px) 20px;
+  border-radius: 20px;
+  background: #fff;
+  color: #505ba9;
+  font-family: Amiri, Georgia, serif;
+  text-align: center;
+}
+.calorieapp-loading-logo { width: 64px; height: 64px; object-fit: contain; margin-bottom: 18px; }
+.calorieapp-embed-loading strong { color: #008d36; font-size: 26px; line-height: 1.3; }
+.calorieapp-embed-loading p { max-width: 440px; margin: 12px 0 20px; font-size: 18px; line-height: 1.5; }
+.calorieapp-loading-progress { width: min(180px, 100%); height: 5px; border-radius: 5px; background: #f9b233; animation: calorieapp-loading-pulse 1.6s ease-in-out infinite; }
+.calorieapp-loading-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
+.calorieapp-loading-actions button { border: 2px solid #505ba9; border-radius: 18px; background: #fff; color: #505ba9; padding: 9px 18px; font: inherit; cursor: pointer; }
+.calorieapp-loading-actions button:focus-visible { outline: 3px solid #f9b233; outline-offset: 3px; }
+@keyframes calorieapp-loading-pulse { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .calorieapp-loading-progress { animation: none; } }

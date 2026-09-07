@@ -87,7 +87,7 @@ $shortcuts->render_shortcuts();
 $shortcut_html = (string) ob_get_clean();
 check(substr_count($shortcut_html, 'data-calorieapp-fallback-shortcuts') === 1, 'Public pages need a fallback navigation surface.');
 check(str_contains($shortcut_html, 'assets/calorieapp-logo.svg'), 'The fallback uses the original transparent vector mark.');
-check(substr_count($shortcut_html, 'data-calorieapp-shortcut=') === 3, 'Provide Home, App and Top slots for conditional display.');
+check(substr_count($shortcut_html, 'data-calorieapp-shortcut=') === 4, 'Provide Home, App, Top and Bottom slots for conditional display.');
 ob_start();
 $shortcuts->render_shortcuts();
 check(ob_get_clean() === '', 'Repeated hooks cannot duplicate fallback navigation.');

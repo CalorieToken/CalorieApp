@@ -41,6 +41,31 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.26 corrects the remaining market and shortcut layout differences
+reported after installing 0.3.25. Dedicated market ancestors are normalized up
+to the Brizy row, stopping before any shared account or content container. This
+removes Home's 28.1% mobile column and large margins without resizing the XUMM
+card. Existing CAL data validation, request sharing and fallback links remain.
+
+One compact shortcut stack replaces recognized fixed Home/App/Up/Down controls.
+It uses the original transparent app mark, Home's green arrows and purple home
+icon, and 48px desktop / 32px mobile artwork. Hidden current-page links take no
+space. Pages longer than two viewports also receive a working Down control;
+page length is reevaluated after late images and iframe height updates.
+
+The embedded app now has a server-rendered startup cover. It listens passively
+for the existing app handshake with matching origin, frame and locale. An iframe
+load alone does not dismiss the cover. Slow starts offer manual retry or reveal;
+there are no automatic reloads or new login requests. This covers the embedded
+frontend only. It cannot cover the separate top-level Render health page used
+by the accepted website sign-in route, which is deliberately unchanged.
+
+The authentication/session JavaScript and header assets are byte-identical to
+0.3.25. IntegratedLogin changes only its shortcode presentation and asset-version
+fallback; server authentication methods are unchanged. No app-main changes,
+WordPress content writes, merge or deployment are included. Native desktop/mobile
+review remains necessary; source/behavior tests are not live visual verification.
+
 Version 0.3.25 applies the CAL market renderer to existing LiveCoinWatch slots
 throughout the public website, including late-loaded cards. The replacement
 stays in its existing position, shares the same cached CAL feed and releases

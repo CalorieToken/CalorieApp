@@ -79,13 +79,28 @@
     widget.setAttribute("data-state", "ready");
   }
 
+  function marketOnly(node) {
+    var copy = node.cloneNode(true);
+    copy.querySelectorAll('script, style, .brz-bg, .livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]').forEach(function (item) { item.remove(); });
+    return !copy.textContent.trim() && !copy.querySelector('a, img, svg, iframe, video, audio, canvas, input, button, select, textarea, .xl-card, [data-calorieapp-embed]');
+  }
+
   function normalizeMarketHost(widget) {
     var host = widget.closest('.brz-wp-shortcode');
     // A combined shortcode containing an account card must keep its own sizing.
-    if (!host || host.querySelector('.xl-card, [data-calorieapp-embed]')) return;
+    if (!host || !marketOnly(host)) return;
     host.classList.add('calorieapp-xpmarket-host');
-    var wrapper = host.closest('.brz-wrapper');
-    if (wrapper) wrapper.classList.add('calorieapp-xpmarket-brizy-wrapper');
+    if (widget.parentElement !== host && marketOnly(widget.parentElement)) {
+      widget.parentElement.classList.add('calorieapp-xpmarket-inner');
+    }
+    // Old mobile widths and negative margins also live ABOVE the shortcode.
+    // Stop before any ancestor shared with account controls or page content.
+    for (var node = host; node && node !== document.body; node = node.parentElement) {
+      if (node.matches('.brz-container, .brz-section, section') || !marketOnly(node)) break;
+      if (node.matches('.brz-wp-shortcode, .brz-wrapper, .brz-column__items, .brz-columns, .brz-row, .brz-row__container')) {
+        node.classList.add('calorieapp-xpmarket-layout');
+      }
+    }
   }
 
   function enhanceXpMarketPriceWidgets() {
@@ -100,9 +115,7 @@
       "https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY";
     var widgets = Array.from(document.querySelectorAll(
       ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
-    )).filter(function (widget) {
-      return widget.getAttribute("data-calorieapp-xpmarket-widget") !== "1";
-    }).map(function (widget) {
+    )).map(function (widget) {
       if (widget.classList.contains("livecoinwatch-widget-1")) {
         // Replace the node so an already-running legacy script cannot refill it.
         var replacement = document.createElement("div");
@@ -113,6 +126,8 @@
       }
       normalizeMarketHost(widget);
       return widget;
+    }).filter(function (widget) {
+      return widget.getAttribute("data-calorieapp-xpmarket-widget") !== "1";
     });
     if (!widgets.length) {
       return;
@@ -231,7 +246,68 @@
       });
   }
 
+  function initializeEmbedLoading() {
+    document.querySelectorAll('[data-calorieapp-embed]').forEach(function (root) {
+      var stage = root.querySelector('[data-calorieapp-frame-stage]');
+      var frame = root.querySelector('.calorieapp-embed-frame');
+      var mask = root.querySelector('[data-calorieapp-embed-loading]');
+      if (!stage || !frame || !mask || mask.getAttribute('data-loading-ready') === '1') return;
+      var appOrigin;
+      try {
+        appOrigin = new URL(root.getAttribute('data-app-origin'));
+        if (appOrigin.protocol !== 'https:' || new URL(frame.getAttribute('src')).origin !== appOrigin.origin) return;
+      } catch (_error) { return; }
+      mask.setAttribute('data-loading-ready', '1');
+      var message = mask.querySelector('[data-calorieapp-loading-message]');
+      var actions = mask.querySelector('[data-calorieapp-loading-actions]');
+      var retry = mask.querySelector('[data-calorieapp-loading-retry]');
+      var reveal = mask.querySelector('[data-calorieapp-loading-reveal]');
+      var timer = null;
+      var complete = false;
+      var initialMessage = message.textContent;
+
+      function show() {
+        complete = false;
+        mask.hidden = false;
+        stage.setAttribute('data-calorieapp-frame-loading', '1');
+        stage.setAttribute('aria-busy', 'true');
+        message.textContent = initialMessage;
+        actions.hidden = true;
+        if (timer !== null) window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          timer = null;
+          if (complete) return;
+          message.textContent = mask.getAttribute('data-slow-message');
+          actions.hidden = false;
+        }, 45000);
+      }
+      function finish() {
+        complete = true;
+        if (timer !== null) window.clearTimeout(timer);
+        timer = null;
+        mask.hidden = true;
+        stage.removeAttribute('data-calorieapp-frame-loading');
+        stage.setAttribute('aria-busy', 'false');
+      }
+      window.addEventListener('message', function (event) {
+        if (event.source !== frame.contentWindow || event.origin !== appOrigin.origin || !event.data ||
+            event.data.type !== 'calorieapp:bridge:initialized' || event.data.locale !== root.getAttribute('data-locale')) return;
+        finish();
+      });
+      retry.addEventListener('click', function () {
+        if (complete) return;
+        show();
+        frame.setAttribute('src', frame.getAttribute('src'));
+      });
+      reveal.addEventListener('click', finish);
+      // An iframe load can be the hosting provider's wake-up screen. Only the
+      // existing origin/source/locale-bound app handshake dismisses this mask.
+      show();
+    });
+  }
+
   function initialize() {
+    initializeEmbedLoading();
     enhanceXpMarketPriceWidgets();
     enhanceSharedFooterCarousels();
     window.addEventListener("load", enhanceXpMarketPriceWidgets);

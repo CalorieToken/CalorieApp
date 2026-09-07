@@ -35,7 +35,7 @@ class PageEnding {
         wp_enqueue_script('calorieapp-identity-bridge-page-ending', $url . 'calorieapp-page-ending.js', [], $version, true);
     }
 
-    /** Fill only missing shortcuts; the browser keeps existing Brizy controls. */
+    /** One compact stack replaces the page-specific fixed shortcut slots. */
     public function render_shortcuts(): void {
         if ($this->shortcuts_rendered || is_admin() || is_feed() || is_embed()) {
             return;
@@ -55,8 +55,13 @@ class PageEnding {
                     <img class="calorieapp-page-tool-icon" src="<?php echo esc_url($logo); ?>" alt="" aria-hidden="true" width="48" height="48">
                 </a>
             </div>
+            <div class="calorieapp-page-tool-position calorieapp-page-tool-position-bottom" data-calorieapp-shortcut="bottom" hidden>
+                <a class="calorieapp-page-tool" href="#" data-calorieapp-scroll="bottom" aria-label="<?php echo esc_attr__('Go to bottom', 'calorieapp-identity-bridge'); ?>" title="<?php echo esc_attr__('Go to bottom', 'calorieapp-identity-bridge'); ?>">
+                    <svg class="calorieapp-page-tool-icon" aria-hidden="true" focusable="false"><use href="<?php echo esc_url($glyphs . 'square-download.svg#nc_icon'); ?>"></use></svg>
+                </a>
+            </div>
             <div class="calorieapp-page-tool-position calorieapp-page-tool-position-top" data-calorieapp-shortcut="top" hidden>
-                <a class="calorieapp-page-tool" href="#" data-calorieapp-scroll-top aria-label="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>" title="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>">
+                <a class="calorieapp-page-tool" href="#" data-calorieapp-scroll="top" aria-label="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>" title="<?php echo esc_attr__('Back to top', 'calorieapp-identity-bridge'); ?>">
                     <svg class="calorieapp-page-tool-icon" aria-hidden="true" focusable="false"><use href="<?php echo esc_url($glyphs . 'square-upload.svg#nc_icon'); ?>"></use></svg>
                 </a>
             </div>
