@@ -1,4 +1,4 @@
-/* CalorieApp page ending only; no account, header or iframe selectors. */
+/* Shared CAL card and missing shortcuts; footer markup stays app-only. */
 .calorieapp-shared-page-ending {
   box-sizing: border-box;
   width: 100%;
@@ -262,3 +262,76 @@
 @media (prefers-reduced-motion: reduce) {
   .calorieapp-shared-social-track { scroll-behavior: auto; }
 }
+
+/* Original Home shortcut geometry, captured from the existing Brizy stylesheet:
+   48px desktop icons, 32px mobile icons, original colours and fixed slots. */
+.calorieapp-page-tools[hidden],
+.calorieapp-page-tool-position[hidden] { display: none !important; }
+.calorieapp-page-tool-position {
+  position: fixed;
+  z-index: 11;
+  display: flex;
+  box-sizing: border-box;
+  width: 30%;
+  align-items: center;
+  justify-content: center;
+  right: 81px;
+  top: auto;
+  left: auto;
+  margin: 10px 0;
+  padding: 0;
+  pointer-events: none;
+}
+.calorieapp-page-tool-position-home { bottom: 12px; color: #505ba9; }
+.calorieapp-page-tool-position-app { bottom: 66px; color: #008d36; }
+.calorieapp-page-tool-position-top { bottom: 120px; color: #3dbfe8; }
+.calorieapp-page-tool {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  color: inherit !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: auto;
+  text-decoration: none !important;
+}
+.calorieapp-page-tool-icon {
+  display: block;
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  max-width: none;
+  object-fit: contain;
+  fill: currentColor;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.calorieapp-page-tool:focus-visible { outline: 3px solid #f9b233; outline-offset: 2px; }
+@media (min-width: 991px) {
+  .calorieapp-page-tool:hover { color: rgba(249, 178, 51, 0.8) !important; }
+}
+@media (max-width: 767px) {
+  .calorieapp-page-tool-position { right: max(-35px, calc(20px - 15vw)); }
+  .calorieapp-page-tool-position-home { bottom: -8px; }
+  .calorieapp-page-tool-position-app { bottom: 25px; }
+  .calorieapp-page-tool-position-top { bottom: 60px; }
+  .calorieapp-page-tool-icon { width: 32px; height: 32px; }
+}
+/* Release only obsolete market-shortcode sizing; account wrappers are excluded. */
+.calorieapp-xpmarket-brizy-wrapper,
+.calorieapp-xpmarket-host,
+.calorieapp-xpmarket-host > div {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+.calorieapp-xpmarket-brizy-wrapper { justify-content: center !important; }
+.calorieapp-xpmarket-host > div { display: flex; justify-content: center; }

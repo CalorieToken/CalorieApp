@@ -78,12 +78,30 @@ foreach (['home', 'faq', 'privacy-policy'] as $page) {
     $styles = $scripts = [];
     $other = new PageEnding();
     $other->enqueue_assets();
-    check(render($other) === '' && !$styles && !$scripts, 'Existing footers on other pages remain untouched.');
+    check(render($other) === '', 'Existing footers on other pages remain untouched.');
+    check(count($styles) === 1 && count($scripts) === 1, 'Shared market styles and renderer must load on other public pages too.');
 }
+$shortcuts = new PageEnding();
+ob_start();
+$shortcuts->render_shortcuts();
+$shortcut_html = (string) ob_get_clean();
+check(substr_count($shortcut_html, 'data-calorieapp-fallback-shortcuts') === 1, 'Public pages need a fallback navigation surface.');
+check(str_contains($shortcut_html, 'assets/calorieapp-logo.svg'), 'The fallback uses the original transparent vector mark.');
+check(substr_count($shortcut_html, 'data-calorieapp-shortcut=') === 3, 'Provide Home, App and Top slots for conditional display.');
+ob_start();
+$shortcuts->render_shortcuts();
+check(ob_get_clean() === '', 'Repeated hooks cannot duplicate fallback navigation.');
 $page = 'calorieapp';
 foreach (['admin', 'feed', 'embed'] as $flag) {
     $GLOBALS[$flag] = true;
-    check(render(new PageEnding()) === '', 'Do not insert public page furniture into ' . $flag . ' responses.');
+    $special = new PageEnding();
+    check(render($special) === '', 'Do not insert public page furniture into ' . $flag . ' responses.');
+    ob_start();
+    $special->render_shortcuts();
+    check(ob_get_clean() === '', 'No fallback navigation in ' . $flag . ' responses.');
+    $styles = $scripts = [];
+    $special->enqueue_assets();
+    check(!$styles && !$scripts, 'No market assets in ' . $flag . ' responses.');
     $GLOBALS[$flag] = false;
 }
 

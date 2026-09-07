@@ -8,7 +8,8 @@ const tokenUrl = 'https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApb
 function element() {
   return {
     attrs: {}, textContent: '', hidden: false, children: new Map(), listeners: {},
-    classList: { add() {} },
+    classList: { values: new Set(), add(name) { this.values.add(name); }, contains(name) { return this.values.has(name); } },
+    closest(selector) { return this.ancestors?.[selector] || null; },
     setAttribute(name, value) { this.attrs[name] = String(value); },
     getAttribute(name) { return this.attrs[name] ?? null; },
     querySelector(selector) { return this.children.get(selector) ?? null; },
@@ -29,8 +30,26 @@ const good = () => ({ success: true, data: {
   price_usd: 0.00000007, price_xrp: 0.00000005, market_cap_usd: 4000, rank: 300, holders: 14000,
 } });
 async function settle() { for (let i = 0; i < 10; i++) await Promise.resolve(); }
-function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, empty = false, endpoint = true } = {}) {
+function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, empty = false, endpoint = true, legacy = false, mixedHost = false } = {}) {
   const widget = element();
+  const widgets = [widget];
+  const oldWidget = widget;
+  const wrapper = element();
+  const host = element();
+  host.ancestors = { '.brz-wrapper': wrapper };
+  if (mixedHost) host.children.set('.xl-card, [data-calorieapp-embed]', {});
+  function attachLegacy(node) {
+    node.nodeType = 1;
+    node.classList.add('livecoinwatch-widget-1');
+    node.ancestors = { '.brz-wp-shortcode': host };
+    node.matches = () => true;
+    node.replaceWith = function (replacement) {
+      replacement.ancestors = this.ancestors;
+      widgets[widgets.indexOf(this)] = replacement;
+      this.detached = true;
+    };
+  }
+  if (legacy) attachLegacy(widget);
   const track = element();
   track.clientWidth = 400;
   track.children.set('a', { getBoundingClientRect: () => ({ width: 200 }) });
@@ -44,13 +63,16 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
   carousel.querySelectorAll = () => buttons;
   const requests = [];
   const timers = new Map();
-  let ready;
+  let ready, mutation;
+  const events = new Map(), frames = [];
   const document = {
+    body: {},
+    createElement() { return element(); },
     readyState: 'loading',
     addEventListener(name, fn) { if (name === 'DOMContentLoaded') ready = fn; },
     querySelectorAll(selector) {
       if (empty) return [];
-      return selector.includes('xpmarket-widget') ? [widget] : [carousel];
+      return selector.includes('xpmarket-widget') ? widgets : [carousel];
     },
   };
   const window = {
@@ -65,10 +87,24 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
     setTimeout(fn) { timers.set(1, fn); return 1; },
     clearTimeout(id) { timers.delete(id); },
     matchMedia() { return { matches: reduced }; },
+    addEventListener(name, fn) { events.set(name, fn); },
+    requestAnimationFrame(fn) { frames.push(fn); },
+    MutationObserver: class {
+      constructor(fn) { mutation = fn; }
+      observe() {}
+    },
   };
   vm.runInNewContext(source, { window, document, URL, Intl });
   ready();
-  return { widget, buttons, track, requests, timers, ready };
+  return { get widget() { return widgets[0]; }, widgets, oldWidget, host, wrapper, buttons, track, requests, timers, ready,
+    event(name) { events.get(name)?.(); },
+    addLate() {
+      const late = element(); attachLegacy(late); widgets.push(late);
+      mutation([{ addedNodes: [late] }]);
+      while (frames.length) frames.shift()();
+      return late;
+    },
+  };
 }
 
 test('public CAL data is shown beside an always-available XPMarket destination', async () => {
@@ -113,7 +149,35 @@ test('social arrows move one item and respect reduced motion', () => {
   assert.equal(h.track.moves[1].left, 200);
   assert.equal(h.track.moves[1].behavior, 'auto');
 });
-test('pages without the CalorieApp ending do not request market data', () => {
+test('pages without market cards do not request market data', () => {
   const h = run({ empty: true });
   assert.equal(h.requests.length, 0);
+});
+
+test('legacy website cards use the same CAL renderer and keep their original slot', async () => {
+  const h = run({ legacy: true }); await settle();
+  assert.equal(h.oldWidget.detached, true);
+  assert.equal(h.widget.getAttribute('data-state'), 'ready');
+  assert.equal(h.widget.querySelector('.calorieapp-xpmarket-price').textContent, '$0.00000007');
+  assert.equal(h.host.classList.contains('calorieapp-xpmarket-host'), true);
+  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-brizy-wrapper'), true);
+  h.oldWidget.innerHTML = '<span class="legacy">Late old provider callback</span>';
+  assert.equal(h.widget.querySelector('.legacy'), null, 'An old provider callback cannot overwrite the replacement.');
+});
+test('a mixed market/account shortcode keeps its account layout', async () => {
+  const h = run({ legacy: true, mixedHost: true }); await settle();
+  assert.equal(h.widget.getAttribute('data-state'), 'ready');
+  assert.equal(h.host.classList.contains('calorieapp-xpmarket-host'), false);
+  assert.equal(h.wrapper.classList.contains('calorieapp-xpmarket-brizy-wrapper'), false);
+});
+test('late-loaded market cards share the first request without duplicating existing cards', async () => {
+  const h = run(); await settle();
+  const first = h.widget;
+  const oldLate = h.addLate(); await settle();
+  assert.equal(oldLate.detached, true);
+  assert.equal(h.widgets.length, 2);
+  assert.equal(h.widgets[0], first);
+  assert.equal(h.widgets[1].getAttribute('data-state'), 'ready');
+  h.event('load'); h.event('pageshow'); await settle();
+  assert.equal(h.requests.length, 1);
 });

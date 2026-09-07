@@ -41,6 +41,22 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.25 applies the CAL market renderer to existing LiveCoinWatch slots
+throughout the public website, including late-loaded cards. The replacement
+stays in its existing position, shares the same cached CAL feed and releases
+obsolete market-shortcode height/width rules. Combined shortcodes containing
+an account card are excluded from that sizing correction.
+
+Floating navigation now rechecks after page load, restored pages, layout changes
+and dynamically inserted Brizy controls. It suppresses duplicate destinations,
+omits the current page and fills missing Home/CalorieApp/Top controls using the
+original transparent logo, original 48px desktop / 32px mobile icon sizing and
+original fixed slots. Existing visible Brizy controls take precedence. Inline
+content links and the installed account/header/authentication code are retained.
+The footer introduced in 0.3.24 is still rendered only on CalorieApp. This package
+does not publish the prepared FAQ, Home or Tokenomics content or the app's food-log
+and background changes; those are separate reviewed deliverables.
+
 Version 0.3.24 restores the missing WordPress footer and a CAL market card below
 CalorieApp, only on the `calorieapp` page. It reuses the existing footer colours,
 social destinations, and current operator/copyright copy; the privacy and terms

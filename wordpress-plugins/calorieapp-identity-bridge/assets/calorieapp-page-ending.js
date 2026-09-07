@@ -79,6 +79,15 @@
     widget.setAttribute("data-state", "ready");
   }
 
+  function normalizeMarketHost(widget) {
+    var host = widget.closest('.brz-wp-shortcode');
+    // A combined shortcode containing an account card must keep its own sizing.
+    if (!host || host.querySelector('.xl-card, [data-calorieapp-embed]')) return;
+    host.classList.add('calorieapp-xpmarket-host');
+    var wrapper = host.closest('.brz-wrapper');
+    if (wrapper) wrapper.classList.add('calorieapp-xpmarket-brizy-wrapper');
+  }
+
   function enhanceXpMarketPriceWidgets() {
     if (typeof document.querySelectorAll !== "function") {
       return;
@@ -89,9 +98,22 @@
     var tokenUrl =
       config.xpMarketTokenUrl ||
       "https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY";
-    var widgets = document.querySelectorAll(
-      "[data-calorieapp-shared-page-ending] [data-calorieapp-xpmarket-widget]"
-    );
+    var widgets = Array.from(document.querySelectorAll(
+      ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
+    )).filter(function (widget) {
+      return widget.getAttribute("data-calorieapp-xpmarket-widget") !== "1";
+    }).map(function (widget) {
+      if (widget.classList.contains("livecoinwatch-widget-1")) {
+        // Replace the node so an already-running legacy script cannot refill it.
+        var replacement = document.createElement("div");
+        if (widget.id) replacement.id = widget.id;
+        replacement.setAttribute("data-calorieapp-xpmarket-widget", "");
+        widget.replaceWith(replacement);
+        widget = replacement;
+      }
+      normalizeMarketHost(widget);
+      return widget;
+    });
     if (!widgets.length) {
       return;
     }
@@ -212,6 +234,26 @@
   function initialize() {
     enhanceXpMarketPriceWidgets();
     enhanceSharedFooterCarousels();
+    window.addEventListener("load", enhanceXpMarketPriceWidgets);
+    window.addEventListener("pageshow", enhanceXpMarketPriceWidgets);
+    if (window.MutationObserver) {
+      var scheduled = false;
+      var selector = ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]";
+      var observer = new window.MutationObserver(function (records) {
+        var addedWidget = records.some(function (record) {
+          return Array.from(record.addedNodes).some(function (node) {
+            return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
+          });
+        });
+        if (!addedWidget || scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(function () {
+          scheduled = false;
+          enhanceXpMarketPriceWidgets();
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initialize, { once: true });
