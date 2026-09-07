@@ -1,5 +1,23 @@
-/* Public-header presentation only. Desktop and authentication UI keep their
-   existing styles. On phones the account card scrolls with the header. */
+/* Public-header presentation only. Keep the account card within its desktop
+   column. On phones the account card scrolls with the header. */
+@media (min-width: 769px) {
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .brz .calorieapp-identity-wrapper .brz-wp-shortcode > div {
+    width: 100% !important;
+  }
+
+  .brz .calorieapp-identity-card {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 220px !important;
+    margin: 5px auto !important;
+  }
+}
+
 @media (max-width: 768px) {
   .brz .calorieapp-identity-wrapper {
     position: relative !important;
