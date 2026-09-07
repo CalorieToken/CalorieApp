@@ -13,6 +13,7 @@ import { isTrustedPrivateExportRequest } from "@/lib/privateExportRequest";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 18_000;
+const FOOD_SEARCH_UPSTREAM_TIMEOUT_MS = 45_000;
 const COLD_START_UPSTREAM_TIMEOUT_MS = 70_000;
 const ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS = 60_000;
 const LOGOUT_REVOCATION_TIMEOUT_MS = 8_000;
@@ -182,20 +183,21 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   }
 
   const controller = new AbortController();
-  // A sleeping Render backend can need well over the ordinary request timeout
-  // before its health endpoint answers. Keep only this readiness probe alive
-  // long enough to wake it; normal application requests retain the tighter
-  // timeout after readiness has been established.
+  // Readiness and identity routes retain their accepted deadlines. Search must
+  // also fit the existing primary/fallback provider attempts and queue time;
+  // otherwise the proxy returns 504 while the backend is still finding food.
   const upstreamTimeoutMs =
-    path === ACCOUNT_IMPORT_PATH
-      ? ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS
-      : [
-          "health",
-          "api/identity/login/start",
-          "api/identity/callback",
-        ].includes(path)
-        ? COLD_START_UPSTREAM_TIMEOUT_MS
-        : DEFAULT_UPSTREAM_TIMEOUT_MS;
+    path === "search-food"
+      ? FOOD_SEARCH_UPSTREAM_TIMEOUT_MS
+      : path === ACCOUNT_IMPORT_PATH
+        ? ACCOUNT_IMPORT_UPSTREAM_TIMEOUT_MS
+        : [
+            "health",
+            "api/identity/login/start",
+            "api/identity/callback",
+          ].includes(path)
+          ? COLD_START_UPSTREAM_TIMEOUT_MS
+          : DEFAULT_UPSTREAM_TIMEOUT_MS;
   const timeoutId = setTimeout(() => controller.abort(), upstreamTimeoutMs);
 
   try {

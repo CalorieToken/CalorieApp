@@ -15,6 +15,7 @@ import {
 import type { AuthStateChangedDetail } from "@/components/authEvents";
 import {
   BACKEND_WAKE_BASE_URL,
+  FOOD_SEARCH_TIMEOUT_MS,
   backendRequest,
   backendUnavailableMessage,
   waitForBackendReady,
@@ -398,16 +399,17 @@ export function FoodSearchPlaceholder() {
     setError(null);
     setDidSearch(true);
     setSearchStatus(
-      "Connecting to the food service. After inactivity, startup can take up to 90 seconds."
+      "Preparing food search. This can take a moment after inactivity."
     );
 
     try {
       await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
-      setSearchStatus("Searching foods...");
+      setSearchStatus("Searching foods. This can take up to 45 seconds.");
 
       const response = await backendRequest(
         `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
-        { signal: controller.signal }
+        { signal: controller.signal },
+        FOOD_SEARCH_TIMEOUT_MS
       );
 
       if (requestId !== searchRequestIdRef.current) {
@@ -415,7 +417,13 @@ export function FoodSearchPlaceholder() {
       }
 
       if (!response.ok) {
-        throw new Error("Search request failed.");
+        setResults([]);
+        setError(response.status === 429
+          ? "Food search is busy. Please wait before searching again."
+          : response.status === 504
+            ? "The food search took longer than expected. Please try again later."
+            : "Food search is temporarily unavailable. Please try again later.");
+        return;
       }
 
       const data = (await response.json()) as FoodSearchResponse;
@@ -429,7 +437,8 @@ export function FoodSearchPlaceholder() {
         setError(
           backendUnavailableMessage(
             requestError,
-            "Unable to fetch foods right now. Please try again."
+            "Unable to fetch foods right now. Please try again.",
+            "The food search took longer than expected. Please try again later."
           )
         );
       }
