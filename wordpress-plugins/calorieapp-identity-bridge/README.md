@@ -41,6 +41,15 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+Version 0.3.23 keeps the desktop account card within its existing Brizy column.
+The shortcode uses the available column width and the card is centred with a
+maximum width of 220px. This prevents the right edge from being clipped on
+narrower desktop windows without adding a height constraint or moving the menu.
+Only the horizontal margins are adjusted; vertical spacing stays theme-controlled.
+These rules apply only from 769px. The mobile CSS and all JavaScript files stay
+unchanged from 0.3.22. Authentication and session logic is unchanged; the fallback
+asset-version string also advances to 0.3.23.
+
 Version 0.3.22 moves the embedded page's existing joint-logout button into the
 XUMM account card after the embed controller initializes. Both website controls
 use the short label “Log out”, with an accessible explanation of the sessions
