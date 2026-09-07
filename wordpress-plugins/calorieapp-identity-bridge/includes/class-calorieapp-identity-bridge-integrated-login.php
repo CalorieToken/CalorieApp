@@ -81,7 +81,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.20';
+            : '0.3.22';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -142,6 +142,9 @@ class IntegratedLogin {
             data-app-origin="<?php echo esc_attr($this->url_origin($frontend_url)); ?>"
             data-frame-src="<?php echo esc_url($frame_src); ?>"
             data-app-page="<?php echo esc_url($app_page); ?>"
+            data-home-page="<?php echo esc_url(home_url('/')); ?>"
+            data-is-home="<?php echo is_front_page() ? '1' : '0'; ?>"
+            data-app-logo="<?php echo esc_url(plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE) . 'assets/calorieapp-logo.svg'); ?>"
             data-startup-url="<?php echo esc_url('https://calorieapp-backend-rvul.onrender.com/health?resume_login=true'); ?>"
             data-locale="<?php echo esc_attr($locale); ?>"
             hidden
@@ -152,8 +155,10 @@ class IntegratedLogin {
                     type="button"
                     class="calorieapp-site-logout"
                     data-logout-url="<?php echo esc_url(wp_logout_url($return_url)); ?>"
-                    data-idle-label="<?php echo esc_attr__('Sign out both', 'calorieapp-identity-bridge'); ?>"
-                ><?php echo esc_html__('Sign out both', 'calorieapp-identity-bridge'); ?></button>
+                    data-idle-label="<?php echo esc_attr__('Log out', 'calorieapp-identity-bridge'); ?>"
+                    title="<?php echo esc_attr__('Log out of CalorieToken.net and CalorieApp on this device', 'calorieapp-identity-bridge'); ?>"
+                    aria-label="<?php echo esc_attr__('Log out of CalorieToken.net and CalorieApp on this device', 'calorieapp-identity-bridge'); ?>"
+                ><?php echo esc_html__('Log out', 'calorieapp-identity-bridge'); ?></button>
                 <span class="calorieapp-site-logout-status" role="status" aria-live="polite" hidden></span>
             </div>
         <?php endif; ?>
@@ -229,8 +234,10 @@ class IntegratedLogin {
                         type="button"
                         class="calorieapp-site-logout"
                         data-logout-url="<?php echo esc_url($logout_url); ?>"
-                        data-idle-label="<?php echo esc_attr__('Log out of website and CalorieApp', 'calorieapp-identity-bridge'); ?>"
-                    ><?php echo esc_html__('Log out of website and CalorieApp', 'calorieapp-identity-bridge'); ?></button>
+                        data-idle-label="<?php echo esc_attr__('Log out', 'calorieapp-identity-bridge'); ?>"
+                        title="<?php echo esc_attr__('Log out of CalorieToken.net and CalorieApp on this device', 'calorieapp-identity-bridge'); ?>"
+                        aria-label="<?php echo esc_attr__('Log out of CalorieToken.net and CalorieApp on this device', 'calorieapp-identity-bridge'); ?>"
+                    ><?php echo esc_html__('Log out', 'calorieapp-identity-bridge'); ?></button>
                     <span class="calorieapp-site-logout-status" role="status" aria-live="polite" hidden></span>
                 </div>
             <?php endif; ?>

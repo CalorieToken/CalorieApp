@@ -100,6 +100,14 @@
       }
     }
 
+    // The embed controller initializes first and retains its existing button
+    // and status references. Move those same nodes without adding a logout flow.
+    var card = document.querySelector(".xl-card");
+    var embeddedActions = root && root.querySelector(".calorieapp-site-session-actions");
+    if (card && embeddedActions) {
+      card.appendChild(embeddedActions);
+    }
+
     var actions = document.querySelector("[data-calorieapp-sitewide-session-actions]");
     if (!actions) {
       return;
@@ -118,7 +126,6 @@
     } catch (_error) {
       return;
     }
-    var card = document.querySelector(".xl-card");
     if (card) {
       card.appendChild(actions);
     }

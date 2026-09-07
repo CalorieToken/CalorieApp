@@ -136,6 +136,16 @@
       "clearance_status": "contributor-source-and-similarity-review-pending"
     },
     {
+      "path": "assets/calorieapp-logo.svg",
+      "origin_class": "existing-project-brand-asset-vector-extraction",
+      "repository_first_add_commit": "7191b0fc150fd5e4c1e928f0ba95282af7b52bf2",
+      "declared_distribution_licence": "project-mark-no-general-trademark-licence-granted",
+      "clearance_status": "requested-use-on-existing-project-website-no-expanded-mark-licence",
+      "source": "https://drive.google.com/file/d/1FMepF9HinYi9Pd5AuR7BSOO6peY5gIPu/view",
+      "source_file": "calorieappdraft3.ai",
+      "adaptation": "Original phone-mark vector paths and colours retained; surrounding artboard and border omitted."
+    },
+    {
       "path": "assets/calorieapp-site-layout.css",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "e10428f74f1af12fee5092768ef89b6d40828d35",
@@ -146,6 +156,13 @@
       "path": "assets/calorieapp-site-layout.js",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "e10428f74f1af12fee5092768ef89b6d40828d35",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "assets/calorieapp-site-navigation.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "7191b0fc150fd5e4c1e928f0ba95282af7b52bf2",
       "declared_distribution_licence": "GPL-2.0-or-later",
       "clearance_status": "contributor-source-and-similarity-review-pending"
     },

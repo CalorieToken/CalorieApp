@@ -12,6 +12,14 @@ function element(hidden = true) {
   const listeners = {};
   return {
     hidden,
+    children: [],
+    appendChild(child) {
+      if (child.parentElement) {
+        child.parentElement.children = child.parentElement.children.filter(item => item !== child);
+      }
+      this.children.push(child);
+      child.parentElement = this;
+    },
     href: "",
     src: "",
     style: {},
@@ -59,7 +67,7 @@ test("Xaman waits for CalorieApp and verified completion refreshes WordPress", a
   siteLogoutButton.dataset = {
     logoutUrl:
       "https://calorietoken.net/wp-login.php?action=logout&redirect_to=calorieapp",
-    idleLabel: "Log out of website and CalorieApp",
+    idleLabel: "Log out",
   };
   siteLogoutButton.textContent = siteLogoutButton.dataset.idleLabel;
   const siteLogoutStatus = element(true);
@@ -385,6 +393,35 @@ test("Xaman waits for CalorieApp and verified completion refreshes WordPress", a
   assert.equal(fetchCalls.filter((url) => url === "/finish").length, 8);
   assert.equal(fetchCalls.at(-1), "/authorize");
   assert.equal(status.textContent, "CalorieApp startup failed");
+
+  // WordPress queues the site controller after the embed controller. Exercise
+  // both real scripts: the existing button must keep its handler after moving.
+  const actions = element(false);
+  actions.appendChild(siteLogoutButton);
+  actions.appendChild(siteLogoutStatus);
+  const embedShell = element(false);
+  embedShell.appendChild(actions);
+  selectors.set(".calorieapp-site-session-actions", actions);
+  const config = { dataset: {
+    appPage: "https://calorietoken.net/index.php/calorieapp/",
+    frameSrc: appOrigin + "/?embedded=1&locale=nl",
+    appOrigin, locale: "nl",
+  } };
+  document.querySelector = (selector) => ({
+    "[data-calorieapp-site-integration]": config,
+    "[data-calorieapp-embed]": root,
+    ".xl-card": legacySigninCard,
+  })[selector] ?? null;
+  const siteSource = await readFile(new URL(
+    "../../wordpress-plugins/calorieapp-identity-bridge/assets/calorieapp-site-session.js",
+    import.meta.url
+  ), "utf8");
+  vm.runInNewContext(siteSource, {
+    document, window, URL,
+    fetch() { throw new Error("Relocating logout must not create another session flow"); },
+  });
+  assert.equal(legacySigninCard.children[0], actions);
+  assert.equal(embedShell.children.length, 0, "remove the separate control above the iframe");
 
   const logoutRequest = {
     data: { type: "calorieapp:logout:request", locale: "nl" },

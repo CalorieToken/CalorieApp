@@ -29,6 +29,8 @@ jobs:
         run: node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs
       - name: Check responsive header correction lifecycle
         run: node --test tools/tests/wordpress_site_layout.test.mjs
+      - name: Check floating shortcut destinations and current-page visibility
+        run: node --test tools/tests/wordpress_site_navigation.test.mjs
       - name: Verify deterministic plugin package
         run: |
           python -m unittest tools.tests.test_build_wordpress_plugin_release

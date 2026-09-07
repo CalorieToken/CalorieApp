@@ -28,7 +28,7 @@ RELEASE_FILES = (
     "THIRD_PARTY_NOTICES.md",
     f"{PLUGIN_SLUG}.php",
 )
-RELEASE_GLOBS = ("includes/*.php", "assets/*.css", "assets/*.js", "config/*.json")
+RELEASE_GLOBS = ("includes/*.php", "assets/*.css", "assets/*.js", "assets/*.svg", "config/*.json")
 FORBIDDEN_SUFFIXES = (
     ".bak",
     ".db",
