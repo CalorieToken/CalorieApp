@@ -15,6 +15,7 @@ import {
 import type { AuthStateChangedDetail } from "@/components/authEvents";
 import {
   BACKEND_WAKE_BASE_URL,
+  FOOD_SEARCH_TIMEOUT_MS,
   backendRequest,
   backendUnavailableMessage,
   waitForBackendReady,
@@ -191,6 +192,7 @@ export function FoodSearchPlaceholder() {
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const logsRequestIdRef = useRef(0);
   const logMutationInFlightRef = useRef(false);
+  const logSelectionIdRef = useRef(0);
   const deleteMutationInFlightRef = useRef(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodSearchItem[]>([]);
@@ -202,6 +204,12 @@ export function FoodSearchPlaceholder() {
   const [pendingLogIndex, setPendingLogIndex] = useState<number | null>(null);
   const [portionOption, setPortionOption] = useState<PortionOption>("whole");
   const [customPortion, setCustomPortion] = useState("30");
+  const [portionError, setPortionError] = useState<string | null>(null);
+  const [logFeedback, setLogFeedback] = useState<{
+    index: number;
+    message: string;
+    isError: boolean;
+  } | null>(null);
   const [deletingLogId, setDeletingLogId] = useState<number | null>(null);
   const [isClearingAll, setIsClearingAll] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<number | null>(null);
@@ -281,10 +289,13 @@ export function FoodSearchPlaceholder() {
     // Invalidate any request that began under the previous authentication
     // state so a late response cannot repopulate another session's logs.
     logsRequestIdRef.current += 1;
+    logSelectionIdRef.current += 1;
     setLogs([]);
     setSelectedLogId(null);
     setPendingLogItem(null);
     setPendingLogIndex(null);
+    setPortionError(null);
+    setLogFeedback(null);
     setIsLogsLoading(false);
     setLogError(SIGN_IN_REQUIRED_LOG_MESSAGE);
   }, []);
@@ -366,6 +377,9 @@ export function FoodSearchPlaceholder() {
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (logMutationInFlightRef.current) return;
+    cancelPortionLogging();
+    setLogFeedback(null);
 
     const trimmedQuery = query.trim();
     if (!trimmedQuery) {
@@ -385,16 +399,17 @@ export function FoodSearchPlaceholder() {
     setError(null);
     setDidSearch(true);
     setSearchStatus(
-      "Connecting to the food service. After inactivity, startup can take up to 90 seconds."
+      "Preparing food search. This can take a moment after inactivity."
     );
 
     try {
       await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
-      setSearchStatus("Searching foods...");
+      setSearchStatus("Searching foods. This can take up to 45 seconds.");
 
       const response = await backendRequest(
         `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
-        { signal: controller.signal }
+        { signal: controller.signal },
+        FOOD_SEARCH_TIMEOUT_MS
       );
 
       if (requestId !== searchRequestIdRef.current) {
@@ -402,7 +417,13 @@ export function FoodSearchPlaceholder() {
       }
 
       if (!response.ok) {
-        throw new Error("Search request failed.");
+        setResults([]);
+        setError(response.status === 429
+          ? "Food search is busy. Please wait before searching again."
+          : response.status === 504
+            ? "The food search took longer than expected. Please try again later."
+            : "Food search is temporarily unavailable. Please try again later.");
+        return;
       }
 
       const data = (await response.json()) as FoodSearchResponse;
@@ -416,7 +437,8 @@ export function FoodSearchPlaceholder() {
         setError(
           backendUnavailableMessage(
             requestError,
-            "Unable to fetch foods right now. Please try again."
+            "Unable to fetch foods right now. Please try again.",
+            "The food search took longer than expected. Please try again later."
           )
         );
       }
@@ -429,17 +451,23 @@ export function FoodSearchPlaceholder() {
   }
 
   function onLogFood(item: FoodSearchItem, index: number) {
+    if (logMutationInFlightRef.current || isLoading) return;
+    logSelectionIdRef.current += 1;
     setPendingLogItem(item);
     setPendingLogIndex(index);
     setPortionOption("whole");
     setCustomPortion("30");
+    setPortionError(null);
+    setLogFeedback(null);
   }
 
   function cancelPortionLogging() {
+    logSelectionIdRef.current += 1;
     setPendingLogItem(null);
     setPendingLogIndex(null);
     setPortionOption("whole");
     setCustomPortion("30");
+    setPortionError(null);
   }
 
   async function confirmPortionLogging() {
@@ -452,15 +480,16 @@ export function FoodSearchPlaceholder() {
     }
 
     if (selectedPortionPercentage === null) {
-      setLogError("Enter a valid custom percentage between 1 and 100.");
+      // The field already presents one inline validation message.
       return;
     }
 
+    const selectionId = logSelectionIdRef.current;
     const payload = scaleNutrition(pendingLogItem, selectedPortionPercentage);
 
     logMutationInFlightRef.current = true;
     setIsLogging(pendingLogIndex);
-    setLogError(null);
+    setPortionError(null);
 
     try {
       const response = await backendRequest(`${BACKEND_BASE_URL}/log-food`, {
@@ -471,13 +500,20 @@ export function FoodSearchPlaceholder() {
         body: JSON.stringify(payload),
       });
 
+      if (selectionId !== logSelectionIdRef.current) return;
+
       if (response.status === 401) {
         clearPrivateLogState();
+        setLogFeedback({
+          index: pendingLogIndex,
+          message: "Sign in with Xaman to save food to your personal log.",
+          isError: true,
+        });
         return;
       }
 
       if (response.status === 409) {
-        setLogError(
+        setPortionError(
           "Your private food log has reached its storage limit. Export or delete existing entries before adding more."
         );
         return;
@@ -487,15 +523,22 @@ export function FoodSearchPlaceholder() {
         throw new Error("Log request failed.");
       }
 
+      setLogFeedback({
+        index: pendingLogIndex,
+        message: `Added ${pendingLogItem.product_name} (${selectedPortionPercentage}%) to your food log.`,
+        isError: false,
+      });
       await fetchLogs();
       cancelPortionLogging();
     } catch (requestError) {
-      setLogError(
-        backendUnavailableMessage(
-          requestError,
-          "Unable to log this food right now. Please try again."
-        )
-      );
+      if (selectionId === logSelectionIdRef.current) {
+        setPortionError(
+          backendUnavailableMessage(
+            requestError,
+            "Unable to log this food right now. Please try again."
+          )
+        );
+      }
     } finally {
       logMutationInFlightRef.current = false;
       setIsLogging(null);
@@ -580,6 +623,133 @@ export function FoodSearchPlaceholder() {
     }
   }
 
+  const portionControls = pendingLogItem ? (
+    <form
+      className="mt-4 rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5"
+      onSubmit={(event) => { event.preventDefault(); void confirmPortionLogging(); }}
+      aria-busy={isLogging !== null}
+    >
+      <h3 className="text-sm font-bold text-brand-primary">How much did you eat?</h3>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <button
+          type="button"
+          className={`min-h-11 rounded-lg border px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary ${
+            portionOption === "whole"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
+          }`}
+          onClick={() => setPortionOption("whole")}
+          aria-pressed={portionOption === "whole"}
+          disabled={isLogging !== null}
+        >
+          Whole - 100%
+        </button>
+        <button
+          type="button"
+          className={`min-h-11 rounded-lg border px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary ${
+            portionOption === "half"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
+          }`}
+          onClick={() => setPortionOption("half")}
+          aria-pressed={portionOption === "half"}
+          disabled={isLogging !== null}
+        >
+          Half - 50%
+        </button>
+        <button
+          type="button"
+          className={`min-h-11 rounded-lg border px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary ${
+            portionOption === "quarter"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
+          }`}
+          onClick={() => setPortionOption("quarter")}
+          aria-pressed={portionOption === "quarter"}
+          disabled={isLogging !== null}
+        >
+          Quarter - 25%
+        </button>
+        <button
+          type="button"
+          className={`min-h-11 rounded-lg border px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary ${
+            portionOption === "custom"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
+          }`}
+          onClick={() => setPortionOption("custom")}
+          aria-pressed={portionOption === "custom"}
+          disabled={isLogging !== null}
+        >
+          Custom
+        </button>
+      </div>
+
+      {portionOption === "custom" ? (
+        <div className="mt-3 flex items-center gap-2">
+          <label htmlFor="custom-portion" className="text-xs font-semibold text-brand-secondary">
+            Custom portion
+          </label>
+          <input
+            id="custom-portion"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={100}
+            step="any"
+            aria-invalid={selectedPortionPercentage === null}
+            aria-describedby={selectedPortionPercentage === null ? "portion-validation" : undefined}
+            value={customPortion}
+            onChange={(event) => setCustomPortion(event.target.value)}
+            disabled={isLogging !== null}
+            className="min-h-11 w-24 rounded-md border border-brand-secondary/30 bg-white px-2 py-1 text-sm text-brand-primary outline-none focus:border-brand-primary"
+          />
+          <span className="text-xs font-semibold text-brand-secondary">%</span>
+        </div>
+      ) : null}
+
+      {selectedPortionPercentage === null ? (
+        <p id="portion-validation" className="mt-2 text-xs font-semibold text-red-600">
+          Enter a valid custom percentage from 1 to 100.
+        </p>
+      ) : null}
+
+      {portionPreview ? (
+        <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-white p-3">
+          <p className="text-xs text-brand-secondary/80">You will log {selectedPortionPercentage}% of</p>
+          <p className="mt-1 break-words text-sm font-bold text-brand-primary">{pendingLogItem.product_name}</p>
+          {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80">{pendingLogItem.brand}</p> : null}
+          <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+            <p><span className="text-brand-secondary/70">Calories:</span> {formatNumber(portionPreview.calories)} kcal</p>
+            <p><span className="text-brand-secondary/70">Protein:</span> {formatNumber(portionPreview.protein)} g</p>
+            <p><span className="text-brand-secondary/70">Fat:</span> {formatNumber(portionPreview.fat)} g</p>
+            <p><span className="text-brand-secondary/70">Carbohydrates:</span> {formatNumber(portionPreview.carbohydrates)} g</p>
+          </div>
+        </div>
+      ) : null}
+
+      {portionError ? <div className="mt-3"><ErrorBanner message={portionError} /></div> : null}
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="min-h-11 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
+          onClick={cancelPortionLogging}
+          disabled={isLogging !== null}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={selectedPortionPercentage === null || isLogging === pendingLogIndex}
+        >
+          {isLogging === pendingLogIndex ? "Adding..." : "Add to food log"}
+        </button>
+      </div>
+    </form>
+  ) : null;
+
   return (
     <section className="space-y-6">
       {/* Search Section */}
@@ -630,125 +800,17 @@ export function FoodSearchPlaceholder() {
                 key={`${item.product_name}-${index}`}
                 item={item}
                 isLogging={isLogging === index}
+                isDisabled={isLogging !== null || isLoading}
+                feedback={logFeedback?.index === index ? logFeedback : null}
                 onLog={() => onLogFood(item, index)}
                 formatNumber={formatNumber}
-              />
+              >
+                {pendingLogIndex === index ? portionControls : null}
+              </FoodCard>
             ))}
           </ul>
         ) : null}
 
-        {pendingLogItem ? (
-          <div className="mt-5 rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5">
-            <h3 className="text-sm font-bold text-brand-primary">How much did you eat?</h3>
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <button
-                type="button"
-                className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                  portionOption === "whole"
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
-                }`}
-                onClick={() => setPortionOption("whole")}
-                disabled={isLogging !== null}
-              >
-                Whole - 100%
-              </button>
-              <button
-                type="button"
-                className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                  portionOption === "half"
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
-                }`}
-                onClick={() => setPortionOption("half")}
-                disabled={isLogging !== null}
-              >
-                Half - 50%
-              </button>
-              <button
-                type="button"
-                className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                  portionOption === "quarter"
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
-                }`}
-                onClick={() => setPortionOption("quarter")}
-                disabled={isLogging !== null}
-              >
-                Quarter - 25%
-              </button>
-              <button
-                type="button"
-                className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                  portionOption === "custom"
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-brand-secondary/30 bg-white text-brand-secondary hover:bg-brand-secondary/5"
-                }`}
-                onClick={() => setPortionOption("custom")}
-                disabled={isLogging !== null}
-              >
-                Custom
-              </button>
-            </div>
-
-            {portionOption === "custom" ? (
-              <div className="mt-3 flex items-center gap-2">
-                <label htmlFor="custom-portion" className="text-xs font-semibold text-brand-secondary">
-                  Custom portion
-                </label>
-                <input
-                  id="custom-portion"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={100}
-                  value={customPortion}
-                  onChange={(event) => setCustomPortion(event.target.value)}
-                  disabled={isLogging !== null}
-                  className="w-24 rounded-md border border-brand-secondary/30 bg-white px-2 py-1 text-sm text-brand-primary outline-none focus:border-brand-primary"
-                />
-                <span className="text-xs font-semibold text-brand-secondary">%</span>
-              </div>
-            ) : null}
-
-            {selectedPortionPercentage === null ? (
-              <p className="mt-2 text-xs font-semibold text-red-600">
-                Enter a valid custom percentage from 1 to 100.
-              </p>
-            ) : null}
-
-            {portionPreview ? (
-              <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-white p-3">
-                <p className="text-xs font-semibold text-brand-primary">You will log</p>
-                <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-                  <p><span className="text-brand-secondary/70">Calories:</span> {formatNumber(portionPreview.calories)} kcal</p>
-                  <p><span className="text-brand-secondary/70">Protein:</span> {formatNumber(portionPreview.protein)} g</p>
-                  <p><span className="text-brand-secondary/70">Fat:</span> {formatNumber(portionPreview.fat)} g</p>
-                  <p><span className="text-brand-secondary/70">Carbohydrates:</span> {formatNumber(portionPreview.carbohydrates)} g</p>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="mt-4 flex items-center gap-2">
-              <button
-                type="button"
-                className="rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
-                onClick={cancelPortionLogging}
-                disabled={isLogging !== null}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="rounded-full bg-brand-primary px-5 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                onClick={confirmPortionLogging}
-                disabled={selectedPortionPercentage === null || isLogging === pendingLogIndex}
-              >
-                {isLogging === pendingLogIndex ? "Logging..." : "Log Food"}
-              </button>
-            </div>
-          </div>
-        ) : null}
       </div>
 
       {/* Logged Foods Section */}

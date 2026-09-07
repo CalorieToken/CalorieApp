@@ -1,4 +1,7 @@
 export const DEFAULT_BACKEND_TIMEOUT_MS = 20_000;
+// Search can include the existing 10s primary + 15s fallback and admission time.
+// Leave room for the search proxy's 45s deadline to report an upstream failure.
+export const FOOD_SEARCH_TIMEOUT_MS = 50_000;
 export const DEFAULT_BACKEND_WARMUP_TIMEOUT_MS = 180_000;
 
 // Render may not wake one free service from another free service's proxy
