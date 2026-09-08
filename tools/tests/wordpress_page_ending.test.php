@@ -8,11 +8,13 @@ $page = 'calorieapp';
 $admin = false;
 $feed = false;
 $embed = false;
+$singular = true;
 $actions = $styles = $scripts = $config = $cache = $requests = $routes = [];
 function add_action($name, $callback, $priority = 10): void { $GLOBALS['actions'][$name][$priority][] = $callback; }
 function is_admin(): bool { return $GLOBALS['admin']; }
 function is_feed(): bool { return $GLOBALS['feed']; }
 function is_embed(): bool { return $GLOBALS['embed']; }
+function is_singular(): bool { return $GLOBALS['singular']; }
 function is_page($slug): bool { return $GLOBALS['page'] === $slug; }
 function plugin_dir_url($file): string { return home_url('/wp-content/plugins/calorieapp-identity-bridge/'); }
 function home_url($path): string { return 'https://calorietoken.net' . $path; }
@@ -56,7 +58,7 @@ $ending = new PageEnding();
 $ending->register_hooks();
 check(isset($actions['wp_footer'][5]), 'Render the ending before footer scripts.');
 $ending->enqueue_assets();
-check(count($styles) === 1 && count($scripts) === 1, 'Only the independent page-ending assets are queued.');
+check(count($styles) === 2 && count($scripts) === 2, 'The independent page-ending and presentation assets are queued.');
 check($scripts['calorieapp-identity-bridge-page-ending'][1] === [], 'Do not load the authentication controller as a dependency.');
 $html = render($ending);
 check(substr_count($html, '<footer ') === 1, 'The app page receives one website footer.');
@@ -78,8 +80,10 @@ foreach (['home', 'faq', 'privacy-policy'] as $page) {
     $styles = $scripts = [];
     $other = new PageEnding();
     $other->enqueue_assets();
-    check(render($other) === '', 'Existing footers on other pages remain untouched.');
-    check(count($styles) === 1 && count($scripts) === 1, 'Shared market styles and renderer must load on other public pages too.');
+    $other_html = render($other);
+    check(substr_count($other_html, 'data-calorieapp-sitewide-market') === 1, 'Other singular pages receive one deduplicated market candidate.');
+    check(!str_contains($other_html, '<footer '), 'Existing Brizy footers remain untouched.');
+    check(count($styles) === 2 && count($scripts) === 2, 'Shared market and presentation assets load on other public pages too.');
 }
 $shortcuts = new PageEnding();
 ob_start();

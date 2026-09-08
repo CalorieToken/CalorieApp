@@ -1,4 +1,5 @@
-/* Shared CAL card and missing shortcuts; footer markup stays app-only. */
+/* Shared CAL card, page ending and missing shortcuts. Existing Brizy footers
+   stay stored in place; the companion adds only a deduplicated market card. */
 .calorieapp-shared-page-ending {
   box-sizing: border-box;
   width: 100%;

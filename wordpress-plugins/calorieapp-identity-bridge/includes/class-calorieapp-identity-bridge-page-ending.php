@@ -33,6 +33,8 @@ class PageEnding {
         $version = CALORIEAPP_IDENTITY_BRIDGE_VERSION;
         wp_enqueue_style('calorieapp-identity-bridge-page-ending', $url . 'calorieapp-page-ending.css', [], $version);
         wp_enqueue_script('calorieapp-identity-bridge-page-ending', $url . 'calorieapp-page-ending.js', [], $version, true);
+        wp_enqueue_style('calorieapp-identity-bridge-site-polish', $url . 'calorieapp-site-polish.css', ['calorieapp-identity-bridge-page-ending'], $version);
+        wp_enqueue_script('calorieapp-identity-bridge-site-polish', $url . 'calorieapp-site-polish.js', [], $version, true);
     }
 
     /** One compact stack replaces the page-specific fixed shortcut slots. */
@@ -70,15 +72,27 @@ class PageEnding {
     }
 
     public function render(): void {
-        if ($this->rendered || !$this->is_app_page()) {
+        if ($this->rendered || is_admin() || is_feed() || is_embed() || !is_singular()) {
             return;
         }
         $this->rendered = true;
+        if (!$this->is_app_page()) {
+            ?>
+            <aside class="calorieapp-page-market calorieapp-sitewide-market" data-calorieapp-sitewide-market aria-label="<?php echo esc_attr__('Calorie Token on XPMarket', 'calorieapp-identity-bridge'); ?>">
+                <div class="calorieapp-xpmarket-widget" data-calorieapp-xpmarket-widget>
+                    <a class="calorieapp-xpmarket-link" href="<?php echo esc_url(MarketWidget::TOKEN_PAGE); ?>" rel="noopener noreferrer">
+                        <?php echo esc_html__('View CAL on XPMarket', 'calorieapp-identity-bridge'); ?>
+                    </a>
+                </div>
+            </aside>
+            <?php
+            return;
+        }
         $copyright_year = wp_date('Y');
         $social_links = [
             ['label' => 'Telegram', 'url' => 'https://t.me/+7YxaKdQYWNA0NDA0', 'icon' => 'telegram.svg'],
             ['label' => 'GitHub', 'url' => 'https://github.com/CalorieToken', 'icon' => 'github-square.svg'],
-            ['label' => 'X', 'url' => 'https://twitter.com/CalorieToken', 'icon' => 'twitter.svg'],
+            ['label' => 'X', 'url' => 'https://x.com/CalorieToken', 'icon' => 'twitter.svg'],
             ['label' => 'Facebook', 'url' => 'https://www.facebook.com/CalorieToken-100422882407878', 'icon' => 'facebook.svg'],
             ['label' => 'YouTube', 'url' => 'https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA', 'icon' => 'youtube.svg'],
             ['label' => 'LinkedIn', 'url' => 'https://www.linkedin.com/company/calorie-token/', 'icon' => 'linkedin.svg'],

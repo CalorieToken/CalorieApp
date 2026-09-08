@@ -134,7 +134,7 @@ test("a late shortcode receives layout and disconnects its discovery observer", 
 test("Richlist scrolling preserves the original table and does not duplicate wrappers", () => {
   const wrappers = [], listeners = new Map();
   const parent = { insertBefore(region, item) { assert.equal(item, table); wrappers.push(region); } };
-  const table = { parentNode: parent, rows: [{ balance: "unchanged" }], closest() { return this.parentNode.className === "calorieapp-richlist-scroll" ? this.parentNode : null; } };
+  const table = { parentNode: parent, rows: [{ balance: "unchanged" }], querySelector() { return null; }, closest() { return this.parentNode.className === "calorieapp-richlist-scroll" ? this.parentNode : null; } };
   const document = {
     readyState: "complete",
     querySelectorAll: selector => selector === "table.xl-richlist" ? [table] : [],

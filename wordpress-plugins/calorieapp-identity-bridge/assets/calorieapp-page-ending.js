@@ -103,11 +103,32 @@
     }
   }
 
+  function positionSitewideMarket() {
+    if (typeof document.querySelector !== "function") return;
+    var injected = document.querySelector("[data-calorieapp-sitewide-market]");
+    if (!injected) return;
+    var hasExistingMarket = Array.from(document.querySelectorAll(
+      ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
+    )).some(function (widget) { return !injected.contains(widget); });
+    if (hasExistingMarket) {
+      injected.remove();
+      return;
+    }
+
+    var legalLine = Array.from(document.querySelectorAll(".brz p, .brz footer, .brz [role=contentinfo]"))
+      .find(function (node) { return String(node.textContent || "").replace(/\s+/g, " ").trim().indexOf("Operator: ICTHendrikse") === 0; });
+    var footerSection = legalLine && (legalLine.closest("section") || legalLine.closest("footer") || legalLine.closest("[role=contentinfo]"));
+    if (footerSection && footerSection.parentNode && injected.nextElementSibling !== footerSection) {
+      footerSection.parentNode.insertBefore(injected, footerSection);
+    }
+  }
+
   function enhanceXpMarketPriceWidgets() {
     if (typeof document.querySelectorAll !== "function") {
       return;
     }
 
+    positionSitewideMarket();
     var config = window.calorieappPageEnding || {};
     var endpoint = config.xpMarketWidgetUrl || "";
     var tokenUrl =

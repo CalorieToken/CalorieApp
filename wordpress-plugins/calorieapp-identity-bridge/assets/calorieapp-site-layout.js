@@ -83,14 +83,39 @@
 
   function enhanceRichlists() {
     document.querySelectorAll("table.xl-richlist").forEach(function (table) {
-      if (table.closest(".calorieapp-richlist-scroll")) return;
-      var region = document.createElement("div");
-      region.className = "calorieapp-richlist-scroll";
-      region.tabIndex = 0;
-      region.setAttribute("role", "region");
-      region.setAttribute("aria-label", "CalorieToken holders — scroll sideways for the full table");
-      table.parentNode.insertBefore(region, table);
-      region.appendChild(table);
+      var region = table.closest(".calorieapp-richlist-scroll");
+      if (!region) {
+        region = document.createElement("div");
+        region.className = "calorieapp-richlist-scroll";
+        region.tabIndex = 0;
+        region.setAttribute("role", "region");
+        region.setAttribute("aria-label", "CalorieToken holders — scroll sideways for the full table");
+        table.parentNode.insertBefore(region, table);
+        region.appendChild(table);
+      }
+
+      if (typeof table.querySelector !== "function") return;
+      var ownRow = table.querySelector("tr.xl-is-user");
+      if (!ownRow || document.querySelector("[data-calorieapp-own-rank]")) return;
+      ownRow.setAttribute("aria-current", "true");
+      ownRow.tabIndex = -1;
+      var rankCell = ownRow.querySelector("th,td");
+      var rank = rankCell ? String(rankCell.textContent || "").trim() : "";
+      var jump = document.createElement("button");
+      jump.type = "button";
+      jump.className = "calorieapp-own-rank-jump";
+      jump.setAttribute("data-calorieapp-own-rank", "");
+      jump.textContent = rank ? "My position " + rank : "My position";
+      jump.setAttribute("aria-label", rank ? "Jump to my Richlist position " + rank : "Jump to my Richlist position");
+      jump.addEventListener("click", function () {
+        ownRow.scrollIntoView({
+          behavior: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+        window.setTimeout(function () { ownRow.focus({ preventScroll: true }); }, 350);
+      });
+      document.body.appendChild(jump);
     });
   }
 

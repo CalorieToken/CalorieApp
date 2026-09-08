@@ -89,6 +89,7 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
     createElement() { return element(); },
     readyState: 'loading',
     addEventListener(name, fn) { if (name === 'DOMContentLoaded') ready = fn; },
+    querySelector() { return null; },
     querySelectorAll(selector) {
       if (empty) return [];
       if (selector === '[data-calorieapp-embed]') return [];
