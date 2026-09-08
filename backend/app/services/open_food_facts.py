@@ -68,6 +68,8 @@ async def _governed_attempt(operation: Callable[[], Awaitable[T]]) -> T:
     """Reserve shared egress capacity immediately before an upstream attempt."""
     _OPEN_FOOD_FACTS_AVAILABILITY.check_provider()
     await _OPEN_FOOD_FACTS_RATE_GOVERNOR.acquire()
+    # Another request can start a provider pause while this reservation waits.
+    _OPEN_FOOD_FACTS_AVAILABILITY.check_provider()
     return await operation()
 
 
@@ -317,9 +319,14 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
     except subprocess.TimeoutExpired as exc:
         raise ValueError("curl request timed out") from exc
     response_bytes, separator, status_bytes = completed.stdout.rpartition(b"\n")
-    if not separator or not re.fullmatch(rb"\d{3}", status_bytes):
+    status_code = int(status_bytes) if separator and re.fullmatch(rb"\d{3}", status_bytes) else None
+    if completed.returncode != 0 and (status_code is None or status_code < 400):
+        # stderr can contain the private search URL. Keep only the diagnostic
+        # exit code, and preserve known HTTP errors for provider pause handling.
+        logger.warning("Open Food Facts curl transport failed (exit=%s)", completed.returncode)
+        raise ValueError(f"curl transport failed (exit {completed.returncode})")
+    if status_code is None:
         raise ValueError("curl response is missing its HTTP status")
-    status_code = int(status_bytes)
     response_headers: dict[str, str] = {}
     # curl can print CONNECT and redirect headers before the final response.
     # Keep only the final headers, and keep all transfer data in memory.
@@ -335,8 +342,6 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
                 response_headers["Retry-After"] = value.decode("ascii", errors="replace").strip()
     if status_code >= 400:
         _raise_fallback_http_status(status_code, response_headers.get("Retry-After"))
-    if completed.returncode != 0:
-        raise ValueError(f"curl transport failed (exit {completed.returncode})")
 
     # Decode subprocess bytes explicitly to avoid Windows locale mojibake.
     response_text = response_bytes.decode("utf-8", errors="replace")

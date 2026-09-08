@@ -215,6 +215,39 @@ def test_empty_results_are_not_cached(primary: AsyncMock) -> None:
     assert primary.await_count == 2
 
 
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_pause_started_during_rate_reservation_stops_the_pending_transfer(
+    primary: AsyncMock, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    primary.return_value = {"products": []}
+    class Governor:
+        async def acquire(self) -> None:
+            # Another in-flight search can report 503 while this reservation
+            # waits for the shared database governor.
+            _OPEN_FOOD_FACTS_AVAILABILITY.pause_provider(503, 120)
+
+    monkeypatch.setattr("app.services.open_food_facts._OPEN_FOOD_FACTS_RATE_GOVERNOR", Governor())
+    with pytest.raises(FoodSearchUnavailable):
+        asyncio.run(search_food_products("oats"))
+    primary.assert_not_awaited()
+
+
+@pytest.mark.parametrize("exit_code", [6, 7, 28, 60])
+def test_curl_transport_failure_keeps_exit_code_without_logging_private_stderr(
+    exit_code: int, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+) -> None:
+    monkeypatch.setattr("app.services.open_food_facts._resolve_curl_command", lambda: "curl")
+    transfer = subprocess.CompletedProcess(
+        ["curl"], exit_code, stdout=b"", stderr=b"error mentioning private-search-term",
+    )
+    monkeypatch.setattr("app.services.open_food_facts.subprocess.run", lambda *a, **k: transfer)
+    with pytest.raises(ValueError, match=f"curl transport failed \\(exit {exit_code}\\)"):
+        _curl_fetch({"search_terms": "private-search-term"})
+    messages = [r.getMessage() for r in caplog.records]
+    assert any(f"exit={exit_code}" in message for message in messages)
+    assert all("private-search-term" not in message for message in messages)
+
+
 @pytest.mark.parametrize("transport", ["curl", "urllib"])
 @pytest.mark.parametrize("status", [429, 503])
 @patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
