@@ -13,6 +13,14 @@ Product-search text is sent to Open Food Facts without the CalorieApp account
 identifier and is not retained as CalorieApp history unless the user chooses to
 log a result.
 
+The food-search adapter keeps up to 64 successful, nonempty product-result sets
+in process memory, reusable for up to five minutes. Lookup keys are hashed search text
+and page size; the cache is not an account history and is never written to the
+database or disk. Entries expire on access and disappear when the process stops.
+An unexpired result can be returned without contacting an unavailable provider.
+Provider 429/503 responses pause new upstream searches for Retry-After (30 seconds
+when absent); no extra retry or alternate provider is used to bypass that pause.
+
 Personal food history, email addresses, profile details and stable user
 identifiers are not intended for public blockchain or public IPFS storage.
 Optional encrypted user-controlled exports and non-reversible integrity proofs
