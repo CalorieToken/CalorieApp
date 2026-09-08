@@ -222,6 +222,12 @@ async def _search_food_products_once(
 
 def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
     results: list[FoodSearchResult] = []
+    nutrient_fields = {
+        "calories": "energy-kcal",
+        "protein": "proteins",
+        "fat": "fat",
+        "carbohydrates": "carbohydrates",
+    }
     for product in payload.get("products", []):
         raw_product_name = (product.get("product_name") or "").strip()
         product_name = _repair_common_mojibake(raw_product_name)
@@ -229,12 +235,24 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
             continue
 
         nutriments = product.get("nutriments") or {}
+        serving_size = _to_optional_text(product.get("serving_size"))
         nutrition = {
-            "calories": _to_float(nutriments.get("energy-kcal_100g")),
-            "protein": _to_float(nutriments.get("proteins_100g")),
-            "fat": _to_float(nutriments.get("fat_100g")),
-            "carbohydrates": _to_float(nutriments.get("carbohydrates_100g")),
+            name: _to_float(nutriments.get(f"{field}_serving"))
+            for name, field in nutrient_fields.items()
         }
+        if (
+            not serving_size
+            or len(serving_size) > 80
+            or any(value is None for value in nutrition.values())
+        ):
+            # Never label 100 g/ml values as a whole packaging serving. Keep
+            # every nutrient on one source-provided basis; do not infer a
+            # serving weight, volume or density from free-text packaging data.
+            nutrition = {
+                name: _to_float(nutriments.get(f"{field}_100g"))
+                for name, field in nutrient_fields.items()
+            }
+            serving_size = "100 g / 100 ml (source reference)"
 
         # A missing value is not the same as a measured zero. Incomplete
         # records are excluded from loggable search results so CalorieApp cannot
@@ -252,7 +270,7 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
                 image_url=_extract_image_url(product),
                 barcode=_to_optional_text(product.get("code")),
                 brand=_extract_brand(product),
-                serving_size=_to_optional_text(product.get("serving_size")),
+                serving_size=serving_size,
                 nutri_score=_extract_nutri_score(product),
             )
         )

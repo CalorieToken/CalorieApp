@@ -21,6 +21,15 @@ An unexpired result can be returned without contacting an unavailable provider.
 Provider 429/503 responses pause new upstream searches for Retry-After (30 seconds
 when absent); no extra retry or alternate provider is used to bypass that pause.
 
+Search results use the provider's per-serving nutrient values only when all four
+values and a usable serving label are present. Otherwise all four values use the
+provider's 100 g/ml reference, which is explicitly labelled as the reference amount.
+Portion percentages apply to that displayed amount. Values from different bases
+are never combined, and no density or serving quantity is inferred from packaging
+text. Existing food logs remain as recorded; they are not retrospectively
+rescaled when this search normalization changes. This distinction follows the
+[Open Food Facts nutrition schema](https://openfoodfacts.github.io/openfoodfacts-server/dev/explain-nutrition-data/).
+
 Personal food history, email addresses, profile details and stable user
 identifiers are not intended for public blockchain or public IPFS storage.
 Optional encrypted user-controlled exports and non-reversible integrity proofs
