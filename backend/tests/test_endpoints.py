@@ -221,6 +221,25 @@ def test_search_food_upstream_failure_returns_502(mock_search: AsyncMock, client
 
 
 @patch("app.main.search_food_products", new_callable=AsyncMock)
+@pytest.mark.parametrize("status", [429, 503])
+def test_search_food_preserves_provider_pause_without_exposing_request_text(
+    mock_search: AsyncMock, client: TestClient, status: int, caplog: pytest.LogCaptureFixture,
+) -> None:
+    from app.services.food_search_availability import FoodSearchUnavailable
+
+    mock_search.side_effect = FoodSearchUnavailable(status, 120)
+    response = client.get("/search-food?q=private-search-term")
+    assert response.status_code == status
+    assert response.headers["retry-after"] == "120"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["pragma"] == "no-cache"
+    assert "private-search-term" not in response.text
+    messages = [record.getMessage() for record in caplog.records if record.name == "app.main"]
+    assert messages
+    assert all("private-search-term" not in message for message in messages)
+
+
+@patch("app.main.search_food_products", new_callable=AsyncMock)
 def test_search_food_admission_rejection_returns_bounded_503(
     mock_search: AsyncMock,
     client: TestClient,

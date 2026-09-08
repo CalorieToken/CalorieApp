@@ -1,5 +1,8 @@
 import asyncio
 import math
+import subprocess
+from email.message import Message
+from urllib.error import HTTPError as UrllibHTTPError
 from collections.abc import Iterator
 from unittest.mock import AsyncMock, patch
 
@@ -7,13 +10,16 @@ import httpx
 import pytest
 
 from app.source_admission import AdapterAdmissionRejected
+from app.services.food_search_availability import FoodSearchAvailability, FoodSearchUnavailable
 from app.services.open_food_facts import (
     _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH,
     _OPEN_FOOD_FACTS_ADMISSION,
     _OPEN_FOOD_FACTS_RATE_GOVERNOR,
+    _OPEN_FOOD_FACTS_AVAILABILITY,
     _PRIMARY_MAX_ATTEMPTS,
     _FALLBACK_MAX_ATTEMPTS,
     _extract_nutri_score,
+    _curl_fetch,
     _to_float,
     search_food_products,
 )
@@ -22,11 +28,13 @@ from app.services.open_food_facts import (
 @pytest.fixture(autouse=True)
 def reset_open_food_facts_admission() -> Iterator[None]:
     _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+    _OPEN_FOOD_FACTS_AVAILABILITY.reset()
     reset_governor = getattr(_OPEN_FOOD_FACTS_RATE_GOVERNOR, "_reset_for_tests", None)
     if reset_governor is not None:
         reset_governor()
     yield
     _OPEN_FOOD_FACTS_ADMISSION._reset_for_tests()
+    _OPEN_FOOD_FACTS_AVAILABILITY.reset()
     if reset_governor is not None:
         reset_governor()
 
@@ -130,22 +138,136 @@ def test_unexpected_fallback_programming_error_is_not_hidden(
 
 @patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)
 @patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+@pytest.mark.parametrize("status", [429, 503])
 def test_upstream_http_status_does_not_bypass_limit_through_fallback(
     primary: AsyncMock,
     fallback: AsyncMock,
+    status: int,
 ) -> None:
     request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
-    response = httpx.Response(429, request=request)
+    response = httpx.Response(status, headers={"Retry-After": "120"}, request=request)
     primary.side_effect = httpx.HTTPStatusError(
         "rate limited",
         request=request,
         response=response,
     )
 
-    with pytest.raises(httpx.HTTPStatusError):
+    with pytest.raises(FoodSearchUnavailable) as first:
         asyncio.run(search_food_products("banana"))
+    assert first.value.status_code == status
+    assert first.value.retry_after_seconds == 120
+
+    # A different query must not send more source traffic during its pause.
+    with pytest.raises(FoodSearchUnavailable) as repeated:
+        asyncio.run(search_food_products("apple"))
+    assert repeated.value.status_code == status
+    assert 119 <= repeated.value.retry_after_seconds <= 120
+    primary.assert_awaited_once()
 
     fallback.assert_not_awaited()
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_cached_success_survives_provider_outage_then_expires(
+    primary: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = [0.0]
+    availability = FoodSearchAvailability(ttl_seconds=300, clock=lambda: now[0])
+    monkeypatch.setattr("app.services.open_food_facts._OPEN_FOOD_FACTS_AVAILABILITY", availability)
+    product = {"product_name": "Oats", "nutriments": {
+        "energy-kcal_100g": 375, "proteins_100g": 13,
+        "fat_100g": 7, "carbohydrates_100g": 60,
+    }}
+    primary.return_value = {"products": [product]}
+    first = asyncio.run(search_food_products("oats"))
+    first[0].product_name = "caller mutation"
+
+    assert asyncio.run(search_food_products(" oats "))[0].product_name == "Oats"
+    primary.assert_awaited_once()
+
+    request = httpx.Request("GET", "https://world.openfoodfacts.org/cgi/search.pl")
+    primary.side_effect = httpx.HTTPStatusError(
+        "down", request=request,
+        response=httpx.Response(503, headers={"Retry-After": "600"}, request=request),
+    )
+    with pytest.raises(FoodSearchUnavailable):
+        asyncio.run(search_food_products("apple"))
+    assert asyncio.run(search_food_products("oats"))[0].product_name == "Oats"
+    assert primary.await_count == 2
+
+    now[0] = 301
+    with pytest.raises(FoodSearchUnavailable):
+        asyncio.run(search_food_products("oats"))
+    assert primary.await_count == 2
+
+    now[0] = 601
+    primary.side_effect = None
+    assert asyncio.run(search_food_products("oats"))[0].product_name == "Oats"
+    assert primary.await_count == 3
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_empty_results_are_not_cached(primary: AsyncMock) -> None:
+    primary.return_value = {"products": []}
+    assert asyncio.run(search_food_products("oats")) == []
+    assert asyncio.run(search_food_products("oats")) == []
+    assert primary.await_count == 2
+
+
+@pytest.mark.parametrize("transport", ["curl", "urllib"])
+@pytest.mark.parametrize("status", [429, 503])
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_fallback_provider_pause_is_preserved_without_a_third_attempt(
+    primary: AsyncMock, transport: str, status: int, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from unittest.mock import Mock
+
+    primary.side_effect = httpx.ReadTimeout("primary timed out")
+    monkeypatch.setattr(
+        "app.services.open_food_facts._resolve_curl_command",
+        lambda: "curl" if transport == "curl" else None,
+    )
+    if transport == "curl":
+        transfer = Mock(return_value=subprocess.CompletedProcess(
+            ["curl"], 22,
+            stdout=(f"HTTP/1.1 200 Connection established\r\n\r\n"
+                    f"HTTP/2 {status}\r\nRetry-After: 120\r\n\r\n\n{status}").encode(),
+            stderr=b"provider unavailable",
+        ))
+        monkeypatch.setattr("app.services.open_food_facts.subprocess.run", transfer)
+    else:
+        headers = Message()
+        headers["Retry-After"] = "120"
+        transfer = Mock(side_effect=UrllibHTTPError(
+            "https://world.openfoodfacts.org/cgi/search.pl", status, "unavailable", headers, None,
+        ))
+        monkeypatch.setattr("app.services.open_food_facts.urlopen", transfer)
+
+    with pytest.raises(FoodSearchUnavailable) as failure:
+        asyncio.run(search_food_products("banana"))
+    assert failure.value.status_code == status
+    assert failure.value.retry_after_seconds == 120
+    with pytest.raises(FoodSearchUnavailable):
+        asyncio.run(search_food_products("apple"))
+    primary.assert_awaited_once()
+    transfer.assert_called_once()
+
+
+def test_curl_success_strips_transfer_headers_but_preserves_utf8_payload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("app.services.open_food_facts._resolve_curl_command", lambda: "curl")
+    transfer = subprocess.CompletedProcess(
+        ["curl"], 0,
+        stdout=(b"HTTP/1.1 200 Connection established\r\n\r\n"
+                b"HTTP/2 301\r\nLocation: https://world.openfoodfacts.org/\r\n\r\n"
+                b'HTTP/2 200\r\nContent-Type: application/json\r\n\r\n'
+                + '{"products":[{"product_name":"Crème"}]}\n200'.encode()),
+        stderr=b"",
+    )
+    monkeypatch.setattr("app.services.open_food_facts.subprocess.run", lambda *a, **k: transfer)
+    assert _curl_fetch({"search_terms": "cream"}) == {"products": [{"product_name": "Crème"}]}
 
 
 @patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)

@@ -3,6 +3,7 @@ import platform
 import json
 import logging
 import math
+import re
 import shutil
 import subprocess
 from collections.abc import Awaitable, Callable
@@ -17,6 +18,11 @@ import httpx
 from app.database import engine
 from app.provider_rate_governor import build_provider_rate_governor
 from app.schemas import FoodSearchResult
+from app.services.food_search_availability import (
+    FoodSearchAvailability,
+    FoodSearchUnavailable,
+    provider_retry_seconds,
+)
 from app.source_admission import (
     AdapterAdmissionController,
     AdapterAdmissionRejected,
@@ -55,10 +61,12 @@ _OPEN_FOOD_FACTS_COALESCER: DuplicateRequestCoalescer[list[FoodSearchResult]] = 
     DuplicateRequestCoalescer()
 )
 _OPEN_FOOD_FACTS_RATE_GOVERNOR = build_provider_rate_governor(engine)
+_OPEN_FOOD_FACTS_AVAILABILITY = FoodSearchAvailability()
 
 
 async def _governed_attempt(operation: Callable[[], Awaitable[T]]) -> T:
     """Reserve shared egress capacity immediately before an upstream attempt."""
+    _OPEN_FOOD_FACTS_AVAILABILITY.check_provider()
     await _OPEN_FOOD_FACTS_RATE_GOVERNOR.acquire()
     return await operation()
 
@@ -133,6 +141,10 @@ def _extract_nutri_score(product: dict[str, Any]) -> str | None:
 
 async def search_food_products(query: str, page_size: int = 10) -> list[FoodSearchResult]:
     safe_query = query.strip()
+    cached = _OPEN_FOOD_FACTS_AVAILABILITY.get(safe_query, page_size)
+    if cached is not None:
+        return cached
+    _OPEN_FOOD_FACTS_AVAILABILITY.check_provider()
     return await _OPEN_FOOD_FACTS_COALESCER.run(
         (safe_query, page_size),
         lambda: _search_food_products_once(safe_query, page_size),
@@ -182,6 +194,13 @@ async def _search_food_products_once(
                 ) from fallback_exc
 
         results = _normalize_products(payload)
+    except httpx.HTTPStatusError as exc:
+        _OPEN_FOOD_FACTS_ADMISSION.record_failure(permit)
+        if exc.response.status_code in {429, 503}:
+            seconds = provider_retry_seconds(exc.response.headers.get("Retry-After"))
+            _OPEN_FOOD_FACTS_AVAILABILITY.pause_provider(exc.response.status_code, seconds)
+            raise FoodSearchUnavailable(exc.response.status_code, seconds) from exc
+        raise
     except AdapterAdmissionRejected:
         if permit.half_open_probe:
             _OPEN_FOOD_FACTS_ADMISSION.record_failure(permit)
@@ -195,6 +214,7 @@ async def _search_food_products_once(
         raise
     else:
         _OPEN_FOOD_FACTS_ADMISSION.record_success(permit)
+        _OPEN_FOOD_FACTS_AVAILABILITY.remember(safe_query, page_size, results)
         return results
 
 
@@ -273,6 +293,10 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
                 "--silent",
                 "--show-error",
                 "--fail",
+                "--dump-header",
+                "-",
+                "--write-out",
+                "\n%{http_code}",
                 "-L",
                 "--connect-timeout",
                 "5",
@@ -284,7 +308,7 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
                 "Accept: application/json",
                 url,
             ],
-            check=True,
+            check=False,
             capture_output=True,
             timeout=15,
         )
@@ -292,16 +316,30 @@ def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(f"{curl_cmd} not found on system; please ensure curl is installed") from exc
     except subprocess.TimeoutExpired as exc:
         raise ValueError("curl request timed out") from exc
-    except subprocess.CalledProcessError as exc:
-        stderr_text = (exc.stderr or b"").decode("utf-8", errors="replace").strip()
-        if stderr_text:
-            raise ValueError(
-                f"curl command failed (exit {exc.returncode}): {stderr_text}"
-            ) from exc
-        raise ValueError(f"curl command failed (exit {exc.returncode})") from exc
-    
+    response_bytes, separator, status_bytes = completed.stdout.rpartition(b"\n")
+    if not separator or not re.fullmatch(rb"\d{3}", status_bytes):
+        raise ValueError("curl response is missing its HTTP status")
+    status_code = int(status_bytes)
+    response_headers: dict[str, str] = {}
+    # curl can print CONNECT and redirect headers before the final response.
+    # Keep only the final headers, and keep all transfer data in memory.
+    while response_bytes.startswith(b"HTTP/"):
+        parts = re.split(rb"\r?\n\r?\n", response_bytes, maxsplit=1)
+        if len(parts) != 2:
+            raise ValueError("curl response headers are incomplete")
+        header_block, response_bytes = parts
+        response_headers = {}
+        for line in header_block.splitlines()[1:]:
+            key, colon, value = line.partition(b":")
+            if colon and key.lower() == b"retry-after":
+                response_headers["Retry-After"] = value.decode("ascii", errors="replace").strip()
+    if status_code >= 400:
+        _raise_fallback_http_status(status_code, response_headers.get("Retry-After"))
+    if completed.returncode != 0:
+        raise ValueError(f"curl transport failed (exit {completed.returncode})")
+
     # Decode subprocess bytes explicitly to avoid Windows locale mojibake.
-    response_text = completed.stdout.decode("utf-8", errors="replace")
+    response_text = response_bytes.decode("utf-8", errors="replace")
     if not response_text.strip():
         raise ValueError("curl returned empty response")
     try:
@@ -325,6 +363,18 @@ def _resolve_curl_command() -> str | None:
     return shutil.which("curl")
 
 
+def _raise_fallback_http_status(status_code: int, retry_after: str | None) -> None:
+    # Preserve status and Retry-After through the same handler as httpx, without
+    # attaching private query text or copying the provider's response body.
+    request = httpx.Request("GET", OPEN_FOOD_FACTS_SEARCH_URL)
+    response = httpx.Response(
+        status_code,
+        request=request,
+        headers={"Retry-After": retry_after} if retry_after else {},
+    )
+    response.raise_for_status()
+
+
 def _urllib_fetch(params: dict[str, Any]) -> dict[str, Any]:
     """Portable fallback using Python stdlib only (no external binaries required)."""
     query_string = urlencode(params)
@@ -334,7 +384,10 @@ def _urllib_fetch(params: dict[str, Any]) -> dict[str, Any]:
         with urlopen(request, timeout=15) as response:
             response_bytes = response.read()
     except UrllibHTTPError as exc:
-        raise ValueError(f"urllib request failed with HTTP {exc.code}") from exc
+        _raise_fallback_http_status(
+            exc.code, exc.headers.get("Retry-After") if exc.headers else None
+        )
+        raise ValueError("urllib returned an unexpected status") from exc
     except (URLError, TimeoutError) as exc:
         raise ValueError(f"urllib request failed: {exc}") from exc
 

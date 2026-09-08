@@ -107,6 +107,7 @@ from .services.identity import (
     validate_origin_login_handoff,
 )
 from .services.open_food_facts import search_food_products
+from .services.food_search_availability import FoodSearchUnavailable
 
 logger = logging.getLogger(__name__)
 
@@ -1690,6 +1691,21 @@ async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> Food
 
     try:
         results = await search_food_products(query)
+    except FoodSearchUnavailable as exc:
+        logger.warning("Open Food Facts unavailable (status=%s)", exc.status_code)
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail=(
+                "Food search rate limit reached"
+                if exc.status_code == 429
+                else "Food search temporarily unavailable"
+            ),
+            headers={
+                "Retry-After": str(exc.retry_after_seconds),
+                "Cache-Control": "no-store",
+                "Pragma": "no-cache",
+            },
+        ) from exc
     except AdapterAdmissionRejected as exc:
         logger.warning(
             "Open Food Facts admission rejected (reason=%s)",
