@@ -1,10 +1,17 @@
 # Step 3 review and acceptance status
 
-Candidate: Identity Bridge 0.3.40, prepared and unreleased. This record retains
+Candidate: Identity Bridge 0.3.41, submitted for review and unreleased. This record retains
 all 27 requested areas. Website Step 3 precedes showcases (Step 4) and publication
 (Step 5). Accepted same-tab joint login/logout remains the regression baseline.
 No financial feature, source/right clearance, deployment or merge is enabled by
 this review. Local automated success is not native/browser or legal acceptance.
+
+The approved 0.3.40 proposal is public on PR #133 and its hosted CI passed,
+including PHP lint/six fixtures. Copilot reviewed that head and raised three
+comments. The 0.3.41 follow-up fixes the asset-version fallback, server-rendered
+language label and duplicated market token constant. Current-head CI and review
+results are recorded on the PR. The accepted session flow and all release gates
+remain unchanged.
 
 | Area | Evidence and status | Remaining closure |
 | --- | --- | --- |
@@ -34,7 +41,7 @@ this review. Local automated success is not native/browser or legal acceptance.
 | PILOT-1 — consumer/retailer | Design/offline proof only at `c008f61`; no working roles, inventory, checkout/inbox or faucet. | Explicit scope decision retained before Step 4. If included, build additive memberships/private stock, baskets/portions, verified Testnet payment requests/hash receipts and retailer/consumer screens in that order. Reserve distributor/producer/farm roles without granting rights. |
 | PILOT-2 — Testnet onboarding | Design only; fresh Xaman test-wallet behavior/current CalorieTest issuer still unverified. | Test ordinary app/site functions with Testnet identity; guide test XRP/reserves and CalorieTest separately. Assisted funding first, automated faucet later. Test funds never settle mainnet donations/trades. |
 | LEG-1 — legal/languages/countries | Partial alignment records and localized consequence/interface copy. App `d6b3f1d` removes its synthetic average Nutri-Score claim; website/source/trademark review, complete public notices and eleven reviewed legal translations remain open. | Feature-by-feature source/terms/privacy/cookie/health-data/financial/provider/rights review. Preserve factual product-grade attribution and review other nutrition claims. Apply LEG-1 above; scope country supplements to actual services/target markets. |
-| RELEASE-1 — review/publication | Open: 0.3.40 passes 130 tests; PHP is unavailable so the strict result is INCOMPLETE/exit 2. PR #133 actual public head and already-public historical provenance were verified. Prepare a public review tree excluding later private recovery history.  | Points 1/3/5: exact compatible candidates, required checks/review, authorized publication/merge/install and tested rollback. Private backup and structural legal/package checks do not clear public distribution. |
+| RELEASE-1 — review/publication | Partial: the approved public 0.3.40 tree passed hosted CI, including PHP lint/six fixtures; 0.3.41 addresses its three Copilot comments. Check PR #133 for current-head CI/re-review results. Later private recovery history is excluded. | Points 1/3/5: exact compatible candidates, required current-head checks/review, source/service-term clearance, native acceptance, explicit merge/install and tested rollback. Public-review permission and green CI do not clear distribution. |
 
 The next acceptance must use the exact compatible app and plugin candidates.
 Cover 360/412/1440 px, tablet/narrow desktop, keyboard/zoom, RTL, native consent,

@@ -9,6 +9,7 @@ $page_id = 1121;
 $preview = false;
 $post_status = 'publish';
 $post_password = '';
+$site_locale = 'nl_NL';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_GET = [];
 $scripts = [];
@@ -26,7 +27,8 @@ function get_post_field($field, $id, $context) {
     return $post_password;
 }
 function plugin_dir_url($file) { return 'https://calorietoken.net/plugin/'; }
-function get_locale() { return 'nl_NL'; }
+function get_locale() { return $GLOBALS['site_locale']; }
+function __($value, $domain) { return $value; }
 function wp_enqueue_style(...$args) { global $scripts; $scripts[] = $args; }
 function wp_enqueue_script(...$args) { global $scripts; $scripts[] = $args; }
 function wp_add_inline_script(...$args) { global $inline; $inline[] = $args; }
@@ -52,6 +54,15 @@ if (!defined('CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW')) {
     check(count($scripts) === 3 && count($inline) === 1, 'One isolated display controller and stylesheet');
     check(strpos($inline[0][1], '"initialLocale":"nl"') !== false, 'Use public page locale');
     check(strpos($inline[0][1], '"cmsPreview"') === false, 'Other pages have no FAQ catalogue');
+    $copy = json_decode(file_get_contents(dirname($includes) . '/config/display-language.json'), true);
+    foreach (\CalorieApp\IdentityBridge\LocaleRegistry::tags() as $site_locale) {
+        ob_start(); (new \CalorieApp\IdentityBridge\DisplayLanguage())->render(); $localized = ob_get_clean();
+        check(str_contains($localized, 'data-calorieapp-language-label>' . esc_html($copy[$site_locale]['label']) . '</label>'), 'Server-render the prepared selector label for ' . $site_locale);
+    }
+    $site_locale = 'de_DE';
+    ob_start(); (new \CalorieApp\IdentityBridge\DisplayLanguage())->render(); $fallback = ob_get_clean();
+    check(str_contains($fallback, 'data-calorieapp-language-label>Language</label>'), 'Unsupported public locales use the explicit English fallback');
+    $site_locale = 'nl_NL';
 
     $cases = [
         ['public FAQ', [], 'GET', 6855, false, 'publish', '', true],

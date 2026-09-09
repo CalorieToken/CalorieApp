@@ -41,7 +41,18 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-## Current local candidate: 0.3.40
+## Current review candidate: 0.3.41
+
+This follow-up addresses the three Copilot comments on the combined website
+review: the standalone asset-cache version follows the plugin version, the
+server-rendered language label uses the existing eleven-locale catalogue with
+a WordPress translation fallback, and market URLs share the fixed CAL identity.
+The optional display control still starts hidden and is off by default.
+Authentication/session methods, browser assets and provider destinations are
+unchanged. Current-head checks and review results are recorded on PR #133;
+source/service-term clearance and native acceptance remain open.
+
+## Previous combined candidate: 0.3.40
 
 The full owned How to Buy/sell guide now follows the same optional display
 choice in eleven prepared languages. Its updated public copy includes the full
@@ -51,8 +62,9 @@ liquidity conflicts. It presents external trading as the current route. Site
 fonts, modest corners, wrapping, 44px links and RTL direction replace the earlier
 inconsistent guide styles. The public-page/source guards retain edited CMS,
 identity values, links and form/account state. No signing or quote call is added.
-130 local tests pass; PHP, hosted CI, native/mobile and linguistic acceptance
-remain open. Source/release clearance is unchanged; no installation is claimed.
+130 Node/Python tests, PHP lint and all six PHP fixtures passed in hosted run
+34326418843 after correcting fixture order. Native/mobile and linguistic
+acceptance remain open. Source/release clearance is unchanged.
 
 ## Previous Tokenomics cycle: 0.3.39
 

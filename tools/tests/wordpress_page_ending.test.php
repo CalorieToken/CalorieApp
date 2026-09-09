@@ -258,6 +258,7 @@ $upstream = ['status' => 200, 'body' => json_encode($payload)];
 $response = $market->get_widget();
 check($response instanceof WP_REST_Response && $response->status === 200, 'Successful public data is returned.');
 check(count($requests) === 1 && $requests[0]['options']['redirection'] === 0, 'Only the fixed XPMarket endpoint is fetched.');
+check($requests[0]['url'] === 'https://api.xpmarket.com/api/currency/widget?token=Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY', 'The shared token identifier preserves the exact CAL data endpoint.');
 check($requests[0]['options']['limit_response_size'] === 16384, 'Bound the upstream response size.');
 check($response->headers['Cache-Control'] === 'public, max-age=300', 'Successful data uses a five-minute public cache.');
 $market->get_widget();

@@ -16,6 +16,10 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             release.plugin_version(),
             re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$"),
         )
+        integrated = (release.PLUGIN_DIR / "includes/class-calorieapp-identity-bridge-integrated-login.php").read_text()
+        fallback = re.search(r"CALORIEAPP_IDENTITY_BRIDGE_VERSION\s*:\s*'([^']+)'", integrated)
+        self.assertIsNotNone(fallback, "The standalone asset version must be explicit")
+        self.assertEqual(fallback.group(1), release.plugin_version(), "Asset cache version must follow the release header")
 
     def test_build_is_reproducible_and_safe(self) -> None:
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:

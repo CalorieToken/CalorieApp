@@ -19,8 +19,8 @@ class MarketWidget {
     private const REST_NAMESPACE = 'calorieapp/v1';
     private const REST_ROUTE = '/xpmarket-widget';
     private const TOKEN = 'Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY';
-    public const TOKEN_PAGE = 'https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY';
-    private const API_URL = 'https://api.xpmarket.com/api/currency/widget?token=Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY';
+    public const TOKEN_PAGE = 'https://xpmarket.com/token/' . self::TOKEN;
+    private const API_URL = 'https://api.xpmarket.com/api/currency/widget?token=' . self::TOKEN;
     private const CACHE_KEY = 'calorieapp_xpmarket_widget_v1';
     private const ERROR_CACHE_KEY = 'calorieapp_xpmarket_widget_error_v1';
     private const CACHE_TTL_SECONDS = 5 * MINUTE_IN_SECONDS;

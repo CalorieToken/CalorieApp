@@ -90,9 +90,15 @@ class DisplayLanguage {
             return;
         }
         $this->rendered = true;
+        $copy = $this->config('display-language');
+        $locale = LocaleRegistry::resolve(get_locale());
+        $label = $copy[$locale]['label'] ?? '';
+        if (!is_string($label) || $label === '') {
+            $label = __('Language', 'calorieapp-identity-bridge');
+        }
         ?>
         <div class="calorieapp-display-language" data-calorieapp-display-language hidden>
-            <label for="calorieapp-display-language-select" data-calorieapp-language-label>Language</label>
+            <label for="calorieapp-display-language-select" data-calorieapp-language-label><?php echo esc_html($label); ?></label>
             <select id="calorieapp-display-language-select" aria-describedby="calorieapp-display-language-note">
                 <?php foreach (LocaleRegistry::all()['locales'] as $locale) : ?>
                     <option value="<?php echo esc_attr($locale['tag']); ?>" lang="<?php echo esc_attr($locale['tag']); ?>"><?php echo esc_html($locale['native_name']); ?></option>
