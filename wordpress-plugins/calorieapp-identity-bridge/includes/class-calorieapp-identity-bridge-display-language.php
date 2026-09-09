@@ -100,8 +100,8 @@ class DisplayLanguage {
         <div class="calorieapp-display-language" data-calorieapp-display-language hidden>
             <label for="calorieapp-display-language-select" data-calorieapp-language-label><?php echo esc_html($label); ?></label>
             <select id="calorieapp-display-language-select" aria-describedby="calorieapp-display-language-note">
-                <?php foreach (LocaleRegistry::all()['locales'] as $locale) : ?>
-                    <option value="<?php echo esc_attr($locale['tag']); ?>" lang="<?php echo esc_attr($locale['tag']); ?>"><?php echo esc_html($locale['native_name']); ?></option>
+                <?php foreach (LocaleRegistry::all()['locales'] as $definition) : ?>
+                    <option value="<?php echo esc_attr($definition['tag']); ?>" lang="<?php echo esc_attr($definition['tag']); ?>"><?php echo esc_html($definition['native_name']); ?></option>
                 <?php endforeach; ?>
             </select>
             <p id="calorieapp-display-language-note" data-calorieapp-language-note></p>

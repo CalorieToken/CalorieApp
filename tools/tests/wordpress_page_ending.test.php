@@ -254,6 +254,20 @@ foreach ([['issuer', 'different-token'], ['logo', 'https://xpcdn.xpmarket.com.ev
 $bad = $payload;
 unset($bad['data']['priceUsd']);
 check(MarketWidget::sanitize_payload($bad) === null, 'Reject incomplete market data.');
+foreach (['holders', 'rank'] as $key) {
+    foreach ([-1, 3.14, '3.14', '2147483648', '1e30', true, [], null] as $value) {
+        $bad = $payload;
+        $bad['data'][$key] = $value;
+        check(MarketWidget::sanitize_payload($bad) === null, 'Reject fractional, overflowing or invalid count: ' . $key);
+    }
+    foreach ([0, '0', 300, '300', 2147483647, '2147483647'] as $value) {
+        $valid = $payload;
+        $valid['data'][$key] = $value;
+        $normalized = MarketWidget::sanitize_payload($valid);
+        check($normalized !== null && $normalized[$key] === (int) $value, 'Preserve zero and bounded integer counts: ' . $key);
+    }
+}
+$cache['calorieapp_xpmarket_widget_v1'] = ['value' => ['holders' => -1], 'ttl' => 300];
 $upstream = ['status' => 200, 'body' => json_encode($payload)];
 $response = $market->get_widget();
 check($response instanceof WP_REST_Response && $response->status === 200, 'Successful public data is returned.');
@@ -261,7 +275,7 @@ check(count($requests) === 1 && $requests[0]['options']['redirection'] === 0, 'O
 check($requests[0]['url'] === 'https://api.xpmarket.com/api/currency/widget?token=Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY', 'The shared token identifier preserves the exact CAL data endpoint.');
 check($requests[0]['options']['limit_response_size'] === 16384, 'Bound the upstream response size.');
 check($response->headers['Cache-Control'] === 'public, max-age=0, must-revalidate', 'Browser and shared caches must revalidate instead of adding another freshness window.');
-check($cache['calorieapp_xpmarket_widget_v1']['ttl'] === 300, 'Origin caching still limits upstream requests to once per five minutes.');
+check($cache['calorieapp_xpmarket_widget_v2']['ttl'] === 300, 'Origin caching still limits upstream requests to once per five minutes and skips the older validation cache.');
 $cached_response = $market->get_widget();
 check($cached_response->headers === $response->headers, 'Transient hits retain the same revalidation policy.');
 check(count($requests) === 1, 'Cached requests must not refetch XPMarket.');

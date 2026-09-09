@@ -41,7 +41,15 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-## Current review candidate: 0.3.42
+## Current review candidate: 0.3.43
+
+Market holder/rank fields now accept only non-negative whole numbers within a
+portable 32-bit integer range before returning or caching them. The cache key
+changes so an older, less strictly validated payload is not reused. The
+language-option loop also has its own variable instead of reusing the resolved
+locale tag. Existing destinations, session behavior and release flags remain.
+
+## Previous review candidate: 0.3.42
 
 The performance follow-up bounds late header-card discovery to ten seconds,
 stops it when leaving the page, and allows one bounded retry after a

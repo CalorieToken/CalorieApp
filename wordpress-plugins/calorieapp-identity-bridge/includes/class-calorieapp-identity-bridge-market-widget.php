@@ -21,7 +21,7 @@ class MarketWidget {
     private const TOKEN = 'Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY';
     public const TOKEN_PAGE = 'https://xpmarket.com/token/' . self::TOKEN;
     private const API_URL = 'https://api.xpmarket.com/api/currency/widget?token=' . self::TOKEN;
-    private const CACHE_KEY = 'calorieapp_xpmarket_widget_v1';
+    private const CACHE_KEY = 'calorieapp_xpmarket_widget_v2';
     private const ERROR_CACHE_KEY = 'calorieapp_xpmarket_widget_error_v1';
     private const CACHE_TTL_SECONDS = 5 * MINUTE_IN_SECONDS;
 
@@ -129,6 +129,21 @@ class MarketWidget {
             }
         }
 
+        $counts = [];
+        foreach (['holders', 'rank'] as $key) {
+            // Use a portable integer range before casting, including on
+            // 32-bit PHP. Fractional or overflowing counts are invalid data.
+            if (is_float($source[$key]) && floor($source[$key]) !== $source[$key]) {
+                return null;
+            }
+            $counts[$key] = filter_var($source[$key], FILTER_VALIDATE_INT, [
+                'options' => ['min_range' => 0, 'max_range' => 2147483647],
+            ]);
+            if ($counts[$key] === false) {
+                return null;
+            }
+        }
+
         return [
             'source' => 'XPMarket',
             'token' => self::TOKEN,
@@ -140,8 +155,8 @@ class MarketWidget {
             'price_xrp' => (float) $source['price'],
             'price_usd' => (float) $source['priceUsd'],
             'market_cap_usd' => (float) $source['marketcap'],
-            'holders' => (int) $source['holders'],
-            'rank' => (int) $source['rank'],
+            'holders' => $counts['holders'],
+            'rank' => $counts['rank'],
         ];
     }
 
