@@ -82,6 +82,10 @@ def main() -> int:
         result["seconds"] = round(time.monotonic() - started, 3)
         checks.append(result)
         print(f"{result['status']}: {name}" + (f" — {reason}" if not available else ""), flush=True)
+        if result["status"] == "FAIL":
+            # CI runners are ephemeral; keep the bounded failure detail in the
+            # job log as well as the complete local report directory.
+            print(log[-16000:], flush=True)
 
     node = shutil.which("node")
     php = shutil.which("php")

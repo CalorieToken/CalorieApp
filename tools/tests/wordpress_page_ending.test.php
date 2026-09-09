@@ -267,11 +267,6 @@ foreach ([new WP_Error('offline', 'offline', []), ['status' => 503, 'body' => ''
     check($market->get_widget() instanceof WP_Error, 'Failed upstream data must not become fake figures.');
     check($market->get_widget() instanceof WP_Error && count($requests) === 1, 'Back off for a minute after an upstream failure.');
 }
-define('REST_REQUEST', true);
-check(render(new PageEnding()) === '', 'REST responses must not receive public page furniture.');
-echo "WordPress page-ending rendering, scope, market validation and cache checks passed.\n";
-
-
 // Additive Tokenomics helper receives only public copy and no native signing readiness.
 $page = 1209; $admin = $feed = $embed = $ajax = $preview = false;
 $post_status = 'publish'; $post_password = ''; $_SERVER['REQUEST_METHOD'] = 'GET'; $_GET = [];
@@ -297,3 +292,11 @@ foreach ([['POST', false, 'publish', '', []], ['GET', true, 'publish', '', []], 
     (new PageEnding())->enqueue_assets();
     check(!isset($config['calorieapp-identity-bridge-site-polish']['buyGuide']) && !isset($scripts['calorieapp-buy-guide-language']), 'Unknown or nonpublic guide contexts remain native');
 }
+
+// PHP constants cannot be reset: exercise REST only after all public-page cases.
+define('REST_REQUEST', true);
+check(render(new PageEnding()) === '', 'REST responses must not receive public page furniture.');
+$styles = $scripts = [];
+(new PageEnding())->enqueue_assets();
+check(!$styles && !$scripts, 'REST responses must not enqueue public presentation assets.');
+echo "WordPress page-ending rendering, scope, market validation and cache checks passed.\n";
