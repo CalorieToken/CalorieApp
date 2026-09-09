@@ -36,7 +36,7 @@ const good = () => ({ success: true, data: {
   price_usd: 0.00000007, price_xrp: 0.00000005, market_cap_usd: 4000, rank: 300, holders: 14000,
 } });
 async function settle() { for (let i = 0; i < 10; i++) await Promise.resolve(); }
-function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, empty = false, endpoint = true, legacy = false, mixedHost = false, mixedColumn = false } = {}) {
+function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, rtl = false, empty = false, endpoint = true, legacy = false, mixedHost = false, mixedColumn = false } = {}) {
   const widget = element();
   const widgets = [widget];
   const oldWidget = widget;
@@ -108,6 +108,7 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
     setTimeout(fn) { timers.set(1, fn); return 1; },
     clearTimeout(id) { timers.delete(id); },
     matchMedia() { return { matches: reduced }; },
+    getComputedStyle() { return { direction: rtl ? 'rtl' : 'ltr' }; },
     addEventListener(name, fn) { events.set(name, fn); },
     requestAnimationFrame(fn) { frames.push(fn); },
     MutationObserver: class {
@@ -169,6 +170,9 @@ test('social arrows move one item and respect reduced motion', () => {
   assert.equal(h.track.moves[0].left, -200);
   assert.equal(h.track.moves[1].left, 200);
   assert.equal(h.track.moves[1].behavior, 'auto');
+  const arabic = run({ rtl: true });
+  arabic.buttons[1].listeners.click();
+  assert.equal(arabic.track.moves[0].left, -200, 'Next follows the RTL item order.');
 });
 test('pages without market cards do not request market data', () => {
   const h = run({ empty: true });

@@ -6,12 +6,14 @@ const source=await readFile(new URL('../../wordpress-plugins/calorieapp-identity
 const site='https://calorietoken.net';
 const app=site+'/index.php/calorieapp/';
 const logo=site+'/wp-content/plugins/calorieapp-identity-bridge/assets/calorieapp-logo.svg';
+const locales=JSON.parse(await readFile(new URL('../../wordpress-plugins/calorieapp-identity-bridge/config/locales.json',import.meta.url),'utf8')).locales;
+const catalogue=JSON.parse(await readFile(new URL('../../wordpress-plugins/calorieapp-identity-bridge/config/navigation.json',import.meta.url),'utf8'));
 function style(){const values=new Map();return {
  setProperty(n,v,p=''){values.set(n,{v,p});this[n]=v;},
  getPropertyValue(n){return values.get(n)?.v||'';},getPropertyPriority(n){return values.get(n)?.p||'';},
  removeProperty(n){values.delete(n);delete this[n];}
 };}
-function harness({pathname='/index.php/faq/',embedded=false,isHome='0',appLogo=logo,missingBar=false,height=2400,viewport=800,delayed=false}={}){
+function harness({pathname='/index.php/faq/',embedded=false,isHome='0',appLogo=logo,missingBar=false,height=2400,viewport=800,delayed=false,configure,protectedBar=false}={}){
  const config={dataset:{homePage:site+'/',appPage:app,appLogo,isHome}};
  const body={scrollHeight:height};
  const html={scrollHeight:height};
@@ -35,26 +37,36 @@ function harness({pathname='/index.php/faq/',embedded=false,isHome='0',appLogo=l
  const foreign=link('https://elsewhere.example/index.php/calorieapp/');
  const fragment=link(site+'/#top');const unrelatedScroll=link(site+'/another/#top',{glyph:'square-upload'});
  const mixed=link(app);const mixedOther=link(site+'/index.php/contact/',{sharedRoot:mixed.root});
- const slots=Object.fromEntries(['home','app','bottom','top'].map(role=>[role,{hidden:true,getAttribute(){return role;}}]));
- const buttons=Object.fromEntries(['top','bottom'].map(role=>[role,{getAttribute(){return role;},addEventListener(n,fn){this[n]=fn;}}]));
- const bar={hidden:true,querySelectorAll(s){return s==='[data-calorieapp-scroll]'?Object.values(buttons):Object.values(slots);}};
+ const buttons=Object.fromEntries(['home','app','top','bottom'].map(role=>[role,{
+  attrs:{href:role==='home'?site+'/':role==='app'?app:'#',...(role==='top'||role==='bottom'?{'data-calorieapp-scroll':role}:{})},icon:{original:role},binds:0,
+  get href(){return new URL(this.attrs.href,site+pathname).href;},
+  getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=String(v);},
+  addEventListener(n,fn){this.binds++;this[n]=fn;}
+ }]));
+ const slots=Object.fromEntries(['home','app','bottom','top'].map(role=>[role,{hidden:true,getAttribute(){return role;},querySelector(){return buttons[role];}}]));
+ const bar={hidden:true,attrs:{},closest(){return protectedBar?{}:null;},setAttribute(n,v){this.attrs[n]=String(v);},querySelectorAll(s){return s==='[data-calorieapp-scroll]'?[buttons.top,buttons.bottom]:Object.values(slots);}};
+ let activeBar=bar;
  const events=new Map(),frames=[];let mutation,resize,observed;
  const document={body,documentElement:html,readyState:'complete',
-  querySelector(s){if(s==='[data-calorieapp-site-integration]')return config;if(s==='[data-calorieapp-fallback-shortcuts]')return missingBar?null:bar;if(s==='[data-calorieapp-embed]')return embedded?{}:null;return null;},
+  querySelector(s){if(s==='[data-calorieapp-site-integration]')return config;if(s==='[data-calorieapp-fallback-shortcuts]')return missingBar?null:activeBar;if(s==='[data-calorieapp-embed]')return embedded?{}:null;return null;},
   querySelectorAll(){return links.map(x=>x.item);}
  };
  const window={location:{href:site+pathname},innerHeight:viewport,
+  calorieappDisplayLanguageConfig:{locales,navigation:structuredClone(catalogue)},
   getComputedStyle(n){return {position:n.position,display:n.style?.display||'block'};},
-  requestAnimationFrame(fn){frames.push(fn);},addEventListener(n,fn){events.set(n,fn);},
+  requestAnimationFrame(fn){frames.push(fn);},addEventListener(n,fn){if(!events.has(n))events.set(n,[]);events.get(n).push(fn);},
+  Event:class {constructor(type){this.type=type;}},dispatchEvent(event){for(const fn of events.get(event.type)||[])fn(event);},
   matchMedia(){return {matches:true};},scrollTo(v){this.scrolled=v;},
   MutationObserver:class{constructor(fn){mutation=fn;}disconnect(){}observe(_target,options){observed=options;}},
   ResizeObserver:class{constructor(fn){resize=fn;}observe(){}}
  };
+ configure?.(window.calorieappDisplayLanguageConfig,buttons);
  const flush=()=>{while(frames.length)frames.shift()();};
  const run=()=>vm.runInNewContext(source,{document,window,URL});run();
  return {home,legacy,currentApp,top,bottom,inline,other,foreign,fragment,unrelatedScroll,mixed,mixedOther,bar,slots,buttons,window,body,html,
   run,link,visible:()=>Object.keys(slots).filter(r=>!slots[r].hidden),
-  event(n){events.get(n)?.();flush();},mutate(){mutation?.([]);flush();},resize(){resize?.();flush();},observed:()=>observed};
+  event(n){for(const fn of [...(events.get(n)||[])])fn();flush();},mutate(){mutation?.([]);flush();},resize(){resize?.();flush();},observed:()=>observed,
+  showBar(value){missingBar=!value;},replaceBar(value){activeBar=value;}};
 }
 test('Home and CalorieApp omit their own destination in one shared stack',()=>{
  for(const pathname of ['/','/index.php/','/?campaign=test']){
@@ -94,7 +106,46 @@ test('late controls and delayed Brizy styles are reconciled without duplicate st
  h.legacy.root.position='fixed';h.event('load');assert.equal(h.legacy.container.hidden,true);
  const late=h.link(app);late.root.position='fixed';h.mutate();assert.equal(late.container.hidden,true);
  h.run();h.event('pageshow');assert.equal(h.bar.hidden,false);
- assert.deepEqual(Array.from(h.observed().attributeFilter),['class','style','href']);
+ assert.deepEqual(Array.from(h.observed().attributeFilter),['class','style','href','data-calorieapp-scroll','data-calorieapp-shortcut']);
+});
+
+test('all eleven navigation labels preserve routes, icons, visibility and existing scroll handlers',()=>{
+ assert.equal(catalogue.release_approved,false);assert.deepEqual(Object.keys(catalogue.translations),locales.map(x=>x.tag));
+ const h=harness({embedded:true});const visible=h.visible();
+ const before=Object.fromEntries(Object.entries(h.buttons).map(([role,b])=>[role,{href:b.href,icon:b.icon,click:b.click}]));
+ for(const locale of locales){
+  h.window.CalorieAppPageNavigation.setLocale(locale.tag);
+  assert.equal(h.bar.lang,locale.tag);assert.equal(h.bar.dir,locale.direction);assert.equal(h.bar.attrs['aria-label'],catalogue.translations[locale.tag].region);
+  for(const [role,b] of Object.entries(h.buttons)){
+   assert.equal(b.attrs['aria-label'],catalogue.translations[locale.tag][role]);assert.equal(b.attrs.title,catalogue.translations[locale.tag][role]);
+   assert.equal(b.href,before[role].href);assert.equal(b.icon,before[role].icon);assert.equal(b.click,before[role].click);
+  }
+  assert.deepEqual(h.visible(),visible);assert.equal(h.buttons.top.binds,1);
+ }
+});
+test('missing or invalid replacement restores native controls and a restored stack binds only once',()=>{
+ const h=harness();h.showBar(false);h.mutate();
+ assert.equal(h.home.container.hidden,false);assert.equal(h.legacy.container.hidden,false);
+ h.showBar(true);h.mutate();assert.equal(h.home.container.hidden,true);assert.equal(h.buttons.top.binds,1);
+ h.buttons.app.attrs.href='https://elsewhere.example/';h.mutate();assert.equal(h.legacy.container.hidden,false);
+ h.buttons.app.attrs.href=app;h.mutate();assert.equal(h.legacy.container.hidden,true);
+ delete h.buttons.bottom.attrs['data-calorieapp-scroll'];h.mutate();assert.equal(h.legacy.container.hidden,false);
+ assert.equal(harness({protectedBar:true}).legacy.container.hidden,false);
+});
+test('load discovers a late stack and replacement controls receive the retained locale and working handlers',()=>{
+ const h=harness({missingBar:true});h.showBar(true);h.event('load');assert.equal(h.legacy.container.hidden,true);
+ h.window.CalorieAppPageNavigation.setLocale('nl');
+ const replacement=harness({missingBar:true});h.replaceBar(replacement.bar);h.mutate();
+ assert.equal(replacement.bar.lang,'nl');assert.equal(replacement.buttons.top.attrs.title,'Naar boven');
+ let clicks=0;replacement.buttons.bottom.click({preventDefault(){clicks++;}});
+ assert.equal(clicks,1);assert.equal(h.window.scrolled.top,2400);assert.equal(replacement.buttons.bottom.binds,1);
+ h.mutate();assert.equal(replacement.buttons.bottom.binds,1);
+});
+test('incomplete and unknown navigation copy fall back as a whole; text never becomes markup',()=>{
+ const h=harness({configure:config=>{delete config.navigation.translations.nl.top;config.navigation.translations.fr.home='<img src=x>';}});
+ h.window.CalorieAppPageNavigation.setLocale('nl');assert.equal(h.bar.lang,'en');assert.equal(h.buttons.home.attrs.title,'Go to Home');
+ h.window.CalorieAppPageNavigation.setLocale('fr');assert.equal(h.buttons.home.attrs.title,'<img src=x>');assert.equal(h.buttons.home.icon.original,'home');
+ h.window.CalorieAppPageNavigation.setLocale('unsupported');assert.equal(h.bar.lang,'en');
 });
 test('an old control restored to ordinary content is no longer hidden',()=>{
  const h=harness();assert.equal(h.legacy.container.hidden,true);

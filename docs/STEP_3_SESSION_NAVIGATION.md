@@ -51,8 +51,9 @@ had no such Brizy shortcuts; the 0.3.25 follow-up above fills that gap.
 ## Logo source
 
 The transparent SVG uses the nine original phone-mark paths from page 1 of
-`calorieappdraft3.ai`, in the CalorieToken Google Drive:
-https://drive.google.com/file/d/1FMepF9HinYi9Pd5AuR7BSOO6peY5gIPu/view
+`calorieappdraft3.ai`, in the project's controlled design archive. The rights
+administrator retains its private source reference; the access URL is not
+part of this public documentation. This edit does not rewrite repository history.
 
 The phone mark is visually matched to `logo app.png`. Vector forms, speaker,
 home button, fork, knife and original colours are retained. The artboard,

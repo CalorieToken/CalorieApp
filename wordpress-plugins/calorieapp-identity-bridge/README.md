@@ -41,6 +41,115 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+## Current local candidate: 0.3.40
+
+The full owned How to Buy/sell guide now follows the same optional display
+choice in eleven prepared languages. Its updated public copy includes the full
+CAL currency code, reserves/fees, Xaman regional-provider guidance, selling and
+separate bank withdrawals, exact-issuer checks, RLUSD trustline guidance and
+liquidity conflicts. It presents external trading as the current route. Site
+fonts, modest corners, wrapping, 44px links and RTL direction replace the earlier
+inconsistent guide styles. The public-page/source guards retain edited CMS,
+identity values, links and form/account state. No signing or quote call is added.
+130 local tests pass; PHP, hosted CI, native/mobile and linguistic acceptance
+remain open. Source/release clearance is unchanged; no installation is claimed.
+
+## Previous Tokenomics cycle: 0.3.39
+
+Tokenomics receives an additive consolidation-wallet panel, dated CAL/XRP LP
+interest disclosure, and operator-confirmed completion of all airdrops beside
+the unchanged published chart. Eleven prepared helper translations use the same
+optional display preference. Only public page 1209 receives the helper; original
+wallet controls, session code and financial handlers are retained. Exact giveaway
+figures remain a separate reconciliation task. 125 local tests pass; PHP, hosted
+CI, native/mobile and linguistic acceptance remain open. This is not installed.
+
+## Previous Trustline cycle: 0.3.38 rebuilt
+
+The Trustline follow-up was rebuilt from preserved 0.3.37 after the previous
+unreleased 0.3.38 artifact became unavailable. Copy/sign activation rechecks the
+current issuer/currency source. Clipboard failures provide manual guidance and
+pending actions cannot duplicate a write. Eleven prepared helper translations
+use the existing optional display store; full page/legal translations remain
+open. The separate public-page marker does not change native signing readiness.
+119 local tests pass; PHP, hosted CI and native/browser acceptance remain open.
+
+This is an unreleased Step 3 repair candidate, not a completed website release.
+It reconciles the existing presentation work, adds scoped page enhancements,
+and retains the accepted authentication/session controllers. The How to Buy
+replacement requires an exact match to the captured old markup; later CMS edits
+and translations are not overwritten. The optional CAL TrustSet link requires
+server confirmation of the existing handler and matching CAL parameters. No
+credential is passed to the browser and presentation creates no payload.
+
+The page ending now provides one CalorieApp information component across public
+page types, with eleven-locale copy and a verified site app link. The app page
+uses an informational label instead of reloading its own embed. No private
+account values, app fetches, new cookies or tracking are added to the component.
+
+Reviewed Brizy footer markup is replaced in the rendered page by the shared
+social/legal footer. Stored content is retained. Unrecognized copy, links or
+controls keep their original footer; later CMS changes restore a formerly
+matched footer. A dedicated market card moves to the shared ending instead of
+overlapping the team section. Mixed account/payment shortcodes and forms remain
+in place. The existing market request is reused; archive/search pages do not
+gain a new market card or request. Admin, feed, embed, AJAX and REST responses
+receive no public page furniture.
+
+The separate design-only DEX registry has dated validated-ledger identity
+evidence and checksum/issuer tests. No first-party trading or mainnet submission
+is enabled. The source-clearance contract still blocks public distribution;
+ordinary local builds do not clear that gate. New PHP fixture execution, exact
+head CI, rendered acceptance and approval remain outstanding.
+
+Version 0.3.37 restores the previously reported Richlist and donation/CMP work
+from the recovered 0.3.34 source baseline. Richlist handles late, replaced,
+removed or ambiguous own-row markers and rechecks before accessible focus/scroll.
+Shared shortcut labels and Richlist helper labels follow the existing optional
+display preview in eleven prepared languages. Missing or edited replacement
+shortcuts restore native controls; replacement scroll buttons bind once. Original
+artwork, destinations and accepted session handlers are retained. Donation/CMP
+CSS aligns type, corners, wrapping and focus without changing native behavior.
+
+The shared local/CI check command is
+`python3 tools/check_step3_candidate.py --require-php` from the source repository.
+This candidate has 113 passing Node/Python tests, but missing PHP is explicitly
+INCOMPLETE and fails that gate. Native mobile/session/donation/consent and
+linguistic acceptance remain open.
+
+See `docs/STEP_3_REPAIR_CHECKPOINT.md` and `docs/STEP_3_PRESENTATION_RELEASE.md`
+in the source repository for the full open-item inventory. Restore the previously
+accepted artifact for an approved rollback; do not disable the whole companion
+plugin merely to undo presentation, because it also supplies identity features.
+
+The display-language preview introduced in 0.3.32 defaults off. When its explicit development
+switch and the matching app switch are enabled, both native selectors share a
+display-only preference and the translated app-information component responds.
+The preference contains only the locale and timestamp for at most 30 days in
+first-party browser storage. No authentication locale, cookie consent, account,
+provider endpoint or payment handler is changed. Full page/legal translation
+and real PHP/browser acceptance remain open. See the repository's
+`contracts/display-language/v1/README.md` for scope and activation details.
+
+Version 0.3.33 connects one FAQ question/answer sample to that same store. The
+additional adapter/catalogue load only for public GET requests of the known
+published FAQ page, outside previews and unknown query contexts. Both paragraphs
+must match their captured text/structure before existing text nodes change.
+Edited source stays intact. The eleven draft translations are not approved
+full-page translations. Disable the preview flag, clear affected page caches
+when used and reload to undo the sample without disabling identity features. No stored CMS text is rewritten. Package
+and JavaScript checks pass locally; PHP/browser and source clearance remain open.
+
+Version 0.3.34 adds a native cookie-settings button, profile link and explanation
+in the observed Blog shortcode even if its X anchor/frame is absent. Three helper
+strings follow the public WP locale or shared display preview in eleven prepared
+languages. The original coloured heading and native CMP/X subtree are retained;
+there is no second provider loader, consent change or paid service. Fifty-seven
+local maintenance tests pass; PHP, live timeline/CMP and actual visual/language
+acceptance remain open. The Roadmap correction still needs its exact source.
+
+## Earlier maintenance history
+
 Version 0.3.27 bundles the 0.3.26 candidate with the mobile screenshot findings.
 The shared header styles now apply to the actual XUMM shortcode before layout
 JavaScript runs, and a late-created account card is initialized once. Richlist
@@ -237,6 +346,7 @@ recommended for production browser-cookie reliability.
 - assets/calorieapp-site-session.js
 - assets/calorieapp-embed.css
 - config/locales.json
+- config/app-information.json
 - tests/bootstrap.php
 - tests/test-identity-bridge-rest.php
 - phpunit.xml.dist

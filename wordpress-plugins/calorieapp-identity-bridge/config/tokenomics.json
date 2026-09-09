@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "copy_version": "tokenomics-helper-v1",
+  "review_status": "prepared-unreviewed",
+  "release_approved": false,
+  "translations": {
+    "en": {
+      "statusTitle": "Airdrops completed",
+      "status": "All airdrops are completed, as confirmed by the project on 2026-09-09. The published chart is retained as historical context; earlier references to future airdrops no longer apply.",
+      "giveaways": "A remaining giveaway allocation will be stated after distributions, internal transfers and liquidity positions have been reconciled.",
+      "walletTitle": "Consolidation wallet",
+      "description": "Project wallet for consolidated CalorieToken funds. Its balance is not a statement of the remaining giveaway allocation.",
+      "liquidity": "At the ledger check on 2026-09-09, this wallet held a liquidity position in the CAL/XRP AMM. The project therefore has a financial interest in this pool.",
+      "action": "View wallet on XPMarket (new tab)"
+    },
+    "zh-Hans": {
+      "statusTitle": "空投已完成",
+      "status": "项目方于 2026-09-09 确认，所有空投均已完成。保留已发布图表作为历史资料；其中关于未来空投的说明已不再适用。",
+      "giveaways": "在核对分发、内部转账和流动性头寸后，将公布剩余赠送额度。",
+      "walletTitle": "归集钱包",
+      "description": "用于归集 CalorieToken 项目资金的钱包。其余额不代表剩余赠送额度。",
+      "liquidity": "在 2026-09-09 的账本核查中，此钱包持有 CAL/XRP AMM 的流动性头寸。因此，项目在该资金池中具有经济利益。",
+      "action": "在 XPMarket 查看钱包（新标签页）"
+    },
+    "hi": {
+      "statusTitle": "एयरड्रॉप पूरे हो चुके हैं",
+      "status": "परियोजना ने 2026-09-09 को पुष्टि की कि सभी एयरड्रॉप पूरे हो चुके हैं। प्रकाशित चार्ट ऐतिहासिक संदर्भ के लिए रखा गया है; भविष्य के एयरड्रॉप के पुराने उल्लेख अब लागू नहीं होते।",
+      "giveaways": "वितरण, आंतरिक हस्तांतरण और लिक्विडिटी पोज़िशन का मिलान करने के बाद शेष गिवअवे आवंटन बताया जाएगा।",
+      "walletTitle": "समेकन वॉलेट",
+      "description": "CalorieToken परियोजना की समेकित निधियों का वॉलेट। इसका बैलेंस शेष गिवअवे आवंटन नहीं दर्शाता।",
+      "liquidity": "2026-09-09 की लेजर जाँच के समय इस वॉलेट की CAL/XRP AMM में लिक्विडिटी पोज़िशन थी। इसलिए इस पूल में परियोजना का वित्तीय हित है।",
+      "action": "XPMarket पर वॉलेट देखें (नया टैब)"
+    },
+    "es": {
+      "statusTitle": "Airdrops completados",
+      "status": "El proyecto confirmó el 2026-09-09 que todos los airdrops han finalizado. El gráfico publicado se conserva como referencia histórica; las menciones anteriores a futuros airdrops ya no se aplican.",
+      "giveaways": "La asignación restante para sorteos y regalos se indicará tras conciliar las distribuciones, las transferencias internas y las posiciones de liquidez.",
+      "walletTitle": "Billetera de consolidación",
+      "description": "Billetera del proyecto para fondos consolidados de CalorieToken. Su saldo no indica la asignación restante para sorteos y regalos.",
+      "liquidity": "En la comprobación del ledger del 2026-09-09, esta billetera mantenía una posición de liquidez en el AMM CAL/XRP. Por tanto, el proyecto tiene un interés financiero en este pool.",
+      "action": "Ver billetera en XPMarket (nueva pestaña)"
+    },
+    "ar": {
+      "statusTitle": "اكتملت عمليات التوزيع المجاني",
+      "status": "أكد المشروع بتاريخ 2026-09-09 اكتمال جميع عمليات التوزيع المجاني (airdrop). يُحتفظ بالمخطط المنشور كسياق تاريخي؛ ولم تعد الإشارات السابقة إلى عمليات توزيع مستقبلية سارية.",
+      "giveaways": "سيُذكر المخصص المتبقي للهدايا بعد مطابقة التوزيعات والتحويلات الداخلية ومراكز السيولة.",
+      "walletTitle": "محفظة التجميع",
+      "description": "محفظة المشروع لتجميع أموال CalorieToken. لا يمثل رصيدها المخصص المتبقي للهدايا.",
+      "liquidity": "عند فحص السجل بتاريخ 2026-09-09، كانت لهذه المحفظة حصة سيولة في مجمع CAL/XRP AMM. ولذلك للمشروع مصلحة مالية في هذا المجمع.",
+      "action": "عرض المحفظة على XPMarket (علامة تبويب جديدة)"
+    },
+    "fr": {
+      "statusTitle": "Airdrops terminés",
+      "status": "Le projet a confirmé le 2026-09-09 que tous les airdrops sont terminés. Le graphique publié est conservé à titre historique ; les anciennes mentions de futurs airdrops ne sont plus applicables.",
+      "giveaways": "Le solde alloué aux cadeaux sera indiqué après rapprochement des distributions, des transferts internes et des positions de liquidité.",
+      "walletTitle": "Portefeuille de consolidation",
+      "description": "Portefeuille du projet destiné aux fonds consolidés de CalorieToken. Son solde ne représente pas le montant restant alloué aux cadeaux.",
+      "liquidity": "Lors de la vérification du registre le 2026-09-09, ce portefeuille détenait une position de liquidité dans l’AMM CAL/XRP. Le projet a donc un intérêt financier dans ce pool.",
+      "action": "Voir le portefeuille sur XPMarket (nouvel onglet)"
+    },
+    "bn": {
+      "statusTitle": "এয়ারড্রপ সম্পন্ন হয়েছে",
+      "status": "প্রকল্পটি 2026-09-09 তারিখে নিশ্চিত করেছে যে সব এয়ারড্রপ সম্পন্ন হয়েছে। প্রকাশিত চার্টটি ঐতিহাসিক তথ্য হিসেবে রাখা হয়েছে; ভবিষ্যৎ এয়ারড্রপের পুরোনো উল্লেখ আর প্রযোজ্য নয়।",
+      "giveaways": "বিতরণ, অভ্যন্তরীণ স্থানান্তর এবং লিকুইডিটি পজিশন মিলিয়ে দেখার পর গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ জানানো হবে।",
+      "walletTitle": "একত্রীকরণ ওয়ালেট",
+      "description": "CalorieToken প্রকল্পের একত্রিত তহবিলের ওয়ালেট। এর ব্যালেন্স গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ নির্দেশ করে না।",
+      "liquidity": "2026-09-09 তারিখে লেজার যাচাইয়ের সময় এই ওয়ালেটের CAL/XRP AMM-এ লিকুইডিটি পজিশন ছিল। তাই এই পুলে প্রকল্পটির আর্থিক স্বার্থ রয়েছে।",
+      "action": "XPMarket-এ ওয়ালেট দেখুন (নতুন ট্যাব)"
+    },
+    "pt": {
+      "statusTitle": "Airdrops concluídos",
+      "status": "O projeto confirmou em 2026-09-09 que todos os airdrops foram concluídos. O gráfico publicado é mantido como referência histórica; as menções anteriores a futuros airdrops já não se aplicam.",
+      "giveaways": "A alocação restante para brindes será indicada após a reconciliação das distribuições, transferências internas e posições de liquidez.",
+      "walletTitle": "Carteira de consolidação",
+      "description": "Carteira do projeto para fundos consolidados de CalorieToken. O seu saldo não representa a alocação restante para brindes.",
+      "liquidity": "Na verificação do ledger em 2026-09-09, esta carteira mantinha uma posição de liquidez no AMM CAL/XRP. Por isso, o projeto tem um interesse financeiro neste pool.",
+      "action": "Ver carteira no XPMarket (nova aba)"
+    },
+    "id": {
+      "statusTitle": "Airdrop telah selesai",
+      "status": "Proyek mengonfirmasi pada 2026-09-09 bahwa semua airdrop telah selesai. Grafik yang diterbitkan dipertahankan sebagai konteks historis; keterangan lama tentang airdrop mendatang tidak lagi berlaku.",
+      "giveaways": "Sisa alokasi giveaway akan dinyatakan setelah distribusi, transfer internal, dan posisi likuiditas direkonsiliasi.",
+      "walletTitle": "Dompet konsolidasi",
+      "description": "Dompet proyek untuk dana CalorieToken yang dikonsolidasikan. Saldonya tidak menyatakan sisa alokasi giveaway.",
+      "liquidity": "Pada pemeriksaan ledger tanggal 2026-09-09, dompet ini memiliki posisi likuiditas di AMM CAL/XRP. Karena itu, proyek memiliki kepentingan finansial dalam pool ini.",
+      "action": "Lihat dompet di XPMarket (tab baru)"
+    },
+    "ur": {
+      "statusTitle": "ایئرڈراپس مکمل ہو چکے ہیں",
+      "status": "منصوبے نے 2026-09-09 کو تصدیق کی کہ تمام ایئرڈراپس مکمل ہو چکے ہیں۔ شائع شدہ چارٹ تاریخی حوالے کے لیے برقرار ہے؛ آئندہ ایئرڈراپس کے پرانے حوالے اب لاگو نہیں ہوتے۔",
+      "giveaways": "تقسیم، داخلی منتقلیوں اور لیکویڈیٹی پوزیشنوں کا حساب ملانے کے بعد تحائف کے لیے باقی مختص مقدار بتائی جائے گی۔",
+      "walletTitle": "یکجا فنڈز کا والیٹ",
+      "description": "CalorieToken منصوبے کے یکجا فنڈز کا والیٹ۔ اس کا بیلنس تحائف کے لیے باقی مختص مقدار کو ظاہر نہیں کرتا۔",
+      "liquidity": "2026-09-09 کی لیجر جانچ کے وقت اس والیٹ کی CAL/XRP AMM میں لیکویڈیٹی پوزیشن تھی۔ اس لیے اس پول میں منصوبے کا مالی مفاد ہے۔",
+      "action": "XPMarket پر والیٹ دیکھیں (نیا ٹیب)"
+    },
+    "nl": {
+      "statusTitle": "Airdrops afgerond",
+      "status": "Alle airdrops zijn afgerond, zoals door het project bevestigd op 2026-09-09. De gepubliceerde grafiek blijft als historische toelichting staan; eerdere verwijzingen naar toekomstige airdrops zijn niet meer van toepassing.",
+      "giveaways": "Het resterende giveawaybudget wordt vermeld nadat uitdelingen, interne overboekingen en liquiditeitsposities met elkaar zijn afgestemd.",
+      "walletTitle": "Consolidatiewallet",
+      "description": "Projectwallet voor samengebrachte CalorieToken-fondsen. Het saldo geeft niet het resterende giveawaybudget aan.",
+      "liquidity": "Bij de ledgercontrole op 2026-09-09 had deze wallet een liquiditeitspositie in de CAL/XRP-AMM. Het project heeft daarmee een financieel belang in deze pool.",
+      "action": "Bekijk wallet op XPMarket (nieuw tabblad)"
+    }
+  }
+}

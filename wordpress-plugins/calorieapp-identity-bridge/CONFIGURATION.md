@@ -51,6 +51,24 @@ Pending status checks begin at five-second intervals, slow to ten seconds after
 to at most 30 seconds and bounded `Retry-After` guidance is respected. Focus and
 page-show events cannot bypass an already scheduled retry.
 
+## Development display-language preview
+
+The optional `CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW` constant must be the boolean
+`true`; it is off by default. Its selector uses one display preference and never
+sets the authentication locale. The separately built CalorieApp preview uses
+`NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW=1` for its corresponding control.
+
+Candidate 0.3.33 also includes a two-paragraph FAQ sample. The extra adapter and
+catalogue load only on the configured public FAQ page, for GET outside content
+previews, password protection and unknown query contexts. Exact client-side
+source/page matching remains required. This is not an automatic site translator;
+all eleven sample translations remain unreviewed. No extra setting, service or
+storage is introduced for the sample. Disable the preview constant, clear affected
+page caches when used and reload to restore the original stored text while
+retaining identity functionality.
+These instructions describe local development behavior, not live activation
+approval. See the repository's display-language contract and Step 3 checkpoint.
+
 ## Security requirements
 
 - Require HTTPS for non-loopback URLs.

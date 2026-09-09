@@ -1,0 +1,24 @@
+/* Additive Tokenomics furniture; historical artwork and native wallets retain their styles. */
+.brz.page-id-1209 .calorieapp-tokenomics-note {
+  box-sizing: border-box; width: 100%; min-width: 0; max-width: 940px;
+  margin: 20px auto; padding: clamp(16px, 3vw, 28px);
+  border: 2px solid #505ba9; border-radius: 8px; background: #fff; color: #303449;
+  font-family: inherit; font-size: 16px; line-height: 1.6; text-align: start;
+  overflow-wrap: anywhere;
+}
+.brz.page-id-1209 .calorieapp-tokenomics-note h2 {
+  margin: 0 0 12px; font: inherit; font-size: 1.35em; font-weight: 700; color: #505ba9;
+}
+.brz.page-id-1209 .calorieapp-tokenomics-note p { margin: 0 0 12px; font: inherit; }
+.brz.page-id-1209 .calorieapp-tokenomics-address {
+  display: block; margin: 12px 0; padding: 12px; border: 1px solid #505ba9;
+  border-radius: 4px; font-family: ui-monospace, monospace; font-size: 16px;
+  direction: ltr; unicode-bidi: isolate; text-align: left; overflow-wrap: anywhere;
+}
+.brz.page-id-1209 .calorieapp-tokenomics-explorer {
+  display: inline-flex; align-items: center; box-sizing: border-box; min-height: 48px;
+  max-width: 100%; padding: 10px 16px; border: 2px solid #505ba9; border-radius: 4px;
+  background: #505ba9; color: #fff; font: inherit; font-weight: 700;
+  text-decoration: underline; text-underline-offset: .2em; white-space: normal;
+}
+.brz.page-id-1209 .calorieapp-tokenomics-explorer:focus-visible { outline: 3px solid #303449; outline-offset: 3px; }

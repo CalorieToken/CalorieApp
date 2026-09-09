@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "mode": "opt-in-development-preview",
+  "source_url": "https://calorietoken.net/index.php/faq/",
+  "observed_on": "2026-09-08",
+  "wordpress_id": 6855,
+  "origins": [
+    "https://calorietoken.net",
+    "https://www.calorietoken.net"
+  ],
+  "pathname": "/index.php/faq/",
+  "copy_version": "faq-mission-current-and-planned-v1",
+  "source_copy_review": "prepared-unreviewed",
+  "release_approved": false,
+  "scope": "One FAQ question and answer only. No legal documents, account, consent or payment controls. Current copy is an unpublished proposal; historical source is restored on disconnect.",
+  "slots": [
+    {
+      "key": "question",
+      "element_id": "uddCR",
+      "source_sha256": "9a276cbfed081b6f9e7c2a3c670f403ae1224e5aa86ac7748bcd55fa06b0d762",
+      "source": {
+        "tag": "p",
+        "attributes": [
+          [
+            "class",
+            "brz-lh-lg-1_9 brz-ls-lg-0 brz-fw-lg-400 brz-fss-lg-px brz-fs-lg-16 brz-ft-google brz-ff-knewave brz-tp-lg-empty brz-text-lg-center brz-css-n84dsb"
+          ],
+          [
+            "data-generated-css",
+            "brz-css-g60SK"
+          ],
+          [
+            "data-uniq-id",
+            "uddCR"
+          ]
+        ],
+        "children": [
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "opacity: 1; color: rgb(80, 91, 169); background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "W"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "hat "
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent; opacity: 1; color: rgb(80, 91, 169);"
+              ]
+            ],
+            "children": [
+              "i"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "s "
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent; opacity: 1; color: rgb(80, 91, 169);"
+              ]
+            ],
+            "children": [
+              "t"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "he "
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent; opacity: 1; color: rgb(80, 91, 169);"
+              ]
+            ],
+            "children": [
+              "m"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "ission "
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent; opacity: 1; color: rgb(80, 91, 169);"
+              ]
+            ],
+            "children": [
+              "o"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "f "
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent; opacity: 1; color: rgb(80, 91, 169);"
+              ]
+            ],
+            "children": [
+              "C"
+            ]
+          },
+          {
+            "tag": "strong",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "alorieToken?"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "answer",
+      "element_id": "mE0AL",
+      "source_sha256": "0c8f1594bf097ee64609db992934e5aaa853e05f805c0ab80dedb54149b14c0a",
+      "source": {
+        "tag": "p",
+        "attributes": [
+          [
+            "class",
+            "brz-text-lg-center brz-tp-lg-empty brz-ff-lato brz-ft-google brz-fs-lg-16 brz-fss-lg-px brz-fw-lg-400 brz-ls-lg-0 brz-lh-lg-1_9 brz-vfw-lg-400 brz-fwdth-lg-100 brz-fsft-lg-0 brz-css-1997g7h"
+          ],
+          [
+            "data-generated-css",
+            "brz-css-ufvZL"
+          ],
+          [
+            "data-uniq-id",
+            "mE0AL"
+          ]
+        ],
+        "children": [
+          {
+            "tag": "span",
+            "attributes": [
+              [
+                "style",
+                "background-color: transparent;"
+              ]
+            ],
+            "children": [
+              "Calorie's mission is to establish a diverse network of partners within the food and beverage industry, integrate payment applications for companies and consumers, contribute to corporate social responsibility, and promote a healthier financial lifestyle."
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "translations": {
+    "en": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "W",
+          "hat ",
+          "i",
+          "s ",
+          "t",
+          "he ",
+          "m",
+          "ission ",
+          "o",
+          "f ",
+          "C",
+          "alorieToken?"
+        ],
+        "answer": [
+          "CalorieToken's goal is to connect food information with uses of the XRP Ledger. CalorieApp currently offers food lookup and a personal food log. Retail payments, supply-chain tracking and an integrated exchange are planned extensions."
+        ]
+      }
+    },
+    "zh-Hans": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "CalorieToken",
+          " 的",
+          "使命",
+          "是",
+          "什么",
+          "？",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "CalorieToken 旨在将食品信息与 XRP Ledger 的应用相结合。CalorieApp 目前提供食品查询和个人饮食日志。零售支付、供应链追踪和集成交易功能属于计划中的扩展。"
+        ]
+      }
+    },
+    "hi": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "CalorieToken",
+          " का ",
+          "मिशन",
+          " क्या ",
+          "है",
+          "?",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "CalorieToken का लक्ष्य खाद्य जानकारी को XRP Ledger के उपयोगों से जोड़ना है। CalorieApp में अभी खाद्य पदार्थ खोजने और निजी आहार डायरी रखने की सुविधाएँ हैं। दुकानों में भुगतान, आपूर्ति शृंखला की निगरानी और एकीकृत एक्सचेंज की सुविधाएँ भविष्य के विस्तार के लिए नियोजित हैं।"
+        ]
+      }
+    },
+    "es": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "¿C",
+          "uál ",
+          "e",
+          "s ",
+          "l",
+          "a ",
+          "m",
+          "isión ",
+          "d",
+          "e ",
+          "C",
+          "alorieToken?"
+        ],
+        "answer": [
+          "CalorieToken busca conectar la información alimentaria con los usos del XRP Ledger. CalorieApp ofrece actualmente búsqueda de alimentos y un diario alimentario personal. Los pagos en comercios, la trazabilidad de la cadena de suministro y un intercambio integrado son ampliaciones previstas."
+        ]
+      }
+    },
+    "ar": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "rtl",
+      "slots": {
+        "question": [
+          "ما",
+          " هي ",
+          "مهمة",
+          " ",
+          "CalorieToken",
+          "؟",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "يهدف CalorieToken إلى ربط معلومات الأغذية باستخدامات XRP Ledger. يتيح CalorieApp حالياً البحث عن الأغذية وتسجيل يوميات غذائية شخصية. وتشمل التوسعات المخططة الدفع في المتاجر وتتبع سلسلة التوريد ومنصة تبادل مدمجة."
+        ]
+      }
+    },
+    "fr": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "Q",
+          "uelle ",
+          "e",
+          "st ",
+          "l",
+          "a ",
+          "m",
+          "ission ",
+          "d",
+          "e ",
+          "C",
+          "alorieToken ?"
+        ],
+        "answer": [
+          "CalorieToken vise à relier les informations alimentaires aux usages du XRP Ledger. CalorieApp propose actuellement la recherche d’aliments et un journal alimentaire personnel. Les paiements aux commerçants, la traçabilité de la chaîne d’approvisionnement et une plateforme d’échange intégrée font partie des extensions prévues."
+        ]
+      }
+    },
+    "bn": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "CalorieToken",
+          "-এর ",
+          "লক্ষ্য",
+          " কী",
+          "?",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "CalorieToken-এর লক্ষ্য খাদ্যসংক্রান্ত তথ্যকে XRP Ledger-এর ব্যবহারের সঙ্গে যুক্ত করা। CalorieApp বর্তমানে খাবার খোঁজা এবং ব্যক্তিগত খাদ্য ডায়েরি রাখার সুবিধা দেয়। দোকানে অর্থপ্রদান, সরবরাহ শৃঙ্খল অনুসরণ এবং সমন্বিত এক্সচেঞ্জ পরিকল্পিত সম্প্রসারণের অংশ।"
+        ]
+      }
+    },
+    "pt": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "Q",
+          "ual ",
+          "é",
+          " ",
+          "a",
+          " ",
+          "m",
+          "issão ",
+          "d",
+          "o ",
+          "C",
+          "alorieToken?"
+        ],
+        "answer": [
+          "O objetivo do CalorieToken é ligar informações alimentares às utilizações do XRP Ledger. O CalorieApp oferece atualmente pesquisa de alimentos e um diário alimentar pessoal. Pagamentos em lojas, rastreabilidade da cadeia de abastecimento e uma plataforma de câmbio integrada são extensões previstas."
+        ]
+      }
+    },
+    "id": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "A",
+          "pa ",
+          "m",
+          "isi ",
+          "C",
+          "alorieToken?",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "CalorieToken bertujuan menghubungkan informasi pangan dengan penggunaan XRP Ledger. CalorieApp saat ini menyediakan pencarian makanan dan catatan makanan pribadi. Pembayaran di toko, pelacakan rantai pasok, dan bursa terintegrasi merupakan pengembangan yang direncanakan."
+        ]
+      }
+    },
+    "ur": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "rtl",
+      "slots": {
+        "question": [
+          "CalorieToken",
+          " کا ",
+          "مشن",
+          " کیا ",
+          "ہے",
+          "؟",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "answer": [
+          "CalorieToken کا مقصد خوراک کی معلومات کو XRP Ledger کے استعمالات سے جوڑنا ہے۔ CalorieApp فی الحال کھانے کی تلاش اور ذاتی غذائی ڈائری کی سہولت فراہم کرتی ہے۔ دکانوں پر ادائیگیاں، سپلائی چین کی نگرانی اور ایک مربوط ایکسچینج منصوبہ بند توسیعات ہیں۔"
+        ]
+      }
+    },
+    "nl": {
+      "copy_version": "faq-mission-current-and-planned-v1",
+      "review_status": "prepared-unreviewed",
+      "direction": "ltr",
+      "slots": {
+        "question": [
+          "W",
+          "at ",
+          "i",
+          "s ",
+          "d",
+          "e ",
+          "m",
+          "issie ",
+          "v",
+          "an ",
+          "C",
+          "alorieToken?"
+        ],
+        "answer": [
+          "CalorieToken wil voedselinformatie verbinden met toepassingen van de XRP Ledger. CalorieApp biedt momenteel het opzoeken van voedingsmiddelen en een persoonlijk voedingsdagboek. Winkelbetalingen, het volgen van de toeleveringsketen en een geïntegreerde exchange zijn geplande uitbreidingen."
+        ]
+      }
+    }
+  }
+}

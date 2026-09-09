@@ -1,5 +1,10 @@
-/* Shared CAL card, page ending and missing shortcuts. Existing Brizy footers
-   stay stored in place; the companion adds only a deduplicated market card. */
+/* One public page ending. Reviewed legacy footers stay stored in Brizy;
+   only their rendered, safely matched counterparts are hidden. */
+.calorieapp-shared-page-ending[hidden],
+.calorieapp-shared-footer[hidden],
+.calorieapp-sitewide-market[hidden],
+[data-calorieapp-legacy-footer][hidden],
+[data-calorieapp-retired-market-slot][hidden] { display: none !important; }
 .calorieapp-shared-page-ending {
   box-sizing: border-box;
   width: 100%;
@@ -8,6 +13,44 @@
   font-family: Amiri, Georgia, "Times New Roman", serif;
 }
 .calorieapp-page-market { padding: 0 16px 32px; }
+.calorieapp-app-info {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  width: min(960px, calc(100% - 32px));
+  margin: 0 auto 32px;
+  padding: 20px 16px;
+  border-block-start: 2px solid #f9b233;
+  border-block-end: 2px solid #505ba9;
+  background: #fff;
+  color: #303449;
+  text-align: start;
+}
+.calorieapp-app-info > * { min-width: 0; max-width: 100%; }
+.calorieapp-app-info > img { width: 64px; height: 64px; object-fit: contain; }
+.calorieapp-app-info h2 { margin: 0 0 4px; color: #008d36; font: 700 28px/1.3 Amiri, Georgia, serif; }
+.calorieapp-app-info p { margin: 0; font: 18px/1.5 Amiri, Georgia, serif; overflow-wrap: anywhere; }
+.calorieapp-app-info-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 2px solid #505ba9;
+  border-radius: 4px;
+  background: #f9b233;
+  color: #303449 !important;
+  font: 700 18px/1.4 Amiri, Georgia, serif;
+  text-decoration: none !important;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.calorieapp-app-info-link:hover { background: #fff; }
+.calorieapp-app-info-link:focus-visible { outline: 3px solid #008d36; outline-offset: 3px; }
+.calorieapp-app-info-current { max-width: 180px; }
 .calorieapp-shared-footer {
   box-sizing: border-box;
   width: 100%;
@@ -80,6 +123,7 @@
   line-height: 1;
   cursor: pointer;
 }
+[dir="rtl"] .calorieapp-shared-social-arrow { transform: scaleX(-1); }
 
 .calorieapp-shared-legal {
   width: min(100%, 1170px);
@@ -99,6 +143,7 @@
   font-weight: 700;
   text-decoration: underline !important;
 }
+.calorieapp-footer-no-script { padding: 16px; background: #505ba9; }
 
 .calorieapp-shared-social:hover,
 .calorieapp-shared-social:focus-visible,
@@ -246,6 +291,10 @@
 
 @media (max-width: 767px) {
   .calorieapp-shared-page-ending { margin-top: 24px; }
+  .calorieapp-app-info { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 16px 12px; }
+  .calorieapp-app-info > img { width: 48px; height: 48px; }
+  .calorieapp-app-info-link,
+  .calorieapp-app-info-current { grid-column: 1 / -1; justify-self: start; max-width: 100%; }
   .calorieapp-shared-footer { padding: 20px 18px 26px; }
   .calorieapp-shared-socials { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 4px; }
   .calorieapp-shared-social { flex-basis: 100%; min-height: 76px; }

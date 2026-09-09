@@ -1,37 +1,26 @@
-# Step 3 presentation release
+# Step 3 presentation review — Identity Bridge 0.3.40
 
-Candidate: Identity Bridge 0.3.30.
+The accumulated website changes are submitted for one code-review and CI pass
+against the existing maintenance base, not app main. They address shared footers,
+market placement, floating navigation, richlist, donation/cookie styling, Trustline,
+Tokenomics, and the complete owned How to Buy/sell guide. The website information
+widget and optional display-language helpers use the same eleven-locale registry.
 
-## Included presentation changes
+The exact reviewed legacy guide is replaced with external buy/sell guidance,
+issuer/currency identity, XRP reserves/network fees, RLUSD trustline checks and a
+separate bank-withdrawal explanation. Xaman's region/currency selector and the
+issuer-specific XPMarket page were checked on 2026-09-09. No quote or signing
+request is added. The Tokenomics helper uses an operator-supplied project wallet
+and dated ledger validation; all airdrops are operator-confirmed complete, while
+exact remaining giveaway figures are still open. Historical images are retained.
 
-- Existing Brizy footers remain stored in place. Singular pages missing a CAL
-  market card receive one candidate which is deduplicated against an existing
-  XPMarket/legacy card and positioned before the existing legal footer.
-- The Trustline page reuses the installed XUMM Login plugin's existing Xaman
-  TrustSet route. No Xaman credential or signing implementation is duplicated.
-- The Richlist highlights only the row already marked for the authenticated
-  visitor and adds an accessible jump control. Logged-out visitors receive no
-  inferred position.
-- Contact, donation and Complianz consent controls receive scoped responsive
-  presentation without changing their submission or consent behavior.
-- How to buy becomes a wallet, regional XRP funding, CAL trustline, then buy or
-  sell path. Unreliable generic DEX links are removed. The issuer-pinned XPMarket
-  destination remains, and CAL/XRP plus CAL/RLUSD are identified as validated
-  XRPL AMMs. First-party mainnet signing stays labelled release-gated.
+130 local tests passed: 114 Node and 16 Python. JS syntax, package/asset checks,
+legal-boundary checks and whitespace passed. PHP lint/six fixtures were not run
+locally; the strict aggregate is INCOMPLETE. Hosted CI and actual WordPress/app,
+mobile/RTL, linguistic, consent and donation acceptance remain to be performed.
+Source clearance remains blocked; no new release, installation or mainnet
+financial feature is approved by this proposal.
 
-The display changes are reversible by disabling the companion plugin. They do
-not mutate stored Brizy content, create a DEX transaction, publish personal
-wallet ownership, or merge the application branch.
-
-## Third-party mark added in 0.3.28+
-
-`assets/calorieapp-site-polish.js` contains the monochrome X logo path from X's
-official brand toolkit solely to identify CalorieToken's X profile. The mark is
-not project-owned and is not licensed under the plugin's software licence.
-
-- Source: <https://about.x.com/en/who-we-are/brand-toolkit>
-- Asset: <https://about.x.com/content/dam/about-twitter/x/brand-toolkit/x-logo.zip>
-- Retrieved: 2026-09-08
-
-The original vector geometry is preserved; `currentColor` retains the site's
-monochrome icon colour.
+See STEP_3_REPAIR_CHECKPOINT.md for all 27 requested areas and their remaining
+closure. Internal recovery archives, attachment handles and later private
+checkpoint history are excluded from this proposed public review commit.

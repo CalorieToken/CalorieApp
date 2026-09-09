@@ -2,6 +2,7 @@
   "schema_version": 1,
   "network": "xrpl-mainnet",
   "status": "design-only",
+  "identity_evidence": "contracts/ecosystem/evidence/xrpl-amm-identities-20260908.json",
   "assets": {
     "XRP": {
       "kind": "native",
@@ -34,7 +35,7 @@
       "base": "CAL",
       "quote": "RLUSD",
       "directions": ["buy_cal", "sell_cal"],
-      "amm_account": "rPN26geWz6jzs4TwiwYDmpeF2maJFZBtr",
+      "amm_account": "rPN26geCWSD4xPu8LYBM8zqDrYSgNQGHeQ",
       "verification": "validated-ledger"
     },
     {

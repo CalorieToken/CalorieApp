@@ -1,8 +1,11 @@
 {
   "contract_id": "calorieapp.identity-bridge.code-provenance",
-  "contract_version": "1.2.0",
+  "contract_version": "1.3.1",
   "review_date": "2026-09-04",
   "plugin_version_reviewed": "0.3.2",
+  "inventory_updated_on": "2026-09-09",
+  "inventory_plugin_version": "0.3.40",
+  "inventory_update_is_source_clearance": false,
   "distribution_clearance_status": "blocked-pending-source-clearance",
   "release_expansion_allowed": false,
   "local_build_and_test_allowed": true,
@@ -33,6 +36,13 @@
     {
       "id": "installed-xumm-login-plugin",
       "relationship": "reads-xummlogin-api-key-secret-and-create-user-options",
+      "presentation_interface": "existing-xl-trustline-route-only-after-loaded-handler-and-exact-CAL-issuer-currency-positive-limit-check",
+      "presentation_option_names": [
+        "xummlogin_trustline_issuer",
+        "xummlogin_trustline_currency",
+        "xummlogin_trustline_limit"
+      ],
+      "presentation_browser_config": "readiness-boolean-only-no-credentials-or-option-values",
       "source": "live-wordpress-installation-export-no-public-1.3.1-source-url-identified",
       "live_observation_date": "2026-09-03",
       "live_asset_reported_version": "1.3.1",
@@ -85,6 +95,66 @@
     "Codex"
   ],
   "release_files": [
+    {
+      "path": "config/blog-x.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public blog helper copy; eleven translations remain prepared-unreviewed and existing publication boundaries apply"
+    },
+    {
+      "path": "assets/calorieapp-cms-language-preview.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Canonical FAQ display adapter in contracts/display-language/v1/cms-preview.js; existing publication boundaries apply"
+    },
+    {
+      "path": "config/cms-faq-preview.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Versioned public FAQ source and unreviewed translation proposal in contracts/display-language/v1/cms-faq-preview.json; source capture is not rights clearance"
+    },
+    {
+      "path": "assets/calorieapp-display-language-runtime.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Shared display-only runtime in contracts/display-language/v1/runtime.js; existing publication boundaries apply"
+    },
+    {
+      "path": "assets/calorieapp-display-language.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "assets/calorieapp-display-language.css",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "config/display-language.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "includes/class-calorieapp-identity-bridge-display-language.php",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending"
+    },
     {
       "path": "CONFIGURATION.md",
       "origin_class": "project-repository-material",
@@ -141,7 +211,7 @@
       "repository_first_add_commit": "7191b0fc150fd5e4c1e928f0ba95282af7b52bf2",
       "declared_distribution_licence": "project-mark-no-general-trademark-licence-granted",
       "clearance_status": "requested-use-on-existing-project-website-no-expanded-mark-licence",
-      "source": "https://drive.google.com/file/d/1FMepF9HinYi9Pd5AuR7BSOO6peY5gIPu/view",
+      "source": "private-project-design-source-reference-omitted-from-public-contract",
       "source_file": "calorieappdraft3.ai",
       "adaptation": "Original phone-mark vector paths and colours retained; surrounding artboard and border omitted."
     },
@@ -176,6 +246,21 @@
       "clearance_status": "contributor-source-and-similarity-review-pending"
     },
     {
+      "path": "assets/calorieapp-site-polish.css",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "assets/calorieapp-site-polish.js",
+      "origin_class": "project-repository-material-with-third-party-mark-path",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later-excluding-third-party-trade-marks",
+      "clearance_status": "contributor-source-similarity-and-mark-review-pending",
+      "source": "https://about.x.com/en/who-we-are/brand-toolkit"
+    },
+    {
       "path": "assets/calorieapp-site-navigation.js",
       "origin_class": "project-repository-material",
       "repository_first_add_commit": "7191b0fc150fd5e4c1e928f0ba95282af7b52bf2",
@@ -195,6 +280,14 @@
       "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
       "declared_distribution_licence": "GPL-2.0-or-later",
       "clearance_status": "contributor-and-source-declaration-pending"
+    },
+    {
+      "path": "config/app-information.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "New public CalorieApp information copy for the existing eleven-locale registry; no private account data or provider records"
     },
     {
       "path": "config/locales.json",
@@ -275,6 +368,70 @@
       "repository_first_add_commit": "2c5a98ec289decadb244274fdf5763e2afde62cf",
       "declared_distribution_licence": "GPL-2.0-or-later",
       "clearance_status": "contributor-source-and-similarity-review-pending"
+    },
+    {
+      "path": "config/richlist.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public Richlist region and own-rank helper copy; eleven translations remain prepared-unreviewed and existing publication boundaries apply"
+    },
+    {
+      "path": "config/navigation.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public shared Home/App/Top/Bottom navigation helper copy; eleven translations remain prepared-unreviewed and existing publication boundaries apply"
+    },
+    {
+      "path": "config/trustline.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public Trustline helper copy; eleven prepared-unreviewed translations; existing publication boundaries apply"
+    },
+    {
+      "path": "assets/calorieapp-tokenomics.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Additive public Tokenomics helper using operator confirmation and dated XRPL evidence; eleven translations prepared-unreviewed; existing publication boundaries apply"
+    },
+    {
+      "path": "assets/calorieapp-tokenomics.css",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Additive public Tokenomics helper using operator confirmation and dated XRPL evidence; eleven translations prepared-unreviewed; existing publication boundaries apply"
+    },
+    {
+      "path": "config/tokenomics.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Additive public Tokenomics helper using operator confirmation and dated XRPL evidence; eleven translations prepared-unreviewed; existing publication boundaries apply"
+    },
+    {
+      "path": "assets/calorieapp-buy-guide-language.js",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public How to Buy/sell guide language helper and eleven prepared-unreviewed translations; existing publication boundaries apply"
+    },
+    {
+      "path": "config/how-to-buy.json",
+      "origin_class": "project-repository-material",
+      "repository_first_add_commit": "pending-current-change",
+      "declared_distribution_licence": "GPL-2.0-or-later",
+      "clearance_status": "contributor-and-source-declaration-pending",
+      "source": "Public How to Buy/sell guide language helper and eleven prepared-unreviewed translations; existing publication boundaries apply"
     }
   ],
   "completed_evidence_actions": [

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared footer — isolated layout checks</title>
+<style>
+  body { margin: 16px; background: #eee; color: #222; font: 16px/1.5 sans-serif; }
+  h1 { font-size: 24px; }
+  iframe { display: block; border: 1px solid #888; margin-bottom: 28px; height: 1040px; background: #fff; }
+  .lanes { display: flex; align-items: start; gap: 24px; }
+  .lane { flex: 0 0 auto; }
+</style>
+<h1>Shared footer — isolated layout checks</h1>
+<p>Uses the production CSS and JavaScript with representative public page markup.
+No account, app, market or signing requests. This does not execute PHP or replace live WordPress acceptance.</p>
+<div class="lanes" id="lanes"></div>
+<script>
+  const assets = '../../../wordpress-plugins/calorieapp-identity-bridge/assets/';
+  const origin = 'https://calorietoken.net';
+  const links = [
+    ['Telegram', 'https://t.me/+7YxaKdQYWNA0NDA0'], ['GitHub', 'https://github.com/CalorieToken'],
+    ['X', 'https://x.com/CalorieToken'], ['Facebook', 'https://www.facebook.com/CalorieToken-100422882407878'],
+    ['YouTube', 'https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA'],
+    ['LinkedIn', 'https://www.linkedin.com/company/calorie-token/'], ['Instagram', 'https://www.instagram.com/calorietoken/']
+  ];
+  const operator = 'Operator: ICTHendrikse · KVK 73774693';
+  const copyright = '© 2026 ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse';
+  // The observed usecase footer had ordinary paragraphs instead of legal links.
+  const legacy = `<section class="brz-section" id="old-footer"><p>${operator}</p><p>${copyright}</p><p>Privacy Policy</p><p>Terms &amp; Conditions</p><a href="https://x.com/CalorieToken" aria-label="X"></a></section>`;
+  const social = links.map(([label, href]) => `<a class="calorieapp-shared-social" href="${href}" aria-label="${label}">${label}</a>`).join('');
+  const footer = `<footer class="calorieapp-shared-footer" hidden>
+    <nav class="calorieapp-shared-socials" data-calorieapp-social-carousel aria-label="CalorieToken social channels">
+      <button class="calorieapp-shared-social-arrow" data-calorieapp-carousel-direction="-1" aria-label="Previous social channel">‹</button>
+      <div class="calorieapp-shared-social-window"><div class="calorieapp-shared-social-track">${social}</div></div>
+      <button class="calorieapp-shared-social-arrow" data-calorieapp-carousel-direction="1" aria-label="Next social channel">›</button>
+    </nav>
+    <div class="calorieapp-shared-legal"><p>Calorie aims to be the world’s food token</p><p>${operator}</p><p>${copyright}</p>
+      <p class="calorieapp-shared-legal-links"><a href="${origin}/index.php/privacy-policy/">Privacy Policy</a><a href="${origin}/index.php/terms-conditions/">Terms &amp; Conditions</a></p>
+    </div></footer>`;
+  const copy = {
+    en: ['Find food products, explore nutrition and keep your own food diary.', 'Open CalorieApp'],
+    nl: ['Zoek voedingsproducten, bekijk voedingswaarden en houd je eigen eetdagboek bij.', 'Open CalorieApp'],
+    ar: ['ابحث عن المنتجات الغذائية، واطّلع على معلوماتها الغذائية، واحتفظ بسجل طعامك الخاص.', 'افتح CalorieApp']
+  };
+  const cases = [
+    [360, 'en', false], [412, 'nl', false], [768, 'en', false],
+    [1440, 'en', false], [360, 'ar', false], [412, 'en', true]
+  ];
+  cases.forEach(([width, locale, custom], index) => {
+    const lane = document.createElement('section'); lane.className = 'lane';
+    const heading = document.createElement('h2'); heading.textContent = `${width}px · ${locale}${custom ? ' · changed CMS footer' : ''}`;
+    lane.appendChild(heading);
+    const frame = document.createElement('iframe'); frame.width = width; frame.id = 'lane-' + index;
+    frame.title = heading.textContent;
+    const old = custom ? legacy.replace('</section>', '<form><label>Local form fixture <input name="fixture"></label></form></section>') : legacy;
+    frame.srcdoc = `<!doctype html><html lang="${locale}"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="${assets}calorieapp-page-ending.css">
+      <style>body{margin:0;background:#fff;font-family:Georgia,serif}.team{padding:24px;min-height:220px;box-sizing:border-box;border-bottom:1px solid #ddd}.legacy-market{margin-top:-60px;width:240px}.fixture-result{padding:8px;font:14px/1.5 sans-serif}#old-footer{padding:18px;background:#505ba9;color:white}#old-footer[hidden]{display:none!important}</style>
+      <body class="brz">
+      <section class="brz-section" id="content"><article class="team" id="team"><h1>Team / page content</h1><p>This content must remain above the shared information and market card.</p></article>
+      <div class="brz-wp-shortcode legacy-market" id="old-market-host"><div class="livecoinwatch-widget-1" data-coin="_CAL"></div></div></section>
+      ${old}
+      <div class="calorieapp-shared-page-ending" data-calorieapp-shared-page-ending data-calorieapp-page="site">
+        <aside class="calorieapp-app-info" data-calorieapp-app-info lang="${locale}" dir="${locale === 'ar' ? 'rtl' : 'ltr'}" aria-labelledby="calorieapp-app-info-title">
+          <img src="${assets}calorieapp-logo.svg" alt="" width="64" height="64">
+          <div><h2 id="calorieapp-app-info-title">CalorieApp</h2><p>${copy[locale][0]}</p></div>
+          <a class="calorieapp-app-info-link" href="${origin}/index.php/calorieapp/">${copy[locale][1]}</a>
+        </aside>
+        <aside class="calorieapp-page-market calorieapp-sitewide-market" data-calorieapp-sitewide-market hidden><div data-calorieapp-xpmarket-widget></div></aside>
+        ${footer}
+      </div>
+      <p class="fixture-result" id="fixture-result">Awaiting local rendering checks…</p>
+      <script src="${assets}calorieapp-page-ending.js"><\/script>
+      <script>window.addEventListener('load',()=>{
+        const ending=document.querySelector('[data-calorieapp-shared-page-ending]');
+        const market=ending.querySelector('[data-calorieapp-xpmarket-widget]');
+        const info=ending.querySelector('[data-calorieapp-app-info]');
+        const original=document.getElementById('old-footer');
+        const shared=ending.querySelector('footer');
+        const results={width:innerWidth,locale:'${locale}',custom:${custom},
+          originalPreserved:${custom} ? !original.hidden && !!original.querySelector('form') : original.hidden,
+          footerVisible:${custom} ? shared.hidden : !shared.hidden,
+          oneMarket:document.querySelectorAll('[data-calorieapp-xpmarket-widget]').length===1,
+          marketInEnding:ending.contains(market),
+          noTeamOverlap:document.getElementById('team').getBoundingClientRect().bottom<=info.getBoundingClientRect().top,
+          noHorizontalOverflow:document.documentElement.scrollWidth<=innerWidth,
+          usableLink:info.querySelector('a').getBoundingClientRect().height>=44};
+        const passed=Object.values(results).filter(v=>typeof v==='boolean').every(Boolean);
+        const output=document.getElementById('fixture-result'); output.textContent=JSON.stringify(results);output.dataset.passed=String(passed);
+      });<\/script></body></html>`;
+    lane.appendChild(frame); document.getElementById('lanes').appendChild(lane);
+  });
+</script>
+</html>

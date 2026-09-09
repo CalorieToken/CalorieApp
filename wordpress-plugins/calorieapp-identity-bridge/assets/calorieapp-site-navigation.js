@@ -35,6 +35,65 @@
     var observer = null;
     var scheduled = false;
     var hiddenByNavigation = new Map();
+    var scrollBound = new WeakSet();
+    var displayLocale = "en";
+    var fallback = { region: "Page shortcuts", home: "Go to Home", app: "Open CalorieApp", top: "Back to top", bottom: "Go to bottom" };
+    function bindings() {
+      if (document.querySelector("[data-calorieapp-site-integration]") !== config
+          || document.querySelector("[data-calorieapp-fallback-shortcuts]") !== shortcuts
+          || shortcuts.closest("form,[contenteditable],[data-calorieapp-embed]")) return null;
+      var slots = Array.from(shortcuts.querySelectorAll("[data-calorieapp-shortcut]"));
+      if (slots.length !== 4) return null;
+      var found = {}, valid = slots.every(function (slot) {
+        var role = slot.getAttribute("data-calorieapp-shortcut");
+        var link = slot.querySelector("a.calorieapp-page-tool");
+        if (["home", "app", "top", "bottom"].indexOf(role) < 0 || found[role] || !link) return false;
+        var destination;
+        try { destination = new URL(link.href, window.location.href); } catch (_error) { return false; }
+        var correct = role === "home" ? destination.href === homePage.href
+          : role === "app" ? destination.href === appPage.href
+          : link.getAttribute("href") === "#" && link.getAttribute("data-calorieapp-scroll") === role;
+        if (!correct) return false;
+        found[role] = link;
+        return true;
+      });
+      return valid ? found : null;
+    }
+    function renderLanguage(links) {
+      var settings = window.calorieappDisplayLanguageConfig;
+      var definition = settings && Array.isArray(settings.locales) && settings.locales.find(function (item) { return item.tag === displayLocale; });
+      var candidate = definition && settings.navigation && settings.navigation.translations && settings.navigation.translations[displayLocale];
+      var valid = candidate && Object.keys(fallback).every(function (key) { return typeof candidate[key] === "string" && candidate[key].trim(); });
+      var copy = valid ? candidate : fallback;
+      shortcuts.lang = valid ? displayLocale : "en";
+      shortcuts.dir = valid && (displayLocale === "ar" || displayLocale === "ur") ? "rtl" : "ltr";
+      shortcuts.setAttribute("aria-label", copy.region);
+      Object.keys(links).forEach(function (role) {
+        links[role].setAttribute("aria-label", copy[role]);
+        links[role].setAttribute("title", copy[role]);
+      });
+    }
+    function observe() {
+      if (observer) observer.observe(document.body, {
+        childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "href", "data-calorieapp-scroll", "data-calorieapp-shortcut"]
+      });
+    }
+    function bindScroll(links) {
+      ["top", "bottom"].forEach(function (role) {
+        var button = links[role];
+        if (scrollBound.has(button)) return;
+        scrollBound.add(button);
+        button.addEventListener("click", function (event) {
+          var current = bindings();
+          if (!current || current[role] !== button) return;
+          event.preventDefault();
+          window.scrollTo({
+            top: role === "bottom" ? pageHeight() : 0,
+            behavior: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+          });
+        });
+      });
+    }
     function hide(node) {
       if (!hiddenByNavigation.has(node)) {
         hiddenByNavigation.set(node, {
@@ -55,6 +114,12 @@
         else node.style.removeProperty("display");
       });
       hiddenByNavigation.clear();
+      var replacement = document.querySelector("[data-calorieapp-fallback-shortcuts]");
+      if (replacement) shortcuts = replacement;
+      // A removed, incomplete or edited replacement cannot suppress the native
+      // controls. Keep watching so a restored owned stack can become ready.
+      var links = bindings();
+      if (!links) { observe(); return; }
       var currentPage = new URL(window.location.href);
       var onHome = config.dataset.isHome === "1" || path(currentPage) === path(homePage);
       var onApp = !!document.querySelector("[data-calorieapp-embed]") || path(currentPage) === path(appPage);
@@ -91,26 +156,25 @@
         slot.hidden = (role === "home" && onHome) || (role === "app" && onApp) || (role === "bottom" && !longPage);
       });
       shortcuts.hidden = false;
-      if (observer) observer.observe(document.body, {
-        childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "href"]
-      });
+      bindScroll(links);
+      renderLanguage(links);
+      observe();
     }
     function schedule() {
       if (scheduled) return;
       scheduled = true;
       window.requestAnimationFrame(reconcile);
     }
-    shortcuts.querySelectorAll("[data-calorieapp-scroll]").forEach(function (button) {
-      button.addEventListener("click", function (event) {
-        event.preventDefault();
-        window.scrollTo({
-          top: button.getAttribute("data-calorieapp-scroll") === "bottom" ? pageHeight() : 0,
-          behavior: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-        });
-      });
-    });
     if (window.MutationObserver) observer = new window.MutationObserver(schedule);
+    window.CalorieAppPageNavigation = { setLocale: function (locale) {
+      displayLocale = locale;
+      var links = bindings();
+      if (links) renderLanguage(links);
+    } };
     reconcile();
+    // Carries no state or identity data; the existing display controller reads
+    // its own store if this component was initialized after its load callback.
+    if (typeof window.dispatchEvent === "function" && typeof window.Event === "function") window.dispatchEvent(new window.Event("calorieapp:page-tools-ready"));
     if (window.ResizeObserver) {
       var resizeObserver = new window.ResizeObserver(schedule);
       resizeObserver.observe(document.body);
@@ -122,4 +186,5 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
+  window.addEventListener("load", init, { once: true });
 })();

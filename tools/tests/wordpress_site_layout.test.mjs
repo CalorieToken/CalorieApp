@@ -131,20 +131,4 @@ test("a late shortcode receives layout and disconnects its discovery observer", 
   assert.equal(h.navigation.getBoundingClientRect().top - h.card.getBoundingClientRect().bottom, 12);
 });
 
-test("Richlist scrolling preserves the original table and does not duplicate wrappers", () => {
-  const wrappers = [], listeners = new Map();
-  const parent = { insertBefore(region, item) { assert.equal(item, table); wrappers.push(region); } };
-  const table = { parentNode: parent, rows: [{ balance: "unchanged" }], querySelector() { return null; }, closest() { return this.parentNode.className === "calorieapp-richlist-scroll" ? this.parentNode : null; } };
-  const document = {
-    readyState: "complete",
-    querySelectorAll: selector => selector === "table.xl-richlist" ? [table] : [],
-    createElement: () => ({ attributes: {}, setAttribute(key, value) { this.attributes[key] = value; }, appendChild(item) { this.child = item; item.parentNode = this; } }),
-  };
-  vm.runInNewContext(source, { document, window: { addEventListener: (name, callback) => listeners.set(name, callback) } });
-  listeners.get("load")();
-  assert.equal(wrappers.length, 1);
-  assert.equal(wrappers[0].child, table);
-  assert.equal(wrappers[0].tabIndex, 0);
-  assert.equal(wrappers[0].attributes.role, "region");
-  assert.equal(table.rows[0].balance, "unchanged");
-});
+// Richlist wrapping/data coverage is in wordpress_richlist.test.mjs.

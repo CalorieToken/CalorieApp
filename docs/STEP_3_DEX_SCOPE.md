@@ -3,6 +3,13 @@
 Status: design and verified-asset registry prepared; production transaction
 submission remains disabled pending legal scope and a separate security review.
 
+The retailer/consumer payment pilot requested on 2026-09-08 is a separate
+Testnet simulation, recorded in `STEP_3_REPAIR_CHECKPOINT.md` and app commit
+`c008f61` (`pilots/retail_testnet/README.md`). Its offline policy proof does not
+enable DEX routing or merchant payment processing. Testnet accounts may use
+ordinary app features, subject to verifying the existing login compatibility;
+test funds must not count as mainnet balances, donations or trade settlement.
+
 ## Initial pair set
 
 The first-party selector may show only assets identified by both currency code
@@ -17,6 +24,15 @@ and issuer in `contracts/ecosystem/xrpl-dex-assets.v1.json`.
 The CAL/XRP and CAL/RLUSD AMMs were read from a validated XRPL mainnet ledger on
 2026-09-08. The application must re-read validated ledger state for every quote;
 the recorded pool accounts are identifiers, not a liquidity or price promise.
+
+The recovery review found an invalid CAL/RLUSD pool address in the initial
+registry. It was re-queried using the exact CAL and RLUSD currency/issuer pairs.
+The corrected address is `rPN26geCWSD4xPu8LYBM8zqDrYSgNQGHeQ`.
+`contracts/ecosystem/evidence/xrpl-amm-identities-20260908.json` records a minimal
+identity projection with validated ledger indexes and hashes for both pools.
+LP participant addresses, balances, auction and voting accounts are deliberately
+omitted. Offline tests validate Base58Check, both asset identities and the match
+to this dated evidence. They do not validate a current price or legal clearance.
 
 CAL/EUR, CAL/USD and BTC/CAL labels were observed in a third-party wallet view,
 but are excluded until each issued asset's exact issuer, operator, redemption

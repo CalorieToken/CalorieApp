@@ -6,6 +6,12 @@ internal assertion correction are implemented. Open
 Food Facts remains the only enabled read-only search adapter; no public source
 onboarding, contribution or catalog-write flow is enabled.
 
+The operator's 2026-09-08 request for a small optional complementary-source and
+origin-information extension is assessed in
+[Step 3 food sources and app widget](STEP_3_FOOD_SOURCES_AND_APP_WIDGET.md).
+It does not activate a source, extend assertion policy or change the runtime
+contract. The existing app and completed integration remain the baseline.
+
 ## Decision
 
 CalorieApp does not model food data as an Open Food Facts copy. It uses a

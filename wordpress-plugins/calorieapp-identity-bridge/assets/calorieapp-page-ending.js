@@ -79,10 +79,101 @@
     widget.setAttribute("data-state", "ready");
   }
 
+  function plainFooterText(value) {
+    return String(value || "").replace(/\s+/g, " ").trim();
+  }
+
+  function reviewedLegacyFooter(node, ending) {
+    if (node === ending || ending.contains(node) || node.contains(ending)) return false;
+    var copy = node.cloneNode(true);
+    // An operator name alone is not a footer signature. Never hide a form,
+    // account, image, custom destination or newly edited CMS paragraph.
+    if (copy.querySelector('form, input, select, textarea, iframe, img, video, audio, canvas, [contenteditable], .xl-card, [data-calorieapp-embed]')) return false;
+    if (Array.from(copy.querySelectorAll('button')).some(function (button) {
+      return !button.closest('.brz-carousel');
+    })) return false;
+    var allowedLinks = Array.from(ending.querySelectorAll('.calorieapp-shared-footer a')).map(function (link) {
+      return String(link.getAttribute('href') || '').replace(/\/$/, '');
+    });
+    allowedLinks.push('https://twitter.com/CalorieToken');
+    if (Array.from(copy.querySelectorAll('a')).some(function (link) {
+      return allowedLinks.indexOf(String(link.getAttribute('href') || '').replace(/\/$/, '')) === -1;
+    })) return false;
+    copy.querySelectorAll('script, style, svg, .brz-bg, .brz-carousel').forEach(function (item) { item.remove(); });
+    var text = plainFooterText(copy.textContent);
+    var operator = 'Operator: ICTHendrikse · KVK 73774693';
+    var copyright = /© \d{4} ICTHendrikse \(owned content only\) · CalorieToken® trade mark: Pieter Hendrikse/;
+    if (text.indexOf(operator) === -1 || !copyright.test(text)) return false;
+    return !plainFooterText(text.replace(operator, '').replace(copyright, '')
+      .replace('Calorie aims to be the world’s food token', '')
+      .replace('Privacy Policy', '').replace('Terms & Conditions', ''));
+  }
+
+  function positionSharedPageEnding() {
+    if (typeof document.querySelector !== 'function') return;
+    var ending = document.querySelector('[data-calorieapp-shared-page-ending]');
+    if (!ending) return;
+    if (document.body.classList.contains('brz-ed')) {
+      ending.hidden = true;
+      return;
+    }
+    var footer = ending.querySelector('.calorieapp-shared-footer');
+    if (!footer) return;
+    var regions = Array.from(document.querySelectorAll('.brz-section, footer, [role=contentinfo]'))
+      .filter(function (node) { return node !== ending && !ending.contains(node) && !node.contains(ending); });
+    regions.forEach(function (node) {
+      if (node.hasAttribute('data-calorieapp-legacy-footer') && !reviewedLegacyFooter(node, ending)) {
+        node.hidden = node.getAttribute('data-calorieapp-legacy-footer') === 'hidden';
+        node.removeAttribute('data-calorieapp-legacy-footer');
+      }
+    });
+    var known = regions.filter(function (node) { return reviewedLegacyFooter(node, ending); });
+    // Choose outermost matched sections so nested semantic markup is safe too.
+    known = known.filter(function (node) {
+      return !known.some(function (other) { return other !== node && other.contains(node); });
+    });
+    if (known.length) {
+      var anchor = known[0];
+      if (ending.nextElementSibling !== anchor) anchor.parentNode.insertBefore(ending, anchor);
+      known.forEach(function (node) {
+        if (!node.hasAttribute('data-calorieapp-legacy-footer')) {
+          node.setAttribute('data-calorieapp-legacy-footer', node.hidden ? 'hidden' : 'visible');
+        }
+        node.hidden = true;
+      });
+      footer.hidden = false;
+      return;
+    }
+    var unknown = regions.some(function (node) {
+      return node.matches('footer, [role=contentinfo]') || /ICTHendrikse|Privacy Policy|Terms & Conditions/.test(node.textContent);
+    });
+    // No guessed deletion: custom/translated footers keep their own content.
+    // Pages genuinely lacking a footer receive the accessible fallback.
+    footer.hidden = unknown;
+  }
+
   function marketOnly(node) {
     var copy = node.cloneNode(true);
     copy.querySelectorAll('script, style, .brz-bg, .livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]').forEach(function (item) { item.remove(); });
-    return !copy.textContent.trim() && !copy.querySelector('a, img, svg, iframe, video, audio, canvas, input, button, select, textarea, .xl-card, [data-calorieapp-embed]');
+    return !copy.textContent.trim() && !copy.querySelector('a, img, svg, iframe, video, audio, canvas, form, input, button, select, textarea, [contenteditable], .xl-card, [data-calorieapp-embed]');
+  }
+
+  function protectedMarketContent(widget) {
+    return widget.closest('form, .xl-card, [data-calorieapp-embed]') ||
+      widget.querySelector('form, input, button, select, textarea, [contenteditable], .xl-card, [data-calorieapp-embed]');
+  }
+
+  function dedicatedMarketSlot(widget) {
+    if (protectedMarketContent(widget)) return null;
+    var host = widget.closest('.brz-wp-shortcode');
+    if (!host) return widget;
+    if (!marketOnly(host)) return null;
+    var slot = host;
+    for (var parent = host.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+      if (parent.matches('.brz-section, section') || !marketOnly(parent)) break;
+      slot = parent;
+    }
+    return slot;
   }
 
   function normalizeMarketHost(widget) {
@@ -107,9 +198,32 @@
     if (typeof document.querySelector !== "function") return;
     var injected = document.querySelector("[data-calorieapp-sitewide-market]");
     if (!injected) return;
-    var hasExistingMarket = Array.from(document.querySelectorAll(
+    var existing = Array.from(document.querySelectorAll(
       ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
-    )).some(function (widget) { return !injected.contains(widget); });
+    )).filter(function (widget) {
+      return !injected.contains(widget) && !widget.closest('[data-calorieapp-retired-market-slot]');
+    });
+    var ending = injected.closest('[data-calorieapp-shared-page-ending]');
+    if (ending) {
+      if (ending.hidden) return;
+      var owned = existing.map(function (widget) { return { widget: widget, slot: dedicatedMarketSlot(widget) }; })
+        .filter(function (item) { return item.slot; });
+      if (owned.length) {
+        injected.querySelectorAll('[data-calorieapp-xpmarket-widget]').forEach(function (widget) { widget.remove(); });
+        owned.forEach(function (item, index) {
+          if (index === 0) injected.appendChild(item.widget);
+          if (item.slot !== item.widget || index > 0) {
+            item.slot.setAttribute('data-calorieapp-retired-market-slot', '');
+            item.slot.hidden = true;
+          }
+        });
+      }
+      // A combined account/payment shortcode is not our layout to dismantle.
+      injected.hidden = existing.length > 0 && owned.length === 0;
+      return;
+    }
+    // Compatibility with an older cached PHP page that has only a market slot.
+    var hasExistingMarket = existing.length > 0;
     if (hasExistingMarket) {
       injected.remove();
       return;
@@ -128,6 +242,9 @@
       return;
     }
 
+    positionSharedPageEnding();
+    var ending = document.querySelector && document.querySelector('[data-calorieapp-shared-page-ending]');
+    if (ending && ending.hidden) return;
     positionSitewideMarket();
     var config = window.calorieappPageEnding || {};
     var endpoint = config.xpMarketWidgetUrl || "";
@@ -136,7 +253,11 @@
       "https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY";
     var widgets = Array.from(document.querySelectorAll(
       ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]"
-    )).map(function (widget) {
+    )).filter(function (widget) {
+      return !widget.closest('[data-calorieapp-retired-market-slot]') &&
+        !(widget.closest('[data-calorieapp-sitewide-market]') || {}).hidden &&
+        !protectedMarketContent(widget);
+    }).map(function (widget) {
       if (widget.classList.contains("livecoinwatch-widget-1")) {
         // Replace the node so an already-running legacy script cannot refill it.
         var replacement = document.createElement("div");
@@ -258,8 +379,9 @@
               );
               var item = track.querySelector("a");
               var step = item ? item.getBoundingClientRect().width : track.clientWidth;
+              var rtl = window.getComputedStyle && window.getComputedStyle(track).direction === 'rtl';
               track.scrollBy({
-                left: (direction < 0 ? -1 : 1) * step,
+                left: (direction < 0 ? -1 : 1) * step * (rtl ? -1 : 1),
                 behavior: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
               });
             });
@@ -335,14 +457,18 @@
     window.addEventListener("pageshow", enhanceXpMarketPriceWidgets);
     if (window.MutationObserver) {
       var scheduled = false;
-      var selector = ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget]";
+      var selector = ".livecoinwatch-widget-1, [data-calorieapp-xpmarket-widget], .brz-section, footer, [role=contentinfo]";
       var observer = new window.MutationObserver(function (records) {
         var addedWidget = records.some(function (record) {
           return Array.from(record.addedNodes).some(function (node) {
             return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
           });
         });
-        if (!addedWidget || scheduled) return;
+        var changedFooter = records.some(function (record) {
+          return record.target && record.target.nodeType === 1 &&
+            record.target.closest('[data-calorieapp-legacy-footer]');
+        });
+        if ((!addedWidget && !changedFooter) || scheduled) return;
         scheduled = true;
         window.requestAnimationFrame(function () {
           scheduled = false;

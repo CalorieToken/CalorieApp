@@ -15,6 +15,7 @@ require_once __DIR__ . '/class-calorieapp-identity-bridge-admin.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-legal-footer-compatibility.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-market-widget.php';
 require_once __DIR__ . '/class-calorieapp-identity-bridge-page-ending.php';
+require_once __DIR__ . '/class-calorieapp-identity-bridge-display-language.php';
 
 class Plugin {
     public const OPTION_KEY = 'calorieapp_identity_bridge_options';
@@ -36,6 +37,7 @@ class Plugin {
     private MarketWidget $market_widget;
 
     private PageEnding $page_ending;
+    private DisplayLanguage $display_language;
 
     public static function instance(): Plugin {
         if (self::$instance === null) {
@@ -54,6 +56,7 @@ class Plugin {
         $this->legal_footer_compatibility = new LegalFooterCompatibility();
         $this->market_widget = new MarketWidget();
         $this->page_ending = new PageEnding();
+        $this->display_language = new DisplayLanguage();
 
         register_activation_hook(CALORIEAPP_IDENTITY_BRIDGE_FILE, [$this, 'activate']);
 
@@ -69,6 +72,7 @@ class Plugin {
         $this->legal_footer_compatibility->register_hooks();
         $this->market_widget->register_hooks();
         $this->page_ending->register_hooks();
+        $this->display_language->register_hooks();
         add_filter('woocommerce_add_to_cart_redirect', [self::class, 'donation_return_url'], 20, 2);
     }
 
