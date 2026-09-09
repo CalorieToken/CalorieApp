@@ -58,7 +58,7 @@ The optional `CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW` constant must be the boolean
 sets the authentication locale. The separately built CalorieApp preview uses
 `NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW=1` for its corresponding control.
 
-Candidate 0.3.33 also includes a two-paragraph FAQ sample. The extra adapter and
+This preview also includes a two-paragraph FAQ sample. The extra adapter and
 catalogue load only on the configured public FAQ page, for GET outside content
 previews, password protection and unknown query contexts. Exact client-side
 source/page matching remains required. This is not an automatic site translator;

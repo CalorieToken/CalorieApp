@@ -71,13 +71,14 @@ Navigation tests cover Home, CalorieApp, FAQ, URL variants, inline content,
 unrelated icons, shared wrappers and invalid external asset configuration.
 The existing responsive header tests cover changes in the account card height.
 
-Run:
+Run from the current checkout. The sections above record historical changes;
+the package builder reads the version from this checkout's plugin header:
 
 ```sh
 node --test tools/tests/calorieapp_embed_readiness.test.mjs tools/tests/wordpress_site_session.test.mjs tools/tests/wordpress_site_layout.test.mjs tools/tests/wordpress_site_navigation.test.mjs
 php tools/tests/wordpress_site_session_markup.test.php
 python -m unittest tools.tests.test_build_wordpress_plugin_release
-python tools/build_wordpress_plugin_release.py --expected-version 0.3.25
+python tools/build_wordpress_plugin_release.py
 ```
 
 CI also lints plugin PHP. The original vector extraction is rendered and
