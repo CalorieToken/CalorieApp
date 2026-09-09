@@ -1,12 +1,13 @@
 # Brizy content workbench preparation
 
-Version 0.1.0 is an additional, narrowly scoped WordPress administration tool.
+Version 0.1.1 is an additional, narrowly scoped WordPress administration tool.
 It does not depend on or modify Identity Bridge. It adds a Tools screen and no
 public routes, front-end scripts, authentication mechanism or provider client.
 This is a preparation candidate, not a claim of installed or live functionality.
 
 The tool inventories pages, posts, products and registered Brizy content types
-in batches of 100, including drafts and reusable blocks/templates. Inspection
+in batches of 100, including drafts, reusable blocks/templates and the native editor-story,
+editor-popup and editor-template types. Form-entry/lead types are excluded. Inspection
 exposes only RichText content and component counts, not the complete editor
 model, form settings, users, transactions, plugin configuration or credentials.
 Non-Brizy and unsupported storage records remain visible as unresolved items.
@@ -41,7 +42,11 @@ post-meta backup is written before each source write. Backups remain available
 through source inspection, even after a page refresh. Restore refuses newer
 source changes and creates another recovery point before restoring.
 
-The tool uses `setEditorData`, `set_needs_compile(true)` and `save(0)`. It checks
+The tool captures the current native data version, rechecks source, and supplies
+`setDataVersion(current + 1)` before `setEditorData`,
+`set_needs_compile(true)` and `save(0)`. Brizy still rejects a concurrent version
+change. The initial 0.1.0 live draft probe stopped before source storage because
+the next-version value was missing; 0.1.1 addresses that integration defect. It checks
 stored source bytes after saving. It does not patch `post_content` or compiled
 HTML, delete autosaves, force publication, or mark a rendered preview accepted.
 WordPress's modified timestamp/SEO mirror is not artificially rewritten. Brizy

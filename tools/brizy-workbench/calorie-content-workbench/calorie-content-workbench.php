@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Calorie Content Workbench
  * Description: Private admin workspace for Brizy inventory and reversible draft text batches.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  */
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) { exit; }
 require_once __DIR__ . '/includes/class-content-engine.php';
 
 final class Workbench {
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
     const PAGE = 'calorie-content-workbench';
     const BACKUP = '_ctcw_backup_v1';
     const MUTEX = 'ctcw_operation_lock_v1';
@@ -27,7 +27,7 @@ final class Workbench {
         if (!defined('BRIZY_VERSION') || BRIZY_VERSION !== '2.8.21') {
             throw new \RuntimeException('This preparation build supports Brizy 2.8.21 only. Inventory remains available.');
         }
-        foreach (array('get', 'duplicateTo', 'getEditorData', 'setEditorData', 'set_needs_compile', 'save') as $method) {
+        foreach (array('get', 'duplicateTo', 'getEditorData', 'setEditorData', 'getCurrentDataVersion', 'setDataVersion', 'set_needs_compile', 'save') as $method) {
             if (!is_callable(array('Brizy_Editor_Post', 'get')) || !method_exists('Brizy_Editor_Post', $method)) {
                 throw new \RuntimeException('Required Brizy methods are unavailable. No draft write was started.');
             }
@@ -49,7 +49,7 @@ final class Workbench {
     }
 
     private static function types() {
-        $types = array('page', 'post', 'product');
+        $types = array('page', 'post', 'product', 'editor-story', 'editor-popup', 'editor-template');
         foreach (get_post_types(array(), 'names') as $type) {
             if (strpos($type, 'brizy') === 0) { $types[] = $type; }
         }
@@ -160,13 +160,19 @@ final class Workbench {
             throw new \RuntimeException('Page ' . $id . ' changed since preview. Nothing was overwritten.');
         }
         $editor = \Brizy_Editor_Post::get($id);
-        if (!hash_equals(hash('sha256', $before), hash('sha256', $editor->getEditorData(true)))) {
+        // Brizy checks the caller's next version against the stored version + 1.
+        // Capture before rechecking the source so a concurrent native save will
+        // still fail Brizy's own version guard rather than being overwritten.
+        $data_version = $editor->getCurrentDataVersion();
+        if (!hash_equals(hash('sha256', $before), hash('sha256', $editor->getEditorData(true))) ||
+            !hash_equals(hash('sha256', $before), hash('sha256', self::source($id)))) {
             throw new \RuntimeException('Brizy loaded a different source. Inspect it again.');
         }
         $backup = array('version' => 1, 'created_gmt' => gmdate('c'), 'user' => get_current_user_id(), 'reason' => $reason,
             'before_sha256' => hash('sha256', $before), 'after_sha256' => hash('sha256', $after), 'before_base64' => base64_encode($before));
         $backup_id = add_post_meta($id, self::BACKUP, wp_slash($backup));
         if (!$backup_id) { throw new \RuntimeException('Backup failed. No source write was attempted.'); }
+        $editor->setDataVersion($data_version + 1);
         $editor->setEditorData(base64_encode($after));
         $editor->set_needs_compile(true);
         $editor->save(0);

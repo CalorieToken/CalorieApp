@@ -89,13 +89,14 @@ function reset_state($source) {
     foreach (array(1, 2) as $id) {
         $state['posts'][$id] = (object) array('ID' => $id, 'post_title' => 'Synthetic ' . $id, 'post_type' => 'page', 'post_status' => 'draft', 'post_modified_gmt' => '2026-01-01 00:00:00');
         $state['meta'][$id]['brizy'] = array('brizy-post' => array('editor_data' => base64_encode($source)));
+        $state['meta'][$id]['brizy_data_version'] = 7;
     }
 }
 function get_post($id) { global $state; return $state['posts'][(int) $id] ?? null; }
 function get_post_status($id) { return get_post($id)->post_status; }
 function current_user_can($capability, ...$args) { global $state; return $state['allowed']; }
 function get_current_user_id() { return 7; }
-function get_post_types($args, $output) { return array('page', 'post', 'product', 'brizy-global-block', 'shop_order'); }
+function get_post_types($args, $output) { return array('page', 'post', 'product', 'brizy-global-block', 'editor-story', 'editor-popup', 'editor-template', 'editor-form-entry', 'shop_order'); }
 function post_type_exists($type) { return in_array($type, get_post_types(array(), 'names'), true); }
 function get_post_meta($id, $key, $single) { global $state; return $state['meta'][$id][$key] ?? ''; }
 function apply_filters($name, $value) { return $value; }
@@ -135,20 +136,28 @@ function get_post_type_object($type) { return (object) array('cap' => (object) a
 function wp_insert_post($args, $error) { global $state; $id = $state['next_id']++; $state['posts'][$id] = (object) array_merge($args, array('ID' => $id, 'post_modified_gmt' => '2026-01-01 00:00:00')); return $id; }
 function is_wp_error($value) { return false; }
 class Brizy_Editor_Post {
-    public $id; public $data;
+    public $id; public $data; public $nextVersion = null;
     public static function get($id) { $item = new self(); $item->id = $id; $item->data = get_post_meta($id, 'brizy', true)['brizy-post']['editor_data']; return $item; }
     public function getEditorData($decode = false) { return $decode ? base64_decode($this->data, true) : $this->data; }
     public function setEditorData($data) { $this->data = $data; return $this; }
+    public function getCurrentDataVersion() { return (int) get_post_meta($this->id, 'brizy_data_version', true); }
+    public function setDataVersion($version) { $this->nextVersion = (int) $version; return $this; }
     public function set_needs_compile($value) { global $state; $state['meta'][$this->id]['brizy-need-compile'] = $value; return $this; }
     public function save($autosave = 0) {
         global $state;
+        if (($state['race_id'] ?? 0) === $this->id) { ++$state['meta'][$this->id]['brizy_data_version']; }
+        if ($this->nextVersion !== $this->getCurrentDataVersion() + 1) { throw new RuntimeException('Unable to save entity. The data version is wrong.'); }
         if ($state['fail_id'] === $this->id) { throw new RuntimeException('Synthetic storage failure.'); }
+        $state['meta'][$this->id]['brizy_data_version'] = $this->nextVersion;
         $state['meta'][$this->id]['brizy']['brizy-post']['editor_data'] = $this->data;
         ++$state['writes']; return true;
     }
-    public function duplicateTo($id) { global $state; $state['meta'][$id]['brizy'] = $state['meta'][$this->id]['brizy']; return self::get($id); }
+    public function duplicateTo($id) { global $state; $state['meta'][$id]['brizy'] = $state['meta'][$this->id]['brizy']; return self::get($id)->setDataVersion(1); }
 }
 reset_state($source);
+check(count(array_intersect(call_private('types'), array('editor-story', 'editor-popup', 'editor-template'))) === 3 && !in_array('editor-form-entry', call_private('types'), true), 'Inventory must include native Brizy content types while excluding leads.');
+$unprepared = Brizy_Editor_Post::get(1);
+rejects(function () use ($unprepared) { $unprepared->save(0); }, 'data version is wrong');
 $state['posts'][1]->post_status = 'publish';
 rejects(function () use ($source, $after) { call_private('save_source', 1, $source, $after, 'test'); }, 'drafts');
 check($state['writes'] === 0 && !$state['backups'], 'Published source must not be written or backed up as a draft operation.');
@@ -167,14 +176,20 @@ check($state['writes'] === 0, 'Failed backup must stop before source write.');
 $state['backups_enabled'] = true;
 $backup_id = call_private('save_source', 1, $source, $after, 'test');
 check($state['writes'] === 1 && $state['meta'][1]['brizy-need-compile'] === true && get_post_status(1) === 'draft', 'Save must preserve draft status and invalidate compiled output.');
+check($state['meta'][1]['brizy_data_version'] === 8, 'An existing nonzero native version must advance exactly once.');
 check(base64_decode($state['backups'][$backup_id]->meta_value['before_base64']) === $source, 'Original bytes must be retained.');
 rejects(function () use ($source, $after) { call_private('save_source', 1, $source, $after, 'test'); }, 'changed since preview');
 call_private('restore', 1, $backup_id);
 check(call_private('source', 1) === $source, 'Restore must recover the exact original source bytes.');
+check($state['meta'][1]['brizy_data_version'] === 9, 'Restore must follow the same native version contract.');
 check(count($state['backups']) === 2 && !$state['options'], 'Restore must itself be reversible and release its mutex.');
 rejects(function () use ($backup_id) { call_private('restore', 2, $backup_id); }, 'does not belong');
 rejects(function () use ($backup_id) { call_private('restore', 1, $backup_id); }, 'newer changes');
 
+reset_state($source);
+$state['race_id'] = 1;
+rejects(function () use ($source, $after) { call_private('save_source', 1, $source, $after, 'test-race'); }, 'data version is wrong');
+check($state['writes'] === 0 && call_private('source', 1) === $source, 'A concurrent native version change must still prevent source overwrite.');
 reset_state($source);
 $token = str_repeat('p', 32);
 $state['transients']['ctcw_plan_' . $token] = array('user' => 7, 'version' => Workbench::VERSION, 'jobs' => array(
