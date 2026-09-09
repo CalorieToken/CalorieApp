@@ -1,0 +1,122 @@
+# Brizy content workbench preparation
+
+Version 0.1.0 is an additional, narrowly scoped WordPress administration tool.
+It does not depend on or modify Identity Bridge. It adds a Tools screen and no
+public routes, front-end scripts, authentication mechanism or provider client.
+This is a preparation candidate, not a claim of installed or live functionality.
+
+The tool inventories pages, posts, products and registered Brizy content types
+in batches of 100, including drafts and reusable blocks/templates. Inspection
+exposes only RichText content and component counts, not the complete editor
+model, form settings, users, transactions, plugin configuration or credentials.
+Non-Brizy and unsupported storage records remain visible as unresolved items.
+
+For ordinary Brizy pages/posts it can create a new working draft using Brizy's
+own duplication method. Shared blocks remain references and cannot be written
+by this tool. This is not a complete isolated staging site: shared components,
+native widgets and their provider behavior still need explicit acceptance.
+Do not interact with a financial or voting widget merely to check layout.
+
+Text batches are bound to both the whole source hash and each RichText field's
+hash. Only selected text segments can change. Tags, attributes, styles, links,
+component configuration and shared references are retained. Replacement input
+is plain UTF-8 text; HTML is escaped and dynamic template/shortcode instructions
+are rejected. This supports grouped copy work and prepared translations. It is
+not a language selector, full-page translation system, layout editor or a tool
+for editing widget-generated text.
+
+Writes require an administrator with permission to edit the exact target and
+are limited to ordinary page/post drafts. The installed Brizy version must be
+2.8.21 and the integration methods must exist. A different version can still be
+inventoried; writes stop until its source compatibility has been checked.
+Native editor locks, including the same user's lock, and newer autosaves stop
+draft writes. Close/leave that editor and allow the normal lock to expire;
+inspect a newer autosave rather than discarding it.
+
+Every batch has a server-held, user-bound, expiring preview. All pages are
+checked before the first write and again individually. A failed second save is
+reported as a partial result with the completed page/backup IDs; no transactional
+or automatic rollback claim is made. The plan then cannot be replayed. A private
+post-meta backup is written before each source write. Backups remain available
+through source inspection, even after a page refresh. Restore refuses newer
+source changes and creates another recovery point before restoring.
+
+The tool uses `setEditorData`, `set_needs_compile(true)` and `save(0)`. It checks
+stored source bytes after saving. It does not patch `post_content` or compiled
+HTML, delete autosaves, force publication, or mark a rendered preview accepted.
+WordPress's modified timestamp/SEO mirror is not artificially rewritten. Brizy
+must compile through its normal preview/editor path, which may use the site's
+existing Brizy compiler service. A saved model is not proof of correct rendering.
+
+## Operation after authorized installation
+
+1. Open Tools → Calorie Content Workbench. Review the inventory and source status.
+2. Inspect the intended page and retain the source inventory JSON. Use a working
+   draft for a published page. Avoid duplicate copies by recording the new ID.
+3. Prepare one JSON batch from the inspected source and exact text segments.
+   Upload it or use the ordinary text box. Preview the complete change list.
+4. Apply that preview to drafts. Record each result and backup ID. Open the native
+   preview and verify the intended copy, historical typography, colors, links,
+   figures, consent behavior and unchanged surrounding content.
+5. On a disposable working draft, exercise restore and verify both stored source
+   and native rendering. Deactivation removes the admin tool from use; it does
+   not undo draft content. The tool offers no publication action.
+
+Batch shape (use actual hashes, paths and indexes from inspection):
+
+```json
+{
+  "schema": "calorie-content-batch/v1",
+  "jobs": [{
+    "post_id": 123,
+    "source_sha256": "<whole-source SHA256>",
+    "edits": [{
+      "path": "/items/0/value/text",
+      "sha256": "<RichText-field SHA256>",
+      "segments": [{"index": 2, "before": "Old text", "after": "New text"}]
+    }]
+  }]
+}
+```
+
+## Focused verification
+
+From this directory:
+
+```sh
+php -l calorie-content-workbench/calorie-content-workbench.php
+php -l calorie-content-workbench/includes/class-content-engine.php
+php -l tests/content-workbench.test.php
+php tests/content-workbench.test.php
+```
+
+Fixtures are entirely synthetic. They exercise source/segment conflicts,
+immutable markup and component settings, UTF-8/RTL, dynamic-content rejection,
+draft-only writes, capabilities, current-user locks, autosaves, backup failure,
+readback, byte-exact restore, cross-page backup rejection, whole-batch preflight,
+partial failure and published-to-draft copying. They do not run WordPress or
+the Brizy compiler. Actual installation, source inspection, native compilation,
+draft rendering and restore acceptance remain separate observations.
+
+## Source references and rights
+
+The integration was checked against Brizy's official 2.8.21 build commit
+[`747551cd0e0bcb348308c6062ff6aac4db534bf6`](https://github.com/ThemeFuse/Brizy/commit/747551cd0e0bcb348308c6062ff6aac4db534bf6):
+
+- `editor/post.php`, blob `4cf2c162535db330f24a8866c0ef4eb01a7f58ae`:
+  source encoding, duplication, saving and compile invalidation.
+- `editor/entity.php`, blob `8531c503acad09ea86de12729de67764556b7850`:
+  entity version/storage behavior and native duplication.
+- `editor/storage/post.php`, blob `5291e9a0f43bb4079db8dfced348d71bea386d3e`:
+  the `brizy` post-meta store.
+- RichText's `value.text` model is documented in the official source's
+  `public/editor-src/editor/js/editorComponents/RichText/types.ts`.
+
+[WordPress's lock documentation](https://developer.wordpress.org/reference/functions/wp_check_post_lock/)
+explains why this tool also checks the current user's lock: `wp_check_post_lock`
+alone deliberately ignores that case.
+
+No third-party implementation, editor bundle, assets or credentials are included
+in this tool. The integration calls the already installed Brizy implementation.
+This preparation does not change the repository's existing licence notice,
+grant new distribution rights or clear the Identity Bridge source review.

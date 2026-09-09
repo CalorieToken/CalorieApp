@@ -1,0 +1,28 @@
+name: Brizy content workbench checks
+
+on:
+  push:
+    branches:
+      - review/brizy-content-workbench
+    paths:
+      - tools/brizy-workbench/**
+      - .github/workflows/brizy-workbench-checks.yml
+
+permissions:
+  contents: read
+
+jobs:
+  focused-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - name: Lint the workbench and its synthetic fixtures
+        working-directory: tools/brizy-workbench
+        run: |
+          php -l calorie-content-workbench/calorie-content-workbench.php
+          php -l calorie-content-workbench/includes/class-content-engine.php
+          php -l tests/content-workbench.test.php
+      - name: Verify source conflicts, draft boundaries, backup and restore
+        working-directory: tools/brizy-workbench
+        run: php tests/content-workbench.test.php
