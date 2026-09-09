@@ -41,7 +41,15 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-## Current review candidate: 0.3.43
+## Current review candidate: 0.3.44
+
+The optional shared language control validates its required, unique DOM nodes
+and locale definitions before creating a store. It snapshots supported text
+directions, disconnects panel observation on page exit and resumes the same
+observer on return. The existing display store/host protocol, CMS subscription
+and authentication/session controllers keep their established behavior.
+
+## Previous review candidate: 0.3.43
 
 Market holder/rank fields now accept only non-negative whole numbers within a
 portable 32-bit integer range before returning or caching them. The cache key

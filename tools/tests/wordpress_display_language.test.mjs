@@ -12,13 +12,14 @@ const script = readFileSync(new URL("assets/calorieapp-display-language.js", bas
 const locales = JSON.parse(readFileSync(new URL("config/locales.json", base))).locales;
 const copy = JSON.parse(readFileSync(new URL("config/display-language.json", base)));
 const information = JSON.parse(readFileSync(new URL("config/app-information.json", base)));
-function harness({ editor = false, panelPresent = true, protectedCard = false, cms = null, cmsConfig = cms ? catalogue : null, cmsAvailable = true, blog, richlist, navigation, trustline, tokenomics, buyGuide } = {}) {
+function harness({ editor = false, panelPresent = true, duplicatePanel = false, missingControl, duplicateControl, configure, protectedCard = false, cms = null, cmsConfig = cms ? catalogue : null, cmsAvailable = true, blog, richlist, navigation, trustline, tokenomics, buyGuide } = {}) {
   const listeners = new Map(), writes = [], fields = {};
-  const stores = [], connections = [];
+  const stores = [], connections = [], observers = [];
   for (const key of ["label", "note", "description", "action", "current"]) fields[key] = { textContent: "" };
   const select = { value: "en", addEventListener(type, fn) { listeners.set("select:" + type, fn); } };
   const panel = { hidden: true, dataset: {}, isConnected: true, parentElement: null,
     querySelector(query) { return query === "select" ? select : query.includes("-label") ? fields.label : fields.note; },
+    querySelectorAll(query) { const node = this.querySelector(query); return query === missingControl ? [] : query === duplicateControl ? [node, node] : [node]; },
     closest() { return this.parentElement === card ? card : null; },
   };
   const account = { sameLoginButton: {}, sessionLocale: "en", consent: { marketing: false } };
@@ -33,7 +34,10 @@ function harness({ editor = false, panelPresent = true, protectedCard = false, c
     if (query === ".brz-ed") return editor ? {} : null;
     if (query === "[data-calorieapp-app-info]") return info;
     return cms?.document.querySelector(query) || null;
-  }, querySelectorAll(query) { return query === ".brz .xl-card" ? [card] : cms?.document.querySelectorAll(query) || []; } };
+  }, querySelectorAll(query) {
+    if (query === "[data-calorieapp-display-language]") return panelPresent ? (duplicatePanel ? [panel, panel] : [panel]) : [];
+    return query === ".brz .xl-card" ? [card] : cms?.document.querySelectorAll(query) || [];
+  } };
   const window = {
     CalorieAppBlogX: blog,
     CalorieAppRichlist: richlist,
@@ -47,18 +51,46 @@ function harness({ editor = false, panelPresent = true, protectedCard = false, c
     CalorieAppCmsLanguagePreview: cmsAvailable ? { connect(options) {
       const api = cmsRuntime.connect(options); connections.push({ api, store: options.store }); return api;
     } } : undefined,
-    calorieappDisplayLanguageConfig: { locales, initialLocale: "en", copy, information, ...(cmsConfig ? { cmsPreview: cmsConfig } : {}) },
+    calorieappDisplayLanguageConfig: { locales: structuredClone(locales), initialLocale: "en", copy, information, ...(cmsConfig ? { cmsPreview: cmsConfig } : {}) },
     location: cms?.location,
     localStorage: { getItem() { return null; }, setItem(key, value) { writes.push({key,value}); }, removeItem() {} },
     addEventListener(type, fn) { listeners.set(type, fn); },
   };
-  const context = vm.createContext({ window, document });
+  configure?.(window.calorieappDisplayLanguageConfig);
+  const context = vm.createContext({ window, document, MutationObserver: class {
+    constructor(callback) { this.callback = callback; this.target = null; observers.push(this); }
+    observe(target) { this.target = target; }
+    disconnect() { this.target = null; }
+  } });
   const run = () => vm.runInContext(script, context);
   run();
-  return { window, panel, select, info, fields, account, card, writes, run, stores, connections,
+  return { window, panel, select, info, fields, account, card, writes, run, stores, connections, observers,
     fire(type, event = {}) { listeners.get(type)?.(event); },
     choose(locale) { select.value = locale; listeners.get("select:change")?.(); } };
 }
+test("missing or duplicate owned controls keep preview hidden without creating a store", () => {
+  const selectors = ["select", "[data-calorieapp-language-label]", "[data-calorieapp-language-note]"];
+  for (const options of [{ duplicatePanel: true }, ...selectors.flatMap(selector => [{ missingControl: selector }, { duplicateControl: selector }])]) {
+    const h = harness(options); assert.equal(h.panel.hidden, true); assert.equal(h.panel.dataset.ready, undefined);
+    assert.equal(h.stores.length, 0); assert.equal(h.observers.length, 0); h.choose("nl"); assert.equal(h.writes.length, 0);
+  }
+});
+test("malformed locale catalogues fail before initialization; valid direction is snapshotted", () => {
+  for (const configure of [c => c.locales = [], c => c.locales.push(null), c => c.locales.push(c.locales[0]), c => c.locales = c.locales.filter(x => x.tag !== "en"), c => c.locales[0].direction = "invalid"]) {
+    const h = harness({ configure }); assert.equal(h.panel.hidden, true); assert.equal(h.stores.length, 0);
+    h.window.calorieappDisplayLanguageConfig.locales = structuredClone(locales); h.run(); assert.equal(h.stores.length, 1);
+  }
+  const h = harness(); h.window.calorieappDisplayLanguageConfig.locales.length = 0; h.choose("ar");
+  assert.equal(h.panel.dir, "rtl"); assert.equal(h.info.dir, "rtl"); assert.equal(h.account.sessionLocale, "en");
+});
+test("panel observation disconnects on exit and resumes once after back-forward restoration", () => {
+  const h = harness(); assert.equal(h.observers.length, 1); assert.ok(h.observers[0].target);
+  const count = h.writes.length;
+  h.fire("pagehide", { persisted: true }); assert.equal(h.observers[0].target, null);
+  h.fire("pageshow", { persisted: true }); assert.ok(h.observers[0].target); assert.equal(h.observers.length, 1);
+  h.choose("ar"); assert.equal(h.info.dir, "rtl"); assert.equal(h.writes.length, count + 1);
+  h.fire("pagehide", { persisted: false }); assert.equal(h.observers[0].target, null);
+});
 test("website control changes only the translated information and preserves account references", () => {
   const h = harness(), account = h.account, login = account.sameLoginButton;
   assert.equal(h.panel.parentElement, h.card);

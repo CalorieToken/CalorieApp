@@ -1,15 +1,25 @@
 (function () {
   "use strict";
   function boot() {
-    var panel = document.querySelector("[data-calorieapp-display-language]");
+    var panels = document.querySelectorAll("[data-calorieapp-display-language]");
+    var panel = panels.length === 1 ? panels[0] : null;
     var runtime = window.CalorieAppDisplayLanguage;
     var config = window.calorieappDisplayLanguageConfig;
-    if (!panel || !runtime || !config || panel.dataset.ready === "1" || document.querySelector(".brz-ed")) return;
+    if (!panel || !runtime || typeof runtime.createStore !== "function" || !config || panel.dataset.ready === "1" || document.querySelector(".brz-ed")) return;
     if (!Array.isArray(config.locales) || !config.copy || !config.copy.en || !config.information) return;
-    panel.dataset.ready = "1";
+    var definitions = Object.create(null);
+    if (!config.locales.every(function (item) {
+      if (!item || typeof item.tag !== "string" || !item.tag || definitions[item.tag]
+          || ["ltr", "rtl"].indexOf(item.direction) < 0) return false;
+      definitions[item.tag] = { tag: item.tag, direction: item.direction };
+      return true;
+    }) || !definitions.en) return;
+    var required = ["select", "[data-calorieapp-language-label]", "[data-calorieapp-language-note]"];
+    if (!required.every(function (selector) { return panel.querySelectorAll(selector).length === 1; })) return;
     var select = panel.querySelector("select");
     var label = panel.querySelector("[data-calorieapp-language-label]");
     var note = panel.querySelector("[data-calorieapp-language-note]");
+    panel.dataset.ready = "1";
     var store = runtime.createStore({
       locales: config.locales.map(function (item) { return item.tag; }),
       fallback: "en", initialLocale: config.initialLocale,
@@ -23,11 +33,12 @@
       if (node && typeof value === "string" && node.textContent !== value) node.textContent = value;
     }
     function render(state) {
-      var definition = config.locales.find(function (item) { return item.tag === state.locale; });
+      var definition = definitions[state.locale] || definitions.en;
+      var direction = definition.direction;
       var copy = config.copy[state.locale] || config.copy.en;
       select.value = state.locale;
       panel.lang = state.locale;
-      panel.dir = definition.direction;
+      panel.dir = direction;
       text(label, copy.label);
       text(note, copy.preview);
       // Only the owned, already translated information component participates.
@@ -37,7 +48,7 @@
       var infoCopy = config.information[state.locale];
       if (info && infoCopy) {
         info.lang = state.locale;
-        info.dir = definition.direction;
+        info.dir = direction;
         text(info.querySelector("div > p"), infoCopy.description);
         text(info.querySelector(".calorieapp-app-info-link"), infoCopy.action);
         text(info.querySelector(".calorieapp-app-info-current"), infoCopy.on_page);
@@ -79,7 +90,7 @@
       if (cms) cms.refresh();
     }
     window.addEventListener("load", refreshPage);
-    window.addEventListener("pageshow", refreshPage);
+    window.addEventListener("pageshow", function () { refreshPage(); observePanel(); });
     window.addEventListener("calorieapp:page-tools-ready", function () {
       if (typeof window.CalorieAppPageNavigation?.setLocale === "function") window.CalorieAppPageNavigation.setLocale(store.get().locale);
     });
@@ -92,15 +103,20 @@
     window.addEventListener("calorieapp:buy-guide-ready", function () {
       if (typeof window.CalorieAppBuyGuide?.setLocale === "function") window.CalorieAppBuyGuide.setLocale(store.get().locale);
     });
-    if (cms) window.addEventListener("pagehide", function (event) {
+    window.addEventListener("pagehide", function (event) {
+      if (observer) observer.disconnect();
       // Keep the same connection for bfcache; pageshow rechecks its source.
-      if (!event.persisted) cms.disconnect();
+      if (cms && !event.persisted) cms.disconnect();
     });
+    var observer = null;
+    function observePanel() {
+      if (observer) observer.observe(document.body, { childList: true, subtree: true });
+    }
     if (typeof MutationObserver === "function") {
-      var observer = new MutationObserver(function () {
+      observer = new MutationObserver(function () {
         if (!panel.isConnected || !panel.closest(".xl-card")) place();
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observePanel();
     }
     if (typeof window.crypto?.randomUUID === "function") runtime.connectHost({
       window: window, store: store, epoch: window.crypto.randomUUID(),
