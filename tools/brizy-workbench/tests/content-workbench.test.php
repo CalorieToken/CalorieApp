@@ -90,6 +90,7 @@ function reset_state($source) {
         $state['posts'][$id] = (object) array('ID' => $id, 'post_title' => 'Synthetic ' . $id, 'post_type' => 'page', 'post_status' => 'draft', 'post_modified_gmt' => '2026-01-01 00:00:00');
         $state['meta'][$id]['brizy'] = array('brizy-post' => array('editor_data' => base64_encode($source)));
         $state['meta'][$id]['brizy_data_version'] = 7;
+        $state['meta'][$id]['brizy-post-compiler-version'] = '3.0.0';
     }
 }
 function get_post($id) { global $state; return $state['posts'][(int) $id] ?? null; }
@@ -143,6 +144,7 @@ class Brizy_Editor_Post {
     public function getCurrentDataVersion() { return (int) get_post_meta($this->id, 'brizy_data_version', true); }
     public function setDataVersion($version) { $this->nextVersion = (int) $version; return $this; }
     public function set_needs_compile($value) { global $state; $state['meta'][$this->id]['brizy-need-compile'] = $value; return $this; }
+    public function set_compiler_version($value) { global $state; $state['meta'][$this->id]['brizy-post-compiler-version'] = $value; }
     public function save($autosave = 0) {
         global $state;
         if (($state['race_id'] ?? 0) === $this->id) { ++$state['meta'][$this->id]['brizy_data_version']; }
@@ -176,11 +178,14 @@ check($state['writes'] === 0, 'Failed backup must stop before source write.');
 $state['backups_enabled'] = true;
 $backup_id = call_private('save_source', 1, $source, $after, 'test');
 check($state['writes'] === 1 && $state['meta'][1]['brizy-need-compile'] === true && get_post_status(1) === 'draft', 'Save must preserve draft status and invalidate compiled output.');
+check($state['meta'][1]['brizy-post-compiler-version'] === '0.0.0' && $state['meta'][2]['brizy-post-compiler-version'] === '3.0.0', 'Brizy native preview needs the stale compiler marker on the saved draft only.');
 check($state['meta'][1]['brizy_data_version'] === 8, 'An existing nonzero native version must advance exactly once.');
 check(base64_decode($state['backups'][$backup_id]->meta_value['before_base64']) === $source, 'Original bytes must be retained.');
 rejects(function () use ($source, $after) { call_private('save_source', 1, $source, $after, 'test'); }, 'changed since preview');
+$state['meta'][1]['brizy-post-compiler-version'] = '3.0.0'; // Model a native compile after the saved batch.
 call_private('restore', 1, $backup_id);
 check(call_private('source', 1) === $source, 'Restore must recover the exact original source bytes.');
+check($state['meta'][1]['brizy-post-compiler-version'] === '0.0.0', 'Restored source must invalidate the previously compiled changed copy.');
 check($state['meta'][1]['brizy_data_version'] === 9, 'Restore must follow the same native version contract.');
 check(count($state['backups']) === 2 && !$state['options'], 'Restore must itself be reversible and release its mutex.');
 rejects(function () use ($backup_id) { call_private('restore', 2, $backup_id); }, 'does not belong');
@@ -190,6 +195,7 @@ reset_state($source);
 $state['race_id'] = 1;
 rejects(function () use ($source, $after) { call_private('save_source', 1, $source, $after, 'test-race'); }, 'data version is wrong');
 check($state['writes'] === 0 && call_private('source', 1) === $source, 'A concurrent native version change must still prevent source overwrite.');
+check($state['meta'][1]['brizy-post-compiler-version'] === '3.0.0', 'Rejected source writes must not invalidate the existing compiled cache.');
 reset_state($source);
 $token = str_repeat('p', 32);
 $state['transients']['ctcw_plan_' . $token] = array('user' => 7, 'version' => Workbench::VERSION, 'jobs' => array(
@@ -206,6 +212,7 @@ call_private('clone_draft', 1, hash('sha256', $source));
 check(get_post_status(1) === 'publish' && get_post_status(100) === 'draft', 'Clone must leave the original published and create a draft.');
 check(call_private('source', 1) === $source && call_private('source', 100) === $source, 'Source and clone must match.');
 check($state['meta'][100]['brizy-need-compile'] === true, 'Clone requires native compilation.');
+check($state['meta'][100]['brizy-post-compiler-version'] === '0.0.0' && $state['meta'][1]['brizy-post-compiler-version'] === '3.0.0', 'A copy without compiled sections must trigger native compilation without invalidating its published original.');
 $old_lock = array('token' => 'old', 'time' => 1);
 $state['options'][Workbench::MUTEX] = array('token' => 'new', 'time' => 2);
 check(call_private('release_mutex', $old_lock) === false && $state['options'][Workbench::MUTEX]['token'] === 'new', 'Releasing an abandoned lock must retain a newer operation lock.');

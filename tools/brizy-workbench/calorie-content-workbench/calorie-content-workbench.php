@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Calorie Content Workbench
  * Description: Private admin workspace for Brizy inventory and reversible draft text batches.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Requires at least: 6.0
  * Requires PHP: 7.4
  */
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) { exit; }
 require_once __DIR__ . '/includes/class-content-engine.php';
 
 final class Workbench {
-    const VERSION = '0.1.1';
+    const VERSION = '0.1.2';
     const PAGE = 'calorie-content-workbench';
     const BACKUP = '_ctcw_backup_v1';
     const MUTEX = 'ctcw_operation_lock_v1';
@@ -27,7 +27,7 @@ final class Workbench {
         if (!defined('BRIZY_VERSION') || BRIZY_VERSION !== '2.8.21') {
             throw new \RuntimeException('This preparation build supports Brizy 2.8.21 only. Inventory remains available.');
         }
-        foreach (array('get', 'duplicateTo', 'getEditorData', 'setEditorData', 'getCurrentDataVersion', 'setDataVersion', 'set_needs_compile', 'save') as $method) {
+        foreach (array('get', 'duplicateTo', 'getEditorData', 'setEditorData', 'getCurrentDataVersion', 'setDataVersion', 'set_needs_compile', 'set_compiler_version', 'save') as $method) {
             if (!is_callable(array('Brizy_Editor_Post', 'get')) || !method_exists('Brizy_Editor_Post', $method)) {
                 throw new \RuntimeException('Required Brizy methods are unavailable. No draft write was started.');
             }
@@ -179,6 +179,10 @@ final class Workbench {
         if (get_post_status($id) !== 'draft' || !hash_equals(hash('sha256', $after), hash('sha256', self::source($id)))) {
             throw new \RuntimeException('Readback failed for page ' . $id . '; backup ' . $backup_id . ' is retained. Inspect before another write.');
         }
+        // Brizy 2.8.21's needsCompile() checks the compiled version, not its
+        // needs_compile flag. Use Brizy's own stale-cache marker for this draft
+        // only, after successful source storage; never reset the whole site.
+        $editor->set_compiler_version('0.0.0');
         return $backup_id;
     }
 
@@ -253,6 +257,7 @@ final class Workbench {
                 $copy->set_needs_compile(true);
                 $copy->save(0);
                 if (!hash_equals(hash('sha256', $before), hash('sha256', self::source($new_id)))) { throw new \RuntimeException('Copied source did not match.'); }
+                $copy->set_compiler_version('0.0.0');
             } catch (\Throwable $error) {
                 throw new \RuntimeException('Draft ' . $new_id . ' was created but its Brizy copy needs inspection. Original retained. ' . $error->getMessage());
             }
