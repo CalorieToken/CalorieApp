@@ -1,0 +1,440 @@
+/* One public page ending. Reviewed legacy footers stay stored in Brizy;
+   only their rendered, safely matched counterparts are hidden. */
+.calorieapp-shared-page-ending[hidden],
+.calorieapp-shared-footer[hidden],
+.calorieapp-sitewide-market[hidden],
+[data-calorieapp-legacy-footer][hidden],
+[data-calorieapp-retired-market-slot][hidden] { display: none !important; }
+.calorieapp-shared-page-ending {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 32px 0 0;
+  color: #fff;
+  font-family: Amiri, Georgia, "Times New Roman", serif;
+}
+.calorieapp-page-market { padding: 0 16px 32px; }
+.calorieapp-app-info {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  width: min(960px, calc(100% - 32px));
+  margin: 0 auto 32px;
+  padding: 20px 16px;
+  border-block-start: 2px solid #f9b233;
+  border-block-end: 2px solid #505ba9;
+  background: #fff;
+  color: #303449;
+  text-align: start;
+}
+.calorieapp-app-info > * { min-width: 0; max-width: 100%; }
+.calorieapp-app-info > img { width: 64px; height: 64px; object-fit: contain; }
+.calorieapp-app-info h2 { margin: 0 0 4px; color: #008d36; font: 700 28px/1.3 Amiri, Georgia, serif; }
+.calorieapp-app-info p { margin: 0; font: 18px/1.5 Amiri, Georgia, serif; overflow-wrap: anywhere; }
+.calorieapp-app-info-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 2px solid #505ba9;
+  border-radius: 4px;
+  background: #f9b233;
+  color: #303449 !important;
+  font: 700 18px/1.4 Amiri, Georgia, serif;
+  text-decoration: none !important;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.calorieapp-app-info-link:hover { background: #fff; }
+.calorieapp-app-info-link:focus-visible { outline: 3px solid #008d36; outline-offset: 3px; }
+.calorieapp-app-info-current { max-width: 180px; }
+.calorieapp-shared-footer {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 24px max(18px, calc((100vw - 1170px) / 2)) 30px;
+  background: #505ba9;
+  color: #fff;
+  text-align: center;
+  box-shadow: none;
+}
+
+.calorieapp-shared-socials {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 1170px);
+  margin: 0 auto 18px;
+}
+
+.calorieapp-shared-social-window {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.calorieapp-shared-social-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.calorieapp-shared-social-track::-webkit-scrollbar {
+  display: none;
+}
+
+.calorieapp-shared-social {
+  display: flex;
+  flex: 0 0 33.3333%;
+  min-height: 80px;
+  align-items: center;
+  justify-content: center;
+  color: #fff !important;
+  scroll-snap-align: start;
+  text-decoration: none !important;
+}
+
+.calorieapp-shared-social-icon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  fill: currentColor;
+}
+
+.calorieapp-shared-social-arrow {
+  display: inline-flex;
+  width: 48px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #079447;
+  font-family: Arial, sans-serif;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+}
+[dir="rtl"] .calorieapp-shared-social-arrow { transform: scaleX(-1); }
+
+.calorieapp-shared-legal {
+  width: min(100%, 1170px);
+  margin: 0 auto;
+}
+
+.calorieapp-shared-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 28px;
+  margin-top: 12px !important;
+}
+
+.calorieapp-shared-legal-links a {
+  color: #fff !important;
+  font-weight: 700;
+  text-decoration: underline !important;
+}
+.calorieapp-footer-no-script { padding: 16px; background: #505ba9; }
+
+.calorieapp-shared-social:hover,
+.calorieapp-shared-social:focus-visible,
+.calorieapp-shared-legal-links a:hover,
+.calorieapp-shared-legal-links a:focus-visible {
+  color: #c7f6d6 !important;
+}
+
+.calorieapp-shared-footer p {
+  margin: 7px 0;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.calorieapp-shared-social-arrow:focus-visible,
+.calorieapp-shared-social:focus-visible,
+.calorieapp-shared-legal-links a:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.calorieapp-xpmarket-widget {
+  display: block;
+  box-sizing: border-box;
+  width: min(380px, calc(100% - 10px));
+  min-height: 0;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 5px solid #505ba9;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+}
+
+.calorieapp-xpmarket-link {
+  display: flex;
+  min-height: 0;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+.calorieapp-xpmarket-heading {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.calorieapp-xpmarket-logo {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.calorieapp-xpmarket-heading strong,
+.calorieapp-xpmarket-heading small {
+  display: block;
+}
+
+.calorieapp-xpmarket-heading strong {
+  color: #079447;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.calorieapp-xpmarket-heading small,
+.calorieapp-xpmarket-state,
+.calorieapp-xpmarket-prices small,
+.calorieapp-xpmarket-stats small {
+  color: #626b8f;
+  font-size: 11px;
+}
+
+.calorieapp-xpmarket-state {
+  align-self: start;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #eef9f2;
+  color: #078442;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.calorieapp-xpmarket-prices {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.calorieapp-xpmarket-price {
+  color: #222;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.calorieapp-xpmarket-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calorieapp-xpmarket-stats > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: #f3f4fa;
+}
+
+.calorieapp-xpmarket-stats strong {
+  overflow: hidden;
+  color: #30386f;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calorieapp-xpmarket-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  color: #505ba9;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calorieapp-xpmarket-widget[data-state="fallback"]
+  .calorieapp-xpmarket-prices,
+.calorieapp-xpmarket-widget[data-state="fallback"]
+  .calorieapp-xpmarket-stats {
+  opacity: 0.45;
+}
+
+@media (max-width: 767px) {
+  .calorieapp-shared-page-ending { margin-top: 24px; }
+  .calorieapp-app-info { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 16px 12px; }
+  .calorieapp-app-info > img { width: 48px; height: 48px; }
+  .calorieapp-app-info-link,
+  .calorieapp-app-info-current { grid-column: 1 / -1; justify-self: start; max-width: 100%; }
+  .calorieapp-shared-footer { padding: 20px 18px 26px; }
+  .calorieapp-shared-socials { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 4px; }
+  .calorieapp-shared-social { flex-basis: 100%; min-height: 76px; }
+  .calorieapp-shared-social-arrow { width: 42px; font-size: 48px; }
+  .calorieapp-shared-footer p { font-size: 14px; }
+  .calorieapp-xpmarket-link { padding: 12px; }
+}
+.calorieapp-xpmarket-logo[hidden] { display: none; }
+.calorieapp-xpmarket-heading { grid-template-columns: auto minmax(0, 1fr); }
+.calorieapp-xpmarket-state { grid-column: 1 / -1; justify-self: start; }
+.calorieapp-xpmarket-prices { flex-wrap: wrap; overflow-wrap: anywhere; }
+.calorieapp-xpmarket-title { overflow-wrap: anywhere; }
+.calorieapp-xpmarket-link:focus-visible { outline: 3px solid #079447; outline-offset: -4px; }
+.calorieapp-shared-social-arrow { touch-action: manipulation; }
+@media (prefers-reduced-motion: reduce) {
+  .calorieapp-shared-social-track { scroll-behavior: auto; }
+}
+
+/* Original Home icons and colours in one stack: omitted slots take no space. */
+.calorieapp-page-tools[hidden],
+.calorieapp-page-tool-position[hidden] { display: none !important; }
+.calorieapp-page-tools {
+  position: fixed;
+  z-index: 11;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 6px;
+  width: 48px;
+  right: calc(81px + 15vw - 24px);
+  bottom: max(22px, env(safe-area-inset-bottom));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+.calorieapp-page-tool-position {
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.calorieapp-page-tool-position-home { color: #505ba9; }
+.calorieapp-page-tool-position-app,
+.calorieapp-page-tool-position-top,
+.calorieapp-page-tool-position-bottom { color: #008d36; }
+.calorieapp-page-tool {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  color: inherit !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: auto;
+  text-decoration: none !important;
+}
+.calorieapp-page-tool-icon {
+  display: block;
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  max-width: none;
+  object-fit: contain;
+  fill: currentColor;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.calorieapp-page-tool:focus-visible { outline: 3px solid #f9b233; outline-offset: 2px; }
+@media (min-width: 991px) {
+  .calorieapp-page-tool:hover { color: rgba(249, 178, 51, 0.8) !important; }
+}
+@media (max-width: 767px) {
+  .calorieapp-page-tools {
+    width: 32px;
+    gap: 2px;
+    right: max(4px, calc(15vw - 51px));
+    bottom: max(2px, env(safe-area-inset-bottom));
+  }
+  .calorieapp-page-tool-icon { width: 32px; height: 32px; }
+}
+/* Only ancestors containing market cards and decoration receive this class.
+   Home previously constrained its mobile column to 28.1% with 100px margins. */
+.calorieapp-xpmarket-layout,
+.calorieapp-xpmarket-inner {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.calorieapp-xpmarket-inner { display: flex; justify-content: center; }
+.calorieapp-xpmarket-layout { justify-content: center !important; }
+
+/* Presentation only: the login modal and session controls remain outside. */
+.calorieapp-frame-stage { position: relative; width: 100%; }
+.calorieapp-frame-stage[data-calorieapp-frame-loading] .calorieapp-embed-frame { visibility: hidden; }
+.calorieapp-embed-loading[hidden],
+.calorieapp-loading-actions[hidden] { display: none !important; }
+.calorieapp-embed-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(32px, 8vw, 72px) 20px;
+  border-radius: 20px;
+  background: #fff;
+  color: #505ba9;
+  font-family: Amiri, Georgia, serif;
+  text-align: center;
+}
+.calorieapp-loading-logo { width: 64px; height: 64px; object-fit: contain; margin-bottom: 18px; }
+.calorieapp-embed-loading strong { color: #008d36; font-size: 26px; line-height: 1.3; }
+.calorieapp-embed-loading p { max-width: 440px; margin: 12px 0 20px; font-size: 18px; line-height: 1.5; }
+.calorieapp-loading-progress { width: min(180px, 100%); height: 5px; border-radius: 5px; background: #f9b233; animation: calorieapp-loading-pulse 1.6s ease-in-out infinite; }
+.calorieapp-loading-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
+.calorieapp-loading-actions button { border: 2px solid #505ba9; border-radius: 18px; background: #fff; color: #505ba9; padding: 9px 18px; font: inherit; cursor: pointer; }
+.calorieapp-loading-actions button:focus-visible { outline: 3px solid #f9b233; outline-offset: 3px; }
+@keyframes calorieapp-loading-pulse { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .calorieapp-loading-progress { animation: none; } }

@@ -16,6 +16,10 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             release.plugin_version(),
             re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$"),
         )
+        integrated = (release.PLUGIN_DIR / "includes/class-calorieapp-identity-bridge-integrated-login.php").read_text()
+        fallback = re.search(r"CALORIEAPP_IDENTITY_BRIDGE_VERSION\s*:\s*'([^']+)'", integrated)
+        self.assertIsNotNone(fallback, "The standalone asset version must be explicit")
+        self.assertEqual(fallback.group(1), release.plugin_version(), "Asset cache version must follow the release header")
 
     def test_build_is_reproducible_and_safe(self) -> None:
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
@@ -43,6 +47,16 @@ class WordPressPluginReleaseTests(unittest.TestCase):
             self.assertIn(f"{release.PLUGIN_SLUG}/LICENSE", names)
             self.assertIn(f"{release.PLUGIN_SLUG}/THIRD_PARTY_NOTICES.md", names)
             self.assertIn(f"{release.PLUGIN_SLUG}/config/locales.json", names)
+            self.assertIn(f"{release.PLUGIN_SLUG}/assets/calorieapp-cms-language-preview.js", names)
+            self.assertIn(f"{release.PLUGIN_SLUG}/config/cms-faq-preview.json", names)
+            for source, packaged in (
+                ("cms-preview.js", "assets/calorieapp-cms-language-preview.js"),
+                ("cms-faq-preview.json", "config/cms-faq-preview.json"),
+            ):
+                canonical = release.ROOT / "contracts/display-language/v1" / source
+                self.assertEqual(canonical.read_bytes(), (release.PLUGIN_DIR / packaged).read_bytes())
+                with zipfile.ZipFile(first_archive) as bundle:
+                    self.assertEqual(bundle.read(f"{release.PLUGIN_SLUG}/{packaged}"), canonical.read_bytes())
 
     def test_release_allowlist_has_exact_code_provenance_inventory(self) -> None:
         files = release.release_paths()
@@ -79,6 +93,14 @@ class WordPressPluginReleaseTests(unittest.TestCase):
                     Path(output),
                     require_cleared_provenance=True,
                 )
+
+    def test_inventory_update_does_not_relabel_historical_source_review(self) -> None:
+        contract = release.code_provenance(release.release_paths())
+        self.assertEqual(contract["inventory_plugin_version"], release.plugin_version())
+        self.assertFalse(contract["inventory_update_is_source_clearance"])
+        self.assertEqual(contract["plugin_version_reviewed"], "0.3.2")
+        self.assertEqual(contract["review_date"], "2026-09-04")
+        self.assertFalse(contract["release_expansion_allowed"])
 
     def test_expected_version_must_match(self) -> None:
         with tempfile.TemporaryDirectory() as output:

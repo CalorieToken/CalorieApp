@@ -81,7 +81,7 @@ class IntegratedLogin {
         $base_url = plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE);
         $version = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
             ? CALORIEAPP_IDENTITY_BRIDGE_VERSION
-            : '0.3.23';
+            : '0.3.44';
 
         wp_register_style(
             'calorieapp-identity-bridge-embed',
@@ -242,6 +242,18 @@ class IntegratedLogin {
                 </div>
             <?php endif; ?>
 
+            <div class="calorieapp-frame-stage" data-calorieapp-frame-stage data-calorieapp-frame-loading="1" aria-busy="true">
+            <div class="calorieapp-embed-loading" data-calorieapp-embed-loading role="status" aria-live="polite" data-slow-message="<?php echo esc_attr__('CalorieApp is taking longer to start. You can keep waiting or try again.', 'calorieapp-identity-bridge'); ?>">
+                <img class="calorieapp-loading-logo" src="<?php echo esc_url(plugin_dir_url(CALORIEAPP_IDENTITY_BRIDGE_FILE) . 'assets/calorieapp-logo.svg'); ?>" width="64" height="64" alt="" aria-hidden="true">
+                <strong><?php echo esc_html__('CalorieApp is starting', 'calorieapp-identity-bridge'); ?></strong>
+                <p data-calorieapp-loading-message><?php echo esc_html__('Your food log will appear here when the app is ready.', 'calorieapp-identity-bridge'); ?></p>
+                <div class="calorieapp-loading-progress" aria-hidden="true"></div>
+                <div class="calorieapp-loading-actions" data-calorieapp-loading-actions hidden>
+                    <button type="button" data-calorieapp-loading-retry><?php echo esc_html__('Try again', 'calorieapp-identity-bridge'); ?></button>
+                    <button type="button" data-calorieapp-loading-reveal><?php echo esc_html__('Show app', 'calorieapp-identity-bridge'); ?></button>
+                </div>
+            </div>
+            <noscript><style>.calorieapp-embed-loading{display:none!important}.calorieapp-frame-stage .calorieapp-embed-frame{visibility:visible!important}</style></noscript>
             <iframe
                 class="calorieapp-embed-frame"
                 src="<?php echo esc_url($iframe_src); ?>"
@@ -250,6 +262,7 @@ class IntegratedLogin {
                 loading="eager"
                 referrerpolicy="strict-origin-when-cross-origin"
             ></iframe>
+            </div>
 
             <div class="calorieapp-login-modal" hidden role="dialog" aria-modal="true" aria-labelledby="<?php echo esc_attr($instance_id); ?>-title">
                 <div class="calorieapp-login-card">

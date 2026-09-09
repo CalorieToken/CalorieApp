@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "network": "xrpl-mainnet",
+  "observed_on": "2026-09-08",
+  "source": "https://s1.ripple.com:51234/",
+  "method": "amm_info",
+  "projection": "Pool identity and ledger reference only; balances, LP participants, auction and voting accounts omitted. This is not a current quote or a liquidity guarantee.",
+  "observations": {
+    "CAL_XRP": {
+      "ledger_index": 106846514,
+      "ledger_hash": "355289C6237F28F79881D11F5D2A97AA5583AD6295CA56839247099539775C51",
+      "validated": true,
+      "amm_account": "rhDx4NgeWz6jzs4TwiwYDmpeF2maJFZBtr",
+      "assets": [
+        {"currency": "43616C6F72696500000000000000000000000000", "issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"},
+        {"currency": "XRP"}
+      ]
+    },
+    "CAL_RLUSD": {
+      "ledger_index": 106846512,
+      "ledger_hash": "97584F563483BAF7D36E0D6479CFA68FE00AD3278B3ACFB9BCB9C309ACB10FDD",
+      "validated": true,
+      "amm_account": "rPN26geCWSD4xPu8LYBM8zqDrYSgNQGHeQ",
+      "assets": [
+        {"currency": "43616C6F72696500000000000000000000000000", "issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"},
+        {"currency": "524C555344000000000000000000000000000000", "issuer": "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"}
+      ]
+    }
+  }
+}

@@ -58,7 +58,21 @@ This is an existing project brand asset, not a newly drawn logo. Use of the mark
 on this project website was requested by the project owner; no broader rights
 to the mark are granted by the plugin's software licence.
 
-Source: https://drive.google.com/file/d/1FMepF9HinYi9Pd5AuR7BSOO6peY5gIPu/view
+Source: Private project design source. Its access URL is intentionally omitted
+from the public package; the project rights administrator retains the source
+record.
+
+## X profile mark
+
+`assets/calorieapp-site-polish.js` contains the monochrome X logo path from X's
+official brand toolkit, used solely to identify CalorieToken's X profile. The
+mark is not project-owned and is not licensed under the plugin's software
+licence.
+
+Source: https://about.x.com/en/who-we-are/brand-toolkit
+Asset: https://about.x.com/content/dam/about-twitter/x/brand-toolkit/x-logo.zip
+Retrieved: 2026-09-08. The original vector geometry is preserved; `currentColor`
+retains the surrounding website's monochrome icon colour.
 
 ## Source and contribution limitation
 

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "copy_version": "navigation-helper-v1",
+  "review_status": "prepared-unreviewed",
+  "release_approved": false,
+  "translations": {
+    "en": {
+      "region": "Page shortcuts",
+      "home": "Go to Home",
+      "app": "Open CalorieApp",
+      "top": "Back to top",
+      "bottom": "Go to bottom"
+    },
+    "zh-Hans": {
+      "region": "页面快捷操作",
+      "home": "返回首页",
+      "app": "打开 CalorieApp",
+      "top": "返回顶部",
+      "bottom": "前往底部"
+    },
+    "hi": {
+      "region": "पेज शॉर्टकट",
+      "home": "होम पर जाएँ",
+      "app": "CalorieApp खोलें",
+      "top": "ऊपर लौटें",
+      "bottom": "नीचे जाएँ"
+    },
+    "es": {
+      "region": "Accesos de página",
+      "home": "Ir al inicio",
+      "app": "Abrir CalorieApp",
+      "top": "Volver arriba",
+      "bottom": "Ir abajo"
+    },
+    "ar": {
+      "region": "اختصارات الصفحة",
+      "home": "إلى الصفحة الرئيسية",
+      "app": "افتح ⁦CalorieApp⁩",
+      "top": "إلى أعلى الصفحة",
+      "bottom": "إلى أسفل الصفحة"
+    },
+    "fr": {
+      "region": "Raccourcis de la page",
+      "home": "Aller à l’accueil",
+      "app": "Ouvrir CalorieApp",
+      "top": "Revenir en haut",
+      "bottom": "Aller en bas"
+    },
+    "bn": {
+      "region": "পৃষ্ঠার শর্টকাট",
+      "home": "হোমে যান",
+      "app": "CalorieApp খুলুন",
+      "top": "উপরে ফিরুন",
+      "bottom": "নিচে যান"
+    },
+    "pt": {
+      "region": "Atalhos da página",
+      "home": "Ir para o início",
+      "app": "Abrir CalorieApp",
+      "top": "Voltar ao topo",
+      "bottom": "Ir para o fim"
+    },
+    "id": {
+      "region": "Pintasan halaman",
+      "home": "Ke beranda",
+      "app": "Buka CalorieApp",
+      "top": "Kembali ke atas",
+      "bottom": "Ke bagian bawah"
+    },
+    "ur": {
+      "region": "صفحے کے شارٹ کٹس",
+      "home": "ہوم پر جائیں",
+      "app": "⁦CalorieApp⁩ کھولیں",
+      "top": "اوپر واپس جائیں",
+      "bottom": "صفحے کے نیچے جائیں"
+    },
+    "nl": {
+      "region": "Paginasnelkoppelingen",
+      "home": "Naar de homepage",
+      "app": "Open CalorieApp",
+      "top": "Naar boven",
+      "bottom": "Naar beneden"
+    }
+  }
+}

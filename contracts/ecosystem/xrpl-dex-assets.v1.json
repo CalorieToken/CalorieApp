@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "network": "xrpl-mainnet",
+  "status": "design-only",
+  "identity_evidence": "contracts/ecosystem/evidence/xrpl-amm-identities-20260908.json",
+  "assets": {
+    "XRP": {
+      "kind": "native",
+      "currency": "XRP"
+    },
+    "CAL": {
+      "kind": "issued",
+      "currency": "43616C6F72696500000000000000000000000000",
+      "display_code": "CAL",
+      "issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"
+    },
+    "RLUSD": {
+      "kind": "issued",
+      "currency": "524C555344000000000000000000000000000000",
+      "display_code": "RLUSD",
+      "issuer": "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"
+    }
+  },
+  "pairs": [
+    {
+      "id": "CAL_XRP",
+      "base": "CAL",
+      "quote": "XRP",
+      "directions": ["buy_cal", "sell_cal"],
+      "amm_account": "rhDx4NgeWz6jzs4TwiwYDmpeF2maJFZBtr",
+      "verification": "validated-ledger"
+    },
+    {
+      "id": "CAL_RLUSD",
+      "base": "CAL",
+      "quote": "RLUSD",
+      "directions": ["buy_cal", "sell_cal"],
+      "amm_account": "rPN26geCWSD4xPu8LYBM8zqDrYSgNQGHeQ",
+      "verification": "validated-ledger"
+    },
+    {
+      "id": "XRP_RLUSD",
+      "base": "XRP",
+      "quote": "RLUSD",
+      "directions": ["both"],
+      "routing_only": true,
+      "verification": "asset-identities-only"
+    }
+  ],
+  "excluded_labels_pending_issuer_review": [
+    "CAL/EUR",
+    "CAL/USD",
+    "BTC/CAL"
+  ]
+}

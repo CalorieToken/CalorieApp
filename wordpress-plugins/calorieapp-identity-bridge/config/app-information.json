@@ -1,0 +1,57 @@
+{
+  "en": {
+    "description": "Find food products, explore nutrition and keep your own food diary.",
+    "action": "Open CalorieApp",
+    "on_page": "CalorieApp is available above."
+  },
+  "zh-Hans": {
+    "description": "查找食品、了解营养信息并记录自己的饮食日记。",
+    "action": "打开 CalorieApp",
+    "on_page": "CalorieApp 位于本页上方。"
+  },
+  "hi": {
+    "description": "खाद्य उत्पाद खोजें, पोषण संबंधी जानकारी देखें और अपनी भोजन डायरी रखें।",
+    "action": "CalorieApp खोलें",
+    "on_page": "CalorieApp इस पृष्ठ पर ऊपर उपलब्ध है।"
+  },
+  "es": {
+    "description": "Busca alimentos, consulta su información nutricional y lleva tu propio diario de alimentación.",
+    "action": "Abrir CalorieApp",
+    "on_page": "CalorieApp está disponible más arriba en esta página."
+  },
+  "ar": {
+    "description": "ابحث عن المنتجات الغذائية، واطّلع على معلوماتها الغذائية، واحتفظ بسجل طعامك الخاص.",
+    "action": "افتح CalorieApp",
+    "on_page": "يتوفر CalorieApp في أعلى هذه الصفحة."
+  },
+  "fr": {
+    "description": "Recherchez des aliments, consultez leurs informations nutritionnelles et tenez votre propre journal alimentaire.",
+    "action": "Ouvrir CalorieApp",
+    "on_page": "CalorieApp est disponible plus haut sur cette page."
+  },
+  "bn": {
+    "description": "খাদ্যপণ্য খুঁজুন, পুষ্টির তথ্য দেখুন এবং নিজের খাবারের ডায়েরি রাখুন।",
+    "action": "CalorieApp খুলুন",
+    "on_page": "এই পৃষ্ঠার উপরে CalorieApp রয়েছে।"
+  },
+  "pt": {
+    "description": "Encontre alimentos, consulte informações nutricionais e mantenha o seu próprio diário alimentar.",
+    "action": "Abrir CalorieApp",
+    "on_page": "O CalorieApp está disponível acima nesta página."
+  },
+  "id": {
+    "description": "Cari produk makanan, lihat informasi gizi, dan buat catatan makanan pribadi Anda.",
+    "action": "Buka CalorieApp",
+    "on_page": "CalorieApp tersedia di bagian atas halaman ini."
+  },
+  "ur": {
+    "description": "غذائی مصنوعات تلاش کریں، غذائیت کی معلومات دیکھیں اور اپنی خوراک کی ڈائری رکھیں۔",
+    "action": "CalorieApp کھولیں",
+    "on_page": "CalorieApp اس صفحے پر اوپر موجود ہے۔"
+  },
+  "nl": {
+    "description": "Zoek voedingsproducten, bekijk voedingswaarden en houd je eigen eetdagboek bij.",
+    "action": "Open CalorieApp",
+    "on_page": "CalorieApp staat hierboven op deze pagina."
+  }
+}

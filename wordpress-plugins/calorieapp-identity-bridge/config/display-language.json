@@ -1,0 +1,46 @@
+{
+  "en": {
+    "label": "Language",
+    "preview": "Translations are being prepared. Some content is still in English."
+  },
+  "zh-Hans": {
+    "label": "语言",
+    "preview": "翻译正在准备中，部分内容仍为英语。"
+  },
+  "hi": {
+    "label": "भाषा",
+    "preview": "अनुवाद तैयार किए जा रहे हैं। कुछ सामग्री अभी भी अंग्रेज़ी में है।"
+  },
+  "es": {
+    "label": "Idioma",
+    "preview": "Se están preparando las traducciones. Parte del contenido sigue en inglés."
+  },
+  "ar": {
+    "label": "اللغة",
+    "preview": "الترجمات قيد الإعداد. لا يزال بعض المحتوى باللغة الإنجليزية."
+  },
+  "fr": {
+    "label": "Langue",
+    "preview": "Les traductions sont en préparation. Certains contenus restent en anglais."
+  },
+  "bn": {
+    "label": "ভাষা",
+    "preview": "অনুবাদ প্রস্তুত করা হচ্ছে। কিছু বিষয়বস্তু এখনও ইংরেজিতে রয়েছে।"
+  },
+  "pt": {
+    "label": "Idioma",
+    "preview": "As traduções estão em preparação. Parte do conteúdo ainda está em inglês."
+  },
+  "id": {
+    "label": "Bahasa",
+    "preview": "Terjemahan sedang disiapkan. Sebagian konten masih berbahasa Inggris."
+  },
+  "ur": {
+    "label": "زبان",
+    "preview": "تراجم تیار کیے جا رہے ہیں۔ کچھ مواد ابھی بھی انگریزی میں ہے۔"
+  },
+  "nl": {
+    "label": "Taal",
+    "preview": "Vertalingen worden voorbereid. Sommige inhoud is nog in het Engels."
+  }
+}

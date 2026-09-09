@@ -41,6 +41,229 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
+## Current review candidate: 0.3.44
+
+The optional shared language control validates its required, unique DOM nodes
+and locale definitions before creating a store. It snapshots supported text
+directions, disconnects panel observation on page exit and resumes the same
+observer on return. The existing display store/host protocol, CMS subscription
+and authentication/session controllers keep their established behavior.
+
+## Previous review candidate: 0.3.43
+
+Market holder/rank fields now accept only non-negative whole numbers within a
+portable 32-bit integer range before returning or caching them. The cache key
+changes so an older, less strictly validated payload is not reused. The
+language-option loop also has its own variable instead of reusing the resolved
+locale tag. Existing destinations, session behavior and release flags remain.
+
+## Previous review candidate: 0.3.42
+
+The performance follow-up bounds late header-card discovery to ten seconds,
+stops it when leaving the page, and allows one bounded retry after a
+back/forward-cache restoration. A discovered card retains its existing layout
+and resize handling. Public market responses now require HTTP revalidation;
+the five-minute WordPress transient remains the upstream cache, without an
+additional browser/CDN freshness window. The display is still a snapshot, not
+a live quote. These changes do not alter authentication or signing behavior.
+
+## Previous review candidate: 0.3.41
+
+This follow-up addresses the three Copilot comments on the combined website
+review: the standalone asset-cache version follows the plugin version, the
+server-rendered language label uses the existing eleven-locale catalogue with
+a WordPress translation fallback, and market URLs share the fixed CAL identity.
+The optional display control still starts hidden and is off by default.
+Authentication/session methods, browser assets and provider destinations are
+unchanged. Current-head checks and review results are recorded on PR #133;
+source/service-term clearance and native acceptance remain open.
+
+## Previous combined candidate: 0.3.40
+
+The full owned How to Buy/sell guide now follows the same optional display
+choice in eleven prepared languages. Its updated public copy includes the full
+CAL currency code, reserves/fees, Xaman regional-provider guidance, selling and
+separate bank withdrawals, exact-issuer checks, RLUSD trustline guidance and
+liquidity conflicts. It presents external trading as the current route. Site
+fonts, modest corners, wrapping, 44px links and RTL direction replace the earlier
+inconsistent guide styles. The public-page/source guards retain edited CMS,
+identity values, links and form/account state. No signing or quote call is added.
+130 Node/Python tests, PHP lint and all six PHP fixtures passed in hosted run
+34326418843 after correcting fixture order. Native/mobile and linguistic
+acceptance remain open. Source/release clearance is unchanged.
+
+## Previous Tokenomics cycle: 0.3.39
+
+Tokenomics receives an additive consolidation-wallet panel, dated CAL/XRP LP
+interest disclosure, and operator-confirmed completion of all airdrops beside
+the unchanged published chart. Eleven prepared helper translations use the same
+optional display preference. Only public page 1209 receives the helper; original
+wallet controls, session code and financial handlers are retained. Exact giveaway
+figures remain a separate reconciliation task. 125 local tests pass; PHP, hosted
+CI, native/mobile and linguistic acceptance remain open. This is not installed.
+
+## Previous Trustline cycle: 0.3.38 rebuilt
+
+The Trustline follow-up was rebuilt from preserved 0.3.37 after the previous
+unreleased 0.3.38 artifact became unavailable. Copy/sign activation rechecks the
+current issuer/currency source. Clipboard failures provide manual guidance and
+pending actions cannot duplicate a write. Eleven prepared helper translations
+use the existing optional display store; full page/legal translations remain
+open. The separate public-page marker does not change native signing readiness.
+119 local tests pass; PHP, hosted CI and native/browser acceptance remain open.
+
+This is an unreleased Step 3 repair candidate, not a completed website release.
+It reconciles the existing presentation work, adds scoped page enhancements,
+and retains the accepted authentication/session controllers. The How to Buy
+replacement requires an exact match to the captured old markup; later CMS edits
+and translations are not overwritten. The optional CAL TrustSet link requires
+server confirmation of the existing handler and matching CAL parameters. No
+credential is passed to the browser and presentation creates no payload.
+
+The page ending now provides one CalorieApp information component across public
+page types, with eleven-locale copy and a verified site app link. The app page
+uses an informational label instead of reloading its own embed. No private
+account values, app fetches, new cookies or tracking are added to the component.
+
+Reviewed Brizy footer markup is replaced in the rendered page by the shared
+social/legal footer. Stored content is retained. Unrecognized copy, links or
+controls keep their original footer; later CMS changes restore a formerly
+matched footer. A dedicated market card moves to the shared ending instead of
+overlapping the team section. Mixed account/payment shortcodes and forms remain
+in place. The existing market request is reused; archive/search pages do not
+gain a new market card or request. Admin, feed, embed, AJAX and REST responses
+receive no public page furniture.
+
+The separate design-only DEX registry has dated validated-ledger identity
+evidence and checksum/issuer tests. No first-party trading or mainnet submission
+is enabled. The source-clearance contract still blocks public distribution;
+ordinary local builds do not clear that gate. New PHP fixture execution, exact
+head CI, rendered acceptance and approval remain outstanding.
+
+Version 0.3.37 restores the previously reported Richlist and donation/CMP work
+from the recovered 0.3.34 source baseline. Richlist handles late, replaced,
+removed or ambiguous own-row markers and rechecks before accessible focus/scroll.
+Shared shortcut labels and Richlist helper labels follow the existing optional
+display preview in eleven prepared languages. Missing or edited replacement
+shortcuts restore native controls; replacement scroll buttons bind once. Original
+artwork, destinations and accepted session handlers are retained. Donation/CMP
+CSS aligns type, corners, wrapping and focus without changing native behavior.
+
+The shared local/CI check command is
+`python3 tools/check_step3_candidate.py --require-php` from the source repository.
+This candidate has 113 passing Node/Python tests, but missing PHP is explicitly
+INCOMPLETE and fails that gate. Native mobile/session/donation/consent and
+linguistic acceptance remain open.
+
+See `docs/STEP_3_REPAIR_CHECKPOINT.md` and `docs/STEP_3_PRESENTATION_RELEASE.md`
+in the source repository for the full open-item inventory. Restore the previously
+accepted artifact for an approved rollback; do not disable the whole companion
+plugin merely to undo presentation, because it also supplies identity features.
+
+The display-language preview introduced in 0.3.32 defaults off. When its explicit development
+switch and the matching app switch are enabled, both native selectors share a
+display-only preference and the translated app-information component responds.
+The preference contains only the locale and timestamp for at most 30 days in
+first-party browser storage. No authentication locale, cookie consent, account,
+provider endpoint or payment handler is changed. Full page/legal translation
+and real PHP/browser acceptance remain open. See the repository's
+`contracts/display-language/v1/README.md` for scope and activation details.
+
+Version 0.3.33 connects one FAQ question/answer sample to that same store. The
+additional adapter/catalogue load only for public GET requests of the known
+published FAQ page, outside previews and unknown query contexts. Both paragraphs
+must match their captured text/structure before existing text nodes change.
+Edited source stays intact. The eleven draft translations are not approved
+full-page translations. Disable the preview flag, clear affected page caches
+when used and reload to undo the sample without disabling identity features. No stored CMS text is rewritten. Package
+and JavaScript checks pass locally; PHP/browser and source clearance remain open.
+
+Version 0.3.34 adds a native cookie-settings button, profile link and explanation
+in the observed Blog shortcode even if its X anchor/frame is absent. Three helper
+strings follow the public WP locale or shared display preview in eleven prepared
+languages. The original coloured heading and native CMP/X subtree are retained;
+there is no second provider loader, consent change or paid service. Fifty-seven
+local maintenance tests pass; PHP, live timeline/CMP and actual visual/language
+acceptance remain open. The Roadmap correction still needs its exact source.
+
+## Earlier maintenance history
+
+Version 0.3.27 bundles the 0.3.26 candidate with the mobile screenshot findings.
+The shared header styles now apply to the actual XUMM shortcode before layout
+JavaScript runs, and a late-created account card is initialized once. Richlist
+tables receive a keyboard-accessible horizontal scroll container; their rows,
+addresses and links are preserved. Mobile donation controls, cart tables and
+terms use readable widths and spacing. Blog slider dots stay in one horizontally
+scrollable row, with every original destination retained.
+
+After WooCommerce successfully accepts the donation product's open-price POST,
+the default flow redirects to the same product's ordinary GET page. This avoids
+leaving a resubmittable product form response in history. Explicit redirects and
+the configured cart redirect remain authoritative. This hook does not calculate
+prices, create orders or alter the payment gateway. The existing legal footer
+correction also covers full product/cart HTML returned after POST, excluding
+AJAX, REST, checkout and non-page response bodies.
+
+The accepted authentication/session controllers are retained. The separate app
+PR adds its own search deadline correction, inline food logging and wallpaper;
+those changes cannot be installed through this WordPress ZIP. Native mobile
+review and the complete donation cancellation/return path are still pending.
+See `docs/STEP_3_CYCLE_1.md` in the repository for scope and acceptance checks.
+
+Version 0.3.26 corrects the remaining market and shortcut layout differences
+reported after installing 0.3.25. Dedicated market ancestors are normalized up
+to the Brizy row, stopping before any shared account or content container. This
+removes Home's 28.1% mobile column and large margins without resizing the XUMM
+card. Existing CAL data validation, request sharing and fallback links remain.
+
+One compact shortcut stack replaces recognized fixed Home/App/Up/Down controls.
+It uses the original transparent app mark, Home's green arrows and purple home
+icon, and 48px desktop / 32px mobile artwork. Hidden current-page links take no
+space. Pages longer than two viewports also receive a working Down control;
+page length is reevaluated after late images and iframe height updates.
+
+The embedded app now has a server-rendered startup cover. It listens passively
+for the existing app handshake with matching origin, frame and locale. An iframe
+load alone does not dismiss the cover. Slow starts offer manual retry or reveal;
+there are no automatic reloads or new login requests. This covers the embedded
+frontend only. It cannot cover the separate top-level Render health page used
+by the accepted website sign-in route, which is deliberately unchanged.
+
+In 0.3.26, authentication/session JavaScript and header assets are byte-identical to
+0.3.25. IntegratedLogin changes only its shortcode presentation and asset-version
+fallback; server authentication methods are unchanged. No app-main changes,
+WordPress content writes, merge or deployment are included. Native desktop/mobile
+review remains necessary; source/behavior tests are not live visual verification.
+
+Version 0.3.25 applies the CAL market renderer to existing LiveCoinWatch slots
+throughout the public website, including late-loaded cards. The replacement
+stays in its existing position, shares the same cached CAL feed and releases
+obsolete market-shortcode height/width rules. Combined shortcodes containing
+an account card are excluded from that sizing correction.
+
+Floating navigation now rechecks after page load, restored pages, layout changes
+and dynamically inserted Brizy controls. It suppresses duplicate destinations,
+omits the current page and fills missing Home/CalorieApp/Top controls using the
+original transparent logo, original 48px desktop / 32px mobile icon sizing and
+original fixed slots. Existing visible Brizy controls take precedence. Inline
+content links and the installed account/header/authentication code are retained.
+The footer introduced in 0.3.24 is still rendered only on CalorieApp. This package
+does not publish the prepared FAQ, Home or Tokenomics content or the app's food-log
+and background changes; those are separate reviewed deliverables.
+
+Version 0.3.24 restores the missing WordPress footer and a CAL market card below
+CalorieApp, only on the `calorieapp` page. It reuses the existing footer colours,
+social destinations, and current operator/copyright copy; the privacy and terms
+links remain available without JavaScript. The XPMarket public CAL response is
+validated and cached for five minutes by WordPress. On an upstream failure the
+card keeps its direct XPMarket link and does not invent market figures.
+
+These components have separate PHP, CSS and JavaScript files. The installed
+0.3.23 header, navigation, login and logout remain the maintenance baseline.
+No stored Brizy content or global theme templates are rewritten. The old
+intervening layout releases are not part of this package. Visual verification
+on the live CalorieApp page is still required before accepting the appearance.
+
 Version 0.3.23 keeps the desktop account card within its existing Brizy column.
 The shortcode uses the available column width and the card is centred with a
 maximum width of 220px. This prevents the right edge from being clipped on
@@ -161,6 +384,7 @@ recommended for production browser-cookie reliability.
 - assets/calorieapp-site-session.js
 - assets/calorieapp-embed.css
 - config/locales.json
+- config/app-information.json
 - tests/bootstrap.php
 - tests/test-identity-bridge-rest.php
 - phpunit.xml.dist

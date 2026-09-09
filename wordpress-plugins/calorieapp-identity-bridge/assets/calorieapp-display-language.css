@@ -1,0 +1,28 @@
+.calorieapp-display-language[hidden] { display: none !important; }
+.calorieapp-display-language {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 10px;
+  max-width: 100%;
+  padding: 10px;
+  color: #505ba9;
+  background: #fff;
+  font: inherit;
+}
+.calorieapp-display-language label { margin: 0; font-weight: 700; }
+.calorieapp-display-language select {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #505ba9;
+  border-radius: 4px;
+  background: #fff;
+  color: #505ba9;
+  font: inherit;
+}
+.calorieapp-display-language select:focus-visible { outline: 3px solid #f9b233; outline-offset: 2px; }
+.calorieapp-display-language p { grid-column: 1 / -1; margin: 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }

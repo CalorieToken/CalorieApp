@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "copy_version": "richlist-helper-v1",
+  "review_status": "prepared-unreviewed",
+  "release_approved": false,
+  "translations": {
+    "en": {
+      "region": "CalorieToken holders. Scroll sideways to see the complete table.",
+      "action": "My position",
+      "jump": "Go to my Richlist position"
+    },
+    "zh-Hans": {
+      "region": "CalorieToken 持有者。左右滚动以查看完整表格。",
+      "action": "我的排名",
+      "jump": "跳转到我在持有者排名中的位置"
+    },
+    "hi": {
+      "region": "CalorieToken धारक। पूरी तालिका देखने के लिए दाएँ या बाएँ स्क्रॉल करें।",
+      "action": "मेरा स्थान",
+      "jump": "धारकों की सूची में मेरे स्थान पर जाएँ"
+    },
+    "es": {
+      "region": "Titulares de CalorieToken. Desplázate horizontalmente para ver la tabla completa.",
+      "action": "Mi posición",
+      "jump": "Ir a mi posición en la lista de titulares"
+    },
+    "ar": {
+      "region": "حاملو CalorieToken. مرّر أفقياً لرؤية الجدول كاملاً.",
+      "action": "ترتيبي",
+      "jump": "انتقل إلى ترتيبي في قائمة الحاملين"
+    },
+    "fr": {
+      "region": "Détenteurs de CalorieToken. Faites défiler horizontalement pour voir le tableau complet.",
+      "action": "Ma position",
+      "jump": "Aller à ma position dans la liste des détenteurs"
+    },
+    "bn": {
+      "region": "CalorieToken ধারকরা। পুরো সারণিটি দেখতে পাশে স্ক্রল করুন।",
+      "action": "আমার অবস্থান",
+      "jump": "ধারকদের তালিকায় আমার অবস্থানে যান"
+    },
+    "pt": {
+      "region": "Detentores de CalorieToken. Desloque horizontalmente para ver a tabela completa.",
+      "action": "A minha posição",
+      "jump": "Ir para a minha posição na lista de detentores"
+    },
+    "id": {
+      "region": "Pemegang CalorieToken. Gulir ke samping untuk melihat seluruh tabel.",
+      "action": "Posisi saya",
+      "jump": "Buka posisi saya dalam daftar pemegang"
+    },
+    "ur": {
+      "region": "CalorieToken کے حاملین۔ مکمل جدول دیکھنے کے لیے دائیں یا بائیں اسکرول کریں۔",
+      "action": "میری پوزیشن",
+      "jump": "حاملین کی فہرست میں میری پوزیشن پر جائیں"
+    },
+    "nl": {
+      "region": "CalorieToken-houders. Scrol horizontaal om de hele tabel te bekijken.",
+      "action": "Mijn positie",
+      "jump": "Ga naar mijn positie in de Richlist"
+    }
+  }
+}

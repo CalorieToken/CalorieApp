@@ -1,0 +1,444 @@
+/* Scoped presentation for the existing Brizy content. Original banners,
+   illustration files, consent, identity and WooCommerce behavior are retained. */
+.brz {
+  --calorieapp-purple: #505ba9;
+  --calorieapp-green: #07853d;
+  --calorieapp-yellow: #fbb62b;
+  --calorieapp-ink: #303449;
+  --calorieapp-border: #dddfea;
+}
+.brz .calorieapp-reading-copy {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 70ch;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+.brz .calorieapp-reading-copy :is(p,li) {
+  font-size: clamp(17px, 1vw + 9px, 20px) !important;
+  line-height: 1.65 !important;
+  letter-spacing: normal !important;
+}
+.brz .calorieapp-reading-copy p { margin-block: 0 1em !important; }
+.brz .calorieapp-reading-copy :is(h2,h3) { line-height: 1.35 !important; }
+.brz .calorieapp-reading-copy :is(img,iframe,video) { max-width: 100%; }
+.brz .calorieapp-reading-copy a { text-underline-offset: .2em; }
+.brz .calorieapp-empty-paragraph { display: none !important; }
+.brz .calorieapp-article-copy {
+  padding: clamp(20px, 3vw, 42px);
+  border: 1px solid var(--calorieapp-border);
+  border-top: 5px solid var(--calorieapp-purple);
+  border-radius: 24px;
+  background: #fff;
+  color: var(--calorieapp-ink);
+  box-shadow: 0 8px 24px #3034490d;
+}
+.brz .calorieapp-article-copy :is(p,li) { text-align: start !important; }
+.brz .calorieapp-article-title h1 {
+  font-size: clamp(24px, 2.8vw, 38px) !important;
+  line-height: 1.35 !important;
+}
+.brz .calorieapp-context-note {
+  box-sizing: border-box;
+  max-width: 70ch;
+  margin: 0 auto 24px;
+  padding: clamp(18px, 2.5vw, 28px);
+  border: 1px solid var(--calorieapp-border);
+  border-left: 5px solid var(--calorieapp-green);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--calorieapp-ink);
+  font: 17px/1.65 system-ui, sans-serif;
+  text-align: start;
+}
+.brz .calorieapp-context-note :is(p,strong,a) { font: inherit; }
+.brz .calorieapp-context-note > strong { display: block; font-weight: 700; color: var(--calorieapp-green); }
+.brz .calorieapp-context-note p { margin: .6em 0 !important; }
+.brz .calorieapp-context-note a { color: var(--calorieapp-purple); text-decoration: underline; }
+.brz :is(.calorieapp-context-note,.calorieapp-social-panel,.calorieapp-donation-steps) a:focus-visible,
+.brz .calorieapp-copy-button:focus-visible,
+.brz a.calorieapp-usecase-link:focus-visible,
+.brz .calorieapp-social-image-link:focus-visible {
+  outline: 3px solid var(--calorieapp-purple);
+  outline-offset: 4px;
+}
+
+/* Blog cards use their existing images, excerpts, dates and read-more links. */
+.brz.page-id-1207 .brz-posts__item > .brz-columns { height: 100%; }
+.brz.page-id-1207 .brz-posts__item > .brz-columns > .brz-column__items {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px !important;
+  border: 1px solid var(--calorieapp-border);
+  border-top: 4px solid var(--calorieapp-purple);
+  border-radius: 24px;
+  background: #fff !important;
+  box-shadow: 0 6px 22px #3034490d;
+}
+.brz.page-id-1207 .brz-posts__item .brz-wp-title {
+  color: var(--calorieapp-green);
+  font-size: 22px !important;
+  line-height: 1.4 !important;
+  text-align: start !important;
+}
+.brz.page-id-1207 .brz-posts__item .brz-wp-post-excerpt {
+  color: var(--calorieapp-ink);
+  font-size: 17px !important;
+  line-height: 1.65 !important;
+  text-align: start !important;
+}
+.brz.page-id-1207 .brz-posts__item .brz-rich-text p {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+.brz.page-id-1207 .brz-posts__item .brz-image { border-radius: 14px; overflow: hidden; }
+.brz.page-id-1207 .brz-posts__item .brz-btn {
+  min-height: 44px;
+  border-radius: 24px !important;
+  color: #303449 !important;
+}
+.brz.page-id-1207 .brz-posts__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-block: 24px;
+}
+.brz.page-id-1207 .brz-posts__pagination :is(a,span) {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brz .calorieapp-social-panel {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 680px !important;
+  margin: 24px auto !important;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--calorieapp-border);
+  border-top: 4px solid var(--calorieapp-purple);
+  border-radius: 8px;
+  background: #fff;
+}
+.brz .calorieapp-social-panel iframe { max-width: 100% !important; }
+.brz .calorieapp-x-fallback {
+  display: block;
+  margin-top: 16px;
+  padding: 12px 18px;
+  border-radius: 4px;
+  color: #fff !important;
+  background: var(--calorieapp-green);
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.brz .calorieapp-x-help { min-width: 0; font: inherit; }
+.brz .calorieapp-x-description { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.brz .calorieapp-x-settings {
+  display: block; width: 100%; min-height: 44px; margin-top: 10px; padding: 10px 16px;
+  border: 1px solid var(--calorieapp-purple); border-radius: 4px; background: #fff;
+  color: var(--calorieapp-purple); font: inherit; white-space: normal; overflow-wrap: anywhere;
+}
+.brz .calorieapp-x-settings[hidden] { display: none !important; }
+.brz :is(.calorieapp-x-fallback,.calorieapp-x-settings):focus-visible {
+  outline: 3px solid var(--calorieapp-purple); outline-offset: 3px;
+}
+.brz .calorieapp-art-gallery {
+  box-sizing: border-box;
+  max-width: 760px !important;
+  margin: 32px auto !important;
+  padding: 16px;
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 8px 24px #3034490d;
+}
+.brz .calorieapp-art-gallery .nivoSlider { box-shadow: none; border-radius: 12px; }
+.brz .calorieapp-art-gallery .nivo-directionNav a {
+  display: grid !important;
+  place-items: center;
+  width: 44px !important;
+  height: 44px !important;
+  top: calc(50% - 22px);
+  background: #fff !important;
+  color: var(--calorieapp-green) !important;
+  border: 2px solid var(--calorieapp-green);
+  border-radius: 50%;
+  opacity: 1 !important;
+  text-indent: 0 !important;
+  font: 0/1 sans-serif;
+}
+.brz .calorieapp-art-gallery .nivo-prevNav { left: 8px !important; }
+.brz .calorieapp-art-gallery .nivo-nextNav { right: 8px !important; }
+.brz .calorieapp-art-gallery .nivo-prevNav::after { content: "‹"; font-size: 32px; }
+.brz .calorieapp-art-gallery .nivo-nextNav::after { content: "›"; font-size: 32px; }
+.brz .calorieapp-art-gallery :is(.nivo-directionNav,.nivo-controlNav) a:focus-visible {
+  outline: 3px solid var(--calorieapp-purple);
+  outline-offset: 3px;
+}
+.brz .calorieapp-art-gallery .nivo-controlNav a {
+  display: inline-grid !important;
+  place-items: center;
+  width: 36px !important;
+  height: 36px !important;
+  text-indent: 0 !important;
+  border-radius: 50%;
+  background: #f1f2f8 !important;
+  color: var(--calorieapp-purple);
+  font: 600 14px/1 sans-serif;
+}
+.brz .calorieapp-art-gallery .nivo-controlNav a.active { background: var(--calorieapp-purple) !important; color: #fff; }
+.brz .calorieapp-art-caption {
+  margin: 0 0 14px !important;
+  color: var(--calorieapp-purple);
+  font: 600 18px/1.5 system-ui, sans-serif;
+  text-align: center;
+}
+
+/* Contact cards and original usecase illustrations. No artwork is redrawn. */
+.brz .calorieapp-contact-card > .brz-column__items {
+  box-sizing: border-box;
+  min-height: 180px;
+  padding: 24px 18px !important;
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 28px !important;
+  background: #fff !important;
+  box-shadow: 0 6px 20px #30344912 !important;
+}
+.brz .calorieapp-contact-card .brz-wrapper { margin-block: 8px !important; }
+.brz .calorieapp-contact-card .brz-rich-text p { font-size: 22px !important; line-height: 1.4 !important; }
+.brz .calorieapp-social-image-link {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+.brz .calorieapp-social-image-link > svg { display: block; width: 64px; height: 64px; color: #111; }
+.brz .calorieapp-contact-card .brz-image { max-width: 88px; margin-inline: auto; }
+.brz.page-id-1213 .calorieapp-contact-card,
+.brz.page-id-1213 .calorieapp-contact-card > .brz-column__items,
+.brz.page-id-1213 .calorieapp-contact-card .brz-wrapper {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+.brz.page-id-1213 .calorieapp-contact-card { position: relative; z-index: 1; }
+.brz .calorieapp-usecase-image {
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 6px 20px #30344912;
+}
+.brz .calorieapp-usecase-image img { object-fit: contain !important; }
+.brz .calorieapp-usecase-link { display: block; border-radius: 16px; }
+.brz .calorieapp-usecase-link:hover { outline: 2px solid var(--calorieapp-green); outline-offset: 3px; }
+.brz .calorieapp-trustline-details {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+}
+.brz .calorieapp-trustline-details p { font-size: 18px !important; line-height: 1.6 !important; overflow-wrap: anywhere; }
+.brz .calorieapp-trustline-details .calorieapp-context-note { border-radius: 8px; font-family: inherit; }
+.brz .calorieapp-trustline-details p.calorieapp-copy-value {
+  color: var(--calorieapp-ink);
+  font: 16px/1.6 ui-monospace, monospace !important;
+  user-select: all;
+  overflow-wrap: anywhere;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+.brz .calorieapp-copy-controls { max-width: 100%; margin-block: 8px 20px; overflow-wrap: anywhere; }
+.brz .calorieapp-copy-button {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 0 auto 6px;
+  padding: 8px 20px;
+  border: 2px solid var(--calorieapp-purple);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--calorieapp-purple);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.brz .calorieapp-copy-button:disabled { opacity: .6; cursor: wait; }
+.brz .calorieapp-copy-status { display: block; min-height: 1.5em; font-family: inherit; font-size: 14px; line-height: 1.5; }
+.brz .calorieapp-xaman-label { display: block; color: var(--calorieapp-purple); font-family: inherit; font-size: clamp(28px, 5vw, 48px); font-weight: 700; line-height: 1.4; text-align: center; }
+.brz .calorieapp-xaman-trustline {
+  display: block;
+  box-sizing: border-box;
+  width: min(100%, 420px);
+  min-height: 48px;
+  margin: 24px auto;
+  padding: 12px 22px;
+  border: 2px solid var(--calorieapp-green);
+  border-radius: 4px;
+  background: var(--calorieapp-green);
+  color: #fff !important;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-decoration: none !important;
+}
+.brz .calorieapp-xaman-trustline:hover { background: #056d32; border-color: #056d32; }
+.brz .calorieapp-xaman-trustline:focus-visible { outline: 3px solid var(--calorieapp-purple); outline-offset: 4px; }
+
+/* A beginner path first; market identities and both trade directions remain
+   visible without presenting the release-gated website module as live. */
+.brz .cal-buy-guide {
+  box-sizing: border-box;
+  width: min(1120px, calc(100% - 24px));
+  margin: 32px auto;
+  color: var(--calorieapp-ink);
+  font-family: inherit; font-size: 17px; line-height: 1.6;
+  text-align: start; overflow-wrap: anywhere;
+}
+.brz .cal-buy-guide :is(h2,h3,p,dl,ol) { margin-top: 0; }
+.brz .cal-buy-guide h2 { margin-bottom: 14px; color: var(--calorieapp-green); font-size: clamp(30px, 4vw, 48px); line-height: 1.15; }
+.brz .cal-buy-guide h3 { margin-bottom: 8px; color: var(--calorieapp-purple); font-size: 22px; line-height: 1.3; }
+.brz .cal-buy-eyebrow { margin-bottom: 8px !important; color: var(--calorieapp-purple); font-size: 14px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.brz .cal-buy-hero,
+.brz .cal-buy-markets,
+.brz .cal-buy-own-dex,
+.brz .cal-buy-risk {
+  box-sizing: border-box;
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 26px #30344912;
+}
+.brz .cal-buy-hero { border-top: 6px solid var(--calorieapp-green); }
+.brz .cal-buy-identity { display: grid; gap: 10px; margin-bottom: 0; }
+.brz .cal-buy-identity div { display: grid; grid-template-columns: minmax(80px, .3fr) minmax(0,1fr); gap: 12px; }
+.brz .cal-buy-identity dt { color: var(--calorieapp-purple); font-weight: 800; }
+.brz .cal-buy-identity dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.brz .cal-buy-identity code { display: block; direction: ltr; unicode-bidi: isolate; text-align: left; font-size: 16px; user-select: all; }
+.brz .cal-buy-steps { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin: 22px 0; padding: 0; list-style: none; counter-reset: none; }
+.brz .cal-buy-steps li { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 16px; padding: 24px; border: 1px solid var(--calorieapp-border); border-radius: 8px; background: #fff; }
+.brz .cal-buy-steps li > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--calorieapp-purple); color: #fff; font-size: 20px; font-weight: 800; }
+.brz .cal-buy-guide a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; margin-bottom: 8px; color: var(--calorieapp-green); font-weight: 800; text-underline-offset: .2em; }
+.brz .cal-buy-guide a:focus-visible { outline: 3px solid var(--calorieapp-purple); outline-offset: 4px; }
+.brz .cal-buy-markets { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: center; }
+.brz .cal-buy-pair-grid { display: grid; gap: 12px; }
+.brz .cal-buy-pair-grid article { padding: 18px; border: 2px solid var(--calorieapp-green); border-radius: 8px; background: #f3fbf6; }
+.brz .cal-buy-pair-grid :is(strong,small) { display: block; }
+.brz .cal-buy-pair-grid strong { font-size: 21px; }
+.brz .cal-buy-pair-grid small { margin-top: 3px; }
+.brz .cal-buy-own-dex { margin-top: 22px; border-inline-start: 6px solid var(--calorieapp-purple); }
+.brz .cal-buy-risk { margin-top: 22px; border-inline-start: 6px solid var(--calorieapp-yellow); box-shadow: none; }
+.brz .cal-buy-risk > strong { color: var(--calorieapp-purple); font-size: 20px; }
+.brz .cal-buy-risk p { margin: 8px 0 0; }
+
+/* Keep totals, fields, transaction state and error handling native. */
+.brz.calorieapp-donation-page :is(.woocommerce,.brz-woo-add-to-cart) {
+  box-sizing: border-box; min-width: 0; max-width: 100%; color: var(--calorieapp-ink);
+  font-family: inherit; font-size: 17px; line-height: 1.6;
+}
+.brz.calorieapp-donation-page :is(.woocommerce-cart-form,.cart_totals,form.checkout,form.cart:has(#wcj_open_price)) {
+  box-sizing: border-box; padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--calorieapp-border); border-radius: 8px; background: #fff;
+}
+.brz.calorieapp-donation-page :is(.woocommerce,.brz-woo-add-to-cart) :is(input.input-text,textarea,select,#wcj_open_price) {
+  box-sizing: border-box; min-width: 0; max-width: 100%; min-height: 44px;
+  border: 2px solid var(--calorieapp-border); border-radius: 4px; padding: 10px 12px;
+  color: var(--calorieapp-ink); background: #fff; font-family: inherit; font-size: 17px !important;
+}
+.brz.calorieapp-donation-page :is(.woocommerce,.brz-woo-add-to-cart) :is(button.button,a.button,input.button) {
+  box-sizing: border-box; max-width: 100%; min-height: 44px; padding: 12px 22px;
+  border-radius: 4px !important; white-space: normal; overflow-wrap: anywhere;
+  color: #fff !important; background: var(--calorieapp-green) !important;
+  font-family: inherit; font-size: 17px !important; line-height: 1.5 !important;
+}
+.brz.calorieapp-donation-page :is(.woocommerce,.brz-woo-add-to-cart) :is(input,textarea,select,button,a.button):focus-visible {
+  outline: 3px solid var(--calorieapp-purple); outline-offset: 3px;
+}
+.brz.calorieapp-donation-page :is(.woocommerce,.brz-woo-add-to-cart) :is(.woocommerce-invalid .input-text,[aria-invalid="true"]) { border-color: #b32d2e; }
+.brz.calorieapp-donation-page :is(button.button,input.button):disabled { opacity: .6; cursor: not-allowed; }
+.brz .calorieapp-donation-help {
+  flex-basis: 100%; margin: 0 0 12px; color: var(--calorieapp-purple);
+  font-family: inherit; font-size: 16px; line-height: 1.6; overflow-wrap: anywhere;
+}
+.brz .calorieapp-donation-steps {
+  box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto 24px;
+  font-family: inherit; font-size: 16px; line-height: 1.5;
+}
+.brz .calorieapp-donation-steps ol { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+.brz .calorieapp-donation-steps li { min-width: 0; }
+.brz .calorieapp-donation-steps :is(a,span) {
+  display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+  height: 100%; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--calorieapp-border); border-radius: 4px; background: #fff;
+  color: var(--calorieapp-purple); text-align: center; overflow-wrap: anywhere;
+}
+.brz .calorieapp-donation-steps a { text-decoration: underline; text-underline-offset: .2em; }
+.brz .calorieapp-donation-steps [aria-current] { border-color: var(--calorieapp-purple); background: var(--calorieapp-purple); color: #fff; font-weight: 700; }
+@media (max-width: 600px) {
+  .brz .calorieapp-donation-steps ol { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 768px) {
+  .brz .calorieapp-article-copy { padding: 20px 16px; }
+  .brz .calorieapp-contact-card > .brz-column__items { padding: 20px 12px !important; }
+  .brz .calorieapp-contact-card .brz-rich-text p { font-size: 19px !important; }
+  .brz.calorieapp-donation-page .cart_totals { margin-top: 20px; }
+  .brz .cal-buy-steps,
+  .brz .cal-buy-markets { grid-template-columns: 1fr; }
+  .brz .cal-buy-steps li { grid-template-columns: 42px minmax(0,1fr); padding: 20px 16px; }
+  .brz .cal-buy-steps li > span { width: 42px; height: 42px; }
+  .brz .cal-buy-identity div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* Complianz owns consent, visibility and order; these rules only style it. */
+#cmplz-cookiebanner-container .cmplz-cookiebanner {
+  box-sizing: border-box; width: min(440px,calc(100vw - 24px));
+  max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
+  overflow-y: auto; overscroll-behavior: contain; border: 2px solid #505ba9;
+  border-radius: 8px; background: #fff; color: #303449;
+  box-shadow: 0 14px 40px #30344940; font-family: inherit;
+}
+#cmplz-cookiebanner-container .cmplz-title { color: #505ba9; font-weight: 800; }
+#cmplz-cookiebanner-container :is(.cmplz-message,.cmplz-category-title,.cmplz-description) { line-height: 1.55; overflow-wrap: anywhere; }
+#cmplz-cookiebanner-container .cmplz-buttons .cmplz-btn {
+  box-sizing: border-box; min-width: 0; max-width: 100%; min-height: 44px;
+  border: 2px solid #505ba9; border-radius: 4px; font-family: inherit;
+  font-weight: 700; white-space: normal; overflow-wrap: anywhere;
+}
+/* Equal visual treatment; no CSS visibility or choice-order override. */
+#cmplz-cookiebanner-container :is(.cmplz-accept,.cmplz-deny,.cmplz-view-preferences,.cmplz-save-preferences) { background: #fff; color: #303449; }
+#cmplz-cookiebanner-container :is(.cmplz-link,a) { color: #505ba9; text-underline-offset: .18em; }
+#cmplz-manage-consent .cmplz-manage-consent {
+  box-sizing: border-box; max-width: calc(100vw - 24px); min-height: 44px;
+  border: 2px solid #505ba9 !important; border-radius: 4px 4px 0 0 !important;
+  background: #fff !important; color: #303449 !important; font-family: inherit !important;
+  font-size: 14px !important; font-weight: 700 !important; line-height: 1.4 !important;
+  white-space: normal; overflow-wrap: anywhere;
+}
+#cmplz-cookiebanner-container :is(button,a,input):focus-visible,
+#cmplz-manage-consent .cmplz-manage-consent:focus-visible { outline: 3px solid #505ba9; outline-offset: 3px; }
+@media (max-width: 480px) {
+  #cmplz-cookiebanner-container .cmplz-cookiebanner {
+    width: calc(100vw - 16px); max-height: calc(100vh - 16px);
+    max-height: calc(100dvh - 16px); border-radius: 8px;
+  }
+}

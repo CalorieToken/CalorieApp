@@ -30,6 +30,12 @@ remain identical across the WordPress flow, iframe messages, backend callback
 and origin-browser status claim. Locale is request context, not identity proof
 or a persisted user preference.
 
+Step 3's newly requested shared display-language preference is specified as
+LANG-1 in `docs/STEP_3_REPAIR_CHECKPOINT.md`. It is not implemented by this
+identity contract. Its future controls/messages must keep the display choice
+separate from the immutable locale of a pending authentication flow; a selector
+change does not authorize weakening the mismatch, origin or callback checks.
+
 `login-test-matrix.json` freezes the eleven-locale login and failure-path
 coverage used to prevent repetitive manual testing.
 
