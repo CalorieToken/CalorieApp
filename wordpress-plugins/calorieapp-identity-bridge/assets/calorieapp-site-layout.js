@@ -220,12 +220,34 @@
   function boot() {
     startRichlists();
     if (start() || !window.MutationObserver) return;
-    // Brizy can insert a shortcode after DOMContentLoaded. Initialize once
-    // when the card appears, then stop watching the rest of a long Richlist.
-    var waiting = new MutationObserver(function () {
-      if (start()) waiting.disconnect();
-    });
-    waiting.observe(document.body, { childList: true, subtree: true });
+    // Allow a late Brizy shortcode for at most ten seconds. Pages without a
+    // card must not scan every DOM mutation for the rest of the session.
+    var waiting = null, timer = null;
+    function stopWaiting() {
+      if (waiting) waiting.disconnect();
+      waiting = null;
+      if (timer !== null) window.clearTimeout(timer);
+      timer = null;
+    }
+    function discover() {
+      if (!start()) return false;
+      stopWaiting();
+      window.removeEventListener("pagehide", stopWaiting);
+      window.removeEventListener("pageshow", restoreWaiting);
+      return true;
+    }
+    function watch() {
+      if (waiting || discover()) return;
+      waiting = new MutationObserver(discover);
+      waiting.observe(document.body, { childList: true, subtree: true });
+      timer = window.setTimeout(stopWaiting, 10000);
+    }
+    function restoreWaiting(event) {
+      if (event.persisted) watch();
+    }
+    window.addEventListener("pagehide", stopWaiting);
+    window.addEventListener("pageshow", restoreWaiting);
+    watch();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });

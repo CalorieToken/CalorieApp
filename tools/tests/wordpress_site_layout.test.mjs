@@ -47,12 +47,18 @@ function harness({ width = 360, height = 96, present = true, cardAfterMenu = fal
     body: {},
     querySelectorAll: selector => selector === "table.xl-richlist" ? [] : selector === ".brz .xl-card" ? (present ? [card] : []) : [navigation, navigation, footer].map(item => ({ closest: () => item })),
   };
-  const listeners = new Map(), raf = [], observed = [];
-  let resize, mutation, disconnected = false;
+  const listeners = new Map(), raf = [], observed = [], timers = new Map();
+  let resize, mutation, disconnected = false, clock = 0, timerSequence = 0;
   const window = {
     matchMedia: () => ({ get matches() { return state.width <= 768; } }),
     getComputedStyle: () => ({ marginTop: "20px" }),
-    addEventListener: (name, callback) => listeners.set(name, callback),
+    addEventListener(name, callback) {
+      if (!listeners.has(name)) listeners.set(name, new Set());
+      listeners.get(name).add(callback);
+    },
+    removeEventListener: (name, callback) => listeners.get(name)?.delete(callback),
+    setTimeout(callback, delay) { const id = ++timerSequence; timers.set(id, { callback, at: clock + delay }); return id; },
+    clearTimeout: id => timers.delete(id),
     requestAnimationFrame: callback => raf.push(callback),
     ResizeObserver: true,
     MutationObserver: true,
@@ -60,12 +66,21 @@ function harness({ width = 360, height = 96, present = true, cardAfterMenu = fal
   vm.runInNewContext(source, {
     window, document,
     ResizeObserver: class { constructor(callback) { resize = callback; } observe(element) { observed.push(element); } },
-    MutationObserver: class { constructor(callback) { mutation = callback; } observe() {} disconnect() { disconnected = true; } },
+    MutationObserver: class { constructor(callback) { mutation = callback; } observe() { disconnected = false; } disconnect() { disconnected = true; } },
     fetch() { throw new Error("The layout must not send requests"); },
   });
   function flush() { while (raf.length) raf.shift()(); }
-  function event(name) { listeners.get(name)?.(); flush(); }
-  return { state, card, wrapper, navigation, footer, observed, event, resize: () => { resize(); flush(); }, insertCard: () => { present = true; mutation(); flush(); }, disconnected: () => disconnected };
+  function event(name, detail = {}) { for (const callback of [...listeners.get(name) || []]) callback(detail); flush(); }
+  function advance(ms) {
+    clock += ms;
+    for (const [id, timer] of [...timers]) if (timer.at <= clock) { timers.delete(id); timer.callback(); }
+    flush();
+  }
+  return { state, card, wrapper, navigation, footer, observed, event, advance,
+    pendingTimers: () => timers.size,
+    resize: () => { resize(); flush(); },
+    insertCard: () => { present = true; if (!disconnected) mutation(); flush(); },
+    disconnected: () => disconnected };
 }
 
 test("card growth and shrinkage preserve clearance without accumulating margins", () => {
@@ -127,8 +142,28 @@ test("a late shortcode receives layout and disconnects its discovery observer", 
   assert.equal(h.card.getBoundingClientRect().left, 66);
   assert.equal(h.navigation.getBoundingClientRect().top - h.card.getBoundingClientRect().bottom, 12);
   assert.equal(h.disconnected(), true);
+  assert.equal(h.pendingTimers(), 0);
   h.state.height = 96; h.resize();
   assert.equal(h.navigation.getBoundingClientRect().top - h.card.getBoundingClientRect().bottom, 12);
+});
+
+test("pages without a card stop discovery after a bounded wait", () => {
+  const h = harness({ present: false });
+  h.advance(9999); assert.equal(h.disconnected(), false);
+  h.advance(1); assert.equal(h.disconnected(), true);
+  assert.equal(h.pendingTimers(), 0);
+  h.insertCard(); assert.equal(h.observed.length, 0);
+});
+
+test("leaving cancels discovery and a back-forward restoration can find a late card once", () => {
+  const h = harness({ present: false });
+  h.event("pagehide"); assert.equal(h.disconnected(), true);
+  assert.equal(h.pendingTimers(), 0);
+  h.event("pageshow", { persisted: true }); assert.equal(h.disconnected(), false);
+  h.insertCard(); assert.equal(h.observed.length, 3);
+  h.event("pagehide"); h.event("pageshow", { persisted: true });
+  assert.equal(h.observed.length, 3);
+  assert.equal(h.pendingTimers(), 0);
 });
 
 // Richlist wrapping/data coverage is in wordpress_richlist.test.mjs.

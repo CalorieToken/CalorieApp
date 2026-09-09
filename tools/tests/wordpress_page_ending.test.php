@@ -260,8 +260,10 @@ check($response instanceof WP_REST_Response && $response->status === 200, 'Succe
 check(count($requests) === 1 && $requests[0]['options']['redirection'] === 0, 'Only the fixed XPMarket endpoint is fetched.');
 check($requests[0]['url'] === 'https://api.xpmarket.com/api/currency/widget?token=Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY', 'The shared token identifier preserves the exact CAL data endpoint.');
 check($requests[0]['options']['limit_response_size'] === 16384, 'Bound the upstream response size.');
-check($response->headers['Cache-Control'] === 'public, max-age=300', 'Successful data uses a five-minute public cache.');
-$market->get_widget();
+check($response->headers['Cache-Control'] === 'public, max-age=0, must-revalidate', 'Browser and shared caches must revalidate instead of adding another freshness window.');
+check($cache['calorieapp_xpmarket_widget_v1']['ttl'] === 300, 'Origin caching still limits upstream requests to once per five minutes.');
+$cached_response = $market->get_widget();
+check($cached_response->headers === $response->headers, 'Transient hits retain the same revalidation policy.');
 check(count($requests) === 1, 'Cached requests must not refetch XPMarket.');
 foreach ([new WP_Error('offline', 'offline', []), ['status' => 503, 'body' => ''], ['status' => 200, 'body' => '{}']] as $upstream) {
     $cache = $requests = [];

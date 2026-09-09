@@ -9,7 +9,7 @@ const catalogue=JSON.parse(readFileSync(new URL('config/richlist.json',base)));
 
 // Synthetic provider rows with queued mutation delivery; not visual/native auth acceptance.
 function harness({late=false,marked=true,reduced=false,page=3243,path='/index.php/richlist/',search='',configure,protect}={}){
- const observers=[],events=new Map(),scrolls=[],focuses=[];
+ const observers=[],events=new Map(),scrolls=[],focuses=[],timers=new Map();let timerSequence=0;
  function emit(record){for(const observer of observers){
   if(!observer.target?.contains(record.target))continue;const options=observer.options;
   if(record.type==='attributes'&&(!options.attributes||!options.attributeFilter.includes(record.attributeName)))continue;
@@ -44,7 +44,9 @@ function harness({late=false,marked=true,reduced=false,page=3243,path='/index.ph
  const config={locales,richlist:structuredClone(catalogue)};configure?.(config);
  const window={location:{origin:'https://calorietoken.net',pathname:path,search},calorieappDisplayLanguageConfig:config,matchMedia:()=>({matches:reduced}),MutationObserver:true,
   addEventListener(type,callback){if(!events.has(type))events.set(type,[]);events.get(type).push(callback);},
-  setTimeout(){throw Error('No delayed focus');},setInterval(){throw Error('No polling');},fetch(){throw Error('No provider request');}};
+  removeEventListener(type,callback){events.set(type,(events.get(type)||[]).filter(fn=>fn!==callback));},
+  setTimeout(callback,delay){assert.equal(delay,10000,'Only the bounded card-discovery timeout is permitted');const id=++timerSequence;timers.set(id,callback);return id;},
+  clearTimeout(id){timers.delete(id);},setInterval(){throw Error('No polling');},fetch(){throw Error('No provider request');}};
  protect?.({slot,table,row,make,body});
  const context=vm.createContext({window,document,MutationObserver:class{
   constructor(callback){this.callback=callback;this.records=[];observers.push(this);}observe(target,options){this.target=target;this.options=options;}disconnect(){this.target=null;this.records=[];}
@@ -52,7 +54,7 @@ function harness({late=false,marked=true,reduced=false,page=3243,path='/index.ph
  function flush(){for(let i=0;i<30;i++){const pending=observers.filter(o=>o.records.length);if(!pending.length)return;for(const o of pending)o.callback(o.records.splice(0));}throw Error('Observer loop');}
  const run=()=>{vm.runInContext(source,context);flush();};run();
  return{window,document,html,body,slot,table,row,rank,make,scrolls,focuses,flush,run,
-  event(type){for(const fn of events.get(type)||[])fn();flush();},button(){return document.querySelector('[data-calorieapp-own-rank]');},
+  event(type){for(const fn of events.get(type)||[])fn({persisted:true});flush();},button(){return document.querySelector('[data-calorieapp-own-rank]');},
   unchanged(){assert.deepEqual(shape(controls),originalControls);assert.deepEqual(shape(header),originalHeader);assert.deepEqual(shape(address),originalAddress);assert.equal(html.lang,'en');assert.equal(html.dir,'ltr');}};
 }
 test('late tables/markers get one preserved scroll wrapper and jump without an observer loop',()=>{

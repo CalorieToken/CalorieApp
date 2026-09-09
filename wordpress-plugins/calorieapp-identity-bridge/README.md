@@ -41,7 +41,17 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-## Current review candidate: 0.3.41
+## Current review candidate: 0.3.42
+
+The performance follow-up bounds late header-card discovery to ten seconds,
+stops it when leaving the page, and allows one bounded retry after a
+back/forward-cache restoration. A discovered card retains its existing layout
+and resize handling. Public market responses now require HTTP revalidation;
+the five-minute WordPress transient remains the upstream cache, without an
+additional browser/CDN freshness window. The display is still a snapshot, not
+a live quote. These changes do not alter authentication or signing behavior.
+
+## Previous review candidate: 0.3.41
 
 This follow-up addresses the three Copilot comments on the combined website
 review: the standalone asset-cache version follows the plugin version, the

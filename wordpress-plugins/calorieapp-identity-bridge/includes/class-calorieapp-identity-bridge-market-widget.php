@@ -155,7 +155,9 @@ class MarketWidget {
 
     private function response(array $data): WP_REST_Response {
         $response = new WP_REST_Response(['success' => true, 'data' => $data], 200);
-        $response->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL_SECONDS);
+        // Reuse the origin transient, but do not add another browser/CDN
+        // freshness window to an already cached market snapshot.
+        $response->header('Cache-Control', 'public, max-age=0, must-revalidate');
         return $response;
     }
 }
