@@ -125,7 +125,7 @@
   document.addEventListener('click', function (event) {
     if (!allowed() || !(event.target instanceof window.Element)) return;
     var button = event.target.closest('button.cmplz-accept-service[data-service="twitter"]');
-    var link = button && button.closest('a.twitter-timeline');
+    var link = button && button.closest('a.twitter-timeline,a[data-ctstyle-x-anchor]');
     if (link && profile(link) && link.closest('[data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"]')) {
       event.preventDefault();
       window.setTimeout(refresh, 0);

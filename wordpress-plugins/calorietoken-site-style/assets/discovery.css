@@ -317,4 +317,5 @@ body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns {border:0!i
 body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns>.brz-bg {display:none!important;}
 body.ctstyle-enabled .ctstyle-trustline-option h2::before {display:none!important;}
 
-:is(body.ctstyle-enabled,body.ctstyle-footer-only):has(.cmplz-cookiebanner.cmplz-show) .calorieapp-page-tools {visibility:hidden;}
+body.ctstyle-enabled.ctstyle-cookie-banner-open .calorieapp-page-tools,
+body.ctstyle-footer-only.ctstyle-cookie-banner-open .calorieapp-page-tools {visibility:hidden;}

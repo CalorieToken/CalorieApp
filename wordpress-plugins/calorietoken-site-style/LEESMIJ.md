@@ -8,6 +8,8 @@ WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorieto
 
 ## Correctieronde 1.4.4 — 29 screenshots en negen opmerkingen
 
+De laatste reviewcorrectie herkent beide bestaande toestanden van de X-profielkoppeling. De zwevende knoppen volgen de zichtbaarheid van de cookiemelding via een expliciete paginaklasse, ook bij laat laden en terugkeren met de browser. Dit gebruikt de bestaande toestemmingskeuze en vereist geen CSS `:has()`.
+
 - Home-menu en logovlak krijgen een ondoorzichtige achtergrond. De bestaande Home-titelbanner blijft behouden.
 - De consolidatiewallet gebruikt de grijze papierkaart, groene titelstrook en afgeronde onderkant van de bestaande walletpresentatie. Adres, explorerlink en volledige toelichting blijven staan.
 - De acht roadmaponderdelen krijgen op mobiel dezelfde volledige breedte. De appverwijzing past binnen de tijdlijn en is geen afwijkende ingesloten kaart meer.

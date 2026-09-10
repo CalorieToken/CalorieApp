@@ -9,7 +9,7 @@
   var helpURL = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
   var nodes = [], hub = null, launcher = null, test = null, trust = null, frame = null, controls = null, requestedLocale = null, revoked = false, picker = null, preferenceRead = false;
   var preferenceKey = 'calorieapp.display-language.v1';
-  var pickers = [], accountApp = null, accountWatcher = null;
+  var pickers = [], accountApp = null, accountWatcher = null, cookieWatcher = null;
   var menuLabels = new WeakMap();
   function allowed() {
     return document.body && document.body.matches('.ctstyle-enabled,.ctstyle-footer-only') &&
@@ -180,6 +180,28 @@
       return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
     });
   }
+  function syncCookieVisibility() {
+    if (!allowed()) return;
+    var visible = cookieVisible();
+    if (document.body.classList.contains('ctstyle-cookie-banner-open') !== visible) {
+      document.body.classList.toggle('ctstyle-cookie-banner-open', visible);
+    }
+    if (launcher && launcher.hidden !== visible) launcher.hidden = visible;
+  }
+  function watchCookieBanner() {
+    if (cookieWatcher || typeof MutationObserver !== 'function') return;
+    var selector = '#cmplz-cookiebanner-container,.cmplz-cookiebanner';
+    cookieWatcher = new MutationObserver(function (records) {
+      if (records.some(function (record) {
+        if (record.type === 'attributes') return record.target.matches(selector);
+        return Array.from(record.addedNodes).concat(Array.from(record.removedNodes)).some(function (node) {
+          return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
+        });
+      })) syncCookieVisibility();
+    });
+    // Complianz may insert its banner after this script has initialized.
+    cookieWatcher.observe(document.body,{attributes:true,childList:true,subtree:true,attributeFilter:['class','style','hidden']});
+  }
   function websiteLanguage(tag, remember) {
     if (!allowed() || !cfg.copy[tag]) return;
     if (remember) {
@@ -261,14 +283,8 @@
     if (Number(cfg.page) !== 7880) panel.append(link('openApp',cfg.appURL),link('testTitle',cfg.appURL+'#ctstyle-testnet'));
     picker = languagePicker('ctstyle-language-select',panel);
     details.append(panel); launcher.append(details); document.body.append(launcher);
-    launcher.hidden = cookieVisible();
+    syncCookieVisibility();
     details.addEventListener('keydown',function (event) { if (event.key === 'Escape' && details.open) { details.open = false; summary.focus(); } });
-    if (typeof MutationObserver === 'function') {
-      var banners = document.querySelectorAll('#cmplz-cookiebanner-container,.cmplz-cookiebanner');
-      var observer = new MutationObserver(function () { launcher.hidden = cookieVisible(); });
-      banners.forEach(function (node) { observer.observe(node,{attributes:true,childList:true,subtree:true,attributeFilter:['class','style','hidden']}); });
-      window.addEventListener('pagehide',function () { observer.disconnect(); },{once:true});
-    }
   }
   function navigation() {
     // Change only the known label at the existing destination. No menu, URL or metadata rewrite.
@@ -318,6 +334,7 @@
     }
     if (locale) requestedLocale = locale;
     buyingPage(); trustPage(); appPage(); widget(); accountWidget(); watchAccount(); navigation();
+    syncCookieVisibility(); watchCookieBanner();
     var tag = lang();
     sharedLanguage(tag);
     nodes.forEach(function (entry) {
@@ -332,14 +349,16 @@
   }
   window.CalorieTokenDiscoveryUI = {refresh:refresh,getLocale:lang,setLocale:websiteLanguage};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',function () { refresh(); },{once:true}); else refresh();
-  window.addEventListener('load',function () { websiteLanguage(lang(),false); syncConsent(); },{once:true});
+  window.addEventListener('load',function () { websiteLanguage(lang(),false); syncConsent(); syncCookieVisibility(); },{once:true});
   window.addEventListener('pagehide',unload);
   window.addEventListener('pagehide',function () {if (accountWatcher) {accountWatcher.disconnect();accountWatcher=null;}});
-  window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();}});
+  window.addEventListener('pagehide',function () {if (cookieWatcher) {cookieWatcher.disconnect();cookieWatcher=null;}});
+  window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();syncCookieVisibility();watchCookieBanner();}});
+  document.addEventListener('cmplz_cookie_warning_loaded',syncCookieVisibility);
   ['cmplz_status_change','cmplz_service_status_change','cmplz_revoke','cmplz_enable_category','cmplz_enable_service'].forEach(function (name) {
     document.addEventListener(name,function () {
       revoked = name === 'cmplz_revoke';
-      syncConsent(); if (launcher) launcher.hidden = cookieVisible();
+      syncConsent(); syncCookieVisibility();
     });
   });
   document.addEventListener('change',function (event) {
