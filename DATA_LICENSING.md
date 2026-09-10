@@ -47,6 +47,15 @@ proprietary copy, bulk export, or combined database without a fresh ODbL
 share-alike and attribution review. Product facts can also be inaccurate;
 CalorieApp must not present them as medical or dietary advice.
 
+## USDA FoodData Central reference selection
+
+The current frontend bundles three dated reference-food records from USDA FoodData Central. The source file `frontend/data/usda-reference-foods.json` retains the source identifiers, retrieval date, nutrient units and record links. The interface states the edible 100 g basis and links to the provider and its CC0 data information. This is a small reference selection, not a second live search adapter or a claim that every USDA record is included.
+
+- [FoodData Central](https://fdc.nal.usda.gov/)
+- [Data documentation and public-domain/CC0 information](https://fdc.nal.usda.gov/data-documentation.html)
+
+The interface does not silently combine alternative energy methods, treat missing data as measured zero, or import these examples into a private diary. USDA reference provenance remains separate from Open Food Facts licensing and private user records. External names and marks retain their own rights.
+
 ## User and identity data
 
 Authentication identifiers and food logs are application data, not assets

@@ -1,5 +1,9 @@
 # CalorieApp
 
+**Food search · nutrition · your food diary**
+
+[Open the webapp](https://calorietoken.net/index.php/calorieapp/) · [Publications](https://github.com/CalorieToken/Publications) · [September update](docs/public/website-update-2026-09.md) · [Development](#local-development)
+
 CalorieApp is a non-financial, non-custodial food and nutrition tracking project.
 
 Copyright (c) 2026 ICTHendrikse, for original portions created
@@ -27,12 +31,14 @@ Current application stack:
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
 - Data: SQLite for local development and tests; PostgreSQL is required for live user data
-- External food data: source-independent adapters; Open Food Facts is the current adapter
+- External food data: Open Food Facts search adapter; a separate three-food USDA reference selection
 - Identity/authentication: server-side identity flow with session cookies
 
 ## Current Status
 
-### IMPLEMENTED (V2 proven baseline; completion in progress)
+### Implemented in the repository (V2 completion in progress)
+
+The latest website package and app journey still need live owner acceptance. Current source additions include eleven-language UI synchronization, startup/rate-limit feedback, diary filtering, attributed USDA reference foods and a Testnet-guide link. Historical page translations are only partly complete; see the [dated scope and verification record](docs/public/website-update-2026-09.md).
 
 - Food search via backend integration with Open Food Facts
 - Nutrition result display in the web UI
@@ -230,6 +236,8 @@ Git whitespace validation, and a tracked-artifact boundary check. The PowerShell
 gate can additionally run the local developer health check.
 
 ## Documentation
+
+- [September 2026 website/app update and remaining acceptance](docs/public/website-update-2026-09.md)
 
 - Versioned Identity Bridge contracts: contracts/identity-bridge/v1/
 - XRPL-linked provenance contract: contracts/provenance/v1/
