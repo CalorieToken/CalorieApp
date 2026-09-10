@@ -146,9 +146,10 @@ Frontend environment setup:
 - Preferred variable: BACKEND_URL
 - Existing deployments may continue using NEXT_PUBLIC_BACKEND_URL as a fallback
 - Local development value: http://localhost:8000
-The browser calls the frontend's same-origin `/api/backend` proxy. The proxy
+The browser calls the frontend's same-origin `/api/calorieapp` proxy. The proxy
 forwards only supported CalorieApp endpoints to the configured backend and
-keeps CalorieApp cookies first-party to the frontend origin.
+keeps CalorieApp cookies first-party to the frontend origin. The legacy
+`/api/backend` alias remains available for backward compatibility.
 
 Production Xaman sign-in is owned by the WordPress page rendered through the
 `[calorieapp_embed]` shortcode. WordPress creates a SignIn payload without a

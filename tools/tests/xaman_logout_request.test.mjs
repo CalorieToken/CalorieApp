@@ -83,7 +83,7 @@ test("joint logout uses the same-origin proxy without a readiness wait", async (
   await login.requestCalorieAppLogout();
 
   assert.deepEqual(events, [
-    "request:/api/backend/api/identity/logout:75000",
+    "request:/api/calorieapp/api/identity/logout:75000",
   ]);
 });
 
@@ -104,7 +104,7 @@ test("joint logout accepts an absent app session and rejects an HTTP failure", a
   await assert.rejects(login.requestCalorieAppLogout(), /Unable to log out/);
 
   assert.equal(calls.length, 3);
-  assert.equal(calls[0].url, "/api/backend/api/identity/logout");
+  assert.equal(calls[0].url, "/api/calorieapp/api/identity/logout");
   assert.equal(calls[0].options.method, "POST");
   assert.deepEqual(calls.map(({ timeoutMs }) => timeoutMs), [75000, 75000, 75000]);
 });
@@ -122,8 +122,8 @@ test("joint logout retries cookie clearing after a transport interruption", asyn
   await login.requestCalorieAppLogout();
 
   assert.deepEqual(calls.map(({ url }) => url), [
-    "/api/backend/api/identity/logout",
-    "/api/backend/api/identity/logout",
+    "/api/calorieapp/api/identity/logout",
+    "/api/calorieapp/api/identity/logout",
   ]);
   assert.deepEqual(calls.map(({ timeoutMs }) => timeoutMs), [75000, 15000]);
 });

@@ -143,8 +143,8 @@ test("logout retries the cookie-clearing endpoint after an interrupted response"
   await module.exports.requestCalorieAppLogout();
 
   assert.deepEqual(requests, [
-    { url: "/api/backend/api/identity/logout", timeoutMs: 75000 },
-    { url: "/api/backend/api/identity/logout", timeoutMs: 15000 },
+    { url: "/api/calorieapp/api/identity/logout", timeoutMs: 75000 },
+    { url: "/api/calorieapp/api/identity/logout", timeoutMs: 15000 },
   ]);
 });
 
@@ -807,8 +807,8 @@ test("embedded completion recovers safely without replaying one-time codes", asy
 
   assert.equal(directUser.user_id, "calorieapp-user");
   assert.deepEqual(requests, [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
   assert.deepEqual(scheduledDelays, []);
   assert.equal(cancelledResponseBodies, 0);
@@ -825,9 +825,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   );
   assert.equal(transientCookieUser.user_id, "calorieapp-user");
   assert.deepEqual(requests.slice(transientCookieStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
   assert.deepEqual(scheduledDelays, [5000]);
 
@@ -868,10 +868,10 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   );
   assert.equal(fallbackUser.user_id, "calorieapp-user");
   assert.deepEqual(requests.slice(fallbackStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
 
   scenario = "rate-limited";
@@ -893,8 +893,8 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     }
   );
   assert.deepEqual(requests.slice(rateLimitStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
   ]);
 
   scenario = "ambiguous-completed";
@@ -909,9 +909,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   );
   assert.equal(recoveredUser.user_id, "calorieapp-user");
   assert.deepEqual(requests.slice(ambiguousStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
 
   scenario = "ambiguous-session-unavailable";
@@ -932,9 +932,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     }
   );
   assert.deepEqual(requests.slice(unavailableSessionStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
 
   scenario = "malformed-success";
@@ -949,9 +949,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   );
   assert.equal(malformedRecoveryUser.user_id, "calorieapp-user");
   assert.deepEqual(requests.slice(malformedStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
 
   scenario = "consumed-after-success";
@@ -966,9 +966,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   );
   assert.equal(consumedRecoveryUser.user_id, "calorieapp-user");
   assert.deepEqual(requests.slice(consumedStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
-    { url: "/api/backend/api/identity/me", method: "GET" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/me", method: "GET" },
   ]);
 
   scenario = "permanent-callback";
@@ -984,8 +984,8 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     /Callback failed with 400/
   );
   assert.deepEqual(requests.slice(permanentStart), [
-    { url: "/api/backend/api/identity/callback", method: "POST" },
-    { url: "/api/backend/api/identity/login/status", method: "POST" },
+    { url: "/api/calorieapp/api/identity/callback", method: "POST" },
+    { url: "/api/calorieapp/api/identity/login/status", method: "POST" },
   ]);
 
   scenario = "permanent-me";

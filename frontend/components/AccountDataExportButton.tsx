@@ -14,7 +14,7 @@ import {
 import { getAccountPrivacyCopy, translateAccountPrivacyStatus } from "@/lib/accountPrivacyCopy";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v2";
 const ACCOUNT_EXPORT_FILENAME = "calorieapp-account-data-v2.json";
 const PRIVATE_EXPORT_URL_REVOCATION_DELAY_MS = 1_000;

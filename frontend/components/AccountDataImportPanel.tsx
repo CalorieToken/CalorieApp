@@ -19,7 +19,7 @@ import {
 import { getAccountPrivacyCopy, translateAccountPrivacyStatus } from "@/lib/accountPrivacyCopy";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 export const ACCOUNT_IMPORT_MAX_BYTES = 5 * 1024 * 1024;
 export const ACCOUNT_IMPORT_MAX_USER_ID_BYTES = 255;
 

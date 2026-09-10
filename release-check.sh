@@ -73,6 +73,7 @@ node --test \
     "$repo_root/tools/tests/account_data_export_validation.test.mjs" \
     "$repo_root/tools/tests/account_erasure_ui.test.mjs" \
     "$repo_root/tools/tests/account_privacy_locales.test.mjs" \
+    "$repo_root/tools/tests/backend_request_route.test.mjs" \
     "$repo_root/tools/tests/calorieapp_embed_readiness.test.mjs" \
     "$repo_root/tools/tests/identity_locales.test.mjs" \
     "$repo_root/tools/tests/xaman_logout_request.test.mjs" \

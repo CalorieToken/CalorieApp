@@ -14,7 +14,7 @@ import {
 import { getAccountPrivacyCopy, translateAccountPrivacyStatus } from "@/lib/accountPrivacyCopy";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
-const BACKEND_BASE_URL = "/api/backend";
+const BACKEND_BASE_URL = "/api/calorieapp";
 const ACCOUNT_ERASURE_ACKNOWLEDGEMENT = "delete-my-calorieapp-account";
 
 type AccountErasurePanelProps = {
