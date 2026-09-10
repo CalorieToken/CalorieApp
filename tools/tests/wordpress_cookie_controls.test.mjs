@@ -196,3 +196,51 @@ test('An X frame is ready only with consent and visible nonzero dimensions, incl
   assert.equal(observers.filter(o => o.active).length, 1);
   assert.equal(ready(), true);
 });
+
+test('Public translation observation skips private account changes and preserves the selected locale for late content', () => {
+  const observers = [], frames = [];
+  const document = {...handlers(), readyState: 'loading',
+    body: {matches: selector => selector === '.ctstyle-enabled,.ctstyle-footer-only'},
+    querySelector: () => null, querySelectorAll: () => []};
+  const window = {...handlers(), location: new URL('https://calorietoken.net/index.php/donate/'),
+    CalorieTokenContentLanguage: {locales: ['en','nl'], entries: [{source:'No Donations Yet',translations:{nl:'Nog geen donaties'}}]},
+    requestAnimationFrame: fn => frames.push(fn),
+    MutationObserver: class { constructor(fn) { this.fn=fn; observers.push(this); } observe() {} disconnect() {} }};
+  vm.runInNewContext(source('content-language.js'), {window, document, URL});
+  document.emit('DOMContentLoaded');
+  window.CalorieTokenContentLanguageUI.refresh('nl');
+  const privateParent = {isConnected:true,closest:()=>({})};
+  observers[0].fn([{type:'characterData',target:{nodeType:3,parentElement:privateParent,data:'No Donations Yet'}}]);
+  assert.equal(frames.length,0);
+  const publicParent = {isConnected:true,closest:()=>null};
+  observers[0].fn([{type:'characterData',target:{nodeType:3,parentElement:publicParent,data:'No Donations Yet'}}]);
+  assert.equal(frames.length,1);frames.shift()();
+  assert.equal(window.CalorieTokenContentLanguageUI.getLocale(),'nl');
+  observers[0].fn([{type:'characterData',target:{nodeType:3,parentElement:publicParent,data:'1234'}}]);
+  assert.equal(frames.length,0,'Unrelated numeric updates do not rescan the page');
+});
+
+test('Native menu accessibility preserves the existing checkbox and restores focus without duplicate handlers', () => {
+  const copy = {en:{menuLabel:'Main navigation'},nl:{menuLabel:'Hoofdnavigatie'}};
+  const attributes = new Map(), inputEvents = handlers(), menuEvents = handlers();
+  let focuses=0, changes=0;
+  const input = {...inputEvents, id:'native-menu',checked:false,
+    setAttribute:(name,value)=>attributes.set(name,value),focus:()=>focuses++,
+    dispatchEvent:event=>inputEvents.emit(event.type,event),
+    nextElementSibling:{matches:selector=>selector==='.brz-menu-simple__icon',getAttribute:()=> 'native-menu'}};
+  input.addEventListener('change',()=>changes++);
+  const menu = {...menuEvents,querySelector:()=>input,closest:()=>null};
+  const header = {querySelector:selector=>selector==='.brz-menu-simple'?menu:null,classList:tokens()};
+  const document = {...handlers(),readyState:'loading',body:{matches:s=>s==='.ctstyle-enabled,.ctstyle-footer-only'},
+    querySelector:()=>null,querySelectorAll:s=>s==='.ctstyle-header,.ctstyle-native-header'?[header]:[],getElementById:()=>null};
+  const window = {...handlers(),location:new URL('https://calorietoken.net/index.php/whitepaper/'),
+    CalorieTokenDiscovery:{page:1210,copy},Event:class {constructor(type){this.type=type;}}};
+  vm.runInNewContext(source('refinements.js'),{window,document,URL});document.emit('DOMContentLoaded');
+  window.CalorieTokenRefinements.refresh('nl');window.CalorieTokenRefinements.refresh('nl');
+  assert.equal(attributes.get('aria-label'),'Hoofdnavigatie');assert.equal(attributes.get('aria-expanded'),'false');
+  input.checked=true;input.emit('change');assert.equal(attributes.get('aria-expanded'),'true');
+  let prevented=false;menu.emit('keydown',{key:'Escape',preventDefault:()=>prevented=true});
+  assert.equal(input.checked,false);assert.equal(attributes.get('aria-expanded'),'false');
+  assert.equal(prevented,true);assert.equal(changes,2);assert.equal(focuses,1);
+  menu.emit('keydown',{key:'Escape',preventDefault:()=>assert.fail('Already closed menu must not intercept Escape')});
+});

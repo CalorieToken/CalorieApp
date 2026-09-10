@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   if (window.CalorieTokenRefinements || !window.CalorieTokenDiscovery) return;
-  var cfg=window.CalorieTokenDiscovery, locale='en', labels=[], observer=null, pending=false;
+  var cfg=window.CalorieTokenDiscovery, locale='en', labels=[], observer=null, pending=false, menuBindings=new WeakSet();
   var blocked='form,[contenteditable],.xl-card,[data-calorieapp-embed],.ctstyle-title,.ctstyle-header,header,footer,template';
   var dex='https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP';
   var swap='https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market';
@@ -13,7 +13,10 @@
   function make(tag,cls,copy){var n=document.createElement(tag);if(cls)n.className=cls;if(copy)n.textContent=copy;return n;}
   function label(tag,key,cls){var n=make(tag,cls,cfg.copy.en[key]);labels.push({node:n,key:key});return n;}
   function routes(){
-    document.querySelectorAll('.xl-card a[href]').forEach(function(a){if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';});
+    document.querySelectorAll('.xl-card a[href]').forEach(function(a){
+      if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';
+      if(a.getAttribute('href')===window.location.origin+'/index.php/how-to-buy-calorie/' && a.getAttribute('title')==='Trade on the XUMM DEX xApp!')a.removeAttribute('title');
+    });
     if(Number(cfg.page)!==4205)return;
     var guide=one('.cal-buy-guide[data-calorieapp-buy-guide="1"]');if(!guide||guide.closest(blocked))return;
     var trade=guide.querySelector('a[data-cal-buy-copy="tradeAction"]');
@@ -136,7 +139,31 @@
       if(header){
         var menu=header.querySelector('.brz-menu-simple'),logo=header.querySelector('img[src*="C-Logotranspa"]');
         var toggle=menu&&menu.querySelector('.brz-menu-simple__toggle>.brz-input[type="checkbox"]');
-        if(toggle)toggle.setAttribute('aria-label',cfg.copy[locale].menuLabel);
+        if(toggle){
+          toggle.setAttribute('aria-label',cfg.copy[locale].menuLabel);
+          var nativeLabel=toggle.nextElementSibling;
+          if(nativeLabel&&nativeLabel.matches('.brz-menu-simple__icon')&&nativeLabel.getAttribute('for')===toggle.id){
+            toggle.setAttribute('aria-expanded',String(toggle.checked));
+            if(!menuBindings.has(toggle)){
+              menuBindings.add(toggle);
+              toggle.addEventListener('change',function(){toggle.setAttribute('aria-expanded',String(toggle.checked));});
+              menu.addEventListener('keydown',function(event){
+                if(event.key!=='Escape'||!toggle.checked)return;
+                event.preventDefault();toggle.checked=false;
+                toggle.dispatchEvent(new window.Event('change',{bubbles:true}));toggle.focus();
+              });
+            }
+          }
+        }
+        var fallbackMenu=header.querySelector('details.ctstyle-mobile-nav');
+        if(fallbackMenu&&!menuBindings.has(fallbackMenu)){
+          menuBindings.add(fallbackMenu);
+          fallbackMenu.addEventListener('keydown',function(event){
+            if(event.key!=='Escape'||!fallbackMenu.open)return;
+            event.preventDefault();fallbackMenu.open=false;
+            var summary=fallbackMenu.querySelector('summary');if(summary)summary.focus();
+          });
+        }
         var menuCol=menu&&menu.closest('.brz-columns'),logoCol=logo&&logo.closest('.brz-columns');
         if(menuCol&&logoCol&&menuCol!==logoCol&&menuCol.parentElement===logoCol.parentElement){
           var row=menuCol.parentElement,cards=Array.from(row.children).filter(function(n){return n.querySelector('.xl-card');});

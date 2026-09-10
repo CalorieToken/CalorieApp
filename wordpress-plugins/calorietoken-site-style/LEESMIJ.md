@@ -1,10 +1,25 @@
-# CalorieToken Site Style 1.4.6
+# CalorieToken Site Style 1.4.7
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.6.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.6** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.7.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.7** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Auditronde 1.4.7 — basis behouden, review eenvoudiger
+
+Deze versie bevat alle eerdere screenshotcorrecties van 1.4.6, inclusief de gekleurde footer-terugval en het CalorieHelp-vraagteken. Je hoeft 1.4.6 niet eerst te installeren.
+
+- Het bestaande mobiele Brizy-menu meldt zijn open/dicht-status en sluit met Escape; hetzelfde geldt voor het usecase-menu. De oorspronkelijke menu- en inlogknoppen blijven behouden.
+- De oude XUMM DEX-tooltip wordt verwijderd wanneer de Trade-link al naar CAL & Crypto wijst.
+- De losse lege donatiemelding kan de bestaande vertaling volgen. Wijzigingen in accountkaarten en andere uitgesloten onderdelen veroorzaken geen onnodige volledige vertaalscan meer.
+- WordPress-voorbeelden en bewerkmodi worden ook aan de serverkant van de vormgeving uitgesloten.
+- Onder **Gereedschap → CalorieToken review** staat een alleen voor beheerders toegankelijke inventaris van pagina’s en berichten, inclusief ongepubliceerde titels en herkenbare oude verwijzingen. Download desgewenst het privé-reviewbestand. Dit wijzigt of publiceert niets. De inventaris scant gewone WordPress-inhoud; Brizy-opmaak, afbeeldingen en externe bestemmingen vragen nog beoordeling.
+- De repository bevat nu een herhaalbare Site Style-pakketbouwer en CI-controles voor bronbestanden, versies, ZIP-inhoud en toegang tot het reviewoverzicht.
+
+**Nutri-Score:** de kleuren zijn voorbereid in de afzonderlijke CalorieApp-code. Deze WordPress-upload rolt de app niet uit. De bestaande Identity Bridge en backend blijven ongewijzigd.
+
+**Test na upload:** bekijk Home, Whitepaper en een usecase met het menu dicht/open; Richlist ingelogd/uitgelogd; CAL & Crypto, Trustline, Tokenomics, Roadmap, Blog met jouw X-toestemming en de lege donatiemelding. Doe dit op desktop en telefoon. Het rapport legt de nog open inhouds- en releasepunten vast voordat stap 4 als live showcase kan worden afgetekend.
 
 ## Correctieronde 1.4.6 — desktopreview en mobiele aanvullingen
 

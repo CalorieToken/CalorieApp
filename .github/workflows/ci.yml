@@ -78,6 +78,9 @@ jobs:
       - name: Validate standalone Site Style package
         run: node --test tools/tests/wordpress_site_style_package.test.mjs tools/tests/wordpress_app_origin.test.mjs tools/tests/wordpress_cookie_controls.test.mjs
 
+      - name: Test read-only Site Style review inventory
+        run: php tools/tests/wordpress_site_style_review.test.php
+
       - name: Test legal footer compatibility
         shell: bash
         run: |
@@ -133,6 +136,11 @@ jobs:
 
       - name: Build and inspect release archive
         run: python tools/build_wordpress_plugin_release.py
+
+      - name: Build and verify Site Style release
+        run: |
+          python -m unittest tools.tests.test_build_site_style_release
+          python tools/build_site_style_release.py
 
   backend-tests:
     name: Backend tests (Python 3.11)

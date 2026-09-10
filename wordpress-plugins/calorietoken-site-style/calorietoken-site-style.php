@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.6
+ * Version: 1.4.7
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.6';
+    const VERSION = '1.4.7';
 
     private static function json_asset($name) {
         // Request-local cache only: plugin updates never need a persistent cache purge.
@@ -91,10 +91,10 @@ final class Plugin {
             is_page(array(1090, 8001)) ||
             (defined('REST_REQUEST') && REST_REQUEST) ||
             (function_exists('wp_doing_ajax') && wp_doing_ajax()) ||
-            (function_exists('is_customize_preview') && is_customize_preview())) {
+            (function_exists('is_customize_preview') && is_customize_preview()) || is_preview()) {
             return false;
         }
-        foreach (array('brizy-edit', 'brizy-edit-iframe', 'brz-edit', 'brz-edit-iframe') as $key) {
+        foreach (array('preview', 'customize_changeset_uuid', 'brizy-edit', 'brizy-edit-iframe', 'brz-edit', 'brz-edit-iframe') as $key) {
             if (isset($_GET[$key])) { return false; }
         }
         return true;
@@ -173,3 +173,4 @@ add_filter('body_class', array(Plugin::class, 'body_class'));
 add_action('wp_enqueue_scripts', array(Plugin::class, 'enqueue'), 99);
 add_action('wp_footer', array(Plugin::class, 'templates'), 19);
 require_once __DIR__ . '/public-pages.php';
+require_once __DIR__ . '/review.php';

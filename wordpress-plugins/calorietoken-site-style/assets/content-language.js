@@ -6,7 +6,7 @@
   var lookup=new Map(), records=new WeakMap(), active=[], observer=null, queued=false, locale='en';
   var excluded='script,style,template,svg,iframe,input,textarea,select,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],#ctstyle-testnet-secret,.woocommerce-customer-details,.woocommerce-order-details,.woocommerce-order-overview,.comment-content,.comment-list,.cmplz-cookiebanner,.ctstyle-help-reply';
   var owned='[data-cal-buy-copy],#ctstyle-account-app,#ctstyle-app-launcher,.ctstyle-discovery,.ctstyle-discovery-card:not(.ctstyle-faq-hub),.calorieapp-tokenomics-note,[data-calorieapp-trustline-ui],[data-ctstyle-app-info],.ctstyle-faq-hub';
-  var candidates='.ctstyle-legal p,.ctstyle-market-card h2,.ctstyle-market-card p,.brz-rich-text p,.brz-rich-text li,.brz-rich-text h1,.brz-rich-text h2,.brz-rich-text h3,.brz-rich-text h4,.brz-rich-text h5,.brz-rich-text summary,.entry-content p,.entry-content li,.entry-content h1,.entry-content h2,.entry-content h3,.entry-title,.ctstyle-title h1,.ctstyle-title h2,.ctstyle-roadmap-preview p,.ctstyle-roadmap-preview h3,.ctstyle-roadmap-preview a,.calorieapp-context-note p,.calorieapp-context-note strong,.calorieapp-context-note a,.woocommerce label,.woocommerce button,.woocommerce th,.woocommerce h2,.woocommerce h3,.woocommerce .product_title,.woocommerce a,.woocommerce-notices-wrapper,.brz-posts p,.brz-posts h2,.brz-posts a';
+  var candidates='.ctstyle-legal p,.ctstyle-market-card h2,.ctstyle-market-card p,.brz-rich-text p,.brz-rich-text li,.brz-rich-text h1,.brz-rich-text h2,.brz-rich-text h3,.brz-rich-text h4,.brz-rich-text h5,.brz-rich-text summary,.entry-content p,.entry-content li,.entry-content h1,.entry-content h2,.entry-content h3,.entry-title,.ctstyle-title h1,.ctstyle-title h2,.ctstyle-roadmap-preview p,.ctstyle-roadmap-preview h3,.ctstyle-roadmap-preview a,.calorieapp-context-note p,.calorieapp-context-note strong,.calorieapp-context-note a,.woocommerce label,.woocommerce button,.woocommerce th,.woocommerce h2,.woocommerce h3,.woocommerce .product_title,.woocommerce a,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.brz-posts p,.brz-posts h2,.brz-posts a';
   function norm(v){return String(v||'').replace(/\s+/g,' ').trim();}
   cfg.entries.forEach(function(row){if(row&&typeof row.source==='string'&&row.translations)lookup.set(norm(row.source),row);});
   function allowed(){return document.body&&document.body.matches('.ctstyle-enabled,.ctstyle-footer-only')&&!document.body.matches('.page-id-8001,.brz-ed')&&!document.querySelector('.brz-ed,#brz-ed-iframe')&&['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin)&&!/\/wp-admin\//.test(window.location.pathname)&&!Array.from(new URL(window.location.href).searchParams.keys()).some(function(k){return /^(?:preview|customize_changeset_uuid|brizy-edit|brizy-edit-iframe|brz-edit|brz-edit-iframe|xl-)/.test(k);});}
@@ -53,19 +53,30 @@
   }
   function refresh(tag){
     if(!allowed())return;
-    var next=tag||(window.CalorieTokenDiscoveryUI&&window.CalorieTokenDiscoveryUI.getLocale())||'en';
+    var next=tag||(window.CalorieTokenDiscoveryUI&&window.CalorieTokenDiscoveryUI.getLocale())||locale;
     if(!cfg.locales.includes(next))next='en';locale=next;
     if(observer)observer.disconnect();
     // Ask existing owners to translate their own mutable controls and notes.
     ['CalorieAppTokenomics'].forEach(function(key){if(window[key]&&typeof window[key].setLocale==='function')window[key].setLocale(locale);});
     active=active.filter(function(r){return r.node.isConnected;});active.forEach(paint);
     document.querySelectorAll(candidates).forEach(block);
-    document.querySelectorAll('.ctstyle-legal,.ctstyle-market-card,.brz-rich-text,.entry-content,.woocommerce,.woocommerce-notices-wrapper,.ctstyle-roadmap-preview,.calorieapp-context-note,.brz-posts').forEach(function(root){if(!records.has(root))fragments(root);});
+    document.querySelectorAll('.ctstyle-legal,.ctstyle-market-card,.brz-rich-text,.entry-content,.woocommerce,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.ctstyle-roadmap-preview,.calorieapp-context-note,.brz-posts').forEach(function(root){if(!records.has(root))fragments(root);});
     if(observer)observer.observe(document.body,{subtree:true,childList:true,characterData:true});
   }
   window.CalorieTokenContentLanguageUI={refresh:refresh,getLocale:function(){return locale;},coverage:function(){return {locale:locale,translated:active.filter(function(r){return r.node.isConnected&&locale!=='en'&&!!r.row.translations[locale];}).length};}};
-  if(typeof window.MutationObserver==='function')observer=new window.MutationObserver(function(){
-    if(queued)return;queued=true;window.requestAnimationFrame(function(){queued=false;refresh();});
+  function relevant(mutations){
+    return mutations.some(function(record){
+      var target=record.target.nodeType===3?record.target.parentElement:record.target;
+      if(!safe(target))return false;
+      if(record.type==='characterData')return records.has(record.target)||lookup.has(norm(record.target.data));
+      return Array.from(record.addedNodes).concat(Array.from(record.removedNodes)).some(function(node){
+        if(node.nodeType===3)return lookup.has(norm(node.data));
+        return node.nodeType===1&&!node.matches(excluded+','+owned)&&(node.matches(candidates)||!!node.querySelector(candidates));
+      });
+    });
+  }
+  if(typeof window.MutationObserver==='function')observer=new window.MutationObserver(function(records){
+    if(queued||!relevant(records))return;queued=true;window.requestAnimationFrame(function(){queued=false;refresh();});
   });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){refresh();},{once:true});else refresh();
   window.addEventListener('load',function(){refresh();},{once:true});
