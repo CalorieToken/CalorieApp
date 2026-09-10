@@ -21,7 +21,7 @@ final class PublicPages {
         $extra = file_get_contents(__DIR__ . '/content/' . ($id === 531 ? 'privacy' : 'terms') . '.html');
         if (!is_string($extra) || $extra === '') { return null; }
         // Exact old product-version wording, leaving rights and provider clauses intact.
-        $content = preg_replace('/\bV1\b/', 'V2', $content);
+        $content = str_replace('CalorieApp V1', 'CalorieApp V2', $content);
         $content = str_replace('25 August 2026', '10 September 2026', $content);
         return $content . "\n" . $extra;
     }
@@ -57,13 +57,17 @@ final class PublicPages {
                 if ($managed && get_post_meta($managed_id, '_ctstyle_public_hub', true) === '1') {
                     // An operator edit or unpublication is authoritative; never undo it.
                 } elseif (!$managed_id) {
-                    $html = file_get_contents(__DIR__ . '/content/community.html');
+                    $html = @file_get_contents(__DIR__ . '/content/community.html');
+                    if (!is_string($html) || trim($html) === '') {
+                        $errors[] = 'The informational Community Voting Hub content is unavailable; no page was created.';
+                    } else {
                     $result = wp_insert_post(wp_slash(array('post_type'=>'page','post_status'=>'publish',
                         'post_title'=>'Community Voting Hub','post_name'=>'community-voting-hub-info',
                         'post_content'=>$html,'comment_status'=>'closed','ping_status'=>'closed',
                         'meta_input'=>array('_ctstyle_public_hub'=>'1'))), true);
                     if (is_wp_error($result) || !$result) { $errors[] = 'The informational Community Voting Hub could not be created.'; }
                     else { update_option('ctstyle_public_hub_id', (int) $result, false); }
+                    }
                 } else { $errors[] = 'The previously created hub was removed; it was not recreated.'; }
             }
             update_option(self::KEY . '_notes', $errors, false);

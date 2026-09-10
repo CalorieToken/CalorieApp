@@ -547,7 +547,7 @@
       }
       if (metadata) {metadata.external=current;link.setAttribute('data-href',encodeURIComponent(JSON.stringify(metadata)));}
       link.setAttribute('href',current);
-      link.setAttribute('aria-label','Read CalorieToken Whitepaper v4.1');
+      link.setAttribute('aria-label','Read CalorieToken Whitepaper v4.2');
       if (link.getAttribute('target') === '_blank') link.setAttribute('rel',plain((link.getAttribute('rel') || '')+' noopener noreferrer'));
     });
   }
