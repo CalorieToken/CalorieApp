@@ -16,6 +16,8 @@ WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorieto
 
 Acht nieuwe DOM-scenario's controleren deze samenwerking, waaronder zes gereproduceerde regressies. De lustest gebruikt echte DOM-mutatiewaarneming met een begrensde foutdetectie, zodat een defect de testrunner niet kan laten vastlopen. De reparaties wijzigen geen CSS, websitevormgeving, loginprotocol of appcode. Ze omzeilen geen cookietoestemming en garanderen niet dat X zelf altijd berichten levert.
 
+De automatische review leidde bovendien tot een numerieke controle van cookie-transparantie. Gelijkwaardige nulnotaties worden als volledig transparant herkend, zowel op de banner als op zijn container; positieve transparantiewaarden houden de bestaande bannercontrole actief. De aanvullende regressie is vóór de correctie gereproduceerd. Dit is defensieve compatibiliteitscontrole, geen gemeten fout in een specifieke mobiele browser.
+
 De eigenaar meldt dat 1.4.10 is geïnstalleerd. Deze nieuwe ronde kon geen verse livebeelden maken: de cloudbrowser gaf opnieuw verbindingsfouten, ook na een begrensde herstelpoging. Daarom is installatie van 1.4.10 niet onafhankelijk bevestigd en is er geen mobiele of crossbrowser-goedkeuring. De hieronder bewaarde livebeelden betreffen 1.4.9. De afzonderlijke appuitrol en resterende livecontroles blijven open.
 
 ## Inbegrepen: correcties 1.4.10 na livecontrole van 1.4.9

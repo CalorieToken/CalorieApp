@@ -184,7 +184,7 @@
     function visible(node) {
       if (node.hidden || node.classList.contains('cmplz-dismissed')) return false;
       var style = window.getComputedStyle(node);
-      return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+      return style.display !== 'none' && style.visibility !== 'hidden' && Number.parseFloat(style.opacity) !== 0;
     }
     return Array.from(document.querySelectorAll('.cmplz-cookiebanner')).some(function (node) {
       var container = node.closest('#cmplz-cookiebanner-container');

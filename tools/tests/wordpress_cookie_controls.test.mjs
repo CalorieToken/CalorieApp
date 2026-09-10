@@ -158,6 +158,22 @@ test('Hiding the Complianz container restores controls even when its banner has 
   }
 });
 
+test('Numerically zero cookie opacity restores controls for the banner and its container', () => {
+  const h=discoveryFixture(),banner=h.banner(),container=h.banner();
+  banner.closest=()=>container;h.banners.push(banner);
+  for (const target of [banner,container]) {
+    for (const value of ['0','0.0','0.00','0%','-0']) {
+      target.style.opacity=value;h.document.emit('cmplz_status_change');
+      assert.equal(h.open(),false,value);
+    }
+    for (const value of ['0.001','0.1','1']) {
+      target.style.opacity=value;h.document.emit('cmplz_status_change');
+      assert.equal(h.open(),true,value);
+    }
+    target.style.opacity='1';
+  }
+});
+
 test('An X frame is ready only with consent and visible nonzero dimensions, including browser restoration', () => {
   let permitted = true, blocked = false;
   const observers = [], box = {width: 0, height: 0};
