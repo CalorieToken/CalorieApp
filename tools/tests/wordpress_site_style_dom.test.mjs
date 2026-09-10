@@ -35,9 +35,10 @@ function fixture(html, {page = 1210, route = 'whitepaper', home = false} = {}) {
     getComputedStyle: node => ({display: node.style.display || 'block', visibility: node.style.visibility || 'visible', backgroundImage: node.style.backgroundImage || '', opacity: node.style.opacity || '1'}),
     requestAnimationFrame: fn => frames.push(fn),
     addEventListener(name, fn) { events.set(name, [...events.get(name) || [], fn]); },
+    removeEventListener(name, fn) { events.set(name, (events.get(name) || []).filter(item => item !== fn)); },
     dispatchEvent(event) { for (const fn of events.get(event.type) || []) fn(event); },
   };
-  const context = {window, document, URL, MutationObserver: Observer};
+  const context = {window, document, URL, Event: dom.Event, MutationObserver: Observer, navigator: {}};
   return {document, window, observers, frames,
     run(name) { vm.runInNewContext(source(name), context); document.dispatchEvent(new dom.Event('DOMContentLoaded')); },
     emit(name) { for (const fn of events.get(name) || []) fn(); },
@@ -113,6 +114,80 @@ test('Trustline alternatives preserve native links/copy controls and do not dupl
   assert.equal(h.document.querySelectorAll('.ctstyle-manual-trustline').length, 2);
   assert.equal(h.document.querySelectorAll('#ctstyle-trustline-methods').length, 1);
   controls.forEach((node, index) => {assert.ok(node.isConnected); assert.equal(node.getAttribute('href'), links[index]);});
+});
+
+const trustlineContext = '<aside class="calorieapp-context-note" id="calorieapp-trustline-context"><strong>Before you continue</strong><p>A CAL trustline belongs to your XRPL wallet. Check the issuer and currency code in the request before signing. Food search and nutrition information in CalorieApp do not require a CAL trustline.</p><a href="https://www.xrptoolkit.com/">Open XRP Toolkit</a></aside>';
+function trustlineFixture(note = trustlineContext) {
+  return fixture('<div data-brz-custom-id="nrsbytvlhdquaddotxqmaeiihmzfbcufpmhr"><p>rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY</p><p>43616C6F72696500000000000000000000000000</p>' + note + '</div>', {page:1205,route:'trustline'});
+}
+
+test('The live legacy Trustline note is reused once through language changes and restored on cleanup', () => {
+  const h = trustlineFixture(), note = h.document.querySelector('aside'), link = note.querySelector('a');
+  const original = note.outerHTML; let clicks = 0; link.addEventListener('click', () => clicks++);
+  h.run('menu-pages.js');
+  assert.equal(h.document.querySelectorAll('#calorieapp-trustline-context').length, 1);
+  assert.equal(h.document.querySelectorAll('aside.calorieapp-context-note').length, 1);
+  for (const tag of Object.keys(menu.trustline.translations)) {
+    h.window.CalorieAppTrustline.setLocale(tag);
+    assert.equal(note.querySelector('p').textContent, menu.trustline.translations[tag].context);
+    assert.equal(note.querySelector('a'), link);
+  }
+  link.click(); assert.equal(clicks, 1);
+  note.parentElement.querySelector('p').textContent = 'Custom issuer text';
+  h.window.CalorieAppTrustline.refresh();
+  assert.equal(note.outerHTML, original, 'Retire only managed changes, preserving the original CMS node');
+});
+
+test('Custom Trustline notes and edits stay intact without duplicate identifiers', () => {
+  const h = trustlineFixture(trustlineContext.replace('Before you continue', 'Custom instruction'));
+  const custom = h.document.querySelector('aside'), original = custom.outerHTML;
+  h.run('menu-pages.js');
+  h.window.CalorieAppTrustline.setLocale('nl');
+  assert.equal(custom.outerHTML, original);
+  const ids = [...h.document.querySelectorAll('[id]')].map(node => node.id);
+  assert.equal(new Set(ids).size, ids.length);
+  const h2 = trustlineFixture(), originalNote = h2.document.querySelector('aside');
+  h2.run('menu-pages.js'); h2.window.CalorieAppTrustline.setLocale('nl');
+  originalNote.querySelector('p').textContent = 'New custom CMS wording';
+  h2.window.CalorieAppTrustline.refresh();
+  assert.equal(originalNote.querySelector('p').textContent, 'New custom CMS wording');
+  const h3=trustlineFixture(), note3=h3.document.querySelector('aside');
+  h3.run('menu-pages.js');
+  note3.querySelector('p').innerHTML='<em>Custom editorial emphasis</em>';
+  h3.window.CalorieAppTrustline.setLocale('nl');
+  assert.equal(note3.querySelector('p').innerHTML,'<em>Custom editorial emphasis</em>');
+});
+
+function bottomFixture() {
+  const h = fixture('<nav data-calorieapp-fallback-shortcuts><a class="calorieapp-page-tool" data-calorieapp-scroll="bottom" href="#">Bottom</a></nav>', {page:1090,home:true});
+  h.window.CalorieAppPageNavigation = {};
+  let next = 0; const timers = new Map(), scrolls = [];
+  h.window.setTimeout = (fn, delay) => {const id=++next;timers.set(id,{fn,delay});return id;};
+  h.window.clearTimeout = id => timers.delete(id);
+  h.window.scrollTo = options => scrolls.push(options);
+  h.window.matchMedia = () => ({matches:false});
+  h.document.documentElement.scrollHeight = 2000; h.document.body.scrollHeight = 2000;
+  h.run('navigation.js');
+  return {...h,timers,scrolls,click:()=>h.document.querySelector('a').click(),
+    grow(value){h.document.documentElement.scrollHeight=value;h.document.body.scrollHeight=value;},
+    advance(delay){for(const[id,t]of [...timers])if(t.delay<=delay){timers.delete(id);t.fn();}},
+  };
+}
+
+test('Explicit bottom navigation follows late page growth for a bounded time only', () => {
+  const h=bottomFixture();h.click();h.advance(300);assert.equal(h.scrolls.length,0);
+  h.grow(2600);h.advance(800);assert.deepEqual(h.scrolls.map(s=>s.top),[2600]);
+  h.advance(2000);assert.equal(h.timers.size,0);
+  h.grow(3200);h.emit('pageshow');assert.equal(h.scrolls.length,1);
+});
+
+test('Manual interaction or leaving the page cancels late bottom adjustments', () => {
+  for(const event of ['wheel','touchstart','pointerdown','keydown','pagehide']) {
+    const h=bottomFixture();h.click();h.grow(2600);h.emit(event);h.advance(2000);
+    assert.equal(h.scrolls.length,0,event);assert.equal(h.timers.size,0,event);
+  }
+  const h=bottomFixture();h.click();h.click();h.grow(2600);h.advance(2000);
+  assert.equal(h.scrolls.length,1,'Repeated clicks leave one active request');
 });
 
 test('The full CAL guide/discovery/translation sequence retains exact routes and all eleven languages', () => {

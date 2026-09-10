@@ -214,6 +214,11 @@ body.ctstyle-enabled .ctstyle-testnet-help summary {cursor:pointer;min-height:44
 body.ctstyle-enabled .ctstyle-faq-item {padding:8px 0;border-top:1px solid #d4d8e7;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-help-widget,.ctstyle-faq-hub) :is(input,button,a,summary):focus-visible {outline:3px solid #008d36;outline-offset:3px;}
 /* S27: visible app/language controls inside the existing Xaman card. */
+/* Live desktop review: keep shortcuts out of the central reading column.
+   Existing tablet/mobile geometry and the buttons themselves stay unchanged. */
+@media(min-width:1200px){
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {right:max(16px,env(safe-area-inset-right));}
+}
 /* A single compact mobile row leaves forms and footer links usable. */
 @media(max-width:767px){
  :is(body.ctstyle-enabled,body.ctstyle-footer-only) {padding-bottom:calc(64px + env(safe-area-inset-bottom))!important;}

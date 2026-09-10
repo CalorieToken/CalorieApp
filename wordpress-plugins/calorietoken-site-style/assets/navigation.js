@@ -14,6 +14,50 @@
   }
   if (!allowed()) return;
 
+  // Brizy can reveal lazy images after the original bottom target was measured.
+  // Keep the existing click handler; follow only this explicit request, briefly,
+  // and immediately stop when the visitor takes control or leaves the page.
+  if (!document.documentElement.hasAttribute('data-ctstyle-bottom-follow')) {
+    document.documentElement.setAttribute('data-ctstyle-bottom-follow', '1');
+    var stopBottomFollow = null;
+    document.addEventListener('click', function (event) {
+      var link = event.target && event.target.closest && event.target.closest('a.calorieapp-page-tool[data-calorieapp-scroll="bottom"]');
+      if (!link || link.getAttribute('href') !== '#' || !allowed()
+          || !['https://calorietoken.net', 'https://www.calorietoken.net'].includes(window.location.origin)
+          || Array.from(new URL(window.location.href).searchParams.keys()).some(function (key) { return /^xl-/.test(key); })
+          || link.closest('form,[contenteditable],[data-calorieapp-embed]')) return;
+      var stacks = document.querySelectorAll('[data-calorieapp-fallback-shortcuts]');
+      if (stacks.length !== 1 || !stacks[0].contains(link)) return;
+      if (stopBottomFollow) stopBottomFollow();
+      var active = true, height = pageHeight(), timers = [];
+      var cancelEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown', 'pagehide'];
+      function stop() {
+        if (!active) return;
+        active = false;
+        timers.forEach(function (timer) { window.clearTimeout(timer); });
+        cancelEvents.forEach(function (name) { window.removeEventListener(name, stop, true); });
+        document.removeEventListener('visibilitychange', visibility);
+        if (stopBottomFollow === stop) stopBottomFollow = null;
+      }
+      function visibility() { if (document.visibilityState === 'hidden') stop(); }
+      stopBottomFollow = stop;
+      cancelEvents.forEach(function (name) { window.addEventListener(name, stop, {capture: true, passive: true}); });
+      document.addEventListener('visibilitychange', visibility);
+      [300, 800, 1600].forEach(function (delay) {
+        timers.push(window.setTimeout(function () {
+          if (!active || !allowed() || !link.isConnected) { stop(); return; }
+          var nextHeight = pageHeight();
+          if (nextHeight > height + 2) window.scrollTo({
+            top: nextHeight,
+            behavior: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+          });
+          height = nextHeight;
+        }, delay));
+      });
+      timers.push(window.setTimeout(stop, 1800));
+    }, true);
+  }
+
   function extendNativeNavigation() {
     if (!allowed() || !window.CalorieAppPageNavigation) return;
     var stacks=document.querySelectorAll('[data-calorieapp-fallback-shortcuts]');

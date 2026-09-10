@@ -1,12 +1,20 @@
-# CalorieToken Site Style 1.4.9
+# CalorieToken Site Style 1.4.10
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.9.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.9** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.10.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.10** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Extra regressie-audit 1.4.9
+## Gerichte correcties na livecontrole van 1.4.9
+
+- Op brede desktops vanaf 1200 px staan de zwevende snelknoppen aan de rechterrand, zodat ze de CAL-gids en Trustline-uitleg niet bedekken. De bestaande knopvormen, kleuren, maten en de tablet-/mobiele layout blijven behouden.
+- De exacte bestaande Trustline-toelichting wordt hergebruikt en vertaald; zij verschijnt niet meer dubbel. Eigen CMS-tekst, links en handlers blijven behouden, ook wanneer het beheerde onderdeel wordt verwijderd.
+- Na een expliciete klik op ‘naar beneden’ wordt maximaal 1,8 seconde rekening gehouden met laat geladen pagina-inhoud. Handmatig scrollen, aanraken, toetsenbordgebruik of verlaten van de pagina stopt die aanvulling direct. De oorspronkelijke bediening blijft actief.
+
+Home, Whitepaper, Cafés, CAL & Crypto, Trustline, Tokenomics, Roadmap en de Richlist-header zijn live met 1.4.9 bekeken in Chrome op 1363×936. De correcties hierboven zijn vervolgens met gereproduceerde regressies getest. De cloudbrowser bood geen andere viewport/engine en verloor later de verbinding; er wordt geen mobiele, Safari-/Firefox- of na-installatiecontrole van 1.4.10 geclaimd. De appuitrol blijft afzonderlijk. Er is geen handmatige debugronde van tussenversies nodig.
+
+## Inbegrepen: extra regressie-audit 1.4.9
 
 - De bestaande gecombineerde CalorieApp-/taalbediening wordt teruggeplaatst als de native accountwidget zijn footer vernieuwt. De inlogknop en zijn handlers blijven dezelfde nodes.
 - Een nieuwe bekende CMS- of donatiemelding wordt opnieuw vertaald, ook als de vorige tekst al vertaald was. Terug naar Engels herstelt de nieuwe tekst; onbekende eigen wijzigingen blijven behouden.

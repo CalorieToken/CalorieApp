@@ -240,7 +240,11 @@
         && candidate.rows.every(function (row, index) {
           return live.paragraphs[index] === row.paragraph
             && row.group.parentElement === row.paragraph.parentElement;
-        }) && candidate.note.parentElement === candidate.root;
+        }) && candidate.note.parentElement === candidate.root
+        && (!candidate.noteOriginal || candidate.noteOriginal.parts.every(function (part, index) {
+          return part.node.parentElement === candidate.note && part.node.childElementCount === 0
+            && part.node.textContent === candidate.notePainted[index];
+        }));
     }
     function copyForLocale() {
       var config = window.CalorieTokenSiteStyleMenu;
@@ -266,6 +270,8 @@
       text(view.note.querySelector("strong"), copy.before);
       text(view.note.querySelector("p"), copy.context);
       text(view.note.querySelector("a"), copy.toolkit);
+      view.notePainted = [copy.before, copy.context, copy.toolkit];
+      view.noteLocale = { lang: selected.tag, dir: selected.direction };
       if (view.link) {
         localize(view.link, selected);
         text(view.link, copy.signAction);
@@ -278,7 +284,23 @@
         row.group.remove();
         if (row.addedClass) row.paragraph.classList.remove("calorieapp-copy-value");
       });
-      view.note.remove();
+      if (view.noteOriginal) {
+        // The public CMS already contains this exact note. Restore only values
+        // still owned by this controller; never overwrite a later custom edit.
+        view.noteOriginal.parts.forEach(function (part, index) {
+          if (part.node.parentElement === view.note && part.node.childElementCount === 0
+              && part.node.textContent === view.notePainted[index]) {
+            text(part.node, part.text);
+          }
+        });
+        ["lang", "dir"].forEach(function (name) {
+          if (view.note.getAttribute(name) !== view.noteLocale[name]) return;
+          var original = view.noteOriginal[name];
+          if (original === null) view.note.removeAttribute(name);
+          else view.note.setAttribute(name, original);
+        });
+        view.note.removeAttribute("data-calorieapp-trustline-ui");
+      } else view.note.remove();
       if (view.link) view.link.remove();
       if (view.addedClass) view.root.classList.remove("calorieapp-trustline-details");
       view = null;
@@ -323,9 +345,29 @@
           } catch (_) { finish("manual"); }
         });
       });
-      candidate.note = contextNote("calorieapp-trustline-context", english.before, english.context, english.toolkit, "https://www.xrptoolkit.com/");
+      var existingNotes = Array.from(live.root.children).filter(function (node) {
+        if (!node.matches('aside.calorieapp-context-note#calorieapp-trustline-context')
+            || node.matches(protectedSelector) || node.hasAttribute("data-calorieapp-trustline-ui")) return false;
+        var parts = Array.from(node.children);
+        return parts.length === 3 && parts.every(function (part) { return part.childElementCount === 0; })
+          && parts[0].tagName === "STRONG" && plain(parts[0].textContent) === english.before
+          && parts[1].tagName === "P" && plain(parts[1].textContent) === english.context
+          && parts[2].tagName === "A" && plain(parts[2].textContent) === english.toolkit
+          && parts[2].getAttribute("href") === "https://www.xrptoolkit.com/";
+      });
+      if (existingNotes.length === 1) {
+        candidate.note = existingNotes[0];
+        candidate.noteOriginal = {
+          lang: candidate.note.getAttribute("lang"), dir: candidate.note.getAttribute("dir"),
+          parts: Array.from(candidate.note.children).map(function (node) { return {node: node, text: node.textContent}; })
+        };
+      } else {
+        var noteId = "calorieapp-trustline-context", sequence = 2;
+        while (document.getElementById(noteId)) noteId = "calorieapp-trustline-context-" + sequence++;
+        candidate.note = contextNote(noteId, english.before, english.context, english.toolkit, "https://www.xrptoolkit.com/");
+        live.root.appendChild(candidate.note);
+      }
       candidate.note.setAttribute("data-calorieapp-trustline-ui", "");
-      live.root.appendChild(candidate.note);
       view = candidate;
     }
     function refresh() {
