@@ -19,3 +19,10 @@ test('Cancelling a search preserves page preparation and rejects the cancelled c
 test('Failed readiness is not cached and unmount stops the outstanding probe',async()=>{
  const h=fixture(),first=h.api.prepare();h.calls[0].reject(new Error('not ready'));await assert.rejects(first);const retry=h.api.prepare();assert.equal(h.calls.length,2);h.api.dispose();await assert.rejects(retry);assert.equal(h.calls[1].signal.aborted,true);await assert.rejects(h.api.prepare());assert.equal(h.calls.length,2);
 });
+test('Disposal does not abort a health probe that already settled',async()=>{
+ for(const success of [true,false]){
+  const h=fixture(),probe=h.api.prepare();
+  if(success){h.calls[0].resolve();await probe;}else{h.calls[0].reject(new Error('not ready'));await assert.rejects(probe);}
+  h.api.dispose();assert.equal(h.calls[0].signal.aborted,false);
+ }
+});

@@ -9,7 +9,7 @@
   var helpURL = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
   var nodes = [], hub = null, launcher = null, test = null, trust = null, frame = null, controls = null, requestedLocale = null, revoked = false, picker = null, preferenceRead = false;
   var preferenceKey = 'calorieapp.display-language.v1';
-  var pickers = [], accountApp = null, accountWatcher = null, cookieWatcher = null;
+  var pickers = [], accountApp = null, accountWatcher = null, cookieWatcher = null, cookieAttributeWatcher = null;
   var menuLabels = new WeakMap();
   function allowed() {
     return document.body && document.body.matches('.ctstyle-enabled,.ctstyle-footer-only') &&
@@ -191,16 +191,24 @@
   function watchCookieBanner() {
     if (cookieWatcher || typeof MutationObserver !== 'function') return;
     var selector = '#cmplz-cookiebanner-container,.cmplz-cookiebanner';
+    cookieAttributeWatcher = new MutationObserver(syncCookieVisibility);
+    function trackBanners() {
+      cookieAttributeWatcher.disconnect();
+      document.querySelectorAll(selector).forEach(function (node) {
+        cookieAttributeWatcher.observe(node,{attributes:true,attributeFilter:['class','style','hidden']});
+      });
+      syncCookieVisibility();
+    }
     cookieWatcher = new MutationObserver(function (records) {
       if (records.some(function (record) {
-        if (record.type === 'attributes') return record.target.matches(selector);
         return Array.from(record.addedNodes).concat(Array.from(record.removedNodes)).some(function (node) {
           return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
         });
-      })) syncCookieVisibility();
+      })) trackBanners();
     });
-    // Complianz may insert its banner after this script has initialized.
-    cookieWatcher.observe(document.body,{attributes:true,childList:true,subtree:true,attributeFilter:['class','style','hidden']});
+    // Observe only structure here; Brizy class/style changes are unrelated.
+    cookieWatcher.observe(document.body,{childList:true,subtree:true});
+    trackBanners();
   }
   function websiteLanguage(tag, remember) {
     if (!allowed() || !cfg.copy[tag]) return;
@@ -352,7 +360,10 @@
   window.addEventListener('load',function () { websiteLanguage(lang(),false); syncConsent(); syncCookieVisibility(); },{once:true});
   window.addEventListener('pagehide',unload);
   window.addEventListener('pagehide',function () {if (accountWatcher) {accountWatcher.disconnect();accountWatcher=null;}});
-  window.addEventListener('pagehide',function () {if (cookieWatcher) {cookieWatcher.disconnect();cookieWatcher=null;}});
+  window.addEventListener('pagehide',function () {
+    if (cookieWatcher) {cookieWatcher.disconnect();cookieWatcher=null;}
+    if (cookieAttributeWatcher) {cookieAttributeWatcher.disconnect();cookieAttributeWatcher=null;}
+  });
   window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();syncCookieVisibility();watchCookieBanner();}});
   document.addEventListener('cmplz_cookie_warning_loaded',syncCookieVisibility);
   ['cmplz_status_change','cmplz_service_status_change','cmplz_revoke','cmplz_enable_category','cmplz_enable_service'].forEach(function (name) {

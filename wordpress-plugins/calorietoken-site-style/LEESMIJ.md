@@ -1,10 +1,14 @@
-# CalorieToken Site Style 1.4.4
+# CalorieToken Site Style 1.4.5
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.4.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.4** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.5.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.5** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Reviewafronding 1.4.5
+
+Deze versie bevat alle correcties van 1.4.4. De cookiebewaking volgt klasse- en stijlwijzigingen uitsluitend op de herkende Complianz-elementen; wijzigingen elders op Brizy-pagina's activeren die bewaking niet. Laat laden, vervangen en terugkeren via de browser blijven ondersteund. Een afgeronde openbare zoekvoorbereiding geeft in de afzonderlijke appupdate ook zijn annuleringcontroller vrij. Zoeken en login behouden hun bestaande verzoeken en limieten. De pluginupload rolt de appupdate niet uit.
 
 ## Correctieronde 1.4.4 — 29 screenshots en negen opmerkingen
 

@@ -22,15 +22,15 @@ const tokens = (...initial) => {
 function discoveryFixture() {
   const observers = [], banners = [];
   class Observer {
-    constructor(callback) { this.callback = callback; observers.push(this); }
-    observe(target, options) { this.target = target; this.options = options; this.active = true; }
-    disconnect() { this.active = false; }
+    constructor(callback) { this.callback = callback; this.targets = new Map(); this.calls = 0; observers.push(this); }
+    observe(target, options) { this.targets.set(target, options); this.active = true; }
+    disconnect() { this.active = false; this.targets.clear(); }
   }
   const body = {classList: tokens(), matches: s => s === '.ctstyle-enabled,.ctstyle-footer-only'};
   const document = {
     ...handlers(), body, readyState: 'loading', documentElement: {lang: 'en'},
     querySelector: () => null,
-    querySelectorAll: selector => selector === '.cmplz-cookiebanner' ? banners : [],
+    querySelectorAll: selector => ['.cmplz-cookiebanner', '#cmplz-cookiebanner-container,.cmplz-cookiebanner'].includes(selector) ? banners : [],
     // Existing host widgets bypass unrelated creation in this page fixture.
     getElementById: () => ({}),
   };
@@ -43,9 +43,11 @@ function discoveryFixture() {
   vm.runInNewContext(source('discovery.js'), {window, document, URL, MutationObserver: Observer});
   document.emit('DOMContentLoaded');
   function mutate(record) {
-    record = {addedNodes: [], removedNodes: [], ...record};
-    for (const observer of observers) if (observer.active &&
-      (record.type === 'attributes' ? observer.options.attributes : observer.options.childList)) {
+    record = {target: body, addedNodes: [], removedNodes: [], ...record};
+    for (const observer of observers) if (observer.active && Array.from(observer.targets).some(([target, options]) =>
+      (target === record.target || target === body && options.subtree) &&
+      (record.type === 'attributes' ? options.attributes : options.childList))) {
+      observer.calls++;
       observer.callback([record]);
     }
   }
@@ -92,11 +94,27 @@ test('Cookie visibility resumes after back/forward restoration without accumulat
   h.banners.push(h.banner());
   h.window.emit('pageshow');
   assert.equal(h.open(), true);
-  assert.equal(h.observers.filter(o => o.active).length, 2);
+  assert.equal(h.observers.filter(o => o.active).length, 3);
   h.window.emit('pageshow');
-  assert.equal(h.observers.filter(o => o.active).length, 2);
+  assert.equal(h.observers.filter(o => o.active).length, 3);
   h.banners[0].hidden = true; h.document.emit('cmplz_status_change');
   assert.equal(h.open(), false);
+});
+
+test('Cookie attribute observation ignores Brizy changes and follows banner replacement', () => {
+  const h = discoveryFixture(), first = h.banner(); h.banners.push(first);
+  h.mutate({type: 'childList', addedNodes: [first]});
+  const before = h.observers.reduce((sum, o) => sum + o.calls, 0);
+  const unrelated = {matches: () => false};
+  for (let i = 0; i < 20; i++) h.mutate({type: 'attributes', target: unrelated});
+  assert.equal(h.observers.reduce((sum, o) => sum + o.calls, 0), before);
+  const replacement = h.banner(); replacement.hidden = true;
+  h.banners.splice(0, 1, replacement);
+  h.mutate({type: 'childList', addedNodes: [replacement], removedNodes: [first]});
+  assert.equal(h.open(), false);
+  assert.ok(h.observers.every(o => !o.targets.has(first)));
+  replacement.hidden = false; h.mutate({type: 'attributes', target: replacement});
+  assert.equal(h.open(), true);
 });
 
 test('X consent stays on Blog for both native and managed anchors without intercepting ordinary links', () => {

@@ -18,7 +18,7 @@ export function createFoodSearchReadiness() {
       controller = new AbortController();
       pending = waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal)
         .then(() => { if (!disposed) readyUntil = Date.now() + READY_TTL_MS; })
-        .finally(() => { pending = null; });
+        .finally(() => { pending = null; controller = null; });
     }
     const preparation = pending;
     if (!signal) return preparation;
