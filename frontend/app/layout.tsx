@@ -16,7 +16,10 @@ if (
     "NEXT_PUBLIC_CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, underscores or hyphens"
   );
 }
-const buildId = configuredBuildId || "development";
+// Render exposes the deployed Git SHA without additional dashboard setup.
+// Explicit release identifiers keep priority; never expose arbitrary env text.
+const renderCommit = process.env.RENDER_GIT_COMMIT?.trim();
+const buildId = configuredBuildId || (renderCommit && /^[a-f0-9]{40}$/i.test(renderCommit) ? renderCommit : "development");
 
 export default function RootLayout({
   children,

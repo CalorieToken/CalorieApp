@@ -118,10 +118,11 @@ SESSION_IDLE_LIFETIME_SECONDS = 30 * 60
 BRIDGE_STATE_VALIDATE_CONTEXT = "login_state_validate"
 
 
-def _build_identifier(value: str | None) -> str:
+def _build_identifier(value: str | None, *, render_commit: str | None = None) -> str:
     candidate = value.strip() if value else ""
     if not candidate:
-        return "development"
+        commit = render_commit.strip() if render_commit else ""
+        return commit if re.fullmatch(r"[A-Fa-f0-9]{40}", commit) else "development"
     if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", candidate) is None:
         raise RuntimeError(
             "CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, "
@@ -151,7 +152,9 @@ _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {
 _SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").strip().lower()
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
 _CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
-_CALORIEAPP_BUILD_ID = _build_identifier(os.getenv("CALORIEAPP_BUILD_ID"))
+_CALORIEAPP_BUILD_ID = _build_identifier(
+    os.getenv("CALORIEAPP_BUILD_ID"), render_commit=os.getenv("RENDER_GIT_COMMIT")
+)
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
 _BRIDGE_AUTH_MAX_FUTURE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_FUTURE_SECONDS", "30"))
 _BRIDGE_NONCE_RETENTION_SECONDS = int(
