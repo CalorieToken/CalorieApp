@@ -76,7 +76,7 @@ jobs:
         run: find wordpress-plugins -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
       - name: Validate standalone Site Style package
-        run: node --test tools/tests/wordpress_site_style_package.test.mjs
+        run: node --test tools/tests/wordpress_site_style_package.test.mjs tools/tests/wordpress_app_origin.test.mjs
 
       - name: Test legal footer compatibility
         shell: bash

@@ -3,7 +3,8 @@
   'use strict';
   var cfg = window.CalorieTokenDiscovery, runtime = window.CalorieAppDisplayLanguage;
   if (!cfg || !runtime || Number(cfg.page) !== 7880 || window.CalorieTokenAppIntegration) return;
-  var appOrigin = 'https://calorieapp-frontend.onrender.com', active = true, started = false;
+  var appOrigins = ['https://app.calorietoken.net', 'https://calorieapp-frontend.onrender.com'];
+  var active = true, started = false;
   var prefix = 'calorieapp:testnet-guide:';
   function allowed() {
     return active && document.body && document.body.matches('.ctstyle-enabled.page-id-7880') &&
@@ -18,9 +19,9 @@
     if (all.length !== 1 || all[0].closest('form,[contenteditable],[hidden],[inert]')) return [];
     try {
       var url = new URL(all[0].src);
-      if (url.origin !== appOrigin || url.pathname !== '/' || url.username || url.password || !all[0].contentWindow) return [];
+      if (!appOrigins.includes(url.origin) || url.pathname !== '/' || url.username || url.password || !all[0].contentWindow) return [];
     } catch (_) { return []; }
-    return [{window:all[0].contentWindow,origin:appOrigin}];
+    return [{window:all[0].contentWindow,origin:url.origin}];
   }
   function trusted(event) {
     return frames().some(function (frame) { return frame.window === event.source && frame.origin === event.origin; });

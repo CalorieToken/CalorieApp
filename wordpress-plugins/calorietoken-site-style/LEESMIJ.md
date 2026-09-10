@@ -1,10 +1,16 @@
-# CalorieToken Site Style 1.4.2
+# CalorieToken Site Style 1.4.3
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.2.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.2** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.3.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.3** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Gerichte correctie 1.4.3 — echt app-adres
+
+De live controle na installatie van 1.4.2 liet zien dat de ingesloten app `https://app.calorietoken.net` gebruikt. De weergavetaalkoppeling herkende alleen het eerdere Render-adres. Deze versie herkent beide exacte HTTPS-adressen en verstuurt taal- en Testnet-uitlegberichten uitsluitend naar de ene bestaande app-iframe en zijn werkelijke oorsprong. Vreemde adressen, extra iframes en berichten van andere vensters blijven uitgesloten. De login, accountgegevens, transacties en paginaopmaak worden niet aangepast.
+
+De bestaande Render-frontend is op 10 september bijgewerkt naar de gecontroleerde appcommit `c3c9a88bdced3e9d6dd958f1dd7cbe126410ab49`. De USDA-naslag en Nederlandse appbediening zijn daar live gezien. Deze WordPress-correctie moet nog worden geïnstalleerd om de koppeling met die app live te kunnen bevestigen. Volledige CMS-vertaling en de telefoonproef met Xaman blijven afzonderlijke restpunten.
 
 ## Correctieronde 1.4.2 — opmerkingen na de upload
 
