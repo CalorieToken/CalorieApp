@@ -50,3 +50,53 @@ body.ctstyle-enabled .ctstyle-after-team {clear:both;position:relative!important
   body.ctstyle-enabled .ctstyle-roadmap-preview .ctstyle-discovery-action {margin-inline:0;padding-inline:10px;}
   body.ctstyle-enabled.single-post .calorieapp-article-copy {padding:20px 16px;}
 }
+/* Compact shared desktop chrome; no selectors target the accepted Home header. */
+body.ctstyle-enabled .ctstyle-tail-background{background-image:var(--ctstyle-header-image)!important;background-position:47% 69%!important;background-size:cover!important}
+body.ctstyle-enabled .ctstyle-widget-reference .xl-card{background:#505ba9!important;color:#fff!important;border:2px solid #fff!important;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(30,38,80,.22)}
+body.ctstyle-enabled .ctstyle-widget-reference .xl-card-header{background:#f9b233!important;color:#008d36!important;padding:3px 10px}
+body.ctstyle-enabled .ctstyle-widget-reference .xl-card-body,body.ctstyle-enabled .ctstyle-widget-reference .xl-card-footer{color:#fff!important;background:transparent!important}
+body.ctstyle-enabled .ctstyle-widget-reference .xl-card-body a{color:#fff!important}
+@media(min-width:1051px){
+ body.ctstyle-enabled .ctstyle-compact-header .ctstyle-header-content{padding:50px 24px!important}
+ body.ctstyle-enabled .ctstyle-header-grid{display:grid!important;grid-template-columns:173px minmax(0,1fr) 324px!important;gap:0!important;align-items:stretch!important;max-width:1170px!important;margin:0 auto!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.brz-columns{width:auto!important;max-width:none!important;min-width:0!important;flex:none!important;min-height:0!important;margin:0!important;padding:0!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.ctstyle-logo-column{border-radius:60px 0 0 60px!important;background:rgba(255,255,255,.98)!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.ctstyle-menu-column{border-radius:0 60px 60px 0!important;background:rgba(255,255,255,.98)!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.ctstyle-account-column{padding-inline-start:24px!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.brz-columns>.brz-bg{display:none!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.brz-columns>.brz-column__items{box-sizing:border-box!important;display:flex!important;justify-content:center!important;width:100%!important;height:100%!important;min-height:205px!important;margin:0!important;padding:18px!important}
+ body.ctstyle-enabled .ctstyle-header-grid>.ctstyle-account-column>.brz-column__items{padding:0!important}
+ body.ctstyle-enabled .ctstyle-header-grid .brz-wrapper.menu{margin:0!important;padding:0!important;width:100%!important}
+ body.ctstyle-enabled .ctstyle-header-grid .brz-menu-simple a{font-size:24px!important;line-height:1.4!important;padding-block:5px!important}
+ body.ctstyle-enabled .ctstyle-header-grid .xl-card{box-sizing:border-box;width:100%!important;max-width:300px!important;min-height:100%;margin:0!important}
+ body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-header-inner{align-items:stretch}
+ body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-header-brand{align-self:stretch}
+}
+body.ctstyle-enabled.ctstyle-public-document{margin:0;background:#fff var(--ctstyle-paper-image) 50% 0/960px auto repeat;color:#303449}
+body.ctstyle-enabled .ctstyle-public-main{width:100%;margin:0;padding:42px 20px 30px;box-sizing:border-box}
+body.ctstyle-enabled .ctstyle-document{max-width:1050px;margin:0 auto}
+body.ctstyle-enabled .ctstyle-document-copy{max-width:900px;margin:36px auto;padding:32px 38px;background:rgba(255,255,255,.94);border:1px solid #dddfe9;border-top:6px solid #505ba9;border-radius:28px;box-shadow:0 5px 20px rgba(40,48,90,.09);font:400 19px/1.75 Amiri,Georgia,serif;overflow-wrap:anywhere}
+body.ctstyle-enabled .ctstyle-document-copy h2{margin:1.7em 0 .55em;color:#505ba9;font:700 29px/1.35 Amiri,Georgia,serif}
+body.ctstyle-enabled .ctstyle-document-copy h2:first-child{margin-top:0}
+body.ctstyle-enabled .ctstyle-document-copy h3{margin:1.3em 0 .45em;color:#008d36;font:700 23px/1.4 Amiri,Georgia,serif}
+body.ctstyle-enabled .ctstyle-document-copy p{margin:0 0 1em;font-size:inherit;line-height:inherit}
+body.ctstyle-enabled .ctstyle-document-copy a{color:#505ba9;text-decoration:underline;text-underline-offset:3px}
+body.ctstyle-enabled .ctstyle-document-copy li{margin-bottom:.65em}
+body.ctstyle-enabled .ctstyle-document-kicker{color:#008d36;font-weight:700;letter-spacing:.025em}
+body.ctstyle-enabled .ctstyle-community-status{padding:24px;border:2px solid #505ba9;border-inline-start:7px solid #f9b233;border-radius:22px;background:#f7f8fc}
+body.ctstyle-enabled .ctstyle-community-links{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}
+body.ctstyle-enabled .ctstyle-community-links a{display:inline-flex;align-items:center;min-height:44px;padding:9px 17px;border:2px solid #505ba9;border-radius:14px;background:#f9b233;color:#303449;font-weight:700;text-decoration:none}
+body.ctstyle-enabled .ctstyle-community-links a:hover{background:#505ba9;color:#fff}
+body.ctstyle-enabled .ctstyle-community-history{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+body.ctstyle-enabled .ctstyle-community-history figure{margin:0;padding:12px;border:1px solid #dddfe9;border-radius:18px;background:#fff}
+body.ctstyle-enabled .ctstyle-community-history img{display:block;width:100%;height:auto;border-radius:10px}
+body.ctstyle-enabled .ctstyle-community-history figcaption{margin:10px 0 0;color:#505ba9;font:400 15px/1.5 Lato,Arial,sans-serif}
+body.ctstyle-enabled .ctstyle-public-update{margin-top:30px;padding-top:10px;border-top:2px solid #f9b233}
+@media(max-width:767px){
+ body.ctstyle-enabled .ctstyle-public-main{padding:26px 16px 18px}
+ body.ctstyle-enabled .ctstyle-document-copy{padding:23px 19px;margin-top:26px;font-size:18px;border-radius:22px}
+ body.ctstyle-enabled .ctstyle-document-copy h2{font-size:25px}
+ body.ctstyle-enabled .ctstyle-document-copy h3{font-size:21px}
+ body.ctstyle-enabled .ctstyle-community-history{grid-template-columns:1fr}
+ body.ctstyle-enabled .ctstyle-community-status{padding:18px}
+}

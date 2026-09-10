@@ -22,8 +22,8 @@
       var links=Array.from(section.querySelectorAll('a'));
       if(links.length!==3||links[0].href!=='https://sologenic.org/'||links[1].href!==oldDex||links[2].href!=='https://www.xrptoolkit.com/')return;
       // Only the old, exact provider list. Never rewrite a custom destination.
-      links[0].href=dex;links[0].textContent='XPMarket · DEX · CAL/XRP';
-      links[1].href=swap;links[1].textContent='XPMarket · Swap · CAL/XRP';
+      links[0].href=dex;links[0].textContent='Open CAL/XRP order book';links[0].setAttribute('data-cal-buy-copy','dexAlternative');
+      links[1].href=swap;links[1].textContent='Swap CAL/XRP';links[1].setAttribute('data-cal-buy-copy','swapAlternative');
       var sep=links[2].previousSibling;if(sep&&sep.nodeType===3&&/^[\s·]*$/.test(sep.data))sep.remove();links[2].remove();
     });
     if(guide.querySelectorAll('a').length===7 && guide.querySelector('a[href="'+dex+'"]') && guide.querySelector('a[href="'+swap+'"]'))guide.setAttribute('data-ctstyle-buy-routes','1');
@@ -101,10 +101,39 @@
       market.classList.add('ctstyle-after-team');team.parentElement.classList.add('ctstyle-team-container');
     }
   }
+  function sharedLayout(){
+    // The accepted Home header stays untouched. Only recognised native columns
+    // on other pages adopt the compact usecase proportions, without moving them.
+    if(document.body.classList.contains('ctstyle-enabled')){
+      var header=one('.ctstyle-header');
+      if(header){
+        var menu=header.querySelector('.brz-menu-simple'),logo=header.querySelector('img[src*="C-Logotranspa"]');
+        var menuCol=menu&&menu.closest('.brz-columns'),logoCol=logo&&logo.closest('.brz-columns');
+        if(menuCol&&logoCol&&menuCol!==logoCol&&menuCol.parentElement===logoCol.parentElement){
+          var row=menuCol.parentElement,cards=Array.from(row.children).filter(function(n){return n.querySelector('.xl-card');});
+          if(row.matches('.brz-row')&&row.children.length===3&&cards.length===1&&cards[0]!==menuCol&&cards[0]!==logoCol){
+            header.classList.add('ctstyle-compact-header');row.classList.add('ctstyle-header-grid');
+            menuCol.classList.add('ctstyle-menu-column');logoCol.classList.add('ctstyle-logo-column');cards[0].classList.add('ctstyle-account-column');
+          }
+        }
+        if(header.classList.contains('ctstyle-header-fallback'))header.classList.add('ctstyle-widget-reference');
+      }
+    }
+    var footer=one('.ctstyle-footer');
+    if(footer&&[1119,1121,1123,1125,1127,1129].includes(Number(cfg.page))){
+      var siblings=Array.from(footer.parentElement.children),after=siblings.slice(siblings.indexOf(footer)+1);
+      after.forEach(function(section){
+        if(!section.matches('.brz-section')||section.querySelector('img,a,button,form,iframe,video')||text(section.textContent))return;
+        section.querySelectorAll('.brz-bg-image').forEach(function(n){
+          if(/\/Caloriefoto2(?:-\d+x\d+)?\.jpg(?:["')?]|$)/i.test(window.getComputedStyle(n).backgroundImage||''))n.classList.add('ctstyle-tail-background');
+        });
+      });
+    }
+  }
   function refresh(tag){
     if(!allowed())return;if(observer)observer.disconnect();
     locale=cfg.copy[tag]?tag:(window.CalorieTokenDiscoveryUI?window.CalorieTokenDiscoveryUI.getLocale():'en');
-    routes();paper();trustline();roadmap();faq();contact();
+    routes();paper();trustline();roadmap();faq();contact();sharedLayout();
     labels.forEach(function(x){var value=cfg.copy[locale][x.key];if(x.node.textContent!==value)x.node.textContent=value;x.node.lang=locale;x.node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';});
     if(observer)observer.observe(document.body,{childList:true,subtree:true});
   }

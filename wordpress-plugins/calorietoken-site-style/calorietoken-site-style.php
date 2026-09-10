@@ -172,3 +172,4 @@ final class Plugin {
 add_filter('body_class', array(Plugin::class, 'body_class'));
 add_action('wp_enqueue_scripts', array(Plugin::class, 'enqueue'), 99);
 add_action('wp_footer', array(Plugin::class, 'templates'), 19);
+require_once __DIR__ . '/public-pages.php';

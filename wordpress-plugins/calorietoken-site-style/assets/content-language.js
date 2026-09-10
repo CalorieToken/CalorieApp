@@ -15,7 +15,7 @@
   function paint(record){
     var node=record.node;if(!node.isConnected)return;
     if(record.kind==='text'){
-      if(node.data!==record.last)return;
+      if(!safe(node.parentElement)||node.data!==record.last)return;
       var translated=available(record.row);
       var next=translated ? (record.original.match(/^\s*/)[0]+translated+record.original.match(/\s*$/)[0]) : record.original;
       if(locale==='en')next=record.original;

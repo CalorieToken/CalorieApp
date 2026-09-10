@@ -22,6 +22,19 @@ WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorieto
 
 **CalorieApp:** deze update wijzigt uitsluitend de WordPress-plugin. De eigenaar heeft de app zelf nog niet getest. De afzonderlijke appwijzigingen uit PR136/137 blijven behouden; succesvolle live appacceptatie wordt niet geclaimd.
 
+## Aanvullingen uit de laatste controle
+
+- Compactere desktopnavigatie volgens de usecases; bestaande accountnodes blijven behouden. Op usecases krijgt de native widget de Home-kleuren.
+- Het lege strookje onder de usecase-footer gebruikt de huidige kleurrijke headerachtergrond.
+- Privacy, Terms en overige herkende juridische pagina's krijgen de gedeelde header, titelbanner, leesbare inhoudskaart en footer.
+- De Privacy/Terms-bron wordt eenmalig bijgewerkt van V1 naar V2 en aangevuld met de huidige integraties, alleen bij herkende oude bron en na opslag van de exacte oorspronkelijke tekst in WordPress. Afwijkende operatorinhoud wordt behouden en gemeld.
+- Een **nieuwe informatieve Community Voting Hub** verschijnt op `community-voting-hub-info`, met de twee historische beelden. Er zijn geen actieve stemmen, voorstellen of beloningen. De oorspronkelijke Brizy-conceptpagina 7699 blijft ongewijzigd en wordt niet gepubliceerd. Een bestaande publieke pagina op de nieuwe route wordt niet overschreven.
+- De footer toont de hub-link pas wanneer de nieuwe pagina werkelijk gepubliceerd is. Open na de plugin-update één keer het WordPress-dashboard; de beperkte publicatieactie loopt voor een beheerder met publicatierechten.
+- De twee XPMarket-links volgen ook de taalkeuze. Algemene vertaalregels zijn beperkt van 261 naar 33; overige tekst wordt alleen aan de toepasselijke pagina's meegegeven.
+- Whitepaper v4.2 gebruikt de originele historische achtergrond op hogere resolutie en scherp ingebedde tekst. Eerdere gedateerde PDF's blijven intact.
+
+De nieuwe publieke aanvullingen zijn Engelstalig. Dit valt onder de nog open vertaaldekking; een taalkeuze bewijst geen complete vertaling van iedere pagina.
+
 ## Inbegrepen
 
 - De eerder voorbereide Gallery app-huisstijl: herkenbare headers, kopafbeelding, titelplaatsing en footers. Donatiebanner, Roadmap-verwijzing, Tokenomics-afbeelding/walletkaart, mobiele Trustline-kaarten, usecases, Blog en menucorrecties blijven inbegrepen. De geaccepteerde hoofdinhoud en header van Home blijven behouden; de gevraagde footer, appverwijzing en zwevende navigatie zijn de begrensde aanvullingen daar.
@@ -68,9 +81,9 @@ De regressies controleren bestaande account-/formuliernodes en handlers, elf tal
 
 Openbare versies van Home, Trustline, Groceries, CAL & Crypto en Contact zijn gelezen. De browser blokkeerde het openen van een lokale voorbeeldpagina; daarom is **geen visuele browsercontrole van deze nieuwe 1.4.2-versie** geclaimd. De opgeslagen echte DOM-opbouw en CSS-regels zijn wel gebruikt voor de correcties en controles. De praktijktest volgt na upload.
 
-De controles combineren werkelijke opgeslagen pagina-opbouw met lokale/synthetische gevallen. Er is geen uitgevoerde Xaman-import/login of swap geclaimd. De hostingbeveiliging is niet omzeild. De plugin schrijft geen Brizy-bron, WordPress-instellingen of accountgegevens. Editors en historisch Home 8001 zijn uitgesloten.
+De controles combineren werkelijke opgeslagen pagina-opbouw met lokale/synthetische gevallen. Er is geen uitgevoerde Xaman-import/login of swap geclaimd. De hostingbeveiliging is niet omzeild. De plugin schrijft geen Brizy-bron of accountgegevens. De eenmalige publicatieactie schrijft de twee herkende juridische pagina's, de nieuwe informatieve pagina en eigen herstel-/statusopties. Bestaande plugininstellingen en authenticatie blijven behouden. Editors en historisch Home 8001 zijn uitgesloten.
 
-Deactiveren of terugplaatsen van de vorige Site Style-versie verwijdert de toegevoegde weergave. Een extern aangemaakt Testnet-account of expliciet ondertekende ledgertransactie wordt niet teruggedraaid. De app-PR is apart terug te draaien via een GitHub-revert; de WordPress-plugin deactiveren zet de appversie niet terug.
+Deactiveren of terugplaatsen van de vorige Site Style-versie verwijdert de toegevoegde weergave. De gepubliceerde pagina en juridische broncorrecties blijven bestaan. De originele juridische tekst staat in de eigen WordPress-opties `ctstyle_public_pages_142_before_531` en `ctstyle_public_pages_142_before_586`; vergelijk deze met latere handmatige wijzigingen voordat die tekst wordt hersteld. De nieuwe hub kan via Pagina's weer op Concept worden gezet. Een door de beheerder ingetrokken of verwijderde hub wordt niet opnieuw gepubliceerd. Een extern Testnet-account wordt niet teruggedraaid. De afzonderlijke appversie verandert niet door de WordPress-plugin te deactiveren.
 
 Na upload: bekijk FAQ en de appwidget op mobiel, kies een taal in beide richtingen, test één nieuw Testnet-account tot en met Xaman-aanmelding en controleer de eerder gemelde pagina’s. Beoordeel daarna de nieuwe weergave en de nog open vertaaldekking. Voor stap 4 tonen we alleen aantoonbaar werkende functies.
 

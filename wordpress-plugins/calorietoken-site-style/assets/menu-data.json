@@ -334,7 +334,9 @@
         "riskText": "Trading can cause loss. Project-related wallets may provide liquidity and have a financial interest. Quotes, liquidity and execution are not guaranteed. This guide is not investment advice.",
         "appText": "CalorieApp food search and food logging do not require buying CAL.",
         "alternativesTitle": "Other trading interfaces",
-        "alternativesText": "Use the interface you already know and verify the same issuer and currency code."
+        "alternativesText": "Use the interface you already know and verify the same issuer and currency code.",
+        "dexAlternative": "Open CAL/XRP order book",
+        "swapAlternative": "Swap CAL/XRP"
       },
       "zh-Hans": {
         "eyebrow": "XRPL 买卖指南",
@@ -364,7 +366,9 @@
         "riskText": "交易可能造成损失。项目关联钱包可能提供流动性并具有经济利益。报价、流动性和成交均无保证。本指南不构成投资建议。",
         "appText": "使用 CalorieApp 搜索食物和记录饮食无需购买 CAL。",
         "alternativesTitle": "其他交易界面",
-        "alternativesText": "使用您熟悉的交易界面，并核对同一发行方地址和货币代码。"
+        "alternativesText": "使用您熟悉的交易界面，并核对同一发行方地址和货币代码。",
+        "dexAlternative": "打开 CAL/XRP 订单簿",
+        "swapAlternative": "兑换 CAL/XRP"
       },
       "hi": {
         "eyebrow": "XRPL खरीदने और बेचने की मार्गदर्शिका",
@@ -394,7 +398,9 @@
         "riskText": "कारोबार में नुकसान हो सकता है। परियोजना से जुड़े वॉलेट लिक्विडिटी दे सकते हैं और उनका वित्तीय हित हो सकता है। कोट, लिक्विडिटी और निष्पादन की गारंटी नहीं है। यह निवेश सलाह नहीं है।",
         "appText": "CalorieApp में भोजन खोजने और दर्ज करने के लिए CAL खरीदना आवश्यक नहीं है।",
         "alternativesTitle": "अन्य ट्रेडिंग इंटरफ़ेस",
-        "alternativesText": "जिस इंटरफ़ेस से आप परिचित हैं उसका उपयोग करें और वही जारीकर्ता पता तथा मुद्रा कोड सत्यापित करें।"
+        "alternativesText": "जिस इंटरफ़ेस से आप परिचित हैं उसका उपयोग करें और वही जारीकर्ता पता तथा मुद्रा कोड सत्यापित करें।",
+        "dexAlternative": "CAL/XRP ऑर्डर बुक खोलें",
+        "swapAlternative": "CAL/XRP स्वैप करें"
       },
       "es": {
         "eyebrow": "Guía de compra y venta en XRPL",
@@ -424,7 +430,9 @@
         "riskText": "Operar puede causar pérdidas. Las billeteras vinculadas al proyecto pueden aportar liquidez y tener un interés financiero. Las cotizaciones, la liquidez y la ejecución no están garantizadas. Esta guía no es asesoramiento de inversión.",
         "appText": "Buscar alimentos y registrarlos en CalorieApp no requiere comprar CAL.",
         "alternativesTitle": "Otras interfaces de negociación",
-        "alternativesText": "Usa la interfaz que ya conoces y verifica la misma dirección del emisor y el código de moneda."
+        "alternativesText": "Usa la interfaz que ya conoces y verifica la misma dirección del emisor y el código de moneda.",
+        "dexAlternative": "Abrir libro de órdenes CAL/XRP",
+        "swapAlternative": "Intercambiar CAL/XRP"
       },
       "ar": {
         "eyebrow": "دليل الشراء والبيع على XRPL",
@@ -454,7 +462,9 @@
         "riskText": "قد يؤدي التداول إلى خسارة. قد توفّر محافظ مرتبطة بالمشروع السيولة وتكون لها مصلحة مالية. الأسعار والسيولة والتنفيذ غير مضمونة. هذا الدليل ليس نصيحة استثمارية.",
         "appText": "لا يتطلب البحث عن الطعام وتسجيله في CalorieApp شراء CAL.",
         "alternativesTitle": "واجهات تداول أخرى",
-        "alternativesText": "استخدم الواجهة التي تعرفها وتحقّق من عنوان المُصدر ورمز العملة نفسيهما."
+        "alternativesText": "استخدم الواجهة التي تعرفها وتحقّق من عنوان المُصدر ورمز العملة نفسيهما.",
+        "dexAlternative": "فتح دفتر أوامر CAL/XRP",
+        "swapAlternative": "مبادلة CAL/XRP"
       },
       "fr": {
         "eyebrow": "Guide d’achat et de vente sur XRPL",
@@ -484,7 +494,9 @@
         "riskText": "Le trading peut entraîner des pertes. Des portefeuilles liés au projet peuvent fournir de la liquidité et avoir un intérêt financier. Les cotations, la liquidité et l’exécution ne sont pas garanties. Ce guide n’est pas un conseil en investissement.",
         "appText": "La recherche et le journal alimentaires de CalorieApp ne nécessitent pas l’achat de CAL.",
         "alternativesTitle": "Autres interfaces de négociation",
-        "alternativesText": "Utilisez l’interface que vous connaissez et vérifiez la même adresse d’émetteur et le même code de devise."
+        "alternativesText": "Utilisez l’interface que vous connaissez et vérifiez la même adresse d’émetteur et le même code de devise.",
+        "dexAlternative": "Ouvrir le carnet CAL/XRP",
+        "swapAlternative": "Échanger CAL/XRP"
       },
       "bn": {
         "eyebrow": "XRPL কেনাবেচার নির্দেশিকা",
@@ -514,7 +526,9 @@
         "riskText": "লেনদেনে ক্ষতি হতে পারে। প্রকল্প-সংশ্লিষ্ট ওয়ালেট লিকুইডিটি দিতে পারে এবং তাদের আর্থিক স্বার্থ থাকতে পারে। দর, লিকুইডিটি ও লেনদেন সম্পাদনের নিশ্চয়তা নেই। এটি বিনিয়োগের পরামর্শ নয়।",
         "appText": "CalorieApp-এ খাবার খুঁজতে বা লিখে রাখতে CAL কেনার প্রয়োজন নেই।",
         "alternativesTitle": "অন্যান্য ট্রেডিং ইন্টারফেস",
-        "alternativesText": "আপনার পরিচিত ইন্টারফেস ব্যবহার করুন এবং একই ইস্যুকারীর ঠিকানা ও মুদ্রার কোড যাচাই করুন।"
+        "alternativesText": "আপনার পরিচিত ইন্টারফেস ব্যবহার করুন এবং একই ইস্যুকারীর ঠিকানা ও মুদ্রার কোড যাচাই করুন।",
+        "dexAlternative": "CAL/XRP অর্ডার বুক খুলুন",
+        "swapAlternative": "CAL/XRP বিনিময় করুন"
       },
       "pt": {
         "eyebrow": "Guia de compra e venda na XRPL",
@@ -544,7 +558,9 @@
         "riskText": "A negociação pode causar perdas. Carteiras ligadas ao projeto podem fornecer liquidez e ter um interesse financeiro. Cotações, liquidez e execução não são garantidas. Este guia não é aconselhamento de investimento.",
         "appText": "A pesquisa e o registo de alimentos na CalorieApp não exigem a compra de CAL.",
         "alternativesTitle": "Outras interfaces de negociação",
-        "alternativesText": "Use a interface que já conhece e verifique o mesmo endereço do emissor e o mesmo código da moeda."
+        "alternativesText": "Use a interface que já conhece e verifique o mesmo endereço do emissor e o mesmo código da moeda.",
+        "dexAlternative": "Abrir livro de ordens CAL/XRP",
+        "swapAlternative": "Trocar CAL/XRP"
       },
       "id": {
         "eyebrow": "Panduan jual beli XRPL",
@@ -574,7 +590,9 @@
         "riskText": "Perdagangan dapat menyebabkan kerugian. Dompet terkait proyek mungkin menyediakan likuiditas dan memiliki kepentingan finansial. Harga, likuiditas, dan eksekusi tidak dijamin. Panduan ini bukan saran investasi.",
         "appText": "Pencarian dan pencatatan makanan di CalorieApp tidak memerlukan pembelian CAL.",
         "alternativesTitle": "Antarmuka perdagangan lainnya",
-        "alternativesText": "Gunakan antarmuka yang sudah Anda kenal dan verifikasi alamat penerbit serta kode mata uang yang sama."
+        "alternativesText": "Gunakan antarmuka yang sudah Anda kenal dan verifikasi alamat penerbit serta kode mata uang yang sama.",
+        "dexAlternative": "Buka buku pesanan CAL/XRP",
+        "swapAlternative": "Tukar CAL/XRP"
       },
       "ur": {
         "eyebrow": "XRPL خرید و فروخت کی رہنمائی",
@@ -604,7 +622,9 @@
         "riskText": "تجارت میں نقصان ہو سکتا ہے۔ منصوبے سے متعلق والیٹ لیکویڈیٹی فراہم کر سکتے ہیں اور ان کا مالی مفاد ہو سکتا ہے۔ قیمت، لیکویڈیٹی اور عمل درآمد کی ضمانت نہیں۔ یہ سرمایہ کاری کا مشورہ نہیں ہے۔",
         "appText": "CalorieApp میں خوراک تلاش کرنے اور درج کرنے کے لیے CAL خریدنا ضروری نہیں۔",
         "alternativesTitle": "دیگر تجارتی انٹرفیس",
-        "alternativesText": "وہ انٹرفیس استعمال کریں جس سے آپ واقف ہیں اور اسی جاری کنندہ کے پتے اور کرنسی کوڈ کی تصدیق کریں۔"
+        "alternativesText": "وہ انٹرفیس استعمال کریں جس سے آپ واقف ہیں اور اسی جاری کنندہ کے پتے اور کرنسی کوڈ کی تصدیق کریں۔",
+        "dexAlternative": "CAL/XRP آرڈر بک کھولیں",
+        "swapAlternative": "CAL/XRP تبدیل کریں"
       },
       "nl": {
         "eyebrow": "Koop- en verkoopgids voor XRPL",
@@ -634,7 +654,9 @@
         "riskText": "Handelen kan verlies opleveren. Projectgerelateerde wallets kunnen liquiditeit leveren en een financieel belang hebben. Koersen, liquiditeit en uitvoering zijn niet gegarandeerd. Deze gids is geen beleggingsadvies.",
         "appText": "Voor voedsel zoeken en je voedingslogboek in CalorieApp hoef je geen CAL te kopen.",
         "alternativesTitle": "Andere handelsinterfaces",
-        "alternativesText": "Gebruik de interface die je al kent en controleer hetzelfde issueradres en dezelfde valutacode."
+        "alternativesText": "Gebruik de interface die je al kent en controleer hetzelfde issueradres en dezelfde valutacode.",
+        "dexAlternative": "Open CAL/XRP-orderboek",
+        "swapAlternative": "Wissel CAL/XRP"
       }
     },
     "locales": [

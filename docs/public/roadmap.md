@@ -18,3 +18,7 @@ Optional XRPL provenance and ecosystem extensions remain disabled research
 until their privacy, security and regulatory gates pass. Ideas that have not
 been intentionally announced or released are not represented as implemented,
 scheduled or guaranteed.
+
+## Website continuation
+
+See the [September 2026 update](website-update-2026-09.md) for current website/app additions and outstanding live acceptance. The Community Voting Hub is informational; no vote, proposal submission or rewards programme is active. Broader participation and pilots remain separately reviewed future work.
