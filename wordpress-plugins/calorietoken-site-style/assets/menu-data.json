@@ -127,57 +127,68 @@
       "en": {
         "description": "Posts are supplied by X and may not load here. Open the profile directly or review your cookie choices.",
         "action": "Open @CalorieToken on X",
-        "settings": "Cookie settings"
+        "settings": "Cookie settings",
+        "load": "Load X posts (allow X)"
       },
       "zh-Hans": {
         "description": "帖子由 X 提供，可能无法在此加载。您可以直接打开主页，或查看您的 Cookie 选项。",
         "action": "在 X 上打开 @CalorieToken",
-        "settings": "Cookie 设置"
+        "settings": "Cookie 设置",
+        "load": "加载 X 帖子（允许 X）"
       },
       "hi": {
         "description": "पोस्ट X से मिलती हैं और हो सकता है कि यहाँ लोड न हों। प्रोफ़ाइल सीधे खोलें या अपनी कुकी संबंधी पसंद की समीक्षा करें।",
         "action": "X पर @CalorieToken खोलें",
-        "settings": "कुकी सेटिंग"
+        "settings": "कुकी सेटिंग",
+        "load": "X पोस्ट लोड करें (X को अनुमति दें)"
       },
       "es": {
         "description": "X proporciona las publicaciones y es posible que no se carguen aquí. Abre el perfil directamente o revisa tus preferencias de cookies.",
         "action": "Abrir @CalorieToken en X",
-        "settings": "Configuración de cookies"
+        "settings": "Configuración de cookies",
+        "load": "Cargar publicaciones (permitir X)"
       },
       "ar": {
         "description": "يوفّر X المنشورات، وقد لا يتم تحميلها هنا. افتح الملف الشخصي مباشرة أو راجع خيارات ملفات تعريف الارتباط.",
         "action": "افتح ⁦@CalorieToken⁩ على X",
-        "settings": "إعدادات ملفات تعريف الارتباط"
+        "settings": "إعدادات ملفات تعريف الارتباط",
+        "load": "تحميل منشورات X (السماح لـ X)"
       },
       "fr": {
         "description": "Les publications sont fournies par X et peuvent ne pas se charger ici. Ouvrez directement le profil ou consultez vos choix de cookies.",
         "action": "Ouvrir @CalorieToken sur X",
-        "settings": "Paramètres des cookies"
+        "settings": "Paramètres des cookies",
+        "load": "Charger les publications (autoriser X)"
       },
       "bn": {
         "description": "পোস্টগুলো X থেকে আসে এবং এখানে লোড নাও হতে পারে। সরাসরি প্রোফাইল খুলুন অথবা আপনার কুকি পছন্দগুলো দেখুন।",
         "action": "X-এ @CalorieToken খুলুন",
-        "settings": "কুকি সেটিংস"
+        "settings": "কুকি সেটিংস",
+        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)"
       },
       "pt": {
         "description": "As publicações são fornecidas pelo X e podem não carregar aqui. Abra o perfil diretamente ou reveja as suas preferências de cookies.",
         "action": "Abrir @CalorieToken no X",
-        "settings": "Definições de cookies"
+        "settings": "Definições de cookies",
+        "load": "Carregar publicações (permitir X)"
       },
       "id": {
         "description": "Postingan disediakan oleh X dan mungkin tidak dimuat di sini. Buka profil secara langsung atau tinjau pilihan cookie Anda.",
         "action": "Buka @CalorieToken di X",
-        "settings": "Pengaturan cookie"
+        "settings": "Pengaturan cookie",
+        "load": "Muat postingan X (izinkan X)"
       },
       "ur": {
         "description": "پوسٹس X فراہم کرتا ہے اور ممکن ہے یہاں لوڈ نہ ہوں۔ براہ راست پروفائل کھولیں یا کوکیز کے بارے میں اپنے انتخاب کا جائزہ لیں۔",
         "action": "X پر ⁦@CalorieToken⁩ کھولیں",
-        "settings": "کوکی کی ترتیبات"
+        "settings": "کوکی کی ترتیبات",
+        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)"
       },
       "nl": {
         "description": "Berichten worden door X geleverd en laden hier mogelijk niet. Open het profiel rechtstreeks of bekijk je cookievoorkeuren.",
         "action": "Open @CalorieToken op X",
-        "settings": "Cookie-instellingen"
+        "settings": "Cookie-instellingen",
+        "load": "X-posts laden (X toestaan)"
       }
     },
     "locales": [
@@ -793,7 +804,8 @@
         "walletTitle": "Consolidation wallet",
         "description": "Project wallet for consolidated CalorieToken funds. Its balance is not a statement of the remaining giveaway allocation.",
         "liquidity": "At the ledger check on 2026-09-09, this wallet held a liquidity position in the CAL/XRP AMM. The project therefore has a financial interest in this pool.",
-        "action": "View wallet on XPMarket (new tab)"
+        "action": "View wallet ↗",
+        "detailsLabel": "Wallet details"
       },
       "zh-Hans": {
         "statusTitle": "空投已完成",
@@ -802,7 +814,8 @@
         "walletTitle": "归集钱包",
         "description": "用于归集 CalorieToken 项目资金的钱包。其余额不代表剩余赠送额度。",
         "liquidity": "在 2026-09-09 的账本核查中，此钱包持有 CAL/XRP AMM 的流动性头寸。因此，项目在该资金池中具有经济利益。",
-        "action": "在 XPMarket 查看钱包（新标签页）"
+        "action": "查看钱包 ↗",
+        "detailsLabel": "钱包详情"
       },
       "hi": {
         "statusTitle": "एयरड्रॉप पूरे हो चुके हैं",
@@ -811,7 +824,8 @@
         "walletTitle": "समेकन वॉलेट",
         "description": "CalorieToken परियोजना की समेकित निधियों का वॉलेट। इसका बैलेंस शेष गिवअवे आवंटन नहीं दर्शाता।",
         "liquidity": "2026-09-09 की लेजर जाँच के समय इस वॉलेट की CAL/XRP AMM में लिक्विडिटी पोज़िशन थी। इसलिए इस पूल में परियोजना का वित्तीय हित है।",
-        "action": "XPMarket पर वॉलेट देखें (नया टैब)"
+        "action": "वॉलेट देखें ↗",
+        "detailsLabel": "वॉलेट विवरण"
       },
       "es": {
         "statusTitle": "Airdrops completados",
@@ -820,7 +834,8 @@
         "walletTitle": "Billetera de consolidación",
         "description": "Billetera del proyecto para fondos consolidados de CalorieToken. Su saldo no indica la asignación restante para sorteos y regalos.",
         "liquidity": "En la comprobación del ledger del 2026-09-09, esta billetera mantenía una posición de liquidez en el AMM CAL/XRP. Por tanto, el proyecto tiene un interés financiero en este pool.",
-        "action": "Ver billetera en XPMarket (nueva pestaña)"
+        "action": "Ver cartera ↗",
+        "detailsLabel": "Detalles de la cartera"
       },
       "ar": {
         "statusTitle": "اكتملت عمليات التوزيع المجاني",
@@ -829,7 +844,8 @@
         "walletTitle": "محفظة التجميع",
         "description": "محفظة المشروع لتجميع أموال CalorieToken. لا يمثل رصيدها المخصص المتبقي للهدايا.",
         "liquidity": "عند فحص السجل بتاريخ 2026-09-09، كانت لهذه المحفظة حصة سيولة في مجمع CAL/XRP AMM. ولذلك للمشروع مصلحة مالية في هذا المجمع.",
-        "action": "عرض المحفظة على XPMarket (علامة تبويب جديدة)"
+        "action": "عرض المحفظة ↗",
+        "detailsLabel": "تفاصيل المحفظة"
       },
       "fr": {
         "statusTitle": "Airdrops terminés",
@@ -838,7 +854,8 @@
         "walletTitle": "Portefeuille de consolidation",
         "description": "Portefeuille du projet destiné aux fonds consolidés de CalorieToken. Son solde ne représente pas le montant restant alloué aux cadeaux.",
         "liquidity": "Lors de la vérification du registre le 2026-09-09, ce portefeuille détenait une position de liquidité dans l’AMM CAL/XRP. Le projet a donc un intérêt financier dans ce pool.",
-        "action": "Voir le portefeuille sur XPMarket (nouvel onglet)"
+        "action": "Voir le portefeuille ↗",
+        "detailsLabel": "Détails du portefeuille"
       },
       "bn": {
         "statusTitle": "এয়ারড্রপ সম্পন্ন হয়েছে",
@@ -847,7 +864,8 @@
         "walletTitle": "একত্রীকরণ ওয়ালেট",
         "description": "CalorieToken প্রকল্পের একত্রিত তহবিলের ওয়ালেট। এর ব্যালেন্স গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ নির্দেশ করে না।",
         "liquidity": "2026-09-09 তারিখে লেজার যাচাইয়ের সময় এই ওয়ালেটের CAL/XRP AMM-এ লিকুইডিটি পজিশন ছিল। তাই এই পুলে প্রকল্পটির আর্থিক স্বার্থ রয়েছে।",
-        "action": "XPMarket-এ ওয়ালেট দেখুন (নতুন ট্যাব)"
+        "action": "ওয়ালেট দেখুন ↗",
+        "detailsLabel": "ওয়ালেটের বিবরণ"
       },
       "pt": {
         "statusTitle": "Airdrops concluídos",
@@ -856,7 +874,8 @@
         "walletTitle": "Carteira de consolidação",
         "description": "Carteira do projeto para fundos consolidados de CalorieToken. O seu saldo não representa a alocação restante para brindes.",
         "liquidity": "Na verificação do ledger em 2026-09-09, esta carteira mantinha uma posição de liquidez no AMM CAL/XRP. Por isso, o projeto tem um interesse financeiro neste pool.",
-        "action": "Ver carteira no XPMarket (nova aba)"
+        "action": "Ver carteira ↗",
+        "detailsLabel": "Detalhes da carteira"
       },
       "id": {
         "statusTitle": "Airdrop telah selesai",
@@ -865,7 +884,8 @@
         "walletTitle": "Dompet konsolidasi",
         "description": "Dompet proyek untuk dana CalorieToken yang dikonsolidasikan. Saldonya tidak menyatakan sisa alokasi giveaway.",
         "liquidity": "Pada pemeriksaan ledger tanggal 2026-09-09, dompet ini memiliki posisi likuiditas di AMM CAL/XRP. Karena itu, proyek memiliki kepentingan finansial dalam pool ini.",
-        "action": "Lihat dompet di XPMarket (tab baru)"
+        "action": "Lihat dompet ↗",
+        "detailsLabel": "Detail dompet"
       },
       "ur": {
         "statusTitle": "ایئرڈراپس مکمل ہو چکے ہیں",
@@ -874,7 +894,8 @@
         "walletTitle": "یکجا فنڈز کا والیٹ",
         "description": "CalorieToken منصوبے کے یکجا فنڈز کا والیٹ۔ اس کا بیلنس تحائف کے لیے باقی مختص مقدار کو ظاہر نہیں کرتا۔",
         "liquidity": "2026-09-09 کی لیجر جانچ کے وقت اس والیٹ کی CAL/XRP AMM میں لیکویڈیٹی پوزیشن تھی۔ اس لیے اس پول میں منصوبے کا مالی مفاد ہے۔",
-        "action": "XPMarket پر والیٹ دیکھیں (نیا ٹیب)"
+        "action": "والیٹ دیکھیں ↗",
+        "detailsLabel": "والیٹ کی تفصیلات"
       },
       "nl": {
         "statusTitle": "Airdrops afgerond",
@@ -883,7 +904,8 @@
         "walletTitle": "Consolidatiewallet",
         "description": "Projectwallet voor samengebrachte CalorieToken-fondsen. Het saldo geeft niet het resterende giveawaybudget aan.",
         "liquidity": "Bij de ledgercontrole op 2026-09-09 had deze wallet een liquiditeitspositie in de CAL/XRP-AMM. Het project heeft daarmee een financieel belang in deze pool.",
-        "action": "Bekijk wallet op XPMarket (nieuw tabblad)"
+        "action": "Bekijk wallet ↗",
+        "detailsLabel": "Walletgegevens"
       }
     },
     "locales": [

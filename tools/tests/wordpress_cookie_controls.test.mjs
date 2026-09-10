@@ -14,7 +14,7 @@ const handlers = () => {
 };
 const tokens = (...initial) => {
   const values = new Set(initial);
-  return {contains: value => values.has(value), toggle(value, enabled) {
+  return {contains: value => values.has(value), add: value => values.add(value), remove: value => values.delete(value), toggle(value, enabled) {
     if (enabled) values.add(value); else values.delete(value);
   }};
 };
@@ -138,4 +138,61 @@ test('X consent stays on Blog for both native and managed anchors without interc
     event.target = target; link.getAttribute = () => 'https://x.com/another-profile';
     document.emit('click', event); assert.equal(prevented, false);
   }
+});
+
+test('Hiding the Complianz container restores controls even when its banner has visible styles', () => {
+  const h = discoveryFixture(), banner = h.banner(), container = h.banner();
+  banner.closest = () => container;
+  h.banners.push(banner, container);
+  h.mutate({type: 'childList', addedNodes: [container]});
+  assert.equal(h.open(), true);
+  for (const property of ['hidden', 'display', 'visibility', 'opacity']) {
+    if (property === 'hidden') container.hidden = true;
+    else container.style[property] = {display: 'none', visibility: 'hidden', opacity: '0'}[property];
+    h.mutate({type: 'attributes', target: container});
+    assert.equal(h.open(), false, property);
+    container.hidden = false;
+    container.style = {display: 'block', visibility: 'visible', opacity: '1'};
+    h.mutate({type: 'attributes', target: container});
+    assert.equal(h.open(), true, property);
+  }
+});
+
+test('An X frame is ready only with consent and visible nonzero dimensions, including browser restoration', () => {
+  let permitted = true, blocked = false;
+  const observers = [], box = {width: 0, height: 0};
+  const frame = {hidden: false, style: {display: 'block', visibility: 'visible'},
+    getAttribute: () => 'https://syndication.twitter.com/srv/timeline-profile/screen-name/CalorieToken',
+    getBoundingClientRect: () => box, closest: () => blocked ? {} : null};
+  const panel = {isConnected: true, classList: tokens(), closest: () => null, querySelector: () => null,
+    querySelectorAll: selector => selector === 'iframe' ? [frame] : []};
+  const document = {...handlers(), readyState: 'loading', querySelector: () => null,
+    body: {matches: selector => selector === '.ctstyle-enabled.page-id-1207'},
+    querySelectorAll: () => [panel], dispatchEvent: () => {},
+    createElement: () => assert.fail('The existing CMS iframe must not trigger another provider request')};
+  class Observer {
+    constructor(callback) { this.callback = callback; observers.push(this); }
+    observe() { this.active = true; }
+    disconnect() { this.active = false; }
+  }
+  const window = {...handlers(), location: new URL('https://calorietoken.net/index.php/blog/'),
+    cmplz_has_service_consent: () => permitted, getComputedStyle: node => node.style,
+    Event: class {}, setTimeout: () => 0, clearTimeout: () => {}};
+  vm.runInNewContext(source('blog-timeline.js'), {window, document, URL, MutationObserver: Observer});
+  document.emit('DOMContentLoaded');
+  const ready = () => panel.classList.contains('ctstyle-x-ready');
+  const inspect = () => observers.filter(o => o.active).forEach(o => o.callback());
+  assert.equal(ready(), false);
+  box.width = 600; inspect(); assert.equal(ready(), false);
+  box.height = 520; inspect(); assert.equal(ready(), true);
+  blocked = true; inspect(); assert.equal(ready(), false);
+  blocked = false; frame.hidden = true; inspect(); assert.equal(ready(), false);
+  frame.hidden = false; frame.style.visibility = 'hidden'; inspect(); assert.equal(ready(), false);
+  frame.style.visibility = 'visible'; inspect(); assert.equal(ready(), true);
+  permitted = false; document.emit('cmplz_revoke'); assert.equal(ready(), false);
+  permitted = true; document.emit('cmplz_status_change'); assert.equal(ready(), true);
+  window.emit('pagehide'); assert.equal(observers.filter(o => o.active).length, 0);
+  window.emit('pageshow'); window.emit('pageshow');
+  assert.equal(observers.filter(o => o.active).length, 1);
+  assert.equal(ready(), true);
 });

@@ -123,8 +123,11 @@
     // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
     var ready = panel.classList.contains('ctstyle-x-ready');
     blogView.description.hidden = ready;
-    blogView.settings.hidden = ready || typeof window.cmplz_has_service_consent !== "function"
+    blogView.settings.hidden = typeof window.cmplz_has_service_consent !== "function"
       || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner");
+    var permitted=false;
+    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
+    blogView.load.hidden = ready || permitted || blogView.settings.hidden;
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -151,9 +154,12 @@
       link.setAttribute("rel", "noopener noreferrer");
       var settings = label("button", "calorieapp-x-settings cmplz-manage-consent", blogFallback.settings);
       settings.setAttribute("type", "button"); settings.hidden = true;
-      help.appendChild(description); help.appendChild(link); help.appendChild(settings);
+      var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
+      load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
+      load.setAttribute("data-category", "marketing"); load.hidden = true;
+      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);
       panel.appendChild(help); panel.classList.add("calorieapp-social-panel");
-      blogView = { panel: panel, help: help, description: description, action: link, settings: settings };
+      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load };
     }
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     renderBlogHelp(blogLocale || (config && config.initialLocale) || "en");

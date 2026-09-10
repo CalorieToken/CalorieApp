@@ -6,12 +6,13 @@ import { EmptyState } from "@/components/EmptyState";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { FoodCard } from "@/components/FoodCard";
 import { FoodLogList } from "@/components/FoodLogList";
+import { NutriScoreBar } from "@/components/NutriScoreBar";
 import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { countRecordedGrades, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
+import { countRecordedGrades, formatFoodUi, getFoodUi, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
 import {
   AUTH_STATE_CHANGED_EVENT,
@@ -882,11 +883,11 @@ export function FoodSearchPlaceholder() {
             <p className="mt-2 text-xs text-brand-secondary/75">
               {formatFoodUi(copy.scoreCoverage, { known: displayInteger(recordedGrades.known), total: displayInteger(recordedGrades.total) })}
             </p>
-            <dl className="mt-3 grid grid-cols-5 gap-2 text-center text-sm" aria-label={copy.scoreTitle}>
+            <dl className="mt-3 grid grid-cols-5 overflow-hidden rounded-xl text-center text-sm" aria-label={copy.scoreTitle} dir="ltr">
               {recordedGrades.grades.map(({ grade, count }) => (
-                <div key={grade} className="rounded border border-brand-secondary/15 bg-white px-1 py-2">
-                  <dt className="font-semibold text-brand-primary"><bdi dir="ltr">{grade}</bdi></dt>
-                  <dd className="mt-1 text-brand-secondary"><bdi>{displayInteger(count)}</bdi></dd>
+                <div key={grade} className="min-w-0 border-r border-white/40 px-1 py-3 last:border-r-0" style={recordedGradeStyle(grade)}>
+                  <dt className="font-bold"><bdi dir="ltr">{grade}</bdi></dt>
+                  <dd className="mt-1"><bdi>{displayInteger(count)}</bdi></dd>
                 </div>
               ))}
             </dl>
@@ -934,9 +935,7 @@ export function FoodSearchPlaceholder() {
               {selectedLog.serving_size ? (
                 <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{selectedLog.serving_size}</bdi></p>
               ) : null}
-              {selectedLog.nutri_score ? (
-                <p className="mt-1 text-xs text-brand-secondary/75"><bdi dir="ltr">Nutri-Score: {selectedLog.nutri_score}</bdi></p>
-              ) : null}
+              <NutriScoreBar grade={selectedLog.nutri_score} />
               <p className="mt-1 text-xs text-brand-secondary/75">
                 {copy.portionEaten}: <bdi>{displayNumber(portionForDisplay(selectedLog.portion_percentage))}%</bdi>
               </p>

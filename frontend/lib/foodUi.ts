@@ -39,3 +39,16 @@ export function countRecordedGrades(items: ReadonlyArray<{ nutri_score?: string 
   }
   return { grades, known, total: items.length, missing: items.length - known };
 }
+
+const recordedGradeColors: Record<string, { backgroundColor: string; color: string }> = {
+  A: { backgroundColor: "#038141", color: "#ffffff" },
+  B: { backgroundColor: "#85bb2f", color: "#17211a" },
+  C: { backgroundColor: "#fecb02", color: "#17211a" },
+  D: { backgroundColor: "#ee8100", color: "#17211a" },
+  E: { backgroundColor: "#c9382a", color: "#ffffff" },
+};
+
+export function recordedGradeStyle(grade?: string | null) {
+  const key = grade?.trim().toUpperCase();
+  return key && /^[A-E]$/.test(key) ? recordedGradeColors[key] : undefined;
+}

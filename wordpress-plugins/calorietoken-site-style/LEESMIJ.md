@@ -1,10 +1,25 @@
-# CalorieToken Site Style 1.4.5
+# CalorieToken Site Style 1.4.6
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.5.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.5** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.6.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.6** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Correctieronde 1.4.6 — desktopreview en mobiele aanvullingen
+
+- Ronde gedeelde headers, een hamburger op mobiele usecases en geen vierkant achter het Home-menu. Bestaande menu- en accountbediening blijft staan.
+- Rustigere CAL & Crypto- en Trustline-indeling; de directe Xaman-route staat vooraan, twee alternatieven zijn inklapbaar.
+- Consolidatiewallet sluit aan op de oorspronkelijke grijze panelen, groene titel en donkere knoppen. Het adres, de explorerlink en alle toelichting blijven behouden.
+- Roadmap krijgt een passende appverwijzing en een leesbare tekstknop voor de uitleg.
+- Accountkaart laat lange wallettekst doorlopen; de lege donatiemelding gebruikt de huisstijl.
+- Blog herkent de werkelijke X-iframe en houdt hulp zichtbaar bij een iframe van nul pixels. De bezoeker kan X expliciet toestaan via Complianz; toestemming wordt niet automatisch aangepast.
+- CalorieHelp gebruikt een vraagteken, ook op mobiel. De aparte CalorieApp-knop behoudt het applogo.
+- Reviewbevinding opgelost: een verborgen Complianz-container houdt de zwevende bediening niet langer onterecht verborgen.
+
+**Afzonderlijke appwijziging:** de gekleurde A–E-balk is hersteld bij producten en de ingelogde dagboekverdeling. Productscore en aantallen blijven brongegevens; ontbrekende scores worden niet ingevuld. Hiervoor moet de frontend apart worden uitgerold. De WordPress-ZIP doet dat niet.
+
+**Acceptatie:** deze correcties moeten na installatie nog op desktop en mobiel, ingelogd en uitgelogd, worden nagekeken. Volledige historische vertaaldekking, CMS/linkcontrole en de echte Xaman/Testnet-telefoonproef blijven open. Deze release betekent geen volledige aftekening van stap 3.
 
 ## Reviewafronding 1.4.5
 

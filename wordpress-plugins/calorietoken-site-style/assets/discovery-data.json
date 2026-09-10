@@ -1,8 +1,8 @@
 {
   "en": {
-    "intro": "CAL, crypto and your wallet: choose an option below.",
+    "intro": "Explore CAL on the XRP Ledger. Follow the guide, open CAL/XRP markets or explore other crypto routes.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Own trading interface not enabled",
+    "dexStatus": "External trading · XPMarket",
     "dexText": "Open the CAL/XRP order book or swap on XPMarket. Check the asset, issuer, fees and final wallet request. Trading takes place with the external service; this website does not place orders.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL is temporarily delisted at SWFT",
@@ -38,12 +38,15 @@
     "openSwap": "Swap CAL/XRP",
     "directRoute": "Directly via this website → Xaman",
     "externalRoute": "Alternative via xrpl.services → Xaman",
-    "manualRoute": "Manual setup with XRP Toolkit"
+    "manualRoute": "Manual setup with XRP Toolkit",
+    "historicalVideo": "Historical video on YouTube",
+    "roadmapRead": "Roadmap explained",
+    "menuLabel": "Menu"
   },
   "nl": {
-    "intro": "CAL, crypto en je wallet: kies hieronder een mogelijkheid.",
+    "intro": "Ontdek CAL op de XRP Ledger. Volg de uitleg, open de CAL/XRP-markten of bekijk andere cryptoroutes.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Eigen handelsinterface nog niet actief",
+    "dexStatus": "Extern handelen · XPMarket",
     "dexText": "Open het CAL/XRP-orderboek of de swap op XPMarket. Controleer de munt, uitgever, kosten en het uiteindelijke verzoek in je wallet. Je handelt bij de externe dienst; deze website plaatst geen orders.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL is tijdelijk gedelist bij SWFT",
@@ -79,12 +82,15 @@
     "openSwap": "Wissel CAL/XRP",
     "directRoute": "Rechtstreeks via deze website → Xaman",
     "externalRoute": "Alternatief via xrpl.services → Xaman",
-    "manualRoute": "Handmatig instellen met XRP Toolkit"
+    "manualRoute": "Handmatig instellen met XRP Toolkit",
+    "historicalVideo": "Historische video op YouTube",
+    "roadmapRead": "Roadmap toegelicht",
+    "menuLabel": "Menu"
   },
   "zh-Hans": {
-    "intro": "CAL、加密资产与钱包：请选择以下方式。",
+    "intro": "探索 XRP Ledger 上的 CAL。阅读指南、打开 CAL/XRP 市场，或了解其他加密资产兑换途径。",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "自有交易界面尚未启用",
+    "dexStatus": "外部交易 · XPMarket",
     "dexText": "在 XPMarket 打开 CAL/XRP 订单簿或兑换。核对资产、发行方、费用和最终钱包请求。交易通过外部服务进行；本网站不会下单。",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL 暂时从 SWFT 下架",
@@ -120,12 +126,15 @@
     "openSwap": "兑换 CAL/XRP",
     "directRoute": "通过本网站直接进入 Xaman",
     "externalRoute": "另一方式：通过 xrpl.services 进入 Xaman",
-    "manualRoute": "使用 XRP Toolkit 手动设置"
+    "manualRoute": "使用 XRP Toolkit 手动设置",
+    "historicalVideo": "YouTube 上的历史视频",
+    "roadmapRead": "路线图详解",
+    "menuLabel": "菜单"
   },
   "hi": {
-    "intro": "CAL, क्रिप्टो और आपका वॉलेट: नीचे एक विकल्प चुनें।",
+    "intro": "XRP Ledger पर CAL के बारे में जानें। गाइड पढ़ें, CAL/XRP बाज़ार खोलें या अन्य क्रिप्टो विकल्प देखें।",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "अपना ट्रेडिंग इंटरफ़ेस अभी सक्रिय नहीं",
+    "dexStatus": "बाहरी ट्रेडिंग · XPMarket",
     "dexText": "XPMarket पर CAL/XRP ऑर्डर बुक या स्वैप खोलें। एसेट, जारीकर्ता, शुल्क और वॉलेट में अंतिम अनुरोध जाँचें। ट्रेड बाहरी सेवा पर होता है; यह वेबसाइट ऑर्डर नहीं देती।",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "SWFT पर CAL अस्थायी रूप से डीलिस्ट है",
@@ -161,12 +170,15 @@
     "openSwap": "CAL/XRP स्वैप करें",
     "directRoute": "इस वेबसाइट से सीधे → Xaman",
     "externalRoute": "वैकल्पिक मार्ग: xrpl.services → Xaman",
-    "manualRoute": "XRP Toolkit से मैन्युअल सेटअप"
+    "manualRoute": "XRP Toolkit से मैन्युअल सेटअप",
+    "historicalVideo": "YouTube पर ऐतिहासिक वीडियो",
+    "roadmapRead": "रोडमैप का विवरण",
+    "menuLabel": "मेन्यू"
   },
   "es": {
-    "intro": "CAL, cripto y tu cartera: elige una opción.",
+    "intro": "Descubre CAL en XRP Ledger. Sigue la guía, abre los mercados CAL/XRP o explora otras opciones cripto.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Interfaz de negociación propia aún inactiva",
+    "dexStatus": "Operaciones externas · XPMarket",
     "dexText": "Abre el libro de órdenes o el intercambio CAL/XRP en XPMarket. Revisa el activo, emisor, comisiones y la solicitud final en tu cartera. Operas con el servicio externo; esta web no envía órdenes.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL está temporalmente retirado de SWFT",
@@ -202,12 +214,15 @@
     "openSwap": "Intercambiar CAL/XRP",
     "directRoute": "Directamente desde esta web → Xaman",
     "externalRoute": "Alternativa mediante xrpl.services → Xaman",
-    "manualRoute": "Configuración manual con XRP Toolkit"
+    "manualRoute": "Configuración manual con XRP Toolkit",
+    "historicalVideo": "Vídeo histórico en YouTube",
+    "roadmapRead": "Hoja de ruta explicada",
+    "menuLabel": "Menú"
   },
   "ar": {
-    "intro": "CAL والعملات المشفرة ومحفظتك: اختر أحد الخيارات أدناه.",
+    "intro": "اكتشف CAL على XRP Ledger. اتبع الدليل، أو افتح أسواق CAL/XRP، أو استكشف مسارات أخرى للعملات المشفرة.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "واجهة التداول الخاصة غير مفعلة بعد",
+    "dexStatus": "تداول خارجي · XPMarket",
     "dexText": "افتح دفتر أوامر CAL/XRP أو المبادلة على XPMarket. تحقق من الأصل والجهة المصدرة والرسوم والطلب النهائي في محفظتك. يتم التداول عبر الخدمة الخارجية؛ لا يرسل هذا الموقع أوامر تداول.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL مشطوب مؤقتًا من SWFT",
@@ -243,12 +258,15 @@
     "openSwap": "مبادلة CAL/XRP",
     "directRoute": "مباشرة من هذا الموقع ← Xaman",
     "externalRoute": "بديل عبر xrpl.services ← Xaman",
-    "manualRoute": "إعداد يدوي باستخدام XRP Toolkit"
+    "manualRoute": "إعداد يدوي باستخدام XRP Toolkit",
+    "historicalVideo": "فيديو تاريخي على YouTube",
+    "roadmapRead": "شرح خارطة الطريق",
+    "menuLabel": "القائمة"
   },
   "fr": {
-    "intro": "CAL, crypto et portefeuille : choisissez une option.",
+    "intro": "Découvrez CAL sur XRP Ledger. Suivez le guide, ouvrez les marchés CAL/XRP ou explorez d’autres options crypto.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Interface de trading propre pas encore activée",
+    "dexStatus": "Échanges externes · XPMarket",
     "dexText": "Ouvrez le carnet d’ordres ou l’échange CAL/XRP sur XPMarket. Vérifiez l’actif, l’émetteur, les frais et la demande finale dans votre portefeuille. La transaction passe par le service externe ; ce site ne transmet pas d’ordres.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL est temporairement retiré de SWFT",
@@ -284,12 +302,15 @@
     "openSwap": "Échanger CAL/XRP",
     "directRoute": "Directement depuis ce site → Xaman",
     "externalRoute": "Autre voie via xrpl.services → Xaman",
-    "manualRoute": "Configuration manuelle avec XRP Toolkit"
+    "manualRoute": "Configuration manuelle avec XRP Toolkit",
+    "historicalVideo": "Vidéo historique sur YouTube",
+    "roadmapRead": "La feuille de route expliquée",
+    "menuLabel": "Menu"
   },
   "bn": {
-    "intro": "CAL, ক্রিপ্টো ও আপনার ওয়ালেট: নিচে একটি উপায় বেছে নিন।",
+    "intro": "XRP Ledger-এ CAL সম্পর্কে জানুন। নির্দেশিকা পড়ুন, CAL/XRP বাজার খুলুন অথবা অন্য ক্রিপ্টো বিকল্প দেখুন।",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "নিজস্ব ট্রেডিং ইন্টারফেস এখনও সক্রিয় নয়",
+    "dexStatus": "বাহ্যিক লেনদেন · XPMarket",
     "dexText": "XPMarket-এ CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন। সম্পদ, ইস্যুকারী, ফি ও ওয়ালেটের চূড়ান্ত অনুরোধ যাচাই করুন। লেনদেন বাইরের পরিষেবায় হয়; এই ওয়েবসাইট অর্ডার দেয় না।",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "SWFT থেকে CAL সাময়িকভাবে তালিকাচ্যুত",
@@ -325,12 +346,15 @@
     "openSwap": "CAL/XRP বিনিময় করুন",
     "directRoute": "এই ওয়েবসাইট থেকে সরাসরি → Xaman",
     "externalRoute": "বিকল্প: xrpl.services হয়ে → Xaman",
-    "manualRoute": "XRP Toolkit দিয়ে ম্যানুয়াল সেটআপ"
+    "manualRoute": "XRP Toolkit দিয়ে ম্যানুয়াল সেটআপ",
+    "historicalVideo": "YouTube-এ ঐতিহাসিক ভিডিও",
+    "roadmapRead": "রোডম্যাপের ব্যাখ্যা",
+    "menuLabel": "মেনু"
   },
   "pt": {
-    "intro": "CAL, cripto e a sua carteira: escolha uma opção.",
+    "intro": "Explore CAL no XRP Ledger. Siga o guia, abra os mercados CAL/XRP ou veja outras opções cripto.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Interface de negociação própria ainda inativa",
+    "dexStatus": "Negociação externa · XPMarket",
     "dexText": "Abra o livro de ordens ou a troca CAL/XRP no XPMarket. Verifique o ativo, emissor, taxas e o pedido final na carteira. A negociação ocorre no serviço externo; este site não envia ordens.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL temporariamente removido da SWFT",
@@ -366,12 +390,15 @@
     "openSwap": "Trocar CAL/XRP",
     "directRoute": "Diretamente deste site → Xaman",
     "externalRoute": "Alternativa via xrpl.services → Xaman",
-    "manualRoute": "Configuração manual com XRP Toolkit"
+    "manualRoute": "Configuração manual com XRP Toolkit",
+    "historicalVideo": "Vídeo histórico no YouTube",
+    "roadmapRead": "Roteiro explicado",
+    "menuLabel": "Menu"
   },
   "id": {
-    "intro": "CAL, kripto, dan dompet Anda: pilih opsi di bawah.",
+    "intro": "Jelajahi CAL di XRP Ledger. Ikuti panduan, buka pasar CAL/XRP, atau lihat pilihan kripto lainnya.",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "Antarmuka perdagangan sendiri belum aktif",
+    "dexStatus": "Perdagangan eksternal · XPMarket",
     "dexText": "Buka buku pesanan atau swap CAL/XRP di XPMarket. Periksa aset, penerbit, biaya, dan permintaan akhir di dompet. Perdagangan berlangsung di layanan eksternal; situs ini tidak mengirim pesanan.",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "CAL sementara dihapus dari daftar SWFT",
@@ -407,12 +434,15 @@
     "openSwap": "Tukar CAL/XRP",
     "directRoute": "Langsung dari situs ini → Xaman",
     "externalRoute": "Alternatif melalui xrpl.services → Xaman",
-    "manualRoute": "Pengaturan manual dengan XRP Toolkit"
+    "manualRoute": "Pengaturan manual dengan XRP Toolkit",
+    "historicalVideo": "Video historis di YouTube",
+    "roadmapRead": "Penjelasan peta jalan",
+    "menuLabel": "Menu"
   },
   "ur": {
-    "intro": "CAL، کرپٹو اور آپ کا والیٹ: نیچے ایک طریقہ منتخب کریں۔",
+    "intro": "XRP Ledger پر CAL کے بارے میں جانیں۔ رہنما پڑھیں، CAL/XRP مارکیٹ کھولیں یا دوسرے کرپٹو راستے دیکھیں۔",
     "dexTitle": "1 · XRPL DEX",
-    "dexStatus": "اپنا ٹریڈنگ انٹرفیس ابھی فعال نہیں",
+    "dexStatus": "بیرونی ٹریڈنگ · XPMarket",
     "dexText": "XPMarket پر CAL/XRP آرڈر بک یا سواپ کھولیں۔ اثاثہ، جاری کنندہ، فیس اور والٹ میں آخری درخواست چیک کریں۔ تجارت بیرونی سروس پر ہوتی ہے؛ یہ ویب سائٹ آرڈر نہیں بھیجتی۔",
     "bridgeTitle": "3 · AllChainBridge / SWFT",
     "calInactive": "SWFT سے CAL عارضی طور پر ڈی لسٹ ہے",
@@ -448,6 +478,9 @@
     "openSwap": "CAL/XRP تبدیل کریں",
     "directRoute": "اس ویب سائٹ سے براہ راست ← Xaman",
     "externalRoute": "متبادل: xrpl.services کے ذریعے ← Xaman",
-    "manualRoute": "XRP Toolkit سے دستی ترتیب"
+    "manualRoute": "XRP Toolkit سے دستی ترتیب",
+    "historicalVideo": "YouTube پر تاریخی ویڈیو",
+    "roadmapRead": "روڈمیپ کی وضاحت",
+    "menuLabel": "مینو"
   }
 }

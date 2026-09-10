@@ -871,6 +871,9 @@ test("recorded product grades count entries and missing values without deriving 
     h.setDisplayLanguage(tag);
     const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreTitle)[0];
     assert.ok(distribution, tag);
+    assert.equal(distribution.props.dir, "ltr");
+    const colors = nodes(distribution, node => node.props.style?.backgroundColor).map(node => node.props.style.backgroundColor);
+    assert.equal(new Set(colors).size, 5, `${tag}: five Nutri-Score colors remain visible after login`);
     assert.deepEqual(nodes(distribution, node => node.type === "dt").map(node => text(node)), ["A", "B", "C", "D", "E"]);
     assert.deepEqual(nodes(distribution, node => node.type === "dd").map(node => text(node)),
       [2, 1, 0, 0, 1].map(count => new Intl.NumberFormat(tag).format(count)));
@@ -881,4 +884,14 @@ test("recorded product grades count entries and missing values without deriving 
   assert.deepEqual(JSON.parse(JSON.stringify(foodUi.countRecordedGrades([]))), {
     grades: ["A", "B", "C", "D", "E"].map(grade => ({ grade, count: 0 })), known: 0, total: 0, missing: 0,
   });
+});
+
+
+test("Nutri-Score colors accept recorded A–E grades and never invent missing scores", () => {
+  const colors = ["A", "B", "C", "D", "E"].map(grade => foodUi.recordedGradeStyle(grade).backgroundColor);
+  assert.equal(new Set(colors).size, 5);
+  assert.equal(foodUi.recordedGradeStyle(" a "), foodUi.recordedGradeStyle("A"));
+  for (const grade of [undefined, null, "", "unknown", "F", "A/B"]) {
+    assert.equal(foodUi.recordedGradeStyle(grade), undefined);
+  }
 });

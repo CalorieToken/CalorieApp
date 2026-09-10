@@ -116,7 +116,9 @@
     if (!safe(guide) || document.getElementById('ctstyle-cal-crypto')) return;
     // Keep the existing translated guide and every original provider destination in place.
     hub = element('div','ctstyle-discovery'); hub.id = 'ctstyle-cal-crypto';
-    hub.append(label('p','intro','ctstyle-discovery-intro'));
+    var intro=element('header','ctstyle-crypto-intro');
+    intro.append(element('p','ctstyle-crypto-kicker','CalorieToken · XRP Ledger'),label('h2','exchangeLabel'),label('p','intro','ctstyle-discovery-intro'));
+    hub.append(intro);
     var nav = element('nav','ctstyle-discovery-tabs'); nav.setAttribute('aria-label','CAL & Crypto');
     if (!guide.id) guide.id = 'ctstyle-cal-options';
     nav.append(link('dexTitle','#ctstyle-own-dex'),link('guideTitle','#'+guide.id),link('bridgeTitle','#ctstyle-external-exchange'));
@@ -174,10 +176,14 @@
     }
   }
   function cookieVisible() {
-    return Array.from(document.querySelectorAll('.cmplz-cookiebanner')).some(function (node) {
-      if (node.classList.contains('cmplz-dismissed') || node.hidden) return false;
+    function visible(node) {
+      if (node.hidden || node.classList.contains('cmplz-dismissed')) return false;
       var style = window.getComputedStyle(node);
       return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+    }
+    return Array.from(document.querySelectorAll('.cmplz-cookiebanner')).some(function (node) {
+      var container = node.closest('#cmplz-cookiebanner-container');
+      return visible(node) && (!container || visible(container));
     });
   }
   function syncCookieVisibility() {
@@ -283,9 +289,9 @@
     if (launcher || document.getElementById('ctstyle-app-launcher') || document.querySelector('[contenteditable="true"],.brz-ed')) return;
     if (new URL(cfg.appURL).origin !== window.location.origin) return;
     launcher = element('aside','ctstyle-app-launcher'); launcher.id = 'ctstyle-app-launcher';
-    var details = element('details'), summary = element('summary'), logo = element('img');
-    logo.src = cfg.appLogo; logo.alt = ''; logo.width = 32; logo.height = 32;
-    summary.append(logo,element('span','','CalorieApp')); details.append(summary);
+    var details = element('details'), summary = element('summary'), icon = element('span','ctstyle-help-icon','?');
+    icon.setAttribute('aria-hidden','true');
+    summary.append(icon,element('span','ctstyle-help-caption','CalorieHelp')); details.append(summary);
     var panel = element('div','ctstyle-app-launcher-panel');
     panel.append(label('p','appPitch'));
     if (Number(cfg.page) !== 7880) panel.append(link('openApp',cfg.appURL),link('testTitle',cfg.appURL+'#ctstyle-testnet'));

@@ -51,19 +51,35 @@
       var host=make('div','ctstyle-trustline-methods');host.id='ctstyle-trustline-methods';
       options.before(host);host.append(native,options);
       native.prepend(label('p','directRoute','ctstyle-route-label'));
-      var external=one('[data-brz-custom-id="inpxenkjojstawbfbmiwkgigeabgzzcmectb"]');
-      if(external){var labelNode=label('h2','externalRoute','ctstyle-route-label');external.prepend(labelNode);}
       var toolkit=one('[data-brz-custom-id="tudwxqvkogbjptwlykgwzlzdixbhxidyqhku"]');
       if(toolkit&&options.contains(toolkit)){
         var details=make('details','ctstyle-manual-trustline');details.id='ctstyle-manual-trustline';
         toolkit.before(details);details.append(label('summary','manualRoute'),toolkit);
       }
     }
+    var external=one('[data-brz-custom-id="inpxenkjojstawbfbmiwkgigeabgzzcmectb"]');
+    if(options&&external&&options.contains(external)&&!external.closest('.ctstyle-external-trustline')){
+      var alternate=make('details','ctstyle-manual-trustline ctstyle-external-trustline');
+      var priorLabel=external.querySelector(':scope > .ctstyle-route-label');if(priorLabel)priorLabel.remove();
+      external.before(alternate);alternate.append(label('summary','externalRoute'),external);
+    }
     var root=one('[data-brz-custom-id="nrsbytvlhdquaddotxqmaeiihmzfbcufpmhr"]');
     if(root&&root.querySelectorAll('[data-calorieapp-trustline-ui] .calorieapp-copy-button[aria-describedby]').length===2 && root.querySelectorAll('.calorieapp-copy-button:not([aria-describedby])').length===2)root.classList.add('ctstyle-copy-dedup');
   }
   function roadmap(){
     if(!/\/(?:index.php\/)?roadmap\/$/.test(window.location.pathname))return;
+    var explained=one('[data-brz-custom-id="kdpxkiwkssgeeayvskldlkfcrdkkjbksikao"]');
+    var destination='https://github.com/CalorieToken/Publications/blob/main/roadmap/README.md';
+    if(explained&&!explained.closest(blocked)){
+      var button=explained.querySelector('a[href="'+destination+'"]');
+      if(button&&button.querySelector('img[title="roadmapexplainedknop2"]')&&!button.classList.contains('ctstyle-roadmap-link')){
+        explained.classList.add('ctstyle-roadmap-link-host');
+        var wrap=explained.closest('.brz-wrapper');if(wrap)wrap.classList.add('ctstyle-roadmap-link-wrap');
+        button.classList.add('ctstyle-roadmap-link');
+        button.append(label('span','roadmapRead'));
+        button.removeAttribute('aria-label');
+      }
+    }
     var timeline=one('[data-brz-custom-id="fywltezyscgeklkmjuvcoesosmptkgaloptn"].brz-timeline__tabs');
     if(timeline)timeline.classList.add('ctstyle-roadmap-timeline');
     var video=one('[data-brz-custom-id="nuyzubccqediuokhizydlyfagzwueddoqrnd"]');
@@ -71,9 +87,9 @@
     if(document.getElementById('ctstyle-roadmap-preview'))return;
     var card=make('section','ctstyle-roadmap-preview');card.id='ctstyle-roadmap-preview';
     var logo=make('img');logo.src=cfg.appLogo;logo.alt='';logo.width=48;logo.height=48;
-    card.append(logo,make('h3',null,'Discover CalorieApp'),make('p',null,'Search food, explore nutrition and keep your own food diary. Try the current webapp.'));
-    var app=make('a','ctstyle-discovery-action','Open CalorieApp');app.href=cfg.appURL;
-    var history=make('a','ctstyle-video-history','Historical video · watch on YouTube');history.href='https://www.youtube.com/watch?v=a5mwDKsWrA8';history.target='_blank';history.rel='noopener noreferrer';
+    card.append(logo,make('h3',null,'CalorieApp'),label('p','appPitch'));
+    var app=label('a','openApp','ctstyle-discovery-action');app.href=cfg.appURL;
+    var history=label('a','historicalVideo','ctstyle-video-history');history.href='https://www.youtube.com/watch?v=a5mwDKsWrA8';history.target='_blank';history.rel='noopener noreferrer';
     card.append(app,history);video.replaceWith(card);
   }
   function faq(){
@@ -110,14 +126,17 @@
       var n=one('[data-brz-custom-id="'+id+'"]');
       if(n&&n.matches('.brz-columns')&&!n.querySelector('.xl-card'))n.classList.add('ctstyle-home-panel');
     });
+    var menu=one('.brz-menu-simple'),header=menu&&menu.closest('.brz-section');
+    if(header)header.classList.add('ctstyle-native-header');
   }
   function sharedLayout(){
-    // The accepted Home header stays untouched. Only recognised native columns
-    // on other pages adopt the compact usecase proportions, without moving them.
-    if(document.body.classList.contains('ctstyle-enabled')){
-      var header=one('.ctstyle-header');
+    // Style the existing columns without replacing menus or account nodes.
+    if(document.body.matches('.ctstyle-enabled,.ctstyle-footer-only')){
+      var header=one('.ctstyle-header,.ctstyle-native-header');
       if(header){
         var menu=header.querySelector('.brz-menu-simple'),logo=header.querySelector('img[src*="C-Logotranspa"]');
+        var toggle=menu&&menu.querySelector('.brz-menu-simple__toggle>.brz-input[type="checkbox"]');
+        if(toggle)toggle.setAttribute('aria-label',cfg.copy[locale].menuLabel);
         var menuCol=menu&&menu.closest('.brz-columns'),logoCol=logo&&logo.closest('.brz-columns');
         if(menuCol&&logoCol&&menuCol!==logoCol&&menuCol.parentElement===logoCol.parentElement){
           var row=menuCol.parentElement,cards=Array.from(row.children).filter(function(n){return n.querySelector('.xl-card');});

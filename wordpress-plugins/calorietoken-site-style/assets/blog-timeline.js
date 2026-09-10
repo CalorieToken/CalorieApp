@@ -46,12 +46,16 @@
   function frames() {return panel ? Array.from(panel.querySelectorAll('iframe')).filter(providerFrame) : [];}
   function status() {
     if (!panel) return;
-    var ready=frames().some(function (frame) {var style=window.getComputedStyle(frame);return !frame.hidden && style.display!=='none' && style.visibility!=='hidden';});
+    var ready=consent() && frames().some(function (frame) {
+      var style=window.getComputedStyle(frame),box=frame.getBoundingClientRect();
+      return !frame.hidden && !frame.closest('.cmplz-blocked-content-container,[hidden],[inert]') &&
+        style.display!=='none' && style.visibility!=='hidden' && box.width>0 && box.height>0;
+    });
     panel.classList.toggle('ctstyle-x-ready',ready);
     document.dispatchEvent(new window.Event('calorietoken:x-state'));
   }
   function watch() {
-    if (!watcher) {watcher=new MutationObserver(inspect);watcher.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['src','style']});}
+    if (!watcher) {watcher=new MutationObserver(inspect);watcher.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['src','style','width','height','hidden']});}
   }
   function revoke() {
     if (!managed) return;
