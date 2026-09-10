@@ -142,6 +142,7 @@ test("actual food controls render the eleven languages and escape literal produc
     "@/lib/foodUi": foodUi,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
+  imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   const { SearchBar } = loadModule("../../frontend/components/SearchBar.tsx", imports);
   const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);
   const { LoadingState } = loadModule("../../frontend/components/LoadingState.tsx", imports);
@@ -175,4 +176,29 @@ test("actual food controls render the eleven languages and escape literal produc
   display.enabled = false;
   display.locale = "ar";
   assert.ok(renderToStaticMarkup(React.createElement(LoadingState, { variant: "search" })).includes(copy.en.loadingSearch));
+});
+
+test("the actual Nutri-Score bar renders five colors and a recorded grade regardless of login controls", () => {
+  const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
+  const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
+    "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
+  });
+  const imports = { "@/lib/foodUi": foodUi,
+    "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
+  const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
+  imports["@/components/NutriScoreBar"] = score;
+  const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);
+  for (const grade of ["A", "B", "C", "D", "E", " a "]) {
+    for (const isDisabled of [true, false]) {
+      const html = renderToStaticMarkup(React.createElement(FoodCard, {
+        item: { product_name: "Tea", calories: 20, protein: 1, fat: 0, carbohydrates: 4, nutri_score: grade },
+        isLogging: false, isDisabled, onLog() {}, formatNumber: String,
+      }));
+      assert.ok(html.includes(`aria-label="Nutri-Score: ${grade.trim().toUpperCase()}"`));
+      assert.equal((html.match(/background-color:/g) || []).length, 5);
+    }
+  }
+  for (const grade of [undefined, null, "", "unknown"]) {
+    assert.equal(renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade })), "");
+  }
 });
