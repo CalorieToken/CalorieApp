@@ -35,6 +35,7 @@ const foodUi = await loadLibrary("foodUi", {
   "@/config/food-ui-copy.json": { default: foodUiCopy },
   "@/lib/locales": locales,
 });
+const searchAvailability = await loadLibrary("foodSearchAvailability", {});
 const AUTH_EVENT = "test-auth-state-changed";
 const foods = Array.from({ length: 30 }, (_, index) => ({
   product_name: index === 0 ? "Banana" : `Oats ${index}`,
@@ -61,13 +62,16 @@ function button(tree, label) {
   return result[0];
 }
 
-async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse) {
+async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse) {
   const source = await readFile(new URL(`../../frontend/components/${componentName}.tsx`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { jsx: typescript.JsxEmit.ReactJSX, module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
   }).outputText;
   const hooks = [], listeners = new Map(), requests = [], focusEvents = [];
   const confirmations = [];
+  let now = Date.parse("2026-09-10T12:00:00Z"), timerId = 0, warmups = 0;
+  const timers = new Map();
+  class ClockDate extends Date { static now() { return now; } }
   let confirmAnswer = false;
   const document = { body: {}, activeElement: null, documentElement: { lang: "en" } };
   document.activeElement = document.body;
@@ -105,6 +109,9 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
     module, exports: module.exports, AbortController, console, URL, URLSearchParams, document,
+    Date: ClockDate,
+    setInterval(callback) { timers.set(++timerId, callback); return timerId; },
+    clearInterval(id) { timers.delete(id); },
     navigator: { language: "en", languages: ["en"] },
     window: {
       location: { search: "" },
@@ -122,6 +129,9 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/components/authEvents") return { AUTH_STATE_CHANGED_EVENT: AUTH_EVENT };
       if (specifier === "@/lib/foodLogFilter") return foodLogFilter;
       if (specifier === "@/lib/foodUi") return foodUi;
+      if (specifier === "@/lib/foodSearchAvailability") return {
+        foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
+      };
       if (specifier === "@/components/DisplayLanguageProvider") return {
         useDisplayLanguage: () => displayLanguage,
       };
@@ -134,7 +144,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       }
       if (specifier === "@/lib/backendRequest") return {
         BACKEND_WAKE_BASE_URL: "https://backend.example",
-        waitForBackendReady: async () => {},
+        waitForBackendReady: async () => { warmups++; if (warmupResponse) await warmupResponse(); },
         backendUnavailableMessage: (_error, fallback) => fallback,
         async backendRequest(url, options) {
           requests.push({ url, options });
@@ -183,6 +193,8 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   if (componentName === "FoodSearchPlaceholder") render();
   return {
     render, requests, focusEvents, document, confirmations,
+    get warmups() { return warmups; },
+    advance(ms) { now += ms; for (const callback of timers.values()) callback(); return render(); },
     answerConfirmation(value) { confirmAnswer = value; },
     setDisplayLanguage(locale) { displayLanguage = { enabled: true, locale }; return render(); },
     get tree() { return tree; },
@@ -664,6 +676,82 @@ test("switching all eleven languages during search preserves its query, signal a
   assert.equal(h.cards().length, foods.length);
   assert.equal(h.cards()[0].props.item.product_name, foods[0].product_name);
   assert.equal(h.requests.length, 1);
+});
+
+test("rapid resubmits do not restart backend warmup or the pending search", async () => {
+  let ready, finish;
+  const h = await harness("FoodSearchPlaceholder", undefined, undefined,
+    () => new Promise(resolve => { finish = resolve; }),
+    () => new Promise(resolve => { ready = resolve; }));
+  const pending = h.search("banana");
+  await h.flush();
+  await h.search("banana");
+  assert.equal(h.warmups, 1);
+  assert.equal(h.requests.length, 0);
+  assert.ok(text(h.tree).includes(foodUiCopy.en.searchStartupHint));
+  ready(); await h.flush();
+  await h.search("banana");
+  assert.equal(h.requests.length, 1);
+  assert.equal(h.requests[0].options.signal.aborted, false);
+  finish({ ok: true, json: async () => ({ results: foods }) });
+  await pending;
+  assert.equal(h.cards().length, foods.length);
+});
+
+test("rate-limit pause respects Retry-After across languages and enables one manual retry after expiry", async () => {
+  let calls = 0;
+  const h = await harness("FoodSearchPlaceholder", undefined, undefined, async () => ++calls === 1
+    ? { ok: false, status: 429, headers: new Headers({ "Retry-After": "90" }) }
+    : { ok: true, json: async () => ({ results: foods }) });
+  await h.search("banana");
+  assert.equal(nodes(h.tree, n => n.type === "SearchBar")[0].props.retrySeconds, 90);
+  for (const { tag } of localeRegistry.locales) {
+    h.setDisplayLanguage(tag);
+    assert.ok(text(h.tree).includes(foodUiCopy[tag].searchCooldownNotice));
+    await h.search("banana");
+    assert.equal(h.requests.length, 1);
+  }
+  h.advance(89_000); await h.search("banana");
+  assert.equal(h.requests.length, 1);
+  h.advance(1_000);
+  assert.equal(nodes(h.tree, n => n.type === "SearchBar")[0].props.retrySeconds, 0);
+  assert.equal(h.requests.length, 1, "timer expiry sends no request");
+  await h.search("banana");
+  assert.equal(h.requests.length, 2);
+  assert.equal(h.cards().length, foods.length);
+});
+
+test("warmup failure retains query and pauses resubmits without hitting the food provider", async () => {
+  const h = await harness("FoodSearchPlaceholder", undefined, undefined, undefined,
+    async () => { throw new Error("not ready"); });
+  await h.search("oats");
+  assert.equal(nodes(h.tree, n => n.type === "SearchBar")[0].props.query, "oats");
+  assert.equal(nodes(h.tree, n => n.type === "SearchBar")[0].props.retrySeconds, 30);
+  await h.search("oats");
+  assert.equal(h.warmups, 1);
+  assert.equal(h.requests.length, 0);
+});
+
+test("search pause handles HTTP dates, missing headers and invalid values without retrying early", () => {
+  const now = Date.parse("2026-09-10T12:00:00Z");
+  for (const [status, header, wait] of [
+    [429, null, 60_000], [429, "0", 60_000], [429, "300", 300_000],
+    [503, "Thu, 10 Sep 2026 12:03:00 GMT", 180_000], [504, null, 30_000],
+    [429, "garbage", 60_000], [429, "-1", 60_000], [429, "1e999", 60_000],
+  ]) assert.equal(searchAvailability.foodSearchRetryAt(status, header, now), now + wait);
+  assert.equal(searchAvailability.foodSearchRetryAt(400, null, now), 0);
+});
+
+test("search button shows a translated countdown without reporting a request as in progress", async () => {
+  const h = await harness("SearchBar");
+  for (const { tag } of localeRegistry.locales) {
+    h.setDisplayLanguage(tag);
+    const tree = h.render({ query: "oats", isLoading: false, retrySeconds: 60, onQueryChange() {}, onSubmit() {} });
+    const search = nodes(tree, n => n.type === "button")[0];
+    assert.equal(search.props.disabled, true);
+    assert.equal(search.props["aria-busy"], false);
+    assert.equal(text(search), foodUi.formatFoodUi(foodUiCopy[tag].searchWait, { seconds: new Intl.NumberFormat(tag).format(60) }));
+  }
 });
 
 test("language changes preserve custom portion input, pending save payload and success in the current language", async () => {

@@ -25,3 +25,5 @@ source-clearance work are recorded in
 `docs/IDENTITY_BRIDGE_CODE_PROVENANCE.md`. See its `LICENSE` and bundled
 `THIRD_PARTY_NOTICES.md` files. Open Food Facts data is addressed separately in
 `DATA_LICENSING.md`.
+
+The standalone WordPress Site Style component in `wordpress-plugins/calorietoken-site-style/` also declares GPL-2.0-or-later. Its packaged licence applies to its code. Historical site images/fonts remain references to the existing site and retain their original rights; they are not granted a new licence here. The display-language runtime is shared with CalorieApp.

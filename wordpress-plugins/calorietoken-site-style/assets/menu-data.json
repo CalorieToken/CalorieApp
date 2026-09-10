@@ -1,0 +1,1855 @@
+{
+  "locales": [
+    {
+      "tag": "en",
+      "english_name": "English",
+      "native_name": "English",
+      "direction": "ltr",
+      "source": true,
+      "aliases": [
+        "en-US",
+        "en-GB"
+      ]
+    },
+    {
+      "tag": "zh-Hans",
+      "english_name": "Mandarin Chinese (Simplified)",
+      "native_name": "简体中文",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "zh",
+        "zh-CN",
+        "zh-SG"
+      ]
+    },
+    {
+      "tag": "hi",
+      "english_name": "Hindi",
+      "native_name": "हिन्दी",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "hi-IN"
+      ]
+    },
+    {
+      "tag": "es",
+      "english_name": "Spanish",
+      "native_name": "Español",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "es-ES",
+        "es-MX"
+      ]
+    },
+    {
+      "tag": "ar",
+      "english_name": "Modern Standard Arabic",
+      "native_name": "العربية",
+      "direction": "rtl",
+      "source": false,
+      "aliases": [
+        "ar-EG",
+        "ar-SA"
+      ]
+    },
+    {
+      "tag": "fr",
+      "english_name": "French",
+      "native_name": "Français",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "fr-FR",
+        "fr-CA"
+      ]
+    },
+    {
+      "tag": "bn",
+      "english_name": "Bengali",
+      "native_name": "বাংলা",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "bn-BD",
+        "bn-IN"
+      ]
+    },
+    {
+      "tag": "pt",
+      "english_name": "Portuguese",
+      "native_name": "Português",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "pt-BR",
+        "pt-PT"
+      ]
+    },
+    {
+      "tag": "id",
+      "english_name": "Indonesian",
+      "native_name": "Bahasa Indonesia",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "id-ID"
+      ]
+    },
+    {
+      "tag": "ur",
+      "english_name": "Urdu",
+      "native_name": "اردو",
+      "direction": "rtl",
+      "source": false,
+      "aliases": [
+        "ur-PK",
+        "ur-IN"
+      ]
+    },
+    {
+      "tag": "nl",
+      "english_name": "Dutch",
+      "native_name": "Nederlands",
+      "direction": "ltr",
+      "source": false,
+      "aliases": [
+        "nl-NL",
+        "nl-BE"
+      ]
+    }
+  ],
+  "blog": {
+    "publicPage": true,
+    "copy": {
+      "en": {
+        "description": "Posts are supplied by X and may not load here. Open the profile directly or review your cookie choices.",
+        "action": "Open @CalorieToken on X",
+        "settings": "Cookie settings"
+      },
+      "zh-Hans": {
+        "description": "帖子由 X 提供，可能无法在此加载。您可以直接打开主页，或查看您的 Cookie 选项。",
+        "action": "在 X 上打开 @CalorieToken",
+        "settings": "Cookie 设置"
+      },
+      "hi": {
+        "description": "पोस्ट X से मिलती हैं और हो सकता है कि यहाँ लोड न हों। प्रोफ़ाइल सीधे खोलें या अपनी कुकी संबंधी पसंद की समीक्षा करें।",
+        "action": "X पर @CalorieToken खोलें",
+        "settings": "कुकी सेटिंग"
+      },
+      "es": {
+        "description": "X proporciona las publicaciones y es posible que no se carguen aquí. Abre el perfil directamente o revisa tus preferencias de cookies.",
+        "action": "Abrir @CalorieToken en X",
+        "settings": "Configuración de cookies"
+      },
+      "ar": {
+        "description": "يوفّر X المنشورات، وقد لا يتم تحميلها هنا. افتح الملف الشخصي مباشرة أو راجع خيارات ملفات تعريف الارتباط.",
+        "action": "افتح ⁦@CalorieToken⁩ على X",
+        "settings": "إعدادات ملفات تعريف الارتباط"
+      },
+      "fr": {
+        "description": "Les publications sont fournies par X et peuvent ne pas se charger ici. Ouvrez directement le profil ou consultez vos choix de cookies.",
+        "action": "Ouvrir @CalorieToken sur X",
+        "settings": "Paramètres des cookies"
+      },
+      "bn": {
+        "description": "পোস্টগুলো X থেকে আসে এবং এখানে লোড নাও হতে পারে। সরাসরি প্রোফাইল খুলুন অথবা আপনার কুকি পছন্দগুলো দেখুন।",
+        "action": "X-এ @CalorieToken খুলুন",
+        "settings": "কুকি সেটিংস"
+      },
+      "pt": {
+        "description": "As publicações são fornecidas pelo X e podem não carregar aqui. Abra o perfil diretamente ou reveja as suas preferências de cookies.",
+        "action": "Abrir @CalorieToken no X",
+        "settings": "Definições de cookies"
+      },
+      "id": {
+        "description": "Postingan disediakan oleh X dan mungkin tidak dimuat di sini. Buka profil secara langsung atau tinjau pilihan cookie Anda.",
+        "action": "Buka @CalorieToken di X",
+        "settings": "Pengaturan cookie"
+      },
+      "ur": {
+        "description": "پوسٹس X فراہم کرتا ہے اور ممکن ہے یہاں لوڈ نہ ہوں۔ براہ راست پروفائل کھولیں یا کوکیز کے بارے میں اپنے انتخاب کا جائزہ لیں۔",
+        "action": "X پر ⁦@CalorieToken⁩ کھولیں",
+        "settings": "کوکی کی ترتیبات"
+      },
+      "nl": {
+        "description": "Berichten worden door X geleverd en laden hier mogelijk niet. Open het profiel rechtstreeks of bekijk je cookievoorkeuren.",
+        "action": "Open @CalorieToken op X",
+        "settings": "Cookie-instellingen"
+      }
+    },
+    "locales": [
+      {
+        "tag": "en",
+        "english_name": "English",
+        "native_name": "English",
+        "direction": "ltr",
+        "source": true,
+        "aliases": [
+          "en-US",
+          "en-GB"
+        ]
+      },
+      {
+        "tag": "zh-Hans",
+        "english_name": "Mandarin Chinese (Simplified)",
+        "native_name": "简体中文",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "zh",
+          "zh-CN",
+          "zh-SG"
+        ]
+      },
+      {
+        "tag": "hi",
+        "english_name": "Hindi",
+        "native_name": "हिन्दी",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "hi-IN"
+        ]
+      },
+      {
+        "tag": "es",
+        "english_name": "Spanish",
+        "native_name": "Español",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "es-ES",
+          "es-MX"
+        ]
+      },
+      {
+        "tag": "ar",
+        "english_name": "Modern Standard Arabic",
+        "native_name": "العربية",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ar-EG",
+          "ar-SA"
+        ]
+      },
+      {
+        "tag": "fr",
+        "english_name": "French",
+        "native_name": "Français",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "fr-FR",
+          "fr-CA"
+        ]
+      },
+      {
+        "tag": "bn",
+        "english_name": "Bengali",
+        "native_name": "বাংলা",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "bn-BD",
+          "bn-IN"
+        ]
+      },
+      {
+        "tag": "pt",
+        "english_name": "Portuguese",
+        "native_name": "Português",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "pt-BR",
+          "pt-PT"
+        ]
+      },
+      {
+        "tag": "id",
+        "english_name": "Indonesian",
+        "native_name": "Bahasa Indonesia",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "id-ID"
+        ]
+      },
+      {
+        "tag": "ur",
+        "english_name": "Urdu",
+        "native_name": "اردو",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ur-PK",
+          "ur-IN"
+        ]
+      },
+      {
+        "tag": "nl",
+        "english_name": "Dutch",
+        "native_name": "Nederlands",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "nl-NL",
+          "nl-BE"
+        ]
+      }
+    ]
+  },
+  "buyGuide": {
+    "publicPage": true,
+    "copy": {
+      "en": {
+        "eyebrow": "XRPL buying and selling guide",
+        "title": "Buy or sell CAL in four clear steps",
+        "intro": "CAL trades on the XRP Ledger DEX. Verify the complete issuer and currency code, not just the name or logo.",
+        "assetLabel": "Asset",
+        "issuerLabel": "Issuer",
+        "currencyLabel": "Currency code",
+        "walletTitle": "Set up an XRPL wallet",
+        "walletText": "Install Xaman from its official source. Keep recovery information offline; never enter it on this website or a trading page.",
+        "walletAction": "Visit Xaman",
+        "fundTitle": "Fund your wallet with XRP",
+        "fundText": "Xaman lists independent providers by country and currency. Check eligibility, identity checks, rates and fees; availability varies by region. Already hold BTC, ETH or another supported coin? AllChainBridge / SWFT is another possible route to XRP across networks. See section 3 below. Select the source coin and network, choose XRP on XRP Ledger as the destination, and check the available wallets, route, fees and any destination tag with SWFT. CAL is temporarily unavailable there.",
+        "fundAction": "Find options in Xaman",
+        "reserveText": "Keep enough XRP for the reserve and network fees shown by your wallet. Reserve requirements can change.",
+        "reserveAction": "XRPL reserve information",
+        "trustTitle": "Add the exact CAL trustline",
+        "trustText": "To receive CAL, review its issuer and currency code before approving the trustline in Xaman.",
+        "trustAction": "Open CAL trustline guide",
+        "tradeTitle": "Choose buy or sell",
+        "tradeText": "On XPMarket, check what you pay and receive, the issuers, route, fees, liquidity and price impact. Review the final request in your wallet.",
+        "tradeAction": "Open CAL on XPMarket",
+        "sellText": "To sell, select CAL as the asset you pay and check the asset you receive. A received token may need its own trustline. Converting proceeds to money in a bank account is a separate provider service.",
+        "moduleTitle": "Trading through external services",
+        "moduleText": "This website provides guidance and external links. Trading takes place with the selected external service and your wallet.",
+        "riskTitle": "Before you trade",
+        "riskText": "Trading can cause loss. Project-related wallets may provide liquidity and have a financial interest. Quotes, liquidity and execution are not guaranteed. This guide is not investment advice.",
+        "appText": "CalorieApp food search and food logging do not require buying CAL.",
+        "alternativesTitle": "Other trading interfaces",
+        "alternativesText": "Use the interface you already know and verify the same issuer and currency code."
+      },
+      "zh-Hans": {
+        "eyebrow": "XRPL 买卖指南",
+        "title": "四步买入或卖出 CAL",
+        "intro": "CAL 在 XRP Ledger DEX 上交易。请核对完整发行方地址和货币代码，而不只是名称或标志。",
+        "assetLabel": "资产",
+        "issuerLabel": "发行方",
+        "currencyLabel": "货币代码",
+        "walletTitle": "设置 XRPL 钱包",
+        "walletText": "从官方来源安装 Xaman。离线保存恢复信息，切勿在本网站或交易页面输入。",
+        "walletAction": "访问 Xaman",
+        "fundTitle": "向钱包存入 XRP",
+        "fundText": "Xaman 按国家和货币列出独立服务商。请核查资格、身份验证、汇率和费用；可用性因地区而异。 已有 BTC、ETH 或其他受支持的币？AllChainBridge / SWFT 也是跨网络兑换 XRP 的一种可能途径，见下方第 3 节。选择来源币和网络，将 XRP Ledger 上的 XRP 设为目标，并在 SWFT 检查可用钱包、路径、费用及所需的目标标签。CAL 暂时不可用。",
+        "fundAction": "在 Xaman 查看选项",
+        "reserveText": "保留足够的 XRP，以满足钱包显示的储备金和网络费用要求。储备金要求可能变化。",
+        "reserveAction": "XRPL 储备金说明",
+        "trustTitle": "添加准确的 CAL 信任线",
+        "trustText": "接收 CAL 前，请核对发行方地址和货币代码，再在 Xaman 中批准信任线。",
+        "trustAction": "打开 CAL 信任线指南",
+        "tradeTitle": "选择买入或卖出",
+        "tradeText": "在 XPMarket 核对支付和接收的资产、发行方、路径、费用、流动性和价格影响。在钱包中审核最终请求。",
+        "tradeAction": "在 XPMarket 打开 CAL",
+        "sellText": "卖出时，选择 CAL 作为支付资产，并核对接收的资产。接收的代币可能需要单独的信任线。将所得兑换为银行账户中的资金是服务商提供的另一项服务。",
+        "moduleTitle": "通过外部服务交易",
+        "moduleText": "本网站提供指南和外部链接。交易通过选定的外部服务及您的钱包进行。",
+        "riskTitle": "交易前须知",
+        "riskText": "交易可能造成损失。项目关联钱包可能提供流动性并具有经济利益。报价、流动性和成交均无保证。本指南不构成投资建议。",
+        "appText": "使用 CalorieApp 搜索食物和记录饮食无需购买 CAL。",
+        "alternativesTitle": "其他交易界面",
+        "alternativesText": "使用您熟悉的交易界面，并核对同一发行方地址和货币代码。"
+      },
+      "hi": {
+        "eyebrow": "XRPL खरीदने और बेचने की मार्गदर्शिका",
+        "title": "चार स्पष्ट चरणों में CAL खरीदें या बेचें",
+        "intro": "CAL का कारोबार XRP Ledger DEX पर होता है। केवल नाम या लोगो नहीं, पूरा जारीकर्ता पता और मुद्रा कोड जाँचें।",
+        "assetLabel": "संपत्ति",
+        "issuerLabel": "जारीकर्ता",
+        "currencyLabel": "मुद्रा कोड",
+        "walletTitle": "XRPL वॉलेट सेट करें",
+        "walletText": "आधिकारिक स्रोत से Xaman इंस्टॉल करें। रिकवरी जानकारी ऑफलाइन रखें; इसे इस वेबसाइट या किसी ट्रेडिंग पेज पर कभी न डालें।",
+        "walletAction": "Xaman पर जाएँ",
+        "fundTitle": "वॉलेट में XRP डालें",
+        "fundText": "Xaman देश और मुद्रा के अनुसार स्वतंत्र प्रदाता दिखाता है। पात्रता, पहचान जाँच, दरें और शुल्क जाँचें; उपलब्धता क्षेत्र के अनुसार बदलती है। क्या आपके पास BTC, ETH या कोई समर्थित कॉइन है? AllChainBridge / SWFT अलग नेटवर्क से XRP पाने का एक और संभावित रास्ता है। नीचे भाग 3 देखें। स्रोत कॉइन और नेटवर्क चुनें, गंतव्य में XRP Ledger का XRP चुनें और SWFT में उपलब्ध वॉलेट, मार्ग, शुल्क तथा आवश्यक डेस्टिनेशन टैग जाँचें। वहाँ CAL अस्थायी रूप से उपलब्ध नहीं है।",
+        "fundAction": "Xaman में विकल्प देखें",
+        "reserveText": "वॉलेट में दिखाए गए रिज़र्व और नेटवर्क शुल्क के लिए पर्याप्त XRP रखें। रिज़र्व की आवश्यकताएँ बदल सकती हैं।",
+        "reserveAction": "XRPL रिज़र्व की जानकारी",
+        "trustTitle": "सही CAL ट्रस्टलाइन जोड़ें",
+        "trustText": "CAL प्राप्त करने के लिए Xaman में ट्रस्टलाइन स्वीकृत करने से पहले जारीकर्ता और मुद्रा कोड जाँचें।",
+        "trustAction": "CAL ट्रस्टलाइन मार्गदर्शिका खोलें",
+        "tradeTitle": "खरीदना या बेचना चुनें",
+        "tradeText": "XPMarket पर भुगतान और प्राप्ति की संपत्ति, जारीकर्ता, रूट, शुल्क, लिक्विडिटी और मूल्य प्रभाव जाँचें। अंतिम अनुरोध अपने वॉलेट में जाँचें।",
+        "tradeAction": "XPMarket पर CAL खोलें",
+        "sellText": "बेचने के लिए भुगतान वाली संपत्ति के रूप में CAL चुनें और मिलने वाली संपत्ति जाँचें। प्राप्त होने वाले टोकन के लिए अलग ट्रस्टलाइन की आवश्यकता हो सकती है। प्राप्त राशि को बैंक खाते में पैसे के रूप में बदलना प्रदाता की अलग सेवा है।",
+        "moduleTitle": "बाहरी सेवाओं के माध्यम से कारोबार",
+        "moduleText": "यह वेबसाइट मार्गदर्शन और बाहरी लिंक देती है। कारोबार चुनी गई बाहरी सेवा और आपके वॉलेट के माध्यम से होता है।",
+        "riskTitle": "कारोबार से पहले",
+        "riskText": "कारोबार में नुकसान हो सकता है। परियोजना से जुड़े वॉलेट लिक्विडिटी दे सकते हैं और उनका वित्तीय हित हो सकता है। कोट, लिक्विडिटी और निष्पादन की गारंटी नहीं है। यह निवेश सलाह नहीं है।",
+        "appText": "CalorieApp में भोजन खोजने और दर्ज करने के लिए CAL खरीदना आवश्यक नहीं है।",
+        "alternativesTitle": "अन्य ट्रेडिंग इंटरफ़ेस",
+        "alternativesText": "जिस इंटरफ़ेस से आप परिचित हैं उसका उपयोग करें और वही जारीकर्ता पता तथा मुद्रा कोड सत्यापित करें।"
+      },
+      "es": {
+        "eyebrow": "Guía de compra y venta en XRPL",
+        "title": "Compra o vende CAL en cuatro pasos claros",
+        "intro": "CAL se negocia en el DEX de XRP Ledger. Comprueba el emisor completo y el código de moneda, no solo el nombre o el logotipo.",
+        "assetLabel": "Activo",
+        "issuerLabel": "Emisor",
+        "currencyLabel": "Código de moneda",
+        "walletTitle": "Configura una billetera XRPL",
+        "walletText": "Instala Xaman desde su fuente oficial. Guarda los datos de recuperación fuera de línea; nunca los introduzcas en esta web ni en una página de trading.",
+        "walletAction": "Visitar Xaman",
+        "fundTitle": "Ingresa XRP en tu billetera",
+        "fundText": "Xaman muestra proveedores independientes por país y moneda. Comprueba requisitos, verificación de identidad, tipos de cambio y comisiones; la disponibilidad varía por región. ¿Ya tienes BTC, ETH u otra moneda compatible? AllChainBridge / SWFT es otra posible vía hacia XRP entre redes; consulta la sección 3. Elige moneda y red de origen, XRP en XRP Ledger como destino y comprueba en SWFT carteras disponibles, ruta, costes y posible etiqueta de destino. CAL no está disponible allí temporalmente.",
+        "fundAction": "Ver opciones en Xaman",
+        "reserveText": "Mantén suficiente XRP para la reserva y las comisiones de red que indica tu billetera. Los requisitos de reserva pueden cambiar.",
+        "reserveAction": "Información sobre reservas XRPL",
+        "trustTitle": "Añade la línea de confianza CAL exacta",
+        "trustText": "Para recibir CAL, revisa su emisor y código de moneda antes de aprobar la línea de confianza en Xaman.",
+        "trustAction": "Abrir guía de línea de confianza CAL",
+        "tradeTitle": "Elige comprar o vender",
+        "tradeText": "En XPMarket, comprueba lo que pagas y recibes, los emisores, la ruta, las comisiones, la liquidez y el impacto en el precio. Revisa la solicitud final en tu billetera.",
+        "tradeAction": "Abrir CAL en XPMarket",
+        "sellText": "Para vender, selecciona CAL como el activo que pagas y comprueba el activo que recibes. El token recibido puede necesitar su propia línea de confianza. Convertir lo obtenido en dinero en una cuenta bancaria es un servicio independiente del proveedor.",
+        "moduleTitle": "Operar mediante servicios externos",
+        "moduleText": "Esta web ofrece orientación y enlaces externos. Las operaciones se realizan con el servicio externo elegido y tu billetera.",
+        "riskTitle": "Antes de operar",
+        "riskText": "Operar puede causar pérdidas. Las billeteras vinculadas al proyecto pueden aportar liquidez y tener un interés financiero. Las cotizaciones, la liquidez y la ejecución no están garantizadas. Esta guía no es asesoramiento de inversión.",
+        "appText": "Buscar alimentos y registrarlos en CalorieApp no requiere comprar CAL.",
+        "alternativesTitle": "Otras interfaces de negociación",
+        "alternativesText": "Usa la interfaz que ya conoces y verifica la misma dirección del emisor y el código de moneda."
+      },
+      "ar": {
+        "eyebrow": "دليل الشراء والبيع على XRPL",
+        "title": "اشترِ أو بِع CAL في أربع خطوات واضحة",
+        "intro": "يُتداول CAL على منصة XRP Ledger اللامركزية. تحقّق من عنوان المُصدر الكامل ورمز العملة، وليس الاسم أو الشعار فقط.",
+        "assetLabel": "الأصل",
+        "issuerLabel": "المُصدر",
+        "currencyLabel": "رمز العملة",
+        "walletTitle": "إعداد محفظة XRPL",
+        "walletText": "ثبّت Xaman من مصدره الرسمي. احفظ معلومات الاسترداد دون اتصال؛ ولا تدخلها أبداً في هذا الموقع أو صفحات التداول.",
+        "walletAction": "زيارة Xaman",
+        "fundTitle": "تمويل محفظتك بعملة XRP",
+        "fundText": "يعرض Xaman مزودين مستقلين حسب البلد والعملة. تحقّق من الأهلية وفحوص الهوية والأسعار والرسوم؛ فالتوفر يختلف حسب المنطقة. هل لديك BTC أو ETH أو عملة مدعومة أخرى؟ يتيح AllChainBridge / SWFT مسارًا محتملًا آخر إلى XRP بين الشبكات؛ انظر القسم 3 أدناه. اختر عملة المصدر وشبكتها، ثم XRP على XRP Ledger كوجهة، وتحقق لدى SWFT من المحافظ والمسار والرسوم وأي وسم وجهة مطلوب. CAL غير متاح هناك مؤقتًا.",
+        "fundAction": "عرض الخيارات في Xaman",
+        "reserveText": "احتفظ بما يكفي من XRP للاحتياطي ورسوم الشبكة التي تعرضها محفظتك. قد تتغير متطلبات الاحتياطي.",
+        "reserveAction": "معلومات احتياطي XRPL",
+        "trustTitle": "إضافة خط الثقة الصحيح لعملة CAL",
+        "trustText": "لاستلام CAL، راجع المُصدر ورمز العملة قبل الموافقة على خط الثقة في Xaman.",
+        "trustAction": "فتح دليل خط الثقة CAL",
+        "tradeTitle": "اختيار الشراء أو البيع",
+        "tradeText": "في XPMarket، تحقّق مما تدفعه وتستلمه والمُصدرين والمسار والرسوم والسيولة وتأثير السعر. راجع الطلب النهائي في محفظتك.",
+        "tradeAction": "فتح CAL على XPMarket",
+        "sellText": "للبيع، اختر CAL بوصفه الأصل الذي تدفعه وتحقّق من الأصل الذي تستلمه. قد يحتاج الرمز المستلم إلى خط ثقة خاص به. تحويل العائد إلى أموال في حساب مصرفي خدمة منفصلة يقدمها المزود.",
+        "moduleTitle": "التداول عبر خدمات خارجية",
+        "moduleText": "يوفّر هذا الموقع إرشادات وروابط خارجية. يتم التداول عبر الخدمة الخارجية المختارة ومحفظتك.",
+        "riskTitle": "قبل التداول",
+        "riskText": "قد يؤدي التداول إلى خسارة. قد توفّر محافظ مرتبطة بالمشروع السيولة وتكون لها مصلحة مالية. الأسعار والسيولة والتنفيذ غير مضمونة. هذا الدليل ليس نصيحة استثمارية.",
+        "appText": "لا يتطلب البحث عن الطعام وتسجيله في CalorieApp شراء CAL.",
+        "alternativesTitle": "واجهات تداول أخرى",
+        "alternativesText": "استخدم الواجهة التي تعرفها وتحقّق من عنوان المُصدر ورمز العملة نفسيهما."
+      },
+      "fr": {
+        "eyebrow": "Guide d’achat et de vente sur XRPL",
+        "title": "Acheter ou vendre CAL en quatre étapes claires",
+        "intro": "CAL se négocie sur le DEX du XRP Ledger. Vérifiez l’adresse complète de l’émetteur et le code de devise, pas seulement le nom ou le logo.",
+        "assetLabel": "Actif",
+        "issuerLabel": "Émetteur",
+        "currencyLabel": "Code de devise",
+        "walletTitle": "Configurer un portefeuille XRPL",
+        "walletText": "Installez Xaman depuis sa source officielle. Conservez les informations de récupération hors ligne ; ne les saisissez jamais sur ce site ou une page de trading.",
+        "walletAction": "Visiter Xaman",
+        "fundTitle": "Alimenter votre portefeuille en XRP",
+        "fundText": "Xaman présente des prestataires indépendants par pays et devise. Vérifiez l’éligibilité, les contrôles d’identité, les taux et les frais ; la disponibilité varie selon les régions. Vous détenez déjà du BTC, de l’ETH ou une autre monnaie prise en charge ? AllChainBridge / SWFT est une autre voie possible vers XRP entre réseaux ; voir la section 3. Choisissez la monnaie et le réseau source, puis XRP sur XRP Ledger comme destination. Vérifiez chez SWFT les portefeuilles, le parcours, les frais et l’éventuel tag de destination. CAL y est temporairement indisponible.",
+        "fundAction": "Voir les options dans Xaman",
+        "reserveText": "Gardez assez de XRP pour la réserve et les frais de réseau indiqués par votre portefeuille. Les exigences de réserve peuvent changer.",
+        "reserveAction": "Informations sur les réserves XRPL",
+        "trustTitle": "Ajouter la ligne de confiance CAL exacte",
+        "trustText": "Pour recevoir CAL, vérifiez son émetteur et son code de devise avant d’approuver la ligne de confiance dans Xaman.",
+        "trustAction": "Ouvrir le guide de ligne de confiance CAL",
+        "tradeTitle": "Choisir l’achat ou la vente",
+        "tradeText": "Sur XPMarket, vérifiez ce que vous payez et recevez, les émetteurs, le parcours, les frais, la liquidité et l’impact sur le prix. Vérifiez la demande finale dans votre portefeuille.",
+        "tradeAction": "Ouvrir CAL sur XPMarket",
+        "sellText": "Pour vendre, choisissez CAL comme actif à payer et vérifiez l’actif que vous recevez. Le jeton reçu peut nécessiter sa propre ligne de confiance. Convertir le produit de la vente en argent sur un compte bancaire est un service distinct du prestataire.",
+        "moduleTitle": "Négocier via des services externes",
+        "moduleText": "Ce site fournit des conseils pratiques et des liens externes. Les opérations passent par le service externe choisi et votre portefeuille.",
+        "riskTitle": "Avant de négocier",
+        "riskText": "Le trading peut entraîner des pertes. Des portefeuilles liés au projet peuvent fournir de la liquidité et avoir un intérêt financier. Les cotations, la liquidité et l’exécution ne sont pas garanties. Ce guide n’est pas un conseil en investissement.",
+        "appText": "La recherche et le journal alimentaires de CalorieApp ne nécessitent pas l’achat de CAL.",
+        "alternativesTitle": "Autres interfaces de négociation",
+        "alternativesText": "Utilisez l’interface que vous connaissez et vérifiez la même adresse d’émetteur et le même code de devise."
+      },
+      "bn": {
+        "eyebrow": "XRPL কেনাবেচার নির্দেশিকা",
+        "title": "চারটি স্পষ্ট ধাপে CAL কিনুন বা বিক্রি করুন",
+        "intro": "XRP Ledger DEX-এ CAL লেনদেন হয়। শুধু নাম বা লোগো নয়, সম্পূর্ণ ইস্যুকারীর ঠিকানা ও মুদ্রার কোড যাচাই করুন।",
+        "assetLabel": "সম্পদ",
+        "issuerLabel": "ইস্যুকারী",
+        "currencyLabel": "মুদ্রার কোড",
+        "walletTitle": "XRPL ওয়ালেট সেট করুন",
+        "walletText": "অফিশিয়াল উৎস থেকে Xaman ইনস্টল করুন। পুনরুদ্ধারের তথ্য অফলাইনে রাখুন; এই ওয়েবসাইট বা কোনো ট্রেডিং পেজে কখনো লিখবেন না।",
+        "walletAction": "Xaman দেখুন",
+        "fundTitle": "ওয়ালেটে XRP যোগ করুন",
+        "fundText": "Xaman দেশ ও মুদ্রা অনুযায়ী স্বাধীন সেবাদাতা দেখায়। যোগ্যতা, পরিচয় যাচাই, হার ও ফি পরীক্ষা করুন; অঞ্চলভেদে উপলভ্যতা বদলায়। ইতিমধ্যে BTC, ETH বা অন্য সমর্থিত কয়েন আছে? AllChainBridge / SWFT বিভিন্ন নেটওয়ার্ক থেকে XRP পাওয়ার আরেকটি সম্ভাব্য পথ; নিচের ৩ নম্বর অংশ দেখুন। উৎস কয়েন ও নেটওয়ার্ক বেছে নিন, গন্তব্য হিসেবে XRP Ledger-এর XRP দিন এবং SWFT-এ উপলব্ধ ওয়ালেট, পথ, ফি ও প্রয়োজনীয় ডেস্টিনেশন ট্যাগ যাচাই করুন। সেখানে CAL সাময়িকভাবে অনুপলব্ধ।",
+        "fundAction": "Xaman-এ বিকল্প দেখুন",
+        "reserveText": "ওয়ালেটে দেখানো রিজার্ভ ও নেটওয়ার্ক ফির জন্য পর্যাপ্ত XRP রাখুন। রিজার্ভের শর্ত বদলাতে পারে।",
+        "reserveAction": "XRPL রিজার্ভের তথ্য",
+        "trustTitle": "সঠিক CAL ট্রাস্টলাইন যোগ করুন",
+        "trustText": "CAL পেতে Xaman-এ ট্রাস্টলাইন অনুমোদনের আগে ইস্যুকারী ও মুদ্রার কোড যাচাই করুন।",
+        "trustAction": "CAL ট্রাস্টলাইন নির্দেশিকা খুলুন",
+        "tradeTitle": "কেনা বা বিক্রি বেছে নিন",
+        "tradeText": "XPMarket-এ কী দিচ্ছেন ও পাচ্ছেন, ইস্যুকারী, রুট, ফি, লিকুইডিটি এবং দামের প্রভাব যাচাই করুন। চূড়ান্ত অনুরোধ ওয়ালেটে যাচাই করুন।",
+        "tradeAction": "XPMarket-এ CAL খুলুন",
+        "sellText": "বিক্রি করতে যে সম্পদ দিয়ে পরিশোধ করবেন সেটি হিসেবে CAL বেছে নিন এবং যে সম্পদ পাবেন সেটি যাচাই করুন। প্রাপ্ত টোকেনের নিজস্ব ট্রাস্টলাইন প্রয়োজন হতে পারে। প্রাপ্ত সম্পদ ব্যাংক হিসাবে অর্থে রূপান্তর করা সেবাদাতার আলাদা সেবা।",
+        "moduleTitle": "বাইরের সেবার মাধ্যমে লেনদেন",
+        "moduleText": "এই ওয়েবসাইট নির্দেশনা ও বাইরের লিংক দেয়। নির্বাচিত বাইরের সেবা এবং আপনার ওয়ালেটের মাধ্যমে লেনদেন হয়।",
+        "riskTitle": "লেনদেনের আগে",
+        "riskText": "লেনদেনে ক্ষতি হতে পারে। প্রকল্প-সংশ্লিষ্ট ওয়ালেট লিকুইডিটি দিতে পারে এবং তাদের আর্থিক স্বার্থ থাকতে পারে। দর, লিকুইডিটি ও লেনদেন সম্পাদনের নিশ্চয়তা নেই। এটি বিনিয়োগের পরামর্শ নয়।",
+        "appText": "CalorieApp-এ খাবার খুঁজতে বা লিখে রাখতে CAL কেনার প্রয়োজন নেই।",
+        "alternativesTitle": "অন্যান্য ট্রেডিং ইন্টারফেস",
+        "alternativesText": "আপনার পরিচিত ইন্টারফেস ব্যবহার করুন এবং একই ইস্যুকারীর ঠিকানা ও মুদ্রার কোড যাচাই করুন।"
+      },
+      "pt": {
+        "eyebrow": "Guia de compra e venda na XRPL",
+        "title": "Compre ou venda CAL em quatro passos claros",
+        "intro": "CAL é negociado na DEX do XRP Ledger. Verifique o endereço completo do emissor e o código da moeda, não apenas o nome ou o logótipo.",
+        "assetLabel": "Ativo",
+        "issuerLabel": "Emissor",
+        "currencyLabel": "Código da moeda",
+        "walletTitle": "Configure uma carteira XRPL",
+        "walletText": "Instale o Xaman a partir da fonte oficial. Guarde os dados de recuperação offline; nunca os introduza neste site ou numa página de negociação.",
+        "walletAction": "Visitar Xaman",
+        "fundTitle": "Adicione XRP à sua carteira",
+        "fundText": "O Xaman apresenta prestadores independentes por país e moeda. Verifique elegibilidade, identificação, taxas de câmbio e comissões; a disponibilidade varia por região. Já tem BTC, ETH ou outra moeda compatível? AllChainBridge / SWFT é outra possível via para XRP entre redes; veja a secção 3. Escolha a moeda e rede de origem e XRP na XRP Ledger como destino. Confirme no SWFT as carteiras disponíveis, o percurso, as taxas e uma eventual etiqueta de destino. CAL está temporariamente indisponível ali.",
+        "fundAction": "Ver opções no Xaman",
+        "reserveText": "Mantenha XRP suficiente para a reserva e as taxas de rede indicadas pela carteira. Os requisitos de reserva podem mudar.",
+        "reserveAction": "Informações sobre reservas XRPL",
+        "trustTitle": "Adicione a linha de confiança CAL exata",
+        "trustText": "Para receber CAL, verifique o emissor e o código da moeda antes de aprovar a linha de confiança no Xaman.",
+        "trustAction": "Abrir guia da linha de confiança CAL",
+        "tradeTitle": "Escolha comprar ou vender",
+        "tradeText": "Na XPMarket, confira o que paga e recebe, os emissores, a rota, as taxas, a liquidez e o impacto no preço. Reveja o pedido final na carteira.",
+        "tradeAction": "Abrir CAL na XPMarket",
+        "sellText": "Para vender, selecione CAL como o ativo que paga e verifique o ativo que recebe. O token recebido pode precisar de uma linha de confiança própria. Converter o resultado da venda em dinheiro numa conta bancária é um serviço separado do prestador.",
+        "moduleTitle": "Negociação através de serviços externos",
+        "moduleText": "Este site fornece orientação e links externos. A negociação ocorre através do serviço externo escolhido e da sua carteira.",
+        "riskTitle": "Antes de negociar",
+        "riskText": "A negociação pode causar perdas. Carteiras ligadas ao projeto podem fornecer liquidez e ter um interesse financeiro. Cotações, liquidez e execução não são garantidas. Este guia não é aconselhamento de investimento.",
+        "appText": "A pesquisa e o registo de alimentos na CalorieApp não exigem a compra de CAL.",
+        "alternativesTitle": "Outras interfaces de negociação",
+        "alternativesText": "Use a interface que já conhece e verifique o mesmo endereço do emissor e o mesmo código da moeda."
+      },
+      "id": {
+        "eyebrow": "Panduan jual beli XRPL",
+        "title": "Beli atau jual CAL dalam empat langkah jelas",
+        "intro": "CAL diperdagangkan di XRP Ledger DEX. Verifikasi alamat penerbit lengkap dan kode mata uang, bukan hanya nama atau logo.",
+        "assetLabel": "Aset",
+        "issuerLabel": "Penerbit",
+        "currencyLabel": "Kode mata uang",
+        "walletTitle": "Siapkan dompet XRPL",
+        "walletText": "Instal Xaman dari sumber resminya. Simpan informasi pemulihan secara offline; jangan pernah memasukkannya di situs ini atau halaman perdagangan.",
+        "walletAction": "Kunjungi Xaman",
+        "fundTitle": "Isi dompet Anda dengan XRP",
+        "fundText": "Xaman menampilkan penyedia independen berdasarkan negara dan mata uang. Periksa kelayakan, verifikasi identitas, kurs, dan biaya; ketersediaan berbeda menurut wilayah. Sudah memiliki BTC, ETH, atau koin lain yang didukung? AllChainBridge / SWFT adalah jalur lain yang mungkin tersedia menuju XRP lintas jaringan; lihat bagian 3. Pilih koin dan jaringan asal, XRP di XRP Ledger sebagai tujuan, lalu periksa dompet yang tersedia, rute, biaya, dan tag tujuan yang diperlukan di SWFT. CAL sementara tidak tersedia di sana.",
+        "fundAction": "Lihat pilihan di Xaman",
+        "reserveText": "Sisakan cukup XRP untuk cadangan dan biaya jaringan yang ditampilkan dompet Anda. Persyaratan cadangan dapat berubah.",
+        "reserveAction": "Informasi cadangan XRPL",
+        "trustTitle": "Tambahkan trustline CAL yang tepat",
+        "trustText": "Untuk menerima CAL, periksa penerbit dan kode mata uangnya sebelum menyetujui trustline di Xaman.",
+        "trustAction": "Buka panduan trustline CAL",
+        "tradeTitle": "Pilih beli atau jual",
+        "tradeText": "Di XPMarket, periksa apa yang dibayar dan diterima, penerbit, rute, biaya, likuiditas, dan dampak harga. Tinjau permintaan akhir di dompet Anda.",
+        "tradeAction": "Buka CAL di XPMarket",
+        "sellText": "Untuk menjual, pilih CAL sebagai aset yang Anda bayarkan dan periksa aset yang diterima. Token yang diterima mungkin memerlukan trustline sendiri. Mengubah hasil penjualan menjadi uang di rekening bank adalah layanan penyedia yang terpisah.",
+        "moduleTitle": "Perdagangan melalui layanan eksternal",
+        "moduleText": "Situs ini menyediakan panduan dan tautan eksternal. Perdagangan berlangsung melalui layanan eksternal pilihan Anda dan dompet Anda.",
+        "riskTitle": "Sebelum berdagang",
+        "riskText": "Perdagangan dapat menyebabkan kerugian. Dompet terkait proyek mungkin menyediakan likuiditas dan memiliki kepentingan finansial. Harga, likuiditas, dan eksekusi tidak dijamin. Panduan ini bukan saran investasi.",
+        "appText": "Pencarian dan pencatatan makanan di CalorieApp tidak memerlukan pembelian CAL.",
+        "alternativesTitle": "Antarmuka perdagangan lainnya",
+        "alternativesText": "Gunakan antarmuka yang sudah Anda kenal dan verifikasi alamat penerbit serta kode mata uang yang sama."
+      },
+      "ur": {
+        "eyebrow": "XRPL خرید و فروخت کی رہنمائی",
+        "title": "چار واضح مراحل میں CAL خریدیں یا بیچیں",
+        "intro": "CAL کی تجارت XRP Ledger DEX پر ہوتی ہے۔ صرف نام یا لوگو نہیں، جاری کنندہ کا مکمل پتہ اور کرنسی کوڈ جانچیں۔",
+        "assetLabel": "اثاثہ",
+        "issuerLabel": "جاری کنندہ",
+        "currencyLabel": "کرنسی کوڈ",
+        "walletTitle": "XRPL والیٹ بنائیں",
+        "walletText": "Xaman اس کے سرکاری ذریعے سے انسٹال کریں۔ بحالی کی معلومات آف لائن رکھیں؛ انہیں اس ویب سائٹ یا تجارتی صفحے پر کبھی درج نہ کریں۔",
+        "walletAction": "Xaman دیکھیں",
+        "fundTitle": "والیٹ میں XRP شامل کریں",
+        "fundText": "Xaman ملک اور کرنسی کے مطابق آزاد فراہم کنندگان دکھاتا ہے۔ اہلیت، شناخت کی جانچ، شرح اور فیس دیکھیں؛ دستیابی علاقے کے لحاظ سے بدلتی ہے۔ کیا آپ کے پاس BTC، ETH یا کوئی معاون کوائن ہے؟ AllChainBridge / SWFT مختلف نیٹ ورکس سے XRP حاصل کرنے کا ایک اور ممکنہ راستہ ہے؛ نیچے حصہ 3 دیکھیں۔ اصل کوائن اور نیٹ ورک منتخب کریں، منزل میں XRP Ledger کا XRP چنیں اور SWFT پر دستیاب والیٹس، راستہ، فیس اور مطلوبہ ڈیسٹینیشن ٹیگ دیکھیں۔ وہاں CAL عارضی طور پر دستیاب نہیں۔",
+        "fundAction": "Xaman میں اختیارات دیکھیں",
+        "reserveText": "والیٹ میں دکھائے گئے ریزرو اور نیٹ ورک فیس کے لیے کافی XRP رکھیں۔ ریزرو کی ضروریات بدل سکتی ہیں۔",
+        "reserveAction": "XRPL ریزرو کی معلومات",
+        "trustTitle": "درست CAL ٹرسٹ لائن شامل کریں",
+        "trustText": "CAL وصول کرنے کے لیے Xaman میں ٹرسٹ لائن منظور کرنے سے پہلے جاری کنندہ اور کرنسی کوڈ جانچیں۔",
+        "trustAction": "CAL ٹرسٹ لائن کی رہنمائی کھولیں",
+        "tradeTitle": "خریدنا یا بیچنا منتخب کریں",
+        "tradeText": "XPMarket پر ادائیگی اور وصولی کے اثاثے، جاری کنندگان، راستہ، فیس، لیکویڈیٹی اور قیمت پر اثر جانچیں۔ حتمی درخواست والیٹ میں دیکھیں۔",
+        "tradeAction": "XPMarket پر CAL کھولیں",
+        "sellText": "بیچنے کے لیے ادائیگی کے اثاثے کے طور پر CAL منتخب کریں اور وصول ہونے والا اثاثہ جانچیں۔ وصول ہونے والے ٹوکن کو اپنی ٹرسٹ لائن درکار ہو سکتی ہے۔ حاصل رقم کو بینک اکاؤنٹ میں پیسوں میں تبدیل کرنا فراہم کنندہ کی الگ سروس ہے۔",
+        "moduleTitle": "بیرونی خدمات کے ذریعے تجارت",
+        "moduleText": "یہ ویب سائٹ رہنمائی اور بیرونی روابط دیتی ہے۔ تجارت منتخب بیرونی سروس اور آپ کے والیٹ کے ذریعے ہوتی ہے۔",
+        "riskTitle": "تجارت سے پہلے",
+        "riskText": "تجارت میں نقصان ہو سکتا ہے۔ منصوبے سے متعلق والیٹ لیکویڈیٹی فراہم کر سکتے ہیں اور ان کا مالی مفاد ہو سکتا ہے۔ قیمت، لیکویڈیٹی اور عمل درآمد کی ضمانت نہیں۔ یہ سرمایہ کاری کا مشورہ نہیں ہے۔",
+        "appText": "CalorieApp میں خوراک تلاش کرنے اور درج کرنے کے لیے CAL خریدنا ضروری نہیں۔",
+        "alternativesTitle": "دیگر تجارتی انٹرفیس",
+        "alternativesText": "وہ انٹرفیس استعمال کریں جس سے آپ واقف ہیں اور اسی جاری کنندہ کے پتے اور کرنسی کوڈ کی تصدیق کریں۔"
+      },
+      "nl": {
+        "eyebrow": "Koop- en verkoopgids voor XRPL",
+        "title": "Koop of verkoop CAL in vier duidelijke stappen",
+        "intro": "CAL wordt verhandeld op de XRP Ledger DEX. Controleer het volledige issueradres en de valutacode, niet alleen de naam of het logo.",
+        "assetLabel": "Token",
+        "issuerLabel": "Issuer",
+        "currencyLabel": "Valutacode",
+        "walletTitle": "Maak een XRPL-wallet aan",
+        "walletText": "Installeer Xaman via de officiële bron. Bewaar herstelgegevens offline; voer ze nooit op deze website of een handelspagina in.",
+        "walletAction": "Bezoek Xaman",
+        "fundTitle": "Zet XRP op je wallet",
+        "fundText": "Xaman toont onafhankelijke aanbieders per land en valuta. Controleer toelating, identiteitscontroles, koersen en kosten; beschikbaarheid verschilt per regio. Heb je al BTC, ETH of een andere ondersteunde munt? AllChainBridge / SWFT biedt ook een mogelijke route naar XRP tussen netwerken. Zie sectie 3 hieronder. Kies de bronmunt en het netwerk, kies XRP op XRP Ledger als bestemming en controleer bij SWFT de beschikbare wallets, route, kosten en een eventuele destination tag. CAL is daar tijdelijk niet beschikbaar.",
+        "fundAction": "Bekijk mogelijkheden in Xaman",
+        "reserveText": "Houd genoeg XRP aan voor de reserve en netwerkkosten die je wallet toont. Reservevereisten kunnen veranderen.",
+        "reserveAction": "Uitleg over XRPL-reserves",
+        "trustTitle": "Voeg de juiste CAL-trustline toe",
+        "trustText": "Controleer voor het ontvangen van CAL de issuer en valutacode voordat je de trustline in Xaman goedkeurt.",
+        "trustAction": "Open de CAL-trustlinegids",
+        "tradeTitle": "Kies kopen of verkopen",
+        "tradeText": "Controleer op XPMarket wat je betaalt en ontvangt, de issuers, route, kosten, liquiditeit en prijsimpact. Bekijk het definitieve verzoek in je wallet.",
+        "tradeAction": "Open CAL op XPMarket",
+        "sellText": "Kies bij verkopen CAL als de token waarmee je betaalt en controleer wat je ontvangt. Voor een ontvangen token kan een eigen trustline nodig zijn. De opbrengst omzetten naar geld op een bankrekening is een afzonderlijke dienst van een aanbieder.",
+        "moduleTitle": "Handelen via externe diensten",
+        "moduleText": "Deze website biedt uitleg en externe links. Handelen gebeurt via de gekozen externe dienst en je wallet.",
+        "riskTitle": "Voordat je handelt",
+        "riskText": "Handelen kan verlies opleveren. Projectgerelateerde wallets kunnen liquiditeit leveren en een financieel belang hebben. Koersen, liquiditeit en uitvoering zijn niet gegarandeerd. Deze gids is geen beleggingsadvies.",
+        "appText": "Voor voedsel zoeken en je voedingslogboek in CalorieApp hoef je geen CAL te kopen.",
+        "alternativesTitle": "Andere handelsinterfaces",
+        "alternativesText": "Gebruik de interface die je al kent en controleer hetzelfde issueradres en dezelfde valutacode."
+      }
+    },
+    "locales": [
+      {
+        "tag": "en",
+        "english_name": "English",
+        "native_name": "English",
+        "direction": "ltr",
+        "source": true,
+        "aliases": [
+          "en-US",
+          "en-GB"
+        ]
+      },
+      {
+        "tag": "zh-Hans",
+        "english_name": "Mandarin Chinese (Simplified)",
+        "native_name": "简体中文",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "zh",
+          "zh-CN",
+          "zh-SG"
+        ]
+      },
+      {
+        "tag": "hi",
+        "english_name": "Hindi",
+        "native_name": "हिन्दी",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "hi-IN"
+        ]
+      },
+      {
+        "tag": "es",
+        "english_name": "Spanish",
+        "native_name": "Español",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "es-ES",
+          "es-MX"
+        ]
+      },
+      {
+        "tag": "ar",
+        "english_name": "Modern Standard Arabic",
+        "native_name": "العربية",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ar-EG",
+          "ar-SA"
+        ]
+      },
+      {
+        "tag": "fr",
+        "english_name": "French",
+        "native_name": "Français",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "fr-FR",
+          "fr-CA"
+        ]
+      },
+      {
+        "tag": "bn",
+        "english_name": "Bengali",
+        "native_name": "বাংলা",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "bn-BD",
+          "bn-IN"
+        ]
+      },
+      {
+        "tag": "pt",
+        "english_name": "Portuguese",
+        "native_name": "Português",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "pt-BR",
+          "pt-PT"
+        ]
+      },
+      {
+        "tag": "id",
+        "english_name": "Indonesian",
+        "native_name": "Bahasa Indonesia",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "id-ID"
+        ]
+      },
+      {
+        "tag": "ur",
+        "english_name": "Urdu",
+        "native_name": "اردو",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ur-PK",
+          "ur-IN"
+        ]
+      },
+      {
+        "tag": "nl",
+        "english_name": "Dutch",
+        "native_name": "Nederlands",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "nl-NL",
+          "nl-BE"
+        ]
+      }
+    ]
+  },
+  "trustlinePage": true,
+  "tokenomics": {
+    "publicPage": true,
+    "copy": {
+      "en": {
+        "statusTitle": "Airdrops completed",
+        "status": "All airdrops are completed, as confirmed by the project on 2026-09-09. The published chart is retained as historical context; earlier references to future airdrops no longer apply.",
+        "giveaways": "A remaining giveaway allocation will be stated after distributions, internal transfers and liquidity positions have been reconciled.",
+        "walletTitle": "Consolidation wallet",
+        "description": "Project wallet for consolidated CalorieToken funds. Its balance is not a statement of the remaining giveaway allocation.",
+        "liquidity": "At the ledger check on 2026-09-09, this wallet held a liquidity position in the CAL/XRP AMM. The project therefore has a financial interest in this pool.",
+        "action": "View wallet on XPMarket (new tab)"
+      },
+      "zh-Hans": {
+        "statusTitle": "空投已完成",
+        "status": "项目方于 2026-09-09 确认，所有空投均已完成。保留已发布图表作为历史资料；其中关于未来空投的说明已不再适用。",
+        "giveaways": "在核对分发、内部转账和流动性头寸后，将公布剩余赠送额度。",
+        "walletTitle": "归集钱包",
+        "description": "用于归集 CalorieToken 项目资金的钱包。其余额不代表剩余赠送额度。",
+        "liquidity": "在 2026-09-09 的账本核查中，此钱包持有 CAL/XRP AMM 的流动性头寸。因此，项目在该资金池中具有经济利益。",
+        "action": "在 XPMarket 查看钱包（新标签页）"
+      },
+      "hi": {
+        "statusTitle": "एयरड्रॉप पूरे हो चुके हैं",
+        "status": "परियोजना ने 2026-09-09 को पुष्टि की कि सभी एयरड्रॉप पूरे हो चुके हैं। प्रकाशित चार्ट ऐतिहासिक संदर्भ के लिए रखा गया है; भविष्य के एयरड्रॉप के पुराने उल्लेख अब लागू नहीं होते।",
+        "giveaways": "वितरण, आंतरिक हस्तांतरण और लिक्विडिटी पोज़िशन का मिलान करने के बाद शेष गिवअवे आवंटन बताया जाएगा।",
+        "walletTitle": "समेकन वॉलेट",
+        "description": "CalorieToken परियोजना की समेकित निधियों का वॉलेट। इसका बैलेंस शेष गिवअवे आवंटन नहीं दर्शाता।",
+        "liquidity": "2026-09-09 की लेजर जाँच के समय इस वॉलेट की CAL/XRP AMM में लिक्विडिटी पोज़िशन थी। इसलिए इस पूल में परियोजना का वित्तीय हित है।",
+        "action": "XPMarket पर वॉलेट देखें (नया टैब)"
+      },
+      "es": {
+        "statusTitle": "Airdrops completados",
+        "status": "El proyecto confirmó el 2026-09-09 que todos los airdrops han finalizado. El gráfico publicado se conserva como referencia histórica; las menciones anteriores a futuros airdrops ya no se aplican.",
+        "giveaways": "La asignación restante para sorteos y regalos se indicará tras conciliar las distribuciones, las transferencias internas y las posiciones de liquidez.",
+        "walletTitle": "Billetera de consolidación",
+        "description": "Billetera del proyecto para fondos consolidados de CalorieToken. Su saldo no indica la asignación restante para sorteos y regalos.",
+        "liquidity": "En la comprobación del ledger del 2026-09-09, esta billetera mantenía una posición de liquidez en el AMM CAL/XRP. Por tanto, el proyecto tiene un interés financiero en este pool.",
+        "action": "Ver billetera en XPMarket (nueva pestaña)"
+      },
+      "ar": {
+        "statusTitle": "اكتملت عمليات التوزيع المجاني",
+        "status": "أكد المشروع بتاريخ 2026-09-09 اكتمال جميع عمليات التوزيع المجاني (airdrop). يُحتفظ بالمخطط المنشور كسياق تاريخي؛ ولم تعد الإشارات السابقة إلى عمليات توزيع مستقبلية سارية.",
+        "giveaways": "سيُذكر المخصص المتبقي للهدايا بعد مطابقة التوزيعات والتحويلات الداخلية ومراكز السيولة.",
+        "walletTitle": "محفظة التجميع",
+        "description": "محفظة المشروع لتجميع أموال CalorieToken. لا يمثل رصيدها المخصص المتبقي للهدايا.",
+        "liquidity": "عند فحص السجل بتاريخ 2026-09-09، كانت لهذه المحفظة حصة سيولة في مجمع CAL/XRP AMM. ولذلك للمشروع مصلحة مالية في هذا المجمع.",
+        "action": "عرض المحفظة على XPMarket (علامة تبويب جديدة)"
+      },
+      "fr": {
+        "statusTitle": "Airdrops terminés",
+        "status": "Le projet a confirmé le 2026-09-09 que tous les airdrops sont terminés. Le graphique publié est conservé à titre historique ; les anciennes mentions de futurs airdrops ne sont plus applicables.",
+        "giveaways": "Le solde alloué aux cadeaux sera indiqué après rapprochement des distributions, des transferts internes et des positions de liquidité.",
+        "walletTitle": "Portefeuille de consolidation",
+        "description": "Portefeuille du projet destiné aux fonds consolidés de CalorieToken. Son solde ne représente pas le montant restant alloué aux cadeaux.",
+        "liquidity": "Lors de la vérification du registre le 2026-09-09, ce portefeuille détenait une position de liquidité dans l’AMM CAL/XRP. Le projet a donc un intérêt financier dans ce pool.",
+        "action": "Voir le portefeuille sur XPMarket (nouvel onglet)"
+      },
+      "bn": {
+        "statusTitle": "এয়ারড্রপ সম্পন্ন হয়েছে",
+        "status": "প্রকল্পটি 2026-09-09 তারিখে নিশ্চিত করেছে যে সব এয়ারড্রপ সম্পন্ন হয়েছে। প্রকাশিত চার্টটি ঐতিহাসিক তথ্য হিসেবে রাখা হয়েছে; ভবিষ্যৎ এয়ারড্রপের পুরোনো উল্লেখ আর প্রযোজ্য নয়।",
+        "giveaways": "বিতরণ, অভ্যন্তরীণ স্থানান্তর এবং লিকুইডিটি পজিশন মিলিয়ে দেখার পর গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ জানানো হবে।",
+        "walletTitle": "একত্রীকরণ ওয়ালেট",
+        "description": "CalorieToken প্রকল্পের একত্রিত তহবিলের ওয়ালেট। এর ব্যালেন্স গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ নির্দেশ করে না।",
+        "liquidity": "2026-09-09 তারিখে লেজার যাচাইয়ের সময় এই ওয়ালেটের CAL/XRP AMM-এ লিকুইডিটি পজিশন ছিল। তাই এই পুলে প্রকল্পটির আর্থিক স্বার্থ রয়েছে।",
+        "action": "XPMarket-এ ওয়ালেট দেখুন (নতুন ট্যাব)"
+      },
+      "pt": {
+        "statusTitle": "Airdrops concluídos",
+        "status": "O projeto confirmou em 2026-09-09 que todos os airdrops foram concluídos. O gráfico publicado é mantido como referência histórica; as menções anteriores a futuros airdrops já não se aplicam.",
+        "giveaways": "A alocação restante para brindes será indicada após a reconciliação das distribuições, transferências internas e posições de liquidez.",
+        "walletTitle": "Carteira de consolidação",
+        "description": "Carteira do projeto para fundos consolidados de CalorieToken. O seu saldo não representa a alocação restante para brindes.",
+        "liquidity": "Na verificação do ledger em 2026-09-09, esta carteira mantinha uma posição de liquidez no AMM CAL/XRP. Por isso, o projeto tem um interesse financeiro neste pool.",
+        "action": "Ver carteira no XPMarket (nova aba)"
+      },
+      "id": {
+        "statusTitle": "Airdrop telah selesai",
+        "status": "Proyek mengonfirmasi pada 2026-09-09 bahwa semua airdrop telah selesai. Grafik yang diterbitkan dipertahankan sebagai konteks historis; keterangan lama tentang airdrop mendatang tidak lagi berlaku.",
+        "giveaways": "Sisa alokasi giveaway akan dinyatakan setelah distribusi, transfer internal, dan posisi likuiditas direkonsiliasi.",
+        "walletTitle": "Dompet konsolidasi",
+        "description": "Dompet proyek untuk dana CalorieToken yang dikonsolidasikan. Saldonya tidak menyatakan sisa alokasi giveaway.",
+        "liquidity": "Pada pemeriksaan ledger tanggal 2026-09-09, dompet ini memiliki posisi likuiditas di AMM CAL/XRP. Karena itu, proyek memiliki kepentingan finansial dalam pool ini.",
+        "action": "Lihat dompet di XPMarket (tab baru)"
+      },
+      "ur": {
+        "statusTitle": "ایئرڈراپس مکمل ہو چکے ہیں",
+        "status": "منصوبے نے 2026-09-09 کو تصدیق کی کہ تمام ایئرڈراپس مکمل ہو چکے ہیں۔ شائع شدہ چارٹ تاریخی حوالے کے لیے برقرار ہے؛ آئندہ ایئرڈراپس کے پرانے حوالے اب لاگو نہیں ہوتے۔",
+        "giveaways": "تقسیم، داخلی منتقلیوں اور لیکویڈیٹی پوزیشنوں کا حساب ملانے کے بعد تحائف کے لیے باقی مختص مقدار بتائی جائے گی۔",
+        "walletTitle": "یکجا فنڈز کا والیٹ",
+        "description": "CalorieToken منصوبے کے یکجا فنڈز کا والیٹ۔ اس کا بیلنس تحائف کے لیے باقی مختص مقدار کو ظاہر نہیں کرتا۔",
+        "liquidity": "2026-09-09 کی لیجر جانچ کے وقت اس والیٹ کی CAL/XRP AMM میں لیکویڈیٹی پوزیشن تھی۔ اس لیے اس پول میں منصوبے کا مالی مفاد ہے۔",
+        "action": "XPMarket پر والیٹ دیکھیں (نیا ٹیب)"
+      },
+      "nl": {
+        "statusTitle": "Airdrops afgerond",
+        "status": "Alle airdrops zijn afgerond, zoals door het project bevestigd op 2026-09-09. De gepubliceerde grafiek blijft als historische toelichting staan; eerdere verwijzingen naar toekomstige airdrops zijn niet meer van toepassing.",
+        "giveaways": "Het resterende giveawaybudget wordt vermeld nadat uitdelingen, interne overboekingen en liquiditeitsposities met elkaar zijn afgestemd.",
+        "walletTitle": "Consolidatiewallet",
+        "description": "Projectwallet voor samengebrachte CalorieToken-fondsen. Het saldo geeft niet het resterende giveawaybudget aan.",
+        "liquidity": "Bij de ledgercontrole op 2026-09-09 had deze wallet een liquiditeitspositie in de CAL/XRP-AMM. Het project heeft daarmee een financieel belang in deze pool.",
+        "action": "Bekijk wallet op XPMarket (nieuw tabblad)"
+      }
+    },
+    "locales": [
+      {
+        "tag": "en",
+        "english_name": "English",
+        "native_name": "English",
+        "direction": "ltr",
+        "source": true,
+        "aliases": [
+          "en-US",
+          "en-GB"
+        ]
+      },
+      {
+        "tag": "zh-Hans",
+        "english_name": "Mandarin Chinese (Simplified)",
+        "native_name": "简体中文",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "zh",
+          "zh-CN",
+          "zh-SG"
+        ]
+      },
+      {
+        "tag": "hi",
+        "english_name": "Hindi",
+        "native_name": "हिन्दी",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "hi-IN"
+        ]
+      },
+      {
+        "tag": "es",
+        "english_name": "Spanish",
+        "native_name": "Español",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "es-ES",
+          "es-MX"
+        ]
+      },
+      {
+        "tag": "ar",
+        "english_name": "Modern Standard Arabic",
+        "native_name": "العربية",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ar-EG",
+          "ar-SA"
+        ]
+      },
+      {
+        "tag": "fr",
+        "english_name": "French",
+        "native_name": "Français",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "fr-FR",
+          "fr-CA"
+        ]
+      },
+      {
+        "tag": "bn",
+        "english_name": "Bengali",
+        "native_name": "বাংলা",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "bn-BD",
+          "bn-IN"
+        ]
+      },
+      {
+        "tag": "pt",
+        "english_name": "Portuguese",
+        "native_name": "Português",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "pt-BR",
+          "pt-PT"
+        ]
+      },
+      {
+        "tag": "id",
+        "english_name": "Indonesian",
+        "native_name": "Bahasa Indonesia",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "id-ID"
+        ]
+      },
+      {
+        "tag": "ur",
+        "english_name": "Urdu",
+        "native_name": "اردو",
+        "direction": "rtl",
+        "source": false,
+        "aliases": [
+          "ur-PK",
+          "ur-IN"
+        ]
+      },
+      {
+        "tag": "nl",
+        "english_name": "Dutch",
+        "native_name": "Nederlands",
+        "direction": "ltr",
+        "source": false,
+        "aliases": [
+          "nl-NL",
+          "nl-BE"
+        ]
+      }
+    ]
+  },
+  "trustline": {
+    "translations": {
+      "en": {
+        "copyIssuer": "Copy issuer",
+        "copyCurrency": "Copy currency code",
+        "copiedIssuer": "Copied issuer.",
+        "copiedCurrency": "Copied currency code.",
+        "manualIssuer": "Select the issuer above to copy it.",
+        "manualCurrency": "Select the currency code above to copy it.",
+        "signAction": "Set CAL trustline in Xaman",
+        "signLabel": "Create a CAL trustline request and review it in Xaman",
+        "before": "Before you continue",
+        "context": "A CAL trustline belongs to your XRPL wallet. Check the issuer and currency code in the request before signing. Food search and nutrition information in CalorieApp do not require a CAL trustline.",
+        "toolkit": "Open XRP Toolkit"
+      },
+      "zh-Hans": {
+        "copyIssuer": "复制发行方地址",
+        "copyCurrency": "复制货币代码",
+        "copiedIssuer": "已复制发行方地址。",
+        "copiedCurrency": "已复制货币代码。",
+        "manualIssuer": "请选择上方的发行方地址进行复制。",
+        "manualCurrency": "请选择上方的货币代码进行复制。",
+        "signAction": "在 Xaman 中设置 CAL 信任线",
+        "signLabel": "创建 CAL 信任线请求并在 Xaman 中核对",
+        "before": "继续之前",
+        "context": "CAL 信任线属于你的 XRPL 钱包。签署前，请核对请求中的发行方地址和货币代码。使用 CalorieApp 搜索食品和查看营养信息不需要 CAL 信任线。",
+        "toolkit": "打开 XRP Toolkit"
+      },
+      "hi": {
+        "copyIssuer": "जारीकर्ता का पता कॉपी करें",
+        "copyCurrency": "मुद्रा कोड कॉपी करें",
+        "copiedIssuer": "जारीकर्ता का पता कॉपी हो गया।",
+        "copiedCurrency": "मुद्रा कोड कॉपी हो गया।",
+        "manualIssuer": "कॉपी करने के लिए ऊपर दिया गया जारीकर्ता का पता चुनें।",
+        "manualCurrency": "कॉपी करने के लिए ऊपर दिया गया मुद्रा कोड चुनें।",
+        "signAction": "Xaman में CAL ट्रस्टलाइन सेट करें",
+        "signLabel": "CAL ट्रस्टलाइन अनुरोध बनाएं और Xaman में उसकी जाँच करें",
+        "before": "आगे बढ़ने से पहले",
+        "context": "CAL ट्रस्टलाइन आपके XRPL वॉलेट से जुड़ी होती है। हस्ताक्षर करने से पहले अनुरोध में जारीकर्ता का पता और मुद्रा कोड जाँचें। CalorieApp में खाद्य खोज और पोषण संबंधी जानकारी के लिए CAL ट्रस्टलाइन की आवश्यकता नहीं है।",
+        "toolkit": "XRP Toolkit खोलें"
+      },
+      "es": {
+        "copyIssuer": "Copiar emisor",
+        "copyCurrency": "Copiar código de moneda",
+        "copiedIssuer": "Emisor copiado.",
+        "copiedCurrency": "Código de moneda copiado.",
+        "manualIssuer": "Selecciona el emisor de arriba para copiarlo.",
+        "manualCurrency": "Selecciona el código de moneda de arriba para copiarlo.",
+        "signAction": "Configurar línea de confianza CAL en Xaman",
+        "signLabel": "Crear una solicitud de línea de confianza CAL y revisarla en Xaman",
+        "before": "Antes de continuar",
+        "context": "Una línea de confianza CAL pertenece a tu cartera XRPL. Comprueba el emisor y el código de moneda en la solicitud antes de firmar. La búsqueda de alimentos y la información nutricional de CalorieApp no requieren una línea de confianza CAL.",
+        "toolkit": "Abrir XRP Toolkit"
+      },
+      "ar": {
+        "copyIssuer": "نسخ عنوان المُصدر",
+        "copyCurrency": "نسخ رمز العملة",
+        "copiedIssuer": "تم نسخ عنوان المُصدر.",
+        "copiedCurrency": "تم نسخ رمز العملة.",
+        "manualIssuer": "حدّد عنوان المُصدر أعلاه لنسخه.",
+        "manualCurrency": "حدّد رمز العملة أعلاه لنسخه.",
+        "signAction": "إعداد خط ثقة ⁦CAL⁩ في ⁦Xaman⁩",
+        "signLabel": "إنشاء طلب خط ثقة ⁦CAL⁩ ومراجعته في ⁦Xaman⁩",
+        "before": "قبل المتابعة",
+        "context": "يرتبط خط ثقة ⁦CAL⁩ بمحفظتك على ⁦XRPL⁩. تحقّق من عنوان المُصدر ورمز العملة في الطلب قبل التوقيع. لا يتطلب البحث عن الأغذية وعرض المعلومات الغذائية في ⁦CalorieApp⁩ خط ثقة ⁦CAL⁩.",
+        "toolkit": "فتح ⁦XRP Toolkit⁩"
+      },
+      "fr": {
+        "copyIssuer": "Copier l’émetteur",
+        "copyCurrency": "Copier le code de devise",
+        "copiedIssuer": "Émetteur copié.",
+        "copiedCurrency": "Code de devise copié.",
+        "manualIssuer": "Sélectionnez l’émetteur ci-dessus pour le copier.",
+        "manualCurrency": "Sélectionnez le code de devise ci-dessus pour le copier.",
+        "signAction": "Configurer la ligne de confiance CAL dans Xaman",
+        "signLabel": "Créer une demande de ligne de confiance CAL et la vérifier dans Xaman",
+        "before": "Avant de continuer",
+        "context": "Une ligne de confiance CAL appartient à votre portefeuille XRPL. Vérifiez l’émetteur et le code de devise dans la demande avant de signer. La recherche d’aliments et les informations nutritionnelles dans CalorieApp ne nécessitent pas de ligne de confiance CAL.",
+        "toolkit": "Ouvrir XRP Toolkit"
+      },
+      "bn": {
+        "copyIssuer": "ইস্যুকারীর ঠিকানা কপি করুন",
+        "copyCurrency": "মুদ্রার কোড কপি করুন",
+        "copiedIssuer": "ইস্যুকারীর ঠিকানা কপি হয়েছে।",
+        "copiedCurrency": "মুদ্রার কোড কপি হয়েছে।",
+        "manualIssuer": "কপি করতে উপরের ইস্যুকারীর ঠিকানা নির্বাচন করুন।",
+        "manualCurrency": "কপি করতে উপরের মুদ্রার কোড নির্বাচন করুন।",
+        "signAction": "Xaman-এ CAL ট্রাস্টলাইন সেট করুন",
+        "signLabel": "CAL ট্রাস্টলাইনের অনুরোধ তৈরি করুন এবং Xaman-এ যাচাই করুন",
+        "before": "এগিয়ে যাওয়ার আগে",
+        "context": "CAL ট্রাস্টলাইন আপনার XRPL ওয়ালেটের সঙ্গে যুক্ত থাকে। স্বাক্ষর করার আগে অনুরোধের ইস্যুকারীর ঠিকানা ও মুদ্রার কোড যাচাই করুন। CalorieApp-এ খাবার খোঁজা এবং পুষ্টির তথ্য দেখার জন্য CAL ট্রাস্টলাইন প্রয়োজন হয় না।",
+        "toolkit": "XRP Toolkit খুলুন"
+      },
+      "pt": {
+        "copyIssuer": "Copiar emissor",
+        "copyCurrency": "Copiar código da moeda",
+        "copiedIssuer": "Emissor copiado.",
+        "copiedCurrency": "Código da moeda copiado.",
+        "manualIssuer": "Selecione o emissor acima para o copiar.",
+        "manualCurrency": "Selecione o código da moeda acima para o copiar.",
+        "signAction": "Configurar linha de confiança CAL no Xaman",
+        "signLabel": "Criar um pedido de linha de confiança CAL e verificá-lo no Xaman",
+        "before": "Antes de continuar",
+        "context": "Uma linha de confiança CAL pertence à sua carteira XRPL. Verifique o emissor e o código da moeda no pedido antes de assinar. A pesquisa de alimentos e as informações nutricionais na CalorieApp não exigem uma linha de confiança CAL.",
+        "toolkit": "Abrir XRP Toolkit"
+      },
+      "id": {
+        "copyIssuer": "Salin penerbit",
+        "copyCurrency": "Salin kode mata uang",
+        "copiedIssuer": "Penerbit disalin.",
+        "copiedCurrency": "Kode mata uang disalin.",
+        "manualIssuer": "Pilih penerbit di atas untuk menyalinnya.",
+        "manualCurrency": "Pilih kode mata uang di atas untuk menyalinnya.",
+        "signAction": "Atur trustline CAL di Xaman",
+        "signLabel": "Buat permintaan trustline CAL dan periksa di Xaman",
+        "before": "Sebelum melanjutkan",
+        "context": "Trustline CAL terhubung ke dompet XRPL Anda. Periksa penerbit dan kode mata uang dalam permintaan sebelum menandatangani. Pencarian makanan dan informasi gizi di CalorieApp tidak memerlukan trustline CAL.",
+        "toolkit": "Buka XRP Toolkit"
+      },
+      "ur": {
+        "copyIssuer": "جاری کنندہ کا پتہ کاپی کریں",
+        "copyCurrency": "کرنسی کوڈ کاپی کریں",
+        "copiedIssuer": "جاری کنندہ کا پتہ کاپی ہو گیا۔",
+        "copiedCurrency": "کرنسی کوڈ کاپی ہو گیا۔",
+        "manualIssuer": "کاپی کرنے کے لیے اوپر دیا گیا جاری کنندہ کا پتہ منتخب کریں۔",
+        "manualCurrency": "کاپی کرنے کے لیے اوپر دیا گیا کرنسی کوڈ منتخب کریں۔",
+        "signAction": "⁦Xaman⁩ میں ⁦CAL⁩ ٹرسٹ لائن قائم کریں",
+        "signLabel": "⁦CAL⁩ ٹرسٹ لائن کی درخواست بنائیں اور ⁦Xaman⁩ میں اس کی جانچ کریں",
+        "before": "آگے بڑھنے سے پہلے",
+        "context": "⁦CAL⁩ ٹرسٹ لائن آپ کے ⁦XRPL⁩ والیٹ سے منسلک ہوتی ہے۔ دستخط کرنے سے پہلے درخواست میں جاری کنندہ کا پتہ اور کرنسی کوڈ چیک کریں۔ ⁦CalorieApp⁩ میں کھانے کی تلاش اور غذائی معلومات کے لیے ⁦CAL⁩ ٹرسٹ لائن کی ضرورت نہیں ہے۔",
+        "toolkit": "⁦XRP Toolkit⁩ کھولیں"
+      },
+      "nl": {
+        "copyIssuer": "Issuer kopiëren",
+        "copyCurrency": "Valutacode kopiëren",
+        "copiedIssuer": "Issuer gekopieerd.",
+        "copiedCurrency": "Valutacode gekopieerd.",
+        "manualIssuer": "Selecteer de issuer hierboven om deze te kopiëren.",
+        "manualCurrency": "Selecteer de valutacode hierboven om deze te kopiëren.",
+        "signAction": "CAL-trustline instellen in Xaman",
+        "signLabel": "Maak een CAL-trustlineverzoek aan en controleer het in Xaman",
+        "before": "Voordat je verdergaat",
+        "context": "Een CAL-trustline hoort bij je XRPL-wallet. Controleer de issuer en de valutacode in het verzoek voordat je ondertekent. Voor het zoeken naar voedingsmiddelen en het bekijken van voedingsinformatie in CalorieApp is geen CAL-trustline nodig.",
+        "toolkit": "XRP Toolkit openen"
+      }
+    }
+  },
+  "richlist": {
+    "translations": {
+      "en": {
+        "region": "CalorieToken holders. Scroll sideways to see the complete table.",
+        "action": "My position",
+        "jump": "Go to my Richlist position"
+      },
+      "zh-Hans": {
+        "region": "CalorieToken 持有者。左右滚动以查看完整表格。",
+        "action": "我的排名",
+        "jump": "跳转到我在持有者排名中的位置"
+      },
+      "hi": {
+        "region": "CalorieToken धारक। पूरी तालिका देखने के लिए दाएँ या बाएँ स्क्रॉल करें।",
+        "action": "मेरा स्थान",
+        "jump": "धारकों की सूची में मेरे स्थान पर जाएँ"
+      },
+      "es": {
+        "region": "Titulares de CalorieToken. Desplázate horizontalmente para ver la tabla completa.",
+        "action": "Mi posición",
+        "jump": "Ir a mi posición en la lista de titulares"
+      },
+      "ar": {
+        "region": "حاملو CalorieToken. مرّر أفقياً لرؤية الجدول كاملاً.",
+        "action": "ترتيبي",
+        "jump": "انتقل إلى ترتيبي في قائمة الحاملين"
+      },
+      "fr": {
+        "region": "Détenteurs de CalorieToken. Faites défiler horizontalement pour voir le tableau complet.",
+        "action": "Ma position",
+        "jump": "Aller à ma position dans la liste des détenteurs"
+      },
+      "bn": {
+        "region": "CalorieToken ধারকরা। পুরো সারণিটি দেখতে পাশে স্ক্রল করুন।",
+        "action": "আমার অবস্থান",
+        "jump": "ধারকদের তালিকায় আমার অবস্থানে যান"
+      },
+      "pt": {
+        "region": "Detentores de CalorieToken. Desloque horizontalmente para ver a tabela completa.",
+        "action": "A minha posição",
+        "jump": "Ir para a minha posição na lista de detentores"
+      },
+      "id": {
+        "region": "Pemegang CalorieToken. Gulir ke samping untuk melihat seluruh tabel.",
+        "action": "Posisi saya",
+        "jump": "Buka posisi saya dalam daftar pemegang"
+      },
+      "ur": {
+        "region": "CalorieToken کے حاملین۔ مکمل جدول دیکھنے کے لیے دائیں یا بائیں اسکرول کریں۔",
+        "action": "میری پوزیشن",
+        "jump": "حاملین کی فہرست میں میری پوزیشن پر جائیں"
+      },
+      "nl": {
+        "region": "CalorieToken-houders. Scrol horizontaal om de hele tabel te bekijken.",
+        "action": "Mijn positie",
+        "jump": "Ga naar mijn positie in de Richlist"
+      }
+    }
+  },
+  "navigation": {
+    "translations": {
+      "en": {
+        "region": "Page shortcuts",
+        "home": "Go to Home",
+        "app": "Open CalorieApp",
+        "top": "Back to top",
+        "bottom": "Go to bottom",
+        "exchange": "CAL & Crypto"
+      },
+      "zh-Hans": {
+        "region": "页面快捷操作",
+        "home": "返回首页",
+        "app": "打开 CalorieApp",
+        "top": "返回顶部",
+        "bottom": "前往底部",
+        "exchange": "CAL & Crypto"
+      },
+      "hi": {
+        "region": "पेज शॉर्टकट",
+        "home": "होम पर जाएँ",
+        "app": "CalorieApp खोलें",
+        "top": "ऊपर लौटें",
+        "bottom": "नीचे जाएँ",
+        "exchange": "CAL & Crypto"
+      },
+      "es": {
+        "region": "Accesos de página",
+        "home": "Ir al inicio",
+        "app": "Abrir CalorieApp",
+        "top": "Volver arriba",
+        "bottom": "Ir abajo",
+        "exchange": "CAL & Crypto"
+      },
+      "ar": {
+        "region": "اختصارات الصفحة",
+        "home": "إلى الصفحة الرئيسية",
+        "app": "افتح ⁦CalorieApp⁩",
+        "top": "إلى أعلى الصفحة",
+        "bottom": "إلى أسفل الصفحة",
+        "exchange": "CAL & Crypto"
+      },
+      "fr": {
+        "region": "Raccourcis de la page",
+        "home": "Aller à l’accueil",
+        "app": "Ouvrir CalorieApp",
+        "top": "Revenir en haut",
+        "bottom": "Aller en bas",
+        "exchange": "CAL & Crypto"
+      },
+      "bn": {
+        "region": "পৃষ্ঠার শর্টকাট",
+        "home": "হোমে যান",
+        "app": "CalorieApp খুলুন",
+        "top": "উপরে ফিরুন",
+        "bottom": "নিচে যান",
+        "exchange": "CAL & Crypto"
+      },
+      "pt": {
+        "region": "Atalhos da página",
+        "home": "Ir para o início",
+        "app": "Abrir CalorieApp",
+        "top": "Voltar ao topo",
+        "bottom": "Ir para o fim",
+        "exchange": "CAL & Crypto"
+      },
+      "id": {
+        "region": "Pintasan halaman",
+        "home": "Ke beranda",
+        "app": "Buka CalorieApp",
+        "top": "Kembali ke atas",
+        "bottom": "Ke bagian bawah",
+        "exchange": "CAL & Crypto"
+      },
+      "ur": {
+        "region": "صفحے کے شارٹ کٹس",
+        "home": "ہوم پر جائیں",
+        "app": "⁦CalorieApp⁩ کھولیں",
+        "top": "اوپر واپس جائیں",
+        "bottom": "صفحے کے نیچے جائیں",
+        "exchange": "CAL & Crypto"
+      },
+      "nl": {
+        "region": "Paginasnelkoppelingen",
+        "home": "Naar de homepage",
+        "app": "Open CalorieApp",
+        "top": "Naar boven",
+        "bottom": "Naar beneden",
+        "exchange": "CAL & Crypto"
+      }
+    }
+  },
+  "appInformation": {
+    "en": {
+      "description": "Find food products, explore nutrition and keep your own food diary.",
+      "action": "Open CalorieApp",
+      "on_page": "CalorieApp is available above.",
+      "offAttribution": "Product data from {off} (database licence: {odbl}).",
+      "usdaAttribution": "Reference foods: {usda} · {cc0}."
+    },
+    "zh-Hans": {
+      "description": "查找食品、了解营养信息并记录自己的饮食日记。",
+      "action": "打开 CalorieApp",
+      "on_page": "CalorieApp 位于本页上方。",
+      "offAttribution": "产品数据来自 {off}（数据库许可协议：{odbl}）。",
+      "usdaAttribution": "参考食品数据：{usda} · {cc0}。"
+    },
+    "hi": {
+      "description": "खाद्य उत्पाद खोजें, पोषण संबंधी जानकारी देखें और अपनी भोजन डायरी रखें।",
+      "action": "CalorieApp खोलें",
+      "on_page": "CalorieApp इस पृष्ठ पर ऊपर उपलब्ध है।",
+      "offAttribution": "उत्पाद डेटा का स्रोत: {off} (डेटाबेस लाइसेंस: {odbl})।",
+      "usdaAttribution": "संदर्भ के लिए खाद्य डेटा: {usda} · {cc0}।"
+    },
+    "es": {
+      "description": "Busca alimentos, consulta su información nutricional y lleva tu propio diario de alimentación.",
+      "action": "Abrir CalorieApp",
+      "on_page": "CalorieApp está disponible más arriba en esta página.",
+      "offAttribution": "Datos de productos de {off} (licencia de la base de datos: {odbl}).",
+      "usdaAttribution": "Alimentos de referencia: {usda} · {cc0}."
+    },
+    "ar": {
+      "description": "ابحث عن المنتجات الغذائية، واطّلع على معلوماتها الغذائية، واحتفظ بسجل طعامك الخاص.",
+      "action": "افتح CalorieApp",
+      "on_page": "يتوفر CalorieApp في أعلى هذه الصفحة.",
+      "offAttribution": "بيانات المنتجات من {off} (ترخيص قاعدة البيانات: {odbl}).",
+      "usdaAttribution": "أغذية مرجعية: {usda} · {cc0}."
+    },
+    "fr": {
+      "description": "Recherchez des aliments, consultez leurs informations nutritionnelles et tenez votre propre journal alimentaire.",
+      "action": "Ouvrir CalorieApp",
+      "on_page": "CalorieApp est disponible plus haut sur cette page.",
+      "offAttribution": "Données produits issues de {off} (licence de la base de données : {odbl}).",
+      "usdaAttribution": "Aliments de référence : {usda} · {cc0}."
+    },
+    "bn": {
+      "description": "খাদ্যপণ্য খুঁজুন, পুষ্টির তথ্য দেখুন এবং নিজের খাবারের ডায়েরি রাখুন।",
+      "action": "CalorieApp খুলুন",
+      "on_page": "এই পৃষ্ঠার উপরে CalorieApp রয়েছে।",
+      "offAttribution": "পণ্যের ডেটার উৎস: {off} (ডেটাবেসের লাইসেন্স: {odbl})।",
+      "usdaAttribution": "তথ্যসূত্র হিসেবে দেওয়া খাদ্য: {usda} · {cc0}।"
+    },
+    "pt": {
+      "description": "Encontre alimentos, consulte informações nutricionais e mantenha o seu próprio diário alimentar.",
+      "action": "Abrir CalorieApp",
+      "on_page": "O CalorieApp está disponível acima nesta página.",
+      "offAttribution": "Dados de produtos de {off} (licença da base de dados: {odbl}).",
+      "usdaAttribution": "Alimentos de referência: {usda} · {cc0}."
+    },
+    "id": {
+      "description": "Cari produk makanan, lihat informasi gizi, dan buat catatan makanan pribadi Anda.",
+      "action": "Buka CalorieApp",
+      "on_page": "CalorieApp tersedia di bagian atas halaman ini.",
+      "offAttribution": "Data produk dari {off} (lisensi basis data: {odbl}).",
+      "usdaAttribution": "Makanan referensi: {usda} · {cc0}."
+    },
+    "ur": {
+      "description": "غذائی مصنوعات تلاش کریں، غذائیت کی معلومات دیکھیں اور اپنی خوراک کی ڈائری رکھیں۔",
+      "action": "CalorieApp کھولیں",
+      "on_page": "CalorieApp اس صفحے پر اوپر موجود ہے۔",
+      "offAttribution": "مصنوعات کے ڈیٹا کا ذریعہ: {off} (ڈیٹابیس کا لائسنس: {odbl})۔",
+      "usdaAttribution": "حوالے کے لیے غذاؤں کا ڈیٹا: {usda} · {cc0}۔"
+    },
+    "nl": {
+      "description": "Zoek voedingsproducten, bekijk voedingswaarden en houd je eigen eetdagboek bij.",
+      "action": "Open CalorieApp",
+      "on_page": "CalorieApp staat hierboven op deze pagina.",
+      "offAttribution": "Productgegevens van {off} (databaselicentie: {odbl}).",
+      "usdaAttribution": "Voedingsmiddelen ter referentie: {usda} · {cc0}."
+    }
+  },
+  "contentUpdates": [
+    {
+      "page": 6897,
+      "element": "vrhwjlwmuyzhctxiwehppdchpfudmyfvenev",
+      "paragraph": "yAa81",
+      "before": "Catalyze the future of finance with your contribution. Your donation fuels the development of the CalorieApp, unlocking new possibilities and enhancing the Calorie ecosystem. Join us in shaping a revolutionary financial experience – donate today.",
+      "after": "Voluntary contributions support work on CalorieApp and the wider CalorieToken project, including improvements to the food and nutrition experience."
+    },
+    {
+      "page": 6926,
+      "element": "qyhfzzcmfmqhtwpwgmcbfzlduqykzvyvbtdq",
+      "paragraph": "sytvs",
+      "before": "Donations",
+      "after": "Cart"
+    },
+    {
+      "page": 1205,
+      "element": "znktoxmqwoepzseukfugifuucdujbqzchmor",
+      "paragraph": "ucgdw",
+      "before": "Set your trustline on Xumm:",
+      "after": "Set your trustline with Xaman:"
+    },
+    {
+      "page": 1213,
+      "element": "aerjwzqjbkfkyvztwjairnowbewwguyontna",
+      "paragraph": "viurb",
+      "before": "Twitter",
+      "after": "X"
+    },
+    {
+      "page": 1213,
+      "element": "pwwjpwwzusazehemuxkltpyhfnahcbjbdqbm",
+      "paragraph": "ssvhe",
+      "before": "Linkedin",
+      "after": "LinkedIn"
+    },
+    {
+      "page": 1213,
+      "element": "fvpovwkleajvcexfhwyvetuktrzmdjhdijev",
+      "paragraph": "cimmn",
+      "before": "Youtube",
+      "after": "YouTube"
+    },
+    {
+      "page": 1213,
+      "element": "zGipNitpHNJY",
+      "paragraph": "oBMuJ",
+      "before": "New team members are coming",
+      "after": "Team updates"
+    }
+  ],
+  "usecases": [
+    {
+      "page": 1119,
+      "element": "adjzneiqkagtfdgjljxbaoqcsjclanpaxjwg",
+      "key": "calorieapp-usecase-context-1119",
+      "text": "This illustration explores a possible future use of Calorie in food delivery. Ordering and merchant payment services would require further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    },
+    {
+      "page": 1121,
+      "element": "pphvdqmaimxhjnifkigsfdcyguqulfrrhixk",
+      "key": "calorieapp-usecase-context-1121",
+      "text": "This illustration explores possible future uses of Calorie in cafes and bars. Payment applications and a Calorie debit card are concepts, rather than services offered by the current CalorieApp. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    },
+    {
+      "page": 1123,
+      "element": "csfqgofnazlhmpgmwplmyhcbhznuakdreimu",
+      "key": "calorieapp-usecase-context-1123",
+      "text": "This illustration explores a possible future use of Calorie for takeaway orders. Ordering and payment services would require further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    },
+    {
+      "page": 1125,
+      "element": "rnkchjwqjfoqimzlqcpdwbdfzbbyilnoksct",
+      "key": "calorieapp-usecase-context-1125",
+      "text": "This illustration explores possible future uses of Calorie in restaurants, including supplier payments and sharing bills. These functions belong to the longer-term vision. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    },
+    {
+      "page": 1127,
+      "element": "pqtstqgpfoxaayuvdzwipgwonqiicrcnvgmc",
+      "key": "calorieapp-usecase-context-1127",
+      "text": "This illustration explores possible future uses of Calorie in grocery shopping and loyalty programmes. Store payments, rewards and debit cards remain concepts that need further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    },
+    {
+      "page": 1129,
+      "element": "jamhytnywvwftxmjyfkchyazpxnpdcyshpbn",
+      "key": "calorieapp-usecase-context-1129",
+      "text": "This illustration explores possible future uses of Calorie between farmers, wholesalers and hospitality businesses. Supplier payments and business integrations belong to the longer-term vision. Today, CalorieApp provides food search, nutrition information and a personal food log."
+    }
+  ],
+  "articleNotes": [
+    {
+      "page": 7608,
+      "key": "calorie-editorial-context-7608-20260907",
+      "prefix": "Title: Embracing the Future: The Potential of CalorieToken as a DAO",
+      "text": "This article records a discussion from August 2024 about a possible DAO structure. A full transfer of the project to a DAO remains a future direction, not an announced completed transition. The legal and organisational references below belong to the article’s original period. For the current product scope, see the project FAQ.",
+      "label": "Project FAQ",
+      "href": "https://calorietoken.net/index.php/faq/"
+    },
+    {
+      "page": 7545,
+      "key": "calorie-editorial-context-7545-20260907",
+      "prefix": "Tackling Frontrunning on the XRPL: Our Journey to a Practical Solution",
+      "text": "This article records a proposed approach to unfunded XRPL offers. The XRP Ledger can remove unfunded offers when it encounters them during transaction processing; an OfferCancel transaction cancels an offer owned by its sending account. An external monitoring service does not automatically gain permission to cancel other accounts’ offers. The proposal below should not be read as evidence of a deployed CalorieApp service.",
+      "label": "XRPL offer lifecycle",
+      "href": "https://xrpl.org/docs/concepts/tokens/decentralized-exchange/offers"
+    },
+    {
+      "page": 7564,
+      "key": "calorie-editorial-context-7564-20260907",
+      "prefix": "CalorieToken: An Update on Our Journey and Future Plans",
+      "text": "This is a historical project update from 2024. Today, CalorieApp provides food search, nutrition information and a personal food log using Open Food Facts. The FoodRepo, BigchainDB and IPFS descriptions below record earlier development plans; they are not a description of the current web app’s deployed architecture. Team circumstances and listing aspirations should also be read in their original context.",
+      "label": "Open CalorieApp",
+      "href": "https://calorietoken.net/index.php/calorieapp/"
+    },
+    {
+      "page": 7569,
+      "key": "calorie-editorial-context-7569-20260907",
+      "prefix": "Exciting News: First Release of the CalorieApp Test APK on Android!",
+      "text": "This article concerns the earlier CalorieAppTestnet Android prototype. The APK link below is retained as development history and is not the current web app or a Play Store release. For the current food search, nutrition information and personal food log, open CalorieApp in your browser.",
+      "label": "Open CalorieApp",
+      "href": "https://calorietoken.net/index.php/calorieapp/"
+    },
+    {
+      "page": 7578,
+      "key": "calorie-editorial-context-7578-20260907",
+      "prefix": "Unlock Seamless Trading with Our Integrated Exchange",
+      "text": "This article describes the former embedded exchange experience. That integration is outside the current CalorieApp web version, which focuses on food search, nutrition information and a personal food log. The wallet counts, supported assets and trading instructions below are historical descriptions, not a current service list. For today’s product scope, see the project FAQ.",
+      "label": "Project FAQ",
+      "href": "https://calorietoken.net/index.php/faq/"
+    },
+    {
+      "page": 7573,
+      "key": "calorie-editorial-context-7573-20260907",
+      "prefix": "Exciting News: Our Donations Page is LIVE!",
+      "text": "This article announced the donation page in 2023. Voluntary contributions support work on CalorieApp and the wider project. The merchandise and NFT launch language below belongs to that historical announcement and does not confirm current availability. Read the current donation page and its terms before contributing.",
+      "label": "Donation information",
+      "href": "https://calorietoken.net/index.php/donate/"
+    },
+    {
+      "page": 7583,
+      "key": "calorie-editorial-context-7583-20260907",
+      "prefix": "CalorieToken Hackathon: Building the Future of Health and Blockchain",
+      "text": "This article records the 2023 CalorieToken hackathon and early development experiments. It is not an open invitation to a current competition, and the APK links refer to the earlier testnet prototype. New events will have their own announcements. The current browser app is available from the CalorieApp page.",
+      "label": "Open CalorieApp",
+      "href": "https://calorietoken.net/index.php/calorieapp/"
+    },
+    {
+      "page": 7575,
+      "key": "calorie-editorial-context-7575-20260907",
+      "prefix": "Enhancing Trust in the XRPL Ecosystem: The Importance of Verified Doma",
+      "text": "This article records the project’s work on domain and account information. Domain verification establishes a specific link between a domain and an account or validator; it is not an endorsement of every claim, service or token associated with that domain. A TOML entry claiming an account must be checked against that account’s on-ledger Domain field.",
+      "label": "XRPL TOML and account verification",
+      "href": "https://xrpl.org/docs/references/xrp-ledger-toml"
+    },
+    {
+      "page": 7587,
+      "key": "calorie-editorial-context-7587-20260907",
+      "prefix": "The Importance of Test Currency and Testing in Blockchain Development",
+      "text": "This article explains the role of test assets in the project’s early experiments. CalorieTest and Lipisa belong to that development context. Their mention does not mean that the current CalorieApp browser experience includes a test wallet, token faucet or payment service. Its current focus is food search, nutrition information and a personal food log.",
+      "label": "Open CalorieApp",
+      "href": "https://calorietoken.net/index.php/calorieapp/"
+    },
+    {
+      "page": 7591,
+      "key": "calorie-editorial-context-7591-20260907",
+      "prefix": "Discover the Future of Food with Calorie Token: A Comprehensive Overvi",
+      "text": "This is the project’s original 2023 overview. The allocation percentages describe the initial plan, not current wallet balances. The payment, NFT, inventory, private-key and BigchainDB/IPFS sections describe that early vision. Today, CalorieApp provides food search, nutrition information and a personal food log using Open Food Facts. The project FAQ explains the current scope.",
+      "label": "Project FAQ",
+      "href": "https://calorietoken.net/index.php/faq/"
+    }
+  ],
+  "donationCopy": {
+    "en": [
+      "Donation steps",
+      "Donation",
+      "Amount",
+      "Cart",
+      "Checkout"
+    ],
+    "zh-Hans": [
+      "捐赠步骤",
+      "捐赠",
+      "金额",
+      "购物车",
+      "结账"
+    ],
+    "hi": [
+      "दान के चरण",
+      "दान",
+      "राशि",
+      "कार्ट",
+      "चेकआउट"
+    ],
+    "es": [
+      "Pasos de la donación",
+      "Donación",
+      "Importe",
+      "Carrito",
+      "Finalizar compra"
+    ],
+    "ar": [
+      "خطوات التبرع",
+      "التبرع",
+      "المبلغ",
+      "السلة",
+      "إتمام الدفع"
+    ],
+    "fr": [
+      "Étapes du don",
+      "Don",
+      "Montant",
+      "Panier",
+      "Paiement"
+    ],
+    "bn": [
+      "অনুদানের ধাপ",
+      "অনুদান",
+      "পরিমাণ",
+      "কার্ট",
+      "চেকআউট"
+    ],
+    "pt": [
+      "Passos do donativo",
+      "Donativo",
+      "Montante",
+      "Carrinho",
+      "Finalizar compra"
+    ],
+    "id": [
+      "Langkah donasi",
+      "Donasi",
+      "Jumlah",
+      "Keranjang",
+      "Pembayaran"
+    ],
+    "ur": [
+      "عطیے کے مراحل",
+      "عطیہ",
+      "رقم",
+      "کارٹ",
+      "ادائیگی"
+    ],
+    "nl": [
+      "Donatiestappen",
+      "Donatie",
+      "Bedrag",
+      "Winkelwagen",
+      "Afrekenen"
+    ]
+  },
+  "faqUpdates": [
+    {
+      "before": "Calorie's mission is to establish a diverse network of partners within the food and beverage industry, integrate payment applications for companies and consumers, contribute to corporate social responsibility, and promote a healthier financial lifestyle.",
+      "after": "CalorieToken explores digital tools for the food and beverage sector. The current CalorieApp preview focuses on food search, nutrition information and a personal food log. Payment applications and business integrations belong to the wider project vision."
+    },
+    {
+      "before": "Calorie is a token built on the XRP Ledger, with a specific focus on the food and beverage industry. The goal of Calorie is to become the world's food token, providing a digital solution for payments and transactions within this industry.",
+      "after": "Calorie (CAL) is the project's token on the XRP Ledger. Food and beverage applications are its long-term focus. Buying or holding CAL is not required to search for food or keep a food log in CalorieApp."
+    },
+    {
+      "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes.",
+      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value."
+    },
+    {
+      "before": "This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
+      "after": "Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
+    },
+    {
+      "before": "Calorie aims to provide a solution for obtaining food from various distributors, including home delivery services, supermarkets, wholesalers, and hospitality establishments. By distributing digital tokens instead of physical money or food stamps, Calorie facilitates more efficient and secure transactions in meeting people's basic food needs.",
+      "after": "The use-case illustrations explore delivery, shops, hospitality and supply chains. They describe concepts. Ordering, merchant payments and token-based food assistance would require further development and participating organisations."
+    },
+    {
+      "before": "Calorie intends to offer POS system applications for companies in the F&B industry, develop customer web-apps, and implement transaction applications to make payments and transactions more seamless for both businesses and consumers.",
+      "after": "Point-of-sale and business payment integrations remain possible future developments. They are not available as merchant services in the current CalorieApp preview."
+    },
+    {
+      "before": "Calorie envisions its widespread integration in the food and beverage industry on a global scale. It will serve as a currency for consumers, producers/merchants, and investors, while also being a token governments can use to aid citizens' basic needs.",
+      "after": "The wider vision includes useful food data tools and possible payment applications for consumers and businesses. The roadmap separates current work from longer-term ideas; future adoption is not guaranteed."
+    },
+    {
+      "before": "Calorie aims to help users track their digital Calorie spending alongside their actual calorie intake. An application is in development to track both Calorie payments and nutritional values of consumed products. This assists users in managing their expenses and making healthier choices.",
+      "after": "CalorieApp helps users explore nutrition information and keep a personal food log. Combined payment and expense tracking belongs to the earlier broader vision and is not a feature of the current preview."
+    },
+    {
+      "before": "Calorie's use of the XRPL with its speed, low cost, scalability, and sustainability benefits existing systems. It helps companies implement more efficient and socially responsible practices.",
+      "after": "Responsible food information and practical tools are project goals. Using a ledger alone does not establish a measurable social or environmental benefit; those outcomes need evidence from an implemented use case."
+    },
+    {
+      "before": "Calorie's versatility allows it to cater to multiple F&B sectors, enabling governments to distribute tokens for food needs efficiently. This includes supermarkets, restaurants, and home delivery services.",
+      "after": "Token-based food assistance is a proposed use case. This page does not announce an operating government programme or an accepted food-benefit payment service."
+    },
+    {
+      "before": "CalorieApp is an upcoming all-in-one application that's being developed for consumers, producers, merchants, and investors within the food and beverage industry. This innovative app aims to transform how we engage with the food sector by providing an intuitive interface that simplifies transactions, enables easy nutritional tracking, and facilitates convenient expense management.",
+      "after": "CalorieApp is the project's browser-based preview for food search, nutrition information and a personal food log, using Open Food Facts. Website sign-in is connected through Xaman. Retail payments, an integrated exchange and business expense management are outside the current preview."
+    },
+    {
+      "before": "CalorieApp will be introduced in alpha and beta versions, initially catering to consumers with simple functionalities. Feedback from users during the beta phase will be used to improve the app before its official launch. The app will then undergo further enhancements to accommodate various user groups and corporate clients.",
+      "after": "The browser preview can already be explored from the CalorieApp page. The current roadmap records eight milestones and their status. Earlier Android and Testnet prototypes remain development history; additional services will need their own implementation and release announcement."
+    }
+  ],
+  "merchUpdates": [
+    {
+      "before": "Coming soon:",
+      "after": "Merchandise and NFT concepts"
+    },
+    {
+      "before": "Please be aware that regulatory processes are underway for both our NFTs and merchandise. While we're diligently working on developing our NFTs and ensuring the quality of our merchandise, regulatory clearances are required before we can proceed with advertising these offerings. These steps are crucial in supporting the funding for the CalorieToken project. We're actively engaged in securing the necessary regulatory approvals. Stay tuned for further updates on our progress!",
+      "after": "The illustrations show merchandise and NFT concepts from the project. This page does not offer an active sale or a confirmed launch date. Any future release will have its own announcement, availability information and terms."
+    }
+  ],
+  "sharedLabels": {
+    "en": {
+      "/": "Home",
+      "/whitepaper": "Whitepaper",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Trustline",
+      "/tokenomics-update": "Tokenomics update",
+      "/roadmap": "Roadmap",
+      "/richlist": "Richlist",
+      "/blog": "Blog",
+      "/contact": "Contact",
+      "/faq": "FAQ",
+      "/donate": "Donate",
+      "/merchnfts": "Merch&NFTs",
+      "/privacy-policy": "Privacy Policy",
+      "/terms-conditions": "Terms & Conditions"
+    },
+    "nl": {
+      "/": "Home",
+      "/whitepaper": "Whitepaper",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Trustline",
+      "/tokenomics-update": "Tokenomics-update",
+      "/roadmap": "Routekaart",
+      "/richlist": "Houderslijst",
+      "/blog": "Blog",
+      "/contact": "Contact",
+      "/faq": "Veelgestelde vragen",
+      "/donate": "Doneren",
+      "/merchnfts": "Merch & NFT’s",
+      "/privacy-policy": "Privacybeleid",
+      "/terms-conditions": "Algemene voorwaarden"
+    },
+    "zh-Hans": {
+      "/": "首页",
+      "/whitepaper": "白皮书",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "信任线",
+      "/tokenomics-update": "代币经济更新",
+      "/roadmap": "路线图",
+      "/richlist": "持有者排名",
+      "/blog": "博客",
+      "/contact": "联系",
+      "/faq": "常见问题",
+      "/donate": "捐赠",
+      "/merchnfts": "商品与 NFT",
+      "/privacy-policy": "隐私政策",
+      "/terms-conditions": "条款与条件"
+    },
+    "hi": {
+      "/": "होम",
+      "/whitepaper": "श्वेतपत्र",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "ट्रस्टलाइन",
+      "/tokenomics-update": "टोकन अर्थव्यवस्था अपडेट",
+      "/roadmap": "रोडमैप",
+      "/richlist": "धारकों की सूची",
+      "/blog": "ब्लॉग",
+      "/contact": "संपर्क",
+      "/faq": "अक्सर पूछे जाने वाले प्रश्न",
+      "/donate": "दान करें",
+      "/merchnfts": "उत्पाद और NFT",
+      "/privacy-policy": "गोपनीयता नीति",
+      "/terms-conditions": "नियम और शर्तें"
+    },
+    "es": {
+      "/": "Inicio",
+      "/whitepaper": "Libro blanco",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Línea de confianza",
+      "/tokenomics-update": "Actualización de tokenómica",
+      "/roadmap": "Hoja de ruta",
+      "/richlist": "Lista de titulares",
+      "/blog": "Blog",
+      "/contact": "Contacto",
+      "/faq": "Preguntas frecuentes",
+      "/donate": "Donar",
+      "/merchnfts": "Productos y NFT",
+      "/privacy-policy": "Política de privacidad",
+      "/terms-conditions": "Términos y condiciones"
+    },
+    "ar": {
+      "/": "الرئيسية",
+      "/whitepaper": "الورقة البيضاء",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "خط الثقة",
+      "/tokenomics-update": "تحديث اقتصاد الرمز",
+      "/roadmap": "خارطة الطريق",
+      "/richlist": "قائمة الحائزين",
+      "/blog": "المدونة",
+      "/contact": "اتصل بنا",
+      "/faq": "الأسئلة الشائعة",
+      "/donate": "تبرع",
+      "/merchnfts": "المنتجات وNFT",
+      "/privacy-policy": "سياسة الخصوصية",
+      "/terms-conditions": "الشروط والأحكام"
+    },
+    "fr": {
+      "/": "Accueil",
+      "/whitepaper": "Livre blanc",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Ligne de confiance",
+      "/tokenomics-update": "Mise à jour de la tokenomique",
+      "/roadmap": "Feuille de route",
+      "/richlist": "Liste des détenteurs",
+      "/blog": "Blog",
+      "/contact": "Contact",
+      "/faq": "Questions fréquentes",
+      "/donate": "Faire un don",
+      "/merchnfts": "Produits et NFT",
+      "/privacy-policy": "Politique de confidentialité",
+      "/terms-conditions": "Conditions générales"
+    },
+    "bn": {
+      "/": "হোম",
+      "/whitepaper": "শ্বেতপত্র",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "ট্রাস্টলাইন",
+      "/tokenomics-update": "টোকেন অর্থনীতি আপডেট",
+      "/roadmap": "রোডম্যাপ",
+      "/richlist": "ধারকদের তালিকা",
+      "/blog": "ব্লগ",
+      "/contact": "যোগাযোগ",
+      "/faq": "সাধারণ প্রশ্ন",
+      "/donate": "অনুদান দিন",
+      "/merchnfts": "পণ্য ও NFT",
+      "/privacy-policy": "গোপনীয়তা নীতি",
+      "/terms-conditions": "শর্তাবলি"
+    },
+    "pt": {
+      "/": "Início",
+      "/whitepaper": "Livro branco",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Linha de confiança",
+      "/tokenomics-update": "Atualização da tokenomia",
+      "/roadmap": "Roteiro",
+      "/richlist": "Lista de detentores",
+      "/blog": "Blog",
+      "/contact": "Contacto",
+      "/faq": "Perguntas frequentes",
+      "/donate": "Doar",
+      "/merchnfts": "Produtos e NFT",
+      "/privacy-policy": "Política de privacidade",
+      "/terms-conditions": "Termos e condições"
+    },
+    "id": {
+      "/": "Beranda",
+      "/whitepaper": "Whitepaper",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "Trustline",
+      "/tokenomics-update": "Pembaruan tokenomik",
+      "/roadmap": "Peta jalan",
+      "/richlist": "Daftar pemegang",
+      "/blog": "Blog",
+      "/contact": "Kontak",
+      "/faq": "Pertanyaan umum",
+      "/donate": "Donasi",
+      "/merchnfts": "Produk & NFT",
+      "/privacy-policy": "Kebijakan privasi",
+      "/terms-conditions": "Syarat dan ketentuan"
+    },
+    "ur": {
+      "/": "ہوم",
+      "/whitepaper": "وائٹ پیپر",
+      "/how-to-buy-calorie": "CAL & Crypto",
+      "/trustline": "ٹرسٹ لائن",
+      "/tokenomics-update": "ٹوکن معاشیات کی تازہ کاری",
+      "/roadmap": "روڈمیپ",
+      "/richlist": "ہولڈرز کی فہرست",
+      "/blog": "بلاگ",
+      "/contact": "رابطہ",
+      "/faq": "اکثر پوچھے گئے سوالات",
+      "/donate": "عطیہ دیں",
+      "/merchnfts": "مصنوعات اور NFT",
+      "/privacy-policy": "رازداری کی پالیسی",
+      "/terms-conditions": "شرائط و ضوابط"
+    }
+  }
+}

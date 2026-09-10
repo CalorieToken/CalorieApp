@@ -11,6 +11,7 @@ import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { countRecordedGrades, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
+import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
 import {
   AUTH_STATE_CHANGED_EVENT,
 } from "@/components/authEvents";
@@ -170,6 +171,8 @@ export function FoodSearchPlaceholder() {
   const displayPercentage = (value: number) => display.enabled ? numbers.percentage.format(value) : String(value);
   const searchRequestIdRef = useRef(0);
   const searchAbortControllerRef = useRef<AbortController | null>(null);
+  const searchInFlightRef = useRef(false);
+  const searchRetryAtRef = useRef(0);
   const logsRequestIdRef = useRef(0);
   const logMutationInFlightRef = useRef(false);
   const logSelectionIdRef = useRef(0);
@@ -198,6 +201,25 @@ export function FoodSearchPlaceholder() {
   const [logError, setLogError] = useState<string | null>(SIGN_IN_REQUIRED_LOG_MESSAGE);
   const [didSearch, setDidSearch] = useState(false);
   const [searchStatus, setSearchStatus] = useState<string | null>(null);
+  const [searchRetryAt, setSearchRetryAt] = useState(0);
+  const [searchWaitSeconds, setSearchWaitSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!searchRetryAt) return;
+    const update = () => setSearchWaitSeconds(Math.max(0, Math.ceil((searchRetryAt - Date.now()) / 1_000)));
+    update();
+    const timer = setInterval(() => {
+      update();
+      if (Date.now() >= searchRetryAt) clearInterval(timer);
+    }, 1_000);
+    return () => clearInterval(timer);
+  }, [searchRetryAt]);
+
+  function pauseSearch(retryAt: number) {
+    searchRetryAtRef.current = retryAt;
+    setSearchRetryAt(retryAt);
+    setSearchWaitSeconds(Math.max(0, Math.ceil((retryAt - Date.now()) / 1_000)));
+  }
 
   const hasResults = useMemo(() => results.length > 0, [results]);
   const hasLogs = useMemo(() => logs.length > 0, [logs]);
@@ -328,7 +350,8 @@ export function FoodSearchPlaceholder() {
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (logMutationInFlightRef.current) return;
+    // Enter-key submissions and rapid clicks must not cancel/restart a cold start.
+    if (logMutationInFlightRef.current || searchInFlightRef.current || Date.now() < searchRetryAtRef.current) return;
     cancelPortionLogging();
     setLogFeedback(null);
 
@@ -345,6 +368,8 @@ export function FoodSearchPlaceholder() {
     const controller = new AbortController();
     searchAbortControllerRef.current = controller;
     const requestId = ++searchRequestIdRef.current;
+    searchInFlightRef.current = true;
+    pauseSearch(0);
 
     setIsLoading(true);
     setError(null);
@@ -368,6 +393,7 @@ export function FoodSearchPlaceholder() {
       }
 
       if (!response.ok) {
+        pauseSearch(foodSearchRetryAt(response.status, response.headers?.get("retry-after") ?? null));
         setResults([]);
         setError(response.status === 429
           ? "Food search is busy. Please wait before searching again."
@@ -384,6 +410,7 @@ export function FoodSearchPlaceholder() {
       setResults(normalizeFoodItems(data.results ?? []));
     } catch (requestError) {
       if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
+        pauseSearch(foodSearchRetryAt(503, null));
         setResults([]);
         setError(
           backendUnavailableMessage(
@@ -395,6 +422,7 @@ export function FoodSearchPlaceholder() {
       }
     } finally {
       if (requestId === searchRequestIdRef.current) {
+        searchInFlightRef.current = false;
         setIsLoading(false);
         setSearchStatus(null);
       }
@@ -718,11 +746,13 @@ export function FoodSearchPlaceholder() {
         <SearchBar
           query={query}
           isLoading={isLoading}
+          retrySeconds={searchWaitSeconds}
           onQueryChange={setQuery}
           onSubmit={onSearch}
         />
 
         {error ? <div className="mt-4"><ErrorBanner message={translateFoodStatus(error, copy)} /></div> : null}
+        {searchWaitSeconds > 0 ? <p className="mt-3 text-sm text-brand-secondary" role="status">{copy.searchCooldownNotice}</p> : null}
 
         {!error && !hasResults && !isLoading && !didSearch ? (
           <div className="mt-4">
@@ -734,7 +764,10 @@ export function FoodSearchPlaceholder() {
         ) : null}
 
         {isLoading ? (
-          <LoadingState variant="search" message={searchStatus ? translateFoodStatus(searchStatus, copy) : undefined} />
+          <div>
+            <LoadingState variant="search" message={searchStatus ? translateFoodStatus(searchStatus, copy) : undefined} />
+            <p className="mt-2 text-sm text-brand-secondary">{copy.searchStartupHint}</p>
+          </div>
         ) : null}
 
         {!error && !isLoading && didSearch && !hasResults ? (

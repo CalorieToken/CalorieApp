@@ -89,7 +89,10 @@
     "statusDeleteFailed": "Unable to delete this logged food right now. Please try again.",
     "statusClearFailed": "Unable to clear logged foods right now. Please try again.",
     "statusServiceSlow": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.",
-    "addedFeedback": "Added {product} ({percentage}%) to your food log."
+    "addedFeedback": "Added {product} ({percentage}%) to your food log.",
+    "searchWait": "Wait {seconds}s",
+    "searchCooldownNotice": "The search button becomes available after this pause. Your search text stays here; you do not need to refresh.",
+    "searchStartupHint": "The first search after inactivity can take a few minutes. Please leave this page open; one search is already in progress."
   },
   "nl": {
     "searchTitle": "Voedingsmiddelen zoeken",
@@ -181,7 +184,10 @@
     "statusDeleteFailed": "Deze dagboekvermelding kan nu niet worden verwijderd. Probeer het opnieuw.",
     "statusClearFailed": "Het eetdagboek kan nu niet worden gewist. Probeer het opnieuw.",
     "statusServiceSlow": "Het opstarten van CalorieApp duurt langer dan verwacht. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen.",
-    "addedFeedback": "{product} ({percentage}%) toegevoegd aan je eetdagboek."
+    "addedFeedback": "{product} ({percentage}%) toegevoegd aan je eetdagboek.",
+    "searchWait": "Wacht {seconds}s",
+    "searchCooldownNotice": "Na deze pauze kun je weer zoeken. Je zoektekst blijft staan; verversen is niet nodig.",
+    "searchStartupHint": "De eerste zoekopdracht na inactiviteit kan enkele minuten duren. Laat deze pagina open; je zoekopdracht wordt al uitgevoerd."
   },
   "es": {
     "searchTitle": "Buscar alimentos",
@@ -273,7 +279,10 @@
     "statusDeleteFailed": "No se puede eliminar este registro ahora. Inténtalo de nuevo.",
     "statusClearFailed": "No se pueden borrar los registros ahora. Inténtalo de nuevo.",
     "statusServiceSlow": "CalorieApp tarda más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede retrasar el inicio.",
-    "addedFeedback": "Se añadió {product} ({percentage}%) a tu diario."
+    "addedFeedback": "Se añadió {product} ({percentage}%) a tu diario.",
+    "searchWait": "Espera {seconds}s",
+    "searchCooldownNotice": "Podrás volver a buscar después de esta pausa. El texto se conserva; no hace falta actualizar la página.",
+    "searchStartupHint": "La primera búsqueda tras un periodo de inactividad puede tardar unos minutos. Deja esta página abierta; tu búsqueda ya está en curso."
   },
   "fr": {
     "searchTitle": "Rechercher des aliments",
@@ -365,7 +374,10 @@
     "statusDeleteFailed": "Impossible de supprimer cette entrée pour le moment. Réessayez.",
     "statusClearFailed": "Impossible de vider le journal pour le moment. Réessayez.",
     "statusServiceSlow": "CalorieApp met plus de temps que prévu à démarrer. Patientez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage.",
-    "addedFeedback": "{product} ({percentage}%) a été ajouté à votre journal alimentaire."
+    "addedFeedback": "{product} ({percentage}%) a été ajouté à votre journal alimentaire.",
+    "searchWait": "Attendre {seconds}s",
+    "searchCooldownNotice": "Le bouton de recherche sera disponible après cette pause. Le texte est conservé ; inutile de recharger la page.",
+    "searchStartupHint": "La première recherche après une période d’inactivité peut prendre quelques minutes. Laissez cette page ouverte ; votre recherche est déjà en cours."
   },
   "pt": {
     "searchTitle": "Pesquisar alimentos",
@@ -457,7 +469,10 @@
     "statusDeleteFailed": "Não é possível eliminar este registo agora. Tente novamente.",
     "statusClearFailed": "Não é possível limpar o diário agora. Tente novamente.",
     "statusServiceSlow": "O CalorieApp está a demorar mais do que o previsto a iniciar. Aguarde alguns minutos antes de tentar novamente; atualizar repetidamente pode atrasar o início.",
-    "addedFeedback": "{product} ({percentage}%) foi adicionado ao seu diário alimentar."
+    "addedFeedback": "{product} ({percentage}%) foi adicionado ao seu diário alimentar.",
+    "searchWait": "Aguarde {seconds}s",
+    "searchCooldownNotice": "O botão de pesquisa ficará disponível após esta pausa. O texto é mantido; não é preciso atualizar a página.",
+    "searchStartupHint": "A primeira pesquisa após um período de inatividade pode demorar alguns minutos. Deixe esta página aberta; a pesquisa já está em andamento."
   },
   "zh-Hans": {
     "searchTitle": "搜索食品",
@@ -549,7 +564,10 @@
     "statusDeleteFailed": "暂时无法删除此饮食记录，请重试。",
     "statusClearFailed": "暂时无法清空饮食记录，请重试。",
     "statusServiceSlow": "CalorieApp 服务启动时间超出预期。请等待几分钟再重试；反复刷新可能会减慢启动速度。",
-    "addedFeedback": "已将 {product}（{percentage}%）添加到你的饮食记录。"
+    "addedFeedback": "已将 {product}（{percentage}%）添加到你的饮食记录。",
+    "searchWait": "请等待 {seconds} 秒",
+    "searchCooldownNotice": "暂停结束后即可再次搜索。搜索文字会保留，无需刷新页面。",
+    "searchStartupHint": "闲置后的首次搜索可能需要几分钟。请保持页面打开，搜索已经在进行中。"
   },
   "id": {
     "searchTitle": "Cari makanan",
@@ -641,7 +659,10 @@
     "statusDeleteFailed": "Catatan makanan ini tidak dapat dihapus saat ini. Coba lagi.",
     "statusClearFailed": "Catatan makanan tidak dapat dikosongkan saat ini. Coba lagi.",
     "statusServiceSlow": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat prosesnya.",
-    "addedFeedback": "{product} ({percentage}%) ditambahkan ke catatan makanan Anda."
+    "addedFeedback": "{product} ({percentage}%) ditambahkan ke catatan makanan Anda.",
+    "searchWait": "Tunggu {seconds} detik",
+    "searchCooldownNotice": "Tombol pencarian tersedia lagi setelah jeda ini. Teks pencarian tetap tersimpan di sini; tidak perlu memuat ulang halaman.",
+    "searchStartupHint": "Pencarian pertama setelah tidak aktif dapat memerlukan beberapa menit. Biarkan halaman ini terbuka; pencarian Anda sudah berjalan."
   },
   "hi": {
     "searchTitle": "खाद्य पदार्थ खोजें",
@@ -733,7 +754,10 @@
     "statusDeleteFailed": "भोजन का यह रिकॉर्ड अभी हटाया नहीं जा सकता। फिर कोशिश करें।",
     "statusClearFailed": "अभी भोजन रिकॉर्ड खाली नहीं किए जा सकते। फिर कोशिश करें।",
     "statusServiceSlow": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय ले रही है। फिर कोशिश करने से पहले कुछ मिनट रुकें; बार-बार रीफ़्रेश करने से शुरू होने में और समय लग सकता है।",
-    "addedFeedback": "{product} ({percentage}%) आपके भोजन रिकॉर्ड में जोड़ा गया।"
+    "addedFeedback": "{product} ({percentage}%) आपके भोजन रिकॉर्ड में जोड़ा गया।",
+    "searchWait": "{seconds} सेकंड रुकें",
+    "searchCooldownNotice": "इस विराम के बाद खोज बटन फिर उपलब्ध होगा। आपका खोज टेक्स्ट यहीं रहेगा; पेज रीफ़्रेश करने की ज़रूरत नहीं है।",
+    "searchStartupHint": "निष्क्रियता के बाद पहली खोज में कुछ मिनट लग सकते हैं। यह पेज खुला रखें; आपकी खोज पहले से जारी है।"
   },
   "bn": {
     "searchTitle": "খাদ্য খুঁজুন",
@@ -825,7 +849,10 @@
     "statusDeleteFailed": "খাবারের এই রেকর্ড এখন মোছা যাচ্ছে না। আবার চেষ্টা করুন।",
     "statusClearFailed": "এখন খাবারের রেকর্ড খালি করা যাচ্ছে না। আবার চেষ্টা করুন।",
     "statusServiceSlow": "CalorieApp চালু হতে প্রত্যাশার চেয়ে বেশি সময় লাগছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও সময় লাগতে পারে।",
-    "addedFeedback": "{product} ({percentage}%) আপনার খাবারের ডায়েরিতে যোগ করা হয়েছে।"
+    "addedFeedback": "{product} ({percentage}%) আপনার খাবারের ডায়েরিতে যোগ করা হয়েছে।",
+    "searchWait": "{seconds} সেকেন্ড অপেক্ষা করুন",
+    "searchCooldownNotice": "এই বিরতির পরে আবার খোঁজা যাবে। আপনার অনুসন্ধানের লেখা এখানেই থাকবে; পেজ রিফ্রেশ করার দরকার নেই।",
+    "searchStartupHint": "কিছুক্ষণ ব্যবহার না করার পর প্রথম অনুসন্ধানে কয়েক মিনিট লাগতে পারে। এই পেজটি খোলা রাখুন; আপনার অনুসন্ধান ইতিমধ্যেই চলছে।"
   },
   "ar": {
     "searchTitle": "البحث عن الأغذية",
@@ -917,7 +944,10 @@
     "statusDeleteFailed": "يتعذر حذف سجل الغذاء هذا الآن. حاول مجددًا.",
     "statusClearFailed": "يتعذر إفراغ سجل الغذاء الآن. حاول مجددًا.",
     "statusServiceSlow": "تستغرق خدمة CalorieApp وقتًا أطول من المتوقع لبدء التشغيل. انتظر بضع دقائق قبل المحاولة مجددًا؛ قد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل.",
-    "addedFeedback": "أُضيف {product} ({percentage}%) إلى سجلّك الغذائي."
+    "addedFeedback": "أُضيف {product} ({percentage}%) إلى سجلّك الغذائي.",
+    "searchWait": "انتظر {seconds} ث",
+    "searchCooldownNotice": "سيصبح زر البحث متاحًا بعد هذه الاستراحة. سيبقى نص البحث هنا؛ لا حاجة لتحديث الصفحة.",
+    "searchStartupHint": "قد يستغرق البحث الأول بعد فترة من عدم النشاط بضع دقائق. اترك هذه الصفحة مفتوحة؛ بحثك قيد التنفيذ بالفعل."
   },
   "ur": {
     "searchTitle": "غذائیں تلاش کریں",
@@ -1009,6 +1039,9 @@
     "statusDeleteFailed": "کھانے کا یہ ریکارڈ ابھی حذف نہیں کیا جا سکتا۔ دوبارہ کوشش کریں۔",
     "statusClearFailed": "ابھی کھانے کا ریکارڈ خالی نہیں کیا جا سکتا۔ دوبارہ کوشش کریں۔",
     "statusServiceSlow": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز میں مزید دیر ہو سکتی ہے۔",
-    "addedFeedback": "{product} ({percentage}%) آپ کے کھانے کے ریکارڈ میں شامل کر دیا گیا۔"
+    "addedFeedback": "{product} ({percentage}%) آپ کے کھانے کے ریکارڈ میں شامل کر دیا گیا۔",
+    "searchWait": "{seconds} سیکنڈ رکیں",
+    "searchCooldownNotice": "اس وقفے کے بعد تلاش کا بٹن دوبارہ دستیاب ہوگا۔ آپ کی تلاش کا متن یہیں رہے گا؛ صفحہ ریفریش کرنے کی ضرورت نہیں۔",
+    "searchStartupHint": "کچھ وقت استعمال نہ ہونے کے بعد پہلی تلاش میں چند منٹ لگ سکتے ہیں۔ یہ صفحہ کھلا رکھیں؛ آپ کی تلاش پہلے سے جاری ہے۔"
   }
 }
