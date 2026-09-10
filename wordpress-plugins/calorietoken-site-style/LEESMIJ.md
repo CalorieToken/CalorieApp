@@ -1,12 +1,24 @@
-# CalorieToken Site Style 1.4.10
+# CalorieToken Site Style 1.4.11
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.10.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.10** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.11.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.11** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Gerichte correcties na livecontrole van 1.4.9
+## Gerichte Blog/X-controle 1.4.11
+
+- Een aangetoonde herhalingslus tussen de X-laadstatus en de verborgen cookieknoppen is verwijderd. Statusberichten worden alleen bij een echte verandering verstuurd; ongewijzigde zichtbaarheid wordt niet opnieuw geschreven.
+- De bestaande X-hulp en cookiebediening verschijnen op zowel `/index.php/blog/` als `/blog/`, met dezelfde elf talen.
+- Een vervangen blogblok krijgt een eigen laadcyclus en controle; de oude controle en timer worden opgeruimd. Eerdere late antwoorden kunnen de nieuwe cyclus niet stilzetten.
+- Na een laadfout blijft het intrekken van toestemming ook werken voor later aangeleverde inhoud. Reeds aanwezige CMS-/Complianz-iframes blijven onder hun bestaande beheer.
+- Ook een vervangende X-link kan na het intrekken en opnieuw geven van toestemming weer worden gevonden, wanneer de gedeelde X-library al eerder is geladen. Er wordt geen tweede library toegevoegd.
+
+Acht nieuwe DOM-scenario's controleren deze samenwerking, waaronder zes gereproduceerde regressies. De lustest gebruikt echte DOM-mutatiewaarneming met een begrensde foutdetectie, zodat een defect de testrunner niet kan laten vastlopen. De reparaties wijzigen geen CSS, websitevormgeving, loginprotocol of appcode. Ze omzeilen geen cookietoestemming en garanderen niet dat X zelf altijd berichten levert.
+
+De eigenaar meldt dat 1.4.10 is geïnstalleerd. Deze nieuwe ronde kon geen verse livebeelden maken: de cloudbrowser gaf opnieuw verbindingsfouten, ook na een begrensde herstelpoging. Daarom is installatie van 1.4.10 niet onafhankelijk bevestigd en is er geen mobiele of crossbrowser-goedkeuring. De hieronder bewaarde livebeelden betreffen 1.4.9. De afzonderlijke appuitrol en resterende livecontroles blijven open.
+
+## Inbegrepen: correcties 1.4.10 na livecontrole van 1.4.9
 
 - Op brede desktops vanaf 1200 px staan de zwevende snelknoppen aan de rechterrand, zodat ze de CAL-gids en Trustline-uitleg niet bedekken. De bestaande knopvormen, kleuren, maten en de tablet-/mobiele layout blijven behouden.
 - De exacte bestaande Trustline-toelichting wordt hergebruikt en vertaald; zij verschijnt niet meer dubbel. Eigen CMS-tekst, links en handlers blijven behouden, ook wanneer het beheerde onderdeel wordt verwijderd.

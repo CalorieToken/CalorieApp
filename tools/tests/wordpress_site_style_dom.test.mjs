@@ -12,13 +12,21 @@ const assets = new URL('../../wordpress-plugins/calorietoken-site-style/assets/'
 const source = name => readFileSync(new URL(name, assets), 'utf8');
 const copy = JSON.parse(source('discovery-data.json'));
 const menu = JSON.parse(source('menu-data.json'));
-function fixture(html, {page = 1210, route = 'whitepaper', home = false} = {}) {
+function fixture(html, {page = 1210, route = 'whitepaper', home = false, nativeObservers = false} = {}) {
   const {document, window: dom} = parseHTML(`<html lang="en"><head></head><body class="${home ? 'home ctstyle-footer-only' : 'ctstyle-enabled'} page-id-${page}">${html}</body></html>`);
-  const observers = [], frames = [], events = new Map();
+  const observers = [], frames = [], events = new Map(), observerOverflow = [];
   class Observer {
-    constructor(callback) { this.callback = callback; observers.push(this); }
-    observe(target, options) { this.target = target; this.options = options; this.active = true; }
-    disconnect() { this.active = false; }
+    constructor(callback) {
+      this.callback = callback; observers.push(this); this.deliveries = 0;
+      if (nativeObservers) this.native = new dom.MutationObserver(records => {
+        // Bound a broken feedback loop so the regression fails without hanging
+        // the test runner. Production must settle well before this limit.
+        if (++this.deliveries > 30) {observerOverflow.push(this);this.disconnect();return;}
+        callback(records);
+      });
+    }
+    observe(target, options) { this.target = target; this.options = options; this.active = true; this.native?.observe(target,options); }
+    disconnect() { this.active = false; this.native?.disconnect(); }
   }
   // linkedom intentionally omits layout and writable select.value behavior.
   // Supply only the native control property; no CSS/layout results are invented.
@@ -39,7 +47,7 @@ function fixture(html, {page = 1210, route = 'whitepaper', home = false} = {}) {
     dispatchEvent(event) { for (const fn of events.get(event.type) || []) fn(event); },
   };
   const context = {window, document, URL, Event: dom.Event, MutationObserver: Observer, navigator: {}};
-  return {document, window, observers, frames,
+  return {document, window, observers, frames, observerOverflow,
     run(name) { vm.runInNewContext(source(name), context); document.dispatchEvent(new dom.Event('DOMContentLoaded')); },
     emit(name) { for (const fn of events.get(name) || []) fn(); },
     mutate(record) { for (const o of [...observers]) if (o.active && o.options.childList) o.callback([{type: 'childList', addedNodes: [], removedNodes: [], ...record}]); },
@@ -49,6 +57,128 @@ function fixture(html, {page = 1210, route = 'whitepaper', home = false} = {}) {
 const account = '<div class="xl-card"><div class="xl-card-header">Public account placeholder</div><div class="xl-card-body"><button id="native-login">Sign in</button></div><div class="xl-card-footer">Sign-in note</div></div>';
 const footer = '<footer class="ctstyle-footer"><p class="ctstyle-legal-links"><a href="https://calorietoken.net/index.php/privacy-policy/">Privacy Policy</a></p></footer>';
 const native = `<section class="brz-section ctstyle-header"><div class="brz-section__content ctstyle-header-content"><div class="brz-row"><div class="brz-columns"><div class="brz-column__items"><img src="/C-Logotranspa.png"></div></div><div class="brz-columns"><div class="brz-column__items"><div class="brz-menu-simple"><div class="brz-menu-simple__toggle"><input class="brz-input" type="checkbox" id="native-menu"><label class="brz-menu-simple__icon" for="native-menu"><span class="brz-menu-simple__icon--bars"></span></label><div><a id="whitepaper" href="https://calorietoken.net/index.php/whitepaper/">Whitepaper</a></div></div></div></div></div><div class="brz-columns"><div class="brz-column__items">${account}</div></div></div></div></section>`;
+
+const blogPanelMarkup = '<div class="brz-wp-shortcode" data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"><a class="twitter-timeline" href="https://x.com/CalorieToken">Tweets by CalorieToken</a></div>';
+function blogFixture({permitted = true, cmsFrame = false, nativeObservers = false} = {}) {
+  const h = fixture(blogPanelMarkup, {page:1207,route:'blog',nativeObservers});
+  h.window.CalorieTokenSiteStyleMenu = structuredClone(menu);
+  const calls = [], pending = [], timers = new Map(); let sequence = 0;
+  h.window.cmplz_has_service_consent = () => permitted;
+  h.window.setTimeout = (fn, delay) => {const id=++sequence;timers.set(id,{fn,delay});return id;};
+  h.window.clearTimeout = id => timers.delete(id);
+  h.window.twttr = {widgets:{load(panel) {
+    calls.push(panel); return new Promise((resolve,reject) => pending.push({resolve,reject}));
+  }}};
+  function frame(panel) {
+    const node = h.document.createElement('iframe');
+    node.src = 'https://syndication.twitter.com/srv/timeline-profile/screen-name/CalorieToken';
+    // These dimensions only exercise provider-state logic, never visual layout.
+    node.getBoundingClientRect = () => ({width:600,height:520});
+    panel.append(node); return node;
+  }
+  const first = h.document.querySelector('.brz-wp-shortcode');
+  if (cmsFrame) {first.replaceChildren();frame(first);}
+  return {...h,calls,pending,timers,first,frame,
+    consent(value) {permitted=value;h.document.dispatchEvent(new h.window.Event(value?'cmplz_status_change':'cmplz_revoke'));},
+    inspect(panel) {for(const o of h.observers)if(o.active&&o.target===panel)o.callback([]);},
+    replace() {
+      const holder=h.document.createElement('div');holder.innerHTML=blogPanelMarkup;
+      const next=holder.firstElementChild;h.document.querySelector('.brz-wp-shortcode').replaceWith(next);return next;
+    },
+  };
+}
+
+test('Blog fallback and cookie controls work on both public URL forms in every locale', () => {
+  for (const route of ['/index.php/blog/','/blog/']) {
+    const h=blogFixture({permitted:false});h.window.location=new URL('https://calorietoken.net'+route);
+    h.run('menu-pages.js');
+    assert.equal(h.document.querySelectorAll('.calorieapp-x-help').length,1,route);
+    for (const tag of Object.keys(menu.blog.copy)) {
+      h.window.CalorieAppBlogX.setLocale(tag);
+      assert.equal(h.document.querySelector('.calorieapp-x-fallback').textContent,menu.blog.copy[tag].action);
+      assert.equal(h.document.querySelector('.calorieapp-x-help').lang,tag);
+    }
+  }
+});
+
+test('X consent controls one render and removes managed output even when it arrives late', async () => {
+  const h=blogFixture({permitted:false});h.run('blog-timeline.js');assert.equal(h.calls.length,0);
+  h.consent(true);h.window.CalorieTokenBlogTimeline.refresh();assert.equal(h.calls.length,1);
+  const rendered=h.frame(h.first);h.inspect(h.first);assert.equal(h.first.classList.contains('ctstyle-x-ready'),true);
+  h.consent(false);assert.equal(rendered.isConnected,false);assert.equal(h.first.classList.contains('ctstyle-x-ready'),false);
+  const late=h.frame(h.first);h.inspect(h.first);assert.equal(late.isConnected,false);
+  h.pending[0].resolve();await Promise.resolve();assert.equal(h.calls.length,1);
+  h.consent(true);assert.equal(h.calls.length,2);
+});
+
+test('A replaced Blog panel receives one fresh timeline and retires the old observer', () => {
+  const h=blogFixture();h.run('blog-timeline.js');h.frame(h.first);h.inspect(h.first);
+  const replacement=h.replace();h.window.CalorieTokenBlogTimeline.refresh();
+  assert.equal(h.calls.length,2);assert.equal(h.calls[0],h.first);assert.equal(h.calls[1],replacement);
+  assert.equal(h.observers.filter(o=>o.active&&o.target===h.first).length,0);
+  assert.equal(h.observers.filter(o=>o.active&&o.target===replacement).length,1);
+  h.window.CalorieTokenBlogTimeline.refresh();assert.equal(h.calls.length,2);
+});
+
+test('Old X completions cannot stop a newer panel or its consent cleanup', async () => {
+  const h=blogFixture();h.run('blog-timeline.js');
+  const replacement=h.replace();h.window.CalorieTokenBlogTimeline.refresh();
+  h.pending[0].reject(new Error('Old provider request failed'));await Promise.resolve();
+  assert.equal(h.observers.filter(o=>o.active&&o.target===replacement).length,1);
+  const rendered=h.frame(replacement);h.inspect(replacement);
+  assert.equal(replacement.classList.contains('ctstyle-x-ready'),true);
+  h.consent(false);assert.equal(rendered.isConnected,false);
+});
+
+test('CMS-owned X frames survive panel changes while readiness follows the new panel', () => {
+  const h=blogFixture({cmsFrame:true}), original=h.first.querySelector('iframe');h.run('blog-timeline.js');
+  const replacement=h.replace();replacement.replaceChildren();const current=h.frame(replacement);
+  h.window.CalorieTokenBlogTimeline.refresh();
+  assert.equal(h.calls.length,0);assert.equal(original.parentElement,h.first);
+  assert.equal(h.observers.filter(o=>o.active&&o.target===replacement).length,1);
+  current.hidden=true;h.inspect(replacement);assert.equal(replacement.classList.contains('ctstyle-x-ready'),false);
+  h.consent(false);assert.equal(current.isConnected,true,'The CMP retains ownership of pre-existing frames');
+});
+
+test('A replaced X anchor can be enabled again after the shared SDK loaded once', () => {
+  const h=blogFixture(), provider=h.window.twttr;delete h.window.twttr;
+  h.run('blog-timeline.js');
+  const scripts=h.document.querySelectorAll('script[data-ctstyle-x-script]');assert.equal(scripts.length,1);
+  h.window.twttr=provider;scripts[0].dispatchEvent(new h.window.Event('load'));assert.equal(h.calls.length,1);
+  const replacement=h.replace();h.window.CalorieTokenBlogTimeline.refresh();assert.equal(h.calls.length,2);
+  h.consent(false);h.consent(true);assert.equal(h.calls.length,3);
+  assert.equal(h.calls[2],replacement);assert.equal(h.document.querySelectorAll('script[data-ctstyle-x-script]').length,1);
+});
+
+test('Rejected X rendering retains consent cleanup and invalid panels retire active work', async () => {
+  const h=blogFixture();h.run('blog-timeline.js');
+  h.pending[0].reject(new Error('Provider render failed'));await Promise.resolve();
+  assert.equal(h.first.classList.contains('ctstyle-x-loading'),false);
+  assert.equal(h.observers.filter(o=>o.active&&o.target===h.first).length,1);
+  h.consent(false);const late=h.frame(h.first);h.inspect(h.first);assert.equal(late.isConnected,false);
+  h.consent(true);h.first.remove();h.window.CalorieTokenBlogTimeline.refresh();
+  assert.equal(h.observers.filter(o=>o.active).length,0);
+  assert.equal([...h.timers.values()].filter(t=>t.delay===12000).length,0);
+  h.pending[1].resolve();await Promise.resolve();assert.equal(h.calls.length,2);
+});
+
+test('X readiness and translated cookie controls settle without a DOM observer feedback loop', async () => {
+  const h=blogFixture({cmsFrame:true,nativeObservers:true});
+  try {
+    h.run('menu-pages.js');h.run('blog-timeline.js');
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.observerOverflow.length,0,'Visible X state must not repeatedly rewrite the same hidden attributes');
+    assert.equal(h.first.classList.contains('ctstyle-x-ready'),true);
+    assert.equal(h.first.querySelector('.calorieapp-x-description').hidden,true);
+    const deliveries=h.observers.reduce((sum,o)=>sum+o.deliveries,0);
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.observers.reduce((sum,o)=>sum+o.deliveries,0),deliveries,'The real DOM mutation queue settles');
+    h.consent(false);await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.first.classList.contains('ctstyle-x-ready'),false);
+    assert.equal(h.first.querySelector('.calorieapp-x-description').hidden,false);
+    assert.equal(h.observerOverflow.length,0);
+  } finally {h.observers.forEach(o=>o.disconnect());}
+});
 
 test('Native headers keep menu/login nodes and handlers through eleven language changes', () => {
   for (const home of [false, true]) {

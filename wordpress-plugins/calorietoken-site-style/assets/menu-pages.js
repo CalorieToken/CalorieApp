@@ -80,7 +80,7 @@
 
   function blogPanel() {
     if (window.CalorieTokenSiteStyleMenu?.blog?.publicPage !== true
-      || pageId() !== 1207 || window.location.pathname !== "/index.php/blog/"
+      || pageId() !== 1207 || !["/index.php/blog/", "/blog/"].includes(window.location.pathname)
       || ["https://calorietoken.net", "https://www.calorietoken.net"].indexOf(home) === -1
       || document.querySelector(".brz-ed,#brz-ed-iframe")
       || /(?:^|[?&])(?:preview|brizy-edit|brizy-edit-iframe)(?:=|&|$)/.test(window.location.search || "")) return null;
@@ -122,12 +122,13 @@
     // Complianz's delegated native button opens settings. We do not grant or
     // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
     var ready = panel.classList.contains('ctstyle-x-ready');
-    blogView.description.hidden = ready;
-    blogView.settings.hidden = typeof window.cmplz_has_service_consent !== "function"
-      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner");
+    function setHidden(node, value) { if (node.hidden !== value) node.hidden = value; }
+    setHidden(blogView.description, ready);
+    setHidden(blogView.settings, typeof window.cmplz_has_service_consent !== "function"
+      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner"));
     var permitted=false;
     try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
-    blogView.load.hidden = ready || permitted || blogView.settings.hidden;
+    setHidden(blogView.load, ready || permitted || blogView.settings.hidden);
   }
   function refineBlogHelp() {
     var panel = blogPanel();
