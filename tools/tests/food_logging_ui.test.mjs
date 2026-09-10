@@ -35,6 +35,9 @@ const foodUi = await loadLibrary("foodUi", {
   "@/config/food-ui-copy.json": { default: foodUiCopy },
   "@/lib/locales": locales,
 });
+const usdaMath = await loadLibrary("usdaReference", {});
+const barcode = await loadLibrary("foodBarcode", {});
+const barcodeCopy = JSON.parse(await readFile(new URL("../../frontend/config/barcode-copy.json", import.meta.url), "utf8"));
 const searchAvailability = await loadLibrary("foodSearchAvailability", {});
 const AUTH_EVENT = "test-auth-state-changed";
 const foods = Array.from({ length: 30 }, (_, index) => ({
@@ -135,6 +138,9 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/components/authEvents") return { AUTH_STATE_CHANGED_EVENT: AUTH_EVENT };
       if (specifier === "@/lib/foodLogFilter") return foodLogFilter;
       if (specifier === "@/lib/foodUi") return foodUi;
+      if (specifier === "@/lib/usdaReference") return usdaMath;
+      if (specifier === "@/lib/foodBarcode") return barcode;
+      if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };
       if (specifier === "@/lib/foodSearchReadiness") return readiness;
       if (specifier === "@/lib/foodSearchAvailability") return {
         foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
@@ -275,7 +281,7 @@ test("USDA reference displays source values without combining energy methods or 
   assert.ok(text(tree).includes(usdaCopy.en.method));
   assert.equal(nodes(tree, (node) => node.type === "time")[0].props.dateTime, usdaReference.retrieved_on);
   assert.ok(nodes(tree, (node) => node.type === "a").some((node) => node.props.href === usdaReference.licence_url));
-  assert.equal(nodes(tree, (node) => ["button", "form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
+  assert.equal(nodes(tree, (node) => ["form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
   await app.flush();
   app.login();
   app.logout();
@@ -894,4 +900,53 @@ test("Nutri-Score colors accept recorded A–E grades and never invent missing s
   for (const grade of [undefined, null, "", "unknown", "F", "A/B"]) {
     assert.equal(foodUi.recordedGradeStyle(grade), undefined);
   }
+});
+
+test('USDA grams scale original precision, accept decimal comma and never change provider records', async () => {
+  const before = JSON.stringify(usdaReference), h = await harness('UsdaReferenceFoods');
+  let tree = h.render();
+  const weight = () => nodes(tree, n => n.type === 'input' && n.props.id === 'usda-reference-weight')[0];
+  weight().props.onChange({ target: { value: '12,5' } }); tree = h.render();
+  assert.ok(text(tree).includes('12.5 g'));
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[0]).replace(/\s+/g, ' ').trim(), '6 kcal');
+  weight().props.onChange({ target: { value: '0.1' } }); tree = h.render();
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[2]).replace(/\s+/g, ' ').trim(), '<0.01 g');
+  weight().props.onChange({ target: { value: '' } }); tree = h.render();
+  assert.equal(weight().props['aria-invalid'], true);
+  assert.ok(nodes(tree, n => n.type === 'dd').every(n => text(n) === usdaCopy.en.unavailable));
+  button(tree, usdaCopy.en.resetWeight).props.onClick(); tree = h.render();
+  assert.equal(weight().props.value, '100'); assert.equal(JSON.stringify(usdaReference), before);
+  assert.deepEqual(h.requests, []);
+});
+
+test('USDA weight validation rejects coercions, invalid ranges and unknown nutrition', () => {
+  for (const input of ['', 'NaN', 'Infinity', '1e3', '-1', '0', '0.01', '5001', '100g', '1,000.5']) assert.equal(usdaMath.parseReferenceGrams(input), null, input);
+  assert.equal(usdaMath.parseReferenceGrams('5000'), 5000);
+  assert.equal(usdaMath.parseReferenceGrams('0,1'), .1);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: null }, 'g', 250), 0);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: .2 }, 'g', 250), null);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 10, unit: 'kJ', loq: null }, 'kcal', 250), null);
+});
+
+test('Barcode lookup uses the existing search guard and shows only the matching product, without logging', async () => {
+  const item = { ...foods[0], barcode: '0034000470693' };
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [item, { ...foods[1], barcode: '3017620422003' }] }) }));
+  const scanner = () => nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0];
+  scanner().props.onLookup('034000470693'); scanner().props.onLookup('034000470693');
+  await h.flush();
+  assert.equal(h.requests.filter(r => r.url.includes('search-food')).length, 1);
+  assert.ok(h.requests.some(r => r.url.endsWith('q=034000470693&mode=barcode')));
+  assert.equal(h.cards().length, 1); assert.equal(h.cards()[0].props.item.barcode, '0034000470693');
+  assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('Barcode absence has useful translated fallback text and name search restores ordinary empty state', async () => {
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [] }) }));
+  nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693'); await h.flush();
+  for (const locale of ['en', 'nl', 'ar']) {
+    h.setDisplayLanguage(locale);
+    assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === barcodeCopy[locale].notFound));
+  }
+  await h.search('oats');
+  assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === foodUiCopy.ar.noResultsDescription));
 });

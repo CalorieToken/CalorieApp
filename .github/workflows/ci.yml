@@ -338,6 +338,7 @@ jobs:
           tools/tests/backend_warmup_rate_limit.test.mjs
           tools/tests/calorieapp_embed_readiness.test.mjs
           tools/tests/food_logging_ui.test.mjs
+          tools/tests/food_barcode.test.mjs
           tools/tests/food_search_deadline.test.mjs
           tools/tests/identity_locales.test.mjs
           tools/tests/xaman_logout_request.test.mjs

@@ -230,13 +230,16 @@ test('Native menu accessibility preserves the existing checkbox and restores foc
     nextElementSibling:{matches:selector=>selector==='.brz-menu-simple__icon',getAttribute:()=> 'native-menu'}};
   input.addEventListener('change',()=>changes++);
   const menu = {...menuEvents,querySelector:()=>input,closest:()=>null};
-  const header = {querySelector:selector=>selector==='.brz-menu-simple'?menu:null,classList:tokens()};
+  const current = new Map();
+  const navLink = {href:'https://calorietoken.net/index.php/whitepaper/',setAttribute:(key,value)=>current.set(key,value)};
+  const header = {querySelectorAll:()=>[navLink],querySelector:selector=>selector==='.brz-menu-simple'?menu:null,classList:tokens()};
   const document = {...handlers(),readyState:'loading',body:{matches:s=>s==='.ctstyle-enabled,.ctstyle-footer-only'},
     querySelector:()=>null,querySelectorAll:s=>s==='.ctstyle-header,.ctstyle-native-header'?[header]:[],getElementById:()=>null};
   const window = {...handlers(),location:new URL('https://calorietoken.net/index.php/whitepaper/'),
     CalorieTokenDiscovery:{page:1210,copy},Event:class {constructor(type){this.type=type;}}};
   vm.runInNewContext(source('refinements.js'),{window,document,URL});document.emit('DOMContentLoaded');
   window.CalorieTokenRefinements.refresh('nl');window.CalorieTokenRefinements.refresh('nl');
+  assert.equal(current.get('aria-current'),'page');
   assert.equal(attributes.get('aria-label'),'Hoofdnavigatie');assert.equal(attributes.get('aria-expanded'),'false');
   input.checked=true;input.emit('change');assert.equal(attributes.get('aria-expanded'),'true');
   let prevented=false;menu.emit('keydown',{key:'Escape',preventDefault:()=>prevented=true});

@@ -118,7 +118,12 @@
     hub = element('div','ctstyle-discovery'); hub.id = 'ctstyle-cal-crypto';
     var intro=element('header','ctstyle-crypto-intro');
     intro.append(element('p','ctstyle-crypto-kicker','CalorieToken · XRP Ledger'),label('h2','exchangeLabel'),label('p','intro','ctstyle-discovery-intro'));
-    hub.append(intro);
+    var actions=element('div','ctstyle-discovery-actions');
+    actions.append(link('exploreApp',window.location.origin+'/index.php/calorieapp/',false),link('readWhitepaper',window.location.origin+'/index.php/whitepaper/',false));
+    intro.append(actions);
+    var journey=element('ol','ctstyle-crypto-journey');
+    ['Wallet','Route','Review'].forEach(function(key){var step=element('li');step.append(label('h3','journey'+key),label('p','journey'+key+'Text'));journey.append(step);});
+    intro.append(journey);hub.append(intro);
     var nav = element('nav','ctstyle-discovery-tabs'); nav.setAttribute('aria-label','CAL & Crypto');
     if (!guide.id) guide.id = 'ctstyle-cal-options';
     nav.append(link('dexTitle','#ctstyle-own-dex'),link('guideTitle','#'+guide.id),link('bridgeTitle','#ctstyle-external-exchange'));

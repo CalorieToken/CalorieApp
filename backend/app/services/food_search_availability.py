@@ -59,32 +59,32 @@ class FoodSearchAvailability:
         self._status_code = 503
 
     @staticmethod
-    def _key(query: str, page_size: int) -> bytes:
-        return hashlib.sha256(f"{page_size}\0{query}".encode("utf-8")).digest()
+    def _key(query: str, page_size: int, barcode: bool = False) -> bytes:
+        return hashlib.sha256(f"{barcode}\0{page_size}\0{query}".encode("utf-8")).digest()
 
     def _expire(self, now: float) -> None:
         for key, (expires_at, _) in list(self._cache.items()):
             if expires_at <= now:
                 del self._cache[key]
 
-    def get(self, query: str, page_size: int) -> list[FoodSearchResult] | None:
+    def get(self, query: str, page_size: int, *, barcode: bool = False) -> list[FoodSearchResult] | None:
         with self._lock:
             self._expire(self.clock())
-            key = self._key(query, page_size)
+            key = self._key(query, page_size, barcode)
             entry = self._cache.get(key)
             if entry is None:
                 return None
             self._cache.move_to_end(key)
             return [item.model_copy(deep=True) for item in entry[1]]
 
-    def remember(self, query: str, page_size: int, results: list[FoodSearchResult]) -> None:
+    def remember(self, query: str, page_size: int, results: list[FoodSearchResult], *, barcode: bool = False) -> None:
         # Do not turn a transient empty provider response into a cached absence.
         if not results:
             return
         with self._lock:
             now = self.clock()
             self._expire(now)
-            key = self._key(query, page_size)
+            key = self._key(query, page_size, barcode)
             self._cache[key] = (
                 now + self.ttl_seconds,
                 [item.model_copy(deep=True) for item in results],

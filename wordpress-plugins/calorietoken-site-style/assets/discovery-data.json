@@ -41,7 +41,15 @@
     "manualRoute": "Manual setup with XRP Toolkit",
     "historicalVideo": "Historical video on YouTube",
     "roadmapRead": "Roadmap explained",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "exploreApp": "Explore CalorieApp",
+    "readWhitepaper": "Read the whitepaper",
+    "journeyWallet": "Prepare your wallet",
+    "journeyWalletText": "Use Xaman and check the network, issuer and CAL trustline before continuing.",
+    "journeyRoute": "Choose your route",
+    "journeyRouteText": "Follow the setup guide or open the external CAL/XRP order book or swap.",
+    "journeyReview": "Review in your wallet",
+    "journeyReviewText": "Check the asset, amount, fees and destination before approving a request."
   },
   "nl": {
     "intro": "Ontdek CAL op de XRP Ledger. Volg de uitleg, open de CAL/XRP-markten of bekijk andere cryptoroutes.",
@@ -85,7 +93,15 @@
     "manualRoute": "Handmatig instellen met XRP Toolkit",
     "historicalVideo": "Historische video op YouTube",
     "roadmapRead": "Roadmap toegelicht",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "exploreApp": "Ontdek CalorieApp",
+    "readWhitepaper": "Lees de whitepaper",
+    "journeyWallet": "Bereid je wallet voor",
+    "journeyWalletText": "Gebruik Xaman en controleer het netwerk, de issuer en de CAL-trustline voordat je verdergaat.",
+    "journeyRoute": "Kies je route",
+    "journeyRouteText": "Volg de installatiegids of open het externe CAL/XRP-orderboek of de swap.",
+    "journeyReview": "Controleer in je wallet",
+    "journeyReviewText": "Controleer de munt, het bedrag, de kosten en de bestemming voordat je een verzoek goedkeurt."
   },
   "zh-Hans": {
     "intro": "探索 XRP Ledger 上的 CAL。阅读指南、打开 CAL/XRP 市场，或了解其他加密资产兑换途径。",
@@ -129,7 +145,15 @@
     "manualRoute": "使用 XRP Toolkit 手动设置",
     "historicalVideo": "YouTube 上的历史视频",
     "roadmapRead": "路线图详解",
-    "menuLabel": "菜单"
+    "menuLabel": "菜单",
+    "exploreApp": "探索 CalorieApp",
+    "readWhitepaper": "阅读白皮书",
+    "journeyWallet": "准备钱包",
+    "journeyWalletText": "使用 Xaman，继续前请核对网络、发行方和 CAL 信任线。",
+    "journeyRoute": "选择方式",
+    "journeyRouteText": "按照设置指南操作，或打开外部 CAL/XRP 订单簿或兑换页面。",
+    "journeyReview": "在钱包中核对",
+    "journeyReviewText": "批准请求前，请核对资产、金额、费用和目标地址。"
   },
   "hi": {
     "intro": "XRP Ledger पर CAL के बारे में जानें। गाइड पढ़ें, CAL/XRP बाज़ार खोलें या अन्य क्रिप्टो विकल्प देखें।",
@@ -173,7 +197,15 @@
     "manualRoute": "XRP Toolkit से मैन्युअल सेटअप",
     "historicalVideo": "YouTube पर ऐतिहासिक वीडियो",
     "roadmapRead": "रोडमैप का विवरण",
-    "menuLabel": "मेन्यू"
+    "menuLabel": "मेन्यू",
+    "exploreApp": "CalorieApp देखें",
+    "readWhitepaper": "श्वेतपत्र पढ़ें",
+    "journeyWallet": "वॉलेट तैयार करें",
+    "journeyWalletText": "Xaman का उपयोग करें और आगे बढ़ने से पहले नेटवर्क, जारीकर्ता और CAL ट्रस्टलाइन जाँचें।",
+    "journeyRoute": "अपना तरीका चुनें",
+    "journeyRouteText": "सेटअप गाइड अपनाएँ या बाहरी CAL/XRP ऑर्डर बुक या स्वैप खोलें।",
+    "journeyReview": "वॉलेट में जाँचें",
+    "journeyReviewText": "अनुरोध स्वीकार करने से पहले संपत्ति, राशि, शुल्क और गंतव्य जाँचें।"
   },
   "es": {
     "intro": "Descubre CAL en XRP Ledger. Sigue la guía, abre los mercados CAL/XRP o explora otras opciones cripto.",
@@ -217,7 +249,15 @@
     "manualRoute": "Configuración manual con XRP Toolkit",
     "historicalVideo": "Vídeo histórico en YouTube",
     "roadmapRead": "Hoja de ruta explicada",
-    "menuLabel": "Menú"
+    "menuLabel": "Menú",
+    "exploreApp": "Explora CalorieApp",
+    "readWhitepaper": "Lee el documento técnico",
+    "journeyWallet": "Prepara tu cartera",
+    "journeyWalletText": "Usa Xaman y comprueba la red, el emisor y la línea de confianza de CAL antes de continuar.",
+    "journeyRoute": "Elige tu ruta",
+    "journeyRouteText": "Sigue la guía de configuración o abre el libro de órdenes o el intercambio externo CAL/XRP.",
+    "journeyReview": "Revisa en tu cartera",
+    "journeyReviewText": "Comprueba el activo, el importe, las comisiones y el destino antes de aprobar una solicitud."
   },
   "ar": {
     "intro": "اكتشف CAL على XRP Ledger. اتبع الدليل، أو افتح أسواق CAL/XRP، أو استكشف مسارات أخرى للعملات المشفرة.",
@@ -261,7 +301,15 @@
     "manualRoute": "إعداد يدوي باستخدام XRP Toolkit",
     "historicalVideo": "فيديو تاريخي على YouTube",
     "roadmapRead": "شرح خارطة الطريق",
-    "menuLabel": "القائمة"
+    "menuLabel": "القائمة",
+    "exploreApp": "استكشف CalorieApp",
+    "readWhitepaper": "اقرأ الورقة البيضاء",
+    "journeyWallet": "جهّز محفظتك",
+    "journeyWalletText": "استخدم Xaman وتحقق من الشبكة والجهة المُصدرة وخط الثقة لـ CAL قبل المتابعة.",
+    "journeyRoute": "اختر المسار",
+    "journeyRouteText": "اتبع دليل الإعداد أو افتح دفتر أوامر CAL/XRP أو المبادلة لدى الخدمة الخارجية.",
+    "journeyReview": "راجع في محفظتك",
+    "journeyReviewText": "تحقق من الأصل والمبلغ والرسوم والوجهة قبل الموافقة على الطلب."
   },
   "fr": {
     "intro": "Découvrez CAL sur XRP Ledger. Suivez le guide, ouvrez les marchés CAL/XRP ou explorez d’autres options crypto.",
@@ -305,7 +353,15 @@
     "manualRoute": "Configuration manuelle avec XRP Toolkit",
     "historicalVideo": "Vidéo historique sur YouTube",
     "roadmapRead": "La feuille de route expliquée",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "exploreApp": "Découvrir CalorieApp",
+    "readWhitepaper": "Lire le livre blanc",
+    "journeyWallet": "Préparez votre portefeuille",
+    "journeyWalletText": "Utilisez Xaman et vérifiez le réseau, l’émetteur et la ligne de confiance CAL avant de continuer.",
+    "journeyRoute": "Choisissez votre parcours",
+    "journeyRouteText": "Suivez le guide de configuration ou ouvrez le carnet d’ordres ou l’échange externe CAL/XRP.",
+    "journeyReview": "Vérifiez dans votre portefeuille",
+    "journeyReviewText": "Vérifiez l’actif, le montant, les frais et la destination avant d’approuver une demande."
   },
   "bn": {
     "intro": "XRP Ledger-এ CAL সম্পর্কে জানুন। নির্দেশিকা পড়ুন, CAL/XRP বাজার খুলুন অথবা অন্য ক্রিপ্টো বিকল্প দেখুন।",
@@ -349,7 +405,15 @@
     "manualRoute": "XRP Toolkit দিয়ে ম্যানুয়াল সেটআপ",
     "historicalVideo": "YouTube-এ ঐতিহাসিক ভিডিও",
     "roadmapRead": "রোডম্যাপের ব্যাখ্যা",
-    "menuLabel": "মেনু"
+    "menuLabel": "মেনু",
+    "exploreApp": "CalorieApp দেখুন",
+    "readWhitepaper": "হোয়াইটপেপার পড়ুন",
+    "journeyWallet": "ওয়ালেট প্রস্তুত করুন",
+    "journeyWalletText": "Xaman ব্যবহার করুন এবং এগোনোর আগে নেটওয়ার্ক, ইস্যুকারী ও CAL ট্রাস্টলাইন যাচাই করুন।",
+    "journeyRoute": "পদ্ধতি বেছে নিন",
+    "journeyRouteText": "সেটআপ নির্দেশিকা অনুসরণ করুন অথবা বাহ্যিক CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন।",
+    "journeyReview": "ওয়ালেটে যাচাই করুন",
+    "journeyReviewText": "অনুরোধ অনুমোদনের আগে সম্পদ, পরিমাণ, ফি ও গন্তব্য যাচাই করুন।"
   },
   "pt": {
     "intro": "Explore CAL no XRP Ledger. Siga o guia, abra os mercados CAL/XRP ou veja outras opções cripto.",
@@ -393,7 +457,15 @@
     "manualRoute": "Configuração manual com XRP Toolkit",
     "historicalVideo": "Vídeo histórico no YouTube",
     "roadmapRead": "Roteiro explicado",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "exploreApp": "Explorar CalorieApp",
+    "readWhitepaper": "Ler o whitepaper",
+    "journeyWallet": "Prepare a sua carteira",
+    "journeyWalletText": "Use Xaman e verifique a rede, o emissor e a linha de confiança CAL antes de continuar.",
+    "journeyRoute": "Escolha o seu caminho",
+    "journeyRouteText": "Siga o guia de configuração ou abra o livro de ordens ou a troca externa CAL/XRP.",
+    "journeyReview": "Reveja na carteira",
+    "journeyReviewText": "Verifique o ativo, o montante, as taxas e o destino antes de aprovar um pedido."
   },
   "id": {
     "intro": "Jelajahi CAL di XRP Ledger. Ikuti panduan, buka pasar CAL/XRP, atau lihat pilihan kripto lainnya.",
@@ -437,7 +509,15 @@
     "manualRoute": "Pengaturan manual dengan XRP Toolkit",
     "historicalVideo": "Video historis di YouTube",
     "roadmapRead": "Penjelasan peta jalan",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "exploreApp": "Jelajahi CalorieApp",
+    "readWhitepaper": "Baca whitepaper",
+    "journeyWallet": "Siapkan dompet",
+    "journeyWalletText": "Gunakan Xaman dan periksa jaringan, penerbit, serta trustline CAL sebelum melanjutkan.",
+    "journeyRoute": "Pilih cara Anda",
+    "journeyRouteText": "Ikuti panduan penyiapan atau buka buku pesanan atau swap CAL/XRP di layanan eksternal.",
+    "journeyReview": "Periksa di dompet",
+    "journeyReviewText": "Periksa aset, jumlah, biaya, dan tujuan sebelum menyetujui permintaan."
   },
   "ur": {
     "intro": "XRP Ledger پر CAL کے بارے میں جانیں۔ رہنما پڑھیں، CAL/XRP مارکیٹ کھولیں یا دوسرے کرپٹو راستے دیکھیں۔",
@@ -481,6 +561,14 @@
     "manualRoute": "XRP Toolkit سے دستی ترتیب",
     "historicalVideo": "YouTube پر تاریخی ویڈیو",
     "roadmapRead": "روڈمیپ کی وضاحت",
-    "menuLabel": "مینو"
+    "menuLabel": "مینو",
+    "exploreApp": "CalorieApp دیکھیں",
+    "readWhitepaper": "وائٹ پیپر پڑھیں",
+    "journeyWallet": "اپنا والیٹ تیار کریں",
+    "journeyWalletText": "Xaman استعمال کریں اور آگے بڑھنے سے پہلے نیٹ ورک، جاری کنندہ اور CAL ٹرسٹ لائن چیک کریں۔",
+    "journeyRoute": "اپنا طریقہ منتخب کریں",
+    "journeyRouteText": "سیٹ اپ گائیڈ پر عمل کریں یا بیرونی CAL/XRP آرڈر بک یا سویپ کھولیں۔",
+    "journeyReview": "والیٹ میں جائزہ لیں",
+    "journeyReviewText": "درخواست منظور کرنے سے پہلے اثاثہ، رقم، فیس اور منزل چیک کریں۔"
   }
 }

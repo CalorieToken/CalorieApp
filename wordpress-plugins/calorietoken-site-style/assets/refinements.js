@@ -155,7 +155,14 @@
             }
           }
         }
+        // Mark only known same-site navigation links; never touch account actions.
+        header.querySelectorAll('.brz-menu-simple a,.ctstyle-header-nav a').forEach(function(a){
+          try {var target=new URL(a.href,window.location.href);
+            if(target.origin===window.location.origin&&target.pathname===window.location.pathname&&!target.hash&&!target.search)a.setAttribute('aria-current','page');
+          } catch(_) { /* Keep an unrecognized native link. */ }
+        });
         var fallbackMenu=header.querySelector('details.ctstyle-mobile-nav');
+        if(fallbackMenu){var fallbackSummary=fallbackMenu.querySelector('summary');if(fallbackSummary)fallbackSummary.setAttribute('aria-label',cfg.copy[locale].menuLabel);}
         if(fallbackMenu&&!menuBindings.has(fallbackMenu)){
           menuBindings.add(fallbackMenu);
           fallbackMenu.addEventListener('keydown',function(event){

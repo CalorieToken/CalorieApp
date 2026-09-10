@@ -1,5 +1,8 @@
 "use client";
 
+import { FoodBarcodeScanner } from "@/components/FoodBarcodeScanner";
+import barcodeTranslations from "@/config/barcode-copy.json";
+import { validFoodBarcode } from "@/lib/foodBarcode";
 import { createFoodSearchReadiness } from "@/lib/foodSearchReadiness";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
@@ -214,6 +217,8 @@ export function FoodSearchPlaceholder() {
   const [error, setError] = useState<string | null>(null);
   const [logError, setLogError] = useState<string | null>(SIGN_IN_REQUIRED_LOG_MESSAGE);
   const [didSearch, setDidSearch] = useState(false);
+  const [barcodeSearch, setBarcodeSearch] = useState(false);
+  const barcodeCopy = barcodeTranslations[locale as keyof typeof barcodeTranslations] ?? barcodeTranslations.en;
   const [searchStatus, setSearchStatus] = useState<string | null>(null);
   const [searchRetryAt, setSearchRetryAt] = useState(0);
   const [searchWaitSeconds, setSearchWaitSeconds] = useState(0);
@@ -364,12 +369,17 @@ export function FoodSearchPlaceholder() {
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    await runSearch(query);
+  }
+
+  async function runSearch(searchQuery: string, barcode = false) {
     // Enter-key submissions and rapid clicks must not cancel/restart a cold start.
     if (logMutationInFlightRef.current || searchInFlightRef.current || Date.now() < searchRetryAtRef.current) return;
     cancelPortionLogging();
     setLogFeedback(null);
 
-    const trimmedQuery = query.trim();
+    const trimmedQuery = searchQuery.trim();
+    if (barcode && !validFoodBarcode(trimmedQuery)) return;
     if (!trimmedQuery) {
       searchAbortControllerRef.current?.abort();
       searchRequestIdRef.current += 1;
@@ -387,6 +397,8 @@ export function FoodSearchPlaceholder() {
 
     setIsLoading(true);
     setError(null);
+    setBarcodeSearch(barcode);
+    if (barcode) setQuery(trimmedQuery);
     setDidSearch(true);
     setSearchStatus(
       "Preparing food search. This can take a moment after inactivity."
@@ -397,7 +409,7 @@ export function FoodSearchPlaceholder() {
       setSearchStatus("Searching foods. This can take up to 45 seconds.");
 
       const response = await backendRequest(
-        `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}`,
+        `${BACKEND_BASE_URL}/search-food?q=${encodeURIComponent(trimmedQuery)}${barcode ? "&mode=barcode" : ""}`,
         { signal: controller.signal },
         FOOD_SEARCH_TIMEOUT_MS
       );
@@ -421,7 +433,11 @@ export function FoodSearchPlaceholder() {
       if (requestId !== searchRequestIdRef.current) {
         return;
       }
-      setResults(normalizeFoodItems(data.results ?? []));
+      const items = normalizeFoodItems(data.results ?? []);
+      setResults(barcode ? items.filter(item => {
+        const code = typeof item.barcode === "string" ? validFoodBarcode(item.barcode) : null;
+        return code !== null && code.padStart(14, "0") === trimmedQuery.padStart(14, "0");
+      }) : items);
     } catch (requestError) {
       if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
         pauseSearch(foodSearchRetryAt(503, null));
@@ -765,6 +781,9 @@ export function FoodSearchPlaceholder() {
           onSubmit={onSearch}
         />
 
+        <FoodBarcodeScanner locale={locale} disabled={isLoading || searchWaitSeconds > 0 || isLogging !== null}
+          onLookup={code => { void runSearch(code, true); }} />
+
         {error ? <div className="mt-4"><ErrorBanner message={translateFoodStatus(error, copy)} /></div> : null}
         {searchWaitSeconds > 0 ? <p className="mt-3 text-sm text-brand-secondary" role="status">{copy.searchCooldownNotice}</p> : null}
 
@@ -788,7 +807,7 @@ export function FoodSearchPlaceholder() {
           <div className="mt-4">
             <EmptyState
               title={copy.noResultsTitle}
-              description={copy.noResultsDescription}
+              description={barcodeSearch ? barcodeCopy.notFound : copy.noResultsDescription}
             />
           </div>
         ) : null}

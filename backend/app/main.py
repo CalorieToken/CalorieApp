@@ -106,7 +106,7 @@ from .services.identity import (
     validate_identity_start_admission_configuration,
     validate_origin_login_handoff,
 )
-from .services.open_food_facts import search_food_products
+from .services.open_food_facts import search_food_products, valid_food_barcode
 from .services.food_search_availability import FoodSearchUnavailable
 
 logger = logging.getLogger(__name__)
@@ -1684,13 +1684,16 @@ def delete_all_logs(
 
 
 @app.get("/search-food", response_model=FoodSearchResponse)
-async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> FoodSearchResponse:
+async def search_food(q: str = Query(..., min_length=1, max_length=120), mode: str = Query("name", pattern="^(name|barcode)$")) -> FoodSearchResponse:
     query = q.strip()
     if not query:
         raise HTTPException(status_code=422, detail="Search query must contain visible characters")
 
+    if mode == "barcode" and valid_food_barcode(query) is None:
+        raise HTTPException(status_code=422, detail="Invalid food barcode")
+
     try:
-        results = await search_food_products(query)
+        results = await search_food_products(query, barcode=True) if mode == "barcode" else await search_food_products(query)
     except FoodSearchUnavailable as exc:
         logger.warning("Open Food Facts unavailable (status=%s)", exc.status_code)
         raise HTTPException(

@@ -1,12 +1,24 @@
-# CalorieToken Site Style 1.4.7
+# CalorieToken Site Style 1.4.8
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.7.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.7** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.8.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.8** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Auditronde 1.4.7 — basis behouden, review eenvoudiger
+## Reviewronde 1.4.8
+
+- Brizy- en usecase-headers delen nu dezelfde logobreedte, menuruimte, buitenmarges en mobiele afronding. Het usecase-menu opent in de pagina en bedekt de accountwidget niet meer.
+- De volledige Xaman-/CalorieApp-kaart kan meegroeien; lange tekst, adresregels, appknop en taalkeuze blijven binnen de beschikbare breedte. De oorspronkelijke inlogbediening blijft intact.
+- Footerlinks en cookieknop delen lettertype, regelhoogte en aanraakruimte. De huidige navigatiepagina is herkenbaar.
+- CAL & Crypto krijgt drie korte stappen, een ingang naar CalorieApp en de whitepaper. Externe markten blijven herkenbaar; er wordt geen eigen orderdienst geactiveerd.
+- Alleen de ene bestaande iframe op de echte CalorieApp-pagina krijgt cameradelegatie voor zijn gecontroleerde app-oorsprong. Er wordt geen camera gestart en een expliciete bestaande camerabeperking wordt niet overschreven.
+
+**Afzonderlijke app-uitrol:** de nieuwe barcodescanner, exacte Open Food Facts-opvraag, USDA-gewichtberekening en Nutri-Score-kleuren vragen uitrol van de bijbehorende appcode. De barcodefunctie vereist zowel de frontend als de backend uit deze PR. Deze ZIP installeert uitsluitend Site Style. De Identity Bridge en accountkoppeling zijn niet gewijzigd.
+
+Test na upload Home, Whitepaper en Cafés op desktop en telefoon, met open/dicht menu en ingelogd/uitgelogd account; controleer ook footer, Richlist, Trustline, CAL & Crypto, Tokenomics, Roadmap, Blog en donaties. Controleer de app pas op de nieuwe functies nadat de afzonderlijke uitrol bevestigd is.
+
+## Historisch: auditronde 1.4.7 — basis behouden, review eenvoudiger
 
 Deze versie bevat alle eerdere screenshotcorrecties van 1.4.6, inclusief de gekleurde footer-terugval en het CalorieHelp-vraagteken. Je hoeft 1.4.6 niet eerst te installeren.
 
