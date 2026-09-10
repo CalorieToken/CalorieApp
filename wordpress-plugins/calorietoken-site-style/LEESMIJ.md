@@ -1,12 +1,23 @@
-# CalorieToken Site Style 1.4.8
+# CalorieToken Site Style 1.4.9
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.8.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.8** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.9.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.9** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Reviewronde 1.4.8
+## Extra regressie-audit 1.4.9
+
+- De bestaande gecombineerde CalorieApp-/taalbediening wordt teruggeplaatst als de native accountwidget zijn footer vernieuwt. De inlogknop en zijn handlers blijven dezelfde nodes.
+- Een nieuwe bekende CMS- of donatiemelding wordt opnieuw vertaald, ook als de vorige tekst al vertaald was. Terug naar Engels herstelt de nieuwe tekst; onbekende eigen wijzigingen blijven behouden.
+- Ook een WordPress-voorbeeld van Home krijgt geen publieke opmaakcorrecties.
+- De bijbehorende appcorrectie negeert late verwijderantwoorden na uitloggen of verlaten van de pagina. Een oude foutmelding kan een nieuwe ingelogde sessie niet meer wissen.
+- Voedselzoeken slaat verkeerd gevormde bronrecords over. Aangeboden producten moeten binnen de bestaande dagboekregels passen; de bronidentiteit wordt niet ingekort. Booleans gelden niet als gemeten voedingswaarden.
+- De CI ontdekt nu alle JavaScript-testbestanden automatisch. Extra DOM-tests controleren de samenwerking van header, accountwidget, CAL-gids, Trustline en vertalingen. De echte decoder leest vier soorten synthetische barcodebeelden; extra bedieningstests controleren stoppen, taalwissels, weigeren en late antwoorden.
+
+Dit is één vervangend pakket; installatie of handmatig testen van tussenversies is niet nodig. Alle 1.4.8-functies hieronder zijn inbegrepen. De automatische controles vervangen geen bewijs van de werkelijk geïnstalleerde website of de camera op een echte telefoon. De appcorrecties vragen nog steeds de afzonderlijke frontend- en backenduitrol; deze ZIP installeert uitsluitend Site Style.
+
+## Inbegrepen: reviewronde 1.4.8
 
 - Brizy- en usecase-headers delen nu dezelfde logobreedte, menuruimte, buitenmarges en mobiele afronding. Het usecase-menu opent in de pagina en bedekt de accountwidget niet meer.
 - De volledige Xaman-/CalorieApp-kaart kan meegroeien; lange tekst, adresregels, appknop en taalkeuze blijven binnen de beschikbare breedte. De oorspronkelijke inlogbediening blijft intact.
@@ -16,7 +27,7 @@ WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorieto
 
 **Afzonderlijke app-uitrol:** de nieuwe barcodescanner, exacte Open Food Facts-opvraag, USDA-gewichtberekening en Nutri-Score-kleuren vragen uitrol van de bijbehorende appcode. De barcodefunctie vereist zowel de frontend als de backend uit deze PR. Deze ZIP installeert uitsluitend Site Style. De Identity Bridge en accountkoppeling zijn niet gewijzigd.
 
-Test na upload Home, Whitepaper en Cafés op desktop en telefoon, met open/dicht menu en ingelogd/uitgelogd account; controleer ook footer, Richlist, Trustline, CAL & Crypto, Tokenomics, Roadmap, Blog en donaties. Controleer de app pas op de nieuwe functies nadat de afzonderlijke uitrol bevestigd is.
+De uiteindelijke livecontrole betreft Home, Whitepaper, Cafés, Richlist, Trustline, CAL & Crypto, Tokenomics, Roadmap, Blog en donaties, plus de afzonderlijk uitgerolde app. De extra audit vraagt geen tussentijdse handmatige controles van de eigenaar.
 
 ## Historisch: auditronde 1.4.7 — basis behouden, review eenvoudiger
 

@@ -14,10 +14,11 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError as UrllibHTTPError, URLError
 
 import httpx
+from pydantic import ValidationError
 
 from app.database import engine
 from app.provider_rate_governor import build_provider_rate_governor
-from app.schemas import FoodSearchResult
+from app.schemas import FoodLogCreate, FoodSearchResult
 from app.services.food_search_availability import (
     FoodSearchAvailability,
     FoodSearchUnavailable,
@@ -95,7 +96,7 @@ def _repair_common_mojibake(text: str) -> str:
 
 
 def _to_float(value: Any) -> float | None:
-    if value is None:
+    if value is None or isinstance(value, bool):
         return None
     try:
         result = float(value)
@@ -104,7 +105,7 @@ def _to_float(value: Any) -> float | None:
         if result < 0:
             return None
         return round(result, 2)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
@@ -269,19 +270,26 @@ async def _fetch_product(code: str) -> dict[str, Any]:
 
 def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
     results: list[FoodSearchResult] = []
+    products = payload.get("products", []) if isinstance(payload, dict) else None
+    if not isinstance(products, list):
+        raise httpx.HTTPError("Invalid Open Food Facts product list")
     nutrient_fields = {
         "calories": "energy-kcal",
         "protein": "proteins",
         "fat": "fat",
         "carbohydrates": "carbohydrates",
     }
-    for product in payload.get("products", []):
-        raw_product_name = (product.get("product_name") or "").strip()
+    for product in products:
+        if not isinstance(product, dict) or not isinstance(product.get("product_name"), str):
+            continue
+        raw_product_name = product["product_name"].strip()
         product_name = _repair_common_mojibake(raw_product_name)
         if not product_name:
             continue
 
-        nutriments = product.get("nutriments") or {}
+        nutriments = product.get("nutriments")
+        if not isinstance(nutriments, dict):
+            continue
         serving_size = _to_optional_text(product.get("serving_size"))
         nutrition = {
             name: _to_float(nutriments.get(f"{field}_serving"))
@@ -307,8 +315,7 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
         if any(value is None for value in nutrition.values()):
             continue
 
-        results.append(
-            FoodSearchResult(
+        result = FoodSearchResult(
                 product_name=product_name,
                 calories=nutrition["calories"],
                 protein=nutrition["protein"],
@@ -319,8 +326,14 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
                 brand=_extract_brand(product),
                 serving_size=serving_size,
                 nutri_score=_extract_nutri_score(product),
-            )
         )
+        try:
+            # Every offered result must fit the existing diary contract. Do not
+            # silently truncate a provider's product identity or source fields.
+            FoodLogCreate.model_validate(result.model_dump())
+        except ValidationError:
+            continue
+        results.append(result)
 
     return results
 

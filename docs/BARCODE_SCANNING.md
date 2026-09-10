@@ -67,6 +67,14 @@ required; synthetic camera tests are not hardware or focus/lighting evidence.
 
 ## Acceptance pass
 
+The follow-up automated audit runs the actual bundled decoder against synthetic
+EAN-8, EAN-13, UPC-A and ITF-14 raster images. It also exercises the scanner
+component's controls through eleven languages, duplicate clicks, refusal,
+cancel/close/hide/unmount/timeout and stale responses from an older session.
+These cover decoding and software lifecycle; the canvas input and camera stream
+remain synthetic and do not establish optical recognition or installed hosting
+permissions on a real phone. No intermediate owner debugging pass is requested.
+
 - Open the disclosure: no camera prompt until Start camera.
 - Allow a rear-camera scan: one product lookup, correct packaging identity and
   nutrition basis, no diary entry until explicit confirmation.

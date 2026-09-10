@@ -283,10 +283,17 @@
   function watchAccount() {
     if (accountWatcher || typeof MutationObserver !== 'function') return;
     accountWatcher = new MutationObserver(function (records) {
-      if (records.some(function (record) {return Array.from(record.addedNodes).some(function (node) {
-        return node.nodeType===1 && !node.closest('#ctstyle-account-app') &&
-          (node.matches('.xl-card,.ctstyle-header') || node.querySelector('.xl-card'));
-      });})) {accountWidget();}
+      if (records.some(function (record) {
+        // Native login widgets can replace just their footer/contents. Reattach
+        // our existing controls when removed, without rebuilding the login card.
+        if (accountApp && !accountApp.isConnected && Array.from(record.removedNodes).some(function (node) {
+          return node===accountApp || node.nodeType===1 && node.contains(accountApp);
+        })) return true;
+        return Array.from(record.addedNodes).some(function (node) {
+          return node.nodeType===1 && !node.closest('#ctstyle-account-app') &&
+            (node.matches('.xl-card,.ctstyle-header') || node.querySelector('.xl-card'));
+        });
+      })) {accountWidget();}
     });
     accountWatcher.observe(document.body,{childList:true,subtree:true});
   }

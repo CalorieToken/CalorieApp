@@ -3,11 +3,11 @@
 define('ABSPATH', __DIR__);
 function add_action(...$args) {}
 function add_filter(...$args) {}
-$allowed = true; $fixture = array(); $queries = 0; $preview = false;
+$allowed = true; $fixture = array(); $queries = 0; $preview = false; $front_page = false;
 function is_admin() { return false; }
 function is_feed() { return false; }
 function is_embed() { return false; }
-function is_front_page() { return false; }
+function is_front_page() { global $front_page; return $front_page; }
 function is_page($ids) { return false; }
 function is_preview() { global $preview; return $preview; }
 function current_user_can($capability) { global $allowed; return $allowed && $capability === 'manage_options'; }
@@ -28,7 +28,11 @@ function post_fixture($id, $status, $content) {
 }
 $preview = true;
 check(!\CalorieToken\SiteStyle\Plugin::enabled(), 'Preview must not load public styling');
+$front_page = true;
+check(!\CalorieToken\SiteStyle\Plugin::footer_only(), 'Front-page preview must not load public styling');
 $preview = false;
+check(\CalorieToken\SiteStyle\Plugin::footer_only(), 'Ordinary front page should retain shared styling');
+$front_page = false;
 check(\CalorieToken\SiteStyle\Plugin::enabled(), 'Ordinary public page should retain styling');
 foreach (array('preview','customize_changeset_uuid','brizy-edit') as $query) {
     $_GET[$query] = '1';

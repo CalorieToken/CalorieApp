@@ -90,3 +90,47 @@ test('All scanner copy covers the eleven existing languages', () => {
     assert.ok(Object.values(values).every(value => typeof value === 'string' && value.trim()));
   });
 });
+
+test('The actual bundled decoder reads EAN-8, EAN-13, UPC-A and ITF-14 raster fixtures', async () => {
+  const zxing = require('@zxing/library');
+  const {BrowserMultiFormatReader} = require('@zxing/browser');
+  // Only the DOM canvas capture is substituted. Format selection, luminance
+  // binarization, real ZXing decoding, validation and session cleanup run as shipped.
+  class RasterReader extends BrowserMultiFormatReader {
+    decode(video) { return this.decodeBitmap(video.bitmap); }
+  }
+  const rasterModule = {exports: {}};
+  let nextStream;
+  vm.runInNewContext(ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText, {
+    module: rasterModule, exports: rasterModule.exports, setTimeout, clearTimeout,
+    navigator: {mediaDevices: {getUserMedia: async () => nextStream}},
+    require(name) { return name === '@zxing/browser' ? {BrowserMultiFormatReader: RasterReader} : require(name); },
+  });
+  const left = ['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
+  const parity = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+  const invert = bits => bits.replace(/[01]/g, bit => bit === '1' ? '0' : '1');
+  function ean(code) {
+    if (code.length === 12) code = '0' + code;
+    const half = code.length === 8 ? 4 : 6, lhs = code.length === 8 ? code.slice(0, 4) : code.slice(1, 7);
+    return '101' + [...lhs].map((digit, i) => code.length === 8 || parity[code[0]][i] === 'L' ? left[digit] : invert([...left[digit]].reverse().join(''))).join('')
+      + '01010' + [...code.slice(-half)].map(digit => invert(left[digit])).join('') + '101';
+  }
+  function itf(code) {
+    const patterns = ['11331','31113','13113','33111','11313','31311','13311','11133','31131','13131'];
+    let bars = '1010';
+    for (let i = 0; i < code.length; i += 2) for (let j = 0; j < 5; j++) bars += '1'.repeat(Number(patterns[code[i]][j])) + '0'.repeat(Number(patterns[code[i + 1]][j]));
+    return bars + '11101';
+  }
+  for (const code of [valid[0], valid[1], valid[3], valid[4]]) {
+    const bars = '0'.repeat(20) + (code.length === 14 ? itf(code) : ean(code)) + '0'.repeat(20);
+    const width = bars.length * 3, height = 100, pixels = new Uint8ClampedArray(width * height);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) pixels[y * width + x] = bars[Math.floor(x / 3)] === '1' ? 0 : 255;
+    const c = camera(); nextStream = c.stream;
+    c.video.bitmap = new zxing.BinaryBitmap(new zxing.HybridBinarizer(new zxing.RGBLuminanceSource(pixels, width, height)));
+    const controller = new AbortController(), found = [];
+    const timeout = setTimeout(() => controller.abort(), 2_000);
+    try { await rasterModule.exports.startBarcodeCamera(c.video, controller.signal, value => found.push(value), () => {}); }
+    finally { clearTimeout(timeout); controller.abort(); }
+    assert.deepEqual(found, [code]); assert.ok(c.counts().stopped > 0); assert.equal(c.video.srcObject, null);
+  }
+});

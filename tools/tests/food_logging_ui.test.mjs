@@ -65,7 +65,7 @@ function button(tree, label) {
   return result[0];
 }
 
-async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse) {
+async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse, deleteResponse) {
   const source = await readFile(new URL(`../../frontend/components/${componentName}.tsx`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { jsx: typescript.JsxEmit.ReactJSX, module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
@@ -168,11 +168,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
             if (response.ok) saved.push({ ...JSON.parse(options.body), id: saved.length + 1 });
             return response;
           }
+          if (options?.method === "DELETE" && /\/logs(?:\/\d+)?$/.test(url)) {
+            const response = deleteResponse ? await deleteResponse() : { ok: true, status: 204 };
+            if (response.ok) saved = url.endsWith('/logs') ? [] : saved.filter(item => item.id !== Number(url.split('/').at(-1)));
+            return response;
+          }
           if (url.endsWith("/logs")) {
-            if (options?.method === "DELETE") {
-              saved = [];
-              return { ok: true, status: 204 };
-            }
             const response = logsResponse ? await logsResponse() : null;
             return response ?? { ok: true, json: async () => saved };
           }
@@ -476,6 +477,37 @@ test("a response arriving after logout cannot restore the former selection or su
   assert.equal(h.controls(), null);
   assert.ok(h.cards().every((card) => !card.props.feedback));
   assert.equal(h.requests.filter((request) => request.url.endsWith("/logs")).length, 0);
+});
+
+test('Late single/bulk delete replies and failures cannot replace the logged-out state or issue another private read', async () => {
+  for (const bulk of [false, true]) for (const outcome of [204, 401, 500, 'network']) {
+    let finish, reject;
+    const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+      () => new Promise((resolve, fail) => { finish = resolve; reject = fail; }));
+    await h.search(); h.choose(0); h.submit(); await h.flush(); h.answerConfirmation(true);
+    const list = nodes(h.tree, node => node.type === 'FoodLogList')[0];
+    const pending = bulk ? list.props.onDeleteAllLogs() : list.props.onDeleteLog(1);
+    h.logout(); const count = h.requests.length;
+    if (outcome === 'network') reject(new Error('Offline')); else finish({ok: outcome === 204, status: outcome});
+    await pending; await h.flush();
+    assert.equal(h.requests.length, count, 'A reply from the signed-out session must not fetch private logs again');
+    assert.ok(text(h.tree).includes(foodUiCopy.en.signInTitle));
+    assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 0);
+    assert.equal(nodes(h.tree, node => node.type === 'ErrorBanner').length, 0);
+  }
+});
+
+test('An old delete authorization failure does not clear a newly signed-in diary', async () => {
+  let finish;
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+    () => new Promise(resolve => { finish = resolve; }));
+  await h.search(); h.choose(0); h.submit(); await h.flush();
+  const pending = nodes(h.tree, node => node.type === 'FoodLogList')[0].props.onDeleteLog(1);
+  h.logout(); h.login(); await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  finish({ok: false, status: 401}); await pending; await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  assert.ok(!text(h.tree).includes(foodUiCopy.en.signInTitle));
 });
 
 test("expanding a card reveals its portion region once and restores keyboard focus on cancel", async () => {

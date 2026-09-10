@@ -28,17 +28,17 @@
       if(record.changed){node.replaceChildren.apply(node,record.children);record.changed=false;}
       if(record.lang===null)node.removeAttribute('lang');else node.setAttribute('lang',record.lang);
       if(record.dir===null)node.removeAttribute('dir');else node.setAttribute('dir',record.dir);
-      record.last=norm(node.textContent);return;
+      record.last=norm(node.textContent);record.current=Array.from(node.childNodes);record.paintedLocale=null;return;
     }
     if(norm(node.textContent)!==value)node.replaceChildren(document.createTextNode(value));
-    node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';record.last=value;record.changed=true;
+    node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';record.last=value;record.changed=true;record.current=Array.from(node.childNodes);record.paintedLocale=locale;
   }
   function block(n){
     if(!safe(n)||n.querySelector(excluded)||records.has(n))return;
     var row=lookup.get(norm(n.textContent));if(!row)return;
     // Keep anchors, icons, labels and controls alive. Complex content uses text-node matches.
     if(Array.from(n.querySelectorAll('*')).some(function(x){return !['SPAN','STRONG','B','EM','I','BR'].includes(x.tagName);}))return;
-    var record={node:n,row:row,children:Array.from(n.childNodes),last:norm(n.textContent),kind:'block',lang:n.getAttribute('lang'),dir:n.getAttribute('dir'),changed:false};
+    var record={node:n,row:row,children:Array.from(n.childNodes),current:Array.from(n.childNodes),last:norm(n.textContent),kind:'block',lang:n.getAttribute('lang'),dir:n.getAttribute('dir'),changed:false};
     records.set(n,record);active.push(record);paint(record);
   }
   function fragments(root){
@@ -58,7 +58,19 @@
     if(observer)observer.disconnect();
     // Ask existing owners to translate their own mutable controls and notes.
     ['CalorieAppTokenomics'].forEach(function(key){if(window[key]&&typeof window[key].setLocale==='function')window[key].setLocale(locale);});
-    active=active.filter(function(r){return r.node.isConnected;});active.forEach(paint);
+    active=active.filter(function(r){
+      if(!r.node.isConnected)return false;
+      var changed=r.kind==='text'?r.node.data!==r.last:
+        norm(r.node.textContent)!==r.last || r.current.length!==r.node.childNodes.length || r.current.some(function(n,i){return n!==r.node.childNodes[i];});
+      if(!changed)return true;
+      // The CMS owns this new content. Forget the old snapshot so a recognized
+      // replacement can translate and English restores the new, current text.
+      if(r.kind==='block' && r.paintedLocale && r.node.getAttribute('lang')===r.paintedLocale){
+        if(r.lang===null)r.node.removeAttribute('lang');else r.node.setAttribute('lang',r.lang);
+        if(r.dir===null)r.node.removeAttribute('dir');else r.node.setAttribute('dir',r.dir);
+      }
+      records.delete(r.node);return false;
+    });active.forEach(paint);
     document.querySelectorAll(candidates).forEach(block);
     document.querySelectorAll('.ctstyle-legal,.ctstyle-market-card,.brz-rich-text,.entry-content,.woocommerce,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.ctstyle-roadmap-preview,.calorieapp-context-note,.brz-posts').forEach(function(root){if(!records.has(root))fragments(root);});
     if(observer)observer.observe(document.body,{subtree:true,childList:true,characterData:true});

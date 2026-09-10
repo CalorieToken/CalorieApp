@@ -57,7 +57,7 @@ def test_open_food_facts_admission_configuration_is_bounded() -> None:
 
 @pytest.mark.parametrize(
     "value",
-    [None, float("inf"), float("-inf"), float("nan"), "Infinity", "NaN", -1],
+    [None, True, False, [], {}, float("inf"), float("-inf"), float("nan"), "Infinity", "NaN", -1],
 )
 def test_to_float_marks_missing_or_invalid_upstream_values_as_unknown(value: object) -> None:
     assert _to_float(value) is None
@@ -108,6 +108,30 @@ def test_search_omits_products_with_unknown_nutrition(primary: AsyncMock) -> Non
     results = asyncio.run(search_food_products("oats"))
 
     assert [result.product_name for result in results] == ["Complete oats"]
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_one_malformed_provider_record_does_not_discard_valid_foods(primary: AsyncMock) -> None:
+    good = {"product_name": "Oats", "nutriments": {
+        "energy-kcal_100g": 375, "proteins_100g": 13, "fat_100g": 7, "carbohydrates_100g": 60,
+    }}
+    primary.return_value = {"products": [None, "wrong type", {"product_name": 12},
+        {"product_name": "Invalid nutrients", "nutriments": []}, good]}
+    results = asyncio.run(search_food_products("oats"))
+    assert [result.product_name for result in results] == ["Oats"]
+
+
+@patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
+def test_search_results_can_be_saved_without_truncating_provider_identity(primary: AsyncMock) -> None:
+    from app.schemas import FoodLogCreate
+    good = {"product_name": "Oats", "nutriments": {
+        "energy-kcal_100g": 375, "proteins_100g": 13, "fat_100g": 7, "carbohydrates_100g": 60,
+    }}
+    primary.return_value = {"products": [good, {**good, "product_name": "x" * 121},
+        {**good, "brands": "x" * 161}, {**good, "image_url": "https://example.test/" + "x" * 500}]}
+    results = asyncio.run(search_food_products("oats"))
+    assert [result.product_name for result in results] == ["Oats"]
+    assert FoodLogCreate.model_validate(results[0].model_dump()).product_name == "Oats"
 
 
 @patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)

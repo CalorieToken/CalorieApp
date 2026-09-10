@@ -191,6 +191,7 @@ export function FoodSearchPlaceholder() {
   const searchInFlightRef = useRef(false);
   const searchRetryAtRef = useRef(0);
   const logsRequestIdRef = useRef(0);
+  const privateStateVersionRef = useRef(0);
   const logMutationInFlightRef = useRef(false);
   const logSelectionIdRef = useRef(0);
   const deleteMutationInFlightRef = useRef(false);
@@ -281,6 +282,7 @@ export function FoodSearchPlaceholder() {
     // Invalidate any request that began under the previous authentication
     // state so a late response cannot repopulate another session's logs.
     logsRequestIdRef.current += 1;
+    privateStateVersionRef.current += 1;
     logSelectionIdRef.current += 1;
     setLogs([]);
     setSelectedLogId(null);
@@ -344,6 +346,8 @@ export function FoodSearchPlaceholder() {
   useEffect(() => {
     return () => {
       searchAbortControllerRef.current?.abort();
+      logsRequestIdRef.current += 1;
+      privateStateVersionRef.current += 1;
     };
   }, []);
 
@@ -384,6 +388,8 @@ export function FoodSearchPlaceholder() {
       searchAbortControllerRef.current?.abort();
       searchRequestIdRef.current += 1;
       setResults([]);
+      setDidSearch(false);
+      setBarcodeSearch(false);
       setError("Enter a food name to search.");
       return;
     }
@@ -560,6 +566,7 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
+    const privateVersion = privateStateVersionRef.current;
     deleteMutationInFlightRef.current = true;
     setDeletingLogId(logId);
     setLogError(null);
@@ -567,6 +574,7 @@ export function FoodSearchPlaceholder() {
       const response = await backendRequest(`${BACKEND_BASE_URL}/logs/${logId}`, {
         method: "DELETE",
       });
+      if (privateVersion !== privateStateVersionRef.current) return;
       if (response.status === 401) {
         clearPrivateLogState();
         return;
@@ -582,6 +590,7 @@ export function FoodSearchPlaceholder() {
       }
       await fetchLogs();
     } catch (requestError) {
+      if (privateVersion !== privateStateVersionRef.current) return;
       setLogError(
         backendUnavailableMessage(
           requestError,
@@ -604,6 +613,7 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
+    const privateVersion = privateStateVersionRef.current;
     deleteMutationInFlightRef.current = true;
     setIsClearingAll(true);
     setLogError(null);
@@ -611,6 +621,7 @@ export function FoodSearchPlaceholder() {
       const response = await backendRequest(`${BACKEND_BASE_URL}/logs`, {
         method: "DELETE",
       });
+      if (privateVersion !== privateStateVersionRef.current) return;
       if (response.status === 401) {
         clearPrivateLogState();
         return;
@@ -621,6 +632,7 @@ export function FoodSearchPlaceholder() {
       setSelectedLogId(null);
       await fetchLogs();
     } catch (requestError) {
+      if (privateVersion !== privateStateVersionRef.current) return;
       setLogError(
         backendUnavailableMessage(
           requestError,
