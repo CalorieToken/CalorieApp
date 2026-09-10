@@ -310,6 +310,7 @@
           return /^(preview|customize_changeset_uuid|brizy-edit|brizy-edit-iframe|brz-edit|brz-edit-iframe)$/.test(key);
         })) {
       imageVar('--ctstyle-paper-image', cfg.paperImage);
+      imageVar('--ctstyle-header-image', cfg.headerImage);
       styleFooter();
       return;
     }
