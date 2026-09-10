@@ -2,11 +2,12 @@
 
 import { FormEvent } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { getFoodUi } from "@/lib/foodUi";
+import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
 
 type SearchBarProps = {
   query: string;
   isLoading: boolean;
+  retrySeconds?: number;
   onQueryChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -14,6 +15,7 @@ type SearchBarProps = {
 export function SearchBar({
   query,
   isLoading,
+  retrySeconds = 0,
   onQueryChange,
   onSubmit,
 }: SearchBarProps) {
@@ -37,7 +39,7 @@ export function SearchBar({
       <button
         type="submit"
         className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-primary px-8 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap"
-        disabled={isLoading}
+        disabled={isLoading || retrySeconds > 0}
         aria-busy={isLoading}
       >
         {isLoading ? (
@@ -45,6 +47,8 @@ export function SearchBar({
             <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
             {copy.searching}
           </>
+        ) : retrySeconds > 0 ? (
+          formatFoodUi(copy.searchWait, { seconds: new Intl.NumberFormat(locale).format(retrySeconds) })
         ) : (
           copy.search
         )}

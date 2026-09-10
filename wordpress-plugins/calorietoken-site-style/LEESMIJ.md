@@ -46,6 +46,8 @@ Het account krijgt geen automatische appidentiteit, retailerrol of pilotinschrij
 
 ## Appwijzigingen en talen
 
+De aanvullende zoekcorrectie in [PR #137](https://github.com/CalorieToken/CalorieApp/pull/137) voorkomt het opnieuw starten van een lopende zoekactie door herhaald klikken/Enter. Opstartuitleg en een zichtbare wachttijd na tijdelijke fouten zijn beschikbaar in alle elf talen. De wachttijd respecteert een langere Retry-After van de server; er is geen automatische nieuwe zoekopdracht bij afloop. Deze appcorrectie komt via de afzonderlijke Render-uitrol beschikbaar, niet door het uploaden van deze WordPress-ZIP. Dit heft hosting- of bronlimieten niet op.
+
 [CalorieApp PR #136](https://github.com/CalorieToken/CalorieApp/pull/136) is samengevoegd na vier geslaagde verplichte controles. Bevat de voorbereide taalprovider, appintroductie en voedingsinterface, een eenvoudige dagboekfilter, duidelijke Nutri-Score-verdeling, de verwijzing terug naar de Testnet-stappen en een minimale USDA-referentie met drie gedateerde voorbeelden per 100 gram en CC0-bronvermelding. Er is geen USDA-API-sleutel nodig en geen nieuwe import van voorbeelden naar het persoonlijke dagboek.
 
 Widget en app gebruiken dezelfde gecontroleerde weergavetaalkoppeling voor elf talen. Een expliciete voorkeur wordt maximaal dertig dagen onthouden. De authenticatietaal en iframe-loginparameters worden hiervoor niet gewijzigd. Een bestaande actieve native WordPress-taalkoppeling houdt voorrang. Dit vertaalt niet automatisch alle historische pagina-inhoud of juridische documenten; sommige onderdelen blijven Engels.
@@ -60,7 +62,7 @@ De bestaande Complianz-toestemming blijft leidend. Biedt de site de service-API 
 
 ## Controle en herstel
 
-De regressies controleren bestaande account-/formuliernodes en handlers, elf talen, appberichtgrenzen, privacykeuzes, Testnet-foutpaden, native WordPress-shortcodes en de nieuwe gedeelde onderdelen. De aparte appcode van PR136 is in deze correctieronde niet gewijzigd. De exacte aantallen staan bij de releasecontrole.
+De regressies controleren bestaande account-/formuliernodes en handlers, elf talen, appberichtgrenzen, privacykeuzes, Testnet-foutpaden, native WordPress-shortcodes en de nieuwe gedeelde onderdelen. De app krijgt alleen de hierboven beschreven zoekcorrectie; account- en backendcode blijven behouden. De exacte aantallen staan bij de releasecontrole.
 
 Openbare versies van Home, Trustline, Groceries, CAL & Crypto en Contact zijn gelezen. De browser blokkeerde het openen van een lokale voorbeeldpagina; daarom is **geen visuele browsercontrole van deze nieuwe 1.4.1-versie** geclaimd. De opgeslagen echte DOM-opbouw en CSS-regels zijn wel gebruikt voor de correcties en controles. De praktijktest volgt na upload.
 
