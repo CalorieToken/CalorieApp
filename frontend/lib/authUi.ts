@@ -6,16 +6,21 @@ export function getAuthUi(value?: string | null) {
   const locale = resolveLocale(value);
   return { locale, direction: localeDirection(locale), copy: translations[locale as keyof typeof translations] ?? translations.en };
 }
+const messageKeys: (keyof AuthUiCopy)[] = [
+  "restoring", "complete", "restoreFailed", "preparing", "starting", "retrying",
+  "busy", "activating", "reconnecting", "signedBoth", "languageMismatch",
+  "responseMismatch", "finishFailed", "prepareFailed", "logoutFailed", "serviceSlow",
+];
 const messages = new Map<string, keyof AuthUiCopy>(
-  (Object.keys(translations.en) as (keyof AuthUiCopy)[]).map(key => [translations.en[key], key]),
+  messageKeys.map(key => [translations.en[key], key]),
 );
 messages.set("Sign-in completed. Your session was restored in this browser.", "complete");
 messages.set("WordPress signed in. Restoring CalorieApp in this browser...", "reconnecting");
 messages.set("Could not log out of both sessions. Please try again.", "logoutFailed");
 
 export function translateAuthMessage(message: string, copy: AuthUiCopy): string {
-  // Display only: the protocol locale, request state and server messages stay intact.
-  // Only exact first-party messages belong to this catalogue.
+  // Display only: protocol locale and request state stay intact. Only known
+  // status/error strings are translated; UI labels and unknown messages pass through.
   const key = messages.get(message);
   return key ? copy[key] : message;
 }

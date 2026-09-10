@@ -33,5 +33,14 @@ test('Owned progress and errors translate; arbitrary server or product text rema
  assert.equal(authUi.translateAuthMessage(authCopy.en.serviceSlow,copy),copy.serviceSlow);
  assert.equal(authUi.translateAuthMessage('WordPress signed in. Restoring CalorieApp in this browser...',copy),copy.reconnecting);
  const unknown='Provider detail <script>not executable</script> {locale}';assert.equal(authUi.translateAuthMessage(unknown,copy),unknown);
+ for(const tag of Object.keys(authCopy)){
+  const localized=authUi.getAuthUi(tag).copy;
+  for(const key of ['logout','signIn','continueXaman','connectedAccount','preparingXaman']){
+   assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),authCopy.en[key],tag+'.'+key);
+  }
+  for(const key of ['restoring','complete','restoreFailed','preparing','starting','retrying','busy','activating','reconnecting','signedBoth','languageMismatch','responseMismatch','finishFailed','prepareFailed','logoutFailed','serviceSlow']){
+   assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),localized[key],tag+'.'+key);
+  }
+ }
  assert.equal(authUi.getAuthUi('unknown').locale,'en');
 });
