@@ -3,6 +3,8 @@
 import { FoodSearchItem } from "@/components/foodTypes";
 import Image from "next/image";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
 
 type FoodCardProps = {
   item: FoodSearchItem;
@@ -15,6 +17,8 @@ type FoodCardProps = {
 };
 
 export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNumber, children, feedback }: FoodCardProps) {
+  const display = useDisplayLanguage();
+  const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const [imageFailed, setImageFailed] = useState(false);
   const portionId = useId();
   const portionRef = useRef<HTMLDivElement>(null);
@@ -39,13 +43,13 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
   }, [isExpanded, isDisabled, isLogging]);
 
   return (
-    <li className={`rounded-xl border bg-white p-4 sm:p-5 shadow-sm transition duration-200 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
+    <li lang={locale} dir={direction} className={`rounded-xl border bg-white p-4 sm:p-5 shadow-sm transition duration-200 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <div className="h-24 w-full shrink-0 overflow-hidden rounded-lg border border-brand-secondary/15 bg-brand-bg sm:h-24 sm:w-24">
           {showImage ? (
             <Image
               src={item.image_url ?? ""}
-              alt={`${item.product_name} product image`}
+              alt={formatFoodUi(copy.productImage, { product: item.product_name })}
               className="h-full w-full object-contain"
               width={96}
               height={96}
@@ -55,46 +59,46 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs font-medium text-brand-secondary/60">
-              No image
+              {copy.noImage}
             </div>
           )}
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-brand-primary">{item.product_name}</p>
+          <p className="text-base font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>
           {item.brand ? (
             <p className="mt-1 truncate text-xs text-brand-secondary/80" title={item.brand}>
-              {item.brand}
+              <bdi>{item.brand}</bdi>
             </p>
           ) : null}
           {item.barcode ? (
-            <p className="mt-1 truncate text-xs text-brand-secondary/75" title={`Barcode: ${item.barcode}`}>
-              Barcode: {item.barcode}
+            <p className="mt-1 truncate text-xs text-brand-secondary/75" title={`${copy.barcode}: ${item.barcode}`}>
+              {copy.barcode}: <bdi dir="ltr">{item.barcode}</bdi>
             </p>
           ) : null}
           {(item.serving_size || item.nutri_score) ? (
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-secondary/75">
-              {item.serving_size ? <p>Serving: {item.serving_size}</p> : null}
-              {item.nutri_score ? <p>Nutri-Score: {item.nutri_score}</p> : null}
+              {item.serving_size ? <p>{copy.serving}: <bdi>{item.serving_size}</bdi></p> : null}
+              {item.nutri_score ? <p><bdi dir="ltr">Nutri-Score: {item.nutri_score}</bdi></p> : null}
             </div>
           ) : null}
 
           <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
-              <span className="text-brand-secondary/70">Calories</span>
-              <p className="font-semibold text-brand-accent">{formatNumber(item.calories)} kcal</p>
+              <span className="text-brand-secondary/70">{copy.calories}</span>
+              <p className="font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">Protein</span>
-              <p className="font-semibold text-brand-primary">{formatNumber(item.protein)}g</p>
+              <span className="text-brand-secondary/70">{copy.protein}</span>
+              <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.protein)}g</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">Fat</span>
-              <p className="font-semibold text-brand-primary">{formatNumber(item.fat)}g</p>
+              <span className="text-brand-secondary/70">{copy.fat}</span>
+              <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.fat)}g</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">Carbs</span>
-              <p className="font-semibold text-brand-primary">{formatNumber(item.carbohydrates)}g</p>
+              <span className="text-brand-secondary/70">{copy.carbs}</span>
+              <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.carbohydrates)}g</bdi></p>
             </div>
           </div>
         </div>
@@ -108,9 +112,9 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
         aria-busy={isLogging}
         aria-expanded={isExpanded}
         aria-controls={isExpanded ? portionId : undefined}
-        aria-label={`Log ${item.product_name}`}
+        aria-label={formatFoodUi(copy.logProduct, { product: item.product_name })}
       >
-        {isLogging ? "Logging..." : isExpanded ? "Choose your portion below" : "Log Food"}
+        {isLogging ? copy.logging : isExpanded ? copy.chooseBelow : copy.logFood}
       </button>
       {isExpanded ? (
         <div
@@ -118,7 +122,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
           ref={portionRef}
           tabIndex={-1}
           role="region"
-          aria-label={`Choose a portion for ${item.product_name}`}
+          aria-label={formatFoodUi(copy.choosePortionFor, { product: item.product_name })}
           className="scroll-mt-4 outline-none"
         >
           {children}

@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "source_id": "usda_fooddata_central",
+  "source_name": "USDA FoodData Central",
+  "source_url": "https://fdc.nal.usda.gov/",
+  "licence_id": "CC0-1.0",
+  "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "terms_url": "https://fdc.nal.usda.gov/api-guide/",
+  "basis_reference": "https://fdc.nal.usda.gov/Foundation_Foods_Documentation/",
+  "retrieved_on": "2026-09-08",
+  "scope": "bundled-reference-only",
+  "basis": {
+    "quantity": 100,
+    "unit": "g",
+    "portion": "edible"
+  },
+  "selected_energy_nutrient_id": 2047,
+  "verification_status": "provider-reported-not-independently-verified",
+  "foods": [
+    {
+      "fdc_id": 2258586,
+      "description": "Carrots, mature, raw",
+      "data_type": "Foundation",
+      "publication_date": "4/28/2022",
+      "food_class": "FinalFood",
+      "source_sha256": "ea9ac83127807d205f1aa444aae3f178c23e61f02846f1a8441b21b630e2a5b1",
+      "nutrients": [
+        {
+          "id": 2047,
+          "name": "Energy (Atwater General Factors)",
+          "unit": "kcal",
+          "amount": 47.9906,
+          "min": null,
+          "max": null,
+          "loq": null
+        },
+        {
+          "id": 2048,
+          "name": "Energy (Atwater Specific Factors)",
+          "unit": "kcal",
+          "amount": 44.978589,
+          "min": null,
+          "max": null,
+          "loq": null
+        },
+        {
+          "id": 1003,
+          "name": "Protein",
+          "unit": "g",
+          "amount": 0.94125,
+          "min": 0.6875,
+          "max": 1.25,
+          "loq": null
+        },
+        {
+          "id": 1004,
+          "name": "Total lipid (fat)",
+          "unit": "g",
+          "amount": 0.3506,
+          "min": 0,
+          "max": 1.79,
+          "loq": 0.08
+        },
+        {
+          "id": 1005,
+          "name": "Carbohydrate, by difference",
+          "unit": "g",
+          "amount": 10.26755,
+          "min": null,
+          "max": null,
+          "loq": null
+        }
+      ],
+      "retrieved_at": "2026-09-08T15:25:44.838923+00:00"
+    },
+    {
+      "fdc_id": 2261421,
+      "description": "Flour, oat, whole grain",
+      "data_type": "Foundation",
+      "publication_date": "4/28/2022",
+      "food_class": "FinalFood",
+      "source_sha256": "863c564c0147a13b81f3691e5286328de59810da0baa710582c5bf23953c9028",
+      "nutrients": [
+        {
+          "id": 2047,
+          "name": "Energy (Atwater General Factors)",
+          "unit": "kcal",
+          "amount": 389.125,
+          "min": null,
+          "max": null,
+          "loq": null
+        },
+        {
+          "id": 2048,
+          "name": "Energy (Atwater Specific Factors)",
+          "unit": "kcal",
+          "amount": 386.429275,
+          "min": null,
+          "max": null,
+          "loq": null
+        },
+        {
+          "id": 1003,
+          "name": "Protein",
+          "unit": "g",
+          "amount": 13.16875,
+          "min": 10.125,
+          "max": 15.0625,
+          "loq": null
+        },
+        {
+          "id": 1004,
+          "name": "Total lipid (fat)",
+          "unit": "g",
+          "amount": 6.309,
+          "min": 2.59,
+          "max": 7.51,
+          "loq": null
+        },
+        {
+          "id": 1005,
+          "name": "Carbohydrate, by difference",
+          "unit": "g",
+          "amount": 69.91725,
+          "min": null,
+          "max": null,
+          "loq": null
+        }
+      ],
+      "retrieved_at": "2026-09-08T15:25:44.838923+00:00"
+    },
+    {
+      "fdc_id": 2257046,
+      "description": "Oat milk, unsweetened, plain, refrigerated",
+      "data_type": "Foundation",
+      "publication_date": "4/28/2022",
+      "food_class": "FinalFood",
+      "source_sha256": "d2293c7232bb263a13c5be60352461dd095a7212ac03320c764dd562cd2cafd0",
+      "nutrients": [
+        {
+          "id": 2047,
+          "name": "Energy (Atwater General Factors)",
+          "unit": "kcal",
+          "amount": 48.3298,
+          "min": null,
+          "max": null,
+          "loq": null
+        },
+        {
+          "id": 1003,
+          "name": "Protein",
+          "unit": "g",
+          "amount": 0.796875,
+          "min": 0.375,
+          "max": 1.1875,
+          "loq": null
+        },
+        {
+          "id": 1004,
+          "name": "Total lipid (fat)",
+          "unit": "g",
+          "amount": 2.749,
+          "min": 0.22,
+          "max": 4.68,
+          "loq": null
+        },
+        {
+          "id": 1005,
+          "name": "Carbohydrate, by difference",
+          "unit": "g",
+          "amount": 5.100325,
+          "min": null,
+          "max": null,
+          "loq": null
+        }
+      ],
+      "retrieved_at": "2026-09-08T15:29:31.372151+00:00"
+    }
+  ]
+}

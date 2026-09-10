@@ -1,0 +1,68 @@
+{
+  "en": {
+    "title": "New here? Try with a free test account",
+    "description": "You can search for food without a wallet. To try saving a personal food log, our guide helps you create a free test account and add it to Xaman.",
+    "start": "Start the test account guide",
+    "scope": "Test XRP has no monetary value. This does not register you for a pilot or give retailer access."
+  },
+  "nl": {
+    "title": "Nieuw hier? Probeer een gratis testaccount",
+    "description": "Je kunt zonder wallet naar voeding zoeken. Wil je ook een eigen eetdagboek proberen? De hulp leidt je door het maken van een gratis testaccount en het toevoegen aan Xaman.",
+    "start": "Start de hulp voor een testaccount",
+    "scope": "Test-XRP heeft geen geldwaarde. Dit schrijft je niet in voor een pilot en geeft geen winkelierstoegang."
+  },
+  "zh-Hans": {
+    "title": "第一次使用？试试免费测试账户",
+    "description": "无需钱包即可搜索食品。如需尝试保存个人饮食记录，请按指南创建免费测试账户并将其添加到 Xaman。",
+    "start": "开始测试账户指南",
+    "scope": "测试 XRP 没有货币价值。这不会注册试点计划，也不会授予商家权限。"
+  },
+  "hi": {
+    "title": "नए हैं? मुफ़्त टेस्ट खाता आज़माएँ",
+    "description": "बिना वॉलेट के भोजन खोज सकते हैं। निजी भोजन डायरी सहेजना आज़माने के लिए गाइड से मुफ़्त टेस्ट खाता बनाएँ और उसे Xaman में जोड़ें।",
+    "start": "टेस्ट खाते की गाइड शुरू करें",
+    "scope": "टेस्ट XRP का कोई मौद्रिक मूल्य नहीं है। इससे पायलट में पंजीकरण या विक्रेता की पहुँच नहीं मिलती।"
+  },
+  "es": {
+    "title": "¿Primera vez? Prueba una cuenta de prueba gratuita",
+    "description": "Puedes buscar alimentos sin cartera. Para probar el registro personal de comidas, la guía te ayuda a crear una cuenta de prueba gratuita y añadirla a Xaman.",
+    "start": "Iniciar la guía de cuenta de prueba",
+    "scope": "El XRP de prueba no tiene valor monetario. Esto no te inscribe en un piloto ni concede acceso de comercio."
+  },
+  "ar": {
+    "title": "جديد هنا؟ جرّب حساب اختبار مجانيًا",
+    "description": "يمكنك البحث عن الطعام دون محفظة. لتجربة حفظ سجل طعام شخصي، يساعدك الدليل على إنشاء حساب اختبار مجاني وإضافته إلى Xaman.",
+    "start": "ابدأ دليل حساب الاختبار",
+    "scope": "ليس لعملة XRP التجريبية قيمة مالية. هذا لا يسجلك في برنامج تجريبي ولا يمنحك صلاحيات تاجر."
+  },
+  "fr": {
+    "title": "Première visite ? Essayez un compte de test gratuit",
+    "description": "Vous pouvez rechercher des aliments sans portefeuille. Pour essayer un journal alimentaire personnel, le guide vous aide à créer un compte de test gratuit et à l’ajouter à Xaman.",
+    "start": "Commencer le guide du compte de test",
+    "scope": "Le XRP de test n’a aucune valeur monétaire. Cela ne vous inscrit pas à un pilote et ne donne aucun accès commerçant."
+  },
+  "bn": {
+    "title": "নতুন এসেছেন? বিনামূল্যে পরীক্ষার অ্যাকাউন্ট ব্যবহার করুন",
+    "description": "ওয়ালেট ছাড়াই খাবার খুঁজতে পারেন। ব্যক্তিগত খাবারের ডায়েরি সংরক্ষণ করতে গাইড অনুসরণ করে বিনামূল্যে পরীক্ষার অ্যাকাউন্ট তৈরি করে Xaman-এ যোগ করুন।",
+    "start": "পরীক্ষার অ্যাকাউন্টের গাইড শুরু করুন",
+    "scope": "পরীক্ষার XRP-এর আর্থিক মূল্য নেই। এতে পাইলটে নিবন্ধন বা বিক্রেতার প্রবেশাধিকার মেলে না।"
+  },
+  "pt": {
+    "title": "Primeira visita? Experimente uma conta de teste gratuita",
+    "description": "Pode pesquisar alimentos sem carteira. Para experimentar um diário alimentar pessoal, o guia ajuda a criar uma conta de teste gratuita e adicioná-la ao Xaman.",
+    "start": "Iniciar o guia da conta de teste",
+    "scope": "O XRP de teste não tem valor monetário. Isto não inscreve num piloto nem concede acesso de comerciante."
+  },
+  "id": {
+    "title": "Baru di sini? Coba akun uji gratis",
+    "description": "Anda dapat mencari makanan tanpa dompet. Untuk mencoba menyimpan catatan makanan pribadi, panduan membantu membuat akun uji gratis dan menambahkannya ke Xaman.",
+    "start": "Mulai panduan akun uji",
+    "scope": "XRP uji tidak memiliki nilai uang. Ini tidak mendaftarkan Anda ke program pilot atau memberikan akses pedagang."
+  },
+  "ur": {
+    "title": "نئے ہیں؟ مفت ٹیسٹ اکاؤنٹ آزمائیں",
+    "description": "آپ والیٹ کے بغیر کھانا تلاش کر سکتے ہیں۔ ذاتی کھانے کی ڈائری محفوظ کرنے کے لیے گائیڈ سے مفت ٹیسٹ اکاؤنٹ بنائیں اور اسے Xaman میں شامل کریں۔",
+    "start": "ٹیسٹ اکاؤنٹ کی گائیڈ شروع کریں",
+    "scope": "ٹیسٹ XRP کی مالی قدر نہیں ہے۔ یہ پائلٹ میں اندراج یا دکاندار کی رسائی نہیں دیتا۔"
+  }
+}

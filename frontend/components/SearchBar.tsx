@@ -1,4 +1,8 @@
+"use client";
+
 import { FormEvent } from "react";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { getFoodUi } from "@/lib/foodUi";
 
 type SearchBarProps = {
   query: string;
@@ -13,19 +17,22 @@ export function SearchBar({
   onQueryChange,
   onSubmit,
 }: SearchBarProps) {
+  const display = useDisplayLanguage();
+  const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   return (
-    <form className="mt-5 flex flex-col gap-3 sm:flex-row" onSubmit={onSubmit}>
+    <form className="mt-5 flex flex-col gap-3 sm:flex-row" onSubmit={onSubmit} lang={locale} dir={direction}>
       <label htmlFor="food-search" className="sr-only">
-        Search for a food product
+        {copy.searchLabel}
       </label>
       <input
         id="food-search"
         type="text"
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Try banana, apple, or oats"
+        placeholder={copy.searchPlaceholder}
+        dir="auto"
         className="w-full rounded-full border-2 border-brand-secondary/30 bg-white px-6 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
-        aria-label="Search food by product name"
+        aria-label={copy.searchInputLabel}
       />
       <button
         type="submit"
@@ -36,10 +43,10 @@ export function SearchBar({
         {isLoading ? (
           <>
             <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-            Searching...
+            {copy.searching}
           </>
         ) : (
-          "Search"
+          copy.search
         )}
       </button>
     </form>

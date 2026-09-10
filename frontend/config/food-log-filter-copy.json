@@ -1,0 +1,101 @@
+{
+  "en": {
+    "label": "Find in logged foods",
+    "placeholder": "Food name, brand or barcode",
+    "clear": "Clear filter",
+    "count": "{shown} of {total} loaded entries",
+    "scope": "Filters this list only. The overview uses all loaded entries.",
+    "empty": "No matching entries in the loaded food log.",
+    "delete_all_hint": "Clear the filter before deleting all logged foods."
+  },
+  "zh-Hans": {
+    "label": "在已记录的食物中查找",
+    "placeholder": "食物名称、品牌或条形码",
+    "clear": "清除筛选",
+    "count": "已加载 {total} 条，显示 {shown} 条",
+    "scope": "仅筛选此列表。概览仍使用所有已加载的记录。",
+    "empty": "已加载的饮食记录中没有匹配项。",
+    "delete_all_hint": "删除所有食物记录前，请先清除筛选。"
+  },
+  "hi": {
+    "label": "दर्ज खाद्य पदार्थों में खोजें",
+    "placeholder": "खाद्य पदार्थ का नाम, ब्रांड या बारकोड",
+    "clear": "फ़िल्टर हटाएँ",
+    "count": "लोड की गई {total} प्रविष्टियों में से {shown}",
+    "scope": "केवल यह सूची फ़िल्टर होती है। सारांश में सभी लोड की गई प्रविष्टियाँ शामिल रहती हैं।",
+    "empty": "लोड की गई भोजन डायरी में कोई मिलती-जुलती प्रविष्टि नहीं है।",
+    "delete_all_hint": "सभी दर्ज खाद्य पदार्थ हटाने से पहले फ़िल्टर हटाएँ।"
+  },
+  "es": {
+    "label": "Buscar en alimentos registrados",
+    "placeholder": "Nombre del alimento, marca o código de barras",
+    "clear": "Quitar filtro",
+    "count": "{shown} de {total} registros cargados",
+    "scope": "Solo se filtra esta lista. El resumen utiliza todos los registros cargados.",
+    "empty": "No hay coincidencias en el diario de alimentos cargado.",
+    "delete_all_hint": "Quita el filtro antes de eliminar todos los alimentos registrados."
+  },
+  "ar": {
+    "label": "البحث في الأطعمة المسجلة",
+    "placeholder": "اسم الطعام أو العلامة التجارية أو الرمز الشريطي",
+    "clear": "إزالة التصفية",
+    "count": "{shown} من أصل {total} سجلًا تم تحميلها",
+    "scope": "تُصفّى هذه القائمة فقط. يستخدم الملخص جميع السجلات التي تم تحميلها.",
+    "empty": "لا توجد سجلات مطابقة في يوميات الطعام التي تم تحميلها.",
+    "delete_all_hint": "أزل التصفية قبل حذف جميع الأطعمة المسجلة."
+  },
+  "fr": {
+    "label": "Rechercher dans les aliments enregistrés",
+    "placeholder": "Nom de l’aliment, marque ou code-barres",
+    "clear": "Effacer le filtre",
+    "count": "{shown} sur {total} entrées chargées",
+    "scope": "Seule cette liste est filtrée. Le récapitulatif utilise toutes les entrées chargées.",
+    "empty": "Aucune entrée correspondante dans le journal alimentaire chargé.",
+    "delete_all_hint": "Effacez le filtre avant de supprimer tous les aliments enregistrés."
+  },
+  "bn": {
+    "label": "নথিভুক্ত খাবারে খুঁজুন",
+    "placeholder": "খাবারের নাম, ব্র্যান্ড বা বারকোড",
+    "clear": "ফিল্টার সরান",
+    "count": "লোড করা {total}টি এন্ট্রির মধ্যে {shown}টি",
+    "scope": "শুধু এই তালিকা ফিল্টার করা হয়। সারসংক্ষেপে সব লোড করা এন্ট্রি ব্যবহার করা হয়।",
+    "empty": "লোড করা খাদ্য ডায়েরিতে কোনো মিল পাওয়া যায়নি।",
+    "delete_all_hint": "সব নথিভুক্ত খাবার মুছে ফেলার আগে ফিল্টার সরান।"
+  },
+  "pt": {
+    "label": "Pesquisar nos alimentos registados",
+    "placeholder": "Nome do alimento, marca ou código de barras",
+    "clear": "Limpar filtro",
+    "count": "{shown} de {total} entradas carregadas",
+    "scope": "O filtro aplica-se apenas a esta lista. O resumo utiliza todas as entradas carregadas.",
+    "empty": "Não há entradas correspondentes no diário alimentar carregado.",
+    "delete_all_hint": "Limpe o filtro antes de eliminar todos os alimentos registados."
+  },
+  "id": {
+    "label": "Cari dalam makanan yang dicatat",
+    "placeholder": "Nama makanan, merek, atau kode batang",
+    "clear": "Hapus filter",
+    "count": "{shown} dari {total} entri yang dimuat",
+    "scope": "Hanya daftar ini yang difilter. Ringkasan menggunakan semua entri yang dimuat.",
+    "empty": "Tidak ada entri yang cocok dalam catatan makanan yang dimuat.",
+    "delete_all_hint": "Hapus filter sebelum menghapus semua makanan yang dicatat."
+  },
+  "ur": {
+    "label": "درج شدہ غذاؤں میں تلاش کریں",
+    "placeholder": "غذا کا نام، برانڈ یا بارکوڈ",
+    "clear": "فلٹر ہٹائیں",
+    "count": "لوڈ شدہ {total} اندراجات میں سے {shown}",
+    "scope": "صرف یہ فہرست فلٹر ہوتی ہے۔ خلاصے میں تمام لوڈ شدہ اندراجات شامل رہتے ہیں۔",
+    "empty": "لوڈ شدہ غذائی ڈائری میں کوئی مماثل اندراج نہیں ملا۔",
+    "delete_all_hint": "تمام درج شدہ غذائیں حذف کرنے سے پہلے فلٹر ہٹائیں۔"
+  },
+  "nl": {
+    "label": "Zoeken in gelogde voeding",
+    "placeholder": "Voedingsmiddel, merk of barcode",
+    "clear": "Filter wissen",
+    "count": "{shown} van {total} geladen registraties",
+    "scope": "Filtert alleen deze lijst. Het overzicht gebruikt alle geladen registraties.",
+    "empty": "Geen overeenkomende registraties in het geladen voedingsdagboek.",
+    "delete_all_hint": "Wis het filter voordat je alle gelogde voeding verwijdert."
+  }
+}

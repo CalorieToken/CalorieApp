@@ -9,6 +9,8 @@ import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { countRecordedGrades, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
 import {
   AUTH_STATE_CHANGED_EVENT,
 } from "@/components/authEvents";
@@ -142,52 +144,30 @@ function formatInteger(value: number): string {
   return Math.round(value).toLocaleString();
 }
 
-function formatLoggedAt(value: string | null | undefined): string {
+function formatLoggedAt(value: string | null | undefined, locale?: string, unknown = "Unknown"): string {
   if (!value) {
-    return "Unknown";
+    return unknown;
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "Unknown";
+    return unknown;
   }
-  return date.toLocaleString();
-}
-
-function nutriScoreValue(grade: string | null | undefined): number | null {
-  switch ((grade ?? "").toUpperCase()) {
-    case "A":
-      return 5;
-    case "B":
-      return 4;
-    case "C":
-      return 3;
-    case "D":
-      return 2;
-    case "E":
-      return 1;
-    default:
-      return null;
-  }
-}
-
-function nutriScoreGradeFromValue(value: number): "A" | "B" | "C" | "D" | "E" {
-  const rounded = Math.max(1, Math.min(5, Math.round(value)));
-  if (rounded === 5) {
-    return "A";
-  }
-  if (rounded === 4) {
-    return "B";
-  }
-  if (rounded === 3) {
-    return "C";
-  }
-  if (rounded === 2) {
-    return "D";
-  }
-  return "E";
+  return date.toLocaleString(locale);
 }
 
 export function FoodSearchPlaceholder() {
+  const display = useDisplayLanguage();
+  const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
+  const numbers = useMemo(() => ({
+    decimal: new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: false }),
+    integer: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+    percentage: new Intl.NumberFormat(locale, { maximumFractionDigits: 20, useGrouping: false }),
+  }), [locale]);
+  const displayNumber = (value: number) => display.enabled
+    ? numbers.decimal.format(Number(formatNumber(value))) : formatNumber(value);
+  const displayInteger = (value: number) => display.enabled
+    ? numbers.integer.format(Number.isFinite(value) ? Math.round(value) : 0) : formatInteger(value);
+  const displayPercentage = (value: number) => display.enabled ? numbers.percentage.format(value) : String(value);
   const searchRequestIdRef = useRef(0);
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const logsRequestIdRef = useRef(0);
@@ -209,6 +189,7 @@ export function FoodSearchPlaceholder() {
     index: number;
     message: string;
     isError: boolean;
+    added?: { product: string; percentage: number };
   } | null>(null);
   const [deletingLogId, setDeletingLogId] = useState<number | null>(null);
   const [isClearingAll, setIsClearingAll] = useState(false);
@@ -243,37 +224,7 @@ export function FoodSearchPlaceholder() {
     () => logs.find((item) => item.id === selectedLogId) ?? null,
     [logs, selectedLogId]
   );
-  const averageNutriScore = useMemo(() => {
-    let total = 0;
-    let count = 0;
-    for (const item of logs) {
-      const value = nutriScoreValue(item.nutri_score);
-      if (value === null) {
-        continue;
-      }
-      total += value;
-      count += 1;
-    }
-
-    if (count === 0) {
-      return {
-        count: 0,
-        averageValue: null,
-        grade: null,
-        markerPercent: null,
-      };
-    }
-
-    const averageValue = total / count;
-    const grade = nutriScoreGradeFromValue(averageValue);
-    const markerPercent = ((averageValue - 1) / 4) * 100;
-    return {
-      count,
-      averageValue,
-      grade,
-      markerPercent,
-    };
-  }, [logs]);
+  const recordedGrades = useMemo(() => countRecordedGrades(logs), [logs]);
   const selectedPortionPercentage = useMemo(
     () => getPortionPercentage(portionOption, customPortion),
     [portionOption, customPortion]
@@ -527,6 +478,7 @@ export function FoodSearchPlaceholder() {
         index: pendingLogIndex,
         message: `Added ${pendingLogItem.product_name} (${selectedPortionPercentage}%) to your food log.`,
         isError: false,
+        added: { product: pendingLogItem.product_name, percentage: selectedPortionPercentage },
       });
       await fetchLogs();
       cancelPortionLogging();
@@ -589,7 +541,7 @@ export function FoodSearchPlaceholder() {
       return;
     }
 
-    const confirmed = window.confirm("Clear all food logs?\n\nThis cannot be undone.");
+    const confirmed = window.confirm(copy.deleteAllConfirm);
     if (!confirmed) {
       return;
     }
@@ -629,7 +581,7 @@ export function FoodSearchPlaceholder() {
       onSubmit={(event) => { event.preventDefault(); void confirmPortionLogging(); }}
       aria-busy={isLogging !== null}
     >
-      <h3 className="text-sm font-bold text-brand-primary">How much did you eat?</h3>
+      <h3 className="text-sm font-bold text-brand-primary">{copy.portionTitle}</h3>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <button
           type="button"
@@ -642,7 +594,7 @@ export function FoodSearchPlaceholder() {
           aria-pressed={portionOption === "whole"}
           disabled={isLogging !== null}
         >
-          Whole - 100%
+          {copy.whole}
         </button>
         <button
           type="button"
@@ -655,7 +607,7 @@ export function FoodSearchPlaceholder() {
           aria-pressed={portionOption === "half"}
           disabled={isLogging !== null}
         >
-          Half - 50%
+          {copy.half}
         </button>
         <button
           type="button"
@@ -668,7 +620,7 @@ export function FoodSearchPlaceholder() {
           aria-pressed={portionOption === "quarter"}
           disabled={isLogging !== null}
         >
-          Quarter - 25%
+          {copy.quarter}
         </button>
         <button
           type="button"
@@ -681,18 +633,19 @@ export function FoodSearchPlaceholder() {
           aria-pressed={portionOption === "custom"}
           disabled={isLogging !== null}
         >
-          Custom
+          {copy.custom}
         </button>
       </div>
 
       {portionOption === "custom" ? (
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <label htmlFor="custom-portion" className="text-xs font-semibold text-brand-secondary">
-            Custom portion
+            {copy.customPortion}
           </label>
           <input
             id="custom-portion"
             type="number"
+            dir="ltr"
             inputMode="numeric"
             min={1}
             max={100}
@@ -710,25 +663,25 @@ export function FoodSearchPlaceholder() {
 
       {selectedPortionPercentage === null ? (
         <p id="portion-validation" className="mt-2 text-xs font-semibold text-red-600">
-          Enter a valid custom percentage from 1 to 100.
+          {copy.invalidPortion}
         </p>
       ) : null}
 
       {portionPreview ? (
         <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-white p-3">
-          <p className="text-xs text-brand-secondary/80">You will log {selectedPortionPercentage}% of</p>
-          <p className="mt-1 break-words text-sm font-bold text-brand-primary">{pendingLogItem.product_name}</p>
-          {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80">{pendingLogItem.brand}</p> : null}
+          <p className="text-xs text-brand-secondary/80">{formatFoodUi(copy.portionPreview, { percentage: displayPercentage(selectedPortionPercentage ?? 100) })}</p>
+          <p className="mt-1 break-words text-sm font-bold text-brand-primary"><bdi>{pendingLogItem.product_name}</bdi></p>
+          {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80"><bdi>{pendingLogItem.brand}</bdi></p> : null}
           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            <p><span className="text-brand-secondary/70">Calories:</span> {formatNumber(portionPreview.calories)} kcal</p>
-            <p><span className="text-brand-secondary/70">Protein:</span> {formatNumber(portionPreview.protein)} g</p>
-            <p><span className="text-brand-secondary/70">Fat:</span> {formatNumber(portionPreview.fat)} g</p>
-            <p><span className="text-brand-secondary/70">Carbohydrates:</span> {formatNumber(portionPreview.carbohydrates)} g</p>
+            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi>{displayNumber(portionPreview.calories)} kcal</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi>{displayNumber(portionPreview.protein)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi>{displayNumber(portionPreview.fat)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi>{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
           </div>
         </div>
       ) : null}
 
-      {portionError ? <div className="mt-3"><ErrorBanner message={portionError} /></div> : null}
+      {portionError ? <div className="mt-3"><ErrorBanner message={translateFoodStatus(portionError, copy)} /></div> : null}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <button
@@ -737,29 +690,29 @@ export function FoodSearchPlaceholder() {
           onClick={cancelPortionLogging}
           disabled={isLogging !== null}
         >
-          Cancel
+          {copy.cancel}
         </button>
         <button
           type="submit"
           className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={selectedPortionPercentage === null || isLogging === pendingLogIndex}
         >
-          {isLogging === pendingLogIndex ? "Adding..." : "Add to food log"}
+          {isLogging === pendingLogIndex ? copy.adding : copy.addToLog}
         </button>
       </div>
     </form>
   ) : null;
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" lang={locale} dir={direction}>
       {/* Search Section */}
       <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
-        <h2 className="text-lg font-bold text-brand-primary">Search Foods</h2>
+        <h2 className="text-lg font-bold text-brand-primary">{copy.searchTitle}</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
-          Explore product nutrition data provided by Open Food Facts.
+          {copy.searchIntro}
         </p>
         <p className="mt-1 text-xs text-brand-secondary/70">
-          Only records with complete calorie, protein, fat, and carbohydrate values are shown.
+          {copy.completeOnly}
         </p>
 
         <SearchBar
@@ -769,26 +722,26 @@ export function FoodSearchPlaceholder() {
           onSubmit={onSearch}
         />
 
-        {error ? <div className="mt-4"><ErrorBanner message={error} /></div> : null}
+        {error ? <div className="mt-4"><ErrorBanner message={translateFoodStatus(error, copy)} /></div> : null}
 
         {!error && !hasResults && !isLoading && !didSearch ? (
           <div className="mt-4">
             <EmptyState
-              title="Ready to search"
-              description="Enter a food name to view nutrition details and log items."
+              title={copy.readyTitle}
+              description={copy.readyDescription}
             />
           </div>
         ) : null}
 
         {isLoading ? (
-          <LoadingState variant="search" message={searchStatus ?? undefined} />
+          <LoadingState variant="search" message={searchStatus ? translateFoodStatus(searchStatus, copy) : undefined} />
         ) : null}
 
         {!error && !isLoading && didSearch && !hasResults ? (
           <div className="mt-4">
             <EmptyState
-              title="No complete nutrition records found"
-              description="Try a broader query like banana, apple, or oats. Records with missing nutrition values are not shown."
+              title={copy.noResultsTitle}
+              description={copy.noResultsDescription}
             />
           </div>
         ) : null}
@@ -801,9 +754,14 @@ export function FoodSearchPlaceholder() {
                 item={item}
                 isLogging={isLogging === index}
                 isDisabled={isLogging !== null || isLoading}
-                feedback={logFeedback?.index === index ? logFeedback : null}
+                feedback={logFeedback?.index === index ? {
+                  ...logFeedback,
+                  message: logFeedback.added
+                    ? formatFoodUi(copy.addedFeedback, { product: logFeedback.added.product, percentage: displayPercentage(logFeedback.added.percentage) })
+                    : translateFoodStatus(logFeedback.message, copy),
+                } : null}
                 onLog={() => onLogFood(item, index)}
-                formatNumber={formatNumber}
+                formatNumber={displayNumber}
               >
                 {pendingLogIndex === index ? portionControls : null}
               </FoodCard>
@@ -819,26 +777,24 @@ export function FoodSearchPlaceholder() {
           role="status"
           className="rounded-xl border border-brand-secondary/20 bg-brand-primary/5 p-4 text-sm text-brand-secondary"
         >
-          <p className="font-semibold text-brand-primary">Sign in to manage your food log</p>
+          <p className="font-semibold text-brand-primary">{copy.signInTitle}</p>
           <p className="mt-1">
-            Food search is available to everyone. Sign in with Xaman to save and manage items.
+            {copy.signInDescription}
           </p>
           <p className="mt-2 text-xs leading-relaxed">
-            On the CalorieToken.net page, Xaman opens without a browser return
-            link. After signing, use Close or Back to return to that same page;
-            WordPress and CalorieApp will finish signing in together.
+            {copy.signInReturn}
           </p>
         </div>
       ) : logError ? (
         <div className="space-y-3">
-          <ErrorBanner message={logError} />
+          <ErrorBanner message={translateFoodStatus(logError, copy)} />
           <button
             type="button"
             onClick={fetchLogs}
             disabled={isLogsLoading}
             className="rounded-full border-2 border-brand-secondary bg-white px-5 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLogsLoading ? "Connecting..." : "Retry connection"}
+            {isLogsLoading ? copy.connecting : copy.retry}
           </button>
         </div>
       ) : null}
@@ -847,71 +803,62 @@ export function FoodSearchPlaceholder() {
 
       {!logError && !isLogsLoading ? (
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
-          <h3 className="text-lg font-bold text-brand-primary">Recent Log Summary</h3>
+          <h3 className="text-lg font-bold text-brand-primary">{copy.summaryTitle}</h3>
           <p className="mt-1 text-sm text-brand-secondary/80">
-            Totals calculated from the food logs currently loaded below.
+            {copy.summaryDescription}
           </p>
           <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
-              <dt className="text-brand-secondary/70">Total Calories</dt>
-              <dd className="font-semibold text-brand-accent">{formatInteger(summary.calories)} kcal</dd>
+              <dt className="text-brand-secondary/70">{copy.totalCalories}</dt>
+              <dd className="font-semibold text-brand-accent"><bdi>{displayInteger(summary.calories)} kcal</bdi></dd>
             </div>
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
-              <dt className="text-brand-secondary/70">Total Protein</dt>
-              <dd className="font-semibold text-brand-primary">{formatNumber(summary.protein)} g</dd>
+              <dt className="text-brand-secondary/70">{copy.totalProtein}</dt>
+              <dd className="font-semibold text-brand-primary"><bdi>{displayNumber(summary.protein)} g</bdi></dd>
             </div>
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
-              <dt className="text-brand-secondary/70">Total Fat</dt>
-              <dd className="font-semibold text-brand-primary">{formatNumber(summary.fat)} g</dd>
+              <dt className="text-brand-secondary/70">{copy.totalFat}</dt>
+              <dd className="font-semibold text-brand-primary"><bdi>{displayNumber(summary.fat)} g</bdi></dd>
             </div>
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
-              <dt className="text-brand-secondary/70">Total Carbohydrates</dt>
-              <dd className="font-semibold text-brand-primary">{formatNumber(summary.carbohydrates)} g</dd>
+              <dt className="text-brand-secondary/70">{copy.totalCarbohydrates}</dt>
+              <dd className="font-semibold text-brand-primary"><bdi>{displayNumber(summary.carbohydrates)} g</bdi></dd>
             </div>
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2 sm:col-span-2">
-              <dt className="text-brand-secondary/70">Foods Logged</dt>
-              <dd className="font-semibold text-brand-primary">{summary.count}</dd>
+              <dt className="text-brand-secondary/70">{copy.foodsLogged}</dt>
+              <dd className="font-semibold text-brand-primary"><bdi>{displayInteger(summary.count)}</bdi></dd>
             </div>
           </dl>
 
           <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-3">
-            <p className="text-sm font-semibold text-brand-primary">Average Nutri-Score of logged foods</p>
-            <p className="mt-1 text-xs text-brand-secondary/75">
-              {averageNutriScore.grade
-                ? `Average Nutri-Score: ${averageNutriScore.grade}`
-                : "Average Nutri-Score: unavailable"}
+            <p className="text-sm font-semibold text-brand-primary">{copy.scoreTitle}</p>
+            <p className="mt-1 text-xs text-brand-secondary/75">{copy.scoreDescription}</p>
+            <p className="mt-2 text-xs text-brand-secondary/75">
+              {formatFoodUi(copy.scoreCoverage, { known: displayInteger(recordedGrades.known), total: displayInteger(recordedGrades.total) })}
             </p>
-            <div className="relative mt-3">
-              <div className="h-3 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-green-500" />
-              {averageNutriScore.markerPercent !== null ? (
-                <span
-                  className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-white bg-brand-primary shadow"
-                  style={{ left: `calc(${averageNutriScore.markerPercent}% - 8px)` }}
-                  aria-label={`Average Nutri-Score marker at ${averageNutriScore.grade}`}
-                />
-              ) : null}
-            </div>
-            <div className="mt-2 flex justify-between text-[10px] font-semibold text-brand-secondary/70">
-              <span>E</span>
-              <span>D</span>
-              <span>C</span>
-              <span>B</span>
-              <span>A</span>
-            </div>
+            <dl className="mt-3 grid grid-cols-5 gap-2 text-center text-sm" aria-label={copy.scoreTitle}>
+              {recordedGrades.grades.map(({ grade, count }) => (
+                <div key={grade} className="rounded border border-brand-secondary/15 bg-white px-1 py-2">
+                  <dt className="font-semibold text-brand-primary"><bdi dir="ltr">{grade}</bdi></dt>
+                  <dd className="mt-1 text-brand-secondary"><bdi>{displayInteger(count)}</bdi></dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-2 text-xs text-brand-secondary/75">{copy.scoreMissing}: <bdi>{displayInteger(recordedGrades.missing)}</bdi></p>
           </div>
         </div>
       ) : null}
 
       {selectedLog ? (
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-lg font-bold text-brand-primary">Logged Food Details</h3>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-bold text-brand-primary">{copy.detailsTitle}</h3>
             <button
               type="button"
               className="rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
               onClick={() => setSelectedLogId(null)}
             >
-              Back to list
+              {copy.backToList}
             </button>
           </div>
 
@@ -920,7 +867,7 @@ export function FoodSearchPlaceholder() {
               {selectedLog.image_url ? (
                 <Image
                   src={selectedLog.image_url}
-                  alt={`${selectedLog.product_name} product image`}
+                  alt={formatFoodUi(copy.productImage, { product: selectedLog.product_name })}
                   className="h-full w-full object-contain"
                   width={112}
                   height={112}
@@ -929,42 +876,42 @@ export function FoodSearchPlaceholder() {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs font-medium text-brand-secondary/60">
-                  No image
+                  {copy.noImage}
                 </div>
               )}
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-base font-semibold text-brand-primary">{selectedLog.product_name}</p>
-              {selectedLog.brand ? <p className="mt-1 text-sm text-brand-secondary/80">{selectedLog.brand}</p> : null}
-              {selectedLog.barcode ? <p className="mt-2 text-xs text-brand-secondary/75">Barcode: {selectedLog.barcode}</p> : null}
+              <p className="text-base font-semibold text-brand-primary"><bdi>{selectedLog.product_name}</bdi></p>
+              {selectedLog.brand ? <p className="mt-1 text-sm text-brand-secondary/80"><bdi>{selectedLog.brand}</bdi></p> : null}
+              {selectedLog.barcode ? <p className="mt-2 text-xs text-brand-secondary/75">{copy.barcode}: <bdi dir="ltr">{selectedLog.barcode}</bdi></p> : null}
               {selectedLog.serving_size ? (
-                <p className="mt-1 text-xs text-brand-secondary/75">Serving: {selectedLog.serving_size}</p>
+                <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{selectedLog.serving_size}</bdi></p>
               ) : null}
               {selectedLog.nutri_score ? (
-                <p className="mt-1 text-xs text-brand-secondary/75">Nutri-Score: {selectedLog.nutri_score}</p>
+                <p className="mt-1 text-xs text-brand-secondary/75"><bdi dir="ltr">Nutri-Score: {selectedLog.nutri_score}</bdi></p>
               ) : null}
               <p className="mt-1 text-xs text-brand-secondary/75">
-                Portion eaten: {formatNumber(portionForDisplay(selectedLog.portion_percentage))}%
+                {copy.portionEaten}: <bdi>{displayNumber(portionForDisplay(selectedLog.portion_percentage))}%</bdi>
               </p>
-              <p className="mt-1 text-xs text-brand-secondary/75">Logged: {formatLoggedAt(selectedLog.created_at)}</p>
+              <p className="mt-1 text-xs text-brand-secondary/75">{copy.loggedAt}: <bdi>{formatLoggedAt(selectedLog.created_at, display.enabled ? locale : undefined, copy.unknownDate)}</bdi></p>
 
               <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                 <div>
-                  <span className="text-brand-secondary/70">Calories</span>
-                  <p className="font-semibold text-brand-accent">{formatNumber(selectedLog.calories)} kcal</p>
+                  <span className="text-brand-secondary/70">{copy.calories}</span>
+                  <p className="font-semibold text-brand-accent"><bdi>{displayNumber(selectedLog.calories)} kcal</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">Protein</span>
-                  <p className="font-semibold text-brand-primary">{formatNumber(selectedLog.protein)}g</p>
+                  <span className="text-brand-secondary/70">{copy.protein}</span>
+                  <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.protein)}g</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">Fat</span>
-                  <p className="font-semibold text-brand-primary">{formatNumber(selectedLog.fat)}g</p>
+                  <span className="text-brand-secondary/70">{copy.fat}</span>
+                  <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.fat)}g</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">Carbs</span>
-                  <p className="font-semibold text-brand-primary">{formatNumber(selectedLog.carbohydrates)}g</p>
+                  <span className="text-brand-secondary/70">{copy.carbs}</span>
+                  <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.carbohydrates)}g</bdi></p>
                 </div>
               </div>
 
@@ -975,7 +922,7 @@ export function FoodSearchPlaceholder() {
                   onClick={() => onDeleteLog(selectedLog.id as number)}
                   disabled={deletingLogId === selectedLog.id || isClearingAll}
                 >
-                  {deletingLogId === selectedLog.id ? "Deleting..." : "Delete this log"}
+                  {deletingLogId === selectedLog.id ? copy.deleting : copy.deleteThis}
                 </button>
               ) : null}
             </div>
@@ -985,8 +932,8 @@ export function FoodSearchPlaceholder() {
 
       {!logError && !isLogsLoading && !hasLogs ? (
         <EmptyState
-          title="No foods logged yet"
-          description="Search and use the Log Food button to build your list."
+          title={copy.emptyLogsTitle}
+          description={copy.emptyLogsDescription}
         />
       ) : null}
 
@@ -1000,7 +947,7 @@ export function FoodSearchPlaceholder() {
           deletingLogId={deletingLogId}
           isClearingAll={isClearingAll}
           isLoading={isLogsLoading}
-          formatNumber={formatNumber}
+          formatNumber={displayNumber}
         />
       ) : null}
     </section>

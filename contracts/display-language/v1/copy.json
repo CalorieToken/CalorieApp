@@ -1,0 +1,46 @@
+{
+  "en": {
+    "label": "Language",
+    "preview": "Some content is still in English. Your language choice is saved in this browser for 30 days."
+  },
+  "zh-Hans": {
+    "label": "语言",
+    "preview": "部分内容仍为英语。语言选择会在此浏览器中保存 30 天。"
+  },
+  "hi": {
+    "label": "भाषा",
+    "preview": "कुछ सामग्री अभी भी अंग्रेज़ी में है। आपकी भाषा की पसंद इस ब्राउज़र में 30 दिनों तक सहेजी जाती है।"
+  },
+  "es": {
+    "label": "Idioma",
+    "preview": "Parte del contenido sigue en inglés. Tu idioma se guarda en este navegador durante 30 días."
+  },
+  "ar": {
+    "label": "اللغة",
+    "preview": "لا يزال بعض المحتوى باللغة الإنجليزية. يُحفظ اختيار اللغة في هذا المتصفح لمدة 30 يومًا."
+  },
+  "fr": {
+    "label": "Langue",
+    "preview": "Certains contenus restent en anglais. Votre langue est conservée dans ce navigateur pendant 30 jours."
+  },
+  "bn": {
+    "label": "ভাষা",
+    "preview": "কিছু বিষয়বস্তু এখনও ইংরেজিতে রয়েছে। আপনার ভাষা এই ব্রাউজারে ৩০ দিন সংরক্ষিত থাকে।"
+  },
+  "pt": {
+    "label": "Idioma",
+    "preview": "Parte do conteúdo ainda está em inglês. O idioma é guardado neste navegador durante 30 dias."
+  },
+  "id": {
+    "label": "Bahasa",
+    "preview": "Sebagian konten masih berbahasa Inggris. Pilihan bahasa disimpan di browser ini selama 30 hari."
+  },
+  "ur": {
+    "label": "زبان",
+    "preview": "کچھ مواد ابھی بھی انگریزی میں ہے۔ آپ کی زبان اس براؤزر میں 30 دن محفوظ رہتی ہے۔"
+  },
+  "nl": {
+    "label": "Taal",
+    "preview": "Sommige inhoud is nog in het Engels. Je taalkeuze wordt 30 dagen in deze browser bewaard."
+  }
+}

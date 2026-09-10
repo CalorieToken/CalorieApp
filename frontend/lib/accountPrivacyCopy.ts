@@ -85,3 +85,30 @@ export function getAccountPrivacyCopy(locale?: string | null): AccountPrivacyCop
     erasure: translation.erasure,
   };
 }
+
+type PrivacySection = "export" | "import" | "erasure";
+
+const statusKeys = {
+  export: ["session_expired", "review_required", "success", "unavailable"],
+  import: ["session_expired", "validation_failed", "import_blocked", "temporarily_unavailable", "file_size_invalid", "success", "already_imported", "unavailable"],
+  erasure: ["session_expired", "confirmation_failed", "temporarily_unavailable", "unavailable", "success"],
+} as const;
+
+/** Render only known UI statuses; never translate account data or provider text. */
+export function translateAccountPrivacyStatus(
+  message: string,
+  section: PrivacySection,
+  displayed: AccountPrivacyCopy
+): string {
+  for (const source of Object.values(translations)) {
+    if (message === source.service_startup_timeout) {
+      return displayed.service_startup_timeout;
+    }
+    const sourceCopy = source[section] as Record<string, string>;
+    const targetCopy = displayed[section] as Record<string, string>;
+    for (const key of statusKeys[section]) {
+      if (message === sourceCopy[key]) return targetCopy[key];
+    }
+  }
+  return message;
+}

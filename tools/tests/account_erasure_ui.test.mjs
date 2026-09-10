@@ -74,6 +74,9 @@ async function loadComponentModule(overrides = {}) {
       if (specifier === "react/jsx-runtime") {
         return jsxRuntime;
       }
+      if (specifier === "@/components/DisplayLanguageProvider") {
+        return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      }
       if (specifier === "@/lib/backendRequest") {
         return {
           BACKEND_WAKE_BASE_URL: "https://backend.example",

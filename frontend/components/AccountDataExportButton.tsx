@@ -11,7 +11,8 @@ import {
   PRIVATE_EXPORT_REQUEST_HEADER,
   PRIVATE_EXPORT_REQUEST_VALUE,
 } from "@/lib/privateExportRequest";
-import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
+import { getAccountPrivacyCopy, translateAccountPrivacyStatus } from "@/lib/accountPrivacyCopy";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_EXPORT_VERSION = "calorieapp-account-data-v2";
@@ -71,8 +72,12 @@ export function AccountDataExportButton({
   locale,
   onAuthenticationLost,
 }: AccountDataExportButtonProps) {
+  // Request/callback messages retain their original locale; display is separate.
   const localized = getAccountPrivacyCopy(locale);
   const copy = localized.export;
+  const display = useDisplayLanguage();
+  const displayed = getAccountPrivacyCopy(display.enabled ? display.locale : locale);
+  const view = displayed.export;
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -151,24 +156,24 @@ export function AccountDataExportButton({
 
   return (
     <section
-      aria-label={copy.section_label}
-      lang={localized.locale}
-      dir={localized.direction}
-      className="rounded-xl border border-brand-secondary/15 bg-white/80 p-3"
+      aria-label={view.section_label}
+      lang={displayed.locale}
+      dir={displayed.direction}
+      className="min-w-0 rounded-xl border border-brand-secondary/15 bg-white/80 p-3 text-start"
     >
       <p className="text-sm font-semibold text-brand-primary">
-        {copy.title}
+        {view.title}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-brand-secondary/90">
-        {copy.description}
+        {view.description}
       </p>
       <button
         type="button"
         onClick={handleDownload}
         disabled={isDownloading}
-        className="mt-3 inline-flex items-center justify-center rounded-full bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-3 inline-flex items-center justify-center rounded-md bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isDownloading ? copy.button_busy : copy.button_idle}
+        {isDownloading ? view.button_busy : view.button_idle}
       </button>
 
       {error ? (
@@ -176,7 +181,7 @@ export function AccountDataExportButton({
           role="alert"
           className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700"
         >
-          {error}
+          {display.enabled ? translateAccountPrivacyStatus(error, "export", displayed) : error}
         </p>
       ) : null}
       {success ? (
@@ -185,7 +190,7 @@ export function AccountDataExportButton({
           aria-live="polite"
           className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-xs text-green-800"
         >
-          {success}
+          {display.enabled ? translateAccountPrivacyStatus(success, "export", displayed) : success}
         </p>
       ) : null}
     </section>
