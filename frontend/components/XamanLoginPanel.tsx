@@ -1705,7 +1705,7 @@ export function XamanLoginPanel() {
           onClick={handleLoginClick}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
         >
-          Continue in Xaman
+          {authCopy.continueXaman}
         </a>
       ) : (
         <button
