@@ -1,5 +1,6 @@
 "use client";
 
+import { createFoodSearchReadiness } from "@/lib/foodSearchReadiness";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorBanner } from "@/components/ErrorBanner";
@@ -169,6 +170,18 @@ export function FoodSearchPlaceholder() {
   const displayInteger = (value: number) => display.enabled
     ? numbers.integer.format(Number.isFinite(value) ? Math.round(value) : 0) : formatInteger(value);
   const displayPercentage = (value: number) => display.enabled ? numbers.percentage.format(value) : String(value);
+  const searchReadinessRef = useRef<ReturnType<typeof createFoodSearchReadiness> | null>(null);
+  useEffect(() => {
+    // Anonymous visitors get the same startup preparation as returning visitors.
+    // This only reads public health; no sign-in or provider search is started.
+    const readiness = createFoodSearchReadiness();
+    searchReadinessRef.current = readiness;
+    void readiness.prepare().catch(() => { /* The search action presents any remaining error. */ });
+    return () => {
+      readiness.dispose();
+      if (searchReadinessRef.current === readiness) searchReadinessRef.current = null;
+    };
+  }, []);
   const searchRequestIdRef = useRef(0);
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const searchInFlightRef = useRef(false);
@@ -379,7 +392,7 @@ export function FoodSearchPlaceholder() {
     );
 
     try {
-      await waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal);
+      await (searchReadinessRef.current?.prepare(controller.signal) ?? waitForBackendReady(BACKEND_WAKE_BASE_URL, controller.signal));
       setSearchStatus("Searching foods. This can take up to 45 seconds.");
 
       const response = await backendRequest(

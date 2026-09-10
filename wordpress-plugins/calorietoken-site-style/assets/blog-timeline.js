@@ -120,6 +120,17 @@
     document.head.appendChild(script);
   }
   window.CalorieTokenBlogTimeline = {refresh: refresh};
+  // Complianz inserts its button inside the profile anchor. Keep the native
+  // consent handler, but prevent that click from also navigating away to X.
+  document.addEventListener('click', function (event) {
+    if (!allowed() || !(event.target instanceof window.Element)) return;
+    var button = event.target.closest('button.cmplz-accept-service[data-service="twitter"]');
+    var link = button && button.closest('a.twitter-timeline');
+    if (link && profile(link) && link.closest('[data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"]')) {
+      event.preventDefault();
+      window.setTimeout(refresh, 0);
+    }
+  }, true);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh, {once: true}); else refresh();
   window.addEventListener('load', refresh, {once: true});
   ['cmplz_cookie_warning_loaded', 'cmplz_status_change', 'cmplz_status_change_service','cmplz_service_status_change','cmplz_enable_service','cmplz_enable_category'].forEach(function (name) {

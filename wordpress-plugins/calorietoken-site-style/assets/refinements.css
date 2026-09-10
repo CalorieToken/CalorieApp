@@ -2,6 +2,38 @@
 :is(body.ctstyle-enabled,body.ctstyle-footer-only).ctstyle-paper-continuous {
   background:#fff var(--ctstyle-paper-image) center top/960px auto repeat!important;
 }
+/* S34: mobile screenshots — keep the original art while restoring readable surfaces. */
+body.ctstyle-footer-only .ctstyle-home-panel {background:#fff!important;isolation:isolate;}
+body.ctstyle-footer-only .ctstyle-home-panel>.brz-bg {background:#fff!important;}
+body.ctstyle-footer-only .ctstyle-home-panel>.brz-bg :is(.brz-bg-image,.brz-bg-color) {background:#fff!important;opacity:1!important;}
+body.ctstyle-footer-only .ctstyle-home-panel .brz-menu-simple {position:relative;z-index:1;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-tail {display:block;box-sizing:border-box;width:100%;height:26px;min-height:26px;background:#f9b233 var(--ctstyle-header-image) 47% 69%/cover;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-replaced-empty-tail {display:none!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.ctstyle-legal p,.ctstyle-legal-links) {box-sizing:border-box;min-width:0;max-width:100%;white-space:normal!important;overflow-wrap:anywhere;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-cookies {display:inline-flex;align-items:center;justify-content:center;position:static!important;min-height:44px;max-width:100%;margin:0;padding:4px 8px;border:0;background:transparent;color:#fff!important;font:inherit;font-weight:700;text-decoration:underline;white-space:normal;cursor:pointer;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-cookies:focus-visible {outline:3px solid #f9b233;outline-offset:2px;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet {width:calc(100% - 32px)!important;max-width:500px!important;gap:16px!important;margin:32px auto 40px!important;padding:22px!important;border:0!important;border-radius:14px 14px 58px 58px!important;background:#dedede var(--ctstyle-paper-image) center/960px auto!important;box-shadow:0 8px 18px #30344940;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet h2 {padding:8px 10px!important;border:3px solid #505ba9;background:#008d36;color:#fff!important;font:700 24px/1.25 Amiri,Georgia,serif!important;overflow-wrap:anywhere;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet h2::before {display:none!important;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet p {font-size:17px!important;line-height:1.5!important;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet code {background:#fffffff0;border-color:#adb2cc;font-size:14px!important;padding:10px;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet a {width:100%!important;box-sizing:border-box;font-size:18px!important;padding:10px 14px!important;border-radius:16px!important;}
+body.ctstyle-enabled.page-id-1213 .ctstyle-after-team {margin-top:48px!important;}
+body.ctstyle-enabled .ctstyle-roadmap-preview {padding:16px 0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
+body.ctstyle-enabled .ctstyle-roadmap-preview>img {display:none;}
+body.ctstyle-enabled .ctstyle-roadmap-preview :is(h3,p,a) {overflow-wrap:anywhere;min-width:0;}
+@media(max-width:767px){
+ body.ctstyle-enabled .ctstyle-title :is(h1,h2) {letter-spacing:0!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline {width:100%!important;max-width:100%!important;min-width:0!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab {box-sizing:border-box;display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;gap:12px!important;width:100%!important;min-width:0!important;margin:0 0 24px!important;padding:16px!important;background:#ffffffef;border:1px solid #d7daea;border-radius:20px;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab::before,body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab::after {display:none!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__nav--icon {grid-column:1;grid-row:1;position:static!important;width:44px!important;height:44px!important;transform:none!important;margin:0!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__nav--title {grid-column:2;grid-row:1;align-self:center;position:static!important;width:auto!important;max-width:100%!important;transform:none!important;margin:0!important;text-align:start!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content {grid-column:1 / -1;position:static!important;box-sizing:border-box;width:100%!important;max-width:100%!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;transform:none!important;text-align:start!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content::before,body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content::after {display:none!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content>.brz-wrapper {width:100%!important;max-width:100%!important;min-width:0!important;padding:0!important;margin:0!important;}
+ body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content p {white-space:normal!important;overflow-wrap:anywhere;}
+}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-paper-layer,.ctstyle-paper-host,.ctstyle-paper-tint) {background:none!important;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only).ctstyle-paper-continuous :is(.ctstyle-app-ending,.ctstyle-discovery-card,#ctstyle-testnet,.calorieapp-app-info) {background-image:none!important;background-color:transparent!important;}
 body.ctstyle-enabled .ctstyle-trustline-methods {width:calc(100% - 32px);max-width:1100px;margin:24px auto 40px;}

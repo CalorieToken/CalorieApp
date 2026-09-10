@@ -11,14 +11,14 @@ const localeRegistry = JSON.parse(await readFile(new URL("../../frontend/config/
 const usdaReference = JSON.parse(await readFile(new URL("../../frontend/data/usda-reference-foods.json", import.meta.url), "utf8"));
 const usdaCopy = JSON.parse(await readFile(new URL("../../frontend/config/usda-reference-copy.json", import.meta.url), "utf8"));
 const foodUiCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-ui-copy.json", import.meta.url), "utf8"));
-async function loadLibrary(name, imports) {
+async function loadLibrary(name, imports, globals = {}) {
   const source = await readFile(new URL(`../../frontend/lib/${name}.ts`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
   }).outputText;
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
-    module, exports: module.exports,
+    module, exports: module.exports, ...globals,
     require(specifier) {
       if (Object.hasOwn(imports, specifier)) return imports[specifier];
       throw new Error(`Unexpected filter import: ${specifier}`);
@@ -72,6 +72,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   let now = Date.parse("2026-09-10T12:00:00Z"), timerId = 0, warmups = 0;
   const timers = new Map();
   class ClockDate extends Date { static now() { return now; } }
+  const readiness = await loadLibrary("foodSearchReadiness", {
+    "@/lib/backendRequest": {
+      BACKEND_WAKE_BASE_URL: "https://backend.example",
+      waitForBackendReady: async () => { warmups++; if (warmupResponse) await warmupResponse(); },
+    },
+  }, { AbortController, Date: ClockDate });
   let confirmAnswer = false;
   const document = { body: {}, activeElement: null, documentElement: { lang: "en" } };
   document.activeElement = document.body;
@@ -129,6 +135,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/components/authEvents") return { AUTH_STATE_CHANGED_EVENT: AUTH_EVENT };
       if (specifier === "@/lib/foodLogFilter") return foodLogFilter;
       if (specifier === "@/lib/foodUi") return foodUi;
+      if (specifier === "@/lib/foodSearchReadiness") return readiness;
       if (specifier === "@/lib/foodSearchAvailability") return {
         foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
       };

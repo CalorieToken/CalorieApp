@@ -1,10 +1,26 @@
-# CalorieToken Site Style 1.4.3
+# CalorieToken Site Style 1.4.4
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.3.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.3** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.4.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.4** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Correctieronde 1.4.4 — 29 screenshots en negen opmerkingen
+
+- Home-menu en logovlak krijgen een ondoorzichtige achtergrond. De bestaande Home-titelbanner blijft behouden.
+- De consolidatiewallet gebruikt de grijze papierkaart, groene titelstrook en afgeronde onderkant van de bestaande walletpresentatie. Adres, explorerlink en volledige toelichting blijven staan.
+- De acht roadmaponderdelen krijgen op mobiel dezelfde volledige breedte. De appverwijzing past binnen de tijdlijn en is geen afwijkende ingesloten kaart meer.
+- De X-toestemmingsknop kan niet meer tegelijk de profiel-link openen. Complianz blijft de toestemming afhandelen. Cookie-instellingen staan ook in de footer. De echte X-timeline is op 10 september na toestemming op de huidige website gezien.
+- Extra ruimte tussen Contact-team en XPMarket; dezelfde kleurrijke afsluitstrook onder iedere herkende footer.
+- Op mobiel staan de zwevende knoppen in één compacte rij. Het CalorieApp-menu opent via het herkenbare appicoon. Footer en formulieren krijgen onderruimte; bediening verdwijnt tijdens de cookiemelding.
+- Aanvullende vertaling van de getoonde Home-teksten, XPMarket-labels, X-kop en winkelstappen. Dit vertaalt geen providergegevens of tekst in afbeeldingen.
+
+**Afzonderlijke appupdate:** de bijbehorende GitHub-wijziging bevat 40 inlogteksten en meldingen in elf talen, minder geneste mobiele witruimte en vroegere openbare zoekvoorbereiding. Voorbereiding en de eerste zoekactie delen één gezondheidscontrole. Er wordt niets automatisch gezocht of aangemeld. Deze appwijzigingen vereisen een Render-uitrol; het uploaden van deze ZIP voert die niet uit.
+
+**Resterende acceptatie:** upload deze versie en controleer de zichtbare pagina's op de telefoon. De productiebuild en gerichte softwarecontroles zijn geen mobiele live acceptatie. Een terugkerende anonieme zoekfout is op de huidige app gereproduceerd; vroegere voorbereiding heft een hosting- of bronstoring niet op. Verdere Render-diagnose/uitrol was in deze ronde door de automatische toegangscontrole geblokkeerd. Een volledige taalcontrole van historische CMS-inhoud en de echte Xaman/Testnet-telefoonproef blijven open.
+
+Onderstaande oudere release-notities bewaren de voorgeschiedenis; bovenstaande versie is leidend.
 
 ## Gerichte correctie 1.4.3 — echt app-adres
 

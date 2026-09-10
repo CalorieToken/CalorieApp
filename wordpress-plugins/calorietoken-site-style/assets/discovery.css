@@ -167,7 +167,7 @@ body.ctstyle-enabled .ctstyle-testnet-import li {padding-inline-start:8px;margin
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is([data-calorieapp-shortcut="top"],[data-calorieapp-shortcut="app"],.ctstyle-app-launcher) {
   --ct-float-bg:#008d36;--ct-float-fg:#fff;--ct-float-hover:#505ba9;--ct-float-hover-fg:#fff;
 }
-:is(body.ctstyle-enabled,body.ctstyle-footer-only) [data-calorieapp-shortcut="exchange"] {
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) :is([data-calorieapp-shortcut="exchange"],[data-ctstyle-exchange-shortcut]) {
   --ct-float-bg:#f9b233;--ct-float-fg:#303449;--ct-float-hover:#008d36;--ct-float-hover-fg:#fff;
 }
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.calorieapp-page-tool,.ctstyle-app-launcher > details > summary) {
@@ -214,6 +214,20 @@ body.ctstyle-enabled .ctstyle-testnet-help summary {cursor:pointer;min-height:44
 body.ctstyle-enabled .ctstyle-faq-item {padding:8px 0;border-top:1px solid #d4d8e7;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-help-widget,.ctstyle-faq-hub) :is(input,button,a,summary):focus-visible {outline:3px solid #008d36;outline-offset:3px;}
 /* S27: visible app/language controls inside the existing Xaman card. */
+/* A single compact mobile row leaves forms and footer links usable. */
+@media(max-width:767px){
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) {padding-bottom:calc(64px + env(safe-area-inset-bottom))!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {box-sizing:border-box;flex-direction:row-reverse!important;width:auto!important;max-width:calc(100vw - 76px);gap:4px!important;right:max(8px,env(safe-area-inset-right))!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;z-index:10000;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool-position {width:44px!important;flex:0 0 44px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool {width:44px;height:44px;padding:7px;border-radius:12px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool-icon {width:26px;height:26px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher {inset-inline-start:max(8px,env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));max-width:44px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary {width:44px;min-width:44px;height:44px;min-height:44px;padding:6px;gap:0;border-radius:12px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>span {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary::after {display:none;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>img {width:28px;height:28px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher-panel {width:340px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 100px);}
+}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-account-app {
   box-sizing:border-box;width:100%;min-width:0;padding:12px;border-top:2px solid #f9b233;
   background:#fff;color:#303449;font:16px/1.45 Amiri,Georgia,serif;text-align:start;border-radius:0 0 12px 12px;
@@ -302,3 +316,5 @@ body.ctstyle-enabled #ctstyle-testnet>.ctstyle-test-steps {padding-top:10px;bord
 body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns {border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
 body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns>.brz-bg {display:none!important;}
 body.ctstyle-enabled .ctstyle-trustline-option h2::before {display:none!important;}
+
+:is(body.ctstyle-enabled,body.ctstyle-footer-only):has(.cmplz-cookiebanner.cmplz-show) .calorieapp-page-tools {visibility:hidden;}
