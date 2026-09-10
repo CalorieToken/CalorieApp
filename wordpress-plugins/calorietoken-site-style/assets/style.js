@@ -1,4 +1,4 @@
-/* CalorieToken Site Style 1.1.3 — GPL-2.0-or-later */
+/* CalorieToken Site Style — GPL-2.0-or-later */
 (function () {
   'use strict';
   var cfg = window.CalorieTokenSiteStyle;

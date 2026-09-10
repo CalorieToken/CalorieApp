@@ -1,4 +1,4 @@
-/* CalorieToken 1.4.0 — explicit, Testnet-only onboarding; GPL-2.0-or-later. */
+/* CalorieToken — explicit, Testnet-only onboarding; GPL-2.0-or-later. */
 (function () {
   'use strict';
   var cfg = window.CalorieTokenDiscovery;

@@ -1,4 +1,4 @@
-/* CalorieToken Site Style 1.1.3 — GPL-2.0-or-later.
+/* CalorieToken Site Style — GPL-2.0-or-later.
  * Language presentation for the owned buy guide, progress and app information.
  * No new picker, persistence, authentication, request or payment handling. */
 (function () {

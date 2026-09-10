@@ -1,4 +1,4 @@
-/* CalorieToken Site Style 1.1.3 — official profile timeline; existing consent remains authoritative. */
+/* CalorieToken Site Style — official profile timeline; existing consent remains authoritative. */
 (function () {
   'use strict';
   if (window.CalorieTokenBlogTimeline) return;

@@ -1,4 +1,4 @@
-/* CalorieToken Site Style 1.4.0 — additive public presentation. GPL-2.0-or-later. */
+/* CalorieToken Site Style — additive public presentation. GPL-2.0-or-later. */
 (function () {
   'use strict';
   var cfg = window.CalorieTokenDiscovery;

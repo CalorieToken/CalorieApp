@@ -17,6 +17,22 @@ if (!defined('ABSPATH')) { exit; }
 final class Plugin {
     const VERSION = '1.4.1';
 
+    private static function json_asset($name) {
+        // Request-local cache only: plugin updates never need a persistent cache purge.
+        static $cache = array();
+        if (array_key_exists($name, $cache)) { return $cache[$name]; }
+        $raw = @file_get_contents(__DIR__ . '/assets/' . $name . '.json');
+        $value = is_string($raw) ? json_decode($raw, true) : null;
+        if (!is_array($value)) { $value = null; }
+        if ($name === 'menu-data' && is_array($value)) {
+            foreach (array('locales', 'appInformation', 'navigation', 'sharedLabels') as $key) {
+                if (!isset($value[$key]) || !is_array($value[$key])) { $value = null; break; }
+            }
+        }
+        $cache[$name] = $value;
+        return $value;
+    }
+
     // Reuse the installed handler. Never read API credentials or construct a transaction.
     public static function trustline_url() {
         if (!is_page(array(1205, 4205)) || !class_exists('Xummlogin_XUMM', false) ||
@@ -32,7 +48,7 @@ final class Plugin {
     }
 
     public static function discovery_assets($base) {
-        $copy = json_decode(file_get_contents(__DIR__ . '/assets/discovery-data.json'), true);
+        $copy = self::json_asset('discovery-data');
         if (!is_array($copy)) { return; }
         wp_enqueue_style('calorietoken-discovery', $base . 'assets/discovery.css', array('calorietoken-app-information'), self::VERSION);
         $dependency = self::footer_only() ? 'calorietoken-app-information' : 'calorietoken-ready-languages';
@@ -42,11 +58,11 @@ final class Plugin {
             'trustlineURL' => self::trustline_url(),
             'appURL' => home_url('/index.php/calorieapp/'),
             'appLogo' => $base . 'assets/calorieapp-logo.svg',
-            'testCopy' => is_page(7880) ? json_decode(file_get_contents(__DIR__ . '/assets/testnet-data.json'), true) : null,
+            'testCopy' => is_page(7880) ? self::json_asset('testnet-data') : null,
         ));
         wp_enqueue_script('calorietoken-help', $base . 'assets/help.js', array('calorietoken-discovery'), self::VERSION, true);
         wp_localize_script('calorietoken-help', 'CalorieTokenHelp', array(
-            'copy' => json_decode(file_get_contents(__DIR__ . '/assets/help-data.json'), true),
+            'copy' => self::json_asset('help-data'),
             'page' => get_queried_object_id(),
         ));
         if (is_page(7880)) {
@@ -100,7 +116,7 @@ final class Plugin {
             'paperImage' => content_url('/uploads/2021/12/Websiteachtergrond.png'),
             'footerOnly' => self::footer_only(),
         ));
-        $copy = json_decode(file_get_contents(__DIR__ . '/assets/menu-data.json'), true);
+        $copy = self::json_asset('menu-data');
         wp_enqueue_style('calorietoken-app-information', $base . 'assets/app-information.css', array('calorietoken-site-style'), self::VERSION);
         wp_enqueue_script('calorietoken-app-information', $base . 'assets/app-information.js', array('calorietoken-site-style'), self::VERSION, true);
         if (is_array($copy)) {

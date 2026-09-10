@@ -1,4 +1,4 @@
-/* CalorieToken Site Style 1.1.3 — shared information card, including Home's footer-only mode. */
+/* CalorieToken Site Style — shared information card, including Home's footer-only mode. */
 (function () {
   'use strict';
   var config = window.CalorieTokenAppInformation, view = null;
