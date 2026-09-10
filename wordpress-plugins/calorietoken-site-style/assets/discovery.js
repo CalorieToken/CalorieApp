@@ -5,7 +5,7 @@
   if (!cfg || window.CalorieTokenDiscoveryUI) return;
   var forbidden = 'form,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],[hidden],[inert],[aria-hidden="true"]';
   var exchangeURL = 'https://defi.swft.pro/#/?sourceFlag=CALORIE';
-  var dexURL = 'https://xumm.app/detect/xapp:xumm.dex?base=43616C6F72696500000000000000000000000000+rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY&quote=xrp';
+  var dexURL = 'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP';
   var helpURL = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
   var nodes = [], hub = null, launcher = null, test = null, trust = null, frame = null, controls = null, requestedLocale = null, revoked = false, picker = null, preferenceRead = false;
   var preferenceKey = 'calorieapp.display-language.v1';
@@ -122,7 +122,7 @@
     nav.append(link('dexTitle','#ctstyle-own-dex'),link('guideTitle','#'+guide.id),link('bridgeTitle','#ctstyle-external-exchange'));
     hub.append(nav);
     var dex = section('ctstyle-own-dex','dexTitle');
-    dex.append(label('p','dexStatus','ctstyle-discovery-badge'),label('p','dexText'),link('openDex',dexURL,true),trustlineCard('ctstyle-buy-trustline'));
+    dex.append(label('p','dexStatus','ctstyle-discovery-badge'),label('p','dexText'),link('openDex',dexURL,true),link('openSwap','https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market',true),trustlineCard('ctstyle-buy-trustline'));
     hub.append(dex,label('h2','guideTitle','ctstyle-guide-heading'));
     var layout=element('div','ctstyle-exchange-layout');guide.before(layout);
     layout.append(hub,guide,exchangeCard());guide.classList.add('ctstyle-second-route');

@@ -40,7 +40,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "You can open CAL/XRP in the Xaman DEX xApp below, just like the Trade link in the sign-in widget. This external route is available; our own order interface is not enabled. CAL is temporarily delisted at SWFT",
+        "text": "Open the CAL/XRP order book or swap on XPMarket. Check the asset, issuer, fees and final wallet request. Trading takes place with the external service; this website does not place orders. CAL is temporarily unavailable at SWFT.",
         "links": [
           "exchange"
         ]
@@ -113,7 +113,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Hieronder kun je CAL/XRP openen in de Xaman DEX-xApp, net zoals met Trade in de aanmeldwidget. Deze externe route is beschikbaar; onze eigen orderinterface is nog niet actief. CAL is tijdelijk gedelist bij SWFT",
+        "text": "Open het CAL/XRP-orderboek of de swap op XPMarket. Controleer de munt, uitgever, kosten en het uiteindelijke verzoek in je wallet. Je handelt bij de externe dienst; deze website plaatst geen orders. CAL is tijdelijk niet beschikbaar bij SWFT.",
         "links": [
           "exchange"
         ]
@@ -186,7 +186,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "您可在下方打开 Xaman DEX xApp 的 CAL/XRP，与登录组件中的 Trade 链接相同。此为外部入口；自有订单界面尚未启用。 CAL 暂时从 SWFT 下架",
+        "text": "在 XPMarket 打开 CAL/XRP 订单簿或兑换。核对资产、发行方、费用和最终钱包请求。交易通过外部服务进行；本网站不会下单。 SWFT 暂不支持 CAL。",
         "links": [
           "exchange"
         ]
@@ -259,7 +259,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "नीचे Xaman DEX xApp में CAL/XRP खोलें, जैसे लॉगिन विजेट के Trade लिंक से। यह बाहरी रास्ता उपलब्ध है; अपना ऑर्डर इंटरफ़ेस सक्रिय नहीं है। SWFT पर CAL अस्थायी रूप से डीलिस्ट है",
+        "text": "XPMarket पर CAL/XRP ऑर्डर बुक या स्वैप खोलें। एसेट, जारीकर्ता, शुल्क और वॉलेट में अंतिम अनुरोध जाँचें। ट्रेड बाहरी सेवा पर होता है; यह वेबसाइट ऑर्डर नहीं देती। SWFT पर CAL अस्थायी रूप से उपलब्ध नहीं है।",
         "links": [
           "exchange"
         ]
@@ -332,7 +332,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Abre CAL/XRP en la xApp DEX de Xaman, igual que con Trade en el widget de acceso. Esta vía externa está disponible; nuestra interfaz de órdenes no está activa. CAL está temporalmente retirado de SWFT",
+        "text": "Abre el libro de órdenes o el intercambio CAL/XRP en XPMarket. Revisa el activo, emisor, comisiones y la solicitud final en tu cartera. Operas con el servicio externo; esta web no envía órdenes. CAL no está disponible temporalmente en SWFT.",
         "links": [
           "exchange"
         ]
@@ -405,7 +405,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "يمكنك فتح CAL/XRP في تطبيق Xaman DEX المصغر أدناه، مثل رابط Trade في أداة تسجيل الدخول. هذا المسار الخارجي متاح؛ واجهة الأوامر الخاصة بنا غير مفعلة. CAL مشطوب مؤقتًا من SWFT",
+        "text": "افتح دفتر أوامر CAL/XRP أو المبادلة على XPMarket. تحقق من الأصل والجهة المصدرة والرسوم والطلب النهائي في محفظتك. يتم التداول عبر الخدمة الخارجية؛ لا يرسل هذا الموقع أوامر تداول. CAL غير متاح مؤقتًا لدى SWFT.",
         "links": [
           "exchange"
         ]
@@ -478,7 +478,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Ouvrez CAL/XRP dans la xApp DEX de Xaman, comme avec le lien Trade du widget de connexion. Cette voie externe est disponible ; notre interface d’ordres reste inactive. CAL est temporairement retiré de SWFT",
+        "text": "Ouvrez le carnet d’ordres ou l’échange CAL/XRP sur XPMarket. Vérifiez l’actif, l’émetteur, les frais et la demande finale dans votre portefeuille. La transaction passe par le service externe ; ce site ne transmet pas d’ordres. CAL est temporairement indisponible sur SWFT.",
         "links": [
           "exchange"
         ]
@@ -551,7 +551,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "লগইন উইজেটের Trade লিঙ্কের মতো নিচে Xaman DEX xApp-এ CAL/XRP খুলুন। এই বাহ্যিক পথটি উপলব্ধ; আমাদের নিজস্ব অর্ডার ইন্টারফেস সক্রিয় নয়। SWFT থেকে CAL সাময়িকভাবে তালিকাচ্যুত",
+        "text": "XPMarket-এ CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন। সম্পদ, ইস্যুকারী, ফি ও ওয়ালেটের চূড়ান্ত অনুরোধ যাচাই করুন। লেনদেন বাইরের পরিষেবায় হয়; এই ওয়েবসাইট অর্ডার দেয় না। SWFT-এ CAL সাময়িকভাবে অনুপলব্ধ।",
         "links": [
           "exchange"
         ]
@@ -624,7 +624,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Abra CAL/XRP na xApp DEX da Xaman, tal como no link Trade do widget de acesso. Esta opção externa está disponível; nossa interface de ordens ainda não está ativa. CAL temporariamente removido da SWFT",
+        "text": "Abra o livro de ordens ou a troca CAL/XRP no XPMarket. Verifique o ativo, emissor, taxas e o pedido final na carteira. A negociação ocorre no serviço externo; este site não envia ordens. CAL está temporariamente indisponível na SWFT.",
         "links": [
           "exchange"
         ]
@@ -697,7 +697,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Buka CAL/XRP di xApp DEX Xaman di bawah, seperti tautan Trade pada widget login. Jalur eksternal ini tersedia; antarmuka pesanan kami sendiri belum aktif. CAL sementara dihapus dari daftar SWFT",
+        "text": "Buka buku pesanan atau swap CAL/XRP di XPMarket. Periksa aset, penerbit, biaya, dan permintaan akhir di dompet. Perdagangan berlangsung di layanan eksternal; situs ini tidak mengirim pesanan. CAL sementara tidak tersedia di SWFT.",
         "links": [
           "exchange"
         ]
@@ -770,7 +770,7 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "نیچے Xaman DEX xApp میں CAL/XRP کھولیں، جیسے لاگ اِن ویجٹ کے Trade لنک سے۔ یہ بیرونی راستہ دستیاب ہے؛ ہمارا اپنا آرڈر انٹرفیس فعال نہیں۔ SWFT سے CAL عارضی طور پر ڈی لسٹ ہے",
+        "text": "XPMarket پر CAL/XRP آرڈر بک یا سواپ کھولیں۔ اثاثہ، جاری کنندہ، فیس اور والٹ میں آخری درخواست چیک کریں۔ تجارت بیرونی سروس پر ہوتی ہے؛ یہ ویب سائٹ آرڈر نہیں بھیجتی۔ SWFT پر CAL عارضی طور پر دستیاب نہیں ہے۔",
         "links": [
           "exchange"
         ]

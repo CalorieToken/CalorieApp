@@ -1662,6 +1662,10 @@
     {
       "before": "CalorieApp will be introduced in alpha and beta versions, initially catering to consumers with simple functionalities. Feedback from users during the beta phase will be used to improve the app before its official launch. The app will then undergo further enhancements to accommodate various user groups and corporate clients.",
       "after": "The browser preview can already be explored from the CalorieApp page. The current roadmap records eight milestones and their status. Earlier Android and Testnet prototypes remain development history; additional services will need their own implementation and release announcement."
+    },
+    {
+      "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes. This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
+      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value. Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
     }
   ],
   "merchUpdates": [

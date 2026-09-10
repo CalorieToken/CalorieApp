@@ -24,7 +24,7 @@
     return match?match.tag:null;
   }
   function direction(tag) {return ['ar','ur'].includes(tag)?'rtl':'ltr';}
-  function pageId() {var match=document.body.className.match(/(?:^|\s)page-id-(\d+)(?:\s|$)/);return match?Number(match[1]):0;}
+  function pageId() {var match=document.body.className.match(/(?:^|\s)(?:page-id|postid)-(\d+)(?:\s|$)/);return match?Number(match[1]):0;}
   function activePicker() {
     var panel=one('[data-calorieapp-display-language]');
     return panel && panel.dataset.ready==='1' && !panel.closest('[hidden],[inert],[contenteditable]')?one('select',panel):null;
@@ -57,10 +57,7 @@
     if (values.length!==3 || !values.every(function (node,index) {return textField(node)&&node.textContent===identity[index];})) return;
     var destinations=['https://xaman.app/','https://xumm.app/detect/xapp:xumm.buysellxrp',
       'https://xrpl.org/docs/concepts/accounts/reserves',url.origin+'/index.php/trustline/',
-      'https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY',
-      'https://sologenic.org/',
-      'https://xumm.app/detect/xapp:xumm.dex?base=43616C6F72696500000000000000000000000000+rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY&quote=xrp',
-      'https://www.xrptoolkit.com/'];
+      'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP', 'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP', 'https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market'];
     var links=Array.from(root.querySelectorAll('a'));
     if (links.length!==destinations.length || !links.every(function (node,index) {return node.getAttribute('href')===destinations[index];})) return;
     fields.forEach(function (node) {node.childNodes[0].data=selected[node.getAttribute('data-cal-buy-copy')];});
@@ -110,7 +107,7 @@
     if (picker) {var tag=resolve(picker.value);if (tag) locale=tag;}
     if (observer && watchedPanel && observing) observer.observe(watchedPanel,{attributes:true,attributeFilter:['data-ready','lang','dir','hidden','inert'],childList:true,subtree:true});
   }
-  function refresh() {if (!allowed()) return;bindPicker();render();}
+  function refresh() {if (!allowed()) return;if(pageId()===4205 && one('.cal-buy-guide[data-ctstyle-buy-routes="1"]')) ownsGuide=true;bindPicker();render();}
   window.CalorieTokenPageLanguage={refresh:refresh,setLocale:setLocale};
   if (pageId()===4205 && !window.CalorieAppBuyGuide) {
     ownsGuide=true;window.CalorieAppBuyGuide={refresh:render,setLocale:setLocale};

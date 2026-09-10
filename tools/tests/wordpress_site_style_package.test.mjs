@@ -18,3 +18,15 @@ test('Every language ships the same declared display-copy keys with nonempty tex
  }
  const menu=JSON.parse(readFileSync(new URL('assets/menu-data.json',plugin),'utf8'));assert.equal(Object.keys(menu.sharedLabels).length,11);
 });
+test('Public content catalogue declares exact sources, page scope and truthful locale coverage',()=>{
+ const data=JSON.parse(readFileSync(new URL('assets/content-data.json',plugin),'utf8'));
+ assert.equal(data.schema,1);assert.equal(new Set(data.entries.map(e=>e.source)).size,data.entries.length);
+ const locales=['nl','zh-Hans','hi','es','ar','fr','bn','pt','id','ur'];
+ for(const row of data.entries){
+  assert.ok(row.source.trim());assert.ok(row.translations.nl?.trim());assert.ok(row.pages.length);
+  assert.ok(row.pages.every(p=>p==='*'||Number.isSafeInteger(p)&&p>0));
+  for(const [tag,value]of Object.entries(row.translations)){assert.ok(locales.includes(tag));assert.ok(value.trim());}
+  if(row.pages.includes(6855)||row.source==='Add Your Donation')assert.deepEqual(Object.keys(row.translations).sort(),[...locales].sort());
+ }
+ assert.ok(data.entries.some(e=>e.pages.includes(7608)&&Object.keys(e.translations).length===1),'Historical Dutch content does not falsely declare all languages');
+});

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.1
+ * Version: 1.4.2
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.1';
+    const VERSION = '1.4.2';
 
     private static function json_asset($name) {
         // Request-local cache only: plugin updates never need a persistent cache purge.
@@ -65,6 +65,20 @@ final class Plugin {
             'copy' => self::json_asset('help-data'),
             'page' => get_queried_object_id(),
         ));
+        wp_enqueue_style('calorietoken-refinements', $base . 'assets/refinements.css', array('calorietoken-discovery'), self::VERSION);
+        wp_enqueue_script('calorietoken-refinements', $base . 'assets/refinements.js', array('calorietoken-help'), self::VERSION, true);
+        $catalogue = self::json_asset('content-data');
+        if (is_array($catalogue) && isset($catalogue['entries']) && is_array($catalogue['entries'])) {
+            $page = get_queried_object_id();
+            $entries = array_values(array_filter($catalogue['entries'], static function ($row) use ($page) {
+                return is_array($row) && isset($row['pages']) && is_array($row['pages']) &&
+                    (in_array('*', $row['pages'], true) || in_array($page, $row['pages'], true));
+            }));
+            wp_enqueue_script('calorietoken-content-language', $base . 'assets/content-language.js', array('calorietoken-refinements'), self::VERSION, true);
+            wp_localize_script('calorietoken-content-language', 'CalorieTokenContentLanguage', array(
+                'entries' => $entries, 'locales' => array_keys($copy),
+            ));
+        }
         if (is_page(7880)) {
             wp_enqueue_script('calorietoken-testnet', $base . 'assets/testnet.js', array('calorietoken-discovery'), self::VERSION, true);
             wp_enqueue_script('calorietoken-display-runtime', $base . 'assets/display-language-runtime.js', array(), self::VERSION, true);

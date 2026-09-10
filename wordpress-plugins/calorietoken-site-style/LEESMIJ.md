@@ -1,30 +1,32 @@
-# CalorieToken Site Style 1.4.1
+# CalorieToken Site Style 1.4.2
 
 Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.1.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.1** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.2.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.2** actief is en leeg de websitecache. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Correctieronde 1.4.1
+## Correctieronde 1.4.2 — opmerkingen na de upload
 
-- Home-footer: ondersteunt de echte WordPress-weergave van de instelling. Gedeelde footer en appverwijzing verschijnen daardoor ook op Home. De titelbanner en hoofdafbeeldingen van Home blijven behouden.
-- Xaman-widget: CalorieApp en elf taalkeuzes staan zichtbaar in de bestaande kaart, zowel voor bezoekers als ingelogde gebruikers. Oudere usecases krijgen dezelfde native Xaman-kaart via de bestaande shortcode, buiten het menu. De bestaande accountnodes, loginroute en handlers blijven behouden.
-- Trustline: de twee werkelijk aangetroffen Brizy-rijen staan als gelijkwaardige kaarten naast elkaar; op mobiel onder elkaar. Bestaande issuer, valuta, bedrag, kopieerknoppen en ondertekenroute blijven behouden.
-- Contact: zes socialmediategels met dezelfde afmetingen, afstand en mobiele indeling. De aangetroffen verkeerd samengestelde Telegram-link is gecorrigeerd.
-- CAL & Crypto: één consistente inhoudsbreedte, drie duidelijke routes en de Trustline-hulp binnen de DEX-sectie. Volgorde: DEX, bestaande uitleg, SWFT.
-- Donatie: verzorgde velden, samenvattingen, voortgang en knoppen bij bedragkeuze, winkelmand en afrekenen. Alleen presentatie; betaalverwerking, veldnamen, waarden en validatie blijven behouden.
-- App-/Testnet-presentatie: zichtbare Calorie-logoachtergrond achter de appafsluiting en uitleg, rustigere stappenkaart en duidelijke startknop. Geen dubbele melding “klaar” bij de eerste stap.
-- X: herkent de daadwerkelijke iframe die X zonder CSS-klasse invoegt. Een geladen tijdlijn houdt daardoor geen overbodige fout-/cookietoelichting zichtbaar. X bepaalt zelf welke posts worden geleverd en in welke volgorde; nieuwste-eerst is niet gegarandeerd. YouTube krijgt een korte, herkenbare videoknop; bestaande privacykeuzes blijven leidend.
-- Open Food Facts en USDA krijgen op de WordPress-apppagina een vergelijkbare bron-/licentievermelding, uit dezelfde elf vertalingen als de app. USDA blijft de kleine selectie van drie referentieproducten; geen volledige zoekintegratie.
-- De gedeelde menu- en footerlinklabels volgen nu dezelfde taalkeuze. Volledige vertaling van alle historische CMS-teksten, afbeeldingen met ingebakken tekst en externe inhoud is nog niet beschikbaar en wordt niet als voltooid aangemerkt.
-- De CAL & Crypto-zweefknop werkt ook naast de oudere, al actieve native navigatie zonder die controller te vervangen.
+- CAL & Crypto: directe CAL/XRP-orderboek- en swaplinks naar XPMarket. Sologenic en generieke XRP Toolkit-handelslinks zijn verwijderd. De onbetrouwbare Xaman DEX-paarlink wordt niet meer gebruikt; de bestaande Trade-link in de accountkaart opent CAL & Crypto. Login, walletgegevens en ondertekenen blijven bij de bestaande plugins.
+- Trustline: rechtstreeks via de website naar Xaman staat bovenaan. De aparte route via xrpl.services is als alternatief herkenbaar. Handmatige XRP Toolkit-uitleg is inklapbaar; aangetroffen dubbele kopieerknoppen worden niet dubbel getoond.
+- Achtergrond: één doorlopend Calorie-patroon met dezelfde schaal. De Home-titelbanner, kleurrijke header en historische afbeeldingen blijven behouden.
+- Tokenomics: rustigere consolidatiewalletkaart met de bestaande kleuren, afgeronde randen, leesbaar adres en behoud van de volledige toelichting.
+- Roadmap: het defecte YouTube-blok is vervangen door een CalorieApp-kaart. De historische video blijft bereikbaar via een gewone YouTube-link; er wordt daar geen iframe meer geladen.
+- Contact: team en XPMarket-blok hebben eigen ruimte in de documentstroom, inclusief mobiele stapeling.
+- FAQ: elf inklapbare oorspronkelijke vragen met vertaling van vraag én volledig antwoord in elf talen. De bestaande hulp staat erbij. Een gemiste correctie van een samengevoegde alinea is hersteld.
+- Vertaling: een eerste lokale catalogus voor bestaande paginatekst, zonder externe vertaaldienst. Bekende formulierlabels, donatie-uitleg, koppen en plugintekst volgen de bestaande taalkeuze. Bedragen, veldnamen, nonces, walletadressen en ingevoerde gegevens worden niet vertaald.
+- Blog: rustigere artikeltypografie; Nederlandse vertaalteksten voor de tien historische artikelen en hun contextnotities. Historische claims blijven als historische inhoud herkenbaar.
+
+**Dekking:** de catalogus bevat 589 bronregels: 283 met alle tien vertalingen naast Engels, plus 306 extra Nederlandse bronregels, hoofdzakelijk historische artikelen. Dit is geen volledige vertaling van alle CMS-inhoud in elf talen. Nieuwe of afwijkende brontekst blijft staan. Ingebakken tekst in afbeeldingen en externe iframes wordt niet vertaald. De overige vertalingen en de live acceptatie blijven open; stap 3 is niet volledig afgetekend.
+
+**CalorieApp:** deze update wijzigt uitsluitend de WordPress-plugin. De eigenaar heeft de app zelf nog niet getest. De afzonderlijke appwijzigingen uit PR136/137 blijven behouden; succesvolle live appacceptatie wordt niet geclaimd.
 
 ## Inbegrepen
 
 - De eerder voorbereide Gallery app-huisstijl: herkenbare headers, kopafbeelding, titelplaatsing en footers. Donatiebanner, Roadmap-verwijzing, Tokenomics-afbeelding/walletkaart, mobiele Trustline-kaarten, usecases, Blog en menucorrecties blijven inbegrepen. De geaccepteerde hoofdinhoud en header van Home blijven behouden; de gevraagde footer, appverwijzing en zwevende navigatie zijn de begrensde aanvullingen daar.
 - **CAL & Crypto**: DEX → bestaande koop-/verkoopuitleg → AllChainBridge/SWFT. Het pagina-adres blijft gelijk. De XRP-uitleg noemt nu ook SWFT-routes uit bijvoorbeeld BTC/ETH, afhankelijk van actuele ondersteuning, netwerk, wallet en kosten.
-- De DEX-sectie verwijst naar de externe **CAL/XRP Xaman DEX-xApp**, dezelfde bestemming als de bekende Trade-route. De eigen orderinterface is niet actief: de concrete eigen dienst heeft in het dossier geen vastgestelde MiCA-uitzondering/toelating. Ondertekenen met Xaman alleen geeft die zekerheid niet.
+- De DEX-sectie verwijst naar het **CAL/XRP-orderboek en de swap op XPMarket**. De eigen orderinterface is niet actief: de concrete eigen dienst heeft in het dossier geen vastgestelde MiCA-uitzondering/toelating. Ondertekenen met Xaman alleen geeft die zekerheid niet.
 - SWFT vermeldt: **andere ondersteunde munten blijven beschikbaar; CAL is tijdelijk gedelist**, volgens de eigenaar. De iframe verschijnt op verzoek met bestaande cookietoestemming. Geen actuele fiat-betaalmethoden of succesvolle swap beloofd.
 - **Vier eenvoudige Testnet-stappen**, één tegelijk zichtbaar, met grote knoppen: aanmaken → Testnet kiezen → in Xaman importeren → adres vergelijken en aanmelden.
 - **Elf weergavetalen** in de CalorieApp-widget. De koppeling met de app is nu geïmplementeerd en in GitHub samengevoegd. De actuele appversie op Render moet wel actief zijn voordat beide kanten samenwerken.
@@ -62,12 +64,25 @@ De bestaande Complianz-toestemming blijft leidend. Biedt de site de service-API 
 
 ## Controle en herstel
 
-De regressies controleren bestaande account-/formuliernodes en handlers, elf talen, appberichtgrenzen, privacykeuzes, Testnet-foutpaden, native WordPress-shortcodes en de nieuwe gedeelde onderdelen. De app krijgt alleen de hierboven beschreven zoekcorrectie; account- en backendcode blijven behouden. De exacte aantallen staan bij de releasecontrole.
+De regressies controleren bestaande account-/formuliernodes en handlers, elf talen, appberichtgrenzen, privacykeuzes, Testnet-foutpaden, native WordPress-shortcodes en de nieuwe gedeelde onderdelen. Deze release wijzigt geen app-, account- of backendcode; de eerdere zoekcorrectie blijft behouden. De exacte aantallen staan bij de releasecontrole.
 
-Openbare versies van Home, Trustline, Groceries, CAL & Crypto en Contact zijn gelezen. De browser blokkeerde het openen van een lokale voorbeeldpagina; daarom is **geen visuele browsercontrole van deze nieuwe 1.4.1-versie** geclaimd. De opgeslagen echte DOM-opbouw en CSS-regels zijn wel gebruikt voor de correcties en controles. De praktijktest volgt na upload.
+Openbare versies van Home, Trustline, Groceries, CAL & Crypto en Contact zijn gelezen. De browser blokkeerde het openen van een lokale voorbeeldpagina; daarom is **geen visuele browsercontrole van deze nieuwe 1.4.2-versie** geclaimd. De opgeslagen echte DOM-opbouw en CSS-regels zijn wel gebruikt voor de correcties en controles. De praktijktest volgt na upload.
 
 De controles combineren werkelijke opgeslagen pagina-opbouw met lokale/synthetische gevallen. Er is geen uitgevoerde Xaman-import/login of swap geclaimd. De hostingbeveiliging is niet omzeild. De plugin schrijft geen Brizy-bron, WordPress-instellingen of accountgegevens. Editors en historisch Home 8001 zijn uitgesloten.
 
 Deactiveren of terugplaatsen van de vorige Site Style-versie verwijdert de toegevoegde weergave. Een extern aangemaakt Testnet-account of expliciet ondertekende ledgertransactie wordt niet teruggedraaid. De app-PR is apart terug te draaien via een GitHub-revert; de WordPress-plugin deactiveren zet de appversie niet terug.
 
-Na upload: bekijk FAQ en de appwidget op mobiel, kies een taal in beide richtingen, test één nieuw Testnet-account tot en met Xaman-aanmelding en controleer de eerder gemelde pagina’s. Rond daarna de visuele acceptatie van stap 3 af; voor stap 4 tonen we alleen aantoonbaar werkende functies.
+Na upload: bekijk FAQ en de appwidget op mobiel, kies een taal in beide richtingen, test één nieuw Testnet-account tot en met Xaman-aanmelding en controleer de eerder gemelde pagina’s. Beoordeel daarna de nieuwe weergave en de nog open vertaaldekking. Voor stap 4 tonen we alleen aantoonbaar werkende functies.
+
+## Gecontroleerde handelsbestemmingen
+
+- [XPMarket CAL/XRP-orderboek](https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP)
+- [XPMarket CAL/XRP-swap](https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market)
+- [Xaman xApp-documentatie](https://docs.xaman.dev/environments/xapps-dapps) biedt geen hier bevestigde contractuele DEX-paarlink.
+- [XRP Toolkit-orderhandleiding](https://docs.xrptoolkit.com/place-and-cancel-orders) beschrijft handmatige paarselectie.
+
+De broncontrole bevestigt de bestemming, geen uitgevoerde handel of transactie.
+
+## Rechten van teksten en beelden
+
+De GPL-licentie van de component betreft de programmacode. Historische websiteartikelen, vertalingen daarvan, handelsmerken en beelden behouden hun bestaande rechten; dit pakket verleent daarvoor geen nieuwe licentie.

@@ -1,0 +1,52 @@
+/* Shared scale and continuous paper; never target banner/hero artwork. */
+:is(body.ctstyle-enabled,body.ctstyle-footer-only).ctstyle-paper-continuous {
+  background:#fff var(--ctstyle-paper-image) center top/960px auto repeat!important;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-paper-layer,.ctstyle-paper-host,.ctstyle-paper-tint) {background:none!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only).ctstyle-paper-continuous :is(.ctstyle-app-ending,.ctstyle-discovery-card,#ctstyle-testnet,.calorieapp-app-info) {background-image:none!important;background-color:transparent!important;}
+body.ctstyle-enabled .ctstyle-trustline-methods {width:calc(100% - 32px);max-width:1100px;margin:24px auto 40px;}
+body.ctstyle-enabled .ctstyle-trustline-methods #ctstyle-direct-trustline {width:100%;margin:0 0 24px;}
+body.ctstyle-enabled .ctstyle-trustline-options {display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
+body.ctstyle-enabled .ctstyle-route-label {font:700 23px/1.4 Amiri,Georgia,serif!important;color:#505ba9!important;margin:0 0 18px!important;}
+body.ctstyle-enabled .ctstyle-manual-trustline {box-sizing:border-box;min-width:0;width:100%;border:2px solid #505ba9;border-radius:22px;background:#ffffffd9;}
+body.ctstyle-enabled .ctstyle-manual-trustline>summary {cursor:pointer;padding:22px;font:700 23px/1.4 Amiri,Georgia,serif;color:#505ba9;}
+body.ctstyle-enabled .ctstyle-manual-trustline:not([open])>*:not(summary) {display:none!important;}
+body.ctstyle-enabled .ctstyle-manual-trustline .ctstyle-trustline-option {border:0!important;box-shadow:none!important;max-width:100%!important;}
+body.ctstyle-enabled .ctstyle-copy-dedup .calorieapp-copy-button:not([aria-describedby]) {display:none!important;}
+body.ctstyle-enabled #calorieapp-consolidation-wallet {
+  box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;width:calc(100% - 32px);max-width:760px;
+  margin:28px auto 36px!important;padding:24px!important;border:3px solid #505ba9!important;border-radius:30px!important;
+  background:#ffffffdf!important;box-shadow:0 4px 14px #505ba91f;text-align:center;
+}
+body.ctstyle-enabled #calorieapp-consolidation-wallet h2 {font:400 25px/1.3 Knewave,Amiri,serif!important;color:#505ba9!important;margin:0!important;}
+body.ctstyle-enabled #calorieapp-consolidation-wallet p {font:400 19px/1.6 Amiri,Georgia,serif!important;margin:0!important;text-align:start;}
+body.ctstyle-enabled #calorieapp-consolidation-wallet code {display:block;max-width:100%;overflow-wrap:anywhere;word-break:break-all;white-space:normal;font:15px/1.6 monospace!important;padding:12px;background:#f1f2f8;border:1px solid #c8cce2;border-radius:14px;}
+body.ctstyle-enabled #calorieapp-consolidation-wallet a {display:inline-flex;justify-content:center;width:auto!important;max-width:100%;margin:4px auto!important;padding:12px 20px!important;border:2px solid #505ba9!important;border-radius:18px!important;background:#f9b233!important;color:#303449!important;font:700 20px/1.4 Amiri,Georgia,serif!important;text-decoration:none!important;}
+body.ctstyle-enabled .ctstyle-roadmap-preview {box-sizing:border-box;padding:22px;max-width:100%;min-width:0;background:#fffffff0;border:2px solid #505ba9;border-top:5px solid #f9b233;border-radius:24px;text-align:start;}
+body.ctstyle-enabled .ctstyle-roadmap-preview>img {display:block;width:48px;height:48px;object-fit:contain;margin-bottom:14px;}
+body.ctstyle-enabled .ctstyle-roadmap-preview h3 {font:700 25px/1.3 Amiri,Georgia,serif!important;color:#008d36;margin:0 0 12px!important;}
+body.ctstyle-enabled .ctstyle-roadmap-preview p {font:400 19px/1.6 Amiri,Georgia,serif!important;margin:0 0 14px!important;}
+body.ctstyle-enabled .ctstyle-video-history {display:block;margin-top:14px;color:#505ba9!important;font:400 16px/1.5 Amiri,Georgia,serif!important;text-decoration:underline!important;}
+body.ctstyle-enabled :is(.ctstyle-faq-copy,.ctstyle-faq-hub) {box-sizing:border-box;width:100%;max-width:980px;margin:24px auto!important;}
+body.ctstyle-enabled .ctstyle-faq-copy .ctstyle-faq-item {padding:0;margin:14px 0;border:2px solid #d7daea;border-radius:18px;background:#fffffff0;overflow:hidden;}
+body.ctstyle-enabled .ctstyle-faq-copy summary {cursor:pointer;padding:18px 22px;font:700 22px/1.4 Amiri,Georgia,serif!important;color:#505ba9!important;}
+body.ctstyle-enabled .ctstyle-faq-copy summary * {font:inherit!important;color:inherit!important;}
+body.ctstyle-enabled .ctstyle-faq-copy p {margin:0!important;padding:0 22px 20px!important;font:400 20px/1.65 Amiri,Georgia,serif!important;text-align:start!important;}
+body.ctstyle-enabled .ctstyle-faq-copy p * {font:inherit!important;}
+body.ctstyle-enabled.single-post .calorieapp-article-copy {box-sizing:border-box;width:100%;max-width:840px;margin:24px auto;padding:clamp(20px,4vw,44px);background:#fffffff2;border:1px solid #d7daea;border-top:4px solid #f9b233;border-radius:24px;}
+body.ctstyle-enabled.single-post .calorieapp-article-copy :is(p,li) {font:400 21px/1.7 Amiri,Georgia,serif!important;color:#303449;text-align:start!important;margin:0 0 18px!important;}
+body.ctstyle-enabled.single-post .calorieapp-article-copy p>strong:only-child {display:block;color:#505ba9;font:700 25px/1.4 Amiri,Georgia,serif!important;margin:28px 0 10px;}
+body.ctstyle-enabled.single-post .calorieapp-article-copy :is(ul,ol) {padding-inline-start:26px;}
+body.ctstyle-enabled .ctstyle-team-container {display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;}
+body.ctstyle-enabled .ctstyle-team-flow {display:flow-root!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;margin-bottom:32px!important;transform:none!important;}
+body.ctstyle-enabled .ctstyle-team-flow :is(.brz-row,.brz-columns,.brz-column__items) {height:auto!important;min-height:0!important;position:relative!important;top:auto!important;bottom:auto!important;transform:none!important;}
+body.ctstyle-enabled .ctstyle-after-team {clear:both;position:relative!important;top:auto!important;bottom:auto!important;transform:none!important;flex:0 0 auto!important;margin-top:24px!important;margin-bottom:28px!important;}
+@media(max-width:767px){
+  body.ctstyle-enabled .ctstyle-trustline-options {grid-template-columns:minmax(0,1fr);gap:18px;}
+  body.ctstyle-enabled .ctstyle-trustline-methods {width:calc(100% - 24px);}
+  body.ctstyle-enabled .ctstyle-team-flow>.brz-row {display:flex!important;flex-direction:column!important;gap:28px!important;}
+  body.ctstyle-enabled .ctstyle-team-flow>.brz-row>.brz-columns {flex:0 0 auto!important;width:100%!important;max-width:360px!important;margin:0 auto!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-preview {padding:16px;}
+  body.ctstyle-enabled .ctstyle-roadmap-preview .ctstyle-discovery-action {margin-inline:0;padding-inline:10px;}
+  body.ctstyle-enabled.single-post .calorieapp-article-copy {padding:20px 16px;}
+}
