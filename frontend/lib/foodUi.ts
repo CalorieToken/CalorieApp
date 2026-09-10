@@ -13,7 +13,7 @@ export function getFoodUi(value?: string | null) {
 }
 
 export function formatFoodUi(template: string, values: Record<string, string | number>): string {
-  // Replace only template tokens, once. Product text remains literal even when
+  // Replace template token occurrences in one pass. Product text remains literal even when
   // it contains braces, dollar signs or words used by the UI catalogue.
   return template.replace(/\{([a-zA-Z]+)\}/g, (token, key: string) =>
     Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : token);

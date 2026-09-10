@@ -1,8 +1,9 @@
-# Display-language preview v1
+# Display-language protocol v1
 
-Status: local, opt-in development preview. These are bounded LANG-1 implementation
-slices, not full eleven-language delivery or an installed feature. Maintenance
-Bridge 0.3.32 and the corresponding app candidate are separate artifacts.
+Status on 2026-09-10: integrated app release candidate, with Site Style 1.4.0 as
+the matching website host. The app control is enabled by default. This is bounded
+LANG-1 delivery, not translation of every page, login message or legal document.
+The historical development evidence below is retained with its original scope.
 The Step 3 master remains `docs/STEP_3_REPAIR_CHECKPOINT.md` on the maintenance
 branch; this file documents the protocol rather than starting another plan.
 
@@ -37,18 +38,14 @@ The separate pending-login locale, its checks, API requests, redirect/session
 routing, consent and payment handlers are unchanged. No mutation of the
 authentication `locale` query parameter or root data attributes is used.
 
-## Local activation and storage
+## Activation and storage
 
-Both switches are off by default. For an authorized development preview only:
-
-- WordPress: `CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW` must be the boolean `true`.
-- App build: `NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE_PREVIEW=1`.
-
-This documents the switches; it is not production activation or a bypass of
-source clearance, review or publication approval. The WP switch queues no new
-assets/markup when disabled; the disabled app control renders nothing and the
-existing component locale initialization is retained. The app preview build
-was compiled locally with the flag on.
+The app is on by default; `NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE=0` is the
+explicit off switch. Site Style 1.4.0 connects its website picker and recognizes
+the existing app iframe without changing the Identity Bridge. Its host yields
+to an already active native display-language controller. The older Maintenance
+Bridge opt-in preview is not required for this release. Old `*_PREVIEW` flags
+do not activate the new app control. The disabled app control renders nothing.
 
 The only new browser record is `calorieapp.display-language.v1`, containing
 `locale` and `savedAt`. An explicit changed selection is remembered for at most
@@ -58,7 +55,7 @@ to an in-memory choice. No preference is saved in an account, diary, database
 or XRPL transaction. No polling, new provider, translation API or remote
 preference service is added. Public WP HTML continues to use public locale
 configuration; private preference state is not put into shared server caches.
-Exact public privacy/cookie wording must cover this storage before activation.
+The visible language notice discloses this browser storage and its 30-day lifetime.
 
 ## App introduction and source-footer slice
 

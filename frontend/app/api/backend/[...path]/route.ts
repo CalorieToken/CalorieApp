@@ -36,9 +36,9 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
 ];
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     path: string[];
-  };
+  }>;
 };
 
 function configuredBackendUrl(): string | null {
@@ -125,7 +125,7 @@ function attemptLogoutRevocation(target: URL, headers: Headers): void {
 }
 
 async function proxyRequest(request: NextRequest, context: RouteContext) {
-  const path = context.params.path.join("/");
+  const path = (await context.params).path.join("/");
   if (!isAllowedRoute(path, request.method)) {
     return NextResponse.json({ detail: "Not found" }, { status: 404 });
   }

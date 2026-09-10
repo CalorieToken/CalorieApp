@@ -30,6 +30,21 @@ Bridge are unchanged from the base. Account export/import/erasure retain their
 existing request locale, session, confirmation and abort behavior; only their
 display language is connected. No existing account is reset, copied or migrated.
 
+### Existing dependency issue found by required CI
+
+The first CI run failed its unchanged production dependency audit because the
+base used Next.js 14.2.35. The current critical AVIF and Windows advisories list
+15.5.24 as the first patched maintenance version. This release pins Next 15.5.25,
+keeps React 18.3.1 and the existing rendering design, and awaits the route
+parameter promise required by Next 15. The proxy's endpoints, request forwarding,
+timeouts, cookies and response headers are preserved. PostCSS is pinned to
+8.5.23, including the nested copy, to close the remaining dependency findings.
+The security gate is not lowered, skipped or replaced with an exception.
+
+Sources: [Next.js AVIF advisory](https://github.com/advisories/GHSA-2xp9-vwfh-vxw4),
+[Next.js upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-15),
+[PostCSS advisory](https://github.com/advisories/GHSA-fxqj-rqcc-2cmp).
+
 Creating or funding a Testnet address is not proof of wallet ownership. Only the
 existing explicit Xaman sign-in may establish an app session. The test guide does
 not bind the faucet address to a production user, set a retailer role, register a
