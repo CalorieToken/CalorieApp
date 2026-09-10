@@ -660,7 +660,7 @@
     "statusClearFailed": "Catatan makanan tidak dapat dikosongkan saat ini. Coba lagi.",
     "statusServiceSlow": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat prosesnya.",
     "addedFeedback": "{product} ({percentage}%) ditambahkan ke catatan makanan Anda.",
-    "searchWait": "Tunggu {seconds}d",
+    "searchWait": "Tunggu {seconds} detik",
     "searchCooldownNotice": "Tombol pencarian tersedia lagi setelah jeda ini. Teks pencarian tetap tersimpan di sini; tidak perlu memuat ulang halaman.",
     "searchStartupHint": "Pencarian pertama setelah tidak aktif dapat memerlukan beberapa menit. Biarkan halaman ini terbuka; pencarian Anda sudah berjalan."
   },
