@@ -18,7 +18,7 @@ final class PublicPages {
         if (!in_array($id, array(531,586), true) || strpos($content, 'ICTHendrikse') === false ||
             strpos($content, '73774693') === false || strpos($content, '25 August 2026') === false ||
             strpos($content, 'CalorieApp V1') === false || strpos($content, 'ctstyle-public-update') !== false) { return null; }
-        $extra = file_get_contents(__DIR__ . '/content/' . ($id === 531 ? 'privacy' : 'terms') . '.html');
+        $extra = @file_get_contents(__DIR__ . '/content/' . ($id === 531 ? 'privacy' : 'terms') . '.html');
         if (!is_string($extra) || $extra === '') { return null; }
         // Exact old product-version wording, leaving rights and provider clauses intact.
         $content = str_replace('CalorieApp V1', 'CalorieApp V2', $content);
@@ -29,7 +29,16 @@ final class PublicPages {
         if (!is_admin() || !current_user_can('manage_options') || !current_user_can('publish_pages') ||
             get_option(self::KEY) === 'complete' ||
             !in_array(wp_parse_url(home_url('/'), PHP_URL_HOST), array('calorietoken.net','www.calorietoken.net'), true)) { return; }
-        // An atomic option prevents concurrent dashboard requests creating duplicates.
+        // Recover an abandoned lock without deleting a newer concurrent owner's lock.
+        $lock_key = self::KEY . '_lock';
+        $locked_at = get_option($lock_key);
+        if (is_numeric($locked_at) && (int) $locked_at > 0 && (int) $locked_at < time() - 900) {
+            global $wpdb;
+            $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s", $lock_key, (string) $locked_at));
+            wp_cache_delete($lock_key, 'options');
+            wp_cache_delete('notoptions', 'options');
+        }
+        // The unique option insert still decides which dashboard request owns migration.
         if (!add_option(self::KEY . '_lock', time(), '', false)) { return; }
         $errors = array();
         try {
