@@ -1,13 +1,20 @@
+"use client";
+
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { getFoodUi } from "@/lib/foodUi";
+
 type LoadingStateProps = {
   variant: "search" | "logs";
   message?: string;
 };
 
 export function LoadingState({ variant, message }: LoadingStateProps) {
+  const display = useDisplayLanguage();
+  const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   if (variant === "logs") {
     return (
-      <div className="mt-4 space-y-2" aria-live="polite" aria-busy="true">
-        <span className="sr-only">Loading food logs...</span>
+      <div className="mt-4 space-y-2" aria-live="polite" aria-busy="true" lang={locale} dir={direction}>
+        <span className="sr-only">{copy.loadingLogs}</span>
         <div className="h-14 rounded-lg bg-brand-secondary/10 animate-pulse" />
         <div className="h-14 rounded-lg bg-brand-secondary/10 animate-pulse" />
       </div>
@@ -15,9 +22,9 @@ export function LoadingState({ variant, message }: LoadingStateProps) {
   }
 
   return (
-    <div className="mt-5" aria-live="polite" aria-busy="true">
+    <div className="mt-5" aria-live="polite" aria-busy="true" lang={locale} dir={direction}>
       <p className="mb-3 rounded-lg bg-brand-primary/5 px-3 py-2 text-xs leading-relaxed text-brand-secondary">
-        {message ?? "Searching for foods..."}
+        {message ?? copy.loadingSearch}
       </p>
       <ul className="space-y-3">
         <li className="rounded-xl border border-brand-secondary/15 bg-white p-5 shadow-sm">

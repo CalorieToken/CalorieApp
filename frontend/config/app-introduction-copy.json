@@ -1,0 +1,123 @@
+{
+  "en": {
+    "logoAlt": "CalorieApp logo",
+    "eyebrow": "Food & nutrition showcase",
+    "intro": "Search products. Understand nutrition. Build your food log.",
+    "footerLabel": "Product scope and data attribution",
+    "scope": "Non-financial food and nutrition tracking",
+    "offAttribution": "Product data from {off} (database licence: {odbl}).",
+    "usdaAttribution": "Reference foods: {usda} · {cc0}.",
+    "communityThanks": "Thank you to the Open Food Facts community for making open food data available. Want to help? Contributions are always voluntary.",
+    "contribute": "Contribute to Open Food Facts"
+  },
+  "zh-Hans": {
+    "logoAlt": "CalorieApp 标志",
+    "eyebrow": "食品与营养功能展示",
+    "intro": "搜索产品。了解营养。建立饮食记录。",
+    "footerLabel": "应用用途与数据来源",
+    "scope": "不涉及金融服务的饮食与营养记录",
+    "offAttribution": "产品数据来自 {off}（数据库许可协议：{odbl}）。",
+    "usdaAttribution": "参考食品数据：{usda} · {cc0}。",
+    "communityThanks": "感谢 Open Food Facts 社区提供开放的食品数据。想参与吗？所有贡献均出于自愿。",
+    "contribute": "为 Open Food Facts 做贡献"
+  },
+  "hi": {
+    "logoAlt": "CalorieApp का लोगो",
+    "eyebrow": "खाद्य और पोषण सुविधाओं की झलक",
+    "intro": "उत्पाद खोजें। पोषण को समझें। अपना भोजन रिकॉर्ड बनाएँ।",
+    "footerLabel": "ऐप का दायरा और डेटा के स्रोत",
+    "scope": "भोजन और पोषण का रिकॉर्ड, वित्तीय सेवाओं के बिना",
+    "offAttribution": "उत्पाद डेटा का स्रोत: {off} (डेटाबेस लाइसेंस: {odbl})।",
+    "usdaAttribution": "संदर्भ के लिए खाद्य डेटा: {usda} · {cc0}।",
+    "communityThanks": "खुला खाद्य डेटा उपलब्ध कराने के लिए Open Food Facts समुदाय का धन्यवाद। मदद करना चाहते हैं? योगदान हमेशा स्वैच्छिक होता है।",
+    "contribute": "Open Food Facts में योगदान दें"
+  },
+  "es": {
+    "logoAlt": "Logotipo de CalorieApp",
+    "eyebrow": "Demostración de alimentación y nutrición",
+    "intro": "Busca productos. Comprende su información nutricional. Crea tu diario de alimentación.",
+    "footerLabel": "Alcance de la aplicación y atribución de datos",
+    "scope": "Registro de alimentación y nutrición sin servicios financieros",
+    "offAttribution": "Datos de productos de {off} (licencia de la base de datos: {odbl}).",
+    "usdaAttribution": "Alimentos de referencia: {usda} · {cc0}.",
+    "communityThanks": "Gracias a la comunidad de Open Food Facts por ofrecer datos alimentarios abiertos. ¿Quieres ayudar? Las contribuciones son siempre voluntarias.",
+    "contribute": "Contribuir a Open Food Facts"
+  },
+  "ar": {
+    "logoAlt": "شعار CalorieApp",
+    "eyebrow": "عرض ميزات الغذاء والتغذية",
+    "intro": "ابحث عن المنتجات. تعرّف على قيمتها الغذائية. أنشئ سجلّك الغذائي.",
+    "footerLabel": "نطاق التطبيق ومصادر البيانات",
+    "scope": "تتبّع الغذاء والتغذية دون خدمات مالية",
+    "offAttribution": "بيانات المنتجات من {off} (ترخيص قاعدة البيانات: {odbl}).",
+    "usdaAttribution": "أغذية مرجعية: {usda} · {cc0}.",
+    "communityThanks": "شكرًا لمجتمع Open Food Facts على إتاحة بيانات غذائية مفتوحة. هل ترغب في المساعدة؟ المساهمات طوعية دائمًا.",
+    "contribute": "ساهم في Open Food Facts"
+  },
+  "fr": {
+    "logoAlt": "Logo de CalorieApp",
+    "eyebrow": "Aperçu des fonctions alimentation et nutrition",
+    "intro": "Recherchez des produits. Comprenez leur valeur nutritionnelle. Créez votre journal alimentaire.",
+    "footerLabel": "Périmètre de l’application et attribution des données",
+    "scope": "Suivi de l’alimentation et de la nutrition, sans services financiers",
+    "offAttribution": "Données produits issues de {off} (licence de la base de données : {odbl}).",
+    "usdaAttribution": "Aliments de référence : {usda} · {cc0}.",
+    "communityThanks": "Merci à la communauté Open Food Facts de rendre accessibles des données alimentaires ouvertes. Vous souhaitez aider ? Les contributions sont toujours volontaires.",
+    "contribute": "Contribuer à Open Food Facts"
+  },
+  "bn": {
+    "logoAlt": "CalorieApp-এর লোগো",
+    "eyebrow": "খাদ্য ও পুষ্টি ফিচারের পরিচিতি",
+    "intro": "পণ্য খুঁজুন। পুষ্টির তথ্য বুঝুন। আপনার খাবারের ডায়েরি তৈরি করুন।",
+    "footerLabel": "অ্যাপের পরিধি ও ডেটার উৎস",
+    "scope": "আর্থিক সেবা ছাড়া খাদ্য ও পুষ্টির হিসাব রাখা",
+    "offAttribution": "পণ্যের ডেটার উৎস: {off} (ডেটাবেসের লাইসেন্স: {odbl})।",
+    "usdaAttribution": "তথ্যসূত্র হিসেবে দেওয়া খাদ্য: {usda} · {cc0}।",
+    "communityThanks": "উন্মুক্ত খাদ্যতথ্য সরবরাহ করার জন্য Open Food Facts কমিউনিটিকে ধন্যবাদ। সাহায্য করতে চান? অংশগ্রহণ সব সময় স্বেচ্ছামূলক।",
+    "contribute": "Open Food Facts-এ অবদান রাখুন"
+  },
+  "pt": {
+    "logoAlt": "Logótipo do CalorieApp",
+    "eyebrow": "Demonstração de alimentação e nutrição",
+    "intro": "Pesquise produtos. Compreenda a informação nutricional. Crie o seu diário alimentar.",
+    "footerLabel": "Âmbito da aplicação e atribuição dos dados",
+    "scope": "Registo de alimentação e nutrição, sem serviços financeiros",
+    "offAttribution": "Dados de produtos de {off} (licença da base de dados: {odbl}).",
+    "usdaAttribution": "Alimentos de referência: {usda} · {cc0}.",
+    "communityThanks": "Agradecemos à comunidade Open Food Facts por disponibilizar dados alimentares abertos. Quer ajudar? As contribuições são sempre voluntárias.",
+    "contribute": "Contribuir para o Open Food Facts"
+  },
+  "id": {
+    "logoAlt": "Logo CalorieApp",
+    "eyebrow": "Pratinjau fitur makanan dan gizi",
+    "intro": "Cari produk. Pahami gizinya. Buat catatan makanan Anda.",
+    "footerLabel": "Cakupan aplikasi dan atribusi data",
+    "scope": "Pencatatan makanan dan gizi tanpa layanan keuangan",
+    "offAttribution": "Data produk dari {off} (lisensi basis data: {odbl}).",
+    "usdaAttribution": "Makanan referensi: {usda} · {cc0}.",
+    "communityThanks": "Terima kasih kepada komunitas Open Food Facts yang menyediakan data makanan terbuka. Ingin membantu? Kontribusi selalu bersifat sukarela.",
+    "contribute": "Berkontribusi ke Open Food Facts"
+  },
+  "ur": {
+    "logoAlt": "CalorieApp کا لوگو",
+    "eyebrow": "خوراک اور غذائیت کی خصوصیات کا تعارف",
+    "intro": "مصنوعات تلاش کریں۔ غذائیت کو سمجھیں۔ اپنی خوراک کا ریکارڈ بنائیں۔",
+    "footerLabel": "ایپ کا دائرۂ کار اور ڈیٹا کے ذرائع",
+    "scope": "مالی خدمات کے بغیر خوراک اور غذائیت کا ریکارڈ",
+    "offAttribution": "مصنوعات کے ڈیٹا کا ذریعہ: {off} (ڈیٹابیس کا لائسنس: {odbl})۔",
+    "usdaAttribution": "حوالے کے لیے غذاؤں کا ڈیٹا: {usda} · {cc0}۔",
+    "communityThanks": "کھلی رسائی والا خوراک کا ڈیٹا فراہم کرنے پر Open Food Facts کمیونٹی کا شکریہ۔ مدد کرنا چاہتے ہیں؟ تعاون ہمیشہ رضاکارانہ ہوتا ہے۔",
+    "contribute": "Open Food Facts میں تعاون کریں"
+  },
+  "nl": {
+    "logoAlt": "CalorieApp-logo",
+    "eyebrow": "Kennismaken met voeding en voedingswaarden",
+    "intro": "Zoek producten. Begrijp hun voedingswaarden. Houd je eetdagboek bij.",
+    "footerLabel": "Doel van de app en bronvermelding",
+    "scope": "Voeding en voedingswaarden bijhouden, zonder financiële diensten",
+    "offAttribution": "Productgegevens van {off} (databaselicentie: {odbl}).",
+    "usdaAttribution": "Voedingsmiddelen ter referentie: {usda} · {cc0}.",
+    "communityThanks": "Bedankt aan de Open Food Facts-community voor het beschikbaar stellen van open voedingsgegevens. Wil je helpen? Bijdragen zijn altijd vrijwillig.",
+    "contribute": "Draag bij aan Open Food Facts"
+  }
+}

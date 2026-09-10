@@ -1030,6 +1030,17 @@ test("Xaman waits for readiness and refreshes the joint account state", async ()
   await new Promise((resolve) => setImmediate(resolve));
 
   assert.deepEqual(fetchCalls, []);
+  const postsBeforeDisplay = iframePosts.length;
+  for (const type of ["ready", "request", "state"]) {
+    windowListeners.message({
+      data: { type: "calorieapp:display-language:" + type, version: 1,
+        channel: "guest-channel-00000001", locale: "ar" },
+      origin: appOrigin,
+      source: iframeWindow,
+    });
+  }
+  assert.deepEqual(fetchCalls, []);
+  assert.equal(iframePosts.length, postsBeforeDisplay);
   windowListeners.message({
     data: {
       type: "calorieapp:login:state",

@@ -61,6 +61,9 @@ async function loadComponentModule() {
         if (specifier === "react/jsx-runtime") {
           return { Fragment: Symbol("Fragment"), jsx() {}, jsxs() {} };
         }
+        if (specifier === "@/components/DisplayLanguageProvider") {
+          return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+        }
         if (specifier === "@/lib/backendRequest") {
           return {
             BACKEND_WAKE_BASE_URL: "https://backend.example",

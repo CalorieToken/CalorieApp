@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { DisplayLanguageProvider } from "@/components/DisplayLanguageProvider";
 
 export const metadata: Metadata = {
   title: "CalorieApp",
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-calorieapp-build-id={buildId}>
-      <body>{children}</body>
+      <body><DisplayLanguageProvider>{children}</DisplayLanguageProvider></body>
     </html>
   );
 }

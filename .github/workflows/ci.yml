@@ -317,6 +317,10 @@ jobs:
           tools/tests/account_data_export_validation.test.mjs
           tools/tests/account_erasure_ui.test.mjs
           tools/tests/account_privacy_locales.test.mjs
+          tools/tests/account_privacy_display.test.mjs
+          tools/tests/display_language_protocol.test.mjs
+          tools/tests/display_language_ui.test.mjs
+          tools/tests/testnet_entry.test.mjs
           tools/tests/backend_proxy_logout_fallback.test.mjs
           tools/tests/backend_warmup_rate_limit.test.mjs
           tools/tests/calorieapp_embed_readiness.test.mjs

@@ -11,7 +11,8 @@ import {
   ACCOUNT_ERASURE_REQUEST_HEADER,
   ACCOUNT_ERASURE_REQUEST_VALUE,
 } from "@/lib/accountErasureRequest";
-import { getAccountPrivacyCopy } from "@/lib/accountPrivacyCopy";
+import { getAccountPrivacyCopy, translateAccountPrivacyStatus } from "@/lib/accountPrivacyCopy";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
 const BACKEND_BASE_URL = "/api/backend";
 const ACCOUNT_ERASURE_ACKNOWLEDGEMENT = "delete-my-calorieapp-account";
@@ -46,8 +47,12 @@ export function AccountErasurePanel({
   onAuthenticationLost,
   onErased,
 }: AccountErasurePanelProps) {
+  // Request/callback messages retain their original locale; display is separate.
   const localized = getAccountPrivacyCopy(locale);
   const copy = localized.erasure;
+  const display = useDisplayLanguage();
+  const displayed = getAccountPrivacyCopy(display.enabled ? display.locale : locale);
+  const view = displayed.erasure;
   const [isReviewing, setIsReviewing] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
@@ -159,38 +164,39 @@ export function AccountErasurePanel({
 
   return (
     <section
-      aria-label={copy.section_label}
-      lang={localized.locale}
-      dir={localized.direction}
-      className="rounded-xl border border-red-200 bg-red-50/70 p-3"
+      aria-label={view.section_label}
+      lang={displayed.locale}
+      dir={displayed.direction}
+      className="min-w-0 rounded-xl border border-red-200 bg-red-50/70 p-3 text-start"
     >
       <p className="text-sm font-semibold text-red-900">
-        {copy.title}
+        {view.title}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-red-900/90">
-        {copy.description}
+        {view.description}
       </p>
 
       {!isReviewing ? (
         <button
           type="button"
           onClick={() => setIsReviewing(true)}
-          className="mt-3 inline-flex items-center justify-center rounded-full border border-red-700 px-5 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-700 hover:text-white"
+          className="mt-3 inline-flex items-center justify-center rounded-md border border-red-700 px-5 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-700 hover:text-white"
         >
-          {copy.review_button}
+          {view.review_button}
         </button>
       ) : (
         <form className="mt-3 space-y-3" onSubmit={handleErase}>
           <p className="text-xs leading-relaxed text-red-950">
-            {copy.confirmation_intro}
+            {view.confirmation_intro}
           </p>
-          <code className="block break-all rounded-md bg-white px-2 py-1.5 text-xs text-red-950">
-            {userId}
+          <code dir="ltr" className="block break-all rounded-md bg-white px-2 py-1.5 text-xs text-red-950">
+            <bdi>{userId}</bdi>
           </code>
           <label className="block text-xs font-semibold text-red-950">
-            {copy.account_identifier}
+            {view.account_identifier}
             <input
               type="text"
+              dir="ltr"
               value={confirmation}
               onChange={(event) => setConfirmation(event.target.value)}
               autoComplete="off"
@@ -208,17 +214,17 @@ export function AccountErasurePanel({
               className="mt-0.5"
             />
             <span>
-              {copy.acknowledgement}
+              {view.acknowledgement}
             </span>
           </label>
 
           {error ? (
             <p role="alert" className="rounded-lg bg-white px-3 py-2 text-xs text-red-800">
-              {error}
+              {display.enabled ? translateAccountPrivacyStatus(error, "erasure", displayed) : error}
             </p>
           ) : null}
 
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button
               type="submit"
               disabled={
@@ -229,19 +235,19 @@ export function AccountErasurePanel({
                   acknowledged
                 )
               }
-              className="inline-flex items-center justify-center rounded-full bg-red-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-md bg-red-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isErasing
-                ? copy.button_busy
-                : copy.button_confirm}
+                ? view.button_busy
+                : view.button_confirm}
             </button>
             <button
               type="button"
               onClick={closeReview}
               disabled={isErasing}
-              className="inline-flex items-center justify-center rounded-full border border-red-300 px-5 py-2 text-sm font-semibold text-red-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-md border border-red-300 px-5 py-2 text-sm font-semibold text-red-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {copy.button_cancel}
+              {view.button_cancel}
             </button>
           </div>
         </form>

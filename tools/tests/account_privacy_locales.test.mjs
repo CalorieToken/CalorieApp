@@ -280,8 +280,8 @@ test("account controls receive locale context and expose language direction", as
 
   for (const component of [exportComponent, importComponent, erasureComponent]) {
     assert.equal(component.includes("getAccountPrivacyCopy(locale)"), true);
-    assert.equal(component.includes("lang={localized.locale}"), true);
-    assert.equal(component.includes("dir={localized.direction}"), true);
+    assert.equal(component.includes("lang={displayed.locale}"), true);
+    assert.equal(component.includes("dir={displayed.direction}"), true);
     assert.equal(
       component.includes("localized.service_startup_timeout"),
       true
