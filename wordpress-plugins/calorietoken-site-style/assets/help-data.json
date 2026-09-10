@@ -1,0 +1,805 @@
+{
+  "en": {
+    "title": "Calorie help",
+    "intro": "Choose a topic or ask a short question.",
+    "question": "Your question",
+    "placeholder": "For example: test account or trustline",
+    "ask": "Find an answer",
+    "unknown": "Choose a topic below or read the FAQ and project documents.",
+    "privacy": "This help does not save questions or create tickets.",
+    "legalTitle": "Privacy, terms & licences",
+    "legalText": "Read the privacy policy, terms and source/licence notes for details. This helper does not decide individual legal or financial questions.",
+    "docsTitle": "Project documents",
+    "docsText": "The publications repository contains the whitepaper and detailed roadmap. Consult the relevant document for current details and disclosures.",
+    "contactTitle": "Contact options",
+    "contactText": "You can find the project’s contact options on the Contact page. This help does not send a message or open a ticket.",
+    "faqTitle": "FAQ & quick answers",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Find food, explore nutrition and keep your food diary. CalorieApp food search and food logging do not require buying CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Try with test funds",
+        "text": "Create a free XRPL Testnet account below. It comes with test XRP, which has no real monetary value. Then add it to Xaman to try CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "Set a CAL trustline",
+        "text": "Mainnet CAL · Check the issuer, currency, limit and network in Xaman before signing. A trustline does not buy CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "You can open CAL/XRP in the Xaman DEX xApp below, just like the Trade link in the sign-in widget. This external route is available; our own order interface is not enabled. CAL is temporarily delisted at SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Privacy, terms & licences",
+        "text": "Read the privacy policy, terms and source/licence notes for details. This helper does not decide individual legal or financial questions.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Project documents",
+        "text": "The publications repository contains the whitepaper and detailed roadmap. Consult the relevant document for current details and disclosures.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Contact options",
+        "text": "You can find the project’s contact options on the Contact page. This help does not send a message or open a ticket.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "nl": {
+    "title": "Calorie-hulp",
+    "intro": "Kies een onderwerp of stel een korte vraag.",
+    "question": "Je vraag",
+    "placeholder": "Bijvoorbeeld: testaccount of trustline",
+    "ask": "Zoek een antwoord",
+    "unknown": "Kies hieronder een onderwerp of lees de FAQ en projectdocumenten.",
+    "privacy": "Deze hulp slaat vragen niet op en maakt geen tickets aan.",
+    "legalTitle": "Privacy, voorwaarden & licenties",
+    "legalText": "Lees het privacybeleid, de voorwaarden en bron-/licentie-informatie voor details. Deze hulp beoordeelt geen persoonlijke juridische of financiële vragen.",
+    "docsTitle": "Projectdocumenten",
+    "docsText": "De publicatierepository bevat de whitepaper en de uitgebreide roadmap. Raadpleeg het betreffende document voor actuele details en toelichtingen.",
+    "contactTitle": "Contactmogelijkheden",
+    "contactText": "De contactmogelijkheden staan op de Contact-pagina. Deze hulp stuurt geen bericht en opent geen ticket.",
+    "faqTitle": "FAQ & snelle antwoorden",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Zoek voeding, bekijk voedingswaarden en houd je eetdagboek bij. Voor voedsel zoeken en je voedingslogboek in CalorieApp hoef je geen CAL te kopen.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Proberen met testtegoed",
+        "text": "Maak hieronder gratis een XRPL Testnet-account aan. Je ontvangt test-XRP zonder echte geldwaarde. Voeg het account daarna toe aan Xaman om CalorieApp te proberen.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "CAL-trustline instellen",
+        "text": "Mainnet CAL · Controleer uitgever, valutacode, limiet en netwerk in Xaman voordat je tekent. Een trustline koopt geen CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "Hieronder kun je CAL/XRP openen in de Xaman DEX-xApp, net zoals met Trade in de aanmeldwidget. Deze externe route is beschikbaar; onze eigen orderinterface is nog niet actief. CAL is tijdelijk gedelist bij SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Privacy, voorwaarden & licenties",
+        "text": "Lees het privacybeleid, de voorwaarden en bron-/licentie-informatie voor details. Deze hulp beoordeelt geen persoonlijke juridische of financiële vragen.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Projectdocumenten",
+        "text": "De publicatierepository bevat de whitepaper en de uitgebreide roadmap. Raadpleeg het betreffende document voor actuele details en toelichtingen.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Contactmogelijkheden",
+        "text": "De contactmogelijkheden staan op de Contact-pagina. Deze hulp stuurt geen bericht en opent geen ticket.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "zh-Hans": {
+    "title": "Calorie 帮助",
+    "intro": "选择主题或提出简短问题。",
+    "question": "你的问题",
+    "placeholder": "例如：测试账户或信任线",
+    "ask": "查找答案",
+    "unknown": "请在下方选择主题，或阅读常见问题和项目文档。",
+    "privacy": "此帮助不保存问题，也不创建工单。",
+    "legalTitle": "隐私、条款和许可",
+    "legalText": "详情请阅读隐私政策、条款及来源和许可说明。此帮助不判断个人法律或财务问题。",
+    "docsTitle": "项目文档",
+    "docsText": "发布库包含白皮书和详细路线图。最新详情及披露请参阅相应文档。",
+    "contactTitle": "联系方式",
+    "contactText": "项目联系方式位于 Contact 页面。此帮助不会发送消息或创建工单。",
+    "faqTitle": "常见问题和快速答案",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "查找食物、了解营养并记录饮食。 使用 CalorieApp 搜索食物和记录饮食无需购买 CAL。",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "使用测试资金体验",
+        "text": "在下方免费创建 XRPL Testnet 账户，获得无真实货币价值的测试 XRP。然后将账户添加到 Xaman，体验 CalorieApp。",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "设置 CAL 信任线",
+        "text": "Mainnet CAL · 签名前请在 Xaman 中核对发行方、货币代码、限额和网络。设置信任线不会购买 CAL。",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "您可在下方打开 Xaman DEX xApp 的 CAL/XRP，与登录组件中的 Trade 链接相同。此为外部入口；自有订单界面尚未启用。 CAL 暂时从 SWFT 下架",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "隐私、条款和许可",
+        "text": "详情请阅读隐私政策、条款及来源和许可说明。此帮助不判断个人法律或财务问题。",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "项目文档",
+        "text": "发布库包含白皮书和详细路线图。最新详情及披露请参阅相应文档。",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "联系方式",
+        "text": "项目联系方式位于 Contact 页面。此帮助不会发送消息或创建工单。",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "hi": {
+    "title": "Calorie सहायता",
+    "intro": "विषय चुनें या छोटा सवाल पूछें।",
+    "question": "आपका सवाल",
+    "placeholder": "जैसे: टेस्ट खाता या ट्रस्टलाइन",
+    "ask": "उत्तर खोजें",
+    "unknown": "नीचे विषय चुनें या FAQ और परियोजना दस्तावेज़ पढ़ें।",
+    "privacy": "यह सहायता सवाल सहेजती या टिकट नहीं बनाती।",
+    "legalTitle": "गोपनीयता, शर्तें और लाइसेंस",
+    "legalText": "विवरण के लिए गोपनीयता नीति, शर्तें और स्रोत/लाइसेंस नोट पढ़ें। यह सहायता व्यक्तिगत कानूनी या वित्तीय सवालों का निर्णय नहीं करती।",
+    "docsTitle": "परियोजना दस्तावेज़",
+    "docsText": "प्रकाशन रिपॉज़िटरी में व्हाइटपेपर और विस्तृत रोडमैप है। वर्तमान विवरण और खुलासे संबंधित दस्तावेज़ में देखें।",
+    "contactTitle": "संपर्क विकल्प",
+    "contactText": "परियोजना के संपर्क विकल्प Contact पृष्ठ पर हैं। यह सहायता संदेश या टिकट नहीं भेजती।",
+    "faqTitle": "FAQ और छोटे उत्तर",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "खाद्य पदार्थ खोजें, पोषण देखें और अपनी भोजन डायरी रखें। CalorieApp में भोजन खोजने और दर्ज करने के लिए CAL खरीदना आवश्यक नहीं है।",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "टेस्ट निधि से आज़माएँ",
+        "text": "नीचे मुफ्त XRPL Testnet खाता बनाएँ। उसमें मिलने वाले टेस्ट XRP का वास्तविक मौद्रिक मूल्य नहीं है। फिर उसे Xaman में जोड़कर CalorieApp आज़माएँ।",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "CAL ट्रस्टलाइन सेट करें",
+        "text": "Mainnet CAL · हस्ताक्षर से पहले Xaman में जारीकर्ता, मुद्रा कोड, सीमा और नेटवर्क जाँचें। ट्रस्टलाइन से CAL नहीं खरीदा जाता।",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "नीचे Xaman DEX xApp में CAL/XRP खोलें, जैसे लॉगिन विजेट के Trade लिंक से। यह बाहरी रास्ता उपलब्ध है; अपना ऑर्डर इंटरफ़ेस सक्रिय नहीं है। SWFT पर CAL अस्थायी रूप से डीलिस्ट है",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "गोपनीयता, शर्तें और लाइसेंस",
+        "text": "विवरण के लिए गोपनीयता नीति, शर्तें और स्रोत/लाइसेंस नोट पढ़ें। यह सहायता व्यक्तिगत कानूनी या वित्तीय सवालों का निर्णय नहीं करती।",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "परियोजना दस्तावेज़",
+        "text": "प्रकाशन रिपॉज़िटरी में व्हाइटपेपर और विस्तृत रोडमैप है। वर्तमान विवरण और खुलासे संबंधित दस्तावेज़ में देखें।",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "संपर्क विकल्प",
+        "text": "परियोजना के संपर्क विकल्प Contact पृष्ठ पर हैं। यह सहायता संदेश या टिकट नहीं भेजती।",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "es": {
+    "title": "Ayuda de Calorie",
+    "intro": "Elige un tema o haz una pregunta breve.",
+    "question": "Tu pregunta",
+    "placeholder": "Por ejemplo: cuenta de prueba o trustline",
+    "ask": "Buscar una respuesta",
+    "unknown": "Elige un tema o lee las preguntas frecuentes y los documentos.",
+    "privacy": "Esta ayuda no guarda preguntas ni crea tickets.",
+    "legalTitle": "Privacidad, condiciones y licencias",
+    "legalText": "Lee la política de privacidad, las condiciones y las notas de fuentes y licencias. Esta ayuda no decide cuestiones jurídicas o financieras personales.",
+    "docsTitle": "Documentos del proyecto",
+    "docsText": "El repositorio contiene el whitepaper y la hoja de ruta detallada. Consulta el documento correspondiente para detalles y declaraciones actuales.",
+    "contactTitle": "Opciones de contacto",
+    "contactText": "Las opciones de contacto están en la página Contact. Esta ayuda no envía mensajes ni abre tickets.",
+    "faqTitle": "Preguntas frecuentes y respuestas rápidas",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Busca alimentos, consulta nutrientes y lleva tu diario alimentario. Buscar alimentos y registrarlos en CalorieApp no requiere comprar CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Probar con fondos de prueba",
+        "text": "Crea gratis una cuenta XRPL Testnet a continuación. Recibirás XRP de prueba sin valor monetario real. Añade la cuenta a Xaman para probar CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "Configurar una línea de confianza CAL",
+        "text": "Mainnet CAL · Antes de firmar, comprueba emisor, código de moneda, límite y red en Xaman. Una línea de confianza no compra CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "Abre CAL/XRP en la xApp DEX de Xaman, igual que con Trade en el widget de acceso. Esta vía externa está disponible; nuestra interfaz de órdenes no está activa. CAL está temporalmente retirado de SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Privacidad, condiciones y licencias",
+        "text": "Lee la política de privacidad, las condiciones y las notas de fuentes y licencias. Esta ayuda no decide cuestiones jurídicas o financieras personales.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Documentos del proyecto",
+        "text": "El repositorio contiene el whitepaper y la hoja de ruta detallada. Consulta el documento correspondiente para detalles y declaraciones actuales.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Opciones de contacto",
+        "text": "Las opciones de contacto están en la página Contact. Esta ayuda no envía mensajes ni abre tickets.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "ar": {
+    "title": "مساعدة Calorie",
+    "intro": "اختر موضوعًا أو اطرح سؤالًا قصيرًا.",
+    "question": "سؤالك",
+    "placeholder": "مثلًا: حساب اختبار أو خط ثقة",
+    "ask": "ابحث عن إجابة",
+    "unknown": "اختر موضوعًا أدناه أو اقرأ الأسئلة الشائعة ووثائق المشروع.",
+    "privacy": "هذه المساعدة لا تحفظ الأسئلة ولا تنشئ تذاكر دعم.",
+    "legalTitle": "الخصوصية والشروط والتراخيص",
+    "legalText": "اقرأ سياسة الخصوصية والشروط وملاحظات المصادر والتراخيص للتفاصيل. هذه المساعدة لا تفصل في أسئلة قانونية أو مالية شخصية.",
+    "docsTitle": "وثائق المشروع",
+    "docsText": "يضم مستودع المنشورات الورقة البيضاء وخارطة الطريق المفصلة. راجع الوثيقة المعنية للتفاصيل والإفصاحات الحالية.",
+    "contactTitle": "خيارات الاتصال",
+    "contactText": "تتوفر خيارات اتصال المشروع في صفحة Contact. هذه المساعدة لا ترسل رسائل ولا تفتح تذاكر.",
+    "faqTitle": "أسئلة شائعة وإجابات سريعة",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "ابحث عن الطعام واستكشف التغذية واحتفظ بيومياتك الغذائية. لا يتطلب البحث عن الطعام وتسجيله في CalorieApp شراء CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "التجربة بأموال اختبار",
+        "text": "أنشئ حساب XRPL Testnet مجانيًا أدناه. ستحصل على XRP تجريبي بلا قيمة مالية حقيقية. أضف الحساب إلى Xaman لتجربة CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "إعداد خط ثقة CAL",
+        "text": "Mainnet CAL · تحقق من المُصدر ورمز العملة والحد والشبكة في Xaman قبل التوقيع. إنشاء خط ثقة لا يشتري CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "يمكنك فتح CAL/XRP في تطبيق Xaman DEX المصغر أدناه، مثل رابط Trade في أداة تسجيل الدخول. هذا المسار الخارجي متاح؛ واجهة الأوامر الخاصة بنا غير مفعلة. CAL مشطوب مؤقتًا من SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "الخصوصية والشروط والتراخيص",
+        "text": "اقرأ سياسة الخصوصية والشروط وملاحظات المصادر والتراخيص للتفاصيل. هذه المساعدة لا تفصل في أسئلة قانونية أو مالية شخصية.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "وثائق المشروع",
+        "text": "يضم مستودع المنشورات الورقة البيضاء وخارطة الطريق المفصلة. راجع الوثيقة المعنية للتفاصيل والإفصاحات الحالية.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "خيارات الاتصال",
+        "text": "تتوفر خيارات اتصال المشروع في صفحة Contact. هذه المساعدة لا ترسل رسائل ولا تفتح تذاكر.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "fr": {
+    "title": "Aide Calorie",
+    "intro": "Choisissez un sujet ou posez une courte question.",
+    "question": "Votre question",
+    "placeholder": "Par exemple : compte de test ou trustline",
+    "ask": "Trouver une réponse",
+    "unknown": "Choisissez un sujet ou consultez la FAQ et les documents du projet.",
+    "privacy": "Cette aide ne conserve pas les questions et ne crée pas de tickets.",
+    "legalTitle": "Confidentialité, conditions et licences",
+    "legalText": "Lisez la politique de confidentialité, les conditions et les notes de sources et licences. Cette aide ne tranche pas les questions juridiques ou financières personnelles.",
+    "docsTitle": "Documents du projet",
+    "docsText": "Le dépôt contient le livre blanc et la feuille de route détaillée. Consultez le document concerné pour les détails et déclarations actuels.",
+    "contactTitle": "Options de contact",
+    "contactText": "Les coordonnées du projet figurent sur la page Contact. Cette aide n’envoie aucun message et n’ouvre aucun ticket.",
+    "faqTitle": "FAQ et réponses rapides",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Recherchez des aliments, consultez leur nutrition et tenez votre journal alimentaire. La recherche et le journal alimentaires de CalorieApp ne nécessitent pas l’achat de CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Essayer avec des fonds de test",
+        "text": "Créez gratuitement un compte XRPL Testnet ci-dessous. Il reçoit des XRP de test sans valeur monétaire réelle. Ajoutez-le ensuite à Xaman pour essayer CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "Configurer une ligne de confiance CAL",
+        "text": "Mainnet CAL · Vérifiez l’émetteur, le code de devise, la limite et le réseau dans Xaman avant de signer. Une ligne de confiance n’achète pas de CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "Ouvrez CAL/XRP dans la xApp DEX de Xaman, comme avec le lien Trade du widget de connexion. Cette voie externe est disponible ; notre interface d’ordres reste inactive. CAL est temporairement retiré de SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Confidentialité, conditions et licences",
+        "text": "Lisez la politique de confidentialité, les conditions et les notes de sources et licences. Cette aide ne tranche pas les questions juridiques ou financières personnelles.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Documents du projet",
+        "text": "Le dépôt contient le livre blanc et la feuille de route détaillée. Consultez le document concerné pour les détails et déclarations actuels.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Options de contact",
+        "text": "Les coordonnées du projet figurent sur la page Contact. Cette aide n’envoie aucun message et n’ouvre aucun ticket.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "bn": {
+    "title": "Calorie সহায়তা",
+    "intro": "একটি বিষয় বেছে নিন বা ছোট প্রশ্ন করুন।",
+    "question": "আপনার প্রশ্ন",
+    "placeholder": "যেমন: পরীক্ষার অ্যাকাউন্ট বা ট্রাস্টলাইন",
+    "ask": "উত্তর খুঁজুন",
+    "unknown": "নিচে বিষয় বেছে নিন বা FAQ ও প্রকল্পের নথি পড়ুন।",
+    "privacy": "এই সহায়তা প্রশ্ন জমা রাখে না বা টিকিট তৈরি করে না।",
+    "legalTitle": "গোপনীয়তা, শর্ত ও লাইসেন্স",
+    "legalText": "বিস্তারিত জানতে গোপনীয়তা নীতি, শর্ত ও উৎস/লাইসেন্সের নোট পড়ুন। এই সহায়তা ব্যক্তিগত আইনি বা আর্থিক প্রশ্নের সিদ্ধান্ত দেয় না।",
+    "docsTitle": "প্রকল্পের নথি",
+    "docsText": "প্রকাশনা রিপোজিটরিতে হোয়াইটপেপার ও বিস্তারিত রোডম্যাপ আছে। বর্তমান তথ্য ও প্রকাশের জন্য সংশ্লিষ্ট নথি পড়ুন।",
+    "contactTitle": "যোগাযোগের উপায়",
+    "contactText": "প্রকল্পের যোগাযোগের উপায় Contact পৃষ্ঠায় আছে। এই সহায়তা বার্তা পাঠায় না বা টিকিট খোলে না।",
+    "faqTitle": "FAQ ও দ্রুত উত্তর",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "খাবার খুঁজুন, পুষ্টির তথ্য দেখুন ও খাবারের ডায়েরি রাখুন। CalorieApp-এ খাবার খুঁজতে বা লিখে রাখতে CAL কেনার প্রয়োজন নেই।",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "টেস্ট তহবিল দিয়ে চেষ্টা করুন",
+        "text": "নিচে বিনামূল্যে XRPL Testnet অ্যাকাউন্ট তৈরি করুন। এতে বাস্তব আর্থিক মূল্যহীন টেস্ট XRP পাওয়া যাবে। তারপর CalorieApp চেষ্টা করতে অ্যাকাউন্টটি Xaman-এ যোগ করুন।",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "CAL ট্রাস্টলাইন তৈরি করুন",
+        "text": "Mainnet CAL · সই করার আগে Xaman-এ ইস্যুকারী, মুদ্রা কোড, সীমা ও নেটওয়ার্ক যাচাই করুন। ট্রাস্টলাইন CAL কেনে না।",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "লগইন উইজেটের Trade লিঙ্কের মতো নিচে Xaman DEX xApp-এ CAL/XRP খুলুন। এই বাহ্যিক পথটি উপলব্ধ; আমাদের নিজস্ব অর্ডার ইন্টারফেস সক্রিয় নয়। SWFT থেকে CAL সাময়িকভাবে তালিকাচ্যুত",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "গোপনীয়তা, শর্ত ও লাইসেন্স",
+        "text": "বিস্তারিত জানতে গোপনীয়তা নীতি, শর্ত ও উৎস/লাইসেন্সের নোট পড়ুন। এই সহায়তা ব্যক্তিগত আইনি বা আর্থিক প্রশ্নের সিদ্ধান্ত দেয় না।",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "প্রকল্পের নথি",
+        "text": "প্রকাশনা রিপোজিটরিতে হোয়াইটপেপার ও বিস্তারিত রোডম্যাপ আছে। বর্তমান তথ্য ও প্রকাশের জন্য সংশ্লিষ্ট নথি পড়ুন।",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "যোগাযোগের উপায়",
+        "text": "প্রকল্পের যোগাযোগের উপায় Contact পৃষ্ঠায় আছে। এই সহায়তা বার্তা পাঠায় না বা টিকিট খোলে না।",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "pt": {
+    "title": "Ajuda Calorie",
+    "intro": "Escolha um tema ou faça uma pergunta curta.",
+    "question": "A sua pergunta",
+    "placeholder": "Por exemplo: conta de teste ou trustline",
+    "ask": "Encontrar resposta",
+    "unknown": "Escolha um tema ou consulte as perguntas frequentes e os documentos.",
+    "privacy": "Esta ajuda não guarda perguntas nem cria pedidos de suporte.",
+    "legalTitle": "Privacidade, termos e licenças",
+    "legalText": "Leia a política de privacidade, os termos e as notas de fontes e licenças. Esta ajuda não decide questões jurídicas ou financeiras pessoais.",
+    "docsTitle": "Documentos do projeto",
+    "docsText": "O repositório contém o whitepaper e o roteiro detalhado. Consulte o documento relevante para detalhes e divulgações atuais.",
+    "contactTitle": "Opções de contacto",
+    "contactText": "As opções de contacto estão na página Contact. Esta ajuda não envia mensagens nem abre pedidos de suporte.",
+    "faqTitle": "Perguntas frequentes e respostas rápidas",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Procure alimentos, explore a nutrição e mantenha o seu diário alimentar. A pesquisa e o registo de alimentos na CalorieApp não exigem a compra de CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Experimentar com fundos de teste",
+        "text": "Crie uma conta XRPL Testnet gratuita abaixo. Ela recebe XRP de teste sem valor monetário real. Depois adicione-a à Xaman para experimentar o CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "Configurar uma linha de confiança CAL",
+        "text": "Mainnet CAL · Verifique emissor, código da moeda, limite e rede no Xaman antes de assinar. Uma linha de confiança não compra CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "Abra CAL/XRP na xApp DEX da Xaman, tal como no link Trade do widget de acesso. Esta opção externa está disponível; nossa interface de ordens ainda não está ativa. CAL temporariamente removido da SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Privacidade, termos e licenças",
+        "text": "Leia a política de privacidade, os termos e as notas de fontes e licenças. Esta ajuda não decide questões jurídicas ou financeiras pessoais.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Documentos do projeto",
+        "text": "O repositório contém o whitepaper e o roteiro detalhado. Consulte o documento relevante para detalhes e divulgações atuais.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Opções de contacto",
+        "text": "As opções de contacto estão na página Contact. Esta ajuda não envia mensagens nem abre pedidos de suporte.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "id": {
+    "title": "Bantuan Calorie",
+    "intro": "Pilih topik atau ajukan pertanyaan singkat.",
+    "question": "Pertanyaan Anda",
+    "placeholder": "Misalnya: akun uji atau trustline",
+    "ask": "Cari jawaban",
+    "unknown": "Pilih topik di bawah atau baca FAQ dan dokumen proyek.",
+    "privacy": "Bantuan ini tidak menyimpan pertanyaan atau membuat tiket.",
+    "legalTitle": "Privasi, ketentuan & lisensi",
+    "legalText": "Baca kebijakan privasi, ketentuan, serta catatan sumber dan lisensi. Bantuan ini tidak memutuskan persoalan hukum atau keuangan pribadi.",
+    "docsTitle": "Dokumen proyek",
+    "docsText": "Repositori publikasi berisi whitepaper dan peta jalan terperinci. Lihat dokumen terkait untuk rincian dan pengungkapan terkini.",
+    "contactTitle": "Pilihan kontak",
+    "contactText": "Pilihan kontak proyek ada di halaman Contact. Bantuan ini tidak mengirim pesan atau membuka tiket.",
+    "faqTitle": "FAQ & jawaban singkat",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "Cari makanan, jelajahi nutrisi, dan catat buku harian makanan Anda. Pencarian dan pencatatan makanan di CalorieApp tidak memerlukan pembelian CAL.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "Coba dengan dana uji",
+        "text": "Buat akun XRPL Testnet gratis di bawah. Akun menerima XRP uji tanpa nilai uang nyata. Tambahkan ke Xaman untuk mencoba CalorieApp.",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "Atur trustline CAL",
+        "text": "Mainnet CAL · Periksa penerbit, kode mata uang, batas, dan jaringan di Xaman sebelum menandatangani. Trustline tidak membeli CAL.",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "Buka CAL/XRP di xApp DEX Xaman di bawah, seperti tautan Trade pada widget login. Jalur eksternal ini tersedia; antarmuka pesanan kami sendiri belum aktif. CAL sementara dihapus dari daftar SWFT",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "Privasi, ketentuan & lisensi",
+        "text": "Baca kebijakan privasi, ketentuan, serta catatan sumber dan lisensi. Bantuan ini tidak memutuskan persoalan hukum atau keuangan pribadi.",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "Dokumen proyek",
+        "text": "Repositori publikasi berisi whitepaper dan peta jalan terperinci. Lihat dokumen terkait untuk rincian dan pengungkapan terkini.",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "Pilihan kontak",
+        "text": "Pilihan kontak proyek ada di halaman Contact. Bantuan ini tidak mengirim pesan atau membuka tiket.",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  },
+  "ur": {
+    "title": "Calorie مدد",
+    "intro": "موضوع چنیں یا مختصر سوال پوچھیں۔",
+    "question": "آپ کا سوال",
+    "placeholder": "مثلاً: ٹیسٹ اکاؤنٹ یا ٹرسٹ لائن",
+    "ask": "جواب تلاش کریں",
+    "unknown": "نیچے موضوع چنیں یا FAQ اور منصوبے کی دستاویزات پڑھیں۔",
+    "privacy": "یہ مدد سوال محفوظ یا ٹکٹ نہیں بناتی۔",
+    "legalTitle": "رازداری، شرائط اور لائسنس",
+    "legalText": "تفصیل کے لیے رازداری کی پالیسی، شرائط اور ماخذ/لائسنس کی معلومات پڑھیں۔ یہ مدد ذاتی قانونی یا مالی سوالوں کا فیصلہ نہیں کرتی۔",
+    "docsTitle": "منصوبے کی دستاویزات",
+    "docsText": "اشاعتی ریپوزٹری میں وائٹ پیپر اور تفصیلی روڈمیپ موجود ہے۔ تازہ تفصیلات اور انکشافات متعلقہ دستاویز میں دیکھیں۔",
+    "contactTitle": "رابطے کے طریقے",
+    "contactText": "منصوبے کے رابطے Contact صفحے پر ہیں۔ یہ مدد پیغام نہیں بھیجتی اور ٹکٹ نہیں کھولتی۔",
+    "faqTitle": "FAQ اور مختصر جوابات",
+    "topics": {
+      "app": {
+        "title": "CalorieApp",
+        "text": "کھانے تلاش کریں، غذائیت دیکھیں اور اپنی خوراک کی ڈائری رکھیں۔ CalorieApp میں خوراک تلاش کرنے اور درج کرنے کے لیے CAL خریدنا ضروری نہیں۔",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "test": {
+        "title": "ٹیسٹ رقم کے ساتھ آزمائیں",
+        "text": "نیچے مفت XRPL Testnet اکاؤنٹ بنائیں۔ اس میں حقیقی مالی قدر کے بغیر ٹیسٹ XRP ملتے ہیں۔ پھر CalorieApp آزمانے کے لیے اسے Xaman میں شامل کریں۔",
+        "links": [
+          "test",
+          "xaman"
+        ]
+      },
+      "trustline": {
+        "title": "CAL ٹرسٹ لائن بنائیں",
+        "text": "Mainnet CAL · دستخط سے پہلے Xaman میں جاری کنندہ، کرنسی کوڈ، حد اور نیٹ ورک دیکھیں۔ ٹرسٹ لائن CAL نہیں خریدتی۔",
+        "links": [
+          "trustline"
+        ]
+      },
+      "exchange": {
+        "title": "CAL & Crypto",
+        "text": "نیچے Xaman DEX xApp میں CAL/XRP کھولیں، جیسے لاگ اِن ویجٹ کے Trade لنک سے۔ یہ بیرونی راستہ دستیاب ہے؛ ہمارا اپنا آرڈر انٹرفیس فعال نہیں۔ SWFT سے CAL عارضی طور پر ڈی لسٹ ہے",
+        "links": [
+          "exchange"
+        ]
+      },
+      "legal": {
+        "title": "رازداری، شرائط اور لائسنس",
+        "text": "تفصیل کے لیے رازداری کی پالیسی، شرائط اور ماخذ/لائسنس کی معلومات پڑھیں۔ یہ مدد ذاتی قانونی یا مالی سوالوں کا فیصلہ نہیں کرتی۔",
+        "links": [
+          "privacy",
+          "terms",
+          "docs"
+        ]
+      },
+      "docs": {
+        "title": "منصوبے کی دستاویزات",
+        "text": "اشاعتی ریپوزٹری میں وائٹ پیپر اور تفصیلی روڈمیپ موجود ہے۔ تازہ تفصیلات اور انکشافات متعلقہ دستاویز میں دیکھیں۔",
+        "links": [
+          "docs",
+          "whitepaper",
+          "roadmap"
+        ]
+      },
+      "contact": {
+        "title": "رابطے کے طریقے",
+        "text": "منصوبے کے رابطے Contact صفحے پر ہیں۔ یہ مدد پیغام نہیں بھیجتی اور ٹکٹ نہیں کھولتی۔",
+        "links": [
+          "contact"
+        ]
+      }
+    }
+  }
+}

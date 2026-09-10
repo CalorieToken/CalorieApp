@@ -16,10 +16,11 @@ in a separate written instrument by the relevant rights holder.
 
 EXCEPTIONS AND THIRD-PARTY RIGHTS
 
-1. The WordPress plugin in
-   wordpress-plugins/calorieapp-identity-bridge/ declares
-   GPL-2.0-or-later in its plugin header. That explicit licence governs that
-   component and is not replaced or restricted by this repository-level
+1. The WordPress plugins in
+   wordpress-plugins/calorieapp-identity-bridge/ and
+   wordpress-plugins/calorietoken-site-style/ declare
+   GPL-2.0-or-later in their plugin headers. That explicit licence governs those
+   components and is not replaced or restricted by this repository-level
    notice.
 2. Dependencies and third-party components remain subject to their own
    licences and notices.

@@ -1,0 +1,47 @@
+/* The same small card on every page; Home authorizes this card and footer only. */
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info {
+  box-sizing:border-box!important;display:grid!important;grid-template-columns:72px minmax(0,1fr) auto;
+  align-items:center;gap:20px;width:calc(100% - 36px)!important;max-width:1100px!important;
+  margin:30px auto!important;padding:26px 30px!important;border:2px solid #505ba9!important;
+  border-top:5px solid #f9b233!important;border-radius:26px!important;
+  background:#fff var(--ctstyle-paper-image) center/cover!important;color:#303449;
+  box-shadow:0 4px 14px rgba(80,91,169,.12);font:18px/1.6 Amiri,Georgia,serif;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>img {
+  box-sizing:border-box;display:block;width:64px;height:64px;max-width:100%;padding:6px;object-fit:contain;
+  background:#fff;border:1px solid #d8dbe9;border-radius:16px;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div {min-width:0;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info h2 {
+  margin:0 0 6px!important;padding:0!important;color:#008d36;font:700 30px/1.2 Amiri,Georgia,serif!important;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info h2::before {display:none!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info p {
+  margin:0!important;color:#303449;font:inherit!important;overflow-wrap:anywhere;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info-link {
+  box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;min-height:48px;
+  max-width:100%;padding:12px 22px!important;border:2px solid #505ba9!important;border-radius:14px!important;
+  background:#f9b233!important;color:#303449!important;text-decoration:none!important;
+  font:700 20px/1.4 Amiri,Georgia,serif!important;text-align:center;box-shadow:none!important;overflow-wrap:anywhere;
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info-link:hover {background:#ffe2a4!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info-link:focus-visible {outline:3px solid #008d36;outline-offset:4px;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info-current {font-weight:700!important;color:#008d36!important;}
+@media(max-width:900px) {
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info {
+    grid-template-columns:56px minmax(0,1fr);gap:14px;padding:20px!important;
+  }
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>img {width:56px;height:56px;align-self:start;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info :is(.calorieapp-app-info-link,.calorieapp-app-info-current) {grid-column:1/-1;justify-self:stretch;}
+}
+@media(max-width:400px) {
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info {width:calc(100% - 28px)!important;padding:18px 14px!important;}
+}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-sources {grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;border-top:1px solid #d8dbe9;padding-top:16px;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-sources p {font:16px/1.6 Amiri,Georgia,serif!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-sources a {color:#414d94!important;font-weight:700;text-decoration:underline;text-underline-offset:3px;}
+@media(max-width:767px) {:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-sources {grid-template-columns:minmax(0,1fr);}}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-ending {box-sizing:border-box;width:100%;padding:28px 0;background:#fff var(--ctstyle-paper-image) center/960px auto repeat;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-ending>.calorieapp-app-info {background:rgba(255,255,255,.94)!important;margin:12px auto!important;}
+body.ctstyle-enabled .ctstyle-app-ending>#ctstyle-testnet {background:rgba(255,255,255,.95);}

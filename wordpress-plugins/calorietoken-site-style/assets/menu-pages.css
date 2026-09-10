@@ -1,0 +1,395 @@
+/* Selected Step 3 presentation styles; Home does not load this asset. */
+body.ctstyle-enabled .calorieapp-context-note{
+  box-sizing: border-box;
+  max-width: 70ch;
+  margin: 0 auto 24px;
+  padding: clamp(18px, 2.5vw, 28px);
+  border: 1px solid var(--calorieapp-border);
+  border-left: 5px solid var(--calorieapp-green);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--calorieapp-ink);
+  font: 17px/1.65 system-ui, sans-serif;
+  text-align: start;
+}
+body.ctstyle-enabled .calorieapp-context-note :is(p,strong,a){ font: inherit; }
+body.ctstyle-enabled .calorieapp-context-note > strong{ display: block; font-weight: 700; color: var(--calorieapp-green); }
+body.ctstyle-enabled .calorieapp-context-note p{ margin: .6em 0 !important; }
+body.ctstyle-enabled .calorieapp-context-note a{ color: var(--calorieapp-purple); text-decoration: underline; }
+body.ctstyle-enabled .calorieapp-copy-controls{ max-width: 100%; margin-block: 8px 20px; overflow-wrap: anywhere; }
+body.ctstyle-enabled .calorieapp-copy-button{
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 0 auto 6px;
+  padding: 8px 20px;
+  border: 2px solid var(--calorieapp-purple);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--calorieapp-purple);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+body.ctstyle-enabled .calorieapp-copy-button:disabled{ opacity: .6; cursor: wait; }
+body.ctstyle-enabled .calorieapp-copy-status{ display: block; min-height: 1.5em; font-family: inherit; font-size: 14px; line-height: 1.5; }
+body.ctstyle-enabled .cal-buy-guide{
+  box-sizing: border-box;
+  width: min(1120px, calc(100% - 24px));
+  margin: 32px auto;
+  color: var(--calorieapp-ink);
+  font-family: inherit; font-size: 17px; line-height: 1.6;
+  text-align: start; overflow-wrap: anywhere;
+}
+body.ctstyle-enabled .cal-buy-guide :is(h2,h3,p,dl,ol){ margin-top: 0; }
+body.ctstyle-enabled .cal-buy-guide h2{ margin-bottom: 14px; color: var(--calorieapp-green); font-size: clamp(30px, 4vw, 48px); line-height: 1.15; }
+body.ctstyle-enabled .cal-buy-guide h3{ margin-bottom: 8px; color: var(--calorieapp-purple); font-size: 22px; line-height: 1.3; }
+body.ctstyle-enabled .cal-buy-eyebrow{ margin-bottom: 8px !important; color: var(--calorieapp-purple); font-size: 14px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+body.ctstyle-enabled .cal-buy-hero,
+body.ctstyle-enabled .cal-buy-markets,
+body.ctstyle-enabled .cal-buy-own-dex,
+body.ctstyle-enabled .cal-buy-risk{
+  box-sizing: border-box;
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid var(--calorieapp-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 26px #30344912;
+}
+body.ctstyle-enabled .cal-buy-hero{ border-top: 6px solid var(--calorieapp-green); }
+body.ctstyle-enabled .cal-buy-identity{ display: grid; gap: 10px; margin-bottom: 0; }
+body.ctstyle-enabled .cal-buy-identity div{ display: grid; grid-template-columns: minmax(80px, .3fr) minmax(0,1fr); gap: 12px; }
+body.ctstyle-enabled .cal-buy-identity dt{ color: var(--calorieapp-purple); font-weight: 800; }
+body.ctstyle-enabled .cal-buy-identity dd{ min-width: 0; margin: 0; overflow-wrap: anywhere; }
+body.ctstyle-enabled .cal-buy-identity code{ display: block; direction: ltr; unicode-bidi: isolate; text-align: left; font-size: 16px; user-select: all; }
+body.ctstyle-enabled .cal-buy-steps{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; margin: 22px 0; padding: 0; list-style: none; counter-reset: none; }
+body.ctstyle-enabled .cal-buy-steps li{ display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 16px; padding: 24px; border: 1px solid var(--calorieapp-border); border-radius: 8px; background: #fff; }
+body.ctstyle-enabled .cal-buy-steps li > span{ display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--calorieapp-purple); color: #fff; font-size: 20px; font-weight: 800; }
+body.ctstyle-enabled .cal-buy-guide a{ display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; margin-bottom: 8px; color: var(--calorieapp-green); font-weight: 800; text-underline-offset: .2em; }
+body.ctstyle-enabled .cal-buy-guide a:focus-visible{ outline: 3px solid var(--calorieapp-purple); outline-offset: 4px; }
+body.ctstyle-enabled .cal-buy-markets{ display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: center; }
+body.ctstyle-enabled .cal-buy-pair-grid{ display: grid; gap: 12px; }
+body.ctstyle-enabled .cal-buy-pair-grid article{ padding: 18px; border: 2px solid var(--calorieapp-green); border-radius: 8px; background: #f3fbf6; }
+body.ctstyle-enabled .cal-buy-pair-grid :is(strong,small){ display: block; }
+body.ctstyle-enabled .cal-buy-pair-grid strong{ font-size: 21px; }
+body.ctstyle-enabled .cal-buy-pair-grid small{ margin-top: 3px; }
+body.ctstyle-enabled .cal-buy-own-dex{ margin-top: 22px; border-inline-start: 6px solid var(--calorieapp-purple); }
+body.ctstyle-enabled .cal-buy-risk{ margin-top: 22px; border-inline-start: 6px solid var(--calorieapp-yellow); box-shadow: none; }
+body.ctstyle-enabled .cal-buy-risk > strong{ color: var(--calorieapp-purple); font-size: 20px; }
+body.ctstyle-enabled .cal-buy-risk p{ margin: 8px 0 0; }
+body.ctstyle-enabled .calorieapp-donation-steps{
+  box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto 24px;
+  font-family: inherit; font-size: 16px; line-height: 1.5;
+}
+body.ctstyle-enabled .calorieapp-donation-steps ol{ display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+body.ctstyle-enabled .calorieapp-donation-steps li{ min-width: 0; }
+body.ctstyle-enabled .calorieapp-donation-steps :is(a,span){
+  display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+  height: 100%; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--calorieapp-border); border-radius: 4px; background: #fff;
+  color: var(--calorieapp-purple); text-align: center; overflow-wrap: anywhere;
+}
+body.ctstyle-enabled .calorieapp-donation-steps a{ text-decoration: underline; text-underline-offset: .2em; }
+body.ctstyle-enabled .calorieapp-donation-steps [aria-current]{ border-color: var(--calorieapp-purple); background: var(--calorieapp-purple); color: #fff; font-weight: 700; }
+body.ctstyle-enabled .calorieapp-richlist-scroll{
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll:focus-visible{
+  outline: 2px solid #505ba9;
+  outline-offset: 2px;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist{
+  width: 100%;
+  min-width: 560px;
+  table-layout: auto;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll :is(th, td){
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  padding: 8px 10px;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll td:first-child{ width: 3.5em; }
+body.ctstyle-enabled .calorieapp-richlist-scroll td:last-child{
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist tr.xl-is-user[aria-current="true"] > :is(th,td){
+  background: #fff4cf !important;
+  color: #303449 !important;
+  font-weight: 700;
+  box-shadow: inset 0 2px 0 #fbb62b, inset 0 -2px 0 #fbb62b;
+}
+body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist tr.xl-is-user[aria-current="true"] > :first-child{ box-shadow: inset 3px 0 0 #fbb62b, inset 0 2px 0 #fbb62b, inset 0 -2px 0 #fbb62b; }
+body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist tr.xl-is-user[aria-current="true"] > :last-child{ box-shadow: inset -3px 0 0 #fbb62b, inset 0 2px 0 #fbb62b, inset 0 -2px 0 #fbb62b; }
+body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist tr.xl-is-user[aria-current="true"]:focus-visible{ outline: 3px solid #505ba9; outline-offset: 3px; }
+body.ctstyle-enabled .calorieapp-richlist-actions{
+  position: sticky; top: 12px; z-index: 10; max-width: 100%;
+  text-align: start; pointer-events: none;
+}
+body.ctstyle-enabled.admin-bar .calorieapp-richlist-actions{ top: 58px; }
+body.ctstyle-enabled .calorieapp-own-rank-jump{
+  display: inline-block; box-sizing: border-box; min-height: 44px; max-width: 100%;
+  margin: 0 0 12px; padding: 10px 18px; border: 2px solid #505ba9;
+  border-radius: 4px; background: #fff; color: #303449; font: inherit;
+  font-weight: 700; line-height: 1.4; white-space: normal; overflow-wrap: anywhere;
+  pointer-events: auto; cursor: pointer;
+}
+body.ctstyle-enabled .calorieapp-own-rank-jump[hidden]{ display: none !important; }
+body.ctstyle-enabled .calorieapp-richlist-actions > span[hidden]{ display: none !important; }
+body.ctstyle-enabled .calorieapp-own-rank-jump:hover{ background: #fff4cf; }
+body.ctstyle-enabled .calorieapp-own-rank-jump:focus-visible{ outline: 3px solid #fbb62b; outline-offset: 3px; }
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note{
+  box-sizing: border-box; width: 100%; min-width: 0; max-width: 940px;
+  margin: 20px auto; padding: clamp(16px, 3vw, 28px);
+  border: 2px solid #505ba9; border-radius: 8px; background: #fff; color: #303449;
+  font-family: inherit; font-size: 16px; line-height: 1.6; text-align: start;
+  overflow-wrap: anywhere;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note h2{
+  margin: 0 0 12px; font: inherit; font-size: 1.35em; font-weight: 700; color: #505ba9;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note p{ margin: 0 0 12px; font: inherit; }
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-address{
+  display: block; margin: 12px 0; padding: 12px; border: 1px solid #505ba9;
+  border-radius: 4px; font-family: ui-monospace, monospace; font-size: 16px;
+  direction: ltr; unicode-bidi: isolate; text-align: left; overflow-wrap: anywhere;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-explorer{
+  display: inline-flex; align-items: center; box-sizing: border-box; min-height: 48px;
+  max-width: 100%; padding: 10px 16px; border: 2px solid #505ba9; border-radius: 4px;
+  background: #505ba9; color: #fff; font: inherit; font-weight: 700;
+  text-decoration: underline; text-underline-offset: .2em; white-space: normal;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-explorer:focus-visible{ outline: 3px solid #303449; outline-offset: 3px; }
+body.ctstyle-enabled .calorieapp-page-tools[hidden],
+body.ctstyle-enabled .calorieapp-page-tool-position[hidden]{ display: none !important; }
+body.ctstyle-enabled .calorieapp-page-tools{
+  position: fixed;
+  z-index: 11;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 6px;
+  width: 48px;
+  right: calc(81px + 15vw - 24px);
+  bottom: max(22px, env(safe-area-inset-bottom));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+body.ctstyle-enabled .calorieapp-page-tool-position{
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+body.ctstyle-enabled .calorieapp-page-tool-position-home{ color: #505ba9; }
+body.ctstyle-enabled .calorieapp-page-tool-position-app,
+body.ctstyle-enabled .calorieapp-page-tool-position-top,
+body.ctstyle-enabled .calorieapp-page-tool-position-bottom{ color: #008d36; }
+body.ctstyle-enabled .calorieapp-page-tool{
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  color: inherit !important;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: auto;
+  text-decoration: none !important;
+}
+body.ctstyle-enabled .calorieapp-page-tool-icon{
+  display: block;
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  max-width: none;
+  object-fit: contain;
+  fill: currentColor;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+body.ctstyle-enabled .calorieapp-page-tool:focus-visible{ outline: 3px solid #f9b233; outline-offset: 2px; }
+@media  (min-width: 991px) {body.ctstyle-enabled .calorieapp-page-tool:hover{ color: rgba(249, 178, 51, 0.8) !important; }}
+@media  (max-width: 767px) {body.ctstyle-enabled .calorieapp-page-tools{
+    width: 32px;
+    gap: 2px;
+    right: max(4px, calc(15vw - 51px));
+    bottom: max(2px, env(safe-area-inset-bottom));
+  }
+body.ctstyle-enabled .calorieapp-page-tool-icon{ width: 32px; height: 32px; }}
+body.ctstyle-enabled :is(.calorieapp-context-note,.calorieapp-copy-controls,.cal-buy-guide,.calorieapp-donation-steps) {
+  --calorieapp-green: #008d36;
+  --calorieapp-purple: #505ba9;
+  --calorieapp-yellow: #f9b233;
+  --calorieapp-border: #d8dbe9;
+  --calorieapp-ink: #303449;
+}
+body.ctstyle-enabled .calorieapp-copy-value {overflow-wrap:anywhere;direction:ltr;unicode-bidi:isolate;user-select:all;}
+body.ctstyle-enabled .ctstyle-usecase-content {background:#fff var(--ctstyle-paper-image) center/cover;}
+body.ctstyle-enabled .ctstyle-usecase-content .calorieapp-context-note {margin:20px auto 28px;border-radius:20px;}
+body.ctstyle-enabled .ctstyle-trustline-content .calorieapp-copy-value {font:15px/1.65 ui-monospace,monospace;}
+body.ctstyle-enabled .ctstyle-trustline-content .calorieapp-copy-button {max-width:100%;min-height:44px;padding:10px 16px;white-space:normal;font-size:18px;line-height:1.4;}
+@media(max-width:767px) {
+  body.ctstyle-enabled .ctstyle-mobile-cards {
+    display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:24px!important;
+    width:100%!important;max-width:100%!important;margin:0!important;
+  }
+  body.ctstyle-enabled .ctstyle-mobile-card {
+    box-sizing:border-box!important;flex:0 0 auto!important;width:100%!important;min-width:0!important;
+    max-width:100%!important;margin:0!important;padding:12px!important;height:auto!important;min-height:0!important;
+  }
+  body.ctstyle-enabled .ctstyle-mobile-card>.brz-column__items {
+    box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    padding:16px!important;margin:0!important;height:auto!important;min-height:0!important;
+  }
+  body.ctstyle-enabled .ctstyle-trustline-content {width:100%!important;max-width:100%!important;box-sizing:border-box!important;}
+  body.ctstyle-enabled .ctstyle-trustline-content p {font-size:18px!important;line-height:1.55!important;overflow-wrap:anywhere;}
+  body.ctstyle-enabled .ctstyle-usecase-content>.brz-section__content {padding-block:20px!important;}
+  body.ctstyle-enabled .ctstyle-usecase-card :is(.brz-wrapper,.brz-image,.brz-image__picture,.brz-picture,.brz-image__wrapper) {
+    box-sizing:border-box!important;display:block!important;position:relative!important;width:100%!important;
+    max-width:640px!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;
+    padding:0!important;margin:0 auto!important;
+  }
+  body.ctstyle-enabled .ctstyle-usecase-card .brz-image img {
+    display:block!important;position:relative!important;inset:auto!important;transform:none!important;
+    width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important;
+  }
+}
+body.ctstyle-enabled .calorieapp-x-help {margin:12px 0;max-width:100%;font-family:inherit;font-size:16px;line-height:1.6;color:#303449;}
+body.ctstyle-enabled .calorieapp-x-help p {margin:0 0 8px;}
+body.ctstyle-enabled .calorieapp-x-help a,
+body.ctstyle-enabled .calorieapp-x-help button {display:inline-flex;align-items:center;min-height:44px;margin:0 14px 6px 0;color:#505ba9;text-decoration:underline;font:inherit;}
+body.ctstyle-enabled .calorieapp-x-help button {background:#fff;border:1px solid #505ba9;border-radius:4px;padding:8px 12px;cursor:pointer;}
+body.ctstyle-enabled .calorieapp-x-help [hidden] {display:none!important;}
+body.ctstyle-enabled .ctstyle-x-timeline {box-sizing:border-box;width:100%!important;max-width:680px!important;margin:24px auto!important;padding:18px!important;border:2px solid #d8dbe9;border-top:4px solid #505ba9;border-radius:24px;background:#fff;}
+body.ctstyle-enabled .ctstyle-x-timeline>a.twitter-timeline {display:block;color:#505ba9!important;font:700 24px/1.4 Amiri,Georgia,serif!important;margin:0 0 14px;}
+body.ctstyle-enabled .ctstyle-x-timeline iframe.twitter-timeline {width:100%!important;min-width:0!important;max-width:100%!important;height:520px!important;max-height:70vh!important;border:0!important;}
+body.ctstyle-enabled .ctstyle-x-timeline .calorieapp-x-help {margin:14px 0 0;padding-top:14px;border-top:1px solid #d8dbe9;}
+body.ctstyle-enabled .ctstyle-x-timeline .calorieapp-x-help p {font:16px/1.5 Amiri,Georgia,serif!important;}
+body.ctstyle-enabled .ctstyle-x-timeline .calorieapp-x-help a {display:inline-flex!important;max-width:100%;padding:10px 16px!important;border-radius:12px!important;background:#008d36!important;color:#fff!important;text-decoration:none!important;font:700 18px/1.4 Amiri,Georgia,serif!important;}
+body.ctstyle-enabled .ctstyle-x-timeline .calorieapp-x-settings {font:16px/1.4 Amiri,Georgia,serif!important;}
+body.ctstyle-enabled .calorieapp-x-help :is(a,button):focus-visible,
+body.ctstyle-enabled .calorieapp-copy-button:focus-visible,
+body.ctstyle-enabled .calorieapp-context-note a:focus-visible,
+body.ctstyle-enabled .calorieapp-donation-steps a:focus-visible {outline:3px solid #008d36;outline-offset:3px;}
+body.ctstyle-enabled .cal-buy-guide {font-family:inherit;}
+body.ctstyle-enabled .cal-buy-guide :is(h2,h3) {font-family:inherit;}
+body.ctstyle-enabled .calorieapp-context-note {max-width:960px;box-sizing:border-box;}
+/* S20: these page IDs are on body; a descendant .brz.page-id selector cannot match. */
+body.ctstyle-enabled.page-id-1209 .ctstyle-tokenomics-chart {
+  box-sizing:border-box!important;width:100%!important;max-width:980px!important;min-width:0!important;
+  margin:28px auto!important;padding:clamp(8px,2vw,18px)!important;display:block!important;
+  background:#fff;border:2px solid #d8dbe9;border-radius:24px;box-shadow:0 5px 16px rgba(80,91,169,.15);
+}
+body.ctstyle-enabled.page-id-1209 .ctstyle-tokenomics-chart :is(.brz-image,.brz-image__picture,.brz-picture,.brz-image__wrapper) {
+  display:block!important;position:relative!important;width:100%!important;max-width:100%!important;
+  height:auto!important;min-height:0!important;padding:0!important;margin:0!important;aspect-ratio:auto!important;box-shadow:none!important;
+}
+body.ctstyle-enabled.page-id-1209 .ctstyle-tokenomics-chart-image {
+  display:block!important;position:relative!important;inset:auto!important;transform:none!important;
+  width:100%!important;max-width:100%!important;height:auto!important;margin:0 auto!important;
+  object-fit:contain!important;border-radius:12px;box-shadow:none!important;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note {
+  max-width:980px;margin:24px auto;padding:clamp(18px,3vw,28px);border-radius:26px;
+  background:#fff;color:#303449;font:18px/1.6 Amiri,Georgia,serif;
+  box-shadow:0 3px 12px rgba(80,91,169,.12);overflow-wrap:anywhere;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note h2 {
+  margin:0 0 14px;font:400 25px/1.4 Knewave,CTKnewave,Georgia,serif;color:#505ba9;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-note p {font:inherit;margin:0 0 14px;}
+body.ctstyle-enabled.page-id-1209 #calorieapp-consolidation-wallet {border:3px solid #505ba9;}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-address {
+  box-sizing:border-box;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:break-word;
+  border:1px solid #d8dbe9;border-radius:12px;background:#f5f6fc;font:14px/1.6 ui-monospace,monospace;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-explorer {
+  display:flex;justify-content:center;width:100%;max-width:640px;margin:20px auto 0;padding:14px 22px;
+  border:4px solid #505ba9;border-radius:999px;background:#fff var(--ctstyle-paper-image) center/cover;
+  color:#303449;font:700 23px/1.4 Amiri,Georgia,serif;text-align:center;
+  box-shadow:0 3px 8px rgba(80,91,169,.15);overflow-wrap:anywhere;
+}
+body.ctstyle-enabled.page-id-1209 .calorieapp-tokenomics-explorer:hover {border-color:#008d36;color:#008d36;}
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice {
+  box-sizing:border-box!important;width:calc(100% - 16px)!important;max-width:420px!important;height:auto!important;
+  min-height:0!important;padding:16px!important;border:2px solid #505ba9!important;border-radius:18px!important;
+  background:#fff!important;color:#303449!important;font:16px/1.5 Arial,sans-serif!important;
+  text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;
+}
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice :is(p,span,div) {font:inherit!important;color:inherit!important;white-space:normal!important;}
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice [data-service="youtube"][data-category="marketing"] {
+  box-sizing:border-box!important;display:inline-flex!important;align-items:center;justify-content:center;
+  min-height:44px;max-width:100%;margin:12px 0 0;padding:10px 14px;border:2px solid #505ba9;border-radius:12px;
+  background:#505ba9;color:#fff!important;font:700 16px/1.4 Arial,sans-serif!important;
+  white-space:normal!important;text-align:center;text-decoration:none;
+}
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice [data-service="youtube"]:focus-visible {outline:3px solid #008d36;outline-offset:3px;}
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice[hidden],
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice[aria-hidden="true"],
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice [data-service="youtube"][hidden],
+body.ctstyle-enabled.page-id-5580 .ctstyle-youtube-notice [data-service="youtube"][aria-hidden="true"] {display:none!important;}
+@media (max-width:767px) {
+  body.ctstyle-enabled .cal-buy-steps,
+  body.ctstyle-enabled .cal-buy-markets {grid-template-columns:1fr;}
+  body.ctstyle-enabled .cal-buy-steps li {grid-template-columns:36px minmax(0,1fr);gap:12px;padding:18px 12px;}
+  body.ctstyle-enabled .cal-buy-steps li>span {width:36px;height:36px;}
+  body.ctstyle-enabled .cal-buy-identity div {grid-template-columns:1fr;gap:2px;}
+  body.ctstyle-enabled .calorieapp-donation-steps ol {grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.ctstyle-enabled .calorieapp-richlist-scroll table.xl-richlist {font-size:14px;line-height:1.5;}
+}
+/* Current X renders a wrapper with twitter-timeline; its iframe has no class. */
+body.ctstyle-enabled .ctstyle-x-timeline :is(.twitter-timeline-rendered,iframe[src^="https://syndication.twitter.com/srv/timeline-profile/"]) {min-width:0!important;max-width:100%!important;width:100%!important;}
+body.ctstyle-enabled .ctstyle-x-timeline iframe[src^="https://syndication.twitter.com/srv/timeline-profile/"] {display:block;height:520px!important;max-height:70vh!important;border:0;}
+body.ctstyle-enabled .ctstyle-x-timeline .calorieapp-x-help [hidden] {display:none!important;}
+body.ctstyle-enabled .ctstyle-x-ready .calorieapp-x-help {margin:12px 0 0!important;padding:0!important;border:0!important;background:transparent!important;}
+body.ctstyle-enabled .ctstyle-x-ready .calorieapp-x-fallback {font-size:16px!important;min-height:44px!important;}
+body.ctstyle-enabled .ctstyle-youtube-notice {font:18px/1.5 Amiri,Georgia,serif!important;max-width:100%!important;min-height:160px;box-sizing:border-box;padding:20px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border:2px solid #505ba9;border-radius:20px;background:#fff!important;color:#303449!important;text-align:center;}
+body.ctstyle-enabled .ctstyle-youtube-notice :is(p,span) {font:inherit!important;}
+/* Donation forms: presentation only. Native fields, validation and payment flow stay intact. */
+body.ctstyle-enabled.ctstyle-donation-page .calorieapp-donation-steps {max-width:960px;margin:16px auto 28px;}
+body.ctstyle-enabled.ctstyle-donation-page .calorieapp-donation-steps :is(a,span) {min-height:56px;padding:14px 12px;border:2px solid #d8dbe9;border-radius:14px;font:700 18px/1.4 Amiri,Georgia,serif;}
+body.ctstyle-enabled.ctstyle-donation-page .calorieapp-donation-steps [aria-current] {border-color:#505ba9;background:#505ba9;box-shadow:0 3px 10px rgba(80,91,169,.15);color:#fff;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart,.woocommerce-cart-form,form.checkout,.woocommerce-order) {box-sizing:border-box!important;min-width:0;max-width:960px!important;width:100%!important;margin:24px auto!important;padding:28px!important;background:#fff!important;border:2px solid #505ba9!important;border-top:5px solid #f9b233!important;border-radius:24px!important;box-shadow:0 4px 14px rgba(80,91,169,.10)!important;color:#303449;font:18px/1.6 Amiri,Georgia,serif;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart,.woocommerce) label {display:block;margin-bottom:8px;font:700 18px/1.5 Amiri,Georgia,serif;color:#414d94;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart,.woocommerce) :is(input[type="number"],input[type="text"],input[type="email"],input[type="tel"],input[type="password"],select,textarea) {box-sizing:border-box;min-height:50px;max-width:100%;padding:12px 14px;border:2px solid #c3c8df;border-radius:12px;background:#fff;color:#303449;font:18px/1.4 Amiri,Georgia,serif;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart,.woocommerce) :is(input,select,textarea,button,a.button):focus-visible {outline:3px solid #008d36;outline-offset:3px;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce .form-row {padding:0;margin-bottom:20px;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart button[type="submit"],.woocommerce button.button,.woocommerce a.button,.woocommerce input.button) {box-sizing:border-box;min-height:52px;max-width:100%;padding:12px 24px;border:2px solid #008d36;border-radius:14px;background:#008d36;color:#fff;font:700 20px/1.4 Amiri,Georgia,serif;white-space:normal;text-align:center;text-decoration:none;}
+body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart button[type="submit"],.woocommerce button.button,.woocommerce a.button,.woocommerce input.button):hover {background:#505ba9;border-color:#505ba9;color:#fff;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce button.button:disabled {background:#686e82;border-color:#686e82;color:#fff;cursor:default;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.cart_totals,#order_review,#payment) {box-sizing:border-box;min-width:0;max-width:100%;padding:22px;border:1px solid #d8dbe9;border-radius:18px;background:#f7f8fc;color:#303449;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.cart_totals h2,#order_review_heading,h3) {color:#008d36;font:700 28px/1.35 Amiri,Georgia,serif;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table {border:1px solid #d8dbe9;border-radius:12px;border-collapse:separate;background:#fff;font-size:17px;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table :is(th,td) {padding:14px 12px;vertical-align:middle;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.woocommerce-info,.woocommerce-message,.woocommerce-error) {border-radius:12px;font:18px/1.6 Amiri,Georgia,serif;}
+body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(input[type="checkbox"],input[type="radio"]) {accent-color:#505ba9;min-width:18px;min-height:18px;}
+@media(max-width:767px) {
+ body.ctstyle-enabled.ctstyle-donation-page :is(.brz-woo-add-to-cart,.woocommerce-cart-form,form.checkout,.woocommerce-order) {padding:22px 16px!important;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.form-row-first,.form-row-last,.col2-set .col-1,.col2-set .col-2) {width:100%;float:none;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.cart_totals,#order_review,#payment) {padding:16px 12px;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce .checkout-button {display:block;width:100%;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table :is(th,td) {padding:12px 8px;overflow-wrap:anywhere;}
+}
