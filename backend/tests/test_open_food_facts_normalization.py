@@ -412,3 +412,64 @@ def test_identical_concurrent_searches_make_one_upstream_attempt(
 
     asyncio.run(scenario())
     primary.assert_awaited_once()
+
+
+def test_indexed_search_uses_literal_multilingual_query_and_preserves_food_data(monkeypatch: pytest.MonkeyPatch) -> None:
+    import json
+    from app.services.open_food_facts import _fetch_primary, _normalize_products
+    seen = []
+    product = {'code': '7622210410900', 'product_name': 'Evergreen Krenten',
+               'brands': ['Liga', 'Other brand'], 'image_front_url': 'https://images.openfoodfacts.org/example.jpg',
+               'nutriments': {'energy-kcal_100g': 383, 'proteins_100g': 6.9, 'fat_100g': 9.1, 'carbohydrates_100g': 65}}
+    def respond(request):
+        seen.append(request)
+        return httpx.Response(200, json={'hits': [product], 'timed_out': False})
+    original = httpx.AsyncClient
+    monkeypatch.setattr(httpx, 'AsyncClient', lambda **kwargs: original(transport=httpx.MockTransport(respond), trust_env=False, **kwargs))
+    payload = asyncio.run(_fetch_primary({'search_terms': 'liga (milk) OR *:*', 'page_size': 10}))
+    request = seen[0]
+    assert request.method == 'POST'
+    assert str(request.url) == 'https://search.openfoodfacts.org/search'
+    body = json.loads(request.content)
+    assert body['q'] == r'liga \(milk\) or \*\:\*'
+    assert {'nl', 'en', 'ar', 'zh'} <= set(body['langs'])
+    assert {'nutriments', 'images', 'lc', 'image_front_url'} <= set(body['fields'])
+    foods = _normalize_products(payload)
+    assert len(foods) == 1
+    assert foods[0].brand == 'Liga'
+    assert foods[0].barcode == product['code']
+    assert foods[0].calories == 383
+    assert foods[0].image_url == product['image_front_url']
+    assert foods[0].serving_size == '100 g / 100 ml (source reference)'
+
+
+@pytest.mark.parametrize('payload', [None, {}, {'hits': []}, {'hits': [], 'timed_out': True},
+    {'hits': {}, 'timed_out': False}, {'hits': [], 'timed_out': False, 'errors': [{'status': 500}]}])
+def test_incomplete_index_response_is_never_reported_as_product_not_found(payload, monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.services.open_food_facts import _fetch_primary
+    original = httpx.AsyncClient
+    monkeypatch.setattr(httpx, 'AsyncClient', lambda **kwargs: original(
+        transport=httpx.MockTransport(lambda request: httpx.Response(200, json=payload)), trust_env=False, **kwargs))
+    with pytest.raises(ValueError):
+        asyncio.run(_fetch_primary({'search_terms': 'liga', 'page_size': 10}))
+
+
+@patch('app.services.open_food_facts._fetch_primary', new_callable=AsyncMock)
+def test_query_variants_reuse_success_during_provider_pause(primary, monkeypatch: pytest.MonkeyPatch) -> None:
+    now = [0.0]
+    state = FoodSearchAvailability(clock=lambda: now[0])
+    monkeypatch.setattr('app.services.open_food_facts._OPEN_FOOD_FACTS_AVAILABILITY', state)
+    primary.return_value = {'products': [{'product_name': 'Liga Milkbreak', 'brands': ['Liga'],
+        'nutriments': {'energy-kcal_100g': 447, 'proteins_100g': 9.2, 'fat_100g': 17, 'carbohydrates_100g': 63}}]}
+    first = asyncio.run(search_food_products('Liga  MILKBREAK'))
+    now[0] = 600  # Previously the five-minute cache had already discarded it.
+    state.pause_provider(503, 1800)
+    cached = asyncio.run(search_food_products('  liga milkbreak  '))
+    assert cached == first
+    primary.assert_awaited_once()
+    with pytest.raises(FoodSearchUnavailable):
+        asyncio.run(search_food_products('different product'))
+    primary.assert_awaited_once()
+    now[0] = 3601
+    asyncio.run(search_food_products('liga milkbreak'))
+    assert primary.await_count == 2

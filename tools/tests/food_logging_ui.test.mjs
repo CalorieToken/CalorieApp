@@ -1062,3 +1062,14 @@ test('failed barcode lookup preserves earlier results and retries the exact barc
   assert.equal(retried.searchParams.get('mode'),'barcode'); assert.equal(retried.searchParams.get('q'),'8711000031544');
   assert.equal(calls,3);
 });
+
+
+test('the source reference label translates in every locale without translating packaging text',()=>{
+ for(const {tag} of localeRegistry.locales){
+  const copy=foodUiCopy[tag];
+  assert.ok(copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('100 g / 100 ml (source reference)',copy),copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('1 bar (28 g)',copy),'1 bar (28 g)');
+  assert.equal(foodUi.displayServingSize('Private {product} $CAL',copy),'Private {product} $CAL');
+ }
+});

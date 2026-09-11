@@ -11,7 +11,7 @@ const nodes=(tree,p)=>Array.isArray(tree)?tree.flatMap(x=>nodes(x,p)):tree&&type
 const text=tree=>Array.isArray(tree)?tree.map(text).join(' '):tree&&typeof tree==='object'?text(tree.props?.children):tree==null||typeof tree==='boolean'?'':String(tree);
 function deferred(){let resolve;const promise=new Promise(r=>{resolve=r;});return {promise,resolve};}
 async function fixture({me,logout}={}){
- const hooks=[],events=new Map(),requests=[],sent=[],announcements=[];let cursor=0,effects=[],tree;
+ const hooks=[],events=new Map(),requests=[],sent=[],announcements=[];let cursor=0,effects=[],tree;let selectedDisplay={enabled:false,locale:"en"};
  const parent={postMessage:(data,origin)=>sent.push({data,origin})};
  const hook=init=>{const i=cursor++;if(!(i in hooks))hooks[i]=init();return i;};
  const equal=(a,b)=>a&&b&&a.length===b.length&&a.every((x,i)=>Object.is(x,b[i]));
@@ -19,7 +19,7 @@ async function fixture({me,logout}={}){
  const window={parent,location:{search:'?embedded=1'},sessionStorage:{getItem:()=>null,removeItem(){},setItem(){}},addEventListener:(name,fn)=>events.set(name,fn),removeEventListener:(name)=>events.delete(name)};
  const module={exports:{}};
  vm.runInNewContext(compiled,{module,exports:module.exports,window,document:{referrer:'https://calorietoken.net/calorieapp/',documentElement:{lang:'en',scrollHeight:800},body:{scrollHeight:800}},navigator:{language:'en'},process:{env:{NODE_ENV:'production'}},AbortController,URL,URLSearchParams,Error,console,
- require(name){if(name==='react')return react;if(name==='react/jsx-runtime')return {jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})};if(name==='@/components/authEvents')return {announceAuthState:v=>announcements.push(v)};if(name==='@/lib/authUi')return authUi;if(name==='@/lib/locales')return {resolveLocale:v=>v||'en'};if(name.startsWith('@/components/'))return {};
+ require(name){if(name==='react')return react;if(name==='react/jsx-runtime')return {jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})};if(name==='@/components/authEvents')return {announceAuthState:v=>announcements.push(v)};if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>selectedDisplay};if(name==='@/lib/authUi')return authUi;if(name==='@/lib/locales')return {resolveLocale:v=>v||'en'};if(name.startsWith('@/components/'))return {};
  if(name==='@/lib/backendRequest')return {BACKEND_WAKE_BASE_URL:'/api/backend',backendUnavailableMessage:(_e,fallback)=>fallback,backendRequest:async(url,options)=>{requests.push({url,options});if(url.endsWith('/me'))return me?await me():{ok:true,json:async()=>({user_id:'synthetic-user'})};if(url.endsWith('/logout'))return logout?await logout():{ok:true,status:204};throw new Error('Unexpected request');}};
  throw new Error(name);}});
  const render=()=>{cursor=0;effects=[];tree=module.exports.XamanLoginPanel();effects.forEach(f=>f());return tree;};render();
@@ -27,6 +27,7 @@ async function fixture({me,logout}={}){
  const message=async(type,{origin='https://calorietoken.net',source=parent}={})=>{await events.get('message')?.({data:{type,locale:'en'},origin,source});render();};
  await flush();await message('calorieapp:bridge:init');
  return {get tree(){return tree;},render,flush,message,requests,sent,announcements,parent,
+ selectDisplay(locale){selectedDisplay={enabled:true,locale};render();},
  button(label){const found=nodes(tree,n=>n.type==='button'&&text(n).trim()===label);assert.equal(found.length,1,label);return found[0];},
  close(){hooks.forEach(h=>h?.cleanup?.());}};
 }
@@ -72,5 +73,24 @@ test('a late session-restore response cannot resurrect the app after logout',asy
   await h.message('calorieapp:logout');
   me.resolve({ok:true,json:async()=>({user_id:'old-synthetic-user'})});await h.flush();
   assert.ok(!text(h.tree).includes(authCopy.en.signedIn));assert.ok(!h.announcements.includes(true));
+ }finally{h.close();}
+});
+
+
+test('display language changes translate account controls without restarting identity or changing the protocol locale',async()=>{
+ const h=await fixture();
+ try{
+  const requests=h.requests.length, sent=h.sent.length;
+  for(const locale of ['nl','zh-Hans','ur','en']){
+   h.selectDisplay(locale);await h.flush();
+   assert.ok(text(h.tree).includes(authCopy[locale].signedIn));
+   assert.ok(text(h.tree).includes(authCopy[locale].logoutBoth));
+   assert.equal(h.requests.length,requests);
+   assert.equal(h.sent.length,sent);
+   const root=nodes(h.tree,n=>n.type==='section')[0];
+   assert.equal(root.props.lang,locale);
+   assert.equal(root.props.dir,locale==='ur'?'rtl':'ltr');
+  }
+  assert.equal(h.sent.find(m=>m.data.type==='calorieapp:bridge:initialized').data.locale,'en');
  }finally{h.close();}
 });

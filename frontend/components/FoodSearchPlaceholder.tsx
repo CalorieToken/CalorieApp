@@ -17,7 +17,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { formatFoodUi, getFoodUi, recordedGradePosition, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
+import { displayServingSize, formatFoodUi, getFoodUi, recordedGradePosition, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
 import {
   AUTH_STATE_CHANGED_EVENT,
@@ -1041,7 +1041,7 @@ export function FoodSearchPlaceholder() {
               {selectedLog.brand ? <p className="mt-1 text-sm text-brand-secondary/80"><bdi>{selectedLog.brand}</bdi></p> : null}
               {selectedLog.barcode ? <p className="mt-2 text-xs text-brand-secondary/75">{copy.barcode}: <bdi dir="ltr">{selectedLog.barcode}</bdi></p> : null}
               {selectedLog.serving_size ? (
-                <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{selectedLog.serving_size}</bdi></p>
+                <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{displayServingSize(selectedLog.serving_size, copy)}</bdi></p>
               ) : null}
               <NutriScoreBar grade={selectedLog.nutri_score} />
               <p className="mt-1 text-xs text-brand-secondary/75">

@@ -9,6 +9,17 @@
   var candidates='.ctstyle-legal p,.ctstyle-market-card h2,.ctstyle-market-card p,.brz-rich-text p,.brz-rich-text li,.brz-rich-text h1,.brz-rich-text h2,.brz-rich-text h3,.brz-rich-text h4,.brz-rich-text h5,.brz-rich-text summary,.entry-content p,.entry-content li,.entry-content h1,.entry-content h2,.entry-content h3,.entry-title,.ctstyle-title h1,.ctstyle-title h2,.ctstyle-roadmap-preview p,.ctstyle-roadmap-preview h3,.ctstyle-roadmap-preview a,.calorieapp-context-note p,.calorieapp-context-note strong,.calorieapp-context-note a,.woocommerce label,.woocommerce button,.woocommerce th,.woocommerce h2,.woocommerce h3,.woocommerce .product_title,.woocommerce a,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.brz-posts p,.brz-posts h2,.brz-posts a';
   function norm(v){return String(v||'').replace(/\s+/g,' ').trim();}
   cfg.entries.forEach(function(row){if(row&&typeof row.source==='string'&&row.translations)lookup.set(norm(row.source),row);});
+  function lookupRow(value){
+    var text=norm(value),exact=lookup.get(text);if(exact)return exact;
+    // Only this owned footer template has a variable. Preserve the year that
+    // WordPress actually rendered, including existing shared bridge footers.
+    var match=/^© (\d{4}) ICTHendrikse \(owned content only\) · CalorieToken® trade mark: Pieter Hendrikse$/.exec(text);
+    if(!match)return null;
+    var row=lookup.get('© {year} ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse');
+    if(!row)return null;
+    var translations={};Object.keys(row.translations).forEach(function(tag){translations[tag]=row.translations[tag].replace('{year}',match[1]);});
+    return {source:text,translations:translations};
+  }
   function allowed(){return document.body&&document.body.matches('.ctstyle-enabled,.ctstyle-footer-only')&&!document.body.matches('.page-id-8001,.brz-ed')&&!document.querySelector('.brz-ed,#brz-ed-iframe')&&['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin)&&!/\/wp-admin\//.test(window.location.pathname)&&!Array.from(new URL(window.location.href).searchParams.keys()).some(function(k){return /^(?:preview|customize_changeset_uuid|brizy-edit|brizy-edit-iframe|brz-edit|brz-edit-iframe|xl-)/.test(k);});}
   function safe(n){return n&&n.isConnected&&!n.closest(excluded+','+owned);}
   function available(row){return locale==='en'?row.source:row.translations[locale];}
@@ -36,7 +47,7 @@
   }
   function block(n){
     if(!safe(n)||n.querySelector(excluded)||records.has(n))return;
-    var row=lookup.get(norm(n.textContent));if(!row)return;
+    var row=lookupRow(n.textContent);if(!row)return;
     // Keep anchors, icons, labels and controls alive. Complex content uses text-node matches.
     if(Array.from(n.querySelectorAll('*')).some(function(x){return !['SPAN','STRONG','B','EM','I','BR'].includes(x.tagName);}))return;
     var record={node:n,row:row,children:Array.from(n.childNodes),current:Array.from(n.childNodes),last:norm(n.textContent),kind:'block',lang:n.getAttribute('lang'),dir:n.getAttribute('dir'),changed:false};
@@ -47,7 +58,7 @@
     Array.from(root.childNodes).forEach(function(n){
       if(n.nodeType===1){if(!records.has(n))fragments(n);return;}
       if(n.nodeType!==3||records.has(n)||!norm(n.data))return;
-      var row=lookup.get(norm(n.data));if(!row)return;
+      var row=lookupRow(n.data);if(!row)return;
       var record={node:n,row:row,original:n.data,last:n.data,kind:'text'};
       records.set(n,record);active.push(record);paint(record);
     });
@@ -81,9 +92,9 @@
     return mutations.some(function(record){
       var target=record.target.nodeType===3?record.target.parentElement:record.target;
       if(!safe(target))return false;
-      if(record.type==='characterData')return records.has(record.target)||lookup.has(norm(record.target.data));
+      if(record.type==='characterData')return records.has(record.target)||!!lookupRow(record.target.data);
       return Array.from(record.addedNodes).concat(Array.from(record.removedNodes)).some(function(node){
-        if(node.nodeType===3)return lookup.has(norm(node.data));
+        if(node.nodeType===3)return !!lookupRow(node.data);
         return node.nodeType===1&&!node.matches(excluded+','+owned)&&(node.matches(candidates)||!!node.querySelector(candidates));
       });
     });

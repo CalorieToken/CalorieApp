@@ -16,7 +16,7 @@ test('Every agreed language renders the anonymous sign-in panel without a reques
   const module={exports:{}};
   vm.runInNewContext(compiled,{module,exports:module.exports,process:{env:{}},URL,URLSearchParams,window:{location:{search:'?locale='+locale}},document:{documentElement:{lang:locale}},navigator:{language:locale},require(name){
    if(['react','react/jsx-runtime'].includes(name))return require(name);
-   if(name==='@/lib/authUi')return authUi;
+   if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>({enabled:false,locale:'en'})};if(name==='@/lib/authUi')return authUi;
    if(name==='@/lib/locales')return {resolveLocale:value=>value||'en'};
    if(name==='@/lib/backendRequest')return {BACKEND_WAKE_BASE_URL:'/api/backend',backendRequest(){throw new Error('Rendering must not start sign-in');}};
    if(name.startsWith('@/components/'))return {};

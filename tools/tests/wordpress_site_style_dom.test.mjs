@@ -474,3 +474,26 @@ test('The full CAL guide/discovery/translation sequence retains exact routes and
     assert.ok(h.document.querySelector('.ctstyle-crypto-intro').textContent.includes(copy[locale].appWithoutCAL));
   }
 });
+
+
+test('Home token copy and legal footer translate in every offered language and restore native formatting',()=>{
+ const catalogue=JSON.parse(source('content-data.json'));
+ const token=catalogue.entries.find(e=>e.source.startsWith('$CAL is the Calorie token issued'));
+ const operator=catalogue.entries.find(e=>e.source==='Operator: ICTHendrikse · KVK 73774693');
+ const copyright=catalogue.entries.find(e=>e.source.startsWith('© {year} ICTHendrikse'));
+ assert.ok(token);assert.ok(operator);assert.ok(copyright);
+ const originalCopyright=copyright.source.replace('{year}','2027');
+ const h=fixture('<div class="brz-rich-text"><p id="token"><strong>'+token.source+'</strong></p></div><footer><div class="ctstyle-legal"><p id="operator">'+operator.source+'</p><p id="copyright">'+originalCopyright+'</p></div></footer>',{home:true,page:1090});
+ const strong=h.document.querySelector('#token strong');
+ h.window.CalorieTokenContentLanguage={locales:['en',...Object.keys(token.translations)],entries:catalogue.entries};
+ h.run('content-language.js');
+ for(const tag of Object.keys(token.translations)){
+  h.window.CalorieTokenContentLanguageUI.refresh(tag);
+  assert.equal(h.document.querySelector('#token').textContent,token.translations[tag]);
+  assert.equal(h.document.querySelector('#operator').textContent,operator.translations[tag]);
+  assert.equal(h.document.querySelector('#copyright').textContent,copyright.translations[tag].replace('{year}','2027'));
+ }
+ h.window.CalorieTokenContentLanguageUI.refresh('en');
+ assert.equal(h.document.querySelector('#token strong'),strong);
+ assert.equal(h.document.querySelector('#copyright').textContent,originalCopyright);
+});

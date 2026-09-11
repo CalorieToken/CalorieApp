@@ -34,12 +34,14 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 OPEN_FOOD_FACTS_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
+OPEN_FOOD_FACTS_INDEX_URL = "https://search.openfoodfacts.org/search"
 REQUEST_HEADERS = {
     "User-Agent": "CalorieApp/0.2.0 (https://calorietoken.net; info@calorietoken.net)",
     "Accept": "application/json",
 }
 
 _PRIMARY_TIMEOUT_SECONDS = 10.0
+_INDEX_TIMEOUT_SECONDS = 15.0
 # One normal request plus at most one alternate-transport request. Nested
 # transport retries would amplify one user search into enough upstream traffic
 # to exhaust Open Food Facts' public per-IP search allowance.
@@ -126,7 +128,11 @@ def _extract_image_url(product: dict[str, Any]) -> str | None:
 
 
 def _extract_brand(product: dict[str, Any]) -> str | None:
-    brands = _to_optional_text(product.get("brands"))
+    raw_brands = product.get("brands")
+    # Search-a-licious returns an array; the product API uses a comma-separated string.
+    if isinstance(raw_brands, list):
+        raw_brands = next((brand for brand in raw_brands if isinstance(brand, str) and brand.strip()), None)
+    brands = _to_optional_text(raw_brands)
     if not brands:
         return None
     # Open Food Facts often returns comma-separated brands; show the first clean label.
@@ -143,7 +149,7 @@ def _extract_nutri_score(product: dict[str, Any]) -> str | None:
 
 
 async def search_food_products(query: str, page_size: int = 10, *, barcode: bool = False) -> list[FoodSearchResult]:
-    safe_query = query.strip()
+    safe_query = query.strip() if barcode else " ".join(query.split()).casefold()
     if barcode and valid_food_barcode(safe_query) is None:
         raise ValueError("Invalid food barcode")
     cached = _OPEN_FOOD_FACTS_AVAILABILITY.get(safe_query, page_size, barcode=barcode)
@@ -169,6 +175,8 @@ async def _search_food_products_once(
         "json": 1,
         "page_size": page_size,
         "fields": _OPEN_FOOD_FACTS_FIELDS,
+        # The UI does not display a total across the complete OFF database.
+        "no_count": 1,
     }
 
     try:
@@ -339,23 +347,31 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
 
 
 async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
-    """Make one primary Open Food Facts request; the caller owns fallback policy."""
-    async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
-        response = await client.get(
-            OPEN_FOOD_FACTS_SEARCH_URL,
-            params=params,
+    """Use OFF's indexed full-text API; keep the bounded legacy transport fallback.
+
+    https://openfoodfacts.github.io/search-a-licious/users/ref-openapi/
+    Search is a read operation. POST keeps the query out of upstream access URLs.
+    """
+    # The app accepts product names, not Lucene filters or wildcard expressions.
+    # Escape reserved syntax while preserving separate words and Unicode text.
+    query = re.sub(r'([+\-=&|><!(){}\[\]^"~*?:\\/])', r'\\\1', params["search_terms"].casefold())
+    async with httpx.AsyncClient(timeout=_INDEX_TIMEOUT_SECONDS, follow_redirects=False) as client:
+        response = await client.post(
+            OPEN_FOOD_FACTS_INDEX_URL,
+            json={
+                "q": query,
+                "page_size": params["page_size"],
+                "fields": (_OPEN_FOOD_FACTS_FIELDS + ",images,lc").split(","),
+                "langs": ["en", "nl", "zh", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur"],
+            },
             headers=REQUEST_HEADERS,
         )
         response.raise_for_status()
         payload = response.json()
-        if not isinstance(payload, dict):
-            raise ValueError("Open Food Facts payload is not a JSON object")
-        products = payload.get("products")
-        if products is None:
-            payload["products"] = []
-        elif not isinstance(products, list):
-            raise ValueError("Open Food Facts payload 'products' field is not a list")
-        return payload
+        if (not isinstance(payload, dict) or payload.get("timed_out") is not False
+                or payload.get("errors") or not isinstance(payload.get("hits"), list)):
+            raise ValueError("Invalid or incomplete Open Food Facts search response")
+        return {"products": payload["hits"]}
 
 
 def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:

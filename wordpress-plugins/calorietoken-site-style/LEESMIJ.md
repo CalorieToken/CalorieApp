@@ -1,4 +1,28 @@
-# CalorieToken Site Style 1.4.20
+# CalorieToken Site Style 1.4.21
+
+Deze correctie behoudt de door de eigenaar geaccepteerde huisstijl van 1.4.20.
+De Richlist-titel krijgt zijn historische uitzondering terug: alleen de twee
+$-tekens zijn paars; alle letters blijven zwart. De overige kopteksten behouden
+hun woordinitialen.
+
+De vertaalcatalogus krijgt elf ontbrekende openbare teksten/varianten voor Home,
+Contact, Roadmap, Richlist en de gedeelde footer, in alle tien doeltalen. De footer
+behoudt het door WordPress geleverde jaartal. Originele links, e-mailadressen,
+opmaak en bediening blijven behouden bij vertalen en terugzetten naar Engels.
+Oudere blogartikelen zijn nog niet volledig in alle talen vertaald; deze versie
+claimt daarvoor geen volledige dekking.
+
+Installeer **calorietoken-site-style-1.4.21.zip** via de bestaande WordPress-upload.
+Controleer vervolgens dat **CalorieToken Site Style 1.4.21** actief is. Directe
+terugval is het bewaarde en geaccepteerde pakket **1.4.20**.
+
+De productzoekverbetering en vertalingen van het aanmeldpaneel en de
+referentieportie in CalorieApp vragen een afzonderlijke frontend/backenduitrol.
+Deze WordPress-ZIP publiceert die appwijzigingen niet. Identity Bridge en het
+werkende camera-/login-/logout-/Testnet-gedrag blijven behouden.
+
+## Historische notities: 1.4.20
+
 
 Deze gerichte correctie gebruikt de eerste CAL & Crypto-sectie als visuele maatstaf voor passende inhoudsblokken: de bestaande vervaagde CAL-logoachtergrond, paarse rand, gouden bovenrand en gedeelde afrondingen. Dit geldt voor de CAL-gids, Trustline, FAQ, documentpagina's, Voting Hub, Showcases en bestaande Brizy-inhoudskaarten met een eigen kop en tekst. Geneste kaarten blijven compacter. De originele tekst, links, formulieren, afbeeldingen en bediening blijven dezelfde elementen.
 

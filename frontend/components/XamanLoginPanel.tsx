@@ -14,6 +14,7 @@ import {
 } from "@/lib/backendRequest";
 import { resolveLocale } from "@/lib/locales";
 import { getAuthUi, translateAuthMessage } from "@/lib/authUi";
+import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
 type MeResponse = {
   user_id: string;
@@ -955,7 +956,12 @@ export function XamanLoginPanel() {
   const [loginSurfaceMode, setLoginSurfaceMode] =
     useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
-  const { copy: authCopy, locale: authLocale, direction: authDirection } = getAuthUi(displayLocale);
+  const display = useDisplayLanguage();
+  // Presentation follows the shared selector. The established login locale,
+  // callback checks, request keys and activeLocale remain unchanged.
+  const { copy: authCopy, locale: authLocale, direction: authDirection } = getAuthUi(
+    display.enabled ? display.locale : displayLocale
+  );
   const loginAbortController = useRef<AbortController | null>(null);
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");

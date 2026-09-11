@@ -62,8 +62,14 @@
       else if(child.nodeType===1){if(child.tagName==='BR')text+='\n';else collect(child);}
     });}
     collect(node);
+    var richlistTitle=(document.body.classList.contains('page-id-3243')||path(window.location.href)==='/richlist')
+      &&node.matches('.ctstyle-heading')&&/^\$[^$]+\$$/.test(text.trim());
     var segmenter=typeof Intl.Segmenter==='function'?new Intl.Segmenter(locale,{granularity:'grapheme'}):null;
-    while((match=regex.exec(text))){
+    if(richlistTitle){
+      // The historical $Richlist$ banner accents its two dollar signs only.
+      [text.indexOf('$'),text.lastIndexOf('$')].forEach(function(index){ranges.push({start:index,end:index+1});});
+    }
+    while(!richlistTitle&&(match=regex.exec(text))){
       var first=segmenter?Array.from(segmenter.segment(match[0]))[0].segment:Array.from(match[0])[0];
       ranges.push({start:match.index,end:match.index+first.length});
     }

@@ -4,7 +4,7 @@ import { FoodSearchItem } from "@/components/foodTypes";
 import Image from "next/image";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
+import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
 
 type FoodCardProps = {
@@ -79,7 +79,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
           ) : null}
           {item.serving_size ? (
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-secondary/75">
-              {item.serving_size ? <p>{copy.serving}: <bdi>{item.serving_size}</bdi></p> : null}
+              {item.serving_size ? <p>{copy.serving}: <bdi>{displayServingSize(item.serving_size, copy)}</bdi></p> : null}
             </div>
           ) : null}
 

@@ -46,8 +46,8 @@ class FoodSearchAvailability:
     def __init__(
         self,
         *,
-        max_entries: int = 64,
-        ttl_seconds: float = 300,
+        max_entries: int = 256,
+        ttl_seconds: float = 3600,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.max_entries = max_entries

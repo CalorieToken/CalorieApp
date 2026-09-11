@@ -96,7 +96,8 @@
     "scoreDetails": "How does this work?",
     "scoreAt": "Average: {grade}",
     "scoreBetween": "Average: between {lower} and {upper}",
-    "scoreEmpty": "No product letters available yet"
+    "scoreEmpty": "No product letters available yet",
+    "sourceReference": "100 g / 100 ml (source reference)"
   },
   "nl": {
     "searchTitle": "Voedingsmiddelen zoeken",
@@ -195,7 +196,8 @@
     "scoreDetails": "Hoe werkt dit?",
     "scoreAt": "Gemiddelde: {grade}",
     "scoreBetween": "Gemiddelde: tussen {lower} en {upper}",
-    "scoreEmpty": "Nog geen productletters beschikbaar"
+    "scoreEmpty": "Nog geen productletters beschikbaar",
+    "sourceReference": "100 g / 100 ml (referentiewaarde van de bron)"
   },
   "es": {
     "searchTitle": "Buscar alimentos",
@@ -294,7 +296,8 @@
     "scoreDetails": "¿Cómo funciona?",
     "scoreAt": "Promedio: {grade}",
     "scoreBetween": "Promedio: entre {lower} y {upper}",
-    "scoreEmpty": "Aún no hay letras de productos disponibles"
+    "scoreEmpty": "Aún no hay letras de productos disponibles",
+    "sourceReference": "100 g / 100 ml (referencia de la fuente)"
   },
   "fr": {
     "searchTitle": "Rechercher des aliments",
@@ -393,7 +396,8 @@
     "scoreDetails": "Comment cela fonctionne-t-il ?",
     "scoreAt": "Moyenne : {grade}",
     "scoreBetween": "Moyenne : entre {lower} et {upper}",
-    "scoreEmpty": "Aucune lettre de produit disponible pour le moment"
+    "scoreEmpty": "Aucune lettre de produit disponible pour le moment",
+    "sourceReference": "100 g / 100 ml (référence de la source)"
   },
   "pt": {
     "searchTitle": "Pesquisar alimentos",
@@ -492,7 +496,8 @@
     "scoreDetails": "Como funciona?",
     "scoreAt": "Média: {grade}",
     "scoreBetween": "Média: entre {lower} e {upper}",
-    "scoreEmpty": "Ainda não há letras de produtos disponíveis"
+    "scoreEmpty": "Ainda não há letras de produtos disponíveis",
+    "sourceReference": "100 g / 100 ml (referência da fonte)"
   },
   "zh-Hans": {
     "searchTitle": "搜索食品",
@@ -591,7 +596,8 @@
     "scoreDetails": "这是如何计算的？",
     "scoreAt": "平均位置：{grade}",
     "scoreBetween": "平均位置：{lower} 与 {upper} 之间",
-    "scoreEmpty": "暂无产品等级"
+    "scoreEmpty": "暂无产品等级",
+    "sourceReference": "100 g / 100 ml（来源参考值）"
   },
   "id": {
     "searchTitle": "Cari makanan",
@@ -690,7 +696,8 @@
     "scoreDetails": "Bagaimana cara kerjanya?",
     "scoreAt": "Rata-rata: {grade}",
     "scoreBetween": "Rata-rata: antara {lower} dan {upper}",
-    "scoreEmpty": "Belum ada huruf produk yang tersedia"
+    "scoreEmpty": "Belum ada huruf produk yang tersedia",
+    "sourceReference": "100 g / 100 ml (nilai acuan sumber)"
   },
   "hi": {
     "searchTitle": "खाद्य पदार्थ खोजें",
@@ -789,7 +796,8 @@
     "scoreDetails": "यह कैसे काम करता है?",
     "scoreAt": "औसत: {grade}",
     "scoreBetween": "औसत: {lower} और {upper} के बीच",
-    "scoreEmpty": "अभी उत्पादों के अक्षर उपलब्ध नहीं हैं"
+    "scoreEmpty": "अभी उत्पादों के अक्षर उपलब्ध नहीं हैं",
+    "sourceReference": "100 g / 100 ml (स्रोत का संदर्भ मान)"
   },
   "bn": {
     "searchTitle": "খাদ্য খুঁজুন",
@@ -888,7 +896,8 @@
     "scoreDetails": "এটি কীভাবে কাজ করে?",
     "scoreAt": "গড়: {grade}",
     "scoreBetween": "গড়: {lower} এবং {upper}-এর মধ্যে",
-    "scoreEmpty": "এখনও পণ্যের অক্ষর পাওয়া যায়নি"
+    "scoreEmpty": "এখনও পণ্যের অক্ষর পাওয়া যায়নি",
+    "sourceReference": "100 g / 100 ml (উৎসের রেফারেন্স মান)"
   },
   "ar": {
     "searchTitle": "البحث عن الأغذية",
@@ -987,7 +996,8 @@
     "scoreDetails": "كيف يعمل هذا؟",
     "scoreAt": "المتوسط: {grade}",
     "scoreBetween": "المتوسط: بين {lower} و{upper}",
-    "scoreEmpty": "لا توجد حروف للمنتجات بعد"
+    "scoreEmpty": "لا توجد حروف للمنتجات بعد",
+    "sourceReference": "100 g / 100 ml (القيمة المرجعية للمصدر)"
   },
   "ur": {
     "searchTitle": "غذائیں تلاش کریں",
@@ -1086,6 +1096,7 @@
     "scoreDetails": "یہ کیسے کام کرتا ہے؟",
     "scoreAt": "اوسط: {grade}",
     "scoreBetween": "اوسط: {lower} اور {upper} کے درمیان",
-    "scoreEmpty": "ابھی مصنوعات کے حروف دستیاب نہیں ہیں"
+    "scoreEmpty": "ابھی مصنوعات کے حروف دستیاب نہیں ہیں",
+    "sourceReference": "100 g / 100 ml (ماخذ کی حوالہ قدر)"
   }
 }

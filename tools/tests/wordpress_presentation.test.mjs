@@ -77,3 +77,17 @@ test('content panels share framing while Brizy structure, forms, disclosures, an
  assert.equal(h.document.querySelectorAll('.ctstyle-header .ctstyle-shared-panel,#protected.ctstyle-shared-panel').length,0);
  assert.deepEqual([...h.document.querySelectorAll('#content .ctstyle-word-initial')].map(n=>n.textContent),['P','g']);
 });
+
+test('Richlist banner accents only both dollar signs, including fragmented and translated titles',()=>{
+ const h=fixture('<div class="ctstyle-title"><h1 class="ctstyle-heading"><strong>$</strong><span>Richlist</span><strong>$</strong></h1></div><h2 class="ctstyle-section-heading">Other Heading</h2>');
+ h.document.body.classList.add('page-id-3243');
+ h.run('presentation.js');
+ const heading=h.document.querySelector('h1');
+ for(const title of ['$Richlist$','$Houderslijst$','$持有者排名$','$Richlist$']){
+  if(heading.textContent!==title)heading.textContent=title;
+  h.window.CalorieTokenPresentationUI.refresh();
+  assert.equal(heading.textContent,title);
+  assert.deepEqual([...heading.querySelectorAll('.ctstyle-word-initial')].map(n=>n.textContent),['$','$']);
+ }
+ assert.deepEqual([...h.document.querySelectorAll('h2 .ctstyle-word-initial')].map(n=>n.textContent),['O','H']);
+});
