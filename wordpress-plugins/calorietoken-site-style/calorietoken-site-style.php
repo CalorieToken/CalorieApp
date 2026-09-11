@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.18
+ * Version: 1.4.19
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,36 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.18';
+    const VERSION = '1.4.19';
+
+    public static function presentation_preview() {
+        if (is_admin() || !is_preview() || !is_singular('page') ||
+            !current_user_can('edit_post', get_queried_object_id()) ||
+            (defined('REST_REQUEST') && REST_REQUEST)) { return false; }
+        foreach (array('customize_changeset_uuid', 'brizy-edit', 'brizy-edit-iframe', 'brz-edit', 'brz-edit-iframe') as $key) {
+            if (isset($_GET[$key])) { return false; }
+        }
+        return true;
+    }
+
+    private static function presentation_assets($base, $preview = false) {
+        // Only public menu labels/URLs. No account data or authentication settings.
+        $links = array();
+        $menu = wp_get_nav_menu_object('Hoofdmenu3');
+        $items = $menu && !is_wp_error($menu) ? wp_get_nav_menu_items($menu) : false;
+        foreach (is_array($items) ? $items : array() as $item) {
+            if ($item->type === 'post_type' && get_post_status($item->object_id) !== 'publish') { continue; }
+            $links[] = array('title' => wp_strip_all_tags($item->title), 'url' => esc_url_raw($item->url));
+        }
+        wp_enqueue_style('calorietoken-presentation', $base . 'assets/presentation.css', $preview ? array() : array('calorietoken-refinements'), self::VERSION);
+        wp_enqueue_script('calorietoken-presentation', $base . 'assets/presentation.js', $preview ? array() : array('calorietoken-refinements', 'calorietoken-content-language'), self::VERSION, true);
+        wp_localize_script('calorietoken-presentation', 'CalorieTokenPresentation', array(
+            'preview' => $preview, 'links' => $links, 'copy' => self::json_asset('presentation-data'),
+            'paperImage' => content_url('/uploads/2021/12/Websiteachtergrond.png'),
+            'headerImage' => content_url('/uploads/2024/01/achtergrondbannersitea1.png'),
+            'titleImage' => content_url('/uploads/2022/10/kopje-banner3.png'),
+        ));
+    }
 
     public static function header_menu() {
         // The menu verified in the live Brizy header. Never fall through to an
@@ -165,6 +194,7 @@ final class Plugin {
                 'entries' => $entries, 'locales' => array_keys($copy),
             ));
         }
+        self::presentation_assets($base);
         if (is_page(7880)) {
             wp_enqueue_script('calorietoken-testnet', $base . 'assets/testnet.js', array('calorietoken-discovery'), self::VERSION, true);
             wp_enqueue_script('calorietoken-display-runtime', $base . 'assets/display-language-runtime.js', array(), self::VERSION, true);
@@ -189,6 +219,7 @@ final class Plugin {
     public static function body_class($classes) {
         if (self::enabled()) { $classes[] = 'ctstyle-enabled'; }
         elseif (self::footer_only()) { $classes[] = 'ctstyle-footer-only'; }
+        elseif (self::presentation_preview()) { $classes[] = 'ctstyle-presentation-preview'; }
         return $classes;
     }
 
@@ -205,6 +236,11 @@ final class Plugin {
     }
 
     public static function enqueue() {
+        if (self::presentation_preview()) {
+            // Draft previews get presentation only, never public app/faucet/login runtimes.
+            self::presentation_assets(plugin_dir_url(__FILE__), true);
+            return;
+        }
         if (!self::enabled() && !self::footer_only()) { return; }
         $base = plugin_dir_url(__FILE__);
         wp_enqueue_style('calorietoken-site-style', $base . 'assets/style.css', array(), self::VERSION);

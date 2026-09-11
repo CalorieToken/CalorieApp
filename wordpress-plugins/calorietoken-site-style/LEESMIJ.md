@@ -1,10 +1,12 @@
-# CalorieToken Site Style 1.4.18
+# CalorieToken Site Style 1.4.19
+
+Deze release groepeert het bestaande Hoofdmenu3 op alle ondersteunde headers, gebruikt de historische papierachtergrond, kleurt de beginletters van titelwoorden en verzorgt accountknoppen en passende inhoudsvakken. Geautoriseerde WordPress-conceptvoorbeelden krijgen alleen de presentatielaag. Geen concepten worden gepubliceerd. De Identity Bridge blijft ongewijzigd. Het periodeoverzicht, de verbeterde zoekmeldingen en zelfstandig uitloggen van CalorieApp vereisen de afzonderlijke appuitrol.
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.18.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.18** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.19.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.19** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
 ## Testnet-antwoordcorrectie
 

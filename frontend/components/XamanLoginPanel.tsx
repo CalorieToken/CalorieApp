@@ -943,6 +943,11 @@ export async function requestCalorieAppLogout(): Promise<void> {
 export function XamanLoginPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutNeedsRetry, setLogoutNeedsRetry] = useState(false);
+  const logoutRequestRef = useRef<Promise<void> | null>(null);
+  const logoutCompleteRef = useRef(false);
+  const authRevisionRef = useRef(0);
+  const embeddedOperationRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
@@ -961,11 +966,13 @@ export function XamanLoginPanel() {
   const activeLocale = useRef(displayLocale);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
+    const revision = authRevisionRef.current;
     try {
       const response = await backendRequest(
         `${BACKEND_BASE_URL}/api/identity/me`,
         { signal }
       );
+      if (signal?.aborted || revision !== authRevisionRef.current) return null;
       if (!response.ok) {
         setCurrentUser(null);
         if (response.status === 401) {
@@ -974,11 +981,13 @@ export function XamanLoginPanel() {
         return null;
       }
       const data = (await response.json()) as MeResponse;
+      if (signal?.aborted || revision !== authRevisionRef.current) return null;
+      logoutCompleteRef.current = false;
       setCurrentUser(data);
       announceAuthState(true);
       return data;
     } catch {
-      if (signal?.aborted) {
+      if (signal?.aborted || revision !== authRevisionRef.current) {
         return null;
       }
       setCurrentUser(null);
@@ -987,9 +996,27 @@ export function XamanLoginPanel() {
   }, []);
 
   const clearCalorieAppSession = useCallback(async () => {
-    await requestCalorieAppLogout();
+    if (logoutRequestRef.current) return logoutRequestRef.current;
+    if (logoutCompleteRef.current) return;
+    authRevisionRef.current += 1;
+    loginAbortController.current?.abort();
+    embeddedOperationRef.current?.abort();
+    embeddedRequestId.current = "";
+    embeddedLoginStart.current = null;
+    embeddedAuthorizationInFlight.current = false;
+    try { clearPendingLogin(); } catch { /* Storage restrictions must not block logout. */ }
     setCurrentUser(null);
     announceAuthState(false);
+    setIsLoading(false);
+    setLoginStatus(null);
+    setLogoutNeedsRetry(true);
+    const pending = requestCalorieAppLogout().then(() => {
+      logoutCompleteRef.current = true;
+      setLogoutNeedsRetry(false);
+    });
+    logoutRequestRef.current = pending;
+    try { await pending; }
+    finally { if (logoutRequestRef.current === pending) logoutRequestRef.current = null; }
   }, []);
 
   useEffect(() => {
@@ -1101,6 +1128,7 @@ export function XamanLoginPanel() {
     postHeight();
 
     const handleParentMessage = async (event: MessageEvent<ParentBridgeMessage>) => {
+      const revision = authRevisionRef.current;
       if (
         event.source === window.parent &&
         event.data?.type === "calorieapp:bridge:init" &&
@@ -1210,17 +1238,22 @@ export function XamanLoginPanel() {
               "WordPress signed in. Restoring CalorieApp in this browser..."
             );
 
+            const operation = new AbortController();
+            embeddedOperationRef.current?.abort();
+            embeddedOperationRef.current = operation;
             try {
               await waitForOriginLogin(
                 pending.state,
                 pending.browser_handoff_token,
                 pending.expires_at,
-                bridgeController.signal,
+                operation.signal,
                 pending.locale
               );
               const restoredUser = await waitForAuthenticatedUserAfterLogin(
-                bridgeController.signal
+                operation.signal
               );
+              if (operation.signal.aborted || revision !== authRevisionRef.current) return;
+              logoutCompleteRef.current = false;
               setCurrentUser(restoredUser);
               announceAuthState(true);
 
@@ -1241,7 +1274,7 @@ export function XamanLoginPanel() {
               );
               return;
             } catch (requestError) {
-              if (bridgeController.signal.aborted) {
+              if (operation.signal.aborted || revision !== authRevisionRef.current) {
                 return;
               }
               setError(
@@ -1290,18 +1323,23 @@ export function XamanLoginPanel() {
       }
 
       embeddedAuthorizationInFlight.current = true;
+      const operation = new AbortController();
+      embeddedOperationRef.current?.abort();
+      embeddedOperationRef.current = operation;
       try {
         setLoginStatus("Activating CalorieApp in this browser...");
         const restoredUser = await completeEmbeddedLogin(
           pending,
           event.data.code,
           event.data.state,
-          bridgeController.signal
+          operation.signal
         );
 
+        if (operation.signal.aborted || revision !== authRevisionRef.current) return;
         embeddedLoginStart.current = null;
         embeddedAuthorizationRefreshes.current = 0;
         clearPendingLogin();
+        logoutCompleteRef.current = false;
         setCurrentUser(restoredUser);
         announceAuthState(true);
         setError(null);
@@ -1319,6 +1357,7 @@ export function XamanLoginPanel() {
           origin
         );
       } catch (requestError) {
+        if (operation.signal.aborted || revision !== authRevisionRef.current) return;
         const refreshDelayMs = embeddedAuthorizationRefreshDelayMs(
           requestError,
           embeddedAuthorizationRefreshes.current,
@@ -1333,13 +1372,13 @@ export function XamanLoginPanel() {
 
           if (refreshDelayMs > 0) {
             try {
-              await delay(refreshDelayMs, bridgeController.signal);
+              await delay(refreshDelayMs, operation.signal);
             } catch {
               return;
             }
           }
           if (
-            bridgeController.signal.aborted ||
+            operation.signal.aborted ||
             embeddedLoginStart.current !== pending ||
             embeddedRequestId.current !== event.data.requestId
           ) {
@@ -1379,7 +1418,7 @@ export function XamanLoginPanel() {
           origin
         );
       } finally {
-        embeddedAuthorizationInFlight.current = false;
+        if (revision === authRevisionRef.current) embeddedAuthorizationInFlight.current = false;
       }
     };
 
@@ -1390,12 +1429,14 @@ export function XamanLoginPanel() {
     );
     return () => {
       bridgeController.abort();
+      embeddedOperationRef.current?.abort();
       resizeObserver?.disconnect();
       window.removeEventListener("message", handleParentMessage);
     };
   }, [clearCalorieAppSession, refreshCurrentUser]);
 
   function handleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (logoutRequestRef.current || logoutNeedsRetry || isLoggingOut) { event.preventDefault(); return; }
     if (
       parentOrigin.current && BACKEND_WAKE_NAVIGATION_URL &&
       rememberBackendWakeReturn(parentOrigin.current, activeLocale.current)
@@ -1409,6 +1450,8 @@ export function XamanLoginPanel() {
   }
 
   async function handleLogin() {
+    if (logoutRequestRef.current || logoutNeedsRetry || isLoggingOut) return;
+    logoutCompleteRef.current = false;
     const controller = new AbortController();
     loginAbortController.current?.abort();
     loginAbortController.current = controller;
@@ -1452,6 +1495,7 @@ export function XamanLoginPanel() {
           EMBEDDED_LOGIN_START_RETRY_WINDOW_MS,
           activeLocale.current
         );
+        if (controller.signal.aborted || embeddedRequestId.current !== requestId) return;
         if (
           data.state.length < 32 ||
           data.browser_handoff_token.length < 32 ||
@@ -1521,30 +1565,23 @@ export function XamanLoginPanel() {
   };
 
   async function handleLogout() {
+    if (logoutRequestRef.current) return;
     setError(null);
     setSuccessNotice(null);
     setIsLoggingOut(true);
-
-    if (parentOrigin.current) {
-      window.parent.postMessage(
-        {
-          type: "calorieapp:logout:request",
-          locale: activeLocale.current,
-        },
-        parentOrigin.current
-      );
-      return;
-    }
-
     try {
+      // Always clear this app's own cookie/session first. An embedded browser
+      // may already have lost the WordPress session and its logout button.
       await clearCalorieAppSession();
+      setSuccessNotice("CalorieApp is signed out on this device.");
+      if (parentOrigin.current) {
+        window.parent.postMessage(
+          { type: "calorieapp:logout:request", locale: activeLocale.current },
+          parentOrigin.current
+        );
+      }
     } catch (requestError) {
-      setError(
-        backendUnavailableMessage(
-          requestError,
-          "Unable to log out right now. Please try again."
-        )
-      );
+      setError(backendUnavailableMessage(requestError, "Unable to log out right now. Please try again."));
     } finally {
       setIsLoggingOut(false);
     }
@@ -1690,6 +1727,11 @@ export function XamanLoginPanel() {
             </div>
           </details>
         </div>
+      ) : isLoggingOut || logoutNeedsRetry ? (
+        <button type="button" onClick={handleLogout} disabled={isLoggingOut}
+          className="mt-4 min-h-11 rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          {isLoggingOut ? authCopy.loggingOut : authCopy.retryLogout}
+        </button>
       ) : loginSurfaceMode === "standalone" ? (
         <a
           href={WORDPRESS_APP_URL}

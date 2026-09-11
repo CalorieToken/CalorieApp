@@ -39,7 +39,9 @@
     "finishFailed": "WordPress is signed in, but CalorieApp could not finish. Please try again.",
     "prepareFailed": "CalorieApp could not prepare its session. WordPress sign-in was not changed.",
     "logoutFailed": "Unable to log out right now. Please try again.",
-    "serviceSlow": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup."
+    "serviceSlow": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.",
+    "signedOutApp": "CalorieApp is signed out on this device.",
+    "retryLogout": "Retry logout"
   },
   "nl": {
     "connectedAccount": "Verbonden account",
@@ -81,7 +83,9 @@
     "finishFailed": "WordPress is ingelogd, maar CalorieApp kon niet afronden. Probeer opnieuw.",
     "prepareFailed": "CalorieApp kon de sessie niet voorbereiden. Je WordPress-aanmelding is niet gewijzigd.",
     "logoutFailed": "Uitloggen lukt nu niet. Probeer opnieuw.",
-    "serviceSlow": "Het opstarten van CalorieApp duurt langer dan verwacht. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen."
+    "serviceSlow": "Het opstarten van CalorieApp duurt langer dan verwacht. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen.",
+    "signedOutApp": "CalorieApp is uitgelogd op dit apparaat.",
+    "retryLogout": "Uitloggen opnieuw proberen"
   },
   "es": {
     "connectedAccount": "Cuenta conectada",
@@ -123,7 +127,9 @@
     "finishFailed": "WordPress tiene sesión iniciada, pero CalorieApp no pudo completarla. Inténtalo de nuevo.",
     "prepareFailed": "CalorieApp no pudo preparar su sesión. El acceso a WordPress no cambió.",
     "logoutFailed": "No se puede cerrar sesión ahora. Inténtalo de nuevo.",
-    "serviceSlow": "CalorieApp tarda más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede retrasar el inicio."
+    "serviceSlow": "CalorieApp tarda más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede retrasar el inicio.",
+    "signedOutApp": "Se ha cerrado la sesión de CalorieApp en este dispositivo.",
+    "retryLogout": "Reintentar cierre de sesión"
   },
   "fr": {
     "connectedAccount": "Compte connecté",
@@ -165,7 +171,9 @@
     "finishFailed": "WordPress est connecté, mais CalorieApp n’a pas pu terminer. Réessayez.",
     "prepareFailed": "CalorieApp n’a pas pu préparer sa session. La connexion WordPress reste inchangée.",
     "logoutFailed": "Impossible de se déconnecter maintenant. Réessayez.",
-    "serviceSlow": "CalorieApp met plus de temps que prévu à démarrer. Patientez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage."
+    "serviceSlow": "CalorieApp met plus de temps que prévu à démarrer. Patientez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage.",
+    "signedOutApp": "CalorieApp est déconnectée sur cet appareil.",
+    "retryLogout": "Réessayer la déconnexion"
   },
   "pt": {
     "connectedAccount": "Conta conectada",
@@ -207,7 +215,9 @@
     "finishFailed": "WordPress está conectado, mas CalorieApp não conseguiu concluir. Tente novamente.",
     "prepareFailed": "CalorieApp não conseguiu preparar a sessão. O acesso ao WordPress não foi alterado.",
     "logoutFailed": "Não foi possível sair agora. Tente novamente.",
-    "serviceSlow": "O CalorieApp está a demorar mais do que o previsto a iniciar. Aguarde alguns minutos antes de tentar novamente; atualizar repetidamente pode atrasar o início."
+    "serviceSlow": "O CalorieApp está a demorar mais do que o previsto a iniciar. Aguarde alguns minutos antes de tentar novamente; atualizar repetidamente pode atrasar o início.",
+    "signedOutApp": "A sessão do CalorieApp foi encerrada neste dispositivo.",
+    "retryLogout": "Tentar sair novamente"
   },
   "zh-Hans": {
     "connectedAccount": "已连接的账户",
@@ -249,7 +259,9 @@
     "finishFailed": "WordPress 已登录，但 CalorieApp 未能完成。请重试。",
     "prepareFailed": "CalorieApp 无法准备会话。WordPress 登录未改变。",
     "logoutFailed": "目前无法退出登录。请重试。",
-    "serviceSlow": "CalorieApp 服务启动时间超出预期。请等待几分钟再重试；反复刷新可能会减慢启动速度。"
+    "serviceSlow": "CalorieApp 服务启动时间超出预期。请等待几分钟再重试；反复刷新可能会减慢启动速度。",
+    "signedOutApp": "已在此设备上退出 CalorieApp。",
+    "retryLogout": "重试退出"
   },
   "id": {
     "connectedAccount": "Akun terhubung",
@@ -291,7 +303,9 @@
     "finishFailed": "WordPress sudah masuk, tetapi CalorieApp belum selesai. Coba lagi.",
     "prepareFailed": "CalorieApp tidak dapat menyiapkan sesi. Proses masuk WordPress tidak berubah.",
     "logoutFailed": "Tidak dapat keluar sekarang. Coba lagi.",
-    "serviceSlow": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat prosesnya."
+    "serviceSlow": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat prosesnya.",
+    "signedOutApp": "CalorieApp sudah keluar di perangkat ini.",
+    "retryLogout": "Coba keluar lagi"
   },
   "hi": {
     "connectedAccount": "जुड़ा हुआ खाता",
@@ -333,7 +347,9 @@
     "finishFailed": "WordPress में लॉग इन है, लेकिन CalorieApp पूरा नहीं हो सका। फिर कोशिश करें।",
     "prepareFailed": "CalorieApp सत्र तैयार नहीं कर सका। WordPress लॉग इन नहीं बदला।",
     "logoutFailed": "अभी लॉग आउट नहीं हो सका। फिर कोशिश करें।",
-    "serviceSlow": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय ले रही है। फिर कोशिश करने से पहले कुछ मिनट रुकें; बार-बार रीफ़्रेश करने से शुरू होने में और समय लग सकता है।"
+    "serviceSlow": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय ले रही है। फिर कोशिश करने से पहले कुछ मिनट रुकें; बार-बार रीफ़्रेश करने से शुरू होने में और समय लग सकता है।",
+    "signedOutApp": "इस डिवाइस पर CalorieApp से लॉग आउट हो गया है।",
+    "retryLogout": "लॉग आउट फिर आज़माएँ"
   },
   "bn": {
     "connectedAccount": "সংযুক্ত অ্যাকাউন্ট",
@@ -375,7 +391,9 @@
     "finishFailed": "WordPress-এ লগ ইন হয়েছে, কিন্তু CalorieApp সম্পূর্ণ করতে পারেনি। আবার চেষ্টা করুন।",
     "prepareFailed": "CalorieApp সেশন প্রস্তুত করতে পারেনি। WordPress লগ ইন পরিবর্তন হয়নি।",
     "logoutFailed": "এখন লগ আউট করা যায়নি। আবার চেষ্টা করুন।",
-    "serviceSlow": "CalorieApp চালু হতে প্রত্যাশার চেয়ে বেশি সময় লাগছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও সময় লাগতে পারে।"
+    "serviceSlow": "CalorieApp চালু হতে প্রত্যাশার চেয়ে বেশি সময় লাগছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও সময় লাগতে পারে।",
+    "signedOutApp": "এই ডিভাইসে CalorieApp থেকে লগ আউট হয়েছে।",
+    "retryLogout": "লগ আউট আবার চেষ্টা করুন"
   },
   "ar": {
     "connectedAccount": "الحساب المتصل",
@@ -417,7 +435,9 @@
     "finishFailed": "تم الدخول إلى WordPress، لكن CalorieApp لم يكتمل. حاول مجددًا.",
     "prepareFailed": "تعذر تجهيز جلسة CalorieApp. لم يتغير تسجيل الدخول إلى WordPress.",
     "logoutFailed": "تعذر تسجيل الخروج الآن. حاول مجددًا.",
-    "serviceSlow": "تستغرق خدمة CalorieApp وقتًا أطول من المتوقع لبدء التشغيل. انتظر بضع دقائق قبل المحاولة مجددًا؛ قد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل."
+    "serviceSlow": "تستغرق خدمة CalorieApp وقتًا أطول من المتوقع لبدء التشغيل. انتظر بضع دقائق قبل المحاولة مجددًا؛ قد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل.",
+    "signedOutApp": "تم تسجيل الخروج من CalorieApp على هذا الجهاز.",
+    "retryLogout": "إعادة محاولة تسجيل الخروج"
   },
   "ur": {
     "connectedAccount": "منسلک اکاؤنٹ",
@@ -459,6 +479,8 @@
     "finishFailed": "WordPress میں لاگ ان ہے لیکن CalorieApp مکمل نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
     "prepareFailed": "CalorieApp سیشن تیار نہیں کر سکا۔ WordPress لاگ ان تبدیل نہیں ہوا۔",
     "logoutFailed": "ابھی لاگ آؤٹ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
-    "serviceSlow": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز میں مزید دیر ہو سکتی ہے۔"
+    "serviceSlow": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز میں مزید دیر ہو سکتی ہے۔",
+    "signedOutApp": "اس آلے پر CalorieApp سے لاگ آؤٹ ہو گیا ہے۔",
+    "retryLogout": "لاگ آؤٹ دوبارہ آزمائیں"
   }
 }

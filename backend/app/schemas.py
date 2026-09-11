@@ -56,6 +56,17 @@ class FoodLog(FoodLogCreate):
         return _ensure_utc(value)
 
 
+class FoodLogOverview(BaseModel):
+    entries: list[FoodLog]
+    next_before: int | None
+    count: int
+    calories: float
+    protein: float
+    fat: float
+    carbohydrates: float
+    grades: dict[str, int]
+
+
 class FoodSearchResult(BaseModel):
     model_config = ConfigDict(allow_inf_nan=False)
 

@@ -1,0 +1,79 @@
+{
+  "en": {
+    "project": "Project",
+    "crypto": "CAL & Crypto",
+    "community": "Community",
+    "help": "Help",
+    "menu": "Menu"
+  },
+  "nl": {
+    "project": "Project",
+    "crypto": "CAL & Crypto",
+    "community": "Community",
+    "help": "Hulp",
+    "menu": "Menu"
+  },
+  "es": {
+    "project": "Proyecto",
+    "crypto": "CAL y Crypto",
+    "community": "Comunidad",
+    "help": "Ayuda",
+    "menu": "Menú"
+  },
+  "fr": {
+    "project": "Projet",
+    "crypto": "CAL & Crypto",
+    "community": "Communauté",
+    "help": "Aide",
+    "menu": "Menu"
+  },
+  "pt": {
+    "project": "Projeto",
+    "crypto": "CAL e Crypto",
+    "community": "Comunidade",
+    "help": "Ajuda",
+    "menu": "Menu"
+  },
+  "zh-Hans": {
+    "project": "项目",
+    "crypto": "CAL 与加密货币",
+    "community": "社区",
+    "help": "帮助",
+    "menu": "菜单"
+  },
+  "id": {
+    "project": "Proyek",
+    "crypto": "CAL & Crypto",
+    "community": "Komunitas",
+    "help": "Bantuan",
+    "menu": "Menu"
+  },
+  "hi": {
+    "project": "परियोजना",
+    "crypto": "CAL और क्रिप्टो",
+    "community": "समुदाय",
+    "help": "सहायता",
+    "menu": "मेन्यू"
+  },
+  "bn": {
+    "project": "প্রকল্প",
+    "crypto": "CAL ও ক্রিপ্টো",
+    "community": "কমিউনিটি",
+    "help": "সহায়তা",
+    "menu": "মেনু"
+  },
+  "ar": {
+    "project": "المشروع",
+    "crypto": "CAL والعملات الرقمية",
+    "community": "المجتمع",
+    "help": "المساعدة",
+    "menu": "القائمة"
+  },
+  "ur": {
+    "project": "منصوبہ",
+    "crypto": "CAL اور کرپٹو",
+    "community": "کمیونٹی",
+    "help": "مدد",
+    "menu": "مینو"
+  }
+}

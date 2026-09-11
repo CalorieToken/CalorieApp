@@ -37,7 +37,7 @@
     if (styled) return styled;
     var menu = document.querySelector('.brz-menu-simple');
     var header = menu && menu.closest('.brz-section,section,header');
-    if (!header) header = document.querySelector('.showcase-page-header,header.site-header,#masthead');
+    if (!header) header = document.querySelector('.showcase-page-header') || document.querySelector('header.site-header,#masthead');
     if (header) {
       header.classList.add('ctstyle-header');
       if (header.classList.contains('brz-section')) {

@@ -25,6 +25,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
   { pattern: /^search-food$/, methods: new Set(["GET"]) },
   { pattern: /^log-food$/, methods: new Set(["POST"]) },
   { pattern: /^logs$/, methods: new Set(["GET", "DELETE"]) },
+  { pattern: /^logs\/overview$/, methods: new Set(["GET"]) },
   { pattern: /^logs\/[^/]+$/, methods: new Set(["DELETE"]) },
   {
     pattern: /^api\/identity\/(login\/(start|status)|callback|logout)$/,

@@ -42,6 +42,8 @@ from .capacity import (
     validate_capacity_configuration,
 )
 from .database import database_readiness, get_session, init_db
+from .food_log_view import food_log_overview
+from .schemas import FoodLogOverview
 from .data_growth import (
     DataGrowthAdmissionRejected,
     create_food_log_with_subject_budget,
@@ -1641,6 +1643,20 @@ def get_logs(
     ).all()
     logger.info("Returning logged food items (count=%s)", len(entries))
     return [FoodLog.model_validate(e.model_dump()) for e in entries]
+
+
+@app.get("/logs/overview", response_model=FoodLogOverview)
+def get_log_overview(
+    session: DbSession,
+    current_user: CurrentUser,
+    response: Response,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    before: int | None = Query(default=None, ge=1),
+    limit: int = Query(default=100, ge=1, le=200),
+) -> FoodLogOverview:
+    response.headers["Cache-Control"] = "private, no-store"
+    return food_log_overview(session, current_user.id, start, end, before, limit)
 
 
 @app.delete("/logs/{log_id}")

@@ -66,6 +66,7 @@ ROUTE_RATE_POLICIES: dict[tuple[str, str], RouteRatePolicy] = {
     ("POST", "/api/identity/logout"): RouteRatePolicy("identity_logout", 120),
     ("POST", "/log-food"): RouteRatePolicy("food_log_create", 120),
     ("GET", "/logs"): RouteRatePolicy("food_log_list", 240),
+    ("GET", "/logs/overview"): RouteRatePolicy("food_log_list", 240),
     ("DELETE", "/logs"): RouteRatePolicy("food_log_delete_all", 30),
     ("GET", "/search-food"): RouteRatePolicy("food_search", 60),
 }

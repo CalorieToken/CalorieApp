@@ -28,10 +28,11 @@
       if(record.changed){node.replaceChildren.apply(node,record.children);record.changed=false;}
       if(record.lang===null)node.removeAttribute('lang');else node.setAttribute('lang',record.lang);
       if(record.dir===null)node.removeAttribute('dir');else node.setAttribute('dir',record.dir);
+      if(window.CalorieTokenPresentationUI)window.CalorieTokenPresentationUI.paintHeading(node);
       record.last=norm(node.textContent);record.current=Array.from(node.childNodes);record.paintedLocale=null;return;
     }
     if(norm(node.textContent)!==value)node.replaceChildren(document.createTextNode(value));
-    node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';record.last=value;record.changed=true;record.current=Array.from(node.childNodes);record.paintedLocale=locale;
+    node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';record.last=value;record.changed=true;if(window.CalorieTokenPresentationUI)window.CalorieTokenPresentationUI.paintHeading(node);record.current=Array.from(node.childNodes);record.paintedLocale=locale;
   }
   function block(n){
     if(!safe(n)||n.querySelector(excluded)||records.has(n))return;
@@ -75,7 +76,7 @@
     document.querySelectorAll('.ctstyle-legal,.ctstyle-market-card,.brz-rich-text,.entry-content,.woocommerce,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.ctstyle-roadmap-preview,.calorieapp-context-note,.brz-posts').forEach(function(root){if(!records.has(root))fragments(root);});
     if(observer)observer.observe(document.body,{subtree:true,childList:true,characterData:true});
   }
-  window.CalorieTokenContentLanguageUI={refresh:refresh,getLocale:function(){return locale;},coverage:function(){return {locale:locale,translated:active.filter(function(r){return r.node.isConnected&&locale!=='en'&&!!r.row.translations[locale];}).length};}};
+  window.CalorieTokenContentLanguageUI={decorateHeading:function(node,decorate){decorate(node);var r=records.get(node);if(r&&r.kind==='block')r.current=Array.from(node.childNodes);},refresh:refresh,getLocale:function(){return locale;},coverage:function(){return {locale:locale,translated:active.filter(function(r){return r.node.isConnected&&locale!=='en'&&!!r.row.translations[locale];}).length};}};
   function relevant(mutations){
     return mutations.some(function(record){
       var target=record.target.nodeType===3?record.target.parentElement:record.target;
