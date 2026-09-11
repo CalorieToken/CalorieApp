@@ -25,10 +25,10 @@
 :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) #ctstyle-account-app{background:#f7f8fc var(--ctstyle-paper-image) center/520px auto!important;border-color:#d7daea!important;color:#505ba9!important;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .calorieapp-site-logout{box-sizing:border-box!important;min-height:44px!important;padding:8px 16px!important;border:2px solid #505ba9!important;border-radius:14px!important;background:#505ba9!important;color:#fff!important;font:700 15px/1.4 Arial,sans-serif!important;cursor:pointer;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .calorieapp-site-logout:is(:hover,:focus-visible){background:#008d36!important;border-color:#008d36!important;outline:2px solid #f9b233;outline-offset:2px;}
-:is(body.ctstyle-enabled,body.ctstyle-presentation-preview) .ctstyle-word-heading,:is(body.ctstyle-enabled,body.ctstyle-presentation-preview) .ctstyle-word-heading *{color:#000104!important;}
-:is(body.ctstyle-enabled,body.ctstyle-presentation-preview) .ctstyle-word-heading .ctstyle-word-initial{color:#505ba9!important;}
-:is(body.ctstyle-enabled,body.ctstyle-presentation-preview) .ctstyle-shared-panel{box-sizing:border-box;border:2px solid #505ba9!important;border-top:7px solid #f9b233!important;border-radius:32px 16px!important;background:linear-gradient(120deg,#505ba912,#f9b23312)!important;padding:clamp(20px,4vw,42px)!important;box-shadow:0 3px 14px #3034490d;}
-:is(body.ctstyle-enabled,body.ctstyle-presentation-preview) .ctstyle-shared-banner{box-sizing:border-box!important;max-width:987px!important;margin:36px auto!important;padding:48px 24px!important;border:0!important;border-radius:100px 51px!important;background:linear-gradient(#505ba92e,#505ba92e),var(--ctstyle-title-image) center/cover!important;box-shadow:1px 2px 8px #505ba9!important;text-align:center!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading,:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading *{color:#000104!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading .ctstyle-word-initial{color:#505ba9!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel{box-sizing:border-box;border:2px solid #505ba9!important;border-top:7px solid #f9b233!important;border-radius:32px 16px!important;background:linear-gradient(120deg,#505ba912,#f9b23312)!important;padding:clamp(20px,4vw,42px)!important;box-shadow:0 3px 14px #3034490d;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-banner{box-sizing:border-box!important;max-width:987px!important;margin:36px auto!important;padding:48px 24px!important;border:0!important;border-radius:100px 51px!important;background:linear-gradient(#505ba92e,#505ba92e),var(--ctstyle-title-image) center/cover!important;box-shadow:1px 2px 8px #505ba9!important;text-align:center!important;}
 body.ctstyle-presentation-preview{background:#fff var(--ctstyle-paper-image) center/960px auto repeat;}
 /* The old Showcases page has its own ID-scoped CSS. Align that existing header. */
 body.ctstyle-enabled #calorie-showcase-page .showcase-page-header{padding:50px 24px!important;background:#f9b233 var(--ctstyle-header-image) 47% 69%/cover!important;}
@@ -46,6 +46,54 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-inner{grid-template-columns:minmax(0,1fr)!important;max-width:760px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{border-radius:26px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-account{max-width:300px!important;width:100%!important;margin:0 auto!important;}
+}
+/* A small, scoped important layer takes precedence over the older Brizy/ID
+   rules. In particular, the continuous-paper reset must not erase these cards.
+   Keep the underlying historical sheets as the fallback for older browsers. */
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-header-grid>:is(.ctstyle-logo-column,.ctstyle-menu-column){background:var(--ctstyle-menu-paper) center/640px auto repeat!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-site-header .ctstyle-menu-groups :is(a,summary){font:700 22px/1.35 Amiri,Georgia,serif!important;letter-spacing:0!important;padding:8px 12px!important;min-height:44px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-toggle{background:#505ba9!important;border-color:#505ba9!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-toggle:is(:hover,:focus-visible),:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) details[open]>.ctstyle-menu-toggle{background:#008d36!important;border-color:#008d36!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) input:checked+.ctstyle-menu-toggle{background:#008d36!important;border-color:#008d36!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .calorieapp-site-logout{background:#f9b233!important;border-color:#f9b233!important;color:#222638!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .calorieapp-site-logout:is(:hover,:focus-visible){background:#008d36!important;border-color:#008d36!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading,:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading *{color:#000104!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading .ctstyle-word-initial{color:#505ba9!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel{
+  box-sizing:border-box!important;min-width:0!important;
+  border:2px solid #505ba9!important;border-top:7px solid #f9b233!important;
+  border-radius:32px 16px!important;
+  background:linear-gradient(120deg,#505ba912,#f9b23312),var(--ctstyle-paper-image) center/960px auto repeat!important;
+  padding:clamp(22px,3vw,40px)!important;box-shadow:0 3px 14px #3034490d!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel-nested{padding:24px!important;border-top-width:5px!important;border-radius:24px 12px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure{padding:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure>summary{padding:20px 24px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-brizy-panel{height:auto!important;min-height:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-brizy-panel .brz-rich-text{background:transparent!important;}
+ @media(min-width:1051px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-compact-header .ctstyle-header-content,.ctstyle-native-header>.brz-section__content){padding:32px 24px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid{grid-template-columns:190px minmax(0,1fr) 324px!important;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-logo-column{grid-row:2!important;border-radius:64px 0 0 64px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-menu-column{grid-row:2!important;border-radius:0 64px 64px 0!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-account-column{grid-row:1 / 4!important;align-self:center!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid>:is(.ctstyle-logo-column,.ctstyle-menu-column)>.brz-column__items{min-height:180px!important;padding-block:20px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-logo-column>.brz-column__items{padding-inline:28px 20px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-header-grid .ctstyle-logo-column :is(.brz-wrapper,.brz-image,.brz-picture){max-width:142px!important;}
+  body.ctstyle-enabled .ctstyle-header-fallback,body.ctstyle-enabled #calorie-showcase-page .showcase-page-header{padding:32px 24px!important;}
+  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-header-inner,body.ctstyle-enabled #calorie-showcase-page .showcase-header-inner{align-items:center!important;max-width:1170px!important;}
+  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-header-brand{align-self:center!important;grid-template-columns:142px minmax(0,1fr)!important;column-gap:20px!important;min-height:180px!important;padding:20px 28px!important;border-radius:64px!important;}
+  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-logo img{width:142px!important;}
+  body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{align-self:center!important;min-height:180px!important;padding:20px 28px!important;gap:20px!important;border-radius:64px!important;}
+  body.ctstyle-enabled #calorie-showcase-page .showcase-site-logo{width:142px!important;flex-basis:142px!important;}
+ }
+ @media(max-width:767px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel{padding:22px 18px!important;border-radius:24px 12px!important;border-top-width:5px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel-nested{padding:18px 14px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure{padding:0!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure>summary{padding:18px!important;}
+ }
 }
 @media(max-width:767px){
  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-groups{display:block!important;}

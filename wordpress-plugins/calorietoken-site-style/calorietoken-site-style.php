@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.19
+ * Version: 1.4.20
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.19';
+    const VERSION = '1.4.20';
 
     public static function presentation_preview() {
         if (is_admin() || !is_preview() || !is_singular('page') ||
@@ -34,7 +34,8 @@ final class Plugin {
         $items = $menu && !is_wp_error($menu) ? wp_get_nav_menu_items($menu) : false;
         foreach (is_array($items) ? $items : array() as $item) {
             if ($item->type === 'post_type' && get_post_status($item->object_id) !== 'publish') { continue; }
-            $links[] = array('title' => wp_strip_all_tags($item->title), 'url' => esc_url_raw($item->url));
+            $title = wp_strip_all_tags(html_entity_decode($item->title, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $links[] = array('title' => $title, 'url' => esc_url_raw($item->url));
         }
         wp_enqueue_style('calorietoken-presentation', $base . 'assets/presentation.css', $preview ? array() : array('calorietoken-refinements'), self::VERSION);
         wp_enqueue_script('calorietoken-presentation', $base . 'assets/presentation.js', $preview ? array() : array('calorietoken-refinements', 'calorietoken-content-language'), self::VERSION, true);

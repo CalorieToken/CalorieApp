@@ -161,3 +161,31 @@ check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_ht
 $site_url = 'https://calorietoken.net/'; $_SERVER['REQUEST_URI'] = '/index.php/login/';
 check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Unexpected public routes remain unchanged');
 echo "Camera delegation: early rendered policy, exact origins, existing restrictions, duplicate frames and preview/auth/page boundaries passed.\n";
+
+// Presentation menu labels are plain text; encoded entities must not leak into
+// textContent, and unpublished destinations must stay out of the shared menu.
+$presentation_items = array(
+    (object) array('type'=>'custom', 'title'=>'Merch&#038;NFTs', 'url'=>'https://calorietoken.net/merchnfts/'),
+    (object) array('type'=>'post_type', 'object_id'=>10, 'title'=>'<b>CAL &amp; Crypto</b>', 'url'=>'https://calorietoken.net/how-to-buy-calorie/'),
+    (object) array('type'=>'post_type', 'object_id'=>11, 'title'=>'Unpublished page', 'url'=>'https://calorietoken.net/draft/')
+);
+$presentation_data = null;
+function wp_get_nav_menu_object($name) { check($name === 'Hoofdmenu3', 'Only the existing shared menu is allowed'); return (object) array('term_id'=>1); }
+function wp_get_nav_menu_items($menu) { global $presentation_items; return $presentation_items; }
+function is_wp_error($value) { return false; }
+function get_post_status($id) { return $id === 10 ? 'publish' : 'draft'; }
+function esc_url_raw($value) { return $value; }
+function wp_enqueue_style(...$args) {}
+function wp_enqueue_script(...$args) {}
+function content_url($path) { return 'https://calorietoken.net/wp-content' . $path; }
+function wp_localize_script($handle, $name, $data) { global $presentation_data; $presentation_data = $data; }
+$presentation_method = new ReflectionMethod('CalorieToken\\SiteStyle\\Plugin', 'presentation_assets');
+$presentation_method->setAccessible(true);
+$presentation_before = serialize($presentation_items);
+$presentation_method->invoke(null, 'https://calorietoken.net/wp-content/plugins/calorietoken-site-style/');
+check(count($presentation_data['links']) === 2, 'Draft must not enter the presentation menu');
+check($presentation_data['links'][0]['title'] === 'Merch&NFTs', 'Numeric ampersand entity must be decoded');
+check($presentation_data['links'][1]['title'] === 'CAL & Crypto', 'Named entities and markup must become plain labels');
+check($presentation_data['links'][0]['url'] === $presentation_items[0]->url, 'Destination must be unchanged');
+check(serialize($presentation_items) === $presentation_before, 'CMS menu source must not be mutated');
+echo "Presentation menu: decoded labels, published destinations and preserved CMS data passed.\n";

@@ -1,14 +1,20 @@
-# CalorieToken Site Style 1.4.19
+# CalorieToken Site Style 1.4.20
 
-Deze release groepeert het bestaande Hoofdmenu3 op alle ondersteunde headers, gebruikt de historische papierachtergrond, kleurt de beginletters van titelwoorden en verzorgt accountknoppen en passende inhoudsvakken. Geautoriseerde WordPress-conceptvoorbeelden krijgen alleen de presentatielaag. Geen concepten worden gepubliceerd. De Identity Bridge blijft ongewijzigd. Het periodeoverzicht, de verbeterde zoekmeldingen en zelfstandig uitloggen van CalorieApp vereisen de afzonderlijke appuitrol.
+Deze gerichte correctie gebruikt de eerste CAL & Crypto-sectie als visuele maatstaf voor passende inhoudsblokken: de bestaande vervaagde CAL-logoachtergrond, paarse rand, gouden bovenrand en gedeelde afrondingen. Dit geldt voor de CAL-gids, Trustline, FAQ, documentpagina's, Voting Hub, Showcases en bestaande Brizy-inhoudskaarten met een eigen kop en tekst. Geneste kaarten blijven compacter. De originele tekst, links, formulieren, afbeeldingen en bediening blijven dezelfde elementen.
+
+Het hoofdmenu krijgt de papierachtergrond ook op de echte Brizy-kolommen. Op desktop groeit het menuvlak niet meer mee met de accountwidget: logo en menu delen een compacte middelste rij. De fallback- en Showcases-header volgen dezelfde maatvoering. De titelopmaak bepaalt woordgrenzen over alle Brizy-tekstfragmenten heen, zodat alleen de eerste letter van elk woord paars wordt en de rest zwart. Dit blijft werken bij taalwisselen. Menu-entiteiten zoals `&#038;` worden leesbaar weergegeven en de uitlogknop krijgt een zichtbare gouden achtergrond.
+
+De presentatieregels krijgen een eigen beperkte CSS-laag, zodat oudere transparante en witte vlakken de gekozen stijl niet overschrijven. Geautoriseerde WordPress-conceptvoorbeelden krijgen dezelfde presentatielaag; er wordt niets gepubliceerd. De appuitrol van commit `6d9641f` is eerder voltooid en blijft de appbasis. Deze ZIP wijzigt geen appcode, Identity Bridge, authenticatieprotocol of providerinstelling.
+
+De nieuwe regressies reproduceren de fouten op 1.4.19 en slagen op deze bron. Browserbeleid verhindert het openen van de lokale visuele testpagina; dit pakket is dus nog niet visueel op de echte site of telefoon geaccepteerd. Na installatie volgt een gerichte livecontrole. Directe WordPress-terugval is het bewaarde pakket **1.4.19**. De onderstaande oudere notities zijn historisch en vragen geen nieuwe camera-, wallet- of faucetproef.
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.19.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.19** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.20.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.20** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Testnet-antwoordcorrectie
+## Inbegrepen uit 1.4.18: Testnet-antwoordcorrectie
 
 Na expliciet akkoord van de eigenaar gaf één officiële Testnet-faucetaanvraag HTTP 200 met JSON terug. De herstelcode staat daarin als `seed` naast `account`; de vorige module las alleen `account.secret`. Daardoor wees zij dit antwoord af als onbruikbare accountgegevens. Alleen status en bekende veldtypen zijn vastgelegd, geen echte herstelcode, adres of volledig antwoord. Er is geen tweede aanvraag gedaan.
 

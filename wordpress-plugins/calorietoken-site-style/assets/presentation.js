@@ -5,8 +5,10 @@
   if(!cfg||window.CalorieTokenPresentationUI)return;
   var observer=null, queued=false, locale='en', menus=new WeakMap();
   var bodySelector='.ctstyle-enabled,.ctstyle-footer-only,.ctstyle-presentation-preview';
-  var headings='.ctstyle-heading,.ctstyle-crypto-intro h2,.showcase-hero h1,.showcase-title-banner h1';
+  var headings='.ctstyle-heading,.ctstyle-section-heading,.ctstyle-crypto-intro h2,.showcase-hero h1,.showcase-title-banner h1';
   var excluded='a,button,input,select,textarea,svg,script,style,iframe,[contenteditable],.xl-card,[data-calorieapp-account]';
+  var panelRoots='.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.showcase-card,.ctstyle-document-copy,.calorieapp-app-info,.ctstyle-faq-hub,.ctstyle-discovery-card,.ctstyle-manual-trustline,.ctstyle-community-status,.calorieapp-article-copy,.cal-buy-hero,.cal-buy-own-dex,.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li';
+  var panelExcluded='.ctstyle-site-header,.ctstyle-header,.ctstyle-header-fallback,.showcase-page-header,.ctstyle-title,.ctstyle-footer,footer,nav,.xl-card,[data-calorieapp-account],[data-calorieapp-embed],.calorieapp-trustline-context,form,[contenteditable]';
   function allowed(){return document.body&&document.body.matches(bodySelector)&&!document.querySelector('.brz-ed,#brz-ed-iframe')&&['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin)&&!/\/wp-admin\//.test(window.location.pathname);}
   function path(value){try{return new URL(value,window.location.href).pathname.replace(/^\/index\.php(?=\/)/,'').replace(/\/+$/,'')||'/';}catch(e){return '';}}
   function category(value){
@@ -52,19 +54,48 @@
     if(node.dataset.ctstyleColorText===node.textContent&&node.querySelector('.ctstyle-word-initial'))return;
     node.querySelectorAll('.ctstyle-word-initial').forEach(function(span){span.replaceWith(document.createTextNode(span.textContent));});
     node.normalize();
-    function walk(parent){Array.from(parent.childNodes).forEach(function(child){
-      if(child.nodeType===1){walk(child);return;}if(child.nodeType!==3)return;
-      var text=child.data, regex=/\p{L}[\p{L}\p{M}\p{N}'’]*/gu, match, last=0, fragment=document.createDocumentFragment(), found=false;
-      while((match=regex.exec(text))){
-        found=true;fragment.appendChild(document.createTextNode(text.slice(last,match.index)));
-        var word=match[0],first=Array.from(word)[0];
-        if(typeof Intl.Segmenter==='function')first=Array.from(new Intl.Segmenter(locale,{granularity:'grapheme'}).segment(word))[0].segment;
-        var initial=document.createElement('span');initial.className='ctstyle-word-initial';initial.textContent=first;
-        fragment.append(initial,document.createTextNode(word.slice(first.length)));last=match.index+word.length;
-      }
-      if(found){fragment.appendChild(document.createTextNode(text.slice(last)));child.replaceWith(fragment);}
+    // Brizy can split one word over several <strong>/<span> nodes. Determine
+    // word boundaries over the complete heading before touching its text nodes.
+    var text='',nodes=[],ranges=[],match,regex=/\p{L}[\p{L}\p{M}\p{N}'’\u200c\u200d]*/gu;
+    function collect(parent){Array.from(parent.childNodes).forEach(function(child){
+      if(child.nodeType===3){nodes.push({node:child,start:text.length});text+=child.data;}
+      else if(child.nodeType===1){if(child.tagName==='BR')text+='\n';else collect(child);}
     });}
-    walk(node);node.classList.add('ctstyle-word-heading');node.dataset.ctstyleColorText=node.textContent;
+    collect(node);
+    var segmenter=typeof Intl.Segmenter==='function'?new Intl.Segmenter(locale,{granularity:'grapheme'}):null;
+    while((match=regex.exec(text))){
+      var first=segmenter?Array.from(segmenter.segment(match[0]))[0].segment:Array.from(match[0])[0];
+      ranges.push({start:match.index,end:match.index+first.length});
+    }
+    nodes.forEach(function(entry){
+      var value=entry.node.data,end=entry.start+value.length,last=0,fragment=document.createDocumentFragment(),found=false;
+      ranges.forEach(function(range){
+        var start=Math.max(range.start,entry.start),stop=Math.min(range.end,end);if(start>=stop)return;
+        found=true;fragment.appendChild(document.createTextNode(value.slice(last,start-entry.start)));
+        var initial=document.createElement('span');initial.className='ctstyle-word-initial';initial.textContent=value.slice(start-entry.start,stop-entry.start);
+        fragment.appendChild(initial);last=stop-entry.start;
+      });
+      if(found){fragment.appendChild(document.createTextNode(value.slice(last)));entry.node.replaceWith(fragment);}
+    });
+    node.classList.add('ctstyle-word-heading');node.dataset.ctstyleColorText=node.textContent;
+  }
+  function sharedPanels(){
+    document.querySelectorAll(panelRoots).forEach(function(node){
+      if(!node.closest(panelExcluded))node.classList.add('ctstyle-shared-panel');
+    });
+    // Frame existing Brizy content cards, not entire layout rows, banners,
+    // account widgets or embeds. Keep every original node and event handler.
+    document.querySelectorAll('.brz-columns>.brz-column__items').forEach(function(box){
+      if(box.closest(panelExcluded+',.ctstyle-shared-panel')||box.querySelector('.brz-columns,iframe,.xl-card,[data-calorieapp-embed],.ctstyle-shared-panel'))return;
+      var ownHeading=Array.from(box.querySelectorAll('.brz-rich-text h2,.brz-rich-text h3')).some(function(h){return h.closest('.brz-column__items')===box&&!h.closest(excluded);});
+      var copy=Array.from(box.querySelectorAll('.brz-rich-text p')).some(function(p){return p.closest('.brz-column__items')===box&&p.textContent.trim();});
+      if(ownHeading&&copy)box.classList.add('ctstyle-shared-panel','ctstyle-brizy-panel');
+    });
+    document.querySelectorAll('.ctstyle-shared-panel').forEach(function(panel){
+      if(panel.parentElement&&panel.parentElement.closest('.ctstyle-shared-panel'))panel.classList.add('ctstyle-shared-panel-nested');
+      if(panel.tagName==='DETAILS')panel.classList.add('ctstyle-shared-disclosure');
+      panel.querySelectorAll('h2,h3').forEach(function(h){if(!h.closest(excluded))h.classList.add('ctstyle-section-heading');});
+    });
   }
   function sharedHeader(){
     document.querySelectorAll('.brz-menu-simple').forEach(function(menu){
@@ -90,7 +121,7 @@
     [['paper',cfg.paperImage],['header',cfg.headerImage],['title',cfg.titleImage]].forEach(function(pair){if(/^https?:\/\//.test(pair[1]||''))document.body.style.setProperty('--ctstyle-'+pair[0]+'-image','url('+JSON.stringify(pair[1])+')');});
     sharedHeader();
     document.querySelectorAll('.showcase-hero h1,.showcase-title-banner h1').forEach(function(node){node.classList.add('ctstyle-heading');var box=node.closest('.showcase-hero,.showcase-title-banner');if(box)box.classList.add('ctstyle-shared-banner');});
-    document.querySelectorAll('.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.ctstyle-document-copy,.calorieapp-app-info,.ctstyle-faq-hub,.ctstyle-discovery-card').forEach(function(node){node.classList.add('ctstyle-shared-panel');});
+    sharedPanels();
     if(document.body.classList.contains('ctstyle-presentation-preview'))document.querySelectorAll('.entry-title,.brz-rich-text h1').forEach(function(node){node.classList.add('ctstyle-heading','ctstyle-shared-banner');});
     document.querySelectorAll(headings).forEach(function(node){
       if(window.CalorieTokenContentLanguageUI&&window.CalorieTokenContentLanguageUI.decorateHeading)window.CalorieTokenContentLanguageUI.decorateHeading(node,paintHeading);else paintHeading(node);
