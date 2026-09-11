@@ -114,11 +114,16 @@ test('The actual bundled decoder reads EAN-8, EAN-13, UPC-A and ITF-14 raster fi
   // binarization, real ZXing decoding, validation and session cleanup run as shipped.
   class RasterReader extends BrowserMultiFormatReader {
     decode(video) { return this.decodeBitmap(video.bitmap); }
+    decodeFromCanvas(canvas) { return this.decodeBitmap(canvas.bitmap); }
   }
   const rasterModule = {exports: {}};
   let nextStream;
   vm.runInNewContext(ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText, {
     module: rasterModule, exports: rasterModule.exports, setTimeout, clearTimeout,
+    document: {createElement() {
+      const canvas = {getContext: () => ({drawImage(video) {canvas.bitmap = video.bitmap;}})};
+      return canvas;
+    }},
     navigator: {mediaDevices: {getUserMedia: async () => nextStream}},
     require(name) { return name === '@zxing/browser' ? {BrowserMultiFormatReader: RasterReader} : require(name); },
   });
@@ -142,6 +147,7 @@ test('The actual bundled decoder reads EAN-8, EAN-13, UPC-A and ITF-14 raster fi
     const width = bars.length * 3, height = 100, pixels = new Uint8ClampedArray(width * height);
     for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) pixels[y * width + x] = bars[Math.floor(x / 3)] === '1' ? 0 : 255;
     const c = camera(); nextStream = c.stream;
+    c.video.videoWidth = width; c.video.videoHeight = height;
     c.video.bitmap = new zxing.BinaryBitmap(new zxing.HybridBinarizer(new zxing.RGBLuminanceSource(pixels, width, height)));
     const controller = new AbortController(), found = [];
     const timeout = setTimeout(() => controller.abort(), 2_000);

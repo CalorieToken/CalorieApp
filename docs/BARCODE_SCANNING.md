@@ -1,5 +1,44 @@
 # Food barcode scanning
 
+## Recognition follow-up — 11 September 2026
+
+The owner confirmed a working camera preview in Android Brave, but no recognition
+of two packages (Becel Light and Douwe Egberts coffee). Clearing browser history
+preceded this report; a causal connection has not been established. Neither
+compressed screenshot yielded a reliable barcode in local decoder attempts, so
+they do not establish the exact optical or device-specific failure.
+
+The recognition follow-up adds optional on-device `BarcodeDetector` support for
+the same permitted food formats. Capability discovery and at most one outstanding
+native detection run independently of the bundled fallback. Missing support,
+rejection or a slow native operation cannot prevent ZXing from scanning. Native
+results must pass the same format and GTIN checksum checks, and late results from
+a disposed session are ignored.
+
+ZXing now examines more scan lines inside the visible guide, retaining quiet-zone
+margins and correctly mapping an object-cover preview to portrait source pixels.
+Every fourth unsuccessful frame also receives the previous wider scan. The rear
+camera requests an ideal 1920 × 1080 image; these dimensions are preferences, not
+requirements. Continuous focus is requested only when the selected track reports
+support, and tuning failure leaves the working preview alone. Localized guidance
+asks visitors to fill most of the frame while preserving the white margins and
+waiting for sharp bars. No new dependency, image upload or backend call is added.
+
+Targeted regression tests demonstrate that the old reader misses a synthetic
+barcode between its sampled rows and the updated reader finds it. They cover
+portrait framing, native API availability/failure/late results and focus rejection,
+alongside the existing supported-format and camera lifecycle tests. Canvas
+capture is substituted with local raster pixels; these tests do not establish
+real-phone focus, lighting or successful recognition of the owner's packages.
+The frontend follow-up requires its own verified publication and a short real
+package scan before scanner acceptance can be marked complete.
+
+References: [BarcodeDetector](https://developer.mozilla.org/en-US/docs/Web/API/BarcodeDetector)
+and [camera constraints](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints).
+The native API is an optional enhancement because browser support varies.
+
+## Original implementation record
+
 Prepared 10 September 2026 for the owner's Step 1–3 review. This is implemented
 source awaiting the normal app release and real-device acceptance.
 
