@@ -40,6 +40,7 @@ function harness() {
       if (name === 'react/jsx-runtime') return {jsx, jsxs: jsx};
       if (name === '@/config/barcode-copy.json') return {default: copy};
       if (name === '@/lib/foodBarcode') return {validFoodBarcode: library.exports.validFoodBarcode,
+        cameraBlockedByPolicy: library.exports.cameraBlockedByPolicy,
         startBarcodeCamera(video, signal, onCode, onReady) {return new Promise((resolve, reject) => sessions.push({video, signal, onCode, onReady, resolve, reject}));}};
       throw Error(`Unexpected import ${name}`);
     },
@@ -109,4 +110,38 @@ test('Camera refusal and unavailable contexts retain a working manual fallback; 
   assert.ok(text(h.tree).includes(copy.en.denied)); h.type('034000470693'); h.submit(); assert.equal(h.results.length, 1);
   h.window.isSecureContext = false; await h.click(); h.render(); assert.ok(text(h.tree).includes(copy.en.unavailable));
   h.render({disabled: true}); h.submit(); await h.click(); assert.equal(h.sessions.length, 1); assert.equal(h.results.length, 1);
+});
+
+
+test('A page policy block is distinguished from visitor refusal without opening a camera or requiring sign-in', async () => {
+  for (const property of ['permissionsPolicy', 'featurePolicy']) {
+    const h = harness();
+    h.document[property] = {allowsFeature(name) {assert.equal(name, 'camera'); return false;}};
+    await h.click(); h.render();
+    assert.equal(h.sessions.length, 0); assert.equal(h.timers.size, 0);
+    for (const locale of Object.keys(copy)) {
+      h.render({locale});
+      assert.ok(text(h.tree).includes(copy[locale].policyBlocked));
+      assert.ok(!text(h.tree).includes(copy[locale].permissionHelp));
+    }
+    h.type('0034000470693'); h.submit();
+    assert.deepEqual(h.results, ['0034000470693']);
+  }
+});
+
+test('Visitor refusal provides localized recovery guidance; unavailable policy introspection is not treated as refusal', async () => {
+  const h = harness();
+  h.document.featurePolicy = {allowsFeature() {throw Error('Introspection unsupported');}};
+  const pending = h.click();
+  assert.equal(h.sessions.length, 1);
+  h.sessions[0].reject(Object.assign(new Error('Blocked'), {name: 'NotAllowedError'}));
+  await pending;
+  for (const locale of Object.keys(copy)) {
+    h.render({locale});
+    assert.ok(text(h.tree).includes(copy[locale].denied));
+    assert.ok(text(h.tree).includes(copy[locale].permissionHelp));
+  }
+  h.document.permissionsPolicy = {allowsFeature() {return true;}};
+  const retry = h.click(); assert.equal(h.sessions.length, 2);
+  h.sessions[1].resolve(); await retry; h.unmount();
 });

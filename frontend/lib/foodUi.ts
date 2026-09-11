@@ -34,10 +34,23 @@ export function countRecordedGrades(items: ReadonlyArray<{ nutri_score?: string 
   const grades = ["A", "B", "C", "D", "E"].map(grade => ({ grade, count: 0 }));
   let known = 0;
   for (const item of items) {
-    const grade = grades.find(entry => entry.grade === item.nutri_score?.toUpperCase());
+    const grade = grades.find(entry => entry.grade === item.nutri_score?.trim().toUpperCase());
     if (grade) { grade.count += 1; known += 1; }
   }
   return { grades, known, total: items.length, missing: items.length - known };
+}
+
+/** A visual mean of recorded product letters, not a new nutritional grade.
+ * Each known entry counts once; missing grades and portion size add no weight.
+ */
+export function recordedGradePosition(summary: ReturnType<typeof countRecordedGrades>) {
+  if (summary.known === 0) return null;
+  const average = summary.grades.reduce((sum, entry, index) => sum + index * entry.count, 0) / summary.known;
+  return {
+    percent: average * 25,
+    lower: summary.grades[Math.floor(average)].grade,
+    upper: summary.grades[Math.ceil(average)].grade,
+  };
 }
 
 const recordedGradeColors: Record<string, { backgroundColor: string; color: string }> = {

@@ -15,7 +15,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { countRecordedGrades, formatFoodUi, getFoodUi, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
+import { countRecordedGrades, formatFoodUi, getFoodUi, recordedGradePosition, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
 import {
   AUTH_STATE_CHANGED_EVENT,
@@ -267,6 +267,11 @@ export function FoodSearchPlaceholder() {
     [logs, selectedLogId]
   );
   const recordedGrades = useMemo(() => countRecordedGrades(logs), [logs]);
+  const gradePosition = recordedGradePosition(recordedGrades);
+  const gradePositionLabel = gradePosition
+    ? formatFoodUi(gradePosition.lower === gradePosition.upper ? copy.scoreAt : copy.scoreBetween,
+      { grade: gradePosition.lower, lower: gradePosition.lower, upper: gradePosition.upper })
+    : copy.scoreEmpty;
   const selectedPortionPercentage = useMemo(
     () => getPortionPercentage(portionOption, customPortion),
     [portionOption, customPortion]
@@ -910,19 +915,35 @@ export function FoodSearchPlaceholder() {
 
           <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-3">
             <p className="text-sm font-semibold text-brand-primary">{copy.scoreTitle}</p>
-            <p className="mt-1 text-xs text-brand-secondary/75">{copy.scoreDescription}</p>
+            <p className="mt-2 text-sm font-semibold text-brand-secondary">{gradePositionLabel}</p>
+            <div className="mx-2 mt-3" role="img" aria-label={gradePositionLabel} dir="ltr">
+              <div className="relative pt-4">
+                {gradePosition ? <span aria-hidden="true" data-grade-pointer="true"
+                  className="absolute top-0 -translate-x-1/2 border-x-[7px] border-t-[10px] border-x-transparent border-t-brand-secondary"
+                  style={{ left: `${gradePosition.percent}%` }} /> : null}
+                <div aria-hidden="true" className="h-5 rounded-full border border-brand-secondary/20"
+                  style={{ background: "linear-gradient(to right, #038141 0%, #85bb2f 25%, #fecb02 50%, #ee8100 75%, #c9382a 100%)" }} />
+              </div>
+              <div aria-hidden="true" className="mt-1 flex justify-between text-xs font-bold text-brand-secondary">
+                {["A", "B", "C", "D", "E"].map(grade => <span key={grade}>{grade}</span>)}
+              </div>
+            </div>
             <p className="mt-2 text-xs text-brand-secondary/75">
               {formatFoodUi(copy.scoreCoverage, { known: displayInteger(recordedGrades.known), total: displayInteger(recordedGrades.total) })}
             </p>
-            <dl className="mt-3 grid grid-cols-5 overflow-hidden rounded-xl text-center text-sm" aria-label={copy.scoreTitle} dir="ltr">
-              {recordedGrades.grades.map(({ grade, count }) => (
-                <div key={grade} className="min-w-0 border-r border-white/40 px-1 py-3 last:border-r-0" style={recordedGradeStyle(grade)}>
-                  <dt className="font-bold"><bdi dir="ltr">{grade}</bdi></dt>
-                  <dd className="mt-1"><bdi>{displayInteger(count)}</bdi></dd>
-                </div>
-              ))}
-            </dl>
             <p className="mt-2 text-xs text-brand-secondary/75">{copy.scoreMissing}: <bdi>{displayInteger(recordedGrades.missing)}</bdi></p>
+            <details className="mt-3 text-xs text-brand-secondary">
+              <summary className="min-h-11 cursor-pointer py-3 font-semibold">{copy.scoreDetails}</summary>
+              <p className="leading-relaxed">{copy.scoreDescription}</p>
+              <dl className="mt-3 grid grid-cols-5 overflow-hidden rounded-xl text-center text-sm" aria-label={copy.scoreDetails} dir="ltr">
+                {recordedGrades.grades.map(({ grade, count }) => (
+                  <div key={grade} className="min-w-0 border-r border-white/40 px-1 py-3 last:border-r-0" style={recordedGradeStyle(grade)}>
+                    <dt className="font-bold"><bdi dir="ltr">{grade}</bdi></dt>
+                    <dd className="mt-1"><bdi>{displayInteger(count)}</bdi></dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
           </div>
         </div>
       ) : null}

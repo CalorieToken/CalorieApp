@@ -9,6 +9,19 @@ export function validFoodBarcode(value: string): string | null {
   return (10 - total % 10) % 10 === Number(code.at(-1)) ? code : null;
 }
 
+/** Read the browser's policy without requesting or changing any permission. */
+export function cameraBlockedByPolicy(page: Document): boolean {
+  type Policy = { allowsFeature: (feature: string) => boolean };
+  const policyPage = page as Document & { permissionsPolicy?: Policy; featurePolicy?: Policy };
+  try {
+    const policy = policyPage.permissionsPolicy ?? policyPage.featurePolicy;
+    return policy?.allowsFeature("camera") === false;
+  } catch {
+    // Unsupported introspection is inconclusive; let the normal camera request decide.
+    return false;
+  }
+}
+
 type Reader = { decode: (video: HTMLVideoElement) => string | null };
 type CameraDependencies = {
   openStream: () => Promise<MediaStream>;

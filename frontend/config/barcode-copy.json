@@ -8,14 +8,16 @@
     "stop": "Stop camera",
     "opening": "Opening camera…",
     "scanning": "Centre the barcode in the frame. Use good light and hold steady.",
-    "denied": "Camera access was not allowed. Enter the barcode below.",
+    "denied": "Camera access is blocked. Check the camera permission for this website in your browser settings.",
     "unavailable": "Camera unavailable. Enter the barcode below.",
     "invalid": "Enter a valid barcode with 8, 12, 13 or 14 digits.",
     "found": "Barcode read. Check the product below before logging it.",
     "paused": "Camera stopped. Try again or enter the barcode.",
     "cameraError": "The camera could not start. Try again or enter the barcode.",
     "privacy": "Camera images stay on your device. Only the barcode is used to look up the food in Open Food Facts.",
-    "notFound": "No product with complete nutrition was found for this barcode. Try searching by food name."
+    "notFound": "No product with complete nutrition was found for this barcode. Try searching by food name.",
+    "permissionHelp": "On a phone, also check that your browser may use the camera in the phone settings. Then return here and tap Start camera. You do not need to sign in.",
+    "policyBlocked": "This page does not allow camera use. Enter the barcode below; signing in is not required."
   },
   "nl": {
     "title": "Scan een voedselbarcode",
@@ -26,14 +28,16 @@
     "stop": "Stop camera",
     "opening": "Camera openen…",
     "scanning": "Houd de barcode in het kader. Zorg voor voldoende licht en houd de camera stil.",
-    "denied": "Cameratoegang is niet toegestaan. Vul de barcode hieronder in.",
+    "denied": "Cameratoegang is geblokkeerd. Controleer in je browserinstellingen de cameratoestemming voor deze website.",
     "unavailable": "Camera niet beschikbaar. Vul de barcode hieronder in.",
     "invalid": "Vul een geldige barcode met 8, 12, 13 of 14 cijfers in.",
     "found": "Barcode gelezen. Controleer het product hieronder voordat je het toevoegt.",
     "paused": "Camera gestopt. Probeer opnieuw of vul de barcode in.",
     "cameraError": "De camera kon niet starten. Probeer opnieuw of vul de barcode in.",
     "privacy": "Camerabeelden blijven op je apparaat. Alleen de barcode wordt gebruikt om het voedsel in Open Food Facts op te zoeken.",
-    "notFound": "Voor deze barcode is geen product met volledige voedingswaarden gevonden. Zoek op de naam van het voedsel."
+    "notFound": "Voor deze barcode is geen product met volledige voedingswaarden gevonden. Zoek op de naam van het voedsel.",
+    "permissionHelp": "Controleer op je telefoon ook of je browser de camera mag gebruiken in de telefooninstellingen. Kom daarna terug en tik op Start camera. Inloggen is niet nodig.",
+    "policyBlocked": "Deze pagina staat cameragebruik niet toe. Vul de barcode hieronder in; inloggen is niet nodig."
   },
   "zh-Hans": {
     "title": "扫描食品条码",
@@ -44,14 +48,16 @@
     "stop": "停止相机",
     "opening": "正在打开相机…",
     "scanning": "将条码置于框内，保持光线充足和相机稳定。",
-    "denied": "相机访问未获允许。请在下方输入条码。",
+    "denied": "相机访问被阻止。请在浏览器设置中检查此网站的相机权限。",
     "unavailable": "相机不可用。请在下方输入条码。",
     "invalid": "请输入有效的 8、12、13 或 14 位条码。",
     "found": "已读取条码。记录前请核对下方产品。",
     "paused": "相机已停止。请重试或输入条码。",
     "cameraError": "相机无法启动。请重试或输入条码。",
     "privacy": "相机图像保留在您的设备上。仅使用条码在 Open Food Facts 中查询食品。",
-    "notFound": "未找到具有完整营养数据的对应产品。请尝试按食品名称搜索。"
+    "notFound": "未找到具有完整营养数据的对应产品。请尝试按食品名称搜索。",
+    "permissionHelp": "如果使用手机，请同时检查手机设置是否允许浏览器使用相机。然后返回此页并点击启动相机。无需登录。",
+    "policyBlocked": "此页面不允许使用相机。请在下方输入条码，无需登录。"
   },
   "hi": {
     "title": "भोजन का बारकोड स्कैन करें",
@@ -62,14 +68,16 @@
     "stop": "कैमरा रोकें",
     "opening": "कैमरा खुल रहा है…",
     "scanning": "बारकोड को फ्रेम के बीच रखें। अच्छी रोशनी में कैमरा स्थिर रखें।",
-    "denied": "कैमरे की अनुमति नहीं मिली। नीचे बारकोड दर्ज करें।",
+    "denied": "कैमरे का उपयोग अवरुद्ध है। ब्राउज़र सेटिंग में इस वेबसाइट की कैमरा अनुमति जाँचें।",
     "unavailable": "कैमरा उपलब्ध नहीं है। नीचे बारकोड दर्ज करें।",
     "invalid": "8, 12, 13 या 14 अंकों का मान्य बारकोड दर्ज करें।",
     "found": "बारकोड पढ़ लिया गया। दर्ज करने से पहले नीचे उत्पाद जाँचें।",
     "paused": "कैमरा बंद है। फिर कोशिश करें या बारकोड दर्ज करें।",
     "cameraError": "कैमरा शुरू नहीं हो सका। फिर कोशिश करें या बारकोड दर्ज करें।",
     "privacy": "कैमरे की छवियाँ आपके डिवाइस पर रहती हैं। Open Food Facts में भोजन खोजने के लिए केवल बारकोड का उपयोग होता है।",
-    "notFound": "इस बारकोड का पूरा पोषण डेटा वाला उत्पाद नहीं मिला। भोजन के नाम से खोजें।"
+    "notFound": "इस बारकोड का पूरा पोषण डेटा वाला उत्पाद नहीं मिला। भोजन के नाम से खोजें।",
+    "permissionHelp": "फ़ोन पर, फ़ोन की सेटिंग में भी जाँचें कि ब्राउज़र को कैमरे की अनुमति है। फिर यहाँ लौटकर कैमरा शुरू करें दबाएँ। लॉग इन करना ज़रूरी नहीं है।",
+    "policyBlocked": "यह पेज कैमरे का उपयोग नहीं करने देता। नीचे बारकोड दर्ज करें; लॉग इन करना ज़रूरी नहीं है।"
   },
   "es": {
     "title": "Escanea un código de alimentos",
@@ -80,14 +88,16 @@
     "stop": "Detener cámara",
     "opening": "Abriendo la cámara…",
     "scanning": "Centra el código en el recuadro. Usa buena luz y mantén la cámara estable.",
-    "denied": "No se permitió el acceso a la cámara. Introduce el código abajo.",
+    "denied": "El acceso a la cámara está bloqueado. Revisa el permiso de cámara de este sitio en los ajustes del navegador.",
     "unavailable": "Cámara no disponible. Introduce el código abajo.",
     "invalid": "Introduce un código válido de 8, 12, 13 o 14 dígitos.",
     "found": "Código leído. Revisa el producto abajo antes de registrarlo.",
     "paused": "Cámara detenida. Vuelve a intentarlo o introduce el código.",
     "cameraError": "La cámara no pudo iniciarse. Reinténtalo o introduce el código.",
     "privacy": "Las imágenes permanecen en tu dispositivo. Solo se usa el código para buscar el alimento en Open Food Facts.",
-    "notFound": "No se encontró un producto con nutrición completa para este código. Busca por el nombre del alimento."
+    "notFound": "No se encontró un producto con nutrición completa para este código. Busca por el nombre del alimento.",
+    "permissionHelp": "En el móvil, comprueba también que el navegador pueda usar la cámara en los ajustes del teléfono. Después vuelve aquí y pulsa Iniciar cámara. No necesitas iniciar sesión.",
+    "policyBlocked": "Esta página no permite usar la cámara. Introduce el código abajo; no necesitas iniciar sesión."
   },
   "ar": {
     "title": "امسح رمز الطعام الشريطي",
@@ -98,14 +108,16 @@
     "stop": "إيقاف الكاميرا",
     "opening": "جارٍ فتح الكاميرا…",
     "scanning": "ضع الرمز في منتصف الإطار مع إضاءة جيدة وثبّت الكاميرا.",
-    "denied": "لم يُسمح بالوصول إلى الكاميرا. أدخل الرمز أدناه.",
+    "denied": "الوصول إلى الكاميرا محظور. تحقق من إذن الكاميرا لهذا الموقع في إعدادات المتصفح.",
     "unavailable": "الكاميرا غير متاحة. أدخل الرمز أدناه.",
     "invalid": "أدخل رمزًا صالحًا من 8 أو 12 أو 13 أو 14 رقمًا.",
     "found": "تمت قراءة الرمز. تحقق من المنتج أدناه قبل تسجيله.",
     "paused": "توقفت الكاميرا. حاول مجددًا أو أدخل الرمز.",
     "cameraError": "تعذر تشغيل الكاميرا. حاول مجددًا أو أدخل الرمز.",
     "privacy": "تبقى صور الكاميرا على جهازك. يُستخدم الرمز فقط للبحث عن الطعام في Open Food Facts.",
-    "notFound": "لم يُعثر على منتج ببيانات غذائية مكتملة لهذا الرمز. جرّب البحث باسم الطعام."
+    "notFound": "لم يُعثر على منتج ببيانات غذائية مكتملة لهذا الرمز. جرّب البحث باسم الطعام.",
+    "permissionHelp": "على الهاتف، تحقق أيضًا من السماح للمتصفح باستخدام الكاميرا في إعدادات الهاتف. ثم عُد إلى هنا واضغط تشغيل الكاميرا. لا تحتاج إلى تسجيل الدخول.",
+    "policyBlocked": "هذه الصفحة لا تسمح باستخدام الكاميرا. أدخل الرمز أدناه؛ لا يلزم تسجيل الدخول."
   },
   "fr": {
     "title": "Scanner un code-barres alimentaire",
@@ -116,14 +128,16 @@
     "stop": "Arrêter la caméra",
     "opening": "Ouverture de la caméra…",
     "scanning": "Centrez le code dans le cadre, avec un bon éclairage et une caméra stable.",
-    "denied": "L’accès à la caméra n’a pas été autorisé. Saisissez le code ci-dessous.",
+    "denied": "L’accès à la caméra est bloqué. Vérifiez l’autorisation de ce site dans les paramètres du navigateur.",
     "unavailable": "Caméra indisponible. Saisissez le code ci-dessous.",
     "invalid": "Saisissez un code valide de 8, 12, 13 ou 14 chiffres.",
     "found": "Code lu. Vérifiez le produit ci-dessous avant de l’enregistrer.",
     "paused": "Caméra arrêtée. Réessayez ou saisissez le code.",
     "cameraError": "La caméra n’a pas pu démarrer. Réessayez ou saisissez le code.",
     "privacy": "Les images restent sur votre appareil. Seul le code sert à rechercher l’aliment dans Open Food Facts.",
-    "notFound": "Aucun produit avec des données nutritionnelles complètes n’a été trouvé pour ce code. Recherchez par nom d’aliment."
+    "notFound": "Aucun produit avec des données nutritionnelles complètes n’a été trouvé pour ce code. Recherchez par nom d’aliment.",
+    "permissionHelp": "Sur téléphone, vérifiez aussi que le navigateur peut utiliser la caméra dans les paramètres du téléphone. Revenez ensuite ici et appuyez sur Démarrer la caméra. Aucune connexion n’est nécessaire.",
+    "policyBlocked": "Cette page n’autorise pas la caméra. Saisissez le code ci-dessous ; aucune connexion n’est nécessaire."
   },
   "bn": {
     "title": "খাবারের বারকোড স্ক্যান করুন",
@@ -134,14 +148,16 @@
     "stop": "ক্যামেরা বন্ধ করুন",
     "opening": "ক্যামেরা খুলছে…",
     "scanning": "বারকোড ফ্রেমের মাঝখানে রাখুন। পর্যাপ্ত আলোতে ক্যামেরা স্থির রাখুন।",
-    "denied": "ক্যামেরার অনুমতি মেলেনি। নিচে বারকোড লিখুন।",
+    "denied": "ক্যামেরার প্রবেশাধিকার অবরুদ্ধ। ব্রাউজারের সেটিংসে এই ওয়েবসাইটের ক্যামেরার অনুমতি দেখুন।",
     "unavailable": "ক্যামেরা নেই। নিচে বারকোড লিখুন।",
     "invalid": "৮, ১২, ১৩ বা ১৪ সংখ্যার বৈধ বারকোড লিখুন।",
     "found": "বারকোড পড়া হয়েছে। লগ করার আগে নিচের পণ্যটি যাচাই করুন।",
     "paused": "ক্যামেরা বন্ধ। আবার চেষ্টা করুন অথবা বারকোড লিখুন।",
     "cameraError": "ক্যামেরা চালু হয়নি। আবার চেষ্টা করুন অথবা বারকোড লিখুন।",
     "privacy": "ক্যামেরার ছবি আপনার ডিভাইসেই থাকে। শুধু বারকোড দিয়ে Open Food Facts-এ খাবার খোঁজা হয়।",
-    "notFound": "এই বারকোডে সম্পূর্ণ পুষ্টিতথ্যসহ পণ্য পাওয়া যায়নি। খাবারের নাম দিয়ে খুঁজুন।"
+    "notFound": "এই বারকোডে সম্পূর্ণ পুষ্টিতথ্যসহ পণ্য পাওয়া যায়নি। খাবারের নাম দিয়ে খুঁজুন।",
+    "permissionHelp": "ফোনে, ফোনের সেটিংসেও দেখুন ব্রাউজারকে ক্যামেরা ব্যবহার করতে দেওয়া হয়েছে কি না। তারপর এখানে ফিরে ক্যামেরা চালু করুন চাপুন। সাইন ইন করার দরকার নেই।",
+    "policyBlocked": "এই পৃষ্ঠায় ক্যামেরা ব্যবহার অনুমোদিত নয়। নিচে বারকোড লিখুন; সাইন ইন করার দরকার নেই।"
   },
   "pt": {
     "title": "Digitalizar um código alimentar",
@@ -152,14 +168,16 @@
     "stop": "Parar câmara",
     "opening": "A abrir a câmara…",
     "scanning": "Centre o código na moldura. Use boa iluminação e mantenha a câmara estável.",
-    "denied": "O acesso à câmara não foi permitido. Introduza o código abaixo.",
+    "denied": "O acesso à câmera está bloqueado. Confira a permissão de câmera deste site nas configurações do navegador.",
     "unavailable": "Câmara indisponível. Introduza o código abaixo.",
     "invalid": "Introduza um código válido com 8, 12, 13 ou 14 dígitos.",
     "found": "Código lido. Verifique o produto abaixo antes de o registar.",
     "paused": "Câmara parada. Tente novamente ou introduza o código.",
     "cameraError": "Não foi possível iniciar a câmara. Tente novamente ou introduza o código.",
     "privacy": "As imagens ficam no seu dispositivo. Só o código é usado para procurar o alimento no Open Food Facts.",
-    "notFound": "Não foi encontrado um produto com dados nutricionais completos para este código. Pesquise pelo nome do alimento."
+    "notFound": "Não foi encontrado um produto com dados nutricionais completos para este código. Pesquise pelo nome do alimento.",
+    "permissionHelp": "No celular, confira também se o navegador pode usar a câmera nas configurações do aparelho. Depois volte aqui e toque em Iniciar câmera. Não é necessário entrar na conta.",
+    "policyBlocked": "Esta página não permite usar a câmera. Digite o código abaixo; não é necessário entrar na conta."
   },
   "id": {
     "title": "Pindai kode batang makanan",
@@ -170,14 +188,16 @@
     "stop": "Hentikan kamera",
     "opening": "Membuka kamera…",
     "scanning": "Posisikan kode di tengah bingkai. Gunakan cahaya yang cukup dan pegang dengan stabil.",
-    "denied": "Akses kamera tidak diizinkan. Masukkan kode di bawah.",
+    "denied": "Akses kamera diblokir. Periksa izin kamera untuk situs ini di pengaturan browser.",
     "unavailable": "Kamera tidak tersedia. Masukkan kode di bawah.",
     "invalid": "Masukkan kode yang valid dengan 8, 12, 13, atau 14 digit.",
     "found": "Kode terbaca. Periksa produk di bawah sebelum mencatatnya.",
     "paused": "Kamera berhenti. Coba lagi atau masukkan kode.",
     "cameraError": "Kamera tidak dapat dimulai. Coba lagi atau masukkan kode.",
     "privacy": "Gambar kamera tetap di perangkat Anda. Hanya kode yang digunakan untuk mencari makanan di Open Food Facts.",
-    "notFound": "Tidak ditemukan produk dengan gizi lengkap untuk kode ini. Coba cari berdasarkan nama makanan."
+    "notFound": "Tidak ditemukan produk dengan gizi lengkap untuk kode ini. Coba cari berdasarkan nama makanan.",
+    "permissionHelp": "Di ponsel, periksa juga apakah browser boleh memakai kamera di pengaturan ponsel. Lalu kembali ke sini dan ketuk Mulai kamera. Anda tidak perlu masuk.",
+    "policyBlocked": "Halaman ini tidak mengizinkan penggunaan kamera. Masukkan kode di bawah; Anda tidak perlu masuk."
   },
   "ur": {
     "title": "کھانے کا بارکوڈ اسکین کریں",
@@ -188,13 +208,15 @@
     "stop": "کیمرہ بند کریں",
     "opening": "کیمرہ کھل رہا ہے…",
     "scanning": "بارکوڈ فریم کے بیچ میں رکھیں۔ مناسب روشنی میں کیمرہ ساکن رکھیں۔",
-    "denied": "کیمرے کی اجازت نہیں ملی۔ نیچے بارکوڈ درج کریں۔",
+    "denied": "کیمرے تک رسائی مسدود ہے۔ براؤزر کی ترتیبات میں اس ویب سائٹ کے کیمرے کی اجازت دیکھیں۔",
     "unavailable": "کیمرہ دستیاب نہیں۔ نیچے بارکوڈ درج کریں۔",
     "invalid": "8، 12، 13 یا 14 ہندسوں کا درست بارکوڈ درج کریں۔",
     "found": "بارکوڈ پڑھ لیا گیا۔ لاگ میں شامل کرنے سے پہلے نیچے پروڈکٹ چیک کریں۔",
     "paused": "کیمرہ بند ہے۔ دوبارہ کوشش کریں یا بارکوڈ درج کریں۔",
     "cameraError": "کیمرہ شروع نہیں ہو سکا۔ دوبارہ کوشش کریں یا بارکوڈ درج کریں۔",
     "privacy": "کیمرے کی تصاویر آپ کے آلے پر رہتی ہیں۔ Open Food Facts میں کھانا تلاش کرنے کے لیے صرف بارکوڈ استعمال ہوتا ہے۔",
-    "notFound": "اس بارکوڈ کے لیے مکمل غذائی معلومات والی پروڈکٹ نہیں ملی۔ کھانے کے نام سے تلاش کریں۔"
+    "notFound": "اس بارکوڈ کے لیے مکمل غذائی معلومات والی پروڈکٹ نہیں ملی۔ کھانے کے نام سے تلاش کریں۔",
+    "permissionHelp": "فون پر، فون کی ترتیبات میں بھی دیکھیں کہ براؤزر کو کیمرہ استعمال کرنے کی اجازت ہے۔ پھر یہاں واپس آ کر کیمرہ شروع کریں دبائیں۔ سائن ان ضروری نہیں ہے۔",
+    "policyBlocked": "یہ صفحہ کیمرہ استعمال کرنے کی اجازت نہیں دیتا۔ نیچے بارکوڈ درج کریں؛ سائن ان ضروری نہیں ہے۔"
   }
 }

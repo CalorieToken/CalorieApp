@@ -893,7 +893,7 @@ test("bulk deletion keeps its explicit confirmation and uses the current display
   assert.ok(nodes(h.tree, node => node.type === "EmptyState").some(node => node.props.title === foodUiCopy.ar.emptyLogsTitle));
 });
 
-test("recorded product grades count entries and missing values without deriving an average or changing records", async () => {
+test("product overview places one average marker above the detailed counts without changing food records", async () => {
   const entries = ["A", "a", "B", "E", null, "", "unknown"].map((grade, index) =>
     Object.freeze({ ...foods[index], id: index + 1, nutri_score: grade, portion_percentage: index + 1 }));
   Object.freeze(entries);
@@ -907,7 +907,7 @@ test("recorded product grades count entries and missing values without deriving 
   h.login(); await h.flush();
   for (const { tag } of localeRegistry.locales) {
     h.setDisplayLanguage(tag);
-    const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreTitle)[0];
+    const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreDetails)[0];
     assert.ok(distribution, tag);
     assert.equal(distribution.props.dir, "ltr");
     const colors = nodes(distribution, node => node.props.style?.backgroundColor).map(node => node.props.style.backgroundColor);
@@ -916,6 +916,15 @@ test("recorded product grades count entries and missing values without deriving 
     assert.deepEqual(nodes(distribution, node => node.type === "dd").map(node => text(node)),
       [2, 1, 0, 0, 1].map(count => new Intl.NumberFormat(tag).format(count)));
     assert.ok(text(h.tree).includes(foodUiCopy[tag].scoreDescription));
+    const marker = nodes(h.tree, node => node.props["data-grade-pointer"] === "true");
+    assert.equal(marker.length, 1);
+    assert.equal(marker[0].props.style.left, "31.25%");
+    const label = foodUi.formatFoodUi(foodUiCopy[tag].scoreBetween, {lower: "B", upper: "C"});
+    const scale = nodes(h.tree, node => node.props.role === "img" && node.props["aria-label"] === label)[0];
+    assert.ok(scale, `${tag}: the position is also available as text`);
+    assert.equal(scale.props.dir, "ltr", "The green-to-red scale remains in the same order in RTL languages");
+    const details = nodes(h.tree, node => node.type === "details" && text(node).includes(foodUiCopy[tag].scoreDescription))[0];
+    assert.ok(details); assert.ok(!details.props.open, "Counts and explanation remain available without crowding the overview");
     assert.equal(h.requests.length, 1);
   }
   assert.equal(JSON.stringify(entries), before);
@@ -981,4 +990,22 @@ test('Barcode absence has useful translated fallback text and name search restor
   }
   await h.search('oats');
   assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === foodUiCopy.ar.noResultsDescription));
+});
+
+
+test("the overview marker follows added and removed grades, excludes missing scores and stays absent without known scores", async () => {
+  const summarize = grades => foodUi.recordedGradePosition(foodUi.countRecordedGrades(grades.map(nutri_score => ({nutri_score}))));
+  assert.equal(summarize(["A"]).percent, 0);
+  assert.equal(summarize(["E"]).percent, 100);
+  assert.equal(summarize(["A", "E"]).percent, 50);
+  assert.ok(Math.abs(summarize(["A", "E", "E"]).percent - 200 / 3) < 1e-10);
+  assert.equal(summarize(["A", "E", "", null, "unknown"]).percent, 50);
+  assert.equal(summarize([" a ", "b"]).percent, 12.5);
+  assert.equal(summarize([]), null);
+  assert.equal(summarize([null, "unknown"]), null);
+  const h = await harness("FoodSearchPlaceholder", undefined, () => ({ok:true, json:async () => [{...foods[0],id:1,nutri_score:null}]}));
+  h.login(); await h.flush();
+  assert.equal(nodes(h.tree, node => node.props["data-grade-pointer"] === "true").length, 0);
+  assert.ok(text(h.tree).includes(foodUiCopy.en.scoreEmpty));
+  assert.equal(h.requests.length, 1);
 });

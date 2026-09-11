@@ -2,9 +2,9 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import translations from "@/config/barcode-copy.json";
-import { startBarcodeCamera, validFoodBarcode } from "@/lib/foodBarcode";
+import { cameraBlockedByPolicy, startBarcodeCamera, validFoodBarcode } from "@/lib/foodBarcode";
 
-type Status = "opening" | "scanning" | "denied" | "unavailable" | "invalid" | "found" | "paused" | "cameraError";
+type Status = "opening" | "scanning" | "denied" | "policyBlocked" | "unavailable" | "invalid" | "found" | "paused" | "cameraError";
 
 export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
   locale: string; disabled: boolean; onLookup: (code: string) => void;
@@ -42,6 +42,7 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
 
   async function scan() {
     if (disabled || camera.current || !video.current) return;
+    if (cameraBlockedByPolicy(document)) { setStatus("policyBlocked"); return; }
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) { setStatus("unavailable"); return; }
     const controller = new AbortController(); camera.current = controller;
     setActive(true); setStatus("opening");
@@ -54,7 +55,8 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
     } catch (error) {
       if (camera.current !== controller) return;
       const name = error && typeof error === "object" && "name" in error ? error.name : "";
-      stop(name === "NotAllowedError" || name === "SecurityError" ? "denied" : "cameraError");
+      stop(cameraBlockedByPolicy(document) ? "policyBlocked"
+        : name === "NotAllowedError" || name === "SecurityError" ? "denied" : "cameraError");
     }
   }
 
@@ -81,6 +83,7 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-[10%] inset-y-[28%] rounded-lg border-2 border-white shadow-[0_0_0_100px_#0005]" />
         </div>
         {status ? <p id="food-barcode-status" role="status" aria-live="polite">{copy[status]}</p> : null}
+        {status === "denied" ? <p className="text-xs leading-relaxed">{copy.permissionHelp}</p> : null}
         <form onSubmit={lookup} className="space-y-2">
           <label htmlFor="food-barcode" className="block font-semibold">{copy.manual}</label>
           <div className="flex flex-wrap gap-2">
