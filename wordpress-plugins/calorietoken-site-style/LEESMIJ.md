@@ -1,12 +1,22 @@
-# CalorieToken Site Style 1.4.15
+# CalorieToken Site Style 1.4.16
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.15.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.15** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.16.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.16** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Begrensde Testnet-bediening na de vraag over misbruik
+## CAL & Crypto: herkenbare snelkoppeling en duidelijke keuzes
+
+Op verzoek van de eigenaar gebruikt de zwevende CAL & Crypto-knop het bestaande transparante CAL-logo uit WordPress. De knop sluit aan op de gecontroleerde vier knoppen van de geïnstalleerde Identity Bridge, ook wanneer die versie een andere controllernaam gebruikt. De originele knoppen en hun afhandeling blijven behouden. De eigen terugvalnavigatie krijgt hetzelfde CAL-logo. De CAL-knop heeft dezelfde afmetingen, kleuren, toetsenbordfocus, mobiele rij, cookieverberging en afdrukregels; op CAL & Crypto zelf verdwijnt hij zonder lege plek.
+
+De pagina benoemt drie herkenbare keuzes: CAL verhandelen, beginnen met de uitleg en andere crypto bekijken. De ankerlinks blijven op de pagina en markeren het gekozen onderdeel. De ingang naar CalorieApp staat duidelijker bij het praktische nut, met de uitleg dat voeding zoeken en het eetdagboek geen aankoop van CAL vereisen. Alle nieuwe tekst is beschikbaar in de bestaande elf talen. Bestaande marktlinks, risico-uitleg, SWFT-toestemming en financiële uitvoering blijven bij hun bestaande diensten.
+
+Site Style 1.4.15 en Identity Bridge 0.3.29 zijn live bevestigd. De eigenaar heeft de afzonderlijke frontenduitrol op 11 september goedgekeurd, op voorwaarde dat deze CAL-aanvulling wordt meegenomen. Dit ZIP-bestand installeert uitsluitend Site Style; de exacte Render-uitrol en terugrolpunten staan in het uitroldossier. Er wordt geen Identity Bridge- of backendwijziging meegeleverd.
+
+De onderstaande notities bewaren de historie van de inbegrepen eerdere correcties; oude vermeldingen van nog ontbrekend frontendakkoord beschrijven die eerdere momenten.
+
+## Inbegrepen uit 1.4.15: begrensde Testnet-bediening na de vraag over misbruik
 
 Site Style 1.4.14 is live bevestigd; de app-build-ID en Render wijzen nog op 53013d75. Eén nieuwe camerastart in de cloudbrowser eindigde met de algemene startfout. De werkelijke telefoonwerking is daarmee niet vastgesteld. De afzonderlijke frontendcorrectie voor videostart en productbalk blijft voorbereid en vraagt eigen uitrolakkoord.
 

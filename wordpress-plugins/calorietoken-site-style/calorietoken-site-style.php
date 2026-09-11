@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.15
+ * Version: 1.4.16
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.15';
+    const VERSION = '1.4.16';
 
     public static function delegate_app_camera($html, $shortcode_tag = null) {
         if (!is_string($html) || ($shortcode_tag !== null && $shortcode_tag !== 'calorieapp_embed') ||
@@ -193,6 +193,7 @@ final class Plugin {
             'headerImage' => content_url('/uploads/2024/01/achtergrondbannersitea1.png'),
             'titleImage' => content_url('/uploads/2022/10/kopje-banner3.png'),
             'paperImage' => content_url('/uploads/2021/12/Websiteachtergrond.png'),
+            'calLogo' => content_url('/uploads/2021/12/C-Logotranspa-1024x936.png'),
             'footerOnly' => self::footer_only(),
         ));
         $copy = self::json_asset('menu-data');

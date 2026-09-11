@@ -39,6 +39,7 @@ function fixture(html, {page = 1210, route = 'whitepaper', home = false, nativeO
     location: new URL(`https://calorietoken.net/${home ? '' : 'index.php/' + route + '/'}`),
     CalorieTokenDiscovery: {page, copy, appURL: 'https://calorietoken.net/index.php/calorieapp/', appLogo: '/logo.svg'},
     CalorieTokenSiteStyleMenu: menu,
+    CalorieTokenSiteStyle: {calLogo:'https://calorietoken.net/wp-content/uploads/2021/12/C-Logotranspa-1024x936.png'},
     localStorage: {getItem: () => null, setItem() {}},
     getComputedStyle: node => ({display: node.style.display || 'block', visibility: node.style.visibility || 'visible', backgroundImage: node.style.backgroundImage || '', opacity: node.style.opacity || '1'}),
     requestAnimationFrame: fn => frames.push(fn),
@@ -379,6 +380,65 @@ test('Manual interaction or leaving the page cancels late bottom adjustments', (
   assert.equal(h.scrolls.length,1,'Repeated clicks leave one active request');
 });
 
+function nativeShortcuts() {
+  return '<nav class="calorieapp-page-tools" data-calorieapp-fallback-shortcuts>' + ['home','app','bottom','top'].map(role =>
+    `<div class="calorieapp-page-tool-position" data-calorieapp-shortcut="${role}"><a class="calorieapp-page-tool" href="${role==='home'?'https://calorietoken.net/':role==='app'?'https://calorietoken.net/index.php/calorieapp/':'#'}" ${['top','bottom'].includes(role)?`data-calorieapp-scroll="${role}"`:''}>${role}</a></div>`
+  ).join('') + '</nav>';
+}
+
+test('CAL shortcut recognizes the installed bridge DOM without relying on its controller name', () => {
+  for (const home of [false,true]) {
+    const h=fixture(nativeShortcuts(),{home});
+    const originals=[...h.document.querySelectorAll('[data-calorieapp-shortcut]')];
+    let clicks=0; originals[2].querySelector('a').addEventListener('click',()=>clicks++);
+    h.run('navigation.js'); h.emit('load'); h.emit('pageshow');
+    h.document.dispatchEvent(new h.window.CustomEvent('calorietoken:display-language',{detail:{locale:'nl'}}));
+    const added=h.document.querySelector('[data-ctstyle-exchange-shortcut]');
+    assert.ok(added); assert.equal(added.hidden,false);
+    assert.equal(h.document.querySelectorAll('[data-ctstyle-exchange-shortcut]').length,1);
+    assert.equal(h.document.querySelectorAll('[data-calorieapp-shortcut]').length,4);
+    assert.equal(added.querySelector('a').href,'https://calorietoken.net/index.php/how-to-buy-calorie/');
+    assert.equal(added.querySelector('a').getAttribute('aria-label'),'CAL & Crypto');
+    assert.equal(added.querySelector('img').src,h.window.CalorieTokenSiteStyle.calLogo);
+    assert.equal(added.querySelector('img').getAttribute('aria-hidden'),'true');
+    assert.equal(h.window.CalorieAppPageNavigation,undefined,'No replacement bridge controller');
+    originals.forEach(n=>assert.ok(n.isConnected));
+    // Native button event handlers are still installed on the same nodes.
+    originals[2].querySelector('a').dispatchEvent(new h.window.Event('click'));
+    assert.equal(clicks,1);
+  }
+});
+
+test('CAL shortcut handles delayed native initialization and hides on its own page', () => {
+  const h=fixture('',{page:4205,route:'how-to-buy-calorie'});
+  h.window.CalorieAppPageNavigation={}; h.run('navigation.js');
+  h.document.body.insertAdjacentHTML('beforeend',nativeShortcuts());h.emit('load');
+  const added=h.document.querySelector('[data-ctstyle-exchange-shortcut]');
+  assert.ok(added);assert.equal(added.hidden,true);
+  h.emit('pageshow');assert.equal(h.document.querySelectorAll('[data-ctstyle-exchange-shortcut]').length,1);
+});
+
+test('CAL shortcut leaves incomplete, edited, duplicate and embedded native stacks alone', () => {
+  const broken=[nativeShortcuts().replace('data-calorieapp-shortcut="top"','data-calorieapp-shortcut="unknown"'),
+    nativeShortcuts().replace('https://calorietoken.net/index.php/calorieapp/','https://example.com/'),
+    nativeShortcuts()+nativeShortcuts(),'<form>'+nativeShortcuts()+'</form>',
+    '<div data-calorieapp-embed>'+nativeShortcuts()+'</div>'];
+  for(const html of broken){const h=fixture(html);const before=h.document.body.innerHTML;h.run('navigation.js');h.emit('load');
+    assert.equal(h.document.querySelectorAll('[data-ctstyle-exchange-shortcut]').length,0);
+    assert.equal(h.document.body.innerHTML,before);}
+});
+
+test('CAL shortcut uses the same logo in the standalone fallback without duplicating native slots', () => {
+  const config='<span data-ctstyle-site-integration data-home-page="https://calorietoken.net/" data-app-page="https://calorietoken.net/index.php/calorieapp/" data-app-logo="https://calorietoken.net/app.svg"></span>';
+  const h=fixture(config+nativeShortcuts());
+  h.window.innerHeight=800;h.document.documentElement.scrollHeight=h.document.body.scrollHeight=2000;
+  h.run('navigation.js');h.emit('load');h.flush();
+  const added=h.document.querySelector('[data-calorieapp-shortcut="exchange"]');
+  assert.ok(added);assert.equal(added.querySelector('img').src,h.window.CalorieTokenSiteStyle.calLogo);
+  assert.equal(h.document.querySelectorAll('[data-calorieapp-shortcut]').length,5);
+  assert.equal(h.document.querySelectorAll('[data-ctstyle-exchange-shortcut]').length,0);
+});
+
 test('The full CAL guide/discovery/translation sequence retains exact routes and all eleven languages', () => {
   const ts = require('typescript');
   const parsed = ts.createSourceFile('menu-pages.js', source('menu-pages.js'), ts.ScriptTarget.Latest, true);
@@ -403,5 +463,14 @@ test('The full CAL guide/discovery/translation sequence retains exact routes and
     assert.equal(h.document.querySelectorAll('#ctstyle-own-dex').length, 1);
     assert.equal(h.document.querySelectorAll('#ctstyle-external-exchange').length, 1);
     assert.equal(h.document.querySelectorAll('iframe').length, 0, 'An unopened external exchange must not load a provider');
+    const routes=[...h.document.querySelectorAll('.ctstyle-discovery-tabs a')];
+    assert.deepEqual(routes.map(a=>a.getAttribute('href')),['#ctstyle-own-dex','#'+guide.id,'#ctstyle-external-exchange']);
+    routes.forEach((a,index)=>{
+      const key=['routeTrade','routeLearn','routeOther'][index];
+      assert.equal(a.querySelector('strong').textContent,copy[locale][key]);
+      assert.equal(a.querySelector('.ctstyle-crypto-route-description').textContent,copy[locale][key+'Text']);
+      assert.ok(h.document.querySelector(a.getAttribute('href')));
+    });
+    assert.ok(h.document.querySelector('.ctstyle-crypto-intro').textContent.includes(copy[locale].appWithoutCAL));
   }
 });

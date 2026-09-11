@@ -120,13 +120,18 @@
     intro.append(element('p','ctstyle-crypto-kicker','CalorieToken · XRP Ledger'),label('h2','exchangeLabel'),label('p','intro','ctstyle-discovery-intro'));
     var actions=element('div','ctstyle-discovery-actions');
     actions.append(link('exploreApp',window.location.origin+'/index.php/calorieapp/',false),link('readWhitepaper',window.location.origin+'/index.php/whitepaper/',false));
-    intro.append(actions);
+    intro.append(label('p','appPitch','ctstyle-crypto-app-pitch'),actions,label('p','appWithoutCAL','ctstyle-discovery-small'));
     var journey=element('ol','ctstyle-crypto-journey');
     ['Wallet','Route','Review'].forEach(function(key){var step=element('li');step.append(label('h3','journey'+key),label('p','journey'+key+'Text'));journey.append(step);});
     intro.append(journey);hub.append(intro);
     var nav = element('nav','ctstyle-discovery-tabs'); nav.setAttribute('aria-label','CAL & Crypto');
     if (!guide.id) guide.id = 'ctstyle-cal-options';
-    nav.append(link('dexTitle','#ctstyle-own-dex'),link('guideTitle','#'+guide.id),link('bridgeTitle','#ctstyle-external-exchange'));
+    [['routeTrade','#ctstyle-own-dex'],['routeLearn','#'+guide.id],['routeOther','#ctstyle-external-exchange']].forEach(function (route) {
+      var action=element('a','ctstyle-discovery-action'); action.href=route[1];
+      var copy=element('span','ctstyle-crypto-route-copy');
+      copy.append(label('strong',route[0]),label('span',route[0]+'Text','ctstyle-crypto-route-description'));
+      action.append(copy); nav.append(action);
+    });
     hub.append(nav);
     var dex = section('ctstyle-own-dex','dexTitle');
     dex.append(label('p','dexStatus','ctstyle-discovery-badge'),label('p','dexText'),link('openDex',dexURL,true),link('openSwap','https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market',true),trustlineCard('ctstyle-buy-trustline'));

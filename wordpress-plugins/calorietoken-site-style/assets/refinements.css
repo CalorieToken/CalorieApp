@@ -275,3 +275,16 @@ body.ctstyle-enabled .ctstyle-crypto-journey h3 {margin:0 0 8px;color:#008d36;fo
 body.ctstyle-enabled .ctstyle-crypto-journey p {margin:0;font:400 19px/1.55 Amiri,Georgia,serif;}
 body.ctstyle-enabled .ctstyle-crypto-intro .ctstyle-discovery-actions {margin-top:22px;}
 @media(max-width:767px){body.ctstyle-enabled .ctstyle-crypto-journey {grid-template-columns:minmax(0,1fr);}}
+/* CAL keeps the same shortcut geometry, palette, cookie and print behavior. */
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) [data-ctstyle-exchange-shortcut][hidden] {display:none!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool .ctstyle-cal-logo {object-fit:contain;background:transparent;border-radius:0;padding:0;}
+body.ctstyle-enabled .ctstyle-crypto-intro .ctstyle-discovery-actions {justify-content:center;}
+body.ctstyle-enabled .ctstyle-crypto-intro .ctstyle-discovery-actions a:first-child {background:#008d36;border-color:#008d36;color:#fff!important;}
+body.ctstyle-enabled .ctstyle-crypto-intro .ctstyle-discovery-actions a:first-child:is(:hover,:focus-visible) {background:#505ba9;border-color:#505ba9;}
+body.ctstyle-enabled .ctstyle-crypto-intro .ctstyle-crypto-app-pitch {margin:20px auto 8px!important;color:#008d36;font-weight:700!important;}
+body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a {align-items:flex-start;text-align:start;}
+body.ctstyle-enabled .ctstyle-crypto-route-copy {display:block;min-width:0;}
+body.ctstyle-enabled .ctstyle-crypto-route-copy strong {display:block;font:700 23px/1.35 Amiri,Georgia,serif;}
+body.ctstyle-enabled .ctstyle-crypto-route-description {display:block;margin-top:8px;color:#414d94;font:400 18px/1.5 Amiri,Georgia,serif;}
+body.ctstyle-enabled :is(#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange) {scroll-margin-top:24px;}
+body.ctstyle-enabled :is(#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange):target {outline:3px solid #008d36;outline-offset:5px;}

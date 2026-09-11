@@ -49,7 +49,14 @@
     "journeyRoute": "Choose your route",
     "journeyRouteText": "Follow the setup guide or open the external CAL/XRP order book or swap.",
     "journeyReview": "Review in your wallet",
-    "journeyReviewText": "Check the asset, amount, fees and destination before approving a request."
+    "journeyReviewText": "Check the asset, amount, fees and destination before approving a request.",
+    "routeTrade": "Trade CAL",
+    "routeTradeText": "Already have a wallet? Explore CAL/XRP at XPMarket.",
+    "routeLearn": "Start with the guide",
+    "routeLearnText": "New to CAL? Follow the wallet and trustline steps.",
+    "routeOther": "Explore other crypto",
+    "routeOtherText": "Check supported coins and networks at SWFT.",
+    "appWithoutCAL": "Food search and your food diary do not require buying CAL."
   },
   "nl": {
     "intro": "Ontdek CAL op de XRP Ledger. Volg de uitleg, open de CAL/XRP-markten of bekijk andere cryptoroutes.",
@@ -101,7 +108,14 @@
     "journeyRoute": "Kies je route",
     "journeyRouteText": "Volg de installatiegids of open het externe CAL/XRP-orderboek of de swap.",
     "journeyReview": "Controleer in je wallet",
-    "journeyReviewText": "Controleer de munt, het bedrag, de kosten en de bestemming voordat je een verzoek goedkeurt."
+    "journeyReviewText": "Controleer de munt, het bedrag, de kosten en de bestemming voordat je een verzoek goedkeurt.",
+    "routeTrade": "CAL verhandelen",
+    "routeTradeText": "Heb je al een wallet? Bekijk CAL/XRP bij XPMarket.",
+    "routeLearn": "Begin met de uitleg",
+    "routeLearnText": "Nieuw met CAL? Volg de stappen voor je wallet en trustline.",
+    "routeOther": "Andere crypto bekijken",
+    "routeOtherText": "Bekijk de ondersteunde munten en netwerken bij SWFT.",
+    "appWithoutCAL": "Je hoeft geen CAL te kopen om voeding te zoeken en je eetdagboek te gebruiken."
   },
   "zh-Hans": {
     "intro": "探索 XRP Ledger 上的 CAL。阅读指南、打开 CAL/XRP 市场，或了解其他加密资产兑换途径。",
@@ -153,7 +167,14 @@
     "journeyRoute": "选择方式",
     "journeyRouteText": "按照设置指南操作，或打开外部 CAL/XRP 订单簿或兑换页面。",
     "journeyReview": "在钱包中核对",
-    "journeyReviewText": "批准请求前，请核对资产、金额、费用和目标地址。"
+    "journeyReviewText": "批准请求前，请核对资产、金额、费用和目标地址。",
+    "routeTrade": "交易 CAL",
+    "routeTradeText": "已有钱包？在 XPMarket 查看 CAL/XRP。",
+    "routeLearn": "从指南开始",
+    "routeLearnText": "刚接触 CAL？按步骤设置钱包和信任线。",
+    "routeOther": "了解其他加密货币",
+    "routeOtherText": "在 SWFT 查看支持的币种和网络。",
+    "appWithoutCAL": "搜索食品和使用饮食日记无需购买 CAL。"
   },
   "hi": {
     "intro": "XRP Ledger पर CAL के बारे में जानें। गाइड पढ़ें, CAL/XRP बाज़ार खोलें या अन्य क्रिप्टो विकल्प देखें।",
@@ -205,7 +226,14 @@
     "journeyRoute": "अपना तरीका चुनें",
     "journeyRouteText": "सेटअप गाइड अपनाएँ या बाहरी CAL/XRP ऑर्डर बुक या स्वैप खोलें।",
     "journeyReview": "वॉलेट में जाँचें",
-    "journeyReviewText": "अनुरोध स्वीकार करने से पहले संपत्ति, राशि, शुल्क और गंतव्य जाँचें।"
+    "journeyReviewText": "अनुरोध स्वीकार करने से पहले संपत्ति, राशि, शुल्क और गंतव्य जाँचें।",
+    "routeTrade": "CAL का व्यापार करें",
+    "routeTradeText": "वॉलेट पहले से है? XPMarket पर CAL/XRP देखें।",
+    "routeLearn": "गाइड से शुरू करें",
+    "routeLearnText": "CAL के लिए नए हैं? वॉलेट और ट्रस्टलाइन के चरण अपनाएँ।",
+    "routeOther": "अन्य क्रिप्टो देखें",
+    "routeOtherText": "SWFT पर समर्थित कॉइन और नेटवर्क जाँचें।",
+    "appWithoutCAL": "खाद्य खोज और भोजन डायरी के लिए CAL खरीदना ज़रूरी नहीं है।"
   },
   "es": {
     "intro": "Descubre CAL en XRP Ledger. Sigue la guía, abre los mercados CAL/XRP o explora otras opciones cripto.",
@@ -257,7 +285,14 @@
     "journeyRoute": "Elige tu ruta",
     "journeyRouteText": "Sigue la guía de configuración o abre el libro de órdenes o el intercambio externo CAL/XRP.",
     "journeyReview": "Revisa en tu cartera",
-    "journeyReviewText": "Comprueba el activo, el importe, las comisiones y el destino antes de aprobar una solicitud."
+    "journeyReviewText": "Comprueba el activo, el importe, las comisiones y el destino antes de aprobar una solicitud.",
+    "routeTrade": "Operar con CAL",
+    "routeTradeText": "¿Ya tienes una cartera? Explora CAL/XRP en XPMarket.",
+    "routeLearn": "Empezar con la guía",
+    "routeLearnText": "¿Es tu primera vez con CAL? Sigue los pasos de cartera y línea de confianza.",
+    "routeOther": "Explorar otras criptomonedas",
+    "routeOtherText": "Consulta las monedas y redes compatibles en SWFT.",
+    "appWithoutCAL": "No necesitas comprar CAL para buscar alimentos y usar tu diario alimentario."
   },
   "ar": {
     "intro": "اكتشف CAL على XRP Ledger. اتبع الدليل، أو افتح أسواق CAL/XRP، أو استكشف مسارات أخرى للعملات المشفرة.",
@@ -309,7 +344,14 @@
     "journeyRoute": "اختر المسار",
     "journeyRouteText": "اتبع دليل الإعداد أو افتح دفتر أوامر CAL/XRP أو المبادلة لدى الخدمة الخارجية.",
     "journeyReview": "راجع في محفظتك",
-    "journeyReviewText": "تحقق من الأصل والمبلغ والرسوم والوجهة قبل الموافقة على الطلب."
+    "journeyReviewText": "تحقق من الأصل والمبلغ والرسوم والوجهة قبل الموافقة على الطلب.",
+    "routeTrade": "تداول CAL",
+    "routeTradeText": "لديك محفظة بالفعل؟ استكشف CAL/XRP على XPMarket.",
+    "routeLearn": "ابدأ بالدليل",
+    "routeLearnText": "جديد على CAL؟ اتبع خطوات المحفظة وخط الثقة.",
+    "routeOther": "استكشف عملات رقمية أخرى",
+    "routeOtherText": "تحقق من العملات والشبكات المدعومة لدى SWFT.",
+    "appWithoutCAL": "لا تحتاج إلى شراء CAL للبحث عن الأطعمة واستخدام سجل طعامك."
   },
   "fr": {
     "intro": "Découvrez CAL sur XRP Ledger. Suivez le guide, ouvrez les marchés CAL/XRP ou explorez d’autres options crypto.",
@@ -361,7 +403,14 @@
     "journeyRoute": "Choisissez votre parcours",
     "journeyRouteText": "Suivez le guide de configuration ou ouvrez le carnet d’ordres ou l’échange externe CAL/XRP.",
     "journeyReview": "Vérifiez dans votre portefeuille",
-    "journeyReviewText": "Vérifiez l’actif, le montant, les frais et la destination avant d’approuver une demande."
+    "journeyReviewText": "Vérifiez l’actif, le montant, les frais et la destination avant d’approuver une demande.",
+    "routeTrade": "Échanger du CAL",
+    "routeTradeText": "Vous avez déjà un portefeuille ? Découvrez CAL/XRP sur XPMarket.",
+    "routeLearn": "Commencer par le guide",
+    "routeLearnText": "Vous découvrez CAL ? Suivez les étapes du portefeuille et de la ligne de confiance.",
+    "routeOther": "Découvrir d’autres cryptos",
+    "routeOtherText": "Consultez les monnaies et réseaux pris en charge par SWFT.",
+    "appWithoutCAL": "La recherche d’aliments et votre journal alimentaire ne nécessitent pas d’acheter du CAL."
   },
   "bn": {
     "intro": "XRP Ledger-এ CAL সম্পর্কে জানুন। নির্দেশিকা পড়ুন, CAL/XRP বাজার খুলুন অথবা অন্য ক্রিপ্টো বিকল্প দেখুন।",
@@ -413,7 +462,14 @@
     "journeyRoute": "পদ্ধতি বেছে নিন",
     "journeyRouteText": "সেটআপ নির্দেশিকা অনুসরণ করুন অথবা বাহ্যিক CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন।",
     "journeyReview": "ওয়ালেটে যাচাই করুন",
-    "journeyReviewText": "অনুরোধ অনুমোদনের আগে সম্পদ, পরিমাণ, ফি ও গন্তব্য যাচাই করুন।"
+    "journeyReviewText": "অনুরোধ অনুমোদনের আগে সম্পদ, পরিমাণ, ফি ও গন্তব্য যাচাই করুন।",
+    "routeTrade": "CAL লেনদেন করুন",
+    "routeTradeText": "আগেই ওয়ালেট আছে? XPMarket-এ CAL/XRP দেখুন।",
+    "routeLearn": "নির্দেশিকা দিয়ে শুরু করুন",
+    "routeLearnText": "CAL নতুন ব্যবহার করছেন? ওয়ালেট ও ট্রাস্টলাইনের ধাপ অনুসরণ করুন।",
+    "routeOther": "অন্যান্য ক্রিপ্টো দেখুন",
+    "routeOtherText": "SWFT-এ সমর্থিত কয়েন ও নেটওয়ার্ক যাচাই করুন।",
+    "appWithoutCAL": "খাবার খোঁজা এবং খাবারের ডায়েরি ব্যবহার করতে CAL কিনতে হয় না।"
   },
   "pt": {
     "intro": "Explore CAL no XRP Ledger. Siga o guia, abra os mercados CAL/XRP ou veja outras opções cripto.",
@@ -465,7 +521,14 @@
     "journeyRoute": "Escolha o seu caminho",
     "journeyRouteText": "Siga o guia de configuração ou abra o livro de ordens ou a troca externa CAL/XRP.",
     "journeyReview": "Reveja na carteira",
-    "journeyReviewText": "Verifique o ativo, o montante, as taxas e o destino antes de aprovar um pedido."
+    "journeyReviewText": "Verifique o ativo, o montante, as taxas e o destino antes de aprovar um pedido.",
+    "routeTrade": "Negociar CAL",
+    "routeTradeText": "Já tem uma carteira? Explore CAL/XRP na XPMarket.",
+    "routeLearn": "Começar pelo guia",
+    "routeLearnText": "Primeira vez com CAL? Siga os passos da carteira e da linha de confiança.",
+    "routeOther": "Explorar outras criptomoedas",
+    "routeOtherText": "Confira as moedas e redes compatíveis na SWFT.",
+    "appWithoutCAL": "Não é preciso comprar CAL para buscar alimentos e usar seu diário alimentar."
   },
   "id": {
     "intro": "Jelajahi CAL di XRP Ledger. Ikuti panduan, buka pasar CAL/XRP, atau lihat pilihan kripto lainnya.",
@@ -517,7 +580,14 @@
     "journeyRoute": "Pilih cara Anda",
     "journeyRouteText": "Ikuti panduan penyiapan atau buka buku pesanan atau swap CAL/XRP di layanan eksternal.",
     "journeyReview": "Periksa di dompet",
-    "journeyReviewText": "Periksa aset, jumlah, biaya, dan tujuan sebelum menyetujui permintaan."
+    "journeyReviewText": "Periksa aset, jumlah, biaya, dan tujuan sebelum menyetujui permintaan.",
+    "routeTrade": "Perdagangkan CAL",
+    "routeTradeText": "Sudah punya dompet? Jelajahi CAL/XRP di XPMarket.",
+    "routeLearn": "Mulai dari panduan",
+    "routeLearnText": "Baru mengenal CAL? Ikuti langkah dompet dan trustline.",
+    "routeOther": "Jelajahi kripto lain",
+    "routeOtherText": "Periksa koin dan jaringan yang didukung di SWFT.",
+    "appWithoutCAL": "Mencari makanan dan menggunakan catatan makanan tidak mengharuskan Anda membeli CAL."
   },
   "ur": {
     "intro": "XRP Ledger پر CAL کے بارے میں جانیں۔ رہنما پڑھیں، CAL/XRP مارکیٹ کھولیں یا دوسرے کرپٹو راستے دیکھیں۔",
@@ -569,6 +639,13 @@
     "journeyRoute": "اپنا طریقہ منتخب کریں",
     "journeyRouteText": "سیٹ اپ گائیڈ پر عمل کریں یا بیرونی CAL/XRP آرڈر بک یا سویپ کھولیں۔",
     "journeyReview": "والیٹ میں جائزہ لیں",
-    "journeyReviewText": "درخواست منظور کرنے سے پہلے اثاثہ، رقم، فیس اور منزل چیک کریں۔"
+    "journeyReviewText": "درخواست منظور کرنے سے پہلے اثاثہ، رقم، فیس اور منزل چیک کریں۔",
+    "routeTrade": "CAL کی تجارت کریں",
+    "routeTradeText": "والٹ پہلے سے ہے؟ XPMarket پر CAL/XRP دیکھیں۔",
+    "routeLearn": "رہنمائی سے شروع کریں",
+    "routeLearnText": "CAL پر نئے ہیں؟ والٹ اور ٹرسٹ لائن کے مراحل پر عمل کریں۔",
+    "routeOther": "دیگر کرپٹو دیکھیں",
+    "routeOtherText": "SWFT پر معاون سکوں اور نیٹ ورکس کی جانچ کریں۔",
+    "appWithoutCAL": "خوراک تلاش کرنے اور خوراک کی ڈائری استعمال کرنے کے لیے CAL خریدنا ضروری نہیں۔"
   }
 }
