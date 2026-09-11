@@ -1,12 +1,24 @@
-# CalorieToken Site Style 1.4.13
+# CalorieToken Site Style 1.4.14
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.13.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.13** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.14.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.14** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Cameracorrectie na de telefoonproef
+## Testaccountmelding na de telefoonproef
+
+De eigenaar kreeg na ‘Maak mijn gratis testaccount’ een algemene faucetfout. Die melding werd ook getoond als de browser geen antwoord kon lezen, de wachttijd verstreek of accountgegevens ontbraken. De screenshot bepaalt niet welke oorzaak optrad. Een rechtstreekse, alleen-lezen verbindingscontrole vanuit de werkomgeving kon niet worden uitgevoerd; er is geen actuele foutstatus van de faucet vastgesteld.
+
+Deze versie gebruikt de [door XRPLF gedocumenteerde lege POST-aanvraag](https://github.com/XRPLF/xrpl.js/wiki/Using-the-Testnet-and-Devnet-faucets-programmatically) voor een nieuw Testnet-account. De onnodige JSON-metadata vervalt. Zo veroorzaakt de aanvraag zelf geen aanvullende JSON-preflight; de browser blijft de [CORS-toestemming voor het antwoord](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) controleren. Dit is een compatibiliteitsverbetering, geen bewijs dat preflight de telefoonfout veroorzaakte.
+
+Alle elf talen onderscheiden nu een ontbrekend antwoord, een time-out en onbruikbare accountgegevens. De bestaande meldingen voor HTTP-fouten en begrenzing door de faucet blijven beschikbaar. Na een time-out wordt niet beweerd dat er zeker geen account is gemaakt; late accountgegevens worden niet alsnog gebruikt. De officiële faucet blijft bereikbaar via de bestaande knop. Er komen geen automatische herhaalverzoeken. Een aangemaakt account blijft behouden als alleen de afzonderlijke saldoverificatie mislukt.
+
+Dertien gerichte DOM-controles gebruiken uitsluitend synthetische antwoorden en ongeldige voorbeeldsleutels. Zij testen ook dubbelklikken, de twee ondersteunde adresvelden, positieve gevalideerde Testnet-saldi, opruimen bij vertrek en behoud van de foutstatus bij taalwisselen. Zij bewijzen geen werkende verbinding op een echte telefoon. Er is tijdens deze voorbereiding geen echte faucetaanvraag verstuurd en geen testaccount gemaakt.
+
+De cameracorrectie uit 1.4.13 blijft inbegrepen. De aparte frontendcorrectie voor de camerapreview en de doorlopende productbalk wacht nog op toestemming voor Render-uitrol. Deze ZIP wijzigt die appuitrol niet. Plan de nog benodigde telefoonproeven samen na installatie en de afzonderlijk goedgekeurde frontenduitrol.
+
+## Inbegrepen: cameracorrectie uit 1.4.13
 
 De camera gaf direct een toestemmingsfout zonder vraag om toegang. Een herhaalde telefoonproef gaf dezelfde melding en een kort opflitsend vlak. Dat vlak bewijst geen werkende camerastream; de camera is nog niet mobiel geaccepteerd. De eigenaar bevestigt wel soepel in- en uitloggen.
 

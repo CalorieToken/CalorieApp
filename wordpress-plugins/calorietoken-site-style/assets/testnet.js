@@ -82,29 +82,36 @@
     if (typeof window.fetch !== 'function' || typeof window.AbortController !== 'function' || typeof window.WebSocket !== 'function') {
       status = 'unsupported'; render(); return;
     }
-    var current = generation, timeout, response, request = new window.AbortController();
+    var current = generation, timeout, response, timedOut = false, request = new window.AbortController();
     busy = true; status = 'creating'; render(); controller = request;
     try {
-      timeout = window.setTimeout(function () { request.abort(); },25000);
+      timeout = window.setTimeout(function () { timedOut = true; request.abort(); },25000);
       // No destination supplied: the official faucet creates a fresh TESTNET wallet.
       // Its secret is returned to this browser, never to WordPress or the CalorieApp.
+      // The documented empty POST needs no JSON metadata or additional CORS preflight.
+      // The browser still enforces the faucet's cross-origin response permission.
       response = await window.fetch(faucet,{method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
-        redirect:'error',referrerPolicy:'no-referrer',signal:request.signal,
-        headers:{'Content-Type':'application/json'},body:JSON.stringify({userAgent:'CalorieToken-Testnet',usageContext:'CalorieApp test account'})});
+        redirect:'error',referrerPolicy:'no-referrer',signal:request.signal});
       if (current !== generation || !allowed()) return;
+      if (timedOut) { status = 'timedOut'; return; }
       if (!response.ok) { status = response.status === 429 ? 'limited' : 'failed'; return; }
-      if (!(response.headers.get('content-type') || '').toLowerCase().startsWith('application/json')) { status = 'failed'; return; }
+      if (!(response.headers.get('content-type') || '').toLowerCase().startsWith('application/json')) { status = 'invalidResponse'; return; }
       var data = await response.json(), wallet = data && data.account;
       if (current !== generation || !allowed()) return;
+      if (timedOut) { status = 'timedOut'; return; }
       var address = wallet && (wallet.classicAddress || wallet.address), secret = wallet && wallet.secret;
       // Schema checks only; the official Testnet ledger independently verifies funding below.
       if (typeof address !== 'string' || !/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(address) ||
-          typeof secret !== 'string' || !/^s[1-9A-HJ-NP-Za-km-z]{20,34}$/.test(secret)) { status = 'failed'; return; }
+          typeof secret !== 'string' || !/^s[1-9A-HJ-NP-Za-km-z]{20,34}$/.test(secret)) { status = 'invalidResponse'; return; }
       if (current !== generation || !allowed()) return;
       account = {address:address,secret:secret};
       step = 1;
       ui.address.textContent = address; status = 'created';
-    } catch (_) { if (current === generation && allowed()) status = 'failed'; }
+    } catch (error) {
+      if (current === generation && allowed()) {
+        status = timedOut ? 'timedOut' : error && error.name === 'SyntaxError' ? 'invalidResponse' : 'connectionFailed';
+      }
+    }
     finally {
       window.clearTimeout(timeout); if (controller === request) controller = null;
       if (current === generation && allowed()) { busy = false; render(); }
