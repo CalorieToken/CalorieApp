@@ -1,12 +1,22 @@
-# CalorieToken Site Style 1.4.12
+# CalorieToken Site Style 1.4.13
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.12.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.12** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.13.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.13** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Correcties op basis van livecontrole van 1.4.11
+## Cameracorrectie na de telefoonproef
+
+De camera gaf direct een toestemmingsfout zonder vraag om toegang. Een herhaalde telefoonproef gaf dezelfde melding en een kort opflitsend vlak. Dat vlak bewijst geen werkende camerastream; de camera is nog niet mobiel geaccepteerd. De eigenaar bevestigt wel soepel in- en uitloggen.
+
+Deze versie zet de cameradelegatie al in de geleverde publieke HTML, vóór de eerste navigatie van de ingesloten app. Dat corrigeert de bestaande timingfout: een later toegevoegd `allow`-attribuut verandert volgens de [HTML-standaard](https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allow) geen al geladen document. Zowel nieuwe shortcode-uitvoer als publieke Brizy-/inhouduitvoer wordt verwerkt. Alleen de herkende CalorieApp-iframe op de twee bestaande publieke app-routes krijgt de eigen gecontroleerde camera-oorsprong. Bestaande expliciete beperkingen en overige attributen blijven behouden. De camera start uitsluitend na een klik en de bezoeker blijft over toegang beslissen.
+
+De aparte frontendcorrectie start de preview expliciet gedempt en inline en houdt een geweigerde videostart gescheiden van geweigerde cameratoegang. Zij bevat ook de eerder voorbereide doorlopende groen-rode productbalk met één aanwijzer. Deze ZIP installeert alleen Site Style; de frontend moet afzonderlijk worden uitgerold. Backend, opgeslagen voeding en de geïnstalleerde Identity Bridge 0.3.29 worden hierbij niet aangepast.
+
+De exacte foutfase op de telefoon is nog onbekend. De oorspronkelijke live paginabron kon niet worden ingezien door een browserbeveiligingsblokkade. De late delegatie is vastgesteld in de bron; dit pakket neemt die fout weg, maar bewijst nog geen werkende telefooncamera. Na installatie en de afzonderlijke frontenduitrol volgt één gerichte scanproef. De eerdere loginproef hoeft niet opnieuw.
+
+## Historisch: correcties op basis van livecontrole van 1.4.11
 
 - De bestaande Identity Bridge-footer krijgt de ontbrekende Community Voting Hub-link uit het publieke WordPress-template. De bestaande rij krijgt ook de gedeelde cookieknop en vertalingen. Eigen links, social-carousel en handlers blijven dezelfde nodes; een onbekende aangepaste footer wordt behouden. Zonder gepubliceerde Hub wordt geen bestemming verzonnen.
 - De exacte oude LiveCoinWatch-loader wordt in de publieke HTML onwerkzaam gemaakt voordat de browser hem kan laden. Dit gebeurt alleen op calorietoken.net als beide bestaande bridge-assets voor de sitebrede XPMarket-weergave worden geleverd. De CMS-bron en andere scripts blijven behouden; editor-, preview- en Xaman-actieverzoeken worden overgeslagen. Zonder de vervangende renderer blijft de bestaande loader staan.

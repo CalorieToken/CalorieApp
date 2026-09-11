@@ -3,12 +3,12 @@
 define('ABSPATH', __DIR__);
 function add_action(...$args) {}
 function add_filter(...$args) {}
-$allowed = true; $fixture = array(); $queries = 0; $preview = false; $front_page = false;
+$allowed = true; $fixture = array(); $queries = 0; $preview = false; $front_page = false; $page_id = 0;
 function is_admin() { return false; }
 function is_feed() { return false; }
 function is_embed() { return false; }
 function is_front_page() { global $front_page; return $front_page; }
-function is_page($ids) { return false; }
+function is_page($ids) { global $page_id; return in_array($page_id, (array) $ids, true); }
 function is_preview() { global $preview; return $preview; }
 function current_user_can($capability) { global $allowed; return $allowed && $capability === 'manage_options'; }
 function get_posts($args) {
@@ -70,10 +70,15 @@ function wp_script_is($handle, $status = 'enqueued') {
 }
 class WP_HTML_Tag_Processor {
     public static $scripts = array();
+    public static $iframes = array();
     public static $last = null;
     public $nodes; private $index = -1;
     public function __construct($html) { $this->nodes = self::$scripts; self::$last = $this; }
-    public function next_tag($tag) { check($tag === 'SCRIPT', 'Only scripts should be visited'); return ++$this->index < count($this->nodes); }
+    public function next_tag($tag) {
+        check(in_array($tag, array('SCRIPT', 'IFRAME'), true), 'Only scripts or app frames should be visited');
+        if ($this->index === -1) { $this->nodes = $tag === 'SCRIPT' ? self::$scripts : self::$iframes; }
+        return ++$this->index < count($this->nodes);
+    }
     public function get_attribute($name) { return isset($this->nodes[$this->index][$name]) ? $this->nodes[$this->index][$name] : null; }
     public function remove_attribute($name) { unset($this->nodes[$this->index][$name]); }
     public function set_attribute($name, $value) { $this->nodes[$this->index][$name] = $value; }
@@ -105,3 +110,54 @@ $site_url = 'https://calorietoken.net/'; $front_page = true;
 check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === 'updated-public-markup', 'Home also retires the replaced loader');
 $front_page = false;
 echo "Market loader: exact URLs, inert output, renderer dependency and preview/auth/origin boundaries passed.\n";
+
+// Camera delegation must be present before the browser navigates the frame.
+// The fixture checks our selection/preservation rules; core parses the HTML.
+$page_id = 7880; $_SERVER['REQUEST_URI'] = '/index.php/calorieapp/';
+$app_html = '<div data-calorieapp-embed><iframe class="calorieapp-embed-frame" title="CalorieApp" src="https://app.calorietoken.net/"></iframe></div>';
+$app_frame = array('class'=>'calorieapp-embed-frame', 'title'=>'CalorieApp', 'src'=>'https://app.calorietoken.net/?ui_lang=nl', 'loading'=>'eager', 'data-keep'=>'original');
+foreach (array('app.calorietoken.net', 'calorieapp-frontend.onrender.com') as $host) {
+    $frame = $app_frame; $frame['src'] = 'https://' . $host . '/?ui_lang=nl'; $frame['allow'] = "fullscreen 'self'";
+    WP_HTML_Tag_Processor::$iframes = array($frame);
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html, 'calorieapp_embed') === 'updated-public-markup', 'Render the permission before iframe navigation');
+    $expected = $frame; $expected['allow'] .= '; camera https://' . $host;
+    check(WP_HTML_Tag_Processor::$last->nodes[0] === $expected, 'Only append the exact camera origin; preserve source, query and all other attributes');
+    WP_HTML_Tag_Processor::$iframes = array($expected);
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Repeated content filtering must be idempotent');
+}
+foreach (array("camera 'none'", "fullscreen; CAMERA 'self'", 'camera', "camera https://other.example") as $permission) {
+    $frame = $app_frame; $frame['allow'] = $permission; WP_HTML_Tag_Processor::$iframes = array($frame);
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Preserve every explicit camera policy');
+}
+foreach (array('srcdoc'=>'<p>Custom</p>', 'sandbox'=>'allow-scripts', 'hidden'=>true, 'inert'=>true, 'title'=>'Other app', 'allow'=>true) as $attribute=>$value) {
+    $frame = $app_frame; $frame[$attribute] = $value; WP_HTML_Tag_Processor::$iframes = array($frame);
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Do not alter restricted or unrecognized frames');
+}
+foreach (array('http://app.calorietoken.net/', 'https://app.calorietoken.net.example/', 'https://user@app.calorietoken.net/', 'https://app.calorietoken.net:8443/', 'https://app.calorietoken.net/other', '/app', null, true) as $src) {
+    $frame = $app_frame; $frame['src'] = $src; WP_HTML_Tag_Processor::$iframes = array($frame);
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Reject noncanonical app destinations');
+}
+WP_HTML_Tag_Processor::$iframes = array($app_frame, $app_frame);
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Ambiguous duplicate app frames must not be changed');
+WP_HTML_Tag_Processor::$iframes = array(array('class'=>'video-embed', 'src'=>'https://video.example/'), $app_frame);
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === 'updated-public-markup', 'Unrelated frames can coexist');
+check(WP_HTML_Tag_Processor::$last->nodes[0] === WP_HTML_Tag_Processor::$iframes[0], 'Unrelated iframe is unchanged');
+WP_HTML_Tag_Processor::$iframes = array($app_frame);
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html, 'other_shortcode') === $app_html, 'Do not modify another shortcode');
+foreach (array('preview', 'brizy-edit', 'xl-return', 'xl-login', 'unknown') as $query) {
+    $_GET[$query] = '1';
+    check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Editor and auth requests are excluded');
+    unset($_GET[$query]);
+}
+$_GET['ui_lang'] = 'nl'; $_SERVER['REQUEST_URI'] = '/calorieapp/?ui_lang=nl';
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === 'updated-public-markup', 'The short public app URL supports display-language selection');
+unset($_GET['ui_lang']);
+$page_id = 1207;
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Only the app page is eligible');
+$page_id = 7880; $preview = true;
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Preview is excluded');
+$preview = false; $site_url = 'https://other.example/';
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Only supported website origins are eligible');
+$site_url = 'https://calorietoken.net/'; $_SERVER['REQUEST_URI'] = '/index.php/login/';
+check(\CalorieToken\SiteStyle\Plugin::delegate_app_camera($app_html) === $app_html, 'Unexpected public routes remain unchanged');
+echo "Camera delegation: early rendered policy, exact origins, existing restrictions, duplicate frames and preview/auth/page boundaries passed.\n";

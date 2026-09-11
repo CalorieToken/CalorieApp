@@ -112,6 +112,20 @@ test('Camera refusal and unavailable contexts retain a working manual fallback; 
   h.render({disabled: true}); h.submit(); await h.click(); assert.equal(h.sessions.length, 1); assert.equal(h.results.length, 1);
 });
 
+test('A failed preview after capture is granted does not tell the visitor camera permission was refused', async () => {
+  const h = harness(), pending = h.click();
+  h.sessions[0].reject(Object.assign(new Error('Preview did not play'), {name: 'CameraPlaybackError'}));
+  await pending;
+  for (const locale of Object.keys(copy)) {
+    h.render({locale});
+    assert.ok(text(h.tree).includes(copy[locale].cameraError));
+    assert.ok(!text(h.tree).includes(copy[locale].denied));
+    assert.ok(!text(h.tree).includes(copy[locale].permissionHelp));
+  }
+  assert.equal(h.timers.size, 0);
+  h.type('034000470693'); h.submit(); assert.deepEqual(h.results, ['034000470693']);
+});
+
 
 test('A page policy block is distinguished from visitor refusal without opening a camera or requiring sign-in', async () => {
   for (const property of ['permissionsPolicy', 'featurePolicy']) {

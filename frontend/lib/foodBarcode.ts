@@ -71,8 +71,14 @@ export async function startBarcodeCamera(
     if (stopped) return;
     stream = await dependencies.openStream();
     if (stopped) { stop(); return; }
+    video.muted = true; video.defaultMuted = true; video.playsInline = true;
     video.srcObject = stream;
-    await video.play();
+    try { await video.play(); }
+    catch (cause) {
+      // Playback can also throw NotAllowedError after capture was granted.
+      // Do not present that as a refusal of camera access.
+      throw Object.assign(new Error("The camera preview could not play."), { name: "CameraPlaybackError", cause });
+    }
     if (stopped) { stop(); return; }
     onReady();
     await new Promise<void>((resolve, reject) => {

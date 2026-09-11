@@ -72,6 +72,22 @@ test('Denied camera and decoder failures remain recoverable and release owned re
   assert.ok(c.counts().stopped > 0); assert.equal(c.video.srcObject, null);
 });
 
+test('Camera preview starts muted and inline; playback refusal is distinct from capture refusal and releases tracks', async () => {
+  const c = camera(), controller = new AbortController();
+  const refusal = Object.assign(new Error('Playback blocked'), {name: 'NotAllowedError'});
+  c.video.play = async () => {
+    assert.equal(c.video.muted, true); assert.equal(c.video.defaultMuted, true); assert.equal(c.video.playsInline, true);
+    assert.equal(c.video.srcObject, c.stream);
+    throw refusal;
+  };
+  await assert.rejects(startBarcodeCamera(c.video, controller.signal, () => assert.fail('No result'),
+    () => assert.fail('No ready signal before playback'), c.dependencies), error => {
+      assert.equal(error.name, 'CameraPlaybackError'); assert.equal(error.cause, refusal); return true;
+    });
+  assert.equal(c.counts().opened, 1); assert.equal(c.counts().decoded, 0);
+  assert.ok(c.counts().stopped > 0); assert.equal(c.video.srcObject, null);
+});
+
 test('Invalid detections keep scanning locally and abort clears the loop', async () => {
   const c = camera(), controller = new AbortController(); let attempted = 0;
   c.dependencies.createReader = async () => ({ decode: () => { attempted++; return 'https://example.com'; } });

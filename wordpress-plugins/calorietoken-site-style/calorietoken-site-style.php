@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.12
+ * Version: 1.4.13
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,45 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.12';
+    const VERSION = '1.4.13';
+
+    public static function delegate_app_camera($html, $shortcode_tag = null) {
+        if (!is_string($html) || ($shortcode_tag !== null && $shortcode_tag !== 'calorieapp_embed') ||
+            !self::enabled() || !is_page(7880) || !class_exists('WP_HTML_Tag_Processor') ||
+            !in_array(rtrim(home_url('/'), '/'), array('https://calorietoken.net', 'https://www.calorietoken.net'), true)) { return $html; }
+        foreach (array_keys($_GET) as $key) { if ($key !== 'ui_lang') { return $html; } }
+        $path = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH);
+        if (!in_array($path, array('/index.php/calorieapp/', '/calorieapp/'), true)) { return $html; }
+
+        // Set the permission in rendered HTML, before the iframe's first
+        // navigation. A late DOM change cannot update an already-loaded policy.
+        // Filter both fresh shortcode output and cached public Brizy content.
+        $tags = new \WP_HTML_Tag_Processor($html);
+        $found = false;
+        while ($tags->next_tag('IFRAME')) {
+            $classes = $tags->get_attribute('class');
+            if (!is_string($classes) || !in_array('calorieapp-embed-frame', preg_split('/\s+/', trim($classes)), true)) { continue; }
+            if ($found || $tags->get_attribute('title') !== 'CalorieApp') { return $html; }
+            $found = true;
+            foreach (array('srcdoc', 'sandbox', 'hidden', 'inert') as $attribute) {
+                if ($tags->get_attribute($attribute) !== null) { return $html; }
+            }
+            $src = $tags->get_attribute('src');
+            $url = is_string($src) ? parse_url($src) : false;
+            if (!is_array($url) || !isset($url['scheme'], $url['host']) || $url['scheme'] !== 'https' ||
+                isset($url['user']) || isset($url['pass']) || isset($url['port']) ||
+                !in_array($url['host'], array('app.calorietoken.net', 'calorieapp-frontend.onrender.com'), true) ||
+                !in_array(isset($url['path']) ? $url['path'] : '/', array('', '/'), true)) { return $html; }
+            $permission = $tags->get_attribute('allow');
+            if ($permission !== null && !is_string($permission)) { return $html; }
+            $permission = $permission === null ? '' : $permission;
+            // Preserve an operator's explicit camera restriction and every
+            // other directive. Never grant the microphone or a wildcard origin.
+            if (preg_match('/(?:^|;)\s*camera(?:\s|;|$)/i', $permission)) { return $html; }
+            $tags->set_attribute('allow', $permission . (trim($permission) !== '' ? '; ' : '') . 'camera https://' . $url['host']);
+        }
+        return $found ? $tags->get_updated_html() : $html;
+    }
 
     public static function retire_market_loader($html) {
         if (!is_string($html) || stripos($html, 'livecoinwatch.com') === false ||
@@ -199,6 +237,9 @@ final class Plugin {
 add_filter('body_class', array(Plugin::class, 'body_class'));
 add_action('wp_enqueue_scripts', array(Plugin::class, 'enqueue'), 99);
 add_action('wp_footer', array(Plugin::class, 'templates'), 19);
+add_filter('brizy_content', array(Plugin::class, 'delegate_app_camera'), 9998);
+add_filter('the_content', array(Plugin::class, 'delegate_app_camera'), 9998);
+add_filter('do_shortcode_tag', array(Plugin::class, 'delegate_app_camera'), 9998, 2);
 add_filter('brizy_content', array(Plugin::class, 'retire_market_loader'), 9999);
 add_filter('the_content', array(Plugin::class, 'retire_market_loader'), 9999);
 add_filter('do_shortcode_tag', array(Plugin::class, 'retire_market_loader'), 9999);
