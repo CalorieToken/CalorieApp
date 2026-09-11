@@ -1,4 +1,18 @@
-# CalorieToken Site Style 1.4.21
+# CalorieToken Site Style 1.4.22
+
+Deze gerichte correctie geeft het geopende mobiele menu de volle breedte van
+de kaart. Logo en hamburger blijven samen in de bovenste rij. Meerregelige
+links, waaronder Tokenomics update, beginnen consequent aan dezelfde kant.
+Dezelfde indeling geldt voor de native Brizy-header, documentheader en Showcases.
+De geaccepteerde desktopindeling en overige historische huisstijl blijven behouden.
+
+Installeer **calorietoken-site-style-1.4.22.zip**. Directe plugin-terugval is de
+bevestigd geïnstalleerde **1.4.21**. Deze ZIP bevat ook de vertaal- en
+Richlist-correcties van 1.4.21. Er is geen nieuwe camera-, account-, zoek- of
+providerinstelling in dit pakket opgenomen. De aparte appuitrol van 3845de6
+bevat de eerder voorbereide zoekcorrectie.
+
+## Historische notities: 1.4.21
 
 Deze correctie behoudt de door de eigenaar geaccepteerde huisstijl van 1.4.20.
 De Richlist-titel krijgt zijn historische uitzondering terug: alleen de twee
