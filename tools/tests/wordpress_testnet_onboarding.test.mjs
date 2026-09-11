@@ -11,7 +11,9 @@ const source = readFileSync(new URL('testnet.js', assets), 'utf8');
 const copy = JSON.parse(readFileSync(new URL('testnet-data.json', assets), 'utf8'));
 // Shape-only placeholders with invalid checksums: no real wallet or network is used.
 const address = 'r' + '1'.repeat(25), secret = 's' + '2'.repeat(24);
-const accountReply = () => ({account: {classicAddress: address, secret}});
+// Matches the field types observed in one approved faucet response on 2026-09-11.
+// All values remain synthetic; no returned account or recovery data is retained.
+const accountReply = () => ({account: {address, classicAddress: address, xAddress: 'T' + '3'.repeat(40)}, amount: 10, seed: secret});
 const response = (data = accountReply(), {status = 200, type = 'application/json', json, retryAfter = null} = {}) => ({
   ok: status >= 200 && status < 300, status,
   headers: {get: name => name === 'content-type' ? type : name === 'retry-after' ? retryAfter : null},
@@ -87,7 +89,55 @@ test('Creating an account requires a click and sends one minimal, credential-fre
   assert.equal(h.timers.size, 0);
 });
 
-test('Both documented address fields are accepted and funding is independently checked on Testnet', async () => {
+test('The current faucet top-level seed reaches independent verification and remains hidden until requested', async () => {
+  const h = fixture();
+  h.click('#ctstyle-testnet-create-button'); await settle();
+  assert.equal(h.status(), copy.nl.checking);
+  assert.equal(h.query('#ctstyle-testnet-address').textContent, address);
+  assert.equal(h.query('#ctstyle-testnet-secret').textContent, '');
+  assert.equal(h.requests.length, 1); assert.equal(h.sockets.length, 1);
+  assert.equal(h.clipboard.length, 0);
+  h.funded(); await settle();
+  assert.equal(h.status(), copy.nl.funded);
+  h.clickCopy('next'); h.clickCopy('show');
+  assert.equal(h.query('#ctstyle-testnet-secret').textContent, secret);
+  h.clickCopy('next'); assert.equal(h.query('#ctstyle-testnet-secret').textContent, '');
+  assert.equal([...h.storage.values()].some(value => value.includes(secret) || value.includes(address)), false);
+  assert.equal([...h.document.querySelectorAll('a')].some(node => node.href.includes(secret)), false);
+});
+
+test('The current faucet seed accepts both supported family-seed shapes without accepting missing or malformed seeds', async () => {
+  for (const seed of [secret, 'sEd' + '3'.repeat(28)]) {
+    const h = fixture({fetch: async () => response({...accountReply(), seed})});
+    h.click('#ctstyle-testnet-create-button'); await settle();
+    assert.equal(h.status(), copy.nl.checking);
+    h.clickCopy('next'); h.clickCopy('show');
+    assert.equal(h.query('#ctstyle-testnet-secret').textContent, seed);
+  }
+  for (const seed of [null, '', 42, {}, [], 'not-a-family-seed', 's' + '0'.repeat(24)]) {
+    const h = fixture({fetch: async () => response({...accountReply(), seed})});
+    h.click('#ctstyle-testnet-create-button'); await settle();
+    assert.equal(h.status(), copy.nl.invalidResponse);
+    assert.equal(h.sockets.length, 0);
+    assert.equal(h.query('#ctstyle-testnet-address').textContent, '');
+    assert.equal(h.query('#ctstyle-testnet-secret').textContent, '');
+  }
+});
+
+test('A malformed or conflicting current seed never silently falls back to a legacy secret', async () => {
+  for (const seed of [null, '', 42, 's' + '4'.repeat(24)]) {
+    const h = fixture({fetch: async () => response({account: {classicAddress: address, secret}, seed})});
+    h.click('#ctstyle-testnet-create-button'); await settle();
+    assert.equal(h.status(), copy.nl.invalidResponse);
+    assert.equal(h.sockets.length, 0);
+    assert.equal(h.query('#ctstyle-testnet-secret').textContent, '');
+  }
+  const h = fixture({fetch: async () => response({account: {classicAddress: address, secret}, seed: secret})});
+  h.click('#ctstyle-testnet-create-button'); await settle();
+  assert.equal(h.status(), copy.nl.checking);
+});
+
+test('Both legacy address fields and account.secret remain accepted with independent Testnet verification', async () => {
   for (const field of ['classicAddress', 'address']) {
     const h = fixture({fetch: async () => response({account: {[field]: address, secret}})});
     h.click('#ctstyle-testnet-create-button'); await settle();

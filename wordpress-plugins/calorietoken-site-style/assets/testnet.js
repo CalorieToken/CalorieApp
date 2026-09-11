@@ -147,7 +147,14 @@
       var data = await response.json(), wallet = data && data.account;
       if (current !== generation || !allowed()) return;
       if (timedOut) { status = 'timedOut'; return; }
-      var address = wallet && (wallet.classicAddress || wallet.address), secret = wallet && wallet.secret;
+      var address = wallet && (wallet.classicAddress || wallet.address);
+      // The current faucet returns seed beside account; older replies used account.secret.
+      // An explicitly supplied current seed must be valid, never replaced by a legacy value.
+      var hasSeed = !!data && Object.prototype.hasOwnProperty.call(data,'seed');
+      var secret = hasSeed ? data.seed : wallet && wallet.secret;
+      if (hasSeed && wallet && Object.prototype.hasOwnProperty.call(wallet,'secret') && wallet.secret !== secret) {
+        status = 'invalidResponse'; return;
+      }
       // Schema checks only; the official Testnet ledger independently verifies funding below.
       if (typeof address !== 'string' || !/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(address) ||
           typeof secret !== 'string' || !/^s[1-9A-HJ-NP-Za-km-z]{20,34}$/.test(secret)) { status = 'invalidResponse'; return; }

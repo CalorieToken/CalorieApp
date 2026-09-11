@@ -1,12 +1,22 @@
-# CalorieToken Site Style 1.4.17
+# CalorieToken Site Style 1.4.18
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.17.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.17** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.18.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.18** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Gedeeld menu na publicatie van Showcases
+## Testnet-antwoordcorrectie
+
+Na expliciet akkoord van de eigenaar gaf één officiële Testnet-faucetaanvraag HTTP 200 met JSON terug. De herstelcode staat daarin als `seed` naast `account`; de vorige module las alleen `account.secret`. Daardoor wees zij dit antwoord af als onbruikbare accountgegevens. Alleen status en bekende veldtypen zijn vastgelegd, geen echte herstelcode, adres of volledig antwoord. Er is geen tweede aanvraag gedaan.
+
+Deze versie leest het actuele `seed`-veld en behoudt ondersteuning voor het oudere `account.secret`-formaat. De adres- en codevormcontrole blijft verplicht. Een ongeldige aanwezige `seed` wordt niet vervangen door een legacywaarde; tegenstrijdige velden worden afgewezen. De herstelcode blijft verborgen tot de bezoeker haar bewust toont of kopieert, staat uitsluitend tijdelijk in browsergeheugen en wordt bij vertrek uit de module gewist. De aparte gevalideerde Testnet-saldocontrole, wachttellers, provider-backoff en één-aanvraagbewaking blijven behouden.
+
+Gerichte tests gebruiken de waargenomen antwoordstructuur met uitsluitend fictieve waarden. De eerdere code reproduceert daarbij de screenshotmelding. Een geslaagde HTTP-reactie bewijst nog geen walletimport of geverifieerd saldo in de geïnstalleerde pagina. De al geaccepteerde telefoonscan, productopvraag en gedeelde Xaman-login/logout hoeven niet opnieuw getest te worden.
+
+Dit pakket verandert uitsluitend de Testnet-uitlezing, versie en installatie-uitleg. Het bevat geen nieuwe afhankelijkheid, frontend-/backenduitrol, menu-/permalinkwijziging of wijziging van de geïnstalleerde Identity Bridge. Directe terugval is het bewaarde pakket **1.4.17**. De onderstaande notities bewaren eerdere tussenstanden; oude verzoeken om camera- of loginproeven gelden niet opnieuw.
+
+## Inbegrepen uit 1.4.17: gedeeld menu na publicatie van Showcases
 
 Op verzoek van de eigenaar zijn de bestaande Showcases-introductie (pagina 7945) en de drie ingangen CalorieApp, Showcases en Voting Hub in het bestaande WordPress/Brizy-menu Hoofdmenu3 bijgewerkt. CalorieApp en de informatieve Community Voting Hub (8020) waren al gepubliceerd. De oude Voting Hub-werkversie blijft een concept; er wordt geen stemming geactiveerd. De verdere showcases blijven werk voor stap 4.
 
