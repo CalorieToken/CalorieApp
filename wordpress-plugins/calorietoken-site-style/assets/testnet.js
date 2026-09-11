@@ -7,6 +7,42 @@
   var ledger = 'wss://s.altnet.rippletest.net:51233/';
   var panel = null, fields = [], ui = {}, locale = 'en', status = 'ready', step = 0;
   var account = null, busy = false, controller = null, cancelLedger = null, generation = 0, departed = false;
+  // Courtesy limits for ordinary UI use, not a server-side anti-bot boundary.
+  // Only two deadlines survive a tab reload; account data is never stored.
+  var delayKey = 'ctstyle-testnet-delays-v1', retryAt = {create:0,check:0}, delayTimer = null;
+  function readDelays() {
+    try {
+      var saved = JSON.parse(window.sessionStorage.getItem(delayKey) || 'null');
+      ['create','check'].forEach(function (key) {
+        var value = saved && saved[key];
+        if (Number.isSafeInteger(value) && value > 0) retryAt[key] = Math.max(retryAt[key],value);
+      });
+    } catch (_) { /* Storage may be blocked; the current page still keeps its delay. */ }
+  }
+  function delayRequest(key, milliseconds) {
+    retryAt[key] = Math.max(retryAt[key],Date.now()+milliseconds);
+    try { window.sessionStorage.setItem(delayKey,JSON.stringify(retryAt)); } catch (_) {}
+  }
+  function remaining(key) { return Math.max(0,Math.ceil((retryAt[key]-Date.now())/1000)); }
+  function providerDelay(value) {
+    if (!value) return 60000;
+    value = value.trim();
+    var delay = /^\d{1,10}$/.test(value) ? Number(value)*1000 : Date.parse(value)-Date.now();
+    return Number.isFinite(delay) ? Math.max(60000,delay) : 60000;
+  }
+  function requestControls() {
+    window.clearTimeout(delayTimer); delayTimer = null;
+    var createWait = remaining('create'), checkWait = remaining('check'), words = cfg.testCopy[locale];
+    ui.create.disabled = busy || !!account || status === 'unsupported' || createWait > 0;
+    ui.check.disabled = busy || checkWait > 0;
+    var createText = !busy && !account && createWait ? words.waitCreate.replace('{seconds}',new Intl.NumberFormat(locale).format(createWait)) : words.create;
+    var checkText = !busy && account && status !== 'funded' && checkWait ? words.waitCheck.replace('{seconds}',new Intl.NumberFormat(locale).format(checkWait)) : words.check;
+    if (ui.create.textContent !== createText) ui.create.textContent = createText;
+    if (ui.check.textContent !== checkText) ui.check.textContent = checkText;
+    if (!departed && !busy && ((!account && createWait) || (account && status !== 'funded' && checkWait))) {
+      delayTimer = window.setTimeout(requestControls,1000);
+    }
+  }
   function allowed() {
     return !departed && document.body.matches('.ctstyle-enabled.page-id-7880') &&
       !document.body.matches('.brz-ed') && !document.querySelector('.brz-ed,#brz-ed-iframe') &&
@@ -25,9 +61,8 @@
     fields.forEach(function (entry) { entry.node.textContent = cfg.testCopy[locale][entry.key]; });
     ui.status.textContent = cfg.testCopy[locale][status];
     ui.status.hidden = status === 'ready';
-    ui.create.disabled = busy || !!account || status === 'unsupported';
     ui.create.hidden = !!account;
-    ui.check.disabled = busy; ui.check.hidden = !account || status === 'funded';
+    ui.check.hidden = !account || status === 'funded';
     ui.result.hidden = !account; panel.setAttribute('aria-busy',busy ? 'true' : 'false');
     ui.copySeed.disabled = !account; ui.show.disabled = !account;
     ui.progress.textContent = (step + 1) + ' / 4';
@@ -35,6 +70,7 @@
     ui.steps.forEach(function (node,index) { node.hidden = step !== index + 1; });
     ui.previous.hidden = step <= 1;
     ui.next.hidden = step < 1 || step >= 3;
+    requestControls();
   }
   function go(next) {
     if (!allowed() || !account || next < 1 || next > 3) return;
@@ -61,17 +97,24 @@
         socket.onmessage = function (event) {
           var data; try { data = JSON.parse(event.data); } catch (_) { finish(false); return; }
           if (data.id !== 1) return;
+          if (data.warning === 'load') delayRequest('check',60000);
           var result = data.result, info = result && result.account_data;
           finish(data.status === 'success' && result.validated === true && info && info.Account === address &&
             typeof info.Balance === 'string' && /^[0-9]{1,18}$/.test(info.Balance) && Number(info.Balance) > 0);
         };
-        socket.onerror = socket.onclose = function () { finish(false); };
+        socket.onerror = function () { finish(false); };
+        socket.onclose = function (event) {
+          if (event && event.code === 1008) delayRequest('check',60000);
+          finish(false);
+        };
       } catch (_) { finish(false); }
     });
   }
   async function check() {
     if (!allowed() || busy || !account) return;
+    readDelays(); if (remaining('check')) { requestControls(); return; }
     var current = generation, address = account.address;
+    delayRequest('check',15000);
     busy = true; status = 'checking'; render();
     try { await verify(address); if (current === generation && allowed()) status = 'funded'; }
     catch (_) { if (current === generation && allowed()) status = 'pending'; }
@@ -79,10 +122,12 @@
   }
   async function create() {
     if (!allowed() || busy || account || !panel.isConnected) return;
+    readDelays(); if (remaining('create')) { requestControls(); return; }
     if (typeof window.fetch !== 'function' || typeof window.AbortController !== 'function' || typeof window.WebSocket !== 'function') {
       status = 'unsupported'; render(); return;
     }
     var current = generation, timeout, response, timedOut = false, request = new window.AbortController();
+    delayRequest('create',60000);
     busy = true; status = 'creating'; render(); controller = request;
     try {
       timeout = window.setTimeout(function () { timedOut = true; request.abort(); },25000);
@@ -94,7 +139,10 @@
         redirect:'error',referrerPolicy:'no-referrer',signal:request.signal});
       if (current !== generation || !allowed()) return;
       if (timedOut) { status = 'timedOut'; return; }
-      if (!response.ok) { status = response.status === 429 ? 'limited' : 'failed'; return; }
+      if (!response.ok) {
+        if (response.status === 429 || response.status === 503) delayRequest('create',providerDelay(response.headers.get('retry-after')));
+        status = response.status === 429 ? 'limited' : 'failed'; return;
+      }
       if (!(response.headers.get('content-type') || '').toLowerCase().startsWith('application/json')) { status = 'invalidResponse'; return; }
       var data = await response.json(), wallet = data && data.account;
       if (current !== generation || !allowed()) return;
@@ -185,6 +233,7 @@
   }
   function refresh(tag) {
     if (!allowed()) return;
+    readDelays();
     if (cfg.testCopy[tag]) locale = tag;
     else if (!panel) {
       var root = document.getElementById('ctstyle-testnet'), initial = (root && root.lang) || document.documentElement.lang;

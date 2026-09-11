@@ -1,12 +1,24 @@
-# CalorieToken Site Style 1.4.14
+# CalorieToken Site Style 1.4.15
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.14.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.14** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.15.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.15** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## Testaccountmelding na de telefoonproef
+## Begrensde Testnet-bediening na de vraag over misbruik
+
+Site Style 1.4.14 is live bevestigd; de app-build-ID en Render wijzen nog op 53013d75. Eén nieuwe camerastart in de cloudbrowser eindigde met de algemene startfout. De werkelijke telefoonwerking is daarmee niet vastgesteld. De afzonderlijke frontendcorrectie voor videostart en productbalk blijft voorbereid en vraagt eigen uitrolakkoord.
+
+Deze versie beperkt gewone herhaalde bediening van de Testnet-hulp: ten minste zestig seconden tussen accountaanvragen en vijftien seconden tussen saldocontroles. HTTP 429/503 met een leesbare `Retry-After` kan de wachttijd verlengen, ook wanneer de dienst uren vraagt. Een XRPL-belastingswaarschuwing of WebSocket-beleidssluiting verlengt de saldowachttijd tot ten minste zestig seconden. Er volgen geen automatische herhaalverzoeken. De knop toont in alle elf talen hoe lang de bezoeker moet wachten en wordt vanzelf weer beschikbaar.
+
+Alleen twee tijdstippen worden in tijdelijke tabopslag bewaard, zodat gewoon verversen de wachttijd niet wist. Herstelcodes, accountadressen en gebruikersidentificatoren worden niet opgeslagen. Als tabopslag is geblokkeerd blijft de wachttijd binnen de huidige pagina werken. De enige afteltimer stopt bij vertrek; terugkeer behoudt de wachttijd. Deze browsermaatregel vermindert onbedoelde herhaling en is **geen afdwingbare bescherming tegen bots of meerdere tabbladen**. De directe faucet en Testnet-server moeten op hun eigen toegangspunten misbruik begrenzen. Hun exacte actuele faucetlimieten zijn niet bevestigd; de [XRPL-limietdocumentatie](https://xrpl.org/docs/references/http-websocket-apis/api-conventions/rate-limiting) beschrijft ledger-API's, niet de faucet.
+
+De bestaande CalorieApp-backend heeft een afzonderlijk gedeeld budget van acht daadwerkelijke Open Food Facts-pogingen per zestig seconden, gecoördineerd via PostgreSQL; naamzoeken en barcodes gebruiken ditzelfde budget. Er zijn daarnaast routebudgetten, een begrensde wachtrij, samenvoegen van gelijke lopende verzoeken, een kleine cache en respect voor bronwachttijden. Deze controles zijn al onderdeel van de laatst bevestigde backendbron. Ze begrenzen verkeer uit deze app, niet het verkeer van andere projecten achter dezelfde provider-IP. Zoekverkeer gaat alleen na expliciet zoeken naar OFF; de app schrijft niet naar de OFF-database. De USDA-pilot leest een gebundeld referentiebestand en doet geen live USDA-API-aanvragen. Een latere live USDA-adapter vraagt eigen serverlimieten. Deze versie verandert geen backend, login, databron of serviceconfiguratie.
+
+Twintig gerichte Testnet-DOM-tests slagen, inclusief zeven nieuwe scenario's die de ontbrekende wachttijden in 1.4.14 reproduceren. Alles gebruikt synthetische antwoorden; er is geen belastingstest tegen een echte provider of echte accountaanmaak gedaan. Dit is een gerichte aanvulling op de nieuwe gebruikersvraag en geen heropening van de geaccepteerde basis van stap 1/2. De volledige publieke website wordt hiermee niet als DDoS-bestendig verklaard.
+
+## Inbegrepen: testaccountmelding uit 1.4.14
 
 De eigenaar kreeg na ‘Maak mijn gratis testaccount’ een algemene faucetfout. Die melding werd ook getoond als de browser geen antwoord kon lezen, de wachttijd verstreek of accountgegevens ontbraken. De screenshot bepaalt niet welke oorzaak optrad. Een rechtstreekse, alleen-lezen verbindingscontrole vanuit de werkomgeving kon niet worden uitgevoerd; er is geen actuele foutstatus van de faucet vastgesteld.
 
