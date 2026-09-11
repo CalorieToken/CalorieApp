@@ -162,7 +162,22 @@
     known.forEach(function (node) {
       if (node !== footer && !node.contains(footer)) node.classList.add('ctstyle-retired-footer');
     });
-    if (canonical) return; // The installed bridge already owns its carousel.
+    if (canonical) {
+      // Adopt the installed bridge's existing row so shared translations and
+      // cookie controls also apply. Copy only missing public template links.
+      var legal = footer.querySelector('.calorieapp-shared-legal-links');
+      if (legal) {
+        legal.classList.add('ctstyle-legal-links');
+        var present = new Set(Array.from(legal.querySelectorAll('a[href]')).map(function (a) {
+          return canonicalURL(a.getAttribute('href'));
+        }));
+        fallback.querySelectorAll('.ctstyle-legal-links a[href]').forEach(function (a) {
+          var url = canonicalURL(a.getAttribute('href'));
+          if (url && !present.has(url)) { legal.append(a.cloneNode(true)); present.add(url); }
+        });
+      }
+      return; // The installed bridge still owns its carousel and handlers.
+    }
     var track = footer.querySelector('.ctstyle-social-track');
     footer.querySelectorAll('[data-ctstyle-direction]').forEach(function (button) {
       button.addEventListener('click', function () {

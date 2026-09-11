@@ -58,3 +58,50 @@ $fixture = array_fill(0, 501, post_fixture(4,'draft',''));
 $report = Review::snapshot();
 check(count($report['pages']) === 500 && $report['truncated'], 'Partial inventory must be explicit');
 echo "Site Style review: access, nonce, redaction, preserved data and bounded inventory passed.\n";
+
+// The WordPress parser is a core dependency, not reimplemented here. These
+// fixtures model its SCRIPT/attribute API and verify our scope and URL policy.
+$site_url = 'https://calorietoken.net/'; $market_renderer = true;
+function home_url($path = '/') { global $site_url; return $site_url; }
+function wp_script_is($handle, $status = 'enqueued') {
+    global $market_renderer;
+    check(in_array($handle, array('calorieapp-identity-bridge-layout','calorieapp-identity-bridge-site-polish'), true), 'Unexpected renderer dependency');
+    return $market_renderer;
+}
+class WP_HTML_Tag_Processor {
+    public static $scripts = array();
+    public static $last = null;
+    public $nodes; private $index = -1;
+    public function __construct($html) { $this->nodes = self::$scripts; self::$last = $this; }
+    public function next_tag($tag) { check($tag === 'SCRIPT', 'Only scripts should be visited'); return ++$this->index < count($this->nodes); }
+    public function get_attribute($name) { return isset($this->nodes[$this->index][$name]) ? $this->nodes[$this->index][$name] : null; }
+    public function remove_attribute($name) { unset($this->nodes[$this->index][$name]); }
+    public function set_attribute($name, $value) { $this->nodes[$this->index][$name] = $value; }
+    public function get_updated_html() { return 'updated-public-markup'; }
+}
+$html = '<section>Public widget<script src="https://www.livecoinwatch.com/static/lcw-widget.js"></script></section>';
+$targets = array('https://www.livecoinwatch.com/static/lcw-widget.js', 'https://livecoinwatch.com/static/lcw-widget.js?ver=1', '//www.livecoinwatch.com/static/lcw-widget.js');
+$others = array('https://platform.twitter.com/widgets.js', 'https://livecoinwatch.com.example/static/lcw-widget.js',
+    'https://www.livecoinwatch.com/static/other.js', 'https://other.example/lcw-widget.js',
+    'https://user@www.livecoinwatch.com/static/lcw-widget.js', '/static/lcw-widget.js', null, true);
+WP_HTML_Tag_Processor::$scripts = array_map(static function ($src) { return array('src'=>$src, 'type'=>'text/javascript', 'keep'=>'original'); }, array_merge($targets, $others));
+$result = \CalorieToken\SiteStyle\Plugin::retire_market_loader($html);
+check($result === 'updated-public-markup', 'Return the core parser output');
+foreach (WP_HTML_Tag_Processor::$last->nodes as $index => $node) {
+    if ($index < count($targets)) {
+        check(!isset($node['src']) && $node['type'] === 'application/x-calorietoken-retired', 'The exact retired loader must not fetch or execute inline content');
+        check($node['keep'] === 'original', 'Unrelated attributes remain intact');
+    } else { check($node === WP_HTML_Tag_Processor::$scripts[$index], 'Unrelated scripts must stay unchanged'); }
+}
+$market_renderer = false;
+check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === $html, 'Retain legacy loading when its replacement is unavailable');
+$market_renderer = true; $preview = true;
+check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === $html, 'Never filter editor previews');
+$preview = false; $_GET['xl-return'] = '1';
+check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === $html, 'Never filter Xaman return/action responses');
+unset($_GET['xl-return']); $site_url = 'https://unrelated.example/';
+check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === $html, 'Only the supported public site is filtered');
+$site_url = 'https://calorietoken.net/'; $front_page = true;
+check(\CalorieToken\SiteStyle\Plugin::retire_market_loader($html) === 'updated-public-markup', 'Home also retires the replaced loader');
+$front_page = false;
+echo "Market loader: exact URLs, inert output, renderer dependency and preview/auth/origin boundaries passed.\n";

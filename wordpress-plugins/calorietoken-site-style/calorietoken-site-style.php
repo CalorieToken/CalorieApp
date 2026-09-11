@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.11
+ * Version: 1.4.12
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,34 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.11';
+    const VERSION = '1.4.12';
+
+    public static function retire_market_loader($html) {
+        if (!is_string($html) || stripos($html, 'livecoinwatch.com') === false ||
+            (!self::enabled() && !self::footer_only()) || !class_exists('WP_HTML_Tag_Processor') ||
+            !in_array(strtolower((string) parse_url(home_url('/'), PHP_URL_HOST)), array('calorietoken.net', 'www.calorietoken.net'), true)) { return $html; }
+        foreach (array_keys($_GET) as $key) { if (strpos($key, 'xl-') === 0) { return $html; } }
+        // These installed bridge handles provide the site-wide XPMarket view.
+        // Keep the legacy loader if that replacement is not being delivered.
+        foreach (array('calorieapp-identity-bridge-layout', 'calorieapp-identity-bridge-site-polish') as $handle) {
+            if (!wp_script_is($handle, 'enqueued') && !wp_script_is($handle, 'done')) { return $html; }
+        }
+        $tags = new \WP_HTML_Tag_Processor($html);
+        while ($tags->next_tag('SCRIPT')) {
+            $src = $tags->get_attribute('src');
+            if (!is_string($src)) { continue; }
+            $url = parse_url(strpos($src, '//') === 0 ? 'https:' . $src : $src);
+            if (!is_array($url) || !isset($url['scheme'], $url['host'], $url['path']) ||
+                !in_array(strtolower($url['scheme']), array('http', 'https'), true) || isset($url['user']) || isset($url['pass']) ||
+                !in_array(strtolower($url['host']), array('livecoinwatch.com', 'www.livecoinwatch.com'), true) ||
+                $url['path'] !== '/static/lcw-widget.js') { continue; }
+            // Make the script inert before HTML reaches the browser. A distinct
+            // data type also prevents consent tools from reactivating its body.
+            $tags->remove_attribute('src');
+            $tags->set_attribute('type', 'application/x-calorietoken-retired');
+        }
+        return $tags->get_updated_html();
+    }
 
     private static function json_asset($name) {
         // Request-local cache only: plugin updates never need a persistent cache purge.
@@ -172,5 +199,8 @@ final class Plugin {
 add_filter('body_class', array(Plugin::class, 'body_class'));
 add_action('wp_enqueue_scripts', array(Plugin::class, 'enqueue'), 99);
 add_action('wp_footer', array(Plugin::class, 'templates'), 19);
+add_filter('brizy_content', array(Plugin::class, 'retire_market_loader'), 9999);
+add_filter('the_content', array(Plugin::class, 'retire_market_loader'), 9999);
+add_filter('do_shortcode_tag', array(Plugin::class, 'retire_market_loader'), 9999);
 require_once __DIR__ . '/public-pages.php';
 require_once __DIR__ . '/review.php';

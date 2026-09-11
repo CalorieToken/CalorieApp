@@ -5,15 +5,17 @@ import { createStore, connectGuest, type DisplayStore } from "@/lib/displayLangu
 import { localeDirection, resolveLocale, supportedLocales } from "@/lib/locales";
 import translations from "@/config/display-language-copy.json";
 
-type DisplayContext = { enabled: boolean; locale: string; select(locale: string): void };
-const Context = createContext<DisplayContext>({ enabled: false, locale: "en", select: () => {} });
+type DisplayContext = { enabled: boolean; locale: string; parentManaged: boolean; select(locale: string): void };
+const Context = createContext<DisplayContext>({ enabled: false, locale: "en", parentManaged: false, select: () => {} });
 
 export function DisplayLanguageProvider({ children }: { children: React.ReactNode }) {
   const enabled = process.env.NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE !== "0";
   const store = useRef<DisplayStore | null>(null);
   const [locale, setLocale] = useState("en");
+  const [parentManaged, setParentManaged] = useState(false);
   useEffect(() => {
     if (!enabled) return;
+    setParentManaged(false);
     // This public display choice never changes the login's locale query/state.
     const initial = new URLSearchParams(window.location.search).get("ui_lang") ||
       new URLSearchParams(window.location.search).get("locale") ||
@@ -31,21 +33,43 @@ export function DisplayLanguageProvider({ children }: { children: React.ReactNod
     const unsubscribe = current.subscribe(state => setLocale(state.locale));
     const disconnect = window.parent !== window && typeof window.crypto?.randomUUID === "function"
       ? connectGuest({
-          window, parent: window.parent, store: current, channel: window.crypto.randomUUID(),
+          window, parent: window.parent, channel: window.crypto.randomUUID(),
+          store: {
+            ...current,
+            apply(value, explicit) {
+              // connectGuest invokes apply only after validating the parent,
+              // origin and protocol state, even when the locale is unchanged.
+              setParentManaged(true);
+              return current.apply(value, explicit);
+            },
+          },
           origins: ["https://calorietoken.net", "https://www.calorietoken.net"],
         })
       : () => {};
     return () => { disconnect(); unsubscribe(); store.current = null; };
   }, [enabled]);
 
-  return <Context.Provider value={{ enabled, locale, select: value => store.current?.select(value) }}>{children}</Context.Provider>;
+  useEffect(() => {
+    if (!enabled) return;
+    const root = document.documentElement;
+    const priorLanguage = root.getAttribute("lang");
+    const priorDirection = root.getAttribute("dir");
+    root.lang = locale;
+    root.dir = localeDirection(locale);
+    return () => {
+      if (priorLanguage === null) root.removeAttribute("lang"); else root.setAttribute("lang", priorLanguage);
+      if (priorDirection === null) root.removeAttribute("dir"); else root.setAttribute("dir", priorDirection);
+    };
+  }, [enabled, locale]);
+
+  return <Context.Provider value={{ enabled, locale, parentManaged, select: value => store.current?.select(value) }}>{children}</Context.Provider>;
 }
 
 export function useDisplayLanguage() { return useContext(Context); }
 
 export function DisplayLanguagePicker() {
-  const { enabled, locale, select } = useDisplayLanguage();
-  if (!enabled) return null;
+  const { enabled, locale, parentManaged, select } = useDisplayLanguage();
+  if (!enabled || parentManaged) return null;
   const copy = translations[locale as keyof typeof translations] ?? translations.en;
   return (
     <div className="mb-5 min-w-0 border-b border-brand-secondary/20 pb-4 text-sm text-brand-secondary" lang={locale} dir={localeDirection(locale)}>

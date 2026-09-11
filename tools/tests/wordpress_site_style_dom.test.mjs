@@ -58,6 +58,65 @@ const account = '<div class="xl-card"><div class="xl-card-header">Public account
 const footer = '<footer class="ctstyle-footer"><p class="ctstyle-legal-links"><a href="https://calorietoken.net/index.php/privacy-policy/">Privacy Policy</a></p></footer>';
 const native = `<section class="brz-section ctstyle-header"><div class="brz-section__content ctstyle-header-content"><div class="brz-row"><div class="brz-columns"><div class="brz-column__items"><img src="/C-Logotranspa.png"></div></div><div class="brz-columns"><div class="brz-column__items"><div class="brz-menu-simple"><div class="brz-menu-simple__toggle"><input class="brz-input" type="checkbox" id="native-menu"><label class="brz-menu-simple__icon" for="native-menu"><span class="brz-menu-simple__icon--bars"></span></label><div><a id="whitepaper" href="https://calorietoken.net/index.php/whitepaper/">Whitepaper</a></div></div></div></div></div><div class="brz-columns"><div class="brz-column__items">${account}</div></div></div></div></section>`;
 
+function sharedFooterFixture({hub = true, custom = false} = {}) {
+  const base = 'https://calorietoken.net/index.php/';
+  const urls = ['https://t.me/+7YxaKdQYWNA0NDA0','https://github.com/CalorieToken','https://x.com/CalorieToken',
+    'https://www.facebook.com/CalorieToken-100422882407878','https://www.youtube.com/channel/UCV_87rxST-cQOVu4W8nFZkA',
+    'https://www.linkedin.com/company/calorie-token/','https://www.instagram.com/calorietoken/'];
+  const social = urls.map((url,i)=>`<a class="calorieapp-shared-social" href="${url}">Channel ${i}</a>`).join('');
+  const privacy = `<a id="original-privacy" href="${base}privacy-policy/">Privacy Policy</a>`;
+  const terms = `<a href="${base}terms-conditions/">Terms &amp; Conditions</a>`;
+  const hubLink = hub ? `<a href="${base}community-voting-hub-info/">Community Voting Hub</a>` : '';
+  const shared = `<footer class="calorieapp-shared-footer"><nav class="calorieapp-shared-socials" data-calorieapp-social-carousel>
+    <button id="original-carousel" type="button">Next</button>${social}</nav><div class="calorieapp-shared-legal">
+    <p>Calorie aims to be the world’s food token</p><p>Operator: ICTHendrikse · KVK 73774693</p>
+    <p>© 2026 ICTHendrikse (owned content only) · CalorieToken® trade mark: Pieter Hendrikse</p>
+    <p class="calorieapp-shared-legal-links">${privacy}${terms}${custom ? '<a href="/custom-policy/">Custom policy</a>' : ''}</p></div></footer>`;
+  const fallback = `<template id="ctstyle-footer-template"><footer class="ctstyle-footer">${social}
+    <p class="ctstyle-legal-links">${privacy.replace('id="original-privacy"','')}${terms}${hubLink}</p></footer></template>`;
+  const h = fixture(shared + fallback, {page:7880,route:'calorieapp'});
+  h.window.CalorieTokenSiteStyle = {};
+  return h;
+}
+
+test('The installed bridge footer gains the public hub and cookie controls without replacing native handlers', () => {
+  const h = sharedFooterFixture();
+  const original = h.document.querySelector('footer');
+  const privacy = h.document.querySelector('#original-privacy'), carousel = h.document.querySelector('#original-carousel');
+  let clicks = 0; carousel.addEventListener('click',()=>clicks++);
+  h.run('style.js'); h.run('refinements.js');
+  assert.equal(h.document.querySelector('footer'),original);
+  assert.equal(h.document.querySelector('#original-privacy'),privacy);
+  const links = original.querySelector('.ctstyle-legal-links');
+  assert.ok(links, 'The adopted bridge legal row participates in Site Style footer controls');
+  assert.equal(links.querySelectorAll('a').length,3);
+  assert.equal(links.querySelectorAll('a[href$="community-voting-hub-info/"]').length,1);
+  assert.equal(links.querySelectorAll('button.cmplz-manage-consent').length,1);
+  h.run('style.js');
+  for(const locale of Object.keys(copy))h.window.CalorieTokenRefinements.refresh(locale);
+  assert.equal(links.querySelectorAll('a').length,3);
+  assert.equal(links.querySelectorAll('button').length,1);
+  assert.equal(h.document.querySelectorAll('.calorieapp-shared-social').length,7);
+  carousel.dispatchEvent(new h.window.Event('click'));
+  assert.equal(clicks,1,'The bridge retains ownership of the existing carousel');
+});
+
+test('An adopted footer does not invent a hub URL when WordPress has no published hub', () => {
+  const h = sharedFooterFixture({hub:false});
+  h.run('style.js'); h.run('refinements.js');
+  const footer = h.document.querySelector('footer');
+  assert.equal(footer.querySelectorAll('.calorieapp-shared-legal-links a').length,2);
+  assert.equal(footer.querySelectorAll('button.cmplz-manage-consent').length,1);
+});
+
+test('An unfamiliar customized bridge footer is retained without adding or hiding controls', () => {
+  const h = sharedFooterFixture({custom:true});
+  const footer = h.document.querySelector('footer'), before = footer.outerHTML;
+  h.run('style.js'); h.run('refinements.js');
+  assert.equal(h.document.querySelector('footer'),footer);
+  assert.equal(footer.outerHTML,before);
+});
+
 const blogPanelMarkup = '<div class="brz-wp-shortcode" data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"><a class="twitter-timeline" href="https://x.com/CalorieToken">Tweets by CalorieToken</a></div>';
 function blogFixture({permitted = true, cmsFrame = false, nativeObservers = false} = {}) {
   const h = fixture(blogPanelMarkup, {page:1207,route:'blog',nativeObservers});

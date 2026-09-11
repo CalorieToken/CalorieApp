@@ -1,10 +1,20 @@
-# CalorieToken Site Style 1.4.11
+# CalorieToken Site Style 1.4.12
 
-Eén complete vervangende ZIP, 10 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
+Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.11.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.11** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.12.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.12** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+
+## Correcties op basis van livecontrole van 1.4.11
+
+- De bestaande Identity Bridge-footer krijgt de ontbrekende Community Voting Hub-link uit het publieke WordPress-template. De bestaande rij krijgt ook de gedeelde cookieknop en vertalingen. Eigen links, social-carousel en handlers blijven dezelfde nodes; een onbekende aangepaste footer wordt behouden. Zonder gepubliceerde Hub wordt geen bestemming verzonnen.
+- De exacte oude LiveCoinWatch-loader wordt in de publieke HTML onwerkzaam gemaakt voordat de browser hem kan laden. Dit gebeurt alleen op calorietoken.net als beide bestaande bridge-assets voor de sitebrede XPMarket-weergave worden geleverd. De CMS-bron en andere scripts blijven behouden; editor-, preview- en Xaman-actieverzoeken worden overgeslagen. Zonder de vervangende renderer blijft de bestaande loader staan.
+- De aparte frontendcorrectie toont één taalkeuze zodra de vertrouwde website de bestaande taalsynchronisatie bevestigt. Zelfstandig of vóór die bevestiging blijft de appselector beschikbaar. De appdocumenttaal en leesrichting volgen de gekozen taal. Het taalprotocol en het Xaman-protocol veranderen niet.
+
+De footerfout en dubbele taalkeuze zijn vóór de correctie automatisch gereproduceerd. De taal- en footercontroles testen tevens behoud van bestaande bediening. De loadercontrole gebruikt de WordPress-parserinterface met nagebootste script-attributen; de echte Brizy-/WordPress-uitvoer moet na installatie worden bevestigd. De filterpunten volgen [Brizy's publieke uitvoer](https://github.com/ThemeFuse/Brizy/blob/master/public/main.php); de gerichte HTML-aanpassing gebruikt [WordPress HTML Tag Processor](https://developer.wordpress.org/reference/classes/wp_html_tag_processor/).
+
+De livecontrole vooraf omvatte 25 publieke URL's in desktop-Chrome met Site Style-assets 1.4.11 en Identity Bridge-assets 0.3.29. Dit pakket verandert de bridge niet en mag de live bridge niet vervangen door bronversie 0.3.18. Er is nog geen liveacceptatie van 1.4.12, fysieke camera- of nieuwe Xaman-ondertekenproef. De frontendcorrectie, scanner, USDA-gewichtskeuze en Nutri-Score-aanpassingen vragen een afzonderlijke appuitrol; deze ZIP installeert alleen Site Style. Onderstaande eerdere audit- en browserstatus is historisch.
 
 ## Gerichte Blog/X-controle 1.4.11
 
