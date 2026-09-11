@@ -1,12 +1,20 @@
-# CalorieToken Site Style 1.4.16
+# CalorieToken Site Style 1.4.17
 
 Eén complete vervangende ZIP, 11 september 2026. Alle eerdere Site Style-correcties zijn inbegrepen; tussenversies zijn niet nodig.
 
 ## Installeren
 
-WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.16.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.16** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
+WordPress → Plugins → Nieuwe plugin → Plugin uploaden → kies **calorietoken-site-style-1.4.17.zip** → Nu installeren → **Huidige vervangen door geüploade**. Controleer dat **CalorieToken Site Style 1.4.17** actief is. Laat XummLogin, Identity Bridge en Content Workbench staan.
 
-## CAL & Crypto: herkenbare snelkoppeling en duidelijke keuzes
+## Gedeeld menu na publicatie van Showcases
+
+Op verzoek van de eigenaar zijn de bestaande Showcases-introductie (pagina 7945) en de drie ingangen CalorieApp, Showcases en Voting Hub in het bestaande WordPress/Brizy-menu Hoofdmenu3 bijgewerkt. CalorieApp en de informatieve Community Voting Hub (8020) waren al gepubliceerd. De oude Voting Hub-werkversie blijft een concept; er wordt geen stemming geactiveerd. De verdere showcases blijven werk voor stap 4.
+
+De terugvalheader leest nu hetzelfde bestaande Hoofdmenu3, zodat de documentpagina’s de actuele paginalinks en volgorde gebruiken. Er wordt geen willekeurig ander menu gekozen. Desktop en mobiel krijgen dezelfde links zonder dubbele menu-item-ID’s. De nieuwe menuteksten zijn opgenomen in de bestaande elf talen; ook de bestaande Showcases-header volgt deze menutaal. De inhoud en Xaman-aanmelding worden niet herschreven.
+
+De nette URL-structuur is op 11 september via WordPress ingesteld met behoud van de bestaande datumstructuur voor blogberichten. Oude index.php-links naar Whitepaper en CalorieApp zijn daarna werkend doorgestuurd naar hun nette URL. Dit ZIP-bestand verandert geen permalinks, Apache-instellingen, Brizy-inhoud of publicatiestatus; het definitieve livebewijs en de overige linkcontroles staan in het menu-/URL-dossier. Een terugkeer naar Site Style 1.4.16 zet menu- of URL-instellingen daarom niet terug.
+
+## Inbegrepen uit 1.4.16: CAL & Crypto
 
 Op verzoek van de eigenaar gebruikt de zwevende CAL & Crypto-knop het bestaande transparante CAL-logo uit WordPress. De knop sluit aan op de gecontroleerde vier knoppen van de geïnstalleerde Identity Bridge, ook wanneer die versie een andere controllernaam gebruikt. De originele knoppen en hun afhandeling blijven behouden. De eigen terugvalnavigatie krijgt hetzelfde CAL-logo. De CAL-knop heeft dezelfde afmetingen, kleuren, toetsenbordfocus, mobiele rij, cookieverberging en afdrukregels; op CAL & Crypto zelf verdwijnt hij zonder lege plek.
 

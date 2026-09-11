@@ -333,7 +333,7 @@
   function sharedLanguage(tag) {
     var all=window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.sharedLabels;
     if (!all || !all[tag]) return;
-    document.querySelectorAll('.brz-menu-simple a[href],.ctstyle-header-nav a[href],.ctstyle-footer .ctstyle-legal-links a[href]').forEach(function (a) {
+    document.querySelectorAll('.brz-menu-simple a[href],.ctstyle-header-nav a[href],.showcase-header-menu a[href],.showcase-mobile-menu a[href],.ctstyle-footer .ctstyle-legal-links a[href]').forEach(function (a) {
       if (a.closest('form,[contenteditable],.xl-card,[hidden],[inert]')) return;
       var url;try {url=new URL(a.getAttribute('href'),window.location.href);} catch (_) {return;}
       var route=url.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'') || '/';

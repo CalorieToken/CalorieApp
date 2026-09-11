@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.16
+ * Version: 1.4.17
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,28 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.16';
+    const VERSION = '1.4.17';
+
+    public static function header_menu() {
+        // The menu verified in the live Brizy header. Never fall through to an
+        // unrelated menu or WordPress's automatic list of all public pages.
+        $menu = wp_get_nav_menu_object('Hoofdmenu3');
+        if (!$menu || is_wp_error($menu)) { return ''; }
+        $html = wp_nav_menu(array(
+            'menu' => $menu, 'container' => false, 'echo' => false,
+            'fallback_cb' => false, 'items_wrap' => '<ul>%3$s</ul>',
+        ));
+        if (!is_string($html) || trim($html) === '') { return ''; }
+        // Desktop and mobile share these links, without duplicate item IDs.
+        $tags = new \WP_HTML_Tag_Processor($html);
+        while ($tags->next_tag('LI')) {
+            $id = $tags->get_attribute('id');
+            if (is_string($id) && preg_match('/^menu-item-\d+$/', $id)) {
+                $tags->remove_attribute('id');
+            }
+        }
+        return $tags->get_updated_html();
+    }
 
     public static function delegate_app_camera($html, $shortcode_tag = null) {
         if (!is_string($html) || ($shortcode_tag !== null && $shortcode_tag !== 'calorieapp_embed') ||

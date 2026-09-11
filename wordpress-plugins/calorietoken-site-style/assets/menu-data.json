@@ -1737,7 +1737,10 @@
       "/donate": "Donate",
       "/merchnfts": "Merch&NFTs",
       "/privacy-policy": "Privacy Policy",
-      "/terms-conditions": "Terms & Conditions"
+      "/terms-conditions": "Terms & Conditions",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcases",
+      "/community-voting-hub-info": "Voting Hub"
     },
     "nl": {
       "/": "Home",
@@ -1753,7 +1756,10 @@
       "/donate": "Doneren",
       "/merchnfts": "Merch & NFT’s",
       "/privacy-policy": "Privacybeleid",
-      "/terms-conditions": "Algemene voorwaarden"
+      "/terms-conditions": "Algemene voorwaarden",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcases",
+      "/community-voting-hub-info": "Stemhub"
     },
     "zh-Hans": {
       "/": "首页",
@@ -1769,7 +1775,10 @@
       "/donate": "捐赠",
       "/merchnfts": "商品与 NFT",
       "/privacy-policy": "隐私政策",
-      "/terms-conditions": "条款与条件"
+      "/terms-conditions": "条款与条件",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "项目展示",
+      "/community-voting-hub-info": "投票中心"
     },
     "hi": {
       "/": "होम",
@@ -1785,7 +1794,10 @@
       "/donate": "दान करें",
       "/merchnfts": "उत्पाद और NFT",
       "/privacy-policy": "गोपनीयता नीति",
-      "/terms-conditions": "नियम और शर्तें"
+      "/terms-conditions": "नियम और शर्तें",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "झलकियाँ",
+      "/community-voting-hub-info": "मतदान केंद्र"
     },
     "es": {
       "/": "Inicio",
@@ -1801,7 +1813,10 @@
       "/donate": "Donar",
       "/merchnfts": "Productos y NFT",
       "/privacy-policy": "Política de privacidad",
-      "/terms-conditions": "Términos y condiciones"
+      "/terms-conditions": "Términos y condiciones",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Presentaciones",
+      "/community-voting-hub-info": "Centro de votación"
     },
     "ar": {
       "/": "الرئيسية",
@@ -1817,7 +1832,10 @@
       "/donate": "تبرع",
       "/merchnfts": "المنتجات وNFT",
       "/privacy-policy": "سياسة الخصوصية",
-      "/terms-conditions": "الشروط والأحكام"
+      "/terms-conditions": "الشروط والأحكام",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "العروض",
+      "/community-voting-hub-info": "مركز التصويت"
     },
     "fr": {
       "/": "Accueil",
@@ -1833,7 +1851,10 @@
       "/donate": "Faire un don",
       "/merchnfts": "Produits et NFT",
       "/privacy-policy": "Politique de confidentialité",
-      "/terms-conditions": "Conditions générales"
+      "/terms-conditions": "Conditions générales",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Présentations",
+      "/community-voting-hub-info": "Espace de vote"
     },
     "bn": {
       "/": "হোম",
@@ -1849,7 +1870,10 @@
       "/donate": "অনুদান দিন",
       "/merchnfts": "পণ্য ও NFT",
       "/privacy-policy": "গোপনীয়তা নীতি",
-      "/terms-conditions": "শর্তাবলি"
+      "/terms-conditions": "শর্তাবলি",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "প্রদর্শনী",
+      "/community-voting-hub-info": "ভোট কেন্দ্র"
     },
     "pt": {
       "/": "Início",
@@ -1865,7 +1889,10 @@
       "/donate": "Doar",
       "/merchnfts": "Produtos e NFT",
       "/privacy-policy": "Política de privacidade",
-      "/terms-conditions": "Termos e condições"
+      "/terms-conditions": "Termos e condições",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Apresentações",
+      "/community-voting-hub-info": "Central de votação"
     },
     "id": {
       "/": "Beranda",
@@ -1881,7 +1908,10 @@
       "/donate": "Donasi",
       "/merchnfts": "Produk & NFT",
       "/privacy-policy": "Kebijakan privasi",
-      "/terms-conditions": "Syarat dan ketentuan"
+      "/terms-conditions": "Syarat dan ketentuan",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcase",
+      "/community-voting-hub-info": "Pusat voting"
     },
     "ur": {
       "/": "ہوم",
@@ -1897,7 +1927,10 @@
       "/donate": "عطیہ دیں",
       "/merchnfts": "مصنوعات اور NFT",
       "/privacy-policy": "رازداری کی پالیسی",
-      "/terms-conditions": "شرائط و ضوابط"
+      "/terms-conditions": "شرائط و ضوابط",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "جھلکیاں",
+      "/community-voting-hub-info": "ووٹنگ مرکز"
     }
   }
 }
