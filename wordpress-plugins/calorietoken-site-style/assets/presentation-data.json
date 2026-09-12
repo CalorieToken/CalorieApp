@@ -4,76 +4,120 @@
     "crypto": "CAL & Crypto",
     "community": "Community",
     "help": "Help",
-    "menu": "Menu"
+    "menu": "Menu",
+    "balance": "Balance:",
+    "rank": "Rank:",
+    "trade": "Trade",
+    "signInNote": "Click on QR Image to Sign In"
   },
   "nl": {
     "project": "Project",
     "crypto": "CAL & Crypto",
     "community": "Community",
     "help": "Hulp",
-    "menu": "Menu"
+    "menu": "Menu",
+    "balance": "Saldo:",
+    "rank": "Rang:",
+    "trade": "Handelen",
+    "signInNote": "Klik op de QR-code om in te loggen"
   },
   "es": {
     "project": "Proyecto",
     "crypto": "CAL y Crypto",
     "community": "Comunidad",
     "help": "Ayuda",
-    "menu": "Menú"
+    "menu": "Menú",
+    "balance": "Saldo:",
+    "rank": "Posición:",
+    "trade": "Operar",
+    "signInNote": "Pulsa el código QR para iniciar sesión"
   },
   "fr": {
     "project": "Projet",
     "crypto": "CAL & Crypto",
     "community": "Communauté",
     "help": "Aide",
-    "menu": "Menu"
+    "menu": "Menu",
+    "balance": "Solde :",
+    "rank": "Classement :",
+    "trade": "Échanger",
+    "signInNote": "Cliquez sur le code QR pour vous connecter"
   },
   "pt": {
     "project": "Projeto",
     "crypto": "CAL e Crypto",
     "community": "Comunidade",
     "help": "Ajuda",
-    "menu": "Menu"
+    "menu": "Menu",
+    "balance": "Saldo:",
+    "rank": "Posição:",
+    "trade": "Negociar",
+    "signInNote": "Clique no código QR para iniciar sessão"
   },
   "zh-Hans": {
     "project": "项目",
     "crypto": "CAL 与加密货币",
     "community": "社区",
     "help": "帮助",
-    "menu": "菜单"
+    "menu": "菜单",
+    "balance": "余额：",
+    "rank": "排名：",
+    "trade": "交易",
+    "signInNote": "点击二维码登录"
   },
   "id": {
     "project": "Proyek",
     "crypto": "CAL & Crypto",
     "community": "Komunitas",
     "help": "Bantuan",
-    "menu": "Menu"
+    "menu": "Menu",
+    "balance": "Saldo:",
+    "rank": "Peringkat:",
+    "trade": "Perdagangkan",
+    "signInNote": "Klik kode QR untuk masuk"
   },
   "hi": {
     "project": "परियोजना",
     "crypto": "CAL और क्रिप्टो",
     "community": "समुदाय",
     "help": "सहायता",
-    "menu": "मेन्यू"
+    "menu": "मेन्यू",
+    "balance": "शेष:",
+    "rank": "रैंक:",
+    "trade": "ट्रेड करें",
+    "signInNote": "साइन इन करने के लिए QR कोड पर क्लिक करें"
   },
   "bn": {
     "project": "প্রকল্প",
     "crypto": "CAL ও ক্রিপ্টো",
     "community": "কমিউনিটি",
     "help": "সহায়তা",
-    "menu": "মেনু"
+    "menu": "মেনু",
+    "balance": "ব্যালেন্স:",
+    "rank": "অবস্থান:",
+    "trade": "ট্রেড করুন",
+    "signInNote": "সাইন ইন করতে QR কোডে চাপুন"
   },
   "ar": {
     "project": "المشروع",
     "crypto": "CAL والعملات الرقمية",
     "community": "المجتمع",
     "help": "المساعدة",
-    "menu": "القائمة"
+    "menu": "القائمة",
+    "balance": "الرصيد:",
+    "rank": "الترتيب:",
+    "trade": "تداول",
+    "signInNote": "اضغط على رمز QR لتسجيل الدخول"
   },
   "ur": {
     "project": "منصوبہ",
     "crypto": "CAL اور کرپٹو",
     "community": "کمیونٹی",
     "help": "مدد",
-    "menu": "مینو"
+    "menu": "مینو",
+    "balance": "بیلنس:",
+    "rank": "درجہ:",
+    "trade": "ٹریڈ کریں",
+    "signInNote": "سائن ان کرنے کے لیے QR کوڈ پر کلک کریں"
   }
 }

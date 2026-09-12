@@ -7,7 +7,7 @@
   var bodySelector='.ctstyle-enabled,.ctstyle-footer-only,.ctstyle-presentation-preview';
   var headings='.ctstyle-heading,.ctstyle-section-heading,.ctstyle-crypto-intro h2,.showcase-hero h1,.showcase-title-banner h1';
   var excluded='a,button,input,select,textarea,svg,script,style,iframe,[contenteditable],.xl-card,[data-calorieapp-account]';
-  var panelRoots='.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.showcase-card,.ctstyle-document-copy,.calorieapp-app-info,.ctstyle-faq-hub,.ctstyle-discovery-card,.ctstyle-manual-trustline,.ctstyle-community-status,.calorieapp-article-copy,.cal-buy-hero,.cal-buy-own-dex,.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li';
+  var panelRoots='.page-id-7224 [data-brz-custom-id="owoOYYzWylhn"],.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.showcase-card,.ctstyle-document-copy,.calorieapp-app-info,.ctstyle-faq-hub,.ctstyle-discovery-card,.ctstyle-manual-trustline,.ctstyle-community-status,.ctstyle-market-card,.ctstyle-roadmap-preview,.calorieapp-article-copy,.cal-buy-hero,.cal-buy-own-dex,.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li';
   var panelExcluded='.ctstyle-site-header,.ctstyle-header,.ctstyle-header-fallback,.showcase-page-header,.ctstyle-title,.ctstyle-footer,footer,nav,.xl-card,[data-calorieapp-account],[data-calorieapp-embed],.calorieapp-trustline-context,form,[contenteditable]';
   function allowed(){return document.body&&document.body.matches(bodySelector)&&!document.querySelector('.brz-ed,#brz-ed-iframe')&&['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin)&&!/\/wp-admin\//.test(window.location.pathname);}
   function path(value){try{return new URL(value,window.location.href).pathname.replace(/^\/index\.php(?=\/)/,'').replace(/\/+$/,'')||'/';}catch(e){return '';}}
@@ -89,6 +89,10 @@
     document.querySelectorAll(panelRoots).forEach(function(node){
       if(!node.closest(panelExcluded))node.classList.add('ctstyle-shared-panel');
     });
+    document.querySelectorAll('.brz-posts .brz-wp-post-excerpt').forEach(function(excerpt){
+      var box=excerpt.closest('.brz-column__items');
+      if(box&&!box.closest(panelExcluded)&&box.querySelector('.brz-wp-title-content'))box.classList.add('ctstyle-shared-panel','ctstyle-blog-card');
+    });
     // Frame existing Brizy content cards, not entire layout rows, banners,
     // account widgets or embeds. Keep every original node and event handler.
     document.querySelectorAll('.brz-columns>.brz-column__items').forEach(function(box){
@@ -120,14 +124,31 @@
     });
     document.querySelectorAll('[data-ctstyle-menu-group]').forEach(function(node){node.textContent=cfg.copy[locale][node.dataset.ctstyleMenuGroup];node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';});
   }
+  function widgetLabels(){
+    // Translate only observed static labels. Keep balances, wallet addresses,
+    // QR images, links, account state and their event handlers owned by Xaman.
+    [['.xl-card-balance>strong','balance'],['.xl-card-rank>strong','rank'],['.xl-card-balance>a','trade'],['.xl-card-note','signInNote']].forEach(function(pair){
+      var key=pair[1],current=cfg.copy[locale][key];if(!current)return;
+      var known=Object.keys(cfg.copy).map(function(tag){return cfg.copy[tag][key];});
+      document.querySelectorAll('.xl-card '+pair[0]).forEach(function(node){
+        if(node.children.length||!known.includes(node.textContent.trim()))return;
+        var next=current+(node.tagName==='STRONG'?' ':'');
+        if(node.textContent!==next)node.textContent=next;
+        node.lang=locale;node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';
+      });
+    });
+  }
   function refresh(tag){
     if(!allowed())return;
     locale=tag||(window.CalorieTokenDiscoveryUI&&window.CalorieTokenDiscoveryUI.getLocale())||locale;if(!cfg.copy[locale])locale='en';
     if(observer)observer.disconnect();
     [['paper',cfg.paperImage],['header',cfg.headerImage],['title',cfg.titleImage]].forEach(function(pair){if(/^https?:\/\//.test(pair[1]||''))document.body.style.setProperty('--ctstyle-'+pair[0]+'-image','url('+JSON.stringify(pair[1])+')');});
-    sharedHeader();
+    sharedHeader();widgetLabels();
     document.querySelectorAll('.showcase-hero h1,.showcase-title-banner h1').forEach(function(node){node.classList.add('ctstyle-heading');var box=node.closest('.showcase-hero,.showcase-title-banner');if(box)box.classList.add('ctstyle-shared-banner');});
     sharedPanels();
+    // These observed builder section titles are paragraphs/spans rather than
+    // heading tags. Preserve their contents while supplying heading semantics.
+    document.querySelectorAll('.page-id-1207 [data-brz-custom-id="vOnO0_eybQxY"] p,.page-id-7224 p[data-uniq-id="vIP4b"],.ctstyle-roadmap-timeline>.brz-timeline__tab>.brz-timeline__nav--title,.brz-posts .brz-wp-title-content').forEach(function(node){node.classList.add('ctstyle-section-heading');node.setAttribute('role','heading');node.setAttribute('aria-level','2');});
     if(document.body.classList.contains('ctstyle-presentation-preview'))document.querySelectorAll('.entry-title,.brz-rich-text h1').forEach(function(node){node.classList.add('ctstyle-heading','ctstyle-shared-banner');});
     document.querySelectorAll(headings).forEach(function(node){
       if(window.CalorieTokenContentLanguageUI&&window.CalorieTokenContentLanguageUI.decorateHeading)window.CalorieTokenContentLanguageUI.decorateHeading(node,paintHeading);else paintHeading(node);
@@ -136,7 +157,14 @@
   }
   window.CalorieTokenPresentationUI={refresh:refresh,paintHeading:paintHeading};
   if(typeof window.MutationObserver==='function')observer=new window.MutationObserver(function(records){
-    if(queued||!records.some(function(r){return !r.target.closest(excluded)&&Array.from(r.addedNodes).some(function(n){return n.nodeType===1&&!n.matches('.ctstyle-word-initial')&&!n.closest('.ctstyle-menu-groups');});}))return;
+    if(queued||!records.some(function(r){
+      if(r.target.closest('.xl-card-balance,.xl-card-rank,.xl-card-note'))return true;
+      return Array.from(r.addedNodes).some(function(n){
+        if(n.nodeType!==1)return false;
+        if(n.matches('.xl-card')||n.querySelector('.xl-card'))return true;
+        return !r.target.closest(excluded)&&!n.matches('.ctstyle-word-initial')&&!n.closest('.ctstyle-menu-groups');
+      });
+    }))return;
     queued=true;window.requestAnimationFrame(function(){queued=false;refresh();});
   });
   document.addEventListener('click',function(e){document.querySelectorAll('.ctstyle-menu-category[open]').forEach(function(details){if(!details.contains(e.target))details.open=false;});});

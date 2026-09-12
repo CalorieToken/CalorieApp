@@ -1,4 +1,33 @@
-# CalorieToken Site Style 1.4.22
+# CalorieToken Site Style 1.4.23
+
+Deze versie corrigeert de gedeelde regels achter de screenshots van 12 september.
+Mobiele document- en Showcases-headers houden logo en menuknop uit elkaar; het
+Showcases-logo en de accountwidget krijgen consistente afmetingen. Passende
+inhoudskaarten gebruiken het lettertype en de papier-/randstijl van CAL & Crypto.
+Geneste kaders worden rustiger. Roadmap-koppen, iconen en inhoud krijgen op mobiel
+vaste afzonderlijke rijen; de oude lege bovenmarges vervallen. Keuzenummers blijven
+op één regel en geselecteerde groene kaarten hebben witte tekst.
+
+54 actuele openbare teksten zijn toegevoegd of aangevuld in de tien doeltalen:
+Voting Hub, Showcases, Merch, Roadmap en de huidige eerste blogpagina. Vier vaste
+accountlabels zijn beschikbaar in alle elf talen. WordPress-aanhalingstekens
+worden ook herkend. Oude oorspronkelijke tekst, links, afbeeldingen en hun
+bediening blijven behouden bij taalwisselen. De uitgebreide historische
+blogartikelen en oudere blogoverzichtspagina's hebben nog geen volledige dekking
+buiten Nederlands en Engels; tekst in historische afbeeldingen verandert niet.
+
+Installeer **calorietoken-site-style-1.4.23.zip** via Plugins → Nieuwe plugin →
+Plugin uploaden → Huidige vervangen door geüploade. De directe terugval is de
+bevestigd geïnstalleerde **1.4.22**. De ZIP wijzigt geen Render-abonnement,
+app/backend, identityprotocol, database, zoeklimiet of camera-instelling.
+
+De gerichte DOM-tests controleren elf talen, herstel van oorspronkelijke nodes,
+leesmeerlinks, bestaande accountknoppen, Richlist en de gedeelde menu's. De
+controle van 263 CalorieApp-interfacevelden vond geen ontbrekende of lege
+vertalingen. Dat is geen volledige taalkundige goedkeuring of mobiele beeldtest.
+De aangepaste CSS moet na installatie nog op de echte site worden bekeken.
+
+## Historische notities: 1.4.22
 
 Deze gerichte correctie geeft het geopende mobiele menu de volle breedte van
 de kaart. Logo en hamburger blijven samen in de bovenste rij. Meerregelige
