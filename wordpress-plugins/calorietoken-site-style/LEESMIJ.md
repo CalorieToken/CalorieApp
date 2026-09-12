@@ -8,6 +8,12 @@ Geneste kaders worden rustiger. Roadmap-koppen, iconen en inhoud krijgen op mobi
 vaste afzonderlijke rijen; de oude lege bovenmarges vervallen. Keuzenummers blijven
 op één regel en geselecteerde groene kaarten hebben witte tekst.
 
+Ook het verdwenen mobiele CAL-logo op Home en de native Brizy-pagina's is
+meegenomen. Brizy's standaardwaarde voor de stapelvolgorde overschreef de
+mobiele logo-regel, waardoor het menuvlak ervoor kon liggen. De gedeelde
+regel zet het oorspronkelijke logo expliciet boven dat vlak, bij een gesloten
+én geopend menu. Er wordt geen tweede logo of nieuwe menubediening gemaakt.
+
 54 actuele openbare teksten zijn toegevoegd of aangevuld in de tien doeltalen:
 Voting Hub, Showcases, Merch, Roadmap en de huidige eerste blogpagina. Vier vaste
 accountlabels zijn beschikbaar in alle elf talen. WordPress-aanhalingstekens
