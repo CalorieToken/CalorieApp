@@ -41,7 +41,7 @@ body.ctstyle-enabled #calorie-showcase-page .showcase-header-menu .ctstyle-menu-
 body.ctstyle-enabled #calorie-showcase-page .showcase-header-menu .ctstyle-menu-category:not([open])>ul{display:none!important;}
 body.ctstyle-enabled #calorie-showcase-page .showcase-mobile-menu{display:none!important;}
 body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){border:2px solid #505ba9!important;border-top:7px solid #f9b233!important;border-radius:32px 16px!important;background:linear-gradient(120deg,#505ba912,#f9b23312)!important;}
-@media(min-width:768px){.ctstyle-site-header .brz-menu-simple__toggle--mobile>.ctstyle-menu-toggle{display:none!important;}}
+@media(min-width:1051px){.ctstyle-site-header .brz-menu-simple__toggle--mobile>.ctstyle-menu-toggle{display:none!important;}}
 @media(max-width:1050px){
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-inner{grid-template-columns:minmax(0,1fr)!important;max-width:760px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{border-radius:26px!important;}
@@ -88,7 +88,7 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{align-self:center!important;min-height:180px!important;padding:20px 28px!important;gap:20px!important;border-radius:64px!important;}
   body.ctstyle-enabled #calorie-showcase-page .showcase-site-logo{width:142px!important;flex-basis:142px!important;}
  }
- @media(max-width:767px){
+ @media(max-width:1050px){
   /* Keep the logo and toggle in the top row, with the open menu using the
      complete card width. Preserve Brizy's checkbox, links and account column. */
   /* Brizy emits an unlayered z-index:auto on its base column. A normal
@@ -110,17 +110,18 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   body.ctstyle-enabled #calorie-showcase-page .showcase-mobile-menu{grid-column:1 / -1!important;grid-row:1!important;width:100%!important;}
   body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav>nav,
   body.ctstyle-enabled #calorie-showcase-page .showcase-mobile-menu>nav{width:100%!important;margin:48px 0 0!important;padding:0!important;}
+ }
+ @media(max-width:767px){
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel{padding:22px 18px!important;border-radius:24px 12px!important;border-top-width:5px!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel-nested{padding:18px 14px!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure{padding:0!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-disclosure>summary{padding:18px!important;}
  }
 }
-@media(max-width:767px){
+@media(max-width:1050px){
  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-groups{display:block!important;}
  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-groups>li{width:100%!important;margin-block:3px!important;}
  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>ul{position:static!important;max-width:100%!important;min-width:0!important;width:100%!important;margin:4px 0 8px!important;box-shadow:none!important;}
- :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-banner{padding:25px 16px!important;border-radius:26px 13px!important;margin:26px auto!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-page-header{padding:24px 18px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:20px!important;padding:20px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-site-logo{width:96px!important;min-width:0!important;}
@@ -169,11 +170,90 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-rich-text :is(p,ul,ol,li){margin-block:0 12px!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel{font-size:20px!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-panel-nested{padding:14px!important;}
-  body.ctstyle-enabled .calorieapp-app-info{grid-template-columns:52px minmax(0,1fr)!important;gap:14px!important;}
  }
 }
 @layer ctstyle-presentation-fixes {
  body.ctstyle-enabled .ctstyle-blog-card :is(.brz-wp-post-excerpt,.brz-wp-post-excerpt-content){font:400 21px/1.65 Amiri,Georgia,serif!important;color:#303449!important;}
  body.ctstyle-enabled .ctstyle-blog-card .brz-wp-title-content{display:block!important;text-align:start!important;}
  body.ctstyle-enabled .ctstyle-blog-card>.brz-wrapper{min-height:0!important;}
+}
+
+/* Home's navigation and ending are the reference across the three header
+   families. Own the shared elements' typography instead of inheriting the
+   different Brizy, Twenty Nineteen and Showcases page defaults. */
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>summary{
+  width:auto!important;height:auto!important;min-height:44px!important;
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  color:#505ba9!important;text-align:start!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>summary::after{
+  content:''!important;display:block!important;position:static!important;flex:0 0 8px!important;
+  width:8px!important;height:8px!important;margin-block:-4px 0!important;margin-inline:0!important;
+  border:0!important;border-right:2px solid currentColor!important;border-bottom:2px solid currentColor!important;
+  background:transparent!important;box-shadow:none!important;transform:rotate(45deg)!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category[open]>summary::after{transform:rotate(225deg)!important;margin-block:4px 0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>summary:is(:hover,:focus-visible){background:#505ba9!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) :is(.ctstyle-menu-category[open],.ctstyle-current-category)>summary{background:#f9b233!important;color:#222638!important;}
+ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-header-menu,.showcase-mobile-menu){
+  box-sizing:border-box!important;min-width:0!important;min-height:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+ }
+ body.ctstyle-enabled #calorie-showcase-page .showcase-mobile-menu>.ctstyle-menu-toggle>span{display:none!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-ending{
+  box-sizing:border-box!important;display:flow-root!important;width:100%!important;max-width:none!important;
+  margin:0!important;padding:28px 0!important;border:0!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info{
+  box-sizing:border-box!important;grid-template-columns:72px minmax(0,1fr) auto!important;
+  width:calc(100% - 36px)!important;max-width:1100px!important;margin:12px auto!important;
+  font:400 21px/1.65 Amiri,Georgia,serif!important;gap:20px!important;text-align:start!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div:not(.ctstyle-app-sources){min-width:0!important;margin:0!important;padding:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info h2{
+  margin:0 0 6px!important;padding:0!important;font:700 30px/1.2 Amiri,Georgia,serif!important;
+  text-align:start!important;letter-spacing:normal!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div:not(.ctstyle-app-sources)>p{
+  margin:0!important;font:400 21px/1.65 Amiri,Georgia,serif!important;text-align:start!important;letter-spacing:normal!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info .ctstyle-app-sources p{font:400 16px/1.6 Amiri,Georgia,serif!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer{
+  box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:0!important;
+  border:0!important;border-radius:0!important;padding:24px max(18px,calc((100vw - 1170px)/2)) 30px!important;
+  font-family:Amiri,Georgia,serif!important;text-align:center!important;
+ }
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>p{font:400 16px/1.9 Amiri,Georgia,serif!important;margin:7px 0!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>.ctstyle-legal-links{margin-top:12px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-tail{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:26px!important;min-height:26px!important;margin:0!important;padding:0!important;border:0!important;}
+ @media(max-width:1050px){
+  body.ctstyle-enabled #calorie-showcase-page .showcase-header-menu{display:none!important;}
+  body.ctstyle-enabled #calorie-showcase-page .showcase-mobile-menu{display:block!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>summary{width:100%!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-menu-category>summary::after{margin-inline-start:auto!important;}
+  body.ctstyle-enabled :is(.ctstyle-mobile-nav,.showcase-mobile-menu)>.ctstyle-menu-toggle{margin-inline:auto 0!important;}
+ }
+ @media(max-width:900px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info{grid-template-columns:56px minmax(0,1fr)!important;gap:14px!important;}
+ }
+ @media(max-width:767px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info{grid-template-columns:56px minmax(0,1fr)!important;font-size:20px!important;}
+  /* Put the description below the logo/title row, so long translations have
+     the complete card width. The existing heading, text and action stay alive. */
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>img{grid-column:1!important;grid-row:1!important;align-self:center!important;width:56px!important;height:56px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div:not(.ctstyle-app-sources){display:contents!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info h2{grid-column:2!important;grid-row:1!important;margin:0!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div:not(.ctstyle-app-sources)>p{grid-column:1 / -1!important;grid-row:2!important;font-size:20px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>:is(.calorieapp-app-info-link,.calorieapp-app-info-current){grid-column:1 / -1!important;grid-row:3!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>.ctstyle-app-sources{grid-column:1 / -1!important;grid-row:4!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>p{font-size:14px!important;line-height:1.65!important;}
+ }
+ @media(max-width:400px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info{width:calc(100% - 28px)!important;}
+ }
+}
+
+@media(max-width:767px){
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-banner{padding:25px 16px!important;border-radius:26px 13px!important;margin:26px auto!important;}
 }

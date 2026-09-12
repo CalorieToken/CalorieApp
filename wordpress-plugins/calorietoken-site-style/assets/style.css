@@ -58,13 +58,13 @@ body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-account-link{grid-column:
  body.ctstyle-enabled .ctstyle-header-brand{width:100%;min-height:140px}
  body.ctstyle-enabled .ctstyle-desktop-nav{display:none}
  body.ctstyle-enabled .ctstyle-mobile-nav{display:block}
- body.ctstyle-enabled .ctstyle-mobile-nav summary{min-height:44px;font:700 24px/1.8 Amiri,serif;color:#000;cursor:pointer}
+ body.ctstyle-enabled .ctstyle-mobile-nav>summary{min-height:44px;font:700 24px/1.8 Amiri,serif;color:#000;cursor:pointer}
  body.ctstyle-enabled .ctstyle-mobile-nav ul{justify-content:start}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-header-brand{grid-template-columns:100px minmax(0,1fr);min-height:0;padding:20px 28px;position:relative}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-logo img{width:100px}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav{grid-column:2;justify-self:end;width:auto}
- body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav summary{padding:4px 12px;border:2px solid #505ba9;border-radius:12px;font:700 20px/1.5 Amiri,serif}
- body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav nav{position:absolute;z-index:20;inset-inline:0;top:100%;margin-top:8px;padding:18px;background:#fff;border:2px solid #505ba9;border-radius:24px;box-shadow:0 5px 14px rgba(80,91,169,.2)}
+ body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav>summary{padding:4px 12px;border:2px solid #505ba9;border-radius:12px;font:700 20px/1.5 Amiri,serif}
+ body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav>nav{position:absolute;z-index:20;inset-inline:0;top:100%;margin-top:8px;padding:18px;background:#fff;border:2px solid #505ba9;border-radius:24px;box-shadow:0 5px 14px rgba(80,91,169,.2)}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-mobile-nav a{font-size:20px;min-height:40px}
  body.ctstyle-enabled .ctstyle-header-fallback .ctstyle-account-link{justify-self:end;padding:8px 12px;font-size:15px;line-height:1.4}

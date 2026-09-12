@@ -1,4 +1,35 @@
-# CalorieToken Site Style 1.4.23
+# CalorieToken Site Style 1.4.24
+
+Home is de referentie voor de gedeelde menu- en footeropmaak.
+
+- De hamburgerregels gelden alleen voor de buitenste menuknop. De
+  submenu's gebruiken op Brizy-, document- en Showcases-pagina's dezelfde
+  tekst, pijlen en geselecteerde categorie.
+- De extra achtergrond, afgeronde binnenrand en schaduw van het oude
+  Showcases-menu zijn verwijderd. Logo en menu delen één buitenvlak.
+- De menuvarianten gebruiken dezelfde omschakelgrens van 1050 pixels;
+  daarboven staat het desktopmenu, daaronder de uitklapbare navigatie.
+- De CalorieApp-kaart boven de footer gebruikt overal dezelfde typografie.
+  Op mobiel staat de beschrijving over de volledige kaartbreedte onder
+  logo en titel. De links en bronvermeldingen blijven behouden.
+- De footer behoudt de Home-maatvoering, eigen typografie en 26px hoge
+  strook van de historische achtergrond, ook binnen andere paginatemplates.
+
+Installatiepakket: **calorietoken-site-style-1.4.24.zip**. Vervang de bestaande
+Site Style-plugin via de gebruikelijke WordPress-upload. Terugval: het
+bevestigd live pakket **1.4.23**.
+
+Status: broncorrectie voor controle, nog niet live geïnstalleerd. Nieuwe
+paginanavigaties in de testbrowser gaven een 502-verbindingsfout. De volledige
+visuele controle van alle pagina's en schermformaten is daarom nog niet
+afgerond. DOM- en pakketcontroles vervangen die controle niet.
+
+Deze release verandert geen JavaScript-bediening, Identity Bridge, account-,
+camera-, wallet-, database- of Render-instelling. De eerder afgeronde Render-
+upgrade en zoekproeven blijven behouden; zij hoeven niet opnieuw voor deze CSS.
+
+## Historische notities: 1.4.23
+
 
 Deze versie corrigeert de gedeelde regels achter de screenshots van 12 september.
 Mobiele document- en Showcases-headers houden logo en menuknop uit elkaar; het
