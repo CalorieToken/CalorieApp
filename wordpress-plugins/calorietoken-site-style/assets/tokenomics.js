@@ -73,7 +73,7 @@
       });
       fields.statusTitle.setAttribute("id", "calorieapp-tokenomics-status-title");
       fields.walletTitle.setAttribute("id", "calorieapp-consolidation-wallet-title");
-      fields.action.setAttribute("href", "https://xpmarket.com/wallet/" + wallet);
+      fields.action.setAttribute("href", "https://bithomp.com/explorer/" + wallet);
       fields.action.setAttribute("target", "_blank");
       fields.action.setAttribute("rel", "noopener noreferrer");
       fields.action.setAttribute("class", "calorieapp-tokenomics-explorer");

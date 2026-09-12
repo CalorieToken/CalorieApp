@@ -14,6 +14,9 @@ mobiele logo-regel, waardoor het menuvlak ervoor kon liggen. De gedeelde
 regel zet het oorspronkelijke logo expliciet boven dat vlak, bij een gesloten
 én geopend menu. Er wordt geen tweede logo of nieuwe menubediening gemaakt.
 
+De knop bij de consolidatiewallet opent nu de Bithomp-explorer voor hetzelfde
+bestaande walletadres. Het adres en de vertaalde knoptekst blijven behouden.
+
 54 actuele openbare teksten zijn toegevoegd of aangevuld in de tien doeltalen:
 Voting Hub, Showcases, Merch, Roadmap en de huidige eerste blogpagina. Vier vaste
 accountlabels zijn beschikbaar in alle elf talen. WordPress-aanhalingstekens
