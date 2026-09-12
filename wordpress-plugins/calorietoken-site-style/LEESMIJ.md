@@ -1,4 +1,37 @@
-# CalorieToken Site Style 1.4.24
+# CalorieToken Site Style 1.4.26
+
+Deze versie werkt de visuele verschillen uit de desktopcontrole en de mobiele
+screenshots weg. Home blijft het voorbeeld voor de gedeelde onderdelen.
+
+- Brizy en de bestaande Showcases-footer gebruiken dezelfde sociale iconen,
+  mobiele indeling en juridische links. De lege strook onder Showcases vervalt.
+- XPMarket behoudt overal dezelfde compacte omlijsting als op Home. De tweede
+  algemene inhoudsrand en extra binnenmarge worden niet meer toegepast.
+- De Roadmap krijgt op desktop volwaardige kolommen voor titels en inhoud.
+  Conceptnotities gebruiken dezelfde opmaak als andere inhoudskaarten.
+- De Testnet-uitleg bevat zes officiële Xaman-voorbeeldschermen: Developer mode,
+  netwerkwissel, XRPL Testnet, bestaand account importeren, Full access en Family
+  Seed. De bron staat bij elk scherm. De uitleg en alternatieve afbeeldingstekst
+  zijn beschikbaar in alle elf bestaande talen en zijn vooraf te bekijken.
+
+Installatiepakket: **calorietoken-site-style-1.4.26.zip**. Vervang de bestaande
+Site Style-plugin via de gebruikelijke WordPress-upload. Terugval: het bevestigd
+geïnstalleerde pakket **1.4.24**.
+
+Controle: de correctie is in WordPress toegepast voor een pagina- en schermcontrole.
+De zes Xaman-afbeeldingen laden op de echte CalorieApp-pagina. De officiële bronnen
+zijn gecontroleerd op 12 september 2026. Screenshots kunnen groter worden geopend;
+bronlinks en tekst zijn ook zonder de afbeeldingen bruikbaar. Het accountadres
+staat bij de importstap, zodat bezoekers het direct met Xaman kunnen vergelijken.
+
+De mobiele footerletters volgen op beide footerimplementaties de Home-regels.
+De screenshotkaarten gebruiken uitgelijnde stappen en compacte bronvermeldingen.
+
+De faucet-aanvraag, tijdelijke verwerking van herstelcodes, wachttijden, bestaande
+Xaman-aanmelding, camera en Render-instellingen zijn niet veranderd.
+
+## Historische notities: 1.4.24
+
 
 Home is de referentie voor de gedeelde menu- en footeropmaak.
 

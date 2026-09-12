@@ -208,6 +208,25 @@ body.ctstyle-enabled #ctstyle-buy-trustline {width:100%;margin:22px 0 0;padding:
  body.ctstyle-enabled .ctstyle-exchange-layout .cal-buy-identity div {grid-template-columns:minmax(0,1fr);gap:2px;}
  body.ctstyle-enabled .ctstyle-crypto-intro h2 {font-size:29px!important;}
 }
+/* Desktop Brizy titles used 116px slots beside oversized translated tabs.
+   Keep the existing alternating timeline, with genuine shared columns. */
+@layer ctstyle-presentation-fixes {
+ @media(min-width:768px){
+  body.ctstyle-enabled .ctstyle-roadmap-timeline {box-sizing:border-box!important;display:grid!important;gap:32px!important;position:relative!important;width:calc(100% - 36px)!important;max-width:1100px!important;min-width:0!important;margin:30px auto!important;padding:0!important;transform:none!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab {box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr)!important;gap:24px!important;position:relative!important;inset:auto!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;margin:0!important;padding:0!important;transform:none!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab::before,
+  body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab::after,
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content::before,
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content::after {display:none!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__nav--title {grid-column:1!important;grid-row:1!important;box-sizing:border-box!important;position:static!important;align-self:start!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;padding:12px 0!important;margin:0!important;transform:none!important;text-align:end!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__nav--icon {grid-column:2!important;grid-row:1!important;position:static!important;justify-self:center!important;width:56px!important;height:56px!important;margin:0!important;transform:none!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content {grid-column:3!important;grid-row:1!important;box-sizing:border-box!important;position:static!important;width:100%!important;max-width:100%!important;min-width:0!important;padding:0!important;margin:0!important;transform:none!important;text-align:start!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab:nth-child(even)>.brz-timeline__nav--title {grid-column:3!important;text-align:start!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline>.brz-timeline__tab:nth-child(even)>.brz-timeline__content {grid-column:1!important;}
+  body.ctstyle-enabled .ctstyle-roadmap-timeline .brz-timeline__content>.brz-wrapper {width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;}
+ }
+}
+
 /* Native roadmap illustration replacement and a real text button, not raster text. */
 body.ctstyle-enabled .ctstyle-roadmap-timeline .ctstyle-roadmap-preview {box-sizing:border-box;display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:14px;max-width:100%;min-width:0;padding:22px;border:2px solid #505ba9;border-top:5px solid #f9b233;border-radius:24px;background:#505ba90d;text-align:start;}
 body.ctstyle-enabled .ctstyle-roadmap-preview>img {display:block;width:64px;height:64px;object-fit:contain;margin:0;}

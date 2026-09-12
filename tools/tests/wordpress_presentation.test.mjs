@@ -168,3 +168,13 @@ test('blog excerpt translation preserves its read-more link and later CMS edits'
  h.window.CalorieTokenContentLanguageUI.refresh('en');assert.equal(excerpt.firstChild.textContent.trim(),row.source);link.click();assert.equal(clicks,1);
  excerpt.firstChild.data='New CMS excerpt';h.window.CalorieTokenContentLanguageUI.refresh('es');assert.equal(excerpt.firstChild.data,'New CMS excerpt');
 });
+
+
+
+test('XPMarket keeps its compact widget while concept notes share the content framing',()=>{
+ const h=fixture('<section class="calorieapp-xpmarket-widget ctstyle-market-card"><a href="https://xpmarket.com/">Market</a></section><aside class="calorieapp-context-note"><h2>Concept</h2><p>Future use</p></aside>');
+ const market=h.document.querySelector('.ctstyle-market-card');
+ h.run('presentation.js');h.window.CalorieTokenPresentationUI.refresh();
+ assert.equal(market.classList.contains('ctstyle-shared-panel'),false);
+ assert.ok(h.document.querySelector('.calorieapp-context-note.ctstyle-shared-panel'));
+});

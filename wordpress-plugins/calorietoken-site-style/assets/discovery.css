@@ -191,6 +191,17 @@ body.ctstyle-enabled .ctstyle-testnet-step h3:focus {outline:2px solid #505ba9;o
 body.ctstyle-enabled .ctstyle-testnet-navigation {display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin-top:18px;}
 body.ctstyle-enabled .ctstyle-testnet-help {margin:18px 0;}
 body.ctstyle-enabled .ctstyle-testnet-help summary {cursor:pointer;min-height:44px;padding:8px 0;font-weight:700;}
+/* Official Xaman screens stay legible in a single mobile column. */
+body.ctstyle-enabled .ctstyle-xaman-screens {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:xaman-step;list-style:none!important;padding:0!important;margin:20px 0!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li {counter-increment:xaman-step;box-sizing:border-box;min-width:0;padding:16px!important;margin:0!important;border:1px solid #d7daea;border-radius:16px;background:#fff;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li::before {content:counter(xaman-step);display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin-bottom:12px;border-radius:50%;background:#505ba9;color:#fff;font:700 18px/1 Arial,sans-serif;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li>p {margin:0 0 16px!important;font-size:19px!important;line-height:1.5!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens figure {margin:0!important;padding:0!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens img {display:block;width:100%!important;max-width:372px!important;height:auto!important;margin:0 auto!important;border:1px solid #d7daea;border-radius:12px;}
+body.ctstyle-enabled .ctstyle-xaman-screens figcaption {margin-top:10px;font:400 15px/1.5 Amiri,Georgia,serif!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens figcaption a {display:inline-block;min-height:44px;padding:8px 0;color:#414d94!important;text-decoration:underline;}
+body.ctstyle-enabled .ctstyle-testnet-picture-preview>h3 {margin-top:24px!important;}
+@media(max-width:767px){body.ctstyle-enabled .ctstyle-xaman-screens {grid-template-columns:minmax(0,1fr);}}
 @media(max-width:600px) {
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {right:max(6px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));}
   body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-discovery-action {min-height:52px;font-size:20px!important;}

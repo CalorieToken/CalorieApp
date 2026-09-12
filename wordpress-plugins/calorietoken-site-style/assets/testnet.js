@@ -10,6 +10,23 @@
   // Courtesy limits for ordinary UI use, not a server-side anti-bot boundary.
   // Only two deadlines survive a tab reload; account data is never stored.
   var delayKey = 'ctstyle-testnet-delays-v1', retryAt = {create:0,check:0}, delayTimer = null;
+  // Screens shown in the official Xaman Help Center, checked 2026-09-12.
+  // These are explanatory examples, never the visitor's account or recovery code.
+  var xamanNetworkHelp = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
+  var xamanImportHelp = 'https://help.xaman.app/app/getting-started-with-xaman/importing-your-account/...with-a-family-seed';
+  var xamanImageBase = 'https://3221812686-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FMiHAzvIPISVuuzt0AeOR%2Fuploads%2Fgit-blob-';
+  var visualSteps = {
+    network: [
+      ['networkDeveloper','f97686945ca4276bb87e45654d2529c4d44c1326%2Ftestnet1.png'],
+      ['networkSwitch','9517def83a3cb4ad4be369efc66f22b265a7dd4e%2Ftestnet2.png'],
+      ['networkSelect','add493570aca56ed3d792e003e912baefd522cc9%2Ftestnet3.png']
+    ],
+    import: [
+      ['importExisting','c2507fa8c45680bf67708abef70ddda9a2d50078%2FAdd%20an%20account%20screen.png'],
+      ['importAccess','fe6631be444cb4e6f89ec863da04a118bc9125e9%2FAccount%20type.png'],
+      ['importFamily','ffdeaf6ae24435ba78bd7e977166ddf217b946ef%2FFamily%20Seed%20-%201.png']
+    ]
+  };
   function readDelays() {
     try {
       var saved = JSON.parse(window.sessionStorage.getItem(delayKey) || 'null');
@@ -56,14 +73,39 @@
     return node;
   }
   function button(key) { var node = el('button',key,'ctstyle-discovery-action'); node.type = 'button'; return node; }
+  function pictureGuide(kind) {
+    var guide = el('div',null,'ctstyle-xaman-guide'), list = el('ol',null,'ctstyle-xaman-screens');
+    visualSteps[kind].forEach(function (row) {
+      var item = el('li'), caption = el('p',row[0]), figure = el('figure'), picture = el('img'), zoom = el('a',null,'ctstyle-xaman-enlarge');
+      var source = el('a','screenshotSource');
+      source.href = kind === 'network' ? xamanNetworkHelp : xamanImportHelp;
+      source.target = '_blank'; source.rel = 'noopener noreferrer';
+      picture.src = xamanImageBase + row[1] + '?alt=media';
+      picture.loading = 'lazy'; picture.decoding = 'async'; picture.referrerPolicy = 'no-referrer';
+      picture.alt = cfg.testCopy[locale][row[0]];
+      fields.push({node:picture,key:row[0],attribute:'alt'});
+      zoom.href = picture.src; zoom.target = '_blank'; zoom.rel = 'noopener noreferrer';
+      zoom.setAttribute('aria-label',cfg.testCopy[locale].enlargeScreenshot);
+      fields.push({node:zoom,key:'enlargeScreenshot',attribute:'aria-label'});
+      zoom.append(picture);
+      var credit = el('figcaption'); credit.append(source);
+      figure.append(zoom,credit); item.append(caption,figure); list.append(item);
+    });
+    guide.append(list,el('p','screenshotNote','ctstyle-discovery-small'));
+    return guide;
+  }
   function render() {
     if (!panel) return;
-    fields.forEach(function (entry) { entry.node.textContent = cfg.testCopy[locale][entry.key]; });
+    fields.forEach(function (entry) {
+      if (entry.attribute) entry.node.setAttribute(entry.attribute,cfg.testCopy[locale][entry.key]);
+      else entry.node.textContent = cfg.testCopy[locale][entry.key];
+    });
     ui.status.textContent = cfg.testCopy[locale][status];
     ui.status.hidden = status === 'ready';
     ui.create.hidden = !!account;
     ui.check.hidden = !account || status === 'funded';
     ui.result.hidden = !account; panel.setAttribute('aria-busy',busy ? 'true' : 'false');
+    ui.importAddress.textContent = account ? account.address : '';
     ui.copySeed.disabled = !account; ui.show.disabled = !account;
     ui.progress.textContent = (step + 1) + ' / 4';
     ui.start.hidden = !!account;
@@ -194,10 +236,15 @@
     panel = el('div',null,'ctstyle-testnet-create'); panel.id = 'ctstyle-testnet-create';
     ui.progress = el('p',null,'ctstyle-testnet-progress'); ui.progress.setAttribute('aria-live','polite');
     ui.start = el('div',null,'ctstyle-testnet-welcome'); ui.start.append(el('h3','stepCreate'),el('p','ready'));
+    ui.start.append(el('p','keepPageOpen','ctstyle-discovery-small'));
+    var preview = el('details',null,'ctstyle-testnet-help ctstyle-testnet-picture-preview');
+    preview.append(el('summary','previewPictures'),el('h3','stepNetwork'),pictureGuide('network'),el('h3','stepImport'),pictureGuide('import'));
+    ui.start.append(preview);
     ui.create = button('create'); ui.create.id = 'ctstyle-testnet-create-button'; ui.create.addEventListener('click',create);
     ui.status = el('p',null,'ctstyle-discovery-status'); ui.status.setAttribute('role','status'); ui.status.setAttribute('aria-live','polite');
     ui.result = el('div',null,'ctstyle-testnet-result'); ui.result.hidden = true;
     ui.address = el('code'); ui.address.dir = 'ltr'; ui.address.id = 'ctstyle-testnet-address';
+    ui.importAddress = el('code'); ui.importAddress.dir = 'ltr';
     ui.secret = el('code'); ui.secret.dir = 'ltr'; ui.secret.hidden = true; ui.secret.id = 'ctstyle-testnet-secret';
     // No user secret input, hidden input, automatic storage, logging, or account data in links/messages.
     ui.show = button('show'); ui.show.setAttribute('aria-controls',ui.secret.id); ui.show.setAttribute('aria-expanded','false');
@@ -215,18 +262,18 @@
       var heading = el('h3',key); heading.tabIndex = -1; part.append(heading); return part;
     });
     var networkHelp = el('a','networkHelp','ctstyle-discovery-action');
-    networkHelp.href = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
+    networkHelp.href = xamanNetworkHelp;
     networkHelp.target = '_blank'; networkHelp.rel = 'noopener noreferrer';
-    ui.steps[0].append(el('p','import1'),networkHelp);
+    ui.steps[0].append(el('p','import1'),pictureGuide('network'),networkHelp);
     var importHelp = el('a','importHelp','ctstyle-discovery-action');
-    importHelp.href = 'https://help.xaman.app/app/getting-started-with-xaman/importing-your-account/...with-a-family-seed';
+    importHelp.href = xamanImportHelp;
     importHelp.target = '_blank'; importHelp.rel = 'noopener noreferrer';
     var back = button('back'); back.addEventListener('click',function () {
       var app = document.querySelector('[data-calorieapp-embed]');
       if (app && typeof app.scrollIntoView === 'function') app.scrollIntoView({block:'start',behavior:'auto'});
       else window.scrollTo({top:0,behavior:'auto'});
     });
-    ui.steps[1].append(el('p','import2'),ui.copySeed,ui.show,ui.secret,ui.copyStatus,el('p','testOnly','ctstyle-discovery-small'),importHelp);
+    ui.steps[1].append(el('p','import2'),ui.copySeed,ui.show,ui.secret,ui.copyStatus,el('p','testOnly','ctstyle-discovery-small'),pictureGuide('import'),el('p','account'),ui.importAddress,el('p','finishImport'),importHelp);
     ui.steps[2].append(el('p','import3'),el('p','account'),ui.address,copyAddress,back,el('p','pilotScope','ctstyle-discovery-small'));
     ui.previous = button('previous'); ui.previous.addEventListener('click',function () { go(step-1); });
     ui.next = button('next'); ui.next.addEventListener('click',function () { go(step+1); });

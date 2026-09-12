@@ -47,6 +47,35 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-brand{border-radius:26px!important;}
  body.ctstyle-enabled #calorie-showcase-page .showcase-header-account{max-width:300px!important;width:100%!important;margin:0 auto!important;}
 }
+
+/* Both the retained bridge footer and the Site Style footer use Home's
+   geometry. Keep each implementation's own carousel and cookie handlers. */
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-shared-page-ending:has(>.ctstyle-footer-tail){padding-bottom:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-socials,.calorieapp-shared-socials){display:grid!important;grid-template-columns:48px minmax(0,1fr) 48px!important;align-items:center!important;gap:12px!important;max-width:1170px!important;width:100%!important;margin:0 auto 18px!important;padding:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-window,.calorieapp-shared-social-window){min-width:0!important;width:100%!important;overflow:hidden!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-track,.calorieapp-shared-social-track){display:flex!important;width:100%!important;gap:0!important;padding:0!important;margin:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social,.calorieapp-shared-social){box-sizing:border-box!important;display:flex!important;flex:0 0 33.333333%!important;min-width:0!important;width:33.333333%!important;min-height:80px!important;margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-icon,.calorieapp-shared-social-icon){width:48px!important;height:48px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-arrow,.calorieapp-shared-social-arrow){box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;width:48px!important;height:64px!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;color:#079447!important;box-shadow:none!important;font:400 56px/1 Arial,sans-serif!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal){box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:1170px!important;padding:0!important;margin:0 auto!important;text-align:center!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal)>p{font:400 16px/1.9 Amiri,Georgia,serif!important;letter-spacing:normal!important;padding:0!important;margin:7px 0!important;white-space:normal!important;overflow-wrap:break-word!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal-links{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:8px 28px!important;width:100%!important;margin:12px 0 7px!important;padding:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal-links :is(a,button){box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:0!important;min-height:44px!important;margin:0!important;padding:6px 8px!important;border:0!important;background:transparent!important;color:#fff!important;font:700 17px/1.5 Amiri,Georgia,serif!important;letter-spacing:normal!important;text-align:center!important;white-space:normal!important;box-shadow:none!important;}
+ /* XPMarket already supplies its own compact card; an additional shared
+    content panel consumed 80px of its inner width and changed its typeface. */
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-xpmarket-widget{box-sizing:border-box!important;width:min(380px,calc(100% - 10px))!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;padding:0!important;margin-inline:auto!important;border:5px solid #505ba9!important;border-radius:12px!important;background:#fff!important;font:400 22px/1.8 Arial,Helvetica,sans-serif!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-xpmarket-link{font:inherit!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-xpmarket-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-xpmarket-stats>span{min-width:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-xpmarket-stats small{white-space:normal!important;overflow-wrap:anywhere!important;}
+ @media(max-width:767px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-socials,.calorieapp-shared-socials){grid-template-columns:36px minmax(0,1fr) 36px!important;gap:4px!important;margin-bottom:10px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-arrow,.calorieapp-shared-social-arrow){width:36px!important;height:52px!important;font-size:44px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social,.calorieapp-shared-social){min-height:56px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-social-icon,.calorieapp-shared-social-icon){width:32px!important;height:32px!important;}
+ }
+}
 /* A small, scoped important layer takes precedence over the older Brizy/ID
    rules. In particular, the continuous-paper reset must not erase these cards.
    Keep the underlying historical sheets as the fallback for older browsers. */
@@ -224,7 +253,7 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   border:0!important;border-radius:0!important;padding:24px max(18px,calc((100vw - 1170px)/2)) 30px!important;
   font-family:Amiri,Georgia,serif!important;text-align:center!important;
  }
- :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>p{font:400 16px/1.9 Amiri,Georgia,serif!important;margin:7px 0!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal)>p{font:400 16px/1.9 Amiri,Georgia,serif!important;margin:7px 0!important;color:#fff!important;}
  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>.ctstyle-legal-links{margin-top:12px!important;}
  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-tail{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:26px!important;min-height:26px!important;margin:0!important;padding:0!important;border:0!important;}
  @media(max-width:1050px){
@@ -247,7 +276,7 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>div:not(.ctstyle-app-sources)>p{grid-column:1 / -1!important;grid-row:2!important;font-size:20px!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>:is(.calorieapp-app-info-link,.calorieapp-app-info-current){grid-column:1 / -1!important;grid-row:3!important;}
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info>.ctstyle-app-sources{grid-column:1 / -1!important;grid-row:4!important;}
-  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>p{font-size:14px!important;line-height:1.65!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal)>p{font-size:14px!important;line-height:1.65!important;}
  }
  @media(max-width:400px){
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-app-info{width:calc(100% - 28px)!important;}
@@ -256,4 +285,14 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
 
 @media(max-width:767px){
  :is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-shared-banner{padding:25px 16px!important;border-radius:26px 13px!important;margin:26px auto!important;}
+}
+
+/* Keep screenshot steps aligned and their source captions compact. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled .ctstyle-xaman-screens>li {display:grid!important;grid-template-rows:subgrid!important;grid-row:span 3;gap:12px!important;}
+ body.ctstyle-enabled .ctstyle-xaman-screens>li::before {margin:0!important;}
+ body.ctstyle-enabled .ctstyle-xaman-screens>li>p {margin:0!important;font-size:19px!important;line-height:1.5!important;}
+ body.ctstyle-enabled .ctstyle-xaman-screens figcaption {font:400 15px/1.5 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .ctstyle-xaman-enlarge {display:block!important;max-width:100%!important;margin:0!important;padding:0!important;}
+ @media(max-width:767px){body.ctstyle-enabled .ctstyle-xaman-screens>li {grid-template-rows:auto auto auto!important;grid-row:auto;}}
 }
