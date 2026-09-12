@@ -7,7 +7,7 @@
   var bodySelector='.ctstyle-enabled,.ctstyle-footer-only,.ctstyle-presentation-preview';
   var headings='.ctstyle-heading,.ctstyle-section-heading,.ctstyle-crypto-intro h2,.showcase-hero h1,.showcase-title-banner h1';
   var excluded='a,button,input,select,textarea,svg,script,style,iframe,[contenteditable],.xl-card,[data-calorieapp-account]';
-  var panelRoots='.page-id-7224 [data-brz-custom-id="owoOYYzWylhn"],.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.showcase-card,.ctstyle-document-copy,.calorieapp-app-info,.calorieapp-context-note,.ctstyle-faq-hub,.ctstyle-discovery-card,.ctstyle-manual-trustline,.ctstyle-community-status,.ctstyle-roadmap-preview,.calorieapp-article-copy,.cal-buy-hero,.cal-buy-own-dex,.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li';
+  var panelRoots='.calorie-legacy-page section,.page-id-7224 [data-brz-custom-id="owoOYYzWylhn"],.ctstyle-crypto-intro,.showcase-intro,.showcase-next,.showcase-card,.ctstyle-document-copy,.calorieapp-app-info,.calorieapp-context-note,.calorieapp-art-gallery,.calorieapp-social-panel,.cart-collaterals .cart_totals,.ctstyle-faq-hub,.ctstyle-discovery-card,.ctstyle-manual-trustline,.ctstyle-community-status,.ctstyle-roadmap-preview,.calorieapp-article-copy,.cal-buy-hero,.cal-buy-own-dex,.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li';
   var panelExcluded='.ctstyle-site-header,.ctstyle-header,.ctstyle-header-fallback,.showcase-page-header,.ctstyle-title,.ctstyle-footer,footer,nav,.xl-card,[data-calorieapp-account],[data-calorieapp-embed],.calorieapp-trustline-context,form,[contenteditable]';
   function allowed(){return document.body&&document.body.matches(bodySelector)&&!document.querySelector('.brz-ed,#brz-ed-iframe')&&['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin)&&!/\/wp-admin\//.test(window.location.pathname);}
   function path(value){try{return new URL(value,window.location.href).pathname.replace(/^\/index\.php(?=\/)/,'').replace(/\/+$/,'')||'/';}catch(e){return '';}}
@@ -104,6 +104,7 @@
     document.querySelectorAll('.ctstyle-shared-panel').forEach(function(panel){
       if(panel.parentElement&&panel.parentElement.closest('.ctstyle-shared-panel'))panel.classList.add('ctstyle-shared-panel-nested');
       if(panel.tagName==='DETAILS')panel.classList.add('ctstyle-shared-disclosure');
+      if (panel.matches('.calorie-legacy-page section')) panel.querySelectorAll('h1').forEach(function(h){h.classList.add('ctstyle-section-heading');});
       panel.querySelectorAll('h2,h3').forEach(function(h){if(!h.closest(excluded))h.classList.add('ctstyle-section-heading');});
     });
   }

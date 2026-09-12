@@ -254,7 +254,7 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
   font-family:Amiri,Georgia,serif!important;text-align:center!important;
  }
  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal)>p{font:400 16px/1.9 Amiri,Georgia,serif!important;margin:7px 0!important;color:#fff!important;}
- :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer .ctstyle-legal>.ctstyle-legal-links{margin-top:12px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer :is(.ctstyle-legal,.calorieapp-shared-legal)>.ctstyle-legal-links{margin-top:12px!important;}
  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-footer-tail{box-sizing:border-box!important;width:100%!important;max-width:none!important;height:26px!important;min-height:26px!important;margin:0!important;padding:0!important;border:0!important;}
  @media(max-width:1050px){
   body.ctstyle-enabled #calorie-showcase-page .showcase-header-menu{display:none!important;}
@@ -295,4 +295,67 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled .ctstyle-xaman-screens figcaption {font:400 15px/1.5 Amiri,Georgia,serif!important;}
  body.ctstyle-enabled .ctstyle-xaman-enlarge {display:block!important;max-width:100%!important;margin:0!important;padding:0!important;}
  @media(max-width:767px){body.ctstyle-enabled .ctstyle-xaman-screens>li {grid-template-rows:auto auto auto!important;grid-row:auto;}}
+}
+
+/* Match the native Home account wrapper in the two non-Brizy headers. */
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-site-header .xl-card {font:400 13.3333px/1.8 NonBreakingSpaceOverride,"Hoefler Text",Garamond,"Times New Roman",serif!important;}
+ @media(max-width:1050px){
+  body.ctstyle-enabled :is(.ctstyle-header-fallback,#calorie-showcase-page .showcase-page-header){padding:30px 18px!important;}
+  body.ctstyle-enabled :is(.ctstyle-header-fallback .ctstyle-header-inner,#calorie-showcase-page .showcase-header-inner){gap:20px!important;}
+  body.ctstyle-enabled :is(.ctstyle-header-fallback .ctstyle-header-account,#calorie-showcase-page .showcase-auth){box-sizing:border-box!important;width:100%!important;max-width:300px!important;margin:0 auto!important;padding:12px 10px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-site-header .xl-card {font-size:13px!important;}
+ }
+}
+
+/* Template-specific spacing discovered during the complete-page review. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled #calorie-showcase-page {background:#fff var(--ctstyle-paper-image) center/960px auto repeat!important;}
+ body.ctstyle-enabled #calorie-showcase-page .showcase-hero {padding:0!important;margin-block:0!important;}
+ @media(min-width:1051px){body.ctstyle-enabled :is(.ctstyle-header-fallback .ctstyle-header-account,#calorie-showcase-page .showcase-auth){box-sizing:border-box!important;padding-block:12px!important;}}
+ body.ctstyle-enabled .ctstyle-blog-card {box-sizing:border-box!important;width:calc(100% - 24px)!important;margin-inline:auto!important;}
+ body.ctstyle-enabled .ctstyle-blog-card .brz-btn {border:2px solid #505ba9!important;border-radius:16px!important;background:#f9b233!important;color:#303449!important;padding:10px 22px!important;font:700 20px/1.4 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .ctstyle-blog-card .brz-btn :is(span,svg){font:inherit!important;color:inherit!important;}
+ body.ctstyle-enabled .calorieapp-art-caption {font:700 23px/1.4 Amiri,Georgia,serif!important;color:#505ba9!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-container {display:block!important;box-sizing:border-box!important;position:relative!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;padding:16px!important;white-space:normal!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice {box-sizing:border-box!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;max-width:100%!important;padding:16px!important;margin:12px 0 0!important;background:#f7f8fc!important;color:#303449!important;border:1px solid #d7daea!important;border-radius:12px!important;font:400 17px/1.5 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice :is(a,button){min-height:44px!important;font-family:Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline:has(.cmplz-blocked-content-container .cmplz-accept-service) .calorieapp-x-help>.calorieapp-x-load {display:none!important;}
+ @media(max-width:767px){body.ctstyle-enabled .ctstyle-blog-card {width:100%!important;margin-block:0 20px!important;}}
+}
+
+/* WooCommerce's fixed-quantity donation still needs a readable table value. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled .woocommerce-cart-form .product-quantity .quantity:has(>input.qty[type="hidden"][min="1"][max="1"])::after {content:"1";display:inline;color:inherit;font:inherit;}
+ body.ctstyle-enabled .woocommerce-cart-form td.product-name a {color:#505ba9!important;}
+ @media(max-width:767px){body.ctstyle-enabled .woocommerce-cart-form :is(td.product-thumbnail,td.product-remove)::before {display:none!important;}}
+}
+
+/* Keep donation summaries in the shared type system. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table {border:1px solid #d8dbe9!important;border-spacing:0!important;font:400 18px/1.5 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table :is(th,td) {font-family:Amiri,Georgia,serif!important;border:0!important;border-bottom:1px solid #d8dbe9!important;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table th {color:#414d94!important;background:#f7f8fc!important;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce table.shop_table tr:last-child>:is(th,td) {border-bottom:0!important;}
+ body.ctstyle-enabled.ctstyle-donation-page .woocommerce :is(.woocommerce-privacy-policy-link,.woocommerce-terms-and-conditions-link) {color:#505ba9!important;}
+}
+
+/* The generated cookie document has its own 14px root; inherit the page card. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled .ctstyle-document-copy #cmplz-document {max-width:none!important;font:inherit!important;color:inherit!important;}
+}
+
+/* Old CEX/DEX/exchange links use the same public menu and content cards. */
+@layer ctstyle-presentation-fixes {
+ body.ctstyle-enabled .calorie-legacy-page {box-sizing:border-box!important;min-height:0!important;padding:28px 18px!important;background:#fff var(--ctstyle-paper-image) center/960px auto repeat!important;color:#303449!important;font:400 21px/1.65 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .calorie-legacy-page>div {max-width:1100px!important;}
+ body.ctstyle-enabled:has(.ctstyle-header-fallback) .calorie-legacy-page>div>a:has(img) {display:none!important;}
+ body.ctstyle-enabled .calorie-legacy-page section {margin:0!important;}
+ body.ctstyle-enabled .calorie-legacy-page section :is(h1,h2) {color:#10111a!important;}
+ body.ctstyle-enabled .calorie-legacy-page section>p:first-child {font-size:16px!important;color:#505ba9!important;}
+ body.ctstyle-enabled .calorie-legacy-page section a[href$="/how-to-buy-calorie/"] {display:inline-flex!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;min-height:48px!important;padding:10px 22px!important;border:2px solid #505ba9!important;border-radius:16px!important;background:#f9b233!important;color:#303449!important;font:700 20px/1.4 Amiri,Georgia,serif!important;}
+ body.ctstyle-enabled .calorie-legacy-page nav {font:700 17px/1.5 Amiri,Georgia,serif!important;gap:8px 24px!important;}
+ body.ctstyle-enabled .calorie-legacy-page nav a {display:inline-flex!important;align-items:center!important;min-height:44px!important;}
+ body.ctstyle-enabled .calorie-legacy-page>div>p:last-child {font:400 16px/1.6 Amiri,Georgia,serif!important;}
+ @media(max-width:767px){body.ctstyle-enabled .calorie-legacy-page {font-size:20px!important;}}
 }

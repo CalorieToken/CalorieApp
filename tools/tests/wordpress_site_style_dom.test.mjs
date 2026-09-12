@@ -497,3 +497,21 @@ test('Home token copy and legal footer translate in every offered language and r
  assert.equal(h.document.querySelector('#token strong'),strong);
  assert.equal(h.document.querySelector('#copyright').textContent,originalCopyright);
 });
+
+
+test('Hidden legacy mastheads do not suppress the shared header or clone native account controls',()=>{
+  const headerTemplate='<template id="ctstyle-header-template"><header class="ctstyle-header ctstyle-header-fallback"><nav><a href="/">Home</a></nav><div class="ctstyle-header-account" hidden></div></header></template>';
+  const h=fixture('<header id="masthead" class="site-header" style="display:none"></header><main><div class="entry-content"><div class="calorie-legacy-page"><section><h1>Our buying guide has moved</h1><p>Existing notice.</p></section></div></div></main>'+headerTemplate+'<div id="ctstyle-native-account-source" hidden>'+account+'</div>',{page:4606,route:'integrated-exchange'});
+  const card=h.document.querySelector('.xl-card');
+  const button=h.document.querySelector('#native-login');
+  let clicks=0;button.addEventListener('click',()=>clicks++);
+  h.run('style.js');
+  assert.equal(h.document.querySelectorAll('.ctstyle-header-fallback').length,1);
+  assert.equal(h.document.querySelector('.ctstyle-header-account .xl-card'),card);
+  assert.equal(h.document.querySelectorAll('.xl-card').length,1);
+  assert.equal(h.document.querySelector('#ctstyle-native-account-source').hidden,false);
+  button.click();assert.equal(clicks,1);
+  h.emit('load');h.flush();
+  assert.equal(h.document.querySelectorAll('.ctstyle-header-fallback').length,1);
+  assert.equal(h.document.querySelector('.calorie-legacy-page h1').textContent,'Our buying guide has moved');
+});

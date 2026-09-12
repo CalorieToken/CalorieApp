@@ -33,11 +33,15 @@
     }
   }
   function styleHeader() {
+    var legacy = document.querySelector('.calorie-legacy-page');
     var styled = document.querySelector('.ctstyle-header');
-    if (styled) return styled;
+    if (styled && (!legacy || window.getComputedStyle(styled).display !== 'none')) return styled;
     var menu = document.querySelector('.brz-menu-simple');
     var header = menu && menu.closest('.brz-section,section,header');
     if (!header) header = document.querySelector('.showcase-page-header') || document.querySelector('header.site-header,#masthead');
+    // Older route notices hide the theme masthead in their own content CSS.
+    // That hidden node must not suppress the normal shared fallback menu.
+    if (legacy && header && window.getComputedStyle(header).display === 'none') header = null;
     if (header) {
       header.classList.add('ctstyle-header');
       if (header.classList.contains('brz-section')) {

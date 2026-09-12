@@ -1,4 +1,4 @@
-# CalorieToken Site Style 1.4.26
+# CalorieToken Site Style 1.4.28
 
 Deze versie werkt de visuele verschillen uit de desktopcontrole en de mobiele
 screenshots weg. Home blijft het voorbeeld voor de gedeelde onderdelen.
@@ -14,7 +14,18 @@ screenshots weg. Home blijft het voorbeeld voor de gedeelde onderdelen.
   Seed. De bron staat bij elk scherm. De uitleg en alternatieve afbeeldingstekst
   zijn beschikbaar in alle elf bestaande talen en zijn vooraf te bekijken.
 
-Installatiepakket: **calorietoken-site-style-1.4.26.zip**. Vervang de bestaande
+Aanvullend uit de paginacontrole:
+- Blogkaarten krijgen tussenruimte en gedeelde knoppen. De X-cookiemelding
+  overlapt de uitleg niet meer; bestaande toestemmingsbediening blijft intact.
+- Showcases gebruikt dezelfde achtergrond en ruimte boven de inhoud als Home.
+- Vaste donatieaantallen blijven zichtbaar; samenvattingen gebruiken de gedeelde
+  typografie. De cookieverklaring erft de leesbare tekstgrootte van zijn kaart.
+- Oude CEX-, DEX- en Integrated Exchange-adressen krijgen het gedeelde menu en
+  de inhoudskaart. Een verborgen themaheader blokkeert deze terugval niet meer.
+  De bestaande Xaman-shortcode levert de accountkaart zoals op documentpagina's;
+  die kaart wordt eenmaal verplaatst, niet gekopieerd.
+
+Installatiepakket: **calorietoken-site-style-1.4.28.zip**. Vervang de bestaande
 Site Style-plugin via de gebruikelijke WordPress-upload. Terugval: het bevestigd
 geïnstalleerde pakket **1.4.24**.
 
@@ -24,7 +35,8 @@ zijn gecontroleerd op 12 september 2026. Screenshots kunnen groter worden geopen
 bronlinks en tekst zijn ook zonder de afbeeldingen bruikbaar. Het accountadres
 staat bij de importstap, zodat bezoekers het direct met Xaman kunnen vergelijken.
 
-De mobiele footerletters volgen op beide footerimplementaties de Home-regels.
+De mobiele footerletters en linkmarges volgen op beide footerimplementaties de Home-regels.
+Ook de mobiele accountmarges van Showcases en documentheaders volgen Home.
 De screenshotkaarten gebruiken uitgelijnde stappen en compacte bronvermeldingen.
 
 De faucet-aanvraag, tijdelijke verwerking van herstelcodes, wachttijden, bestaande
