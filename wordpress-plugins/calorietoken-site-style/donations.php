@@ -1,5 +1,5 @@
 <?php
-/** Public, cached XRP balance. Never creates a payment or reads wallet credentials. */
+/** Public donation total with a separate cached wallet balance. */
 namespace CalorieToken\SiteStyle;
 
 if (!defined('ABSPATH')) { exit; }
@@ -66,12 +66,16 @@ final class Donations {
             <p class="ctstyle-donation-amount"><strong data-donation-amount>—</strong> <span>XRP</span></p>
             <p class="ctstyle-donation-status" data-donation-status role="status" aria-live="polite"><?php echo esc_html($c['loading']); ?></p>
             <p data-donation-copy="description"><?php echo esc_html($c['description']); ?></p>
-            <p class="ctstyle-donation-note" data-donation-copy="note"><?php echo esc_html($c['note']); ?></p>
             <div class="ctstyle-donation-meta">
                 <p><span data-donation-copy="updated"><?php echo esc_html($c['updated']); ?></span> <time data-donation-time>—</time></p>
                 <p data-donation-copy="refreshNote"><?php echo esc_html($c['refreshNote']); ?></p>
             </div>
             <details><summary data-donation-copy="details"><?php echo esc_html($c['details']); ?></summary>
+                <p class="ctstyle-donation-note" data-donation-copy="note"><?php echo esc_html($c['note']); ?></p>
+                <p><span data-donation-copy="openingLabel"><?php echo esc_html($c['openingLabel']); ?></span> <strong data-donation-opening>401.268984</strong> XRP<br><time data-donation-baseline-time datetime="2026-09-12T16:37:31Z">2026-09-12 · 16:37:31 UTC</time></p>
+                <p><span data-donation-copy="addedLabel"><?php echo esc_html($c['addedLabel']); ?></span> <strong data-donation-added>—</strong> XRP</p>
+                <p><span data-donation-copy="walletBalanceLabel"><?php echo esc_html($c['walletBalanceLabel']); ?></span> <strong data-donation-wallet-amount>—</strong> XRP<br><span data-donation-copy="walletNote"><?php echo esc_html($c['walletNote']); ?></span></p>
+                <p><span data-donation-copy="walletUpdated"><?php echo esc_html($c['walletUpdated']); ?></span> <time data-donation-wallet-time>—</time></p>
                 <p><span data-donation-copy="walletLabel"><?php echo esc_html($c['walletLabel']); ?></span><br><code dir="ltr"><?php echo esc_html(self::WALLET); ?></code></p>
                 <p><span data-donation-copy="ledger"><?php echo esc_html($c['ledger']); ?></span> <span data-donation-ledger>—</span></p>
                 <a href="https://bithomp.com/explorer/<?php echo esc_attr(self::WALLET); ?>" target="_blank" rel="noopener noreferrer" data-donation-copy="explorer"><?php echo esc_html($c['explorer']); ?></a>
@@ -82,17 +86,17 @@ final class Donations {
         return ob_get_clean();
     }
 
-    private static function claim_refresh($now) {
+    public static function claim_refresh($now, $key = self::LOCK, $interval = self::INTERVAL) {
         // Atomic lease shared by all visitors, also without persistent object
         // caching. A slow/unavailable upstream cannot trigger a request storm.
-        $until = (string) ($now + self::INTERVAL);
-        if (add_option(self::LOCK, $until, '', false)) { return true; }
-        $old = get_option(self::LOCK);
+        $until = (string) ($now + $interval);
+        if (add_option($key, $until, '', false)) { return true; }
+        $old = get_option($key);
         if (!is_scalar($old) || (int) $old > $now) { return false; }
         global $wpdb;
         $changed = $wpdb->update($wpdb->options, array('option_value' => $until),
-            array('option_name' => self::LOCK, 'option_value' => (string) $old), array('%s'), array('%s', '%s'));
-        if ($changed === 1) { wp_cache_delete(self::LOCK, 'options'); return true; }
+            array('option_name' => $key, 'option_value' => (string) $old), array('%s'), array('%s', '%s'));
+        if ($changed === 1) { wp_cache_delete($key, 'options'); return true; }
         return false;
     }
 
@@ -133,7 +137,12 @@ final class Donations {
             'balanceDrops' => null, 'ledgerIndex' => null, 'checkedAt' => null, 'validated' => false);
         $data['status'] = $fresh ? 'current' : ($saved ? 'stale' : 'unavailable');
         $data['refreshAfter'] = self::INTERVAL;
-        $result = new \WP_REST_Response($data, $saved ? 200 : 503);
+        $total = class_exists(DonationLedger::class) ? DonationLedger::snapshot() : null;
+        if ($total) {
+            $data = array_merge($data, $total);
+            $data['donationsStatus'] = $total['donationsCheckedAt'] > 0 && $now - $total['donationsCheckedAt'] < 900 ? 'current' : 'stale';
+        }
+        $result = new \WP_REST_Response($data, ($saved || $total) ? 200 : 503);
         $result->header('Cache-Control', 'public, max-age=15, s-maxage=15');
         $result->header('X-Content-Type-Options', 'nosniff');
         return $result;

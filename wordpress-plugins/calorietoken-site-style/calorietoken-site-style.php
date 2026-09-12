@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.34
+ * Version: 1.4.37
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.34';
+    const VERSION = '1.4.37';
 
     public static function presentation_preview() {
         if (is_admin() || !is_preview() || !is_singular('page') ||
@@ -318,3 +318,4 @@ add_filter('do_shortcode_tag', array(Plugin::class, 'retire_market_loader'), 999
 require_once __DIR__ . '/public-pages.php';
 require_once __DIR__ . '/review.php';
 require_once __DIR__ . '/donations.php';
+require_once __DIR__ . '/donation-ledger.php';

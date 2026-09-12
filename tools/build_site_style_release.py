@@ -53,6 +53,7 @@ FILES = (
     'content/community.html',
     'content/privacy.html',
     'content/terms.html',
+    'donation-ledger.php',
     'donations.php',
     'public-pages.php',
     'public-template.php',

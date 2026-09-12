@@ -1,4 +1,4 @@
-/* Read-only donation balance; no wallet connection, cookies, or browser storage. */
+/* Cumulative donation total and separate wallet balance. No visitor tracking. */
 (function () {
   'use strict';
   var cfg = window.CalorieTokenDonations;
@@ -37,25 +37,44 @@
         if (el.tagName === 'H2' && window.CalorieTokenPresentationUI) window.CalorieTokenPresentationUI.paintHeading(el);
       }
     });
-    amount.textContent = latest ? formatDrops(latest.balanceDrops) : '—';
-    var stale = latest && (failed || latest.status === 'stale' || Date.now() / 1000 - latest.checkedAt >= 120);
+    amount.textContent = latest ? formatDrops(latest.totalDrops) : '—';
+    var stale = latest && (failed || latest.donationsStatus !== 'current' || Date.now() / 1000 - latest.donationsCheckedAt >= 900);
     var state = latest ? (stale ? 'stale' : 'current') : (failed ? 'unavailable' : 'loading');
     root.dataset.state = state;
     status.textContent = copy[state];
     if (latest) {
-      var date = new Date(latest.checkedAt * 1000);
+      var date = new Date((latest.donationsCheckedAt || latest.baselineAt) * 1000);
       updated.dateTime = date.toISOString();
       updated.textContent = new Intl.DateTimeFormat(locale, {dateStyle: 'medium', timeStyle: 'medium'}).format(date);
-      ledger.textContent = new Intl.NumberFormat(locale, {useGrouping: false}).format(latest.ledgerIndex);
+      ledger.textContent = latest.ledgerIndex ? new Intl.NumberFormat(locale, {useGrouping: false}).format(latest.ledgerIndex) : '—';
+      [['opening',latest.startingDrops],['added',latest.newDonationDrops],['wallet-amount',latest.balanceDrops]].forEach(function (item) {
+        var el = root.querySelector('[data-donation-' + item[0] + ']');
+        if (el) el.textContent = item[1] === null ? '—' : formatDrops(item[1]);
+      });
+      var walletTime = root.querySelector('[data-donation-wallet-time]');
+      var baselineTime = root.querySelector('[data-donation-baseline-time]');
+      if (baselineTime) baselineTime.textContent = new Intl.DateTimeFormat(locale, {dateStyle:'medium',timeStyle:'long',timeZone:'UTC'}).format(new Date(latest.baselineAt * 1000));
+      if (walletTime) {
+        walletTime.textContent = latest.checkedAt ? new Intl.DateTimeFormat(locale, {dateStyle:'medium',timeStyle:'medium'}).format(new Date(latest.checkedAt * 1000)) : '—';
+        if (latest.checkedAt) walletTime.dateTime = new Date(latest.checkedAt * 1000).toISOString();
+        else walletTime.removeAttribute('datetime');
+      }
     } else { updated.removeAttribute('datetime'); updated.textContent = '—'; ledger.textContent = '—'; }
   }
   function valid(data) {
-    return data && data.wallet === cfg.wallet && data.network === 'mainnet' && data.validated === true &&
-      ['current', 'stale'].includes(data.status) && typeof data.balanceDrops === 'string' &&
+    if (!data || data.wallet !== cfg.wallet || data.network !== 'mainnet' || data.cumulative !== true ||
+        data.startingDrops !== '401268984' || data.baselineLedger !== 106938803 || data.baselineAt !== 1789231051 ||
+        !['current','stale'].includes(data.donationsStatus) || !Number.isSafeInteger(data.donationsCheckedAt) ||
+        data.donationsCheckedAt < 0 || data.donationsCheckedAt > Date.now()/1000 + 30 ||
+        ![data.totalDrops,data.newDonationDrops].every(function(n){return typeof n === 'string' && /^(0|[1-9][0-9]{0,29})$/.test(n);}) ||
+        BigInt(data.totalDrops) !== BigInt(data.startingDrops) + BigInt(data.newDonationDrops) ||
+        (latest && BigInt(data.totalDrops) < BigInt(latest.totalDrops))) return false;
+    // The permanent total remains usable when the independent wallet lookup fails.
+    return (data.balanceDrops === null && data.validated === false && data.checkedAt === null && data.ledgerIndex === null) ||
+      (data.validated === true && ['current','stale'].includes(data.status) && typeof data.balanceDrops === 'string' &&
       /^(0|[1-9][0-9]{0,17})$/.test(data.balanceDrops) && BigInt(data.balanceDrops) <= 100000000000000000n &&
-      Number.isSafeInteger(data.ledgerIndex) && data.ledgerIndex > 0 && Number.isSafeInteger(data.checkedAt) &&
-      data.checkedAt > 0 && data.checkedAt <= Math.floor(Date.now() / 1000) + 30 &&
-      Date.now() / 1000 - data.checkedAt < 86400 && (!latest || data.ledgerIndex >= latest.ledgerIndex);
+      Number.isSafeInteger(data.ledgerIndex) && data.ledgerIndex >= data.baselineLedger && Number.isSafeInteger(data.checkedAt) &&
+      data.checkedAt > 0 && data.checkedAt <= Math.floor(Date.now() / 1000) + 30 && Date.now() / 1000 - data.checkedAt < 86400);
   }
   function schedule() {
     window.clearTimeout(timer); timer = null;
@@ -76,7 +95,9 @@
     finally {
       window.clearTimeout(timeout); busy = false; controller = null;
       root.removeAttribute('aria-busy');
-      if (latest && Date.now() / 1000 - latest.checkedAt >= 86400) latest = null;
+      if (latest && latest.checkedAt && Date.now() / 1000 - latest.checkedAt >= 86400) {
+        latest.balanceDrops = null; latest.checkedAt = null; latest.ledgerIndex = null; latest.validated = false;
+      }
       render(); schedule();
     }
   }
