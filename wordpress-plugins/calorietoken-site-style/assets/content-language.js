@@ -5,7 +5,7 @@
   if(!cfg||!Array.isArray(cfg.entries)||window.CalorieTokenContentLanguageUI)return;
   var lookup=new Map(), records=new WeakMap(), active=[], observer=null, queued=false, locale='en';
   var excluded='script,style,template,svg,iframe,input,textarea,select,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],#ctstyle-testnet-secret,.woocommerce-customer-details,.woocommerce-order-details,.woocommerce-order-overview,.comment-content,.comment-list,.cmplz-cookiebanner,.ctstyle-help-reply';
-  var owned='[data-cal-buy-copy],#ctstyle-account-app,#ctstyle-app-launcher,.ctstyle-discovery,.ctstyle-discovery-card:not(.ctstyle-faq-hub),.calorieapp-tokenomics-note,[data-calorieapp-trustline-ui],[data-ctstyle-app-info],.ctstyle-faq-hub';
+  var owned='[data-cal-buy-copy],#ctstyle-account-app,#ctstyle-app-launcher,.ctstyle-discovery,.ctstyle-discovery-card:not(.ctstyle-faq-hub),.calorieapp-tokenomics-note,[data-calorieapp-trustline-ui],[data-ctstyle-app-info],.ctstyle-faq-hub,#ctstyle-donation-balance';
   var candidates='.ctstyle-legal p,.ctstyle-market-card h2,.ctstyle-market-card p,.brz-rich-text p,.brz-rich-text li,.brz-rich-text h1,.brz-rich-text h2,.brz-rich-text h3,.brz-rich-text h4,.brz-rich-text h5,.brz-rich-text summary,.entry-content p,.entry-content li,.entry-content h1,.entry-content h2,.entry-content h3,.entry-title,.ctstyle-title h1,.ctstyle-title h2,.ctstyle-roadmap-preview p,.ctstyle-roadmap-preview h3,.ctstyle-roadmap-preview a,.calorieapp-context-note p,.calorieapp-context-note strong,.calorieapp-context-note a,.woocommerce label,.woocommerce button,.woocommerce th,.woocommerce h2,.woocommerce h3,.woocommerce .product_title,.woocommerce a,.woocommerce-notices-wrapper,.woocommerce-info,.woocommerce-message,.woocommerce-error,.brz-posts p,.brz-posts h2,.brz-posts a';
   // Builder timeline titles are spans; native document and showcase blocks do
   // not always live inside .brz-rich-text or .entry-content.
@@ -76,7 +76,7 @@
     if(!cfg.locales.includes(next))next='en';locale=next;
     if(observer)observer.disconnect();
     // Ask existing owners to translate their own mutable controls and notes.
-    ['CalorieAppTokenomics'].forEach(function(key){if(window[key]&&typeof window[key].setLocale==='function')window[key].setLocale(locale);});
+    ['CalorieAppTokenomics','CalorieTokenDonationBalance'].forEach(function(key){if(window[key]&&typeof window[key].setLocale==='function')window[key].setLocale(locale);});
     active=active.filter(function(r){
       if(!r.node.isConnected)return false;
       var changed=r.kind==='text'?r.node.data!==r.last:

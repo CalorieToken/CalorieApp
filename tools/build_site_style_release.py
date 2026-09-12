@@ -26,6 +26,9 @@ FILES = (
     'assets/discovery.css',
     'assets/discovery.js',
     'assets/display-language-runtime.js',
+    'assets/donations-data.json',
+    'assets/donations.css',
+    'assets/donations.js',
     'assets/fonts/OFL.txt',
     'assets/fonts/knewave-latin-400-normal.woff2',
     'assets/fonts/knewave-latin-ext-400-normal.woff2',
@@ -50,6 +53,7 @@ FILES = (
     'content/community.html',
     'content/privacy.html',
     'content/terms.html',
+    'donations.php',
     'public-pages.php',
     'public-template.php',
     'review.php',
@@ -107,4 +111,3 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
     print(json.dumps(build(args.output_dir), indent=2))
-

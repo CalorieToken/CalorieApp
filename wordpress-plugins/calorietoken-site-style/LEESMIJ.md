@@ -1,4 +1,28 @@
-# CalorieToken Site Style 1.4.33
+# CalorieToken Site Style 1.4.34
+
+De statische voortgangsafbeelding op Donations wordt vervangen door het actuele
+XRP-saldo van de consolidatiewallet rEfiRssDCQd466z2bi63vi64u2rYiMrnhL.
+De kaart toont het laatste controletijdstip, de gevalideerde ledger en een
+Bithomp-bronlink. De tekst benoemt de XRPL-reserve en het verschil tussen huidig
+saldo en historische donaties. Kaart en Caloriehelp ondersteunen alle elf talen.
+
+Een openbaar WordPress-endpoint vraagt uitsluitend account_info op voor dit vaste
+Mainnet-adres. Het deelt één meting per minuut tussen bezoekers, met korte timeouts,
+een tweede publieke bron en een gedeelde begrenzing bij storingen. Een oude meting
+wordt als zodanig gemarkeerd en maximaal 24 uur bewaard. Een fout wordt nooit als
+nul donaties weergegeven. De browser stopt verversen wanneer de pagina verborgen
+is en gebruikt geen tracking, cookies, lokale opslag of walletverbinding voor de meter.
+
+Installatiepakket: **calorietoken-site-style-1.4.34.zip**. Vervang Site Style via de
+normale WordPress-pluginupload. Terugval: het bevestigd geïnstalleerde **1.4.33**.
+De betaalinstellingen blijven van de bestaande XUMM Payments-plugin; de saldometer
+maakt geen betalingen en wijzigt geen wallet- of API-instellingen.
+
+Bronnen: [XRPL account_info](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/account-methods/account_info),
+[XRPL publieke servers](https://xrpl.org/docs/tutorials/public-servers) en
+[XRPL reserves](https://xrpl.org/docs/concepts/accounts/reserves).
+
+## Historische notities: 1.4.33
 
 Deze update voegt een overzichtelijk Caloriehelp-paneel toe met korte stappen,
 projectgeschiedenis, publieke bronlinks en uitleg over dicteren via het eigen

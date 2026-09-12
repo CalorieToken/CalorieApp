@@ -78,6 +78,9 @@ jobs:
       - name: Validate standalone Site Style package
         run: node --test tools/tests/wordpress_site_style_package.test.mjs tools/tests/wordpress_app_origin.test.mjs tools/tests/wordpress_cookie_controls.test.mjs
 
+      - name: Test read-only donation balance and shared caching
+        run: php tools/tests/wordpress_donation_balance.test.php
+
       - name: Test read-only Site Style review inventory
         run: php tools/tests/wordpress_site_style_review.test.php
 

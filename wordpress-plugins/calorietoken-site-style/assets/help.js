@@ -4,7 +4,7 @@
   var cfg = window.CalorieTokenHelp;
   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
   var views = [], locale = 'en';
-  var visibleTopics = ['app','test','exchange','trustline','docs','history','troubleshoot','legal'];
+  var visibleTopics = ['app','test','exchange','donations','trustline','docs','history','troubleshoot','legal'];
   var protectedArea = 'form,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],[hidden],[inert]';
   var routes = {
     app:['CalorieApp','/index.php/calorieapp/'], test:['XRPL Testnet','/index.php/calorieapp/#ctstyle-testnet'],
@@ -17,9 +17,12 @@
     archives:['Whitepaper archive','https://github.com/CalorieToken/Publications/blob/main/whitepaper/archive/README.md'],
     history:['Roadmap archive','https://github.com/CalorieToken/Publications/blob/main/roadmap/archive/README.md'],
     appSource:['GitHub · CalorieApp','https://github.com/CalorieToken/CalorieApp'],
+    donations:['Donations','/donate/'],
+    donationWallet:['Bithomp · XRP','https://bithomp.com/explorer/rEfiRssDCQd466z2bi63vi64u2rYiMrnhL'],
     xaman:['Xaman · Testnet','https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger']
   };
   var keywords = {
+    donations:['donation','donations','donate','donatie','donaties','doneren','donation balance','donatiesaldo','consolidation','consolidatie','捐赠','दान','تبرع','অনুদান','donación','donaciones','dons','donativos','donasi','عطیات'],
     test:['test','testnet','faucet','proberen','oefenen','testaccount','测试','परीक्ष','اختبار','পরীক্ষা','آزمائش','uji'],
     trustline:['trustline','trust set','issuer','uitgever','hex','信任','ट्रस्ट','ثقة','ট্রাস্ট','ٹرسٹ'],
     exchange:['exchange','swft','dex','kopen','verkopen','wisselen','buy','sell','swap','bitcoin','btc','eth','兑换','खरीद','شراء','বিনিময়','trocar','tukar','خرید'],

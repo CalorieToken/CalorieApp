@@ -103,6 +103,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "Current donation balance",
+        "text": "XRP held in the CalorieToken consolidation wallet. Voluntary contributions from the community and project team support ongoing development. Current wallet balance, including the XRPL reserve. Spending and transaction fees reduce this balance; this is not an all-time donation total. Refreshes automatically about once a minute while this page is open.",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "Type with your voice",
@@ -216,6 +224,14 @@
         "links": [
           "faq",
           "exchange"
+        ]
+      },
+      "donations": {
+        "title": "Actueel donatiesaldo",
+        "text": "XRP in de consolidatiewallet van CalorieToken. Vrijwillige bijdragen van de gemeenschap en het projectteam ondersteunen de verdere ontwikkeling. Het huidige walletsaldo, inclusief de XRPL-reserve. Uitgaven en transactiekosten verlagen dit saldo; het is geen totaal van alle ooit ontvangen donaties. Ververst automatisch ongeveer elke minuut zolang deze pagina open is.",
+        "links": [
+          "donations",
+          "donationWallet"
         ]
       }
     },
@@ -331,6 +347,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "当前捐赠余额",
+        "text": "CalorieToken 归集钱包中持有的 XRP。社区与项目团队的自愿投入支持后续开发。 当前钱包余额包含 XRPL 储备金。支出和交易手续费会减少余额；此数值并非历年捐赠总额。 页面打开期间，大约每分钟自动刷新一次。",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "语音输入",
@@ -444,6 +468,14 @@
         "links": [
           "faq",
           "exchange"
+        ]
+      },
+      "donations": {
+        "title": "दान की वर्तमान शेष राशि",
+        "text": "CalorieToken के समेकन वॉलेट में मौजूद XRP। समुदाय और परियोजना टीम के स्वैच्छिक योगदान आगे के विकास में सहायता करते हैं। वॉलेट की वर्तमान राशि में XRPL रिज़र्व शामिल है। खर्च और लेनदेन शुल्क से यह राशि घटती है; यह अब तक मिले सभी दान का कुल योग नहीं है। यह पृष्ठ खुला होने पर लगभग हर मिनट अपने आप अपडेट होता है।",
+        "links": [
+          "donations",
+          "donationWallet"
         ]
       }
     },
@@ -559,6 +591,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "Saldo actual de donaciones",
+        "text": "XRP en la cartera de consolidación de CalorieToken. Las aportaciones voluntarias de la comunidad y del equipo del proyecto apoyan el desarrollo continuo. Saldo actual de la cartera, incluida la reserva de XRPL. Los gastos y las comisiones reducen este saldo; no es el total histórico de donaciones. Se actualiza automáticamente aproximadamente cada minuto mientras esta página está abierta.",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "Escribe con tu voz",
@@ -672,6 +712,14 @@
         "links": [
           "faq",
           "exchange"
+        ]
+      },
+      "donations": {
+        "title": "الرصيد الحالي للتبرعات",
+        "text": "رصيد XRP في محفظة تجميع CalorieToken. تدعم المساهمات الطوعية من المجتمع وفريق المشروع مواصلة التطوير. الرصيد الحالي للمحفظة يشمل احتياطي XRPL. تقلل النفقات ورسوم المعاملات هذا الرصيد؛ وهو ليس مجموع التبرعات عبر جميع السنوات. يُحدّث تلقائيًا كل دقيقة تقريبًا أثناء فتح هذه الصفحة.",
+        "links": [
+          "donations",
+          "donationWallet"
         ]
       }
     },
@@ -787,6 +835,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "Solde actuel des dons",
+        "text": "XRP détenus dans le portefeuille de consolidation de CalorieToken. Les contributions volontaires de la communauté et de l’équipe soutiennent la poursuite du développement. Solde actuel du portefeuille, réserve XRPL comprise. Les dépenses et frais de transaction réduisent ce solde ; il ne s’agit pas du total historique des dons. Actualisation automatique environ chaque minute lorsque cette page est ouverte.",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "Écrire avec la voix",
@@ -900,6 +956,14 @@
         "links": [
           "faq",
           "exchange"
+        ]
+      },
+      "donations": {
+        "title": "অনুদানের বর্তমান ব্যালেন্স",
+        "text": "CalorieToken-এর একত্রীকরণ ওয়ালেটে থাকা XRP। কমিউনিটি ও প্রকল্প দলের স্বেচ্ছায় দেওয়া অবদান পরবর্তী উন্নয়নে সহায়তা করে। ওয়ালেটের বর্তমান ব্যালেন্সে XRPL রিজার্ভ অন্তর্ভুক্ত। খরচ ও লেনদেন ফি এই ব্যালেন্স কমায়; এটি এ পর্যন্ত পাওয়া সব অনুদানের মোট হিসাব নয়। এই পৃষ্ঠা খোলা থাকলে প্রায় প্রতি মিনিটে স্বয়ংক্রিয়ভাবে আপডেট হয়।",
+        "links": [
+          "donations",
+          "donationWallet"
         ]
       }
     },
@@ -1015,6 +1079,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "Saldo atual dos donativos",
+        "text": "XRP na carteira de consolidação do CalorieToken. As contribuições voluntárias da comunidade e da equipa apoiam o desenvolvimento contínuo. Saldo atual da carteira, incluindo a reserva XRPL. As despesas e taxas de transação reduzem este saldo; não é o total histórico dos donativos. Atualiza automaticamente cerca de uma vez por minuto enquanto esta página estiver aberta.",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "Escrever com a voz",
@@ -1129,6 +1201,14 @@
           "faq",
           "exchange"
         ]
+      },
+      "donations": {
+        "title": "Saldo donasi saat ini",
+        "text": "XRP di dompet konsolidasi CalorieToken. Kontribusi sukarela dari komunitas dan tim proyek mendukung pengembangan lebih lanjut. Saldo dompet saat ini, termasuk cadangan XRPL. Pengeluaran dan biaya transaksi mengurangi saldo ini; angka ini bukan total donasi sepanjang waktu. Diperbarui otomatis sekitar sekali per menit selama halaman ini terbuka.",
+        "links": [
+          "donations",
+          "donationWallet"
+        ]
       }
     },
     "voiceTitle": "Mengetik dengan suara",
@@ -1242,6 +1322,14 @@
         "links": [
           "faq",
           "exchange"
+        ]
+      },
+      "donations": {
+        "title": "عطیات کا موجودہ بیلنس",
+        "text": "CalorieToken کے کنسولیڈیشن والیٹ میں موجود XRP۔ کمیونٹی اور منصوبے کی ٹیم کے رضاکارانہ تعاون سے مزید ترقی میں مدد ملتی ہے۔ والیٹ کے موجودہ بیلنس میں XRPL ریزرو شامل ہے۔ اخراجات اور ٹرانزیکشن فیس سے یہ بیلنس کم ہوتا ہے؛ یہ اب تک موصول ہونے والے تمام عطیات کا مجموعہ نہیں ہے۔ یہ صفحہ کھلا ہونے پر تقریباً ہر منٹ خودکار اپ ڈیٹ ہوتا ہے۔",
+        "links": [
+          "donations",
+          "donationWallet"
         ]
       }
     },
