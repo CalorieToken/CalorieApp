@@ -320,7 +320,9 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-container {display:block!important;box-sizing:border-box!important;position:relative!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;padding:16px!important;white-space:normal!important;}
  body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice {box-sizing:border-box!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;max-width:100%!important;padding:16px!important;margin:12px 0 0!important;background:#f7f8fc!important;color:#303449!important;border:1px solid #d7daea!important;border-radius:12px!important;font:400 17px/1.5 Amiri,Georgia,serif!important;}
  body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice :is(a,button){min-height:44px!important;font-family:Amiri,Georgia,serif!important;}
- body.ctstyle-enabled .ctstyle-x-timeline:has(.cmplz-blocked-content-container .cmplz-accept-service) .calorieapp-x-help>.calorieapp-x-load {display:none!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline:has(.calorieapp-x-load:not([hidden])) a.cmplz-blocked-content-container {display:none!important;}
+ body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice a {color:#414d94!important;}
+ body.ctstyle-enabled .calorieapp-x-retry {min-height:44px;padding:10px 14px;border:1px solid #505ba9;border-radius:12px;background:#fff;color:#505ba9;font:700 18px/1.4 Amiri,Georgia,serif;cursor:pointer;}
  @media(max-width:767px){body.ctstyle-enabled .ctstyle-blog-card {width:100%!important;margin-block:0 20px!important;}}
 }
 
@@ -358,4 +360,60 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled .calorie-legacy-page nav a {display:inline-flex!important;align-items:center!important;min-height:44px!important;}
  body.ctstyle-enabled .calorie-legacy-page>div>p:last-child {font:400 16px/1.6 Amiri,Georgia,serif!important;}
  @media(max-width:767px){body.ctstyle-enabled .calorie-legacy-page {font-size:20px!important;}}
+}
+
+/* Keep the fixed shortcuts at the viewport edge on tablets as on desktops. */
+@layer ctstyle-presentation-fixes {
+ @media(min-width:768px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {right:max(16px,env(safe-area-inset-right))!important;left:auto!important;}
+ }
+}
+
+/* A single, readable help panel with an original assistant avatar. */
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher-panel {width:420px!important;max-width:calc(100vw - 24px)!important;max-height:min(720px,calc(100dvh - 100px))!important;padding:20px!important;scrollbar-gutter:stable!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-widget {margin:0!important;padding:0!important;border:0!important;font:18px/1.65 Amiri,Georgia,serif!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-header {display:flex!important;align-items:center!important;gap:12px!important;margin-bottom:10px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-header h2 {font:700 28px/1.2 Amiri,Georgia,serif!important;color:#505ba9!important;margin:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-header .ctstyle-help-avatar {width:64px!important;height:64px!important;flex:0 0 64px!important;background:none!important;padding:0!important;border-radius:0!important;object-fit:contain!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-mascot {display:block!important;flex:0 0 38px!important;width:38px!important;height:38px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-mascot .ctstyle-help-avatar {display:block!important;width:100%!important;height:100%!important;max-width:none!important;background:none!important;padding:0!important;border-radius:0!important;object-fit:contain!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-topics {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-topics button {height:100%!important;font-size:17px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-topics button[aria-pressed="true"] {background:#505ba9!important;color:#fff!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-help-widget,.ctstyle-faq-hub) h3 {font:700 21px/1.3 Amiri,Georgia,serif!important;margin:16px 0 8px!important;color:#505ba9!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-steps {padding-inline-start:24px!important;margin:12px 0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-steps li {margin-block:8px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-source-label {font-weight:700!important;margin-top:16px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-voice {margin:16px 0!important;padding:12px!important;border:1px solid #aeb4d6!important;border-radius:12px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-voice summary {cursor:pointer!important;min-height:32px!important;color:#505ba9!important;font-weight:700!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-voice p {margin:10px 0 0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-clear {min-height:44px!important;padding:8px 12px!important;margin:8px 0!important;background:#fff!important;border:1px solid #505ba9!important;border-radius:10px!important;color:#505ba9!important;font:700 17px/1.4 Amiri,Georgia,serif!important;cursor:pointer!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-updated {font:14px/1.6 Arial,sans-serif!important;color:#535667!important;margin-top:8px!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-language {margin:12px 0!important;}
+ @media(max-width:767px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher-panel {max-width:calc(100vw - 16px)!important;padding:16px!important;}
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>.ctstyle-help-mascot {width:32px!important;height:32px!important;flex-basis:32px!important;}
+ }
+}
+
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-swft-wallets,.ctstyle-swft-route) {margin:20px 0!important;padding:16px 18px!important;border:1px solid #aeb4d6!important;border-radius:16px!important;background:#ffffffbf!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-swft-wallets,.ctstyle-swft-route)>summary {min-height:44px!important;cursor:pointer!important;font-weight:700!important;color:#505ba9!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-swft-wallet-list {display:flex!important;flex-wrap:wrap!important;gap:8px!important;padding:0!important;list-style:none!important;margin:14px 0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-swft-wallet-list li {padding:6px 12px!important;border:1px solid #c4c9df!important;border-radius:999px!important;background:#f7f7fb!important;font:15px/1.5 Arial,sans-serif!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-exchange-frame {margin-block:18px!important;min-width:0!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-exchange-frame:empty {display:none!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-exchange-frame iframe {display:block!important;width:100%!important;max-width:100%!important;height:780px!important;border:1px solid #aeb4d6!important;border-radius:16px!important;background:#fff!important;}
+ @media(max-width:600px){:is(body.ctstyle-enabled,body.ctstyle-footer-only) #ctstyle-external-exchange {padding-inline:10px!important;}}
+}
+
+@layer ctstyle-presentation-fixes {
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-header h2::before {display:none!important;content:none!important;}
+}
+
+@layer ctstyle-presentation-fixes {
+ @media(max-width:600px){
+  :is(body.ctstyle-enabled,body.ctstyle-footer-only) #ctstyle-external-exchange {width:calc(100vw - 28px)!important;max-width:none!important;margin-inline:calc((100% - (100vw - 28px))/2)!important;box-sizing:border-box!important;}
+ }
 }

@@ -1,12 +1,12 @@
 {
   "en": {
-    "title": "Calorie help",
-    "intro": "Choose a topic or ask a short question.",
+    "title": "Caloriehelp",
+    "intro": "Your guide to the app, CAL routes and project history. Choose a topic or ask a short question.",
     "question": "Your question",
     "placeholder": "For example: test account or trustline",
     "ask": "Find an answer",
     "unknown": "Choose a topic below or read the FAQ and project documents.",
-    "privacy": "This help does not save questions or create tickets.",
+    "privacy": "Fixed answers from public project sources. Questions are processed on this page, then cleared; no chat history or tickets.",
     "legalTitle": "Privacy, terms & licences",
     "legalText": "Read the privacy policy, terms and source/licence notes for details. This helper does not decide individual legal or financial questions.",
     "docsTitle": "Project documents",
@@ -21,14 +21,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Open CalorieApp and search for a food by name or barcode.",
+          "Open a result, check its source and nutrition, and choose your portion.",
+          "Sign in to use your personal diary and add the portion you chose."
         ]
       },
       "test": {
         "title": "Try with test funds",
-        "text": "Create a free XRPL Testnet account below. It comes with test XRP, which has no real monetary value. Then add it to Xaman to try CalorieApp.",
+        "text": "Open CalorieApp and choose “Try with test funds”. Follow the pictured guide to create and import a separate XRPL Testnet account. Test XRP has no real monetary value.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "In Xaman, open Settings → Advanced and enable Developer mode. Return Home, open the network switch and select XRPL Testnet.",
+          "Go to Settings → Accounts → +. Tap Import an existing account. Select Full access, then Next. This lets your test account sign in and approve test actions.",
+          "Choose Family Seed in Xaman and paste the recovery code of the test account you created in CalorieApp. Compare the account addresses, then return to CalorieApp to sign in with this test account."
         ]
       },
       "trustline": {
@@ -40,9 +50,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Open the CAL/XRP order book or swap on XPMarket. Check the asset, issuer, fees and final wallet request. Trading takes place with the external service; this website does not place orders. CAL is temporarily unavailable at SWFT.",
+        "text": "Open the CAL/XRP order book or swap on XPMarket. Check the asset, issuer, fees and final wallet request. Trading takes place with the external service; this website does not place orders. CAL is temporarily delisted at SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "Choose any supported source coin and its correct network in SWFT. For example, BTC on Bitcoin; choose XRP on XRP Ledger as the destination.",
+          "Use your own XRPL receiving address. Check the live quote, limits, fees, recipient and any required destination tag before approving with the provider.",
+          "After XRP arrives, open the separate CAL/XRP market on XPMarket. Check the CAL issuer and trustline, keep XRP for reserves and fees, and review the wallet request."
         ]
       },
       "legal": {
@@ -58,9 +74,10 @@
         "title": "Project documents",
         "text": "The publications repository contains the whitepaper and detailed roadmap. Consult the relevant document for current details and disclosures.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -69,17 +86,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "Project history",
+        "text": "2021: the food-focused CalorieToken project began. Earlier Testnet and mobile prototypes explored wider ideas. The September 2026 food webapp preview focuses on food search, nutrition, portions and a personal diary. Read the dated whitepaper and roadmap archives for the original context. Past concepts are not promises of current services.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Something does not load",
+        "text": "For X posts or SWFT, open the content’s cookie options and allow that service if you want to use it. The full SWFT window keeps all provider-supported choices. If content still fails, open the provider directly; browser protection or the provider may block an embed. No need to erase all browser data. For food search, keep your query and follow the displayed retry message.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Type with your voice",
+    "voiceText": "Tap the question box, choose your keyboard language and use the keyboard’s microphone. Check the text before sending.",
+    "voiceNote": "Dictation depends on your device and language. Your keyboard provider handles speech; Caloriehelp does not record audio.",
+    "clear": "Clear answer",
+    "examplesLabel": "Quick topics",
+    "sourcesLabel": "Sources",
+    "updatedLabel": "Updated 12 September 2026"
   },
   "nl": {
-    "title": "Calorie-hulp",
-    "intro": "Kies een onderwerp of stel een korte vraag.",
+    "title": "Caloriehelp",
+    "intro": "Je gids voor de app, CAL-routes en projectgeschiedenis. Kies een onderwerp of stel een korte vraag.",
     "question": "Je vraag",
     "placeholder": "Bijvoorbeeld: testaccount of trustline",
     "ask": "Zoek een antwoord",
     "unknown": "Kies hieronder een onderwerp of lees de FAQ en projectdocumenten.",
-    "privacy": "Deze hulp slaat vragen niet op en maakt geen tickets aan.",
+    "privacy": "Vaste antwoorden uit openbare projectbronnen. Vragen worden op deze pagina verwerkt en daarna gewist; geen chatgeschiedenis of tickets.",
     "legalTitle": "Privacy, voorwaarden & licenties",
     "legalText": "Lees het privacybeleid, de voorwaarden en bron-/licentie-informatie voor details. Deze hulp beoordeelt geen persoonlijke juridische of financiële vragen.",
     "docsTitle": "Projectdocumenten",
@@ -94,14 +135,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Open CalorieApp en zoek voeding op naam of barcode.",
+          "Open een resultaat, bekijk de bron en voedingswaarden en kies je portie.",
+          "Meld je aan voor je persoonlijke dagboek en voeg de gekozen portie toe."
         ]
       },
       "test": {
         "title": "Proberen met testtegoed",
-        "text": "Maak hieronder gratis een XRPL Testnet-account aan. Je ontvangt test-XRP zonder echte geldwaarde. Voeg het account daarna toe aan Xaman om CalorieApp te proberen.",
+        "text": "Open CalorieApp en kies “Proberen met testtegoed”. Volg de handleiding met afbeeldingen om een apart XRPL Testnet-account te maken en te importeren. Test-XRP heeft geen echte geldwaarde.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Open in Xaman Settings → Advanced en zet Developer mode aan. Ga terug naar Home, open de netwerkwissel en kies XRPL Testnet.",
+          "Ga naar Settings → Accounts → +. Tik op Import an existing account. Kies Full access en daarna Next. Zo kan je testaccount aanmelden en testhandelingen goedkeuren.",
+          "Kies in Xaman Family Seed en plak de herstelcode van het testaccount dat je in CalorieApp hebt gemaakt. Vergelijk de accountadressen en ga terug naar CalorieApp om met dit testaccount aan te melden."
         ]
       },
       "trustline": {
@@ -113,9 +164,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Open het CAL/XRP-orderboek of de swap op XPMarket. Controleer de munt, uitgever, kosten en het uiteindelijke verzoek in je wallet. Je handelt bij de externe dienst; deze website plaatst geen orders. CAL is tijdelijk niet beschikbaar bij SWFT.",
+        "text": "Open het CAL/XRP-orderboek of de swap op XPMarket. Controleer de munt, uitgever, kosten en het uiteindelijke verzoek in je wallet. Je handelt bij de externe dienst; deze website plaatst geen orders. CAL is tijdelijk gedelist bij SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "Kies in SWFT een ondersteunde bronmunt en het juiste netwerk. Bijvoorbeeld BTC op Bitcoin; kies als bestemming XRP op XRP Ledger.",
+          "Gebruik je eigen XRPL-ontvangstadres. Controleer de actuele offerte, limieten, kosten, ontvanger en een eventueel vereiste destination tag vóór je bij de aanbieder goedkeurt.",
+          "Open nadat XRP is aangekomen de aparte CAL/XRP-markt op XPMarket. Controleer de CAL-uitgever en trustline, houd XRP over voor reserves en kosten en beoordeel het walletverzoek."
         ]
       },
       "legal": {
@@ -128,12 +185,13 @@
         ]
       },
       "docs": {
-        "title": "Projectdocumenten",
+        "title": "Documenten",
         "text": "De publicatierepository bevat de whitepaper en de uitgebreide roadmap. Raadpleeg het betreffende document voor actuele details en toelichtingen.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -142,17 +200,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "Geschiedenis",
+        "text": "2021: het op voeding gerichte CalorieToken-project begon. Vroege Testnet- en mobiele prototypes verkenden bredere ideeën. De webapp-preview van september 2026 richt zich op voeding zoeken, voedingswaarden, porties en een persoonlijk dagboek. De gedateerde whitepaper- en roadmaparchieven bewaren de oorspronkelijke context. Oude concepten zijn geen beloften over huidige diensten.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Iets laadt niet",
+        "text": "Open bij X-berichten of SWFT de cookieopties van dat onderdeel en sta de dienst toe als je deze wilt gebruiken. Het volledige SWFT-venster behoudt alle keuzes die de aanbieder ondersteunt. Werkt het nog niet, open dan de aanbieder rechtstreeks; browserbescherming of de aanbieder kan een embed blokkeren. Je hoeft niet alle browsergegevens te wissen. Volg bij voeding zoeken de getoonde melding om opnieuw te proberen.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Typen met je stem",
+    "voiceText": "Tik op het vraagveld, kies je toetsenbordtaal en gebruik de microfoon van je toetsenbord. Controleer de tekst vóór je deze verstuurt.",
+    "voiceNote": "Dicteren hangt af van je apparaat en taal. Je toetsenbordaanbieder verwerkt de spraak; Caloriehelp neemt geen geluid op.",
+    "clear": "Antwoord wissen",
+    "examplesLabel": "Snelle onderwerpen",
+    "sourcesLabel": "Bronnen",
+    "updatedLabel": "Bijgewerkt op 12 september 2026"
   },
   "zh-Hans": {
-    "title": "Calorie 帮助",
-    "intro": "选择主题或提出简短问题。",
+    "title": "Caloriehelp",
+    "intro": "了解应用、CAL 兑换路径和项目历史。选择主题或输入简短问题。",
     "question": "你的问题",
     "placeholder": "例如：测试账户或信任线",
     "ask": "查找答案",
     "unknown": "请在下方选择主题，或阅读常见问题和项目文档。",
-    "privacy": "此帮助不保存问题，也不创建工单。",
+    "privacy": "根据公开项目资料提供固定回答。问题仅在本页处理后清除，不保存聊天记录，也不创建工单。",
     "legalTitle": "隐私、条款和许可",
     "legalText": "详情请阅读隐私政策、条款及来源和许可说明。此帮助不判断个人法律或财务问题。",
     "docsTitle": "项目文档",
@@ -167,14 +249,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "打开 CalorieApp，通过名称或条形码搜索食品。",
+          "打开结果，查看来源和营养信息，然后选择份量。",
+          "登录使用个人饮食日记，并添加所选份量。"
         ]
       },
       "test": {
         "title": "使用测试资金体验",
-        "text": "在下方免费创建 XRPL Testnet 账户，获得无真实货币价值的测试 XRP。然后将账户添加到 Xaman，体验 CalorieApp。",
+        "text": "打开 CalorieApp，选择使用测试资金。按照图文指南创建并导入独立的 XRPL Testnet 账户。测试 XRP 没有真实货币价值。",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "在 Xaman 中打开 Settings → Advanced，启用 Developer mode。返回 Home，打开网络切换并选择 XRPL Testnet。",
+          "进入 Settings → Accounts → +。点击 Import an existing account。 选择 Full access，然后点击 Next。这样测试账户就能登录并批准测试操作。",
+          "在 Xaman 中选择 Family Seed，粘贴你在 CalorieApp 创建的测试账户恢复码。核对账户地址，然后返回 CalorieApp 使用此测试账户登录。"
         ]
       },
       "trustline": {
@@ -186,9 +278,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "在 XPMarket 打开 CAL/XRP 订单簿或兑换。核对资产、发行方、费用和最终钱包请求。交易通过外部服务进行；本网站不会下单。 SWFT 暂不支持 CAL。",
+        "text": "在 XPMarket 打开 CAL/XRP 订单簿或兑换。核对资产、发行方、费用和最终钱包请求。交易通过外部服务进行；本网站不会下单。 CAL 暂时从 SWFT 下架",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "在 SWFT 中选择受支持的来源币种及正确网络，例如 Bitcoin 上的 BTC；目标选择 XRP Ledger 上的 XRP。",
+          "使用自己的 XRPL 收款地址。向提供商确认前，检查实时报价、限额、费用、收款人及可能需要的 destination tag。",
+          "XRP 到账后，打开 XPMarket 上独立的 CAL/XRP 市场。检查 CAL 发行方和信任线，预留 XRP 储备及费用，并核对钱包请求。"
         ]
       },
       "legal": {
@@ -204,9 +302,10 @@
         "title": "项目文档",
         "text": "发布库包含白皮书和详细路线图。最新详情及披露请参阅相应文档。",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -215,17 +314,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "项目历史",
+        "text": "2021 年，以食品为主题的 CalorieToken 项目启动。早期 Testnet 和移动端原型探索了更广泛的想法。2026 年 9 月的食品网页应用预览侧重食品搜索、营养、份量和个人饮食日记。带日期的白皮书和路线图存档保留原始背景。过去的概念不代表当前服务承诺。",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "内容无法加载",
+        "text": "对于 X 帖子或 SWFT，打开该内容的 Cookie 选项，如需使用则允许对应服务。完整 SWFT 窗口保留提供商支持的所有选项。仍无法加载时可直接打开提供商；浏览器保护或提供商可能阻止嵌入。无需清除所有浏览器数据。食品搜索请按屏幕提示重试。",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "语音输入",
+    "voiceText": "点按问题框，选择键盘语言并使用键盘上的麦克风。发送前检查文字。",
+    "voiceNote": "听写支持取决于设备和语言。语音由键盘提供商处理；Caloriehelp 不录音。",
+    "clear": "清除回答",
+    "examplesLabel": "快捷主题",
+    "sourcesLabel": "来源",
+    "updatedLabel": "更新于 2026 年 9 月 12 日"
   },
   "hi": {
-    "title": "Calorie सहायता",
-    "intro": "विषय चुनें या छोटा सवाल पूछें।",
+    "title": "Caloriehelp",
+    "intro": "ऐप, CAL के विकल्पों और परियोजना के इतिहास की जानकारी। विषय चुनें या छोटा सवाल पूछें।",
     "question": "आपका सवाल",
     "placeholder": "जैसे: टेस्ट खाता या ट्रस्टलाइन",
     "ask": "उत्तर खोजें",
     "unknown": "नीचे विषय चुनें या FAQ और परियोजना दस्तावेज़ पढ़ें।",
-    "privacy": "यह सहायता सवाल सहेजती या टिकट नहीं बनाती।",
+    "privacy": "सार्वजनिक परियोजना स्रोतों से तय जवाब। सवाल इसी पेज पर संसाधित होकर मिट जाते हैं; चैट इतिहास या टिकट नहीं बनते।",
     "legalTitle": "गोपनीयता, शर्तें और लाइसेंस",
     "legalText": "विवरण के लिए गोपनीयता नीति, शर्तें और स्रोत/लाइसेंस नोट पढ़ें। यह सहायता व्यक्तिगत कानूनी या वित्तीय सवालों का निर्णय नहीं करती।",
     "docsTitle": "परियोजना दस्तावेज़",
@@ -240,14 +363,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "CalorieApp में नाम या बारकोड से भोजन खोजें।",
+          "परिणाम खोलें, स्रोत और पोषण देखें, फिर मात्रा चुनें।",
+          "निजी डायरी के लिए साइन इन करें और चुनी मात्रा जोड़ें।"
         ]
       },
       "test": {
         "title": "टेस्ट निधि से आज़माएँ",
-        "text": "नीचे मुफ्त XRPL Testnet खाता बनाएँ। उसमें मिलने वाले टेस्ट XRP का वास्तविक मौद्रिक मूल्य नहीं है। फिर उसे Xaman में जोड़कर CalorieApp आज़माएँ।",
+        "text": "CalorieApp खोलें और परीक्षण राशि वाला विकल्प चुनें। चित्रों वाली मार्गदर्शिका से अलग XRPL Testnet खाता बनाएँ और आयात करें। टेस्ट XRP का वास्तविक मौद्रिक मूल्य नहीं है।",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Xaman में Settings → Advanced खोलकर Developer mode चालू करें। Home पर लौटें, नेटवर्क स्विच खोलें और XRPL Testnet चुनें।",
+          "Settings → Accounts → + पर जाएँ। Import an existing account पर टैप करें। Full access चुनें, फिर Next। इससे टेस्ट खाता साइन इन और टेस्ट कार्रवाइयाँ मंज़ूर कर सकता है।",
+          "Xaman में Family Seed चुनें और CalorieApp में बनाए टेस्ट खाते का रिकवरी कोड चिपकाएँ। खाते के पते मिलाएँ, फिर इस टेस्ट खाते से साइन इन करने के लिए CalorieApp पर लौटें।"
         ]
       },
       "trustline": {
@@ -259,9 +392,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "XPMarket पर CAL/XRP ऑर्डर बुक या स्वैप खोलें। एसेट, जारीकर्ता, शुल्क और वॉलेट में अंतिम अनुरोध जाँचें। ट्रेड बाहरी सेवा पर होता है; यह वेबसाइट ऑर्डर नहीं देती। SWFT पर CAL अस्थायी रूप से उपलब्ध नहीं है।",
+        "text": "XPMarket पर CAL/XRP ऑर्डर बुक या स्वैप खोलें। एसेट, जारीकर्ता, शुल्क और वॉलेट में अंतिम अनुरोध जाँचें। ट्रेड बाहरी सेवा पर होता है; यह वेबसाइट ऑर्डर नहीं देती। SWFT पर CAL अस्थायी रूप से डीलिस्ट है",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "SWFT में समर्थित स्रोत सिक्का और सही नेटवर्क चुनें। जैसे Bitcoin पर BTC; गंतव्य के लिए XRP Ledger पर XRP चुनें।",
+          "अपना XRPL प्राप्ति पता उपयोग करें। प्रदाता के पास मंज़ूरी से पहले वर्तमान भाव, सीमाएँ, शुल्क, प्राप्तकर्ता और आवश्यक destination tag जाँचें।",
+          "XRP आने के बाद XPMarket का अलग CAL/XRP बाज़ार खोलें। CAL जारीकर्ता और ट्रस्टलाइन जाँचें, रिज़र्व व शुल्क के लिए XRP बचाएँ और वॉलेट अनुरोध पढ़ें।"
         ]
       },
       "legal": {
@@ -277,9 +416,10 @@
         "title": "परियोजना दस्तावेज़",
         "text": "प्रकाशन रिपॉज़िटरी में व्हाइटपेपर और विस्तृत रोडमैप है। वर्तमान विवरण और खुलासे संबंधित दस्तावेज़ में देखें।",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -288,17 +428,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "परियोजना का इतिहास",
+        "text": "2021 में भोजन-केंद्रित CalorieToken परियोजना शुरू हुई। शुरुआती Testnet और मोबाइल प्रोटोटाइप ने व्यापक विचारों को परखा। सितंबर 2026 का वेबऐप पूर्वावलोकन भोजन खोज, पोषण, मात्रा और निजी डायरी पर केंद्रित है। पुराने संदर्भ के लिए दिनांकित श्वेतपत्र और रोडमैप संग्रह पढ़ें। पुराने विचार वर्तमान सेवाओं का वादा नहीं हैं।",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "कुछ लोड नहीं हो रहा",
+        "text": "X पोस्ट या SWFT के लिए उस सामग्री की कुकी सेटिंग खोलें और उपयोग करना चाहें तो उस सेवा को अनुमति दें। पूरे SWFT विंडो में प्रदाता के सभी समर्थित विकल्प रहते हैं। फिर भी न खुले तो प्रदाता की साइट सीधे खोलें; ब्राउज़र सुरक्षा या प्रदाता एम्बेड रोक सकता है। सारा ब्राउज़र डेटा मिटाना ज़रूरी नहीं। भोजन खोज के लिए स्क्रीन पर दोबारा कोशिश करने का संदेश देखें।",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "बोलकर लिखें",
+    "voiceText": "सवाल वाले बॉक्स पर टैप करें, कीबोर्ड की भाषा चुनें और उसके माइक्रोफ़ोन का उपयोग करें। भेजने से पहले टेक्स्ट जाँचें।",
+    "voiceNote": "डिक्टेशन की उपलब्धता डिवाइस और भाषा पर निर्भर है। आवाज़ कीबोर्ड प्रदाता संसाधित करता है; Caloriehelp ऑडियो रिकॉर्ड नहीं करता।",
+    "clear": "जवाब मिटाएँ",
+    "examplesLabel": "त्वरित विषय",
+    "sourcesLabel": "स्रोत",
+    "updatedLabel": "12 सितंबर 2026 को अपडेट किया गया"
   },
   "es": {
-    "title": "Ayuda de Calorie",
-    "intro": "Elige un tema o haz una pregunta breve.",
+    "title": "Caloriehelp",
+    "intro": "Tu guía de la app, las rutas de CAL y la historia del proyecto. Elige un tema o haz una pregunta breve.",
     "question": "Tu pregunta",
     "placeholder": "Por ejemplo: cuenta de prueba o trustline",
     "ask": "Buscar una respuesta",
     "unknown": "Elige un tema o lee las preguntas frecuentes y los documentos.",
-    "privacy": "Esta ayuda no guarda preguntas ni crea tickets.",
+    "privacy": "Respuestas fijas basadas en fuentes públicas del proyecto. Las preguntas se procesan en esta página y se borran; sin historial de chat ni tickets.",
     "legalTitle": "Privacidad, condiciones y licencias",
     "legalText": "Lee la política de privacidad, las condiciones y las notas de fuentes y licencias. Esta ayuda no decide cuestiones jurídicas o financieras personales.",
     "docsTitle": "Documentos del proyecto",
@@ -313,14 +477,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Busca un alimento por nombre o código de barras en CalorieApp.",
+          "Abre un resultado, revisa la fuente y la nutrición y elige una porción.",
+          "Inicia sesión para usar el diario personal y añadir la porción elegida."
         ]
       },
       "test": {
         "title": "Probar con fondos de prueba",
-        "text": "Crea gratis una cuenta XRPL Testnet a continuación. Recibirás XRP de prueba sin valor monetario real. Añade la cuenta a Xaman para probar CalorieApp.",
+        "text": "Abre CalorieApp y elige probar con fondos de prueba. Sigue la guía con imágenes para crear e importar una cuenta separada de XRPL Testnet. El XRP de prueba no tiene valor monetario real.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "En Xaman, abre Settings → Advanced y activa Developer mode. Vuelve a Home, abre el selector de red y elige XRPL Testnet.",
+          "Ve a Settings → Accounts → +. Pulsa Import an existing account. Selecciona Full access y después Next. Así la cuenta de prueba puede iniciar sesión y aprobar acciones de prueba.",
+          "Elige Family Seed en Xaman y pega el código de recuperación de la cuenta de prueba creada en CalorieApp. Compara las direcciones y vuelve a CalorieApp para iniciar sesión con esa cuenta."
         ]
       },
       "trustline": {
@@ -332,9 +506,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Abre el libro de órdenes o el intercambio CAL/XRP en XPMarket. Revisa el activo, emisor, comisiones y la solicitud final en tu cartera. Operas con el servicio externo; esta web no envía órdenes. CAL no está disponible temporalmente en SWFT.",
+        "text": "Abre el libro de órdenes o el intercambio CAL/XRP en XPMarket. Revisa el activo, emisor, comisiones y la solicitud final en tu cartera. Operas con el servicio externo; esta web no envía órdenes. CAL está temporalmente retirado de SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "Elige en SWFT una moneda de origen admitida y su red correcta. Por ejemplo, BTC en Bitcoin; selecciona XRP en XRP Ledger como destino.",
+          "Usa tu propia dirección de recepción XRPL. Revisa la cotización, los límites, las comisiones, el destinatario y cualquier destination tag necesario antes de aprobar con el proveedor.",
+          "Cuando llegue XRP, abre el mercado CAL/XRP independiente de XPMarket. Verifica el emisor y la trustline de CAL, reserva XRP para reservas y comisiones y revisa la solicitud de la cartera."
         ]
       },
       "legal": {
@@ -350,9 +530,10 @@
         "title": "Documentos del proyecto",
         "text": "El repositorio contiene el whitepaper y la hoja de ruta detallada. Consulta el documento correspondiente para detalles y declaraciones actuales.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -361,17 +542,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "Historia del proyecto",
+        "text": "2021: comenzó el proyecto CalorieToken centrado en la alimentación. Los primeros prototipos móviles y de Testnet exploraron ideas más amplias. La vista previa de septiembre de 2026 se centra en buscar alimentos, nutrición, porciones y un diario personal. Los archivos fechados del whitepaper y la hoja de ruta conservan el contexto original. Las ideas pasadas no prometen servicios actuales.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Algo no carga",
+        "text": "Para X o SWFT, abre las opciones de cookies del contenido y permite ese servicio si quieres usarlo. La ventana completa de SWFT conserva todas las opciones admitidas. Si falla, abre el proveedor directamente; el navegador o el proveedor pueden bloquear la inserción. No hace falta borrar todos los datos del navegador. En la búsqueda de alimentos, sigue el mensaje para reintentar.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Escribe con tu voz",
+    "voiceText": "Toca el campo de pregunta, elige el idioma del teclado y usa su micrófono. Revisa el texto antes de enviarlo.",
+    "voiceNote": "El dictado depende del dispositivo y el idioma. El proveedor del teclado procesa la voz; Caloriehelp no graba audio.",
+    "clear": "Borrar respuesta",
+    "examplesLabel": "Temas rápidos",
+    "sourcesLabel": "Fuentes",
+    "updatedLabel": "Actualizado el 12 de septiembre de 2026"
   },
   "ar": {
-    "title": "مساعدة Calorie",
-    "intro": "اختر موضوعًا أو اطرح سؤالًا قصيرًا.",
+    "title": "Caloriehelp",
+    "intro": "دليلك إلى التطبيق ومسارات CAL وتاريخ المشروع. اختر موضوعًا أو اطرح سؤالًا قصيرًا.",
     "question": "سؤالك",
     "placeholder": "مثلًا: حساب اختبار أو خط ثقة",
     "ask": "ابحث عن إجابة",
     "unknown": "اختر موضوعًا أدناه أو اقرأ الأسئلة الشائعة ووثائق المشروع.",
-    "privacy": "هذه المساعدة لا تحفظ الأسئلة ولا تنشئ تذاكر دعم.",
+    "privacy": "إجابات ثابتة من مصادر المشروع العامة. تُعالج الأسئلة في هذه الصفحة ثم تُمسح؛ لا سجل محادثة ولا تذاكر دعم.",
     "legalTitle": "الخصوصية والشروط والتراخيص",
     "legalText": "اقرأ سياسة الخصوصية والشروط وملاحظات المصادر والتراخيص للتفاصيل. هذه المساعدة لا تفصل في أسئلة قانونية أو مالية شخصية.",
     "docsTitle": "وثائق المشروع",
@@ -386,14 +591,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "ابحث عن الطعام بالاسم أو الرمز الشريطي في CalorieApp.",
+          "افتح النتيجة وراجع المصدر والتغذية واختر الحصة.",
+          "سجّل الدخول لاستخدام يومياتك الشخصية وإضافة الحصة المختارة."
         ]
       },
       "test": {
         "title": "التجربة بأموال اختبار",
-        "text": "أنشئ حساب XRPL Testnet مجانيًا أدناه. ستحصل على XRP تجريبي بلا قيمة مالية حقيقية. أضف الحساب إلى Xaman لتجربة CalorieApp.",
+        "text": "افتح CalorieApp واختر التجربة بأموال الاختبار. اتبع الدليل المصوّر لإنشاء حساب XRPL Testnet منفصل واستيراده. ليس لـ XRP التجريبي قيمة مالية حقيقية.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "في Xaman، افتح Settings → Advanced وفعّل Developer mode. عُد إلى Home، وافتح تبديل الشبكة واختر XRPL Testnet.",
+          "انتقل إلى Settings → Accounts → +. اضغط Import an existing account. اختر Full access ثم Next. يتيح ذلك للحساب التجريبي تسجيل الدخول والموافقة على إجراءات الاختبار.",
+          "اختر Family Seed في Xaman والصق رمز استرداد حساب الاختبار الذي أنشأته في CalorieApp. قارن عنوانَي الحساب ثم عد إلى CalorieApp لتسجيل الدخول بحساب الاختبار."
         ]
       },
       "trustline": {
@@ -405,9 +620,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "افتح دفتر أوامر CAL/XRP أو المبادلة على XPMarket. تحقق من الأصل والجهة المصدرة والرسوم والطلب النهائي في محفظتك. يتم التداول عبر الخدمة الخارجية؛ لا يرسل هذا الموقع أوامر تداول. CAL غير متاح مؤقتًا لدى SWFT.",
+        "text": "افتح دفتر أوامر CAL/XRP أو المبادلة على XPMarket. تحقق من الأصل والجهة المصدرة والرسوم والطلب النهائي في محفظتك. يتم التداول عبر الخدمة الخارجية؛ لا يرسل هذا الموقع أوامر تداول. CAL مشطوب مؤقتًا من SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "اختر عملة مصدر مدعومة وشبكتها الصحيحة في SWFT. مثل BTC على Bitcoin؛ واختر XRP على XRP Ledger كوجهة.",
+          "استخدم عنوان الاستلام الخاص بك على XRPL. راجع السعر الحالي والحدود والرسوم والمستلم وأي destination tag مطلوب قبل الموافقة لدى المزوّد.",
+          "بعد وصول XRP، افتح سوق CAL/XRP المنفصل لدى XPMarket. تحقق من مُصدر CAL وخط الثقة واحتفظ بـXRP للاحتياطي والرسوم وراجع طلب المحفظة."
         ]
       },
       "legal": {
@@ -423,9 +644,10 @@
         "title": "وثائق المشروع",
         "text": "يضم مستودع المنشورات الورقة البيضاء وخارطة الطريق المفصلة. راجع الوثيقة المعنية للتفاصيل والإفصاحات الحالية.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -434,17 +656,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "تاريخ المشروع",
+        "text": "بدأ مشروع CalorieToken المهتم بالغذاء في 2021. استكشفت النماذج المبكرة للهاتف وTestnet أفكارًا أوسع. تركز معاينة تطبيق الويب في سبتمبر 2026 على البحث عن الطعام والتغذية والحصص واليوميات الشخصية. تحفظ أرشيفات الورقة البيضاء وخارطة الطريق المؤرخة السياق الأصلي. الأفكار السابقة ليست وعودًا بخدمات حالية.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "محتوى لا يُحمّل",
+        "text": "لمنشورات X أو SWFT، افتح خيارات ملفات الارتباط الخاصة بالمحتوى واسمح بالخدمة إذا أردت استخدامها. تحتفظ نافذة SWFT الكاملة بكل خيارات المزوّد المدعومة. إن لم تعمل، افتح المزوّد مباشرة؛ قد تمنع حماية المتصفح أو المزوّد التضمين. لا داعي لمسح جميع بيانات المتصفح. في بحث الطعام اتبع رسالة إعادة المحاولة المعروضة.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "الكتابة بالصوت",
+    "voiceText": "اضغط على حقل السؤال واختر لغة لوحة المفاتيح ثم استخدم ميكروفونها. راجع النص قبل إرساله.",
+    "voiceNote": "يعتمد الإملاء على الجهاز واللغة. يعالج مزوّد لوحة المفاتيح الصوت؛ لا يسجل Caloriehelp الصوت.",
+    "clear": "مسح الإجابة",
+    "examplesLabel": "مواضيع سريعة",
+    "sourcesLabel": "المصادر",
+    "updatedLabel": "تم التحديث في 12 سبتمبر 2026"
   },
   "fr": {
-    "title": "Aide Calorie",
-    "intro": "Choisissez un sujet ou posez une courte question.",
+    "title": "Caloriehelp",
+    "intro": "Votre guide de l’application, des parcours CAL et de l’histoire du projet. Choisissez un sujet ou posez une question courte.",
     "question": "Votre question",
     "placeholder": "Par exemple : compte de test ou trustline",
     "ask": "Trouver une réponse",
     "unknown": "Choisissez un sujet ou consultez la FAQ et les documents du projet.",
-    "privacy": "Cette aide ne conserve pas les questions et ne crée pas de tickets.",
+    "privacy": "Réponses fixes issues de sources publiques du projet. Les questions sont traitées sur cette page puis effacées ; aucun historique de discussion ni ticket.",
     "legalTitle": "Confidentialité, conditions et licences",
     "legalText": "Lisez la politique de confidentialité, les conditions et les notes de sources et licences. Cette aide ne tranche pas les questions juridiques ou financières personnelles.",
     "docsTitle": "Documents du projet",
@@ -459,14 +705,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Recherchez un aliment par nom ou code-barres dans CalorieApp.",
+          "Ouvrez un résultat, vérifiez la source et les valeurs nutritionnelles puis choisissez une portion.",
+          "Connectez-vous pour utiliser votre journal personnel et ajouter la portion choisie."
         ]
       },
       "test": {
         "title": "Essayer avec des fonds de test",
-        "text": "Créez gratuitement un compte XRPL Testnet ci-dessous. Il reçoit des XRP de test sans valeur monétaire réelle. Ajoutez-le ensuite à Xaman pour essayer CalorieApp.",
+        "text": "Ouvrez CalorieApp et choisissez les fonds de test. Suivez le guide illustré pour créer et importer un compte XRPL Testnet séparé. Le XRP de test n’a aucune valeur monétaire réelle.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Dans Xaman, ouvrez Settings → Advanced et activez Developer mode. Revenez à Home, ouvrez le sélecteur de réseau et choisissez XRPL Testnet.",
+          "Allez dans Settings → Accounts → +. Touchez Import an existing account. Choisissez Full access, puis Next. Le compte de test pourra ainsi se connecter et approuver des actions de test.",
+          "Choisissez Family Seed dans Xaman et collez le code de récupération du compte de test créé dans CalorieApp. Comparez les adresses puis revenez dans CalorieApp pour vous connecter avec ce compte."
         ]
       },
       "trustline": {
@@ -478,9 +734,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Ouvrez le carnet d’ordres ou l’échange CAL/XRP sur XPMarket. Vérifiez l’actif, l’émetteur, les frais et la demande finale dans votre portefeuille. La transaction passe par le service externe ; ce site ne transmet pas d’ordres. CAL est temporairement indisponible sur SWFT.",
+        "text": "Ouvrez le carnet d’ordres ou l’échange CAL/XRP sur XPMarket. Vérifiez l’actif, l’émetteur, les frais et la demande finale dans votre portefeuille. La transaction passe par le service externe ; ce site ne transmet pas d’ordres. CAL est temporairement retiré de SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "Dans SWFT, choisissez une monnaie source compatible et son bon réseau. Par exemple BTC sur Bitcoin ; choisissez XRP sur XRP Ledger comme destination.",
+          "Utilisez votre propre adresse de réception XRPL. Vérifiez le devis, les limites, les frais, le destinataire et tout destination tag requis avant d’approuver chez le fournisseur.",
+          "Une fois XRP reçu, ouvrez le marché CAL/XRP distinct de XPMarket. Vérifiez l’émetteur et la trustline CAL, gardez des XRP pour les réserves et frais, puis contrôlez la demande du portefeuille."
         ]
       },
       "legal": {
@@ -496,9 +758,10 @@
         "title": "Documents du projet",
         "text": "Le dépôt contient le livre blanc et la feuille de route détaillée. Consultez le document concerné pour les détails et déclarations actuels.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -507,17 +770,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "Histoire du projet",
+        "text": "2021 : début du projet CalorieToken consacré à l’alimentation. Les premiers prototypes mobiles et Testnet exploraient des idées plus larges. L’aperçu de septembre 2026 se concentre sur la recherche alimentaire, la nutrition, les portions et le journal personnel. Les archives datées du livre blanc et de la feuille de route préservent le contexte. Les anciens concepts ne promettent pas de services actuels.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Un contenu ne charge pas",
+        "text": "Pour X ou SWFT, ouvrez les options de cookies du contenu et autorisez ce service si vous souhaitez l’utiliser. La fenêtre complète de SWFT conserve tous les choix pris en charge. En cas d’échec, ouvrez directement le fournisseur : le navigateur ou le fournisseur peut bloquer l’intégration. Inutile d’effacer toutes les données du navigateur. Pour les aliments, suivez le message de nouvelle tentative.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Écrire avec la voix",
+    "voiceText": "Touchez le champ de question, choisissez la langue du clavier et utilisez son microphone. Vérifiez le texte avant de l’envoyer.",
+    "voiceNote": "La dictée dépend de l’appareil et de la langue. Le fournisseur du clavier traite la voix ; Caloriehelp n’enregistre pas de son.",
+    "clear": "Effacer la réponse",
+    "examplesLabel": "Sujets rapides",
+    "sourcesLabel": "Sources",
+    "updatedLabel": "Mis à jour le 12 septembre 2026"
   },
   "bn": {
-    "title": "Calorie সহায়তা",
-    "intro": "একটি বিষয় বেছে নিন বা ছোট প্রশ্ন করুন।",
+    "title": "Caloriehelp",
+    "intro": "অ্যাপ, CAL-এর পথ এবং প্রকল্পের ইতিহাসের নির্দেশিকা। একটি বিষয় বেছে নিন বা ছোট প্রশ্ন করুন।",
     "question": "আপনার প্রশ্ন",
     "placeholder": "যেমন: পরীক্ষার অ্যাকাউন্ট বা ট্রাস্টলাইন",
     "ask": "উত্তর খুঁজুন",
     "unknown": "নিচে বিষয় বেছে নিন বা FAQ ও প্রকল্পের নথি পড়ুন।",
-    "privacy": "এই সহায়তা প্রশ্ন জমা রাখে না বা টিকিট তৈরি করে না।",
+    "privacy": "প্রকল্পের প্রকাশ্য উৎস থেকে নির্দিষ্ট উত্তর। প্রশ্ন এই পৃষ্ঠায় প্রক্রিয়া করে মুছে ফেলা হয়; চ্যাটের ইতিহাস বা টিকিট তৈরি হয় না।",
     "legalTitle": "গোপনীয়তা, শর্ত ও লাইসেন্স",
     "legalText": "বিস্তারিত জানতে গোপনীয়তা নীতি, শর্ত ও উৎস/লাইসেন্সের নোট পড়ুন। এই সহায়তা ব্যক্তিগত আইনি বা আর্থিক প্রশ্নের সিদ্ধান্ত দেয় না।",
     "docsTitle": "প্রকল্পের নথি",
@@ -532,14 +819,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "CalorieApp-এ নাম বা বারকোড দিয়ে খাবার খুঁজুন।",
+          "ফলাফল খুলে উৎস ও পুষ্টি দেখুন এবং পরিমাণ বেছে নিন।",
+          "ব্যক্তিগত ডায়েরি ব্যবহার করতে সাইন ইন করুন এবং বেছে নেওয়া পরিমাণ যোগ করুন।"
         ]
       },
       "test": {
         "title": "টেস্ট তহবিল দিয়ে চেষ্টা করুন",
-        "text": "নিচে বিনামূল্যে XRPL Testnet অ্যাকাউন্ট তৈরি করুন। এতে বাস্তব আর্থিক মূল্যহীন টেস্ট XRP পাওয়া যাবে। তারপর CalorieApp চেষ্টা করতে অ্যাকাউন্টটি Xaman-এ যোগ করুন।",
+        "text": "CalorieApp খুলে পরীক্ষামূলক অর্থের বিকল্প বেছে নিন। ছবিসহ নির্দেশিকা অনুসরণ করে আলাদা XRPL Testnet অ্যাকাউন্ট তৈরি ও আমদানি করুন। পরীক্ষামূলক XRP-এর বাস্তব আর্থিক মূল্য নেই।",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Xaman-এ Settings → Advanced খুলে Developer mode চালু করুন। Home-এ ফিরুন, নেটওয়ার্ক পরিবর্তন খুলে XRPL Testnet বেছে নিন।",
+          "Settings → Accounts → + এ যান। Import an existing account-এ চাপুন। Full access, তারপর Next বেছে নিন। এতে টেস্ট অ্যাকাউন্ট সাইন ইন ও টেস্ট কাজ অনুমোদন করতে পারবে।",
+          "Xaman-এ Family Seed বেছে নিয়ে CalorieApp-এ তৈরি পরীক্ষামূলক অ্যাকাউন্টের রিকভারি কোড পেস্ট করুন। অ্যাকাউন্টের ঠিকানা মিলিয়ে সেই অ্যাকাউন্ট দিয়ে সাইন ইন করতে CalorieApp-এ ফিরুন।"
         ]
       },
       "trustline": {
@@ -551,9 +848,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "XPMarket-এ CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন। সম্পদ, ইস্যুকারী, ফি ও ওয়ালেটের চূড়ান্ত অনুরোধ যাচাই করুন। লেনদেন বাইরের পরিষেবায় হয়; এই ওয়েবসাইট অর্ডার দেয় না। SWFT-এ CAL সাময়িকভাবে অনুপলব্ধ।",
+        "text": "XPMarket-এ CAL/XRP অর্ডার বুক বা সোয়াপ খুলুন। সম্পদ, ইস্যুকারী, ফি ও ওয়ালেটের চূড়ান্ত অনুরোধ যাচাই করুন। লেনদেন বাইরের পরিষেবায় হয়; এই ওয়েবসাইট অর্ডার দেয় না। SWFT থেকে CAL সাময়িকভাবে তালিকাচ্যুত",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "SWFT-তে সমর্থিত উৎস মুদ্রা ও সঠিক নেটওয়ার্ক বেছে নিন। যেমন Bitcoin-এ BTC; গন্তব্য হিসেবে XRP Ledger-এ XRP বেছে নিন।",
+          "নিজের XRPL গ্রহণের ঠিকানা ব্যবহার করুন। প্রদানকারীর কাছে অনুমোদনের আগে বর্তমান মূল্য, সীমা, ফি, প্রাপক ও প্রয়োজনীয় destination tag পরীক্ষা করুন।",
+          "XRP এলে XPMarket-এর আলাদা CAL/XRP বাজার খুলুন। CAL ইস্যুকারী ও ট্রাস্টলাইন পরীক্ষা করুন, রিজার্ভ ও ফির জন্য XRP রাখুন এবং ওয়ালেটের অনুরোধ দেখুন।"
         ]
       },
       "legal": {
@@ -569,9 +872,10 @@
         "title": "প্রকল্পের নথি",
         "text": "প্রকাশনা রিপোজিটরিতে হোয়াইটপেপার ও বিস্তারিত রোডম্যাপ আছে। বর্তমান তথ্য ও প্রকাশের জন্য সংশ্লিষ্ট নথি পড়ুন।",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -580,17 +884,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "প্রকল্পের ইতিহাস",
+        "text": "২০২১ সালে খাদ্যকেন্দ্রিক CalorieToken প্রকল্প শুরু হয়। প্রাথমিক Testnet ও মোবাইল প্রোটোটাইপে আরও বিস্তৃত ধারণা পরীক্ষা করা হয়েছিল। সেপ্টেম্বর ২০২৬-এর ওয়েবঅ্যাপ প্রিভিউ খাদ্য অনুসন্ধান, পুষ্টি, পরিমাণ ও ব্যক্তিগত ডায়েরিতে কেন্দ্রীভূত। তারিখসহ হোয়াইটপেপার ও রোডম্যাপের আর্কাইভে মূল প্রসঙ্গ আছে। পুরোনো ধারণা বর্তমান সেবার প্রতিশ্রুতি নয়।",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "কিছু লোড হচ্ছে না",
+        "text": "X পোস্ট বা SWFT-এর জন্য বিষয়বস্তুর কুকি বিকল্প খুলে ব্যবহার করতে চাইলে সেই সেবার অনুমতি দিন। সম্পূর্ণ SWFT উইন্ডোতে প্রদানকারীর সমর্থিত সব বিকল্প থাকে। তবুও না খুললে প্রদানকারীর সাইট সরাসরি খুলুন; ব্রাউজার সুরক্ষা বা প্রদানকারী এমবেড আটকাতে পারে। সব ব্রাউজার ডেটা মুছতে হবে না। খাদ্য অনুসন্ধানে পুনরায় চেষ্টার বার্তা অনুসরণ করুন।",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "কথা বলে লিখুন",
+    "voiceText": "প্রশ্নের ঘরে ট্যাপ করুন, কীবোর্ডের ভাষা বেছে নিন এবং তার মাইক্রোফোন ব্যবহার করুন। পাঠানোর আগে লেখা পরীক্ষা করুন।",
+    "voiceNote": "ডিকটেশন ডিভাইস ও ভাষার ওপর নির্ভর করে। কীবোর্ড প্রদানকারী কণ্ঠ প্রক্রিয়া করে; Caloriehelp অডিও রেকর্ড করে না।",
+    "clear": "উত্তর মুছুন",
+    "examplesLabel": "দ্রুত বিষয়",
+    "sourcesLabel": "উৎস",
+    "updatedLabel": "১২ সেপ্টেম্বর ২০২৬-এ আপডেট করা হয়েছে"
   },
   "pt": {
-    "title": "Ajuda Calorie",
-    "intro": "Escolha um tema ou faça uma pergunta curta.",
+    "title": "Caloriehelp",
+    "intro": "O seu guia da aplicação, dos percursos CAL e da história do projeto. Escolha um tema ou faça uma pergunta curta.",
     "question": "A sua pergunta",
     "placeholder": "Por exemplo: conta de teste ou trustline",
     "ask": "Encontrar resposta",
     "unknown": "Escolha um tema ou consulte as perguntas frequentes e os documentos.",
-    "privacy": "Esta ajuda não guarda perguntas nem cria pedidos de suporte.",
+    "privacy": "Respostas fixas de fontes públicas do projeto. As perguntas são processadas nesta página e depois apagadas; sem histórico de conversa nem pedidos de suporte.",
     "legalTitle": "Privacidade, termos e licenças",
     "legalText": "Leia a política de privacidade, os termos e as notas de fontes e licenças. Esta ajuda não decide questões jurídicas ou financeiras pessoais.",
     "docsTitle": "Documentos do projeto",
@@ -605,14 +933,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Pesquise um alimento por nome ou código de barras no CalorieApp.",
+          "Abra um resultado, consulte a fonte e a nutrição e escolha a porção.",
+          "Inicie sessão para usar o diário pessoal e adicionar a porção escolhida."
         ]
       },
       "test": {
         "title": "Experimentar com fundos de teste",
-        "text": "Crie uma conta XRPL Testnet gratuita abaixo. Ela recebe XRP de teste sem valor monetário real. Depois adicione-a à Xaman para experimentar o CalorieApp.",
+        "text": "Abra o CalorieApp e escolha experimentar com fundos de teste. Siga o guia ilustrado para criar e importar uma conta XRPL Testnet separada. O XRP de teste não tem valor monetário real.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "No Xaman, abra Settings → Advanced e ative Developer mode. Volte a Home, abra o seletor de rede e escolha XRPL Testnet.",
+          "Vá a Settings → Accounts → +. Toque em Import an existing account. Selecione Full access e depois Next. Assim, a conta de teste pode iniciar sessão e aprovar ações de teste.",
+          "Escolha Family Seed no Xaman e cole o código de recuperação da conta de teste criada no CalorieApp. Compare os endereços e volte ao CalorieApp para iniciar sessão com essa conta."
         ]
       },
       "trustline": {
@@ -624,9 +962,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Abra o livro de ordens ou a troca CAL/XRP no XPMarket. Verifique o ativo, emissor, taxas e o pedido final na carteira. A negociação ocorre no serviço externo; este site não envia ordens. CAL está temporariamente indisponível na SWFT.",
+        "text": "Abra o livro de ordens ou a troca CAL/XRP no XPMarket. Verifique o ativo, emissor, taxas e o pedido final na carteira. A negociação ocorre no serviço externo; este site não envia ordens. CAL temporariamente removido da SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "No SWFT, escolha uma moeda de origem suportada e a rede correta. Por exemplo, BTC em Bitcoin; escolha XRP em XRP Ledger como destino.",
+          "Use o seu próprio endereço de receção XRPL. Verifique a cotação atual, limites, taxas, destinatário e qualquer destination tag necessário antes de aprovar no fornecedor.",
+          "Após receber XRP, abra o mercado CAL/XRP separado no XPMarket. Verifique o emissor e a trustline CAL, reserve XRP para reservas e taxas e reveja o pedido da carteira."
         ]
       },
       "legal": {
@@ -642,9 +986,10 @@
         "title": "Documentos do projeto",
         "text": "O repositório contém o whitepaper e o roteiro detalhado. Consulte o documento relevante para detalhes e divulgações atuais.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -653,17 +998,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "História do projeto",
+        "text": "2021: começou o projeto CalorieToken dedicado à alimentação. Os primeiros protótipos móveis e Testnet exploraram ideias mais amplas. A pré-visualização de setembro de 2026 centra-se na pesquisa de alimentos, nutrição, porções e diário pessoal. Os arquivos datados do whitepaper e do roteiro preservam o contexto original. Os conceitos antigos não prometem serviços atuais.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Algo não carrega",
+        "text": "Para X ou SWFT, abra as opções de cookies do conteúdo e permita esse serviço se o quiser usar. A janela completa do SWFT mantém todas as opções suportadas. Se falhar, abra o fornecedor diretamente; o navegador ou o fornecedor pode bloquear a integração. Não é preciso apagar todos os dados do navegador. Na pesquisa de alimentos, siga a mensagem para tentar novamente.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Escrever com a voz",
+    "voiceText": "Toque no campo da pergunta, escolha o idioma do teclado e use o microfone do teclado. Verifique o texto antes de o enviar.",
+    "voiceNote": "O ditado depende do dispositivo e do idioma. O fornecedor do teclado processa a voz; o Caloriehelp não grava áudio.",
+    "clear": "Limpar resposta",
+    "examplesLabel": "Temas rápidos",
+    "sourcesLabel": "Fontes",
+    "updatedLabel": "Atualizado em 12 de setembro de 2026"
   },
   "id": {
-    "title": "Bantuan Calorie",
-    "intro": "Pilih topik atau ajukan pertanyaan singkat.",
+    "title": "Caloriehelp",
+    "intro": "Panduan aplikasi, jalur CAL, dan sejarah proyek. Pilih topik atau ajukan pertanyaan singkat.",
     "question": "Pertanyaan Anda",
     "placeholder": "Misalnya: akun uji atau trustline",
     "ask": "Cari jawaban",
     "unknown": "Pilih topik di bawah atau baca FAQ dan dokumen proyek.",
-    "privacy": "Bantuan ini tidak menyimpan pertanyaan atau membuat tiket.",
+    "privacy": "Jawaban tetap dari sumber proyek yang terbuka untuk umum. Pertanyaan diproses di halaman ini lalu dihapus; tanpa riwayat obrolan atau tiket.",
     "legalTitle": "Privasi, ketentuan & lisensi",
     "legalText": "Baca kebijakan privasi, ketentuan, serta catatan sumber dan lisensi. Bantuan ini tidak memutuskan persoalan hukum atau keuangan pribadi.",
     "docsTitle": "Dokumen proyek",
@@ -678,14 +1047,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "Cari makanan berdasarkan nama atau kode batang di CalorieApp.",
+          "Buka hasil, periksa sumber dan nutrisi, lalu pilih porsi.",
+          "Masuk untuk menggunakan catatan pribadi dan menambahkan porsi pilihan Anda."
         ]
       },
       "test": {
         "title": "Coba dengan dana uji",
-        "text": "Buat akun XRPL Testnet gratis di bawah. Akun menerima XRP uji tanpa nilai uang nyata. Tambahkan ke Xaman untuk mencoba CalorieApp.",
+        "text": "Buka CalorieApp dan pilih mencoba dengan dana uji. Ikuti panduan bergambar untuk membuat dan mengimpor akun XRPL Testnet terpisah. XRP uji tidak memiliki nilai uang nyata.",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Di Xaman, buka Settings → Advanced dan aktifkan Developer mode. Kembali ke Home, buka pengalih jaringan dan pilih XRPL Testnet.",
+          "Buka Settings → Accounts → +. Ketuk Import an existing account. Pilih Full access, lalu Next. Ini memungkinkan akun uji masuk dan menyetujui tindakan uji.",
+          "Pilih Family Seed di Xaman dan tempel kode pemulihan akun uji yang dibuat di CalorieApp. Cocokkan alamat akun, lalu kembali ke CalorieApp untuk masuk dengan akun uji tersebut."
         ]
       },
       "trustline": {
@@ -697,9 +1076,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "Buka buku pesanan atau swap CAL/XRP di XPMarket. Periksa aset, penerbit, biaya, dan permintaan akhir di dompet. Perdagangan berlangsung di layanan eksternal; situs ini tidak mengirim pesanan. CAL sementara tidak tersedia di SWFT.",
+        "text": "Buka buku pesanan atau swap CAL/XRP di XPMarket. Periksa aset, penerbit, biaya, dan permintaan akhir di dompet. Perdagangan berlangsung di layanan eksternal; situs ini tidak mengirim pesanan. CAL sementara dihapus dari daftar SWFT",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "Di SWFT, pilih koin sumber yang didukung dan jaringan yang tepat. Contohnya BTC pada Bitcoin; pilih XRP pada XRP Ledger sebagai tujuan.",
+          "Gunakan alamat penerima XRPL milik sendiri. Periksa kuotasi, batas, biaya, penerima, dan destination tag yang diperlukan sebelum menyetujui di penyedia.",
+          "Setelah XRP tiba, buka pasar CAL/XRP terpisah di XPMarket. Periksa penerbit dan trustline CAL, sisakan XRP untuk cadangan dan biaya, lalu tinjau permintaan wallet."
         ]
       },
       "legal": {
@@ -715,9 +1100,10 @@
         "title": "Dokumen proyek",
         "text": "Repositori publikasi berisi whitepaper dan peta jalan terperinci. Lihat dokumen terkait untuk rincian dan pengungkapan terkini.",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -726,17 +1112,41 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "Sejarah proyek",
+        "text": "2021: proyek CalorieToken yang berfokus pada makanan dimulai. Prototipe Testnet dan seluler awal mengeksplorasi gagasan yang lebih luas. Pratinjau aplikasi web September 2026 berfokus pada pencarian makanan, nutrisi, porsi, dan catatan pribadi. Arsip whitepaper dan roadmap bertanggal menjaga konteks asli. Konsep lama bukan janji layanan saat ini.",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "Konten tidak dimuat",
+        "text": "Untuk postingan X atau SWFT, buka opsi cookie konten dan izinkan layanan itu jika ingin menggunakannya. Jendela SWFT lengkap mempertahankan semua pilihan yang didukung penyedia. Jika tetap gagal, buka penyedia langsung; perlindungan browser atau penyedia dapat memblokir sematan. Tidak perlu menghapus semua data browser. Untuk pencarian makanan, ikuti pesan coba lagi di layar.",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "Mengetik dengan suara",
+    "voiceText": "Ketuk kotak pertanyaan, pilih bahasa keyboard, lalu gunakan mikrofon keyboard. Periksa teks sebelum mengirim.",
+    "voiceNote": "Dikte bergantung pada perangkat dan bahasa. Penyedia keyboard memproses suara; Caloriehelp tidak merekam audio.",
+    "clear": "Hapus jawaban",
+    "examplesLabel": "Topik cepat",
+    "sourcesLabel": "Sumber",
+    "updatedLabel": "Diperbarui 12 September 2026"
   },
   "ur": {
-    "title": "Calorie مدد",
-    "intro": "موضوع چنیں یا مختصر سوال پوچھیں۔",
+    "title": "Caloriehelp",
+    "intro": "ایپ، CAL کے راستوں اور منصوبے کی تاریخ کی رہنمائی۔ موضوع منتخب کریں یا مختصر سوال پوچھیں۔",
     "question": "آپ کا سوال",
     "placeholder": "مثلاً: ٹیسٹ اکاؤنٹ یا ٹرسٹ لائن",
     "ask": "جواب تلاش کریں",
     "unknown": "نیچے موضوع چنیں یا FAQ اور منصوبے کی دستاویزات پڑھیں۔",
-    "privacy": "یہ مدد سوال محفوظ یا ٹکٹ نہیں بناتی۔",
+    "privacy": "منصوبے کے عوامی ذرائع سے مقررہ جوابات۔ سوالات اسی صفحے پر پراسیس ہو کر مٹ جاتے ہیں؛ چیٹ کی تاریخ یا ٹکٹ نہیں بنتے۔",
     "legalTitle": "رازداری، شرائط اور لائسنس",
     "legalText": "تفصیل کے لیے رازداری کی پالیسی، شرائط اور ماخذ/لائسنس کی معلومات پڑھیں۔ یہ مدد ذاتی قانونی یا مالی سوالوں کا فیصلہ نہیں کرتی۔",
     "docsTitle": "منصوبے کی دستاویزات",
@@ -751,14 +1161,24 @@
         "links": [
           "app",
           "faq"
+        ],
+        "steps": [
+          "CalorieApp میں نام یا بارکوڈ سے خوراک تلاش کریں۔",
+          "نتیجہ کھولیں، ماخذ اور غذائیت دیکھیں، پھر مقدار چنیں۔",
+          "ذاتی ڈائری استعمال کرنے کے لیے سائن ان کریں اور منتخب مقدار شامل کریں۔"
         ]
       },
       "test": {
         "title": "ٹیسٹ رقم کے ساتھ آزمائیں",
-        "text": "نیچے مفت XRPL Testnet اکاؤنٹ بنائیں۔ اس میں حقیقی مالی قدر کے بغیر ٹیسٹ XRP ملتے ہیں۔ پھر CalorieApp آزمانے کے لیے اسے Xaman میں شامل کریں۔",
+        "text": "CalorieApp کھولیں اور آزمائشی فنڈز کا اختیار چنیں۔ تصویری رہنما سے الگ XRPL Testnet اکاؤنٹ بنائیں اور درآمد کریں۔ آزمائشی XRP کی حقیقی مالی قدر نہیں ہوتی۔",
         "links": [
           "test",
           "xaman"
+        ],
+        "steps": [
+          "Xaman میں Settings → Advanced کھول کر Developer mode فعال کریں۔ Home پر واپس آئیں، نیٹ ورک سوئچ کھولیں اور XRPL Testnet منتخب کریں۔",
+          "Settings → Accounts → + پر جائیں۔ Import an existing account پر ٹیپ کریں۔ Full access، پھر Next منتخب کریں۔ اس سے ٹیسٹ اکاؤنٹ سائن ان اور ٹیسٹ کارروائیوں کی منظوری دے سکتا ہے۔",
+          "Xaman میں Family Seed چنیں اور CalorieApp میں بنائے گئے آزمائشی اکاؤنٹ کا ریکوری کوڈ پیسٹ کریں۔ اکاؤنٹ کے پتے ملائیں، پھر اسی آزمائشی اکاؤنٹ سے سائن ان کرنے کے لیے CalorieApp پر واپس جائیں۔"
         ]
       },
       "trustline": {
@@ -770,9 +1190,15 @@
       },
       "exchange": {
         "title": "CAL & Crypto",
-        "text": "XPMarket پر CAL/XRP آرڈر بک یا سواپ کھولیں۔ اثاثہ، جاری کنندہ، فیس اور والٹ میں آخری درخواست چیک کریں۔ تجارت بیرونی سروس پر ہوتی ہے؛ یہ ویب سائٹ آرڈر نہیں بھیجتی۔ SWFT پر CAL عارضی طور پر دستیاب نہیں ہے۔",
+        "text": "XPMarket پر CAL/XRP آرڈر بک یا سواپ کھولیں۔ اثاثہ، جاری کنندہ، فیس اور والٹ میں آخری درخواست چیک کریں۔ تجارت بیرونی سروس پر ہوتی ہے؛ یہ ویب سائٹ آرڈر نہیں بھیجتی۔ SWFT سے CAL عارضی طور پر ڈی لسٹ ہے",
         "links": [
-          "exchange"
+          "exchange",
+          "trustline"
+        ],
+        "steps": [
+          "SWFT میں معاون ماخذ سکہ اور درست نیٹ ورک منتخب کریں۔ مثلاً Bitcoin پر BTC؛ منزل کے لیے XRP Ledger پر XRP منتخب کریں۔",
+          "اپنا XRPL وصولی پتہ استعمال کریں۔ فراہم کنندہ کے پاس منظوری سے پہلے موجودہ قیمت، حدود، فیس، وصول کنندہ اور ضروری destination tag دیکھیں۔",
+          "XRP آنے کے بعد XPMarket پر الگ CAL/XRP مارکیٹ کھولیں۔ CAL جاری کنندہ اور ٹرسٹ لائن چیک کریں، ریزرو اور فیس کے لیے XRP رکھیں اور والیٹ درخواست دیکھیں۔"
         ]
       },
       "legal": {
@@ -788,9 +1214,10 @@
         "title": "منصوبے کی دستاویزات",
         "text": "اشاعتی ریپوزٹری میں وائٹ پیپر اور تفصیلی روڈمیپ موجود ہے۔ تازہ تفصیلات اور انکشافات متعلقہ دستاویز میں دیکھیں۔",
         "links": [
-          "docs",
           "whitepaper",
-          "roadmap"
+          "roadmap",
+          "docs",
+          "appSource"
         ]
       },
       "contact": {
@@ -799,7 +1226,31 @@
         "links": [
           "contact"
         ]
+      },
+      "history": {
+        "title": "منصوبے کی تاریخ",
+        "text": "2021 میں خوراک پر مرکوز CalorieToken منصوبہ شروع ہوا۔ ابتدائی Testnet اور موبائل نمونوں میں وسیع تر خیالات آزمائے گئے۔ ستمبر 2026 کا ویب ایپ پیش منظر خوراک کی تلاش، غذائیت، مقدار اور ذاتی ڈائری پر مرکوز ہے۔ تاریخ والے وائٹ پیپر اور روڈمیپ آرکائیو اصل پس منظر محفوظ رکھتے ہیں۔ پرانے تصورات موجودہ خدمات کا وعدہ نہیں ہیں۔",
+        "links": [
+          "roadmap",
+          "archives",
+          "history"
+        ]
+      },
+      "troubleshoot": {
+        "title": "کچھ لوڈ نہیں ہو رہا",
+        "text": "X پوسٹ یا SWFT کے لیے مواد کے کوکی اختیارات کھولیں اور استعمال کرنا چاہیں تو اس سروس کی اجازت دیں۔ مکمل SWFT ونڈو میں فراہم کنندہ کے تمام معاون اختیارات رہتے ہیں۔ پھر بھی نہ کھلے تو فراہم کنندہ کی سائٹ براہ راست کھولیں؛ براؤزر تحفظ یا فراہم کنندہ ایمبیڈ روک سکتا ہے۔ تمام براؤزر ڈیٹا مٹانا ضروری نہیں۔ خوراک کی تلاش میں دوبارہ کوشش کا پیغام دیکھیں۔",
+        "links": [
+          "faq",
+          "exchange"
+        ]
       }
-    }
+    },
+    "voiceTitle": "بول کر لکھیں",
+    "voiceText": "سوال کے خانے پر ٹیپ کریں، کی بورڈ کی زبان منتخب کریں اور اس کا مائیکروفون استعمال کریں۔ بھیجنے سے پہلے متن دیکھ لیں۔",
+    "voiceNote": "ڈکٹیشن کا انحصار ڈیوائس اور زبان پر ہے۔ آواز کی بورڈ فراہم کنندہ پراسیس کرتا ہے؛ Caloriehelp آڈیو ریکارڈ نہیں کرتا۔",
+    "clear": "جواب صاف کریں",
+    "examplesLabel": "فوری موضوعات",
+    "sourcesLabel": "ذرائع",
+    "updatedLabel": "12 ستمبر 2026 کو اپ ڈیٹ کیا گیا"
   }
 }

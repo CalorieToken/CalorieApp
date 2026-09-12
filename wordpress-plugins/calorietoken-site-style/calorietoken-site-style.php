@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CalorieToken Site Style
  * Description: CalorieApp-huisstijl en gebundelde stap 3-verfijningen. Gedeelde huisstijl, appinformatie en paginakoppelingen; geaccepteerde Home-inhoud behouden.
- * Version: 1.4.28
+ * Version: 1.4.33
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: ICTHendrikse
@@ -15,7 +15,7 @@ namespace CalorieToken\SiteStyle;
 if (!defined('ABSPATH')) { exit; }
 
 final class Plugin {
-    const VERSION = '1.4.28';
+    const VERSION = '1.4.33';
 
     public static function presentation_preview() {
         if (is_admin() || !is_preview() || !is_singular('page') ||
@@ -179,6 +179,7 @@ final class Plugin {
         wp_enqueue_script('calorietoken-help', $base . 'assets/help.js', array('calorietoken-discovery'), self::VERSION, true);
         wp_localize_script('calorietoken-help', 'CalorieTokenHelp', array(
             'copy' => self::json_asset('help-data'),
+            'avatar' => $base . 'assets/caloriehelp-avatar.webp',
             'page' => get_queried_object_id(),
         ));
         wp_enqueue_style('calorietoken-refinements', $base . 'assets/refinements.css', array('calorietoken-discovery'), self::VERSION);
@@ -286,6 +287,17 @@ final class Plugin {
         self::discovery_assets($base);
     }
 
+    public static function swft_consent_service($tags) {
+        // Register the existing external frame with Complianz; never set user consent.
+        if (!is_array($tags)) { return $tags; }
+        foreach ($tags as $tag) {
+            if (is_array($tag) && isset($tag['name']) && $tag['name'] === 'swft') { return $tags; }
+        }
+        $tags[] = array('name' => 'swft', 'category' => 'marketing',
+            'urls' => array('defi.swft.pro'), 'enable_placeholder' => '0');
+        return $tags;
+    }
+
     public static function templates() {
         if (!self::enabled() && !self::footer_only()) { return; }
         // Templates are inert. Existing login DOM and its handlers are never copied.
@@ -293,6 +305,7 @@ final class Plugin {
     }
 }
 
+add_filter('cmplz_known_script_tags', array(Plugin::class, 'swft_consent_service'));
 add_filter('body_class', array(Plugin::class, 'body_class'));
 add_action('wp_enqueue_scripts', array(Plugin::class, 'enqueue'), 99);
 add_action('wp_footer', array(Plugin::class, 'templates'), 19);

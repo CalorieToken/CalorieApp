@@ -171,6 +171,16 @@ test('X consent controls one render and removes managed output even when it arri
   h.consent(true);assert.equal(h.calls.length,2);
 });
 
+test('Manual X retry is bounded, respects consent and preserves a CMS-owned frame', () => {
+  const h=blogFixture();h.run('blog-timeline.js');assert.equal(h.calls.length,1);
+  h.window.CalorieTokenBlogTimeline.retry();assert.equal(h.calls.length,2);
+  h.window.CalorieTokenBlogTimeline.retry();assert.equal(h.calls.length,2);
+  h.consent(false);h.window.CalorieTokenBlogTimeline.retry();assert.equal(h.calls.length,2);
+  const cms=blogFixture({cmsFrame:true}), frame=cms.first.querySelector('iframe');
+  cms.run('blog-timeline.js');cms.window.CalorieTokenBlogTimeline.retry();
+  assert.equal(frame.isConnected,true);assert.equal(cms.calls.length,0);
+});
+
 test('A replaced Blog panel receives one fresh timeline and retires the old observer', () => {
   const h=blogFixture();h.run('blog-timeline.js');h.frame(h.first);h.inspect(h.first);
   const replacement=h.replace();h.window.CalorieTokenBlogTimeline.refresh();
@@ -452,6 +462,8 @@ test('The full CAL guide/discovery/translation sequence retains exact routes and
   h.run('menu-pages.js'); h.run('ready-languages.js'); h.run('discovery.js'); h.run('refinements.js');
   const guide = h.document.querySelector('.cal-buy-guide');
   assert.equal(guide.getAttribute('data-ctstyle-buy-routes'), '1');
+  h.window.CalorieTokenPresentation={copy:JSON.parse(readFileSync(new URL('presentation-data.json',assets),'utf8')),links:[]};
+  h.run('presentation.js');
   const controls = [...guide.querySelectorAll('a')], destinations = controls.map(a => a.getAttribute('href'));
   assert.equal(destinations.length, 7);
   for (const locale of [...Object.keys(copy), 'en']) {
@@ -514,4 +526,18 @@ test('Hidden legacy mastheads do not suppress the shared header or clone native 
   h.emit('load');h.flush();
   assert.equal(h.document.querySelectorAll('.ctstyle-header-fallback').length,1);
   assert.equal(h.document.querySelector('.calorie-legacy-page h1').textContent,'Our buying guide has moved');
+});
+
+test('Tokenomics refresh and language changes retain one decorated title and the original artwork',()=>{
+ const h=fixture('<section data-brz-custom-id="rmpolgctfmggclsdfezbyrgrptsoksmyibth"><div class="brz-container"><div class="chart"><div data-brz-custom-id="dqvixegjsqsgfpehzvyzdhvvjusglgsaioai"><img title="Tokenomics update 2024 10" src="/chart.png"></div></div><div data-brz-custom-id="qzyfxcwgwvmqaychwaxfgllbvrxwptqijdnb"><a href="/original-wallet">Existing wallet</a></div></div></section>',{page:1209,route:'tokenomics-update'});
+ const graphic=h.document.querySelector('img'),original=h.document.querySelector('a');
+ h.window.CalorieTokenPresentation={copy:JSON.parse(readFileSync(new URL('presentation-data.json',assets),'utf8')),links:[]};
+ h.run('tokenomics.js');h.run('presentation.js');
+ for(const locale of [...Object.keys(menu.tokenomics.copy),'en','en','nl','en']){
+  h.window.CalorieAppTokenomics.setLocale(locale);h.window.CalorieTokenPresentationUI.refresh(locale);h.window.CalorieAppTokenomics.refresh();
+  assert.equal(h.document.querySelector('#calorieapp-tokenomics-status-title').textContent,menu.tokenomics.copy[locale].statusTitle);
+  assert.equal(h.document.querySelector('#calorieapp-consolidation-wallet-title').textContent,menu.tokenomics.copy[locale].walletTitle);
+ }
+ assert.equal(h.document.querySelectorAll('.calorieapp-tokenomics-note').length,2);
+ assert.equal(h.document.querySelector('img'),graphic);assert.ok(original.isConnected);
 });

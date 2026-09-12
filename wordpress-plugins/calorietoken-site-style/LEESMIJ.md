@@ -1,4 +1,28 @@
-# CalorieToken Site Style 1.4.28
+# CalorieToken Site Style 1.4.33
+
+Deze update voegt een overzichtelijk Caloriehelp-paneel toe met korte stappen,
+projectgeschiedenis, publieke bronlinks en uitleg over dicteren via het eigen
+toetsenbord, in de elf bestaande talen. Antwoorden blijven vaste projectinformatie;
+vragen worden lokaal verwerkt en gewist. Er is geen chatopslag of audiocollectie.
+
+CAL & Crypto bevat het volledige oorspronkelijke SWFT/AllChainBridge-venster met
+alle keuzes van de aanbieder. CAL is daar momenteel niet beschikbaar. De aparte
+CAL/XRP-route en een voorbeeld van een route via SWFT worden duidelijk uitgelegd.
+De service opent via Complianz-toestemming en een bewuste klik; intrekken verwijdert
+het venster. X gebruikt één vertaalde toestemmingsknop, een scrollbare tijdlijn,
+een begrensde handmatige herhaaloptie en een rechtstreekse bronlink.
+
+Het nieuwe Caloriehelp-karakter in assets/caloriehelp-avatar.webp is op 12 september
+2026 met AI gegenereerd op basis van een zelfstandige beschrijving. JPW's aangeleverde
+mascotte is niet als afbeeldingsinvoer gebruikt en is niet opgenomen. Deze toelichting
+verleent geen rechten op JPW's werk en claimt geen exclusief auteursrecht op AI-uitvoer.
+De bestaande code- en bronlicenties blijven gelden.
+
+Installatiepakket: **calorietoken-site-style-1.4.33.zip**. Installeer via de normale
+WordPress-pluginupload en vervang Site Style. Terugval: het eerder bevestigde 1.4.28.
+De eindcontrole en het WordPress-gezondheidsverslag worden apart vastgelegd.
+
+## Inbegrepen correcties uit 1.4.28
 
 Deze versie werkt de visuele verschillen uit de desktopcontrole en de mobiele
 screenshots weg. Home blijft het voorbeeld voor de gedeelde onderdelen.

@@ -128,67 +128,78 @@
         "description": "Posts are supplied by X and may not load here. Open the profile directly or review your cookie choices.",
         "action": "Open @CalorieToken on X",
         "settings": "Cookie settings",
-        "load": "Load X posts (allow X)"
+        "load": "Load X posts (allow X)",
+        "retry": "Try loading X again"
       },
       "zh-Hans": {
         "description": "帖子由 X 提供，可能无法在此加载。您可以直接打开主页，或查看您的 Cookie 选项。",
         "action": "在 X 上打开 @CalorieToken",
         "settings": "Cookie 设置",
-        "load": "加载 X 帖子（允许 X）"
+        "load": "加载 X 帖子（允许 X）",
+        "retry": "重新加载 X"
       },
       "hi": {
         "description": "पोस्ट X से मिलती हैं और हो सकता है कि यहाँ लोड न हों। प्रोफ़ाइल सीधे खोलें या अपनी कुकी संबंधी पसंद की समीक्षा करें।",
         "action": "X पर @CalorieToken खोलें",
         "settings": "कुकी सेटिंग",
-        "load": "X पोस्ट लोड करें (X को अनुमति दें)"
+        "load": "X पोस्ट लोड करें (X को अनुमति दें)",
+        "retry": "X दोबारा लोड करें"
       },
       "es": {
         "description": "X proporciona las publicaciones y es posible que no se carguen aquí. Abre el perfil directamente o revisa tus preferencias de cookies.",
         "action": "Abrir @CalorieToken en X",
         "settings": "Configuración de cookies",
-        "load": "Cargar publicaciones (permitir X)"
+        "load": "Cargar publicaciones (permitir X)",
+        "retry": "Volver a cargar X"
       },
       "ar": {
         "description": "يوفّر X المنشورات، وقد لا يتم تحميلها هنا. افتح الملف الشخصي مباشرة أو راجع خيارات ملفات تعريف الارتباط.",
         "action": "افتح ⁦@CalorieToken⁩ على X",
         "settings": "إعدادات ملفات تعريف الارتباط",
-        "load": "تحميل منشورات X (السماح لـ X)"
+        "load": "تحميل منشورات X (السماح لـ X)",
+        "retry": "إعادة تحميل X"
       },
       "fr": {
         "description": "Les publications sont fournies par X et peuvent ne pas se charger ici. Ouvrez directement le profil ou consultez vos choix de cookies.",
         "action": "Ouvrir @CalorieToken sur X",
         "settings": "Paramètres des cookies",
-        "load": "Charger les publications (autoriser X)"
+        "load": "Charger les publications (autoriser X)",
+        "retry": "Recharger X"
       },
       "bn": {
         "description": "পোস্টগুলো X থেকে আসে এবং এখানে লোড নাও হতে পারে। সরাসরি প্রোফাইল খুলুন অথবা আপনার কুকি পছন্দগুলো দেখুন।",
         "action": "X-এ @CalorieToken খুলুন",
         "settings": "কুকি সেটিংস",
-        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)"
+        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)",
+        "retry": "X আবার লোড করুন"
       },
       "pt": {
         "description": "As publicações são fornecidas pelo X e podem não carregar aqui. Abra o perfil diretamente ou reveja as suas preferências de cookies.",
         "action": "Abrir @CalorieToken no X",
         "settings": "Definições de cookies",
-        "load": "Carregar publicações (permitir X)"
+        "load": "Carregar publicações (permitir X)",
+        "retry": "Carregar X novamente"
       },
       "id": {
         "description": "Postingan disediakan oleh X dan mungkin tidak dimuat di sini. Buka profil secara langsung atau tinjau pilihan cookie Anda.",
         "action": "Buka @CalorieToken di X",
         "settings": "Pengaturan cookie",
-        "load": "Muat postingan X (izinkan X)"
+        "load": "Muat postingan X (izinkan X)",
+        "retry": "Muat ulang X"
       },
       "ur": {
         "description": "پوسٹس X فراہم کرتا ہے اور ممکن ہے یہاں لوڈ نہ ہوں۔ براہ راست پروفائل کھولیں یا کوکیز کے بارے میں اپنے انتخاب کا جائزہ لیں۔",
         "action": "X پر ⁦@CalorieToken⁩ کھولیں",
         "settings": "کوکی کی ترتیبات",
-        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)"
+        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)",
+        "retry": "X دوبارہ لوڈ کریں"
       },
       "nl": {
         "description": "Berichten worden door X geleverd en laden hier mogelijk niet. Open het profiel rechtstreeks of bekijk je cookievoorkeuren.",
         "action": "Open @CalorieToken op X",
         "settings": "Cookie-instellingen",
-        "load": "X-posts laden (X toestaan)"
+        "load": "X-posts laden (X toestaan)",
+        "retry": "X opnieuw laden"
       }
     },
     "locales": [

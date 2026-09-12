@@ -129,6 +129,7 @@
     var permitted=false;
     try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
     setHidden(blogView.load, ready || permitted || blogView.settings.hidden);
+    setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -158,9 +159,13 @@
       var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
       load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
       load.setAttribute("data-category", "marketing"); load.hidden = true;
-      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);
+      var retry=label('button','calorieapp-x-retry',blogFallback.retry);retry.type='button';retry.hidden=true;
+      retry.addEventListener('click',function(){
+        if(window.CalorieTokenBlogTimeline&&typeof window.CalorieTokenBlogTimeline.retry==='function')window.CalorieTokenBlogTimeline.retry();
+      });
+      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);help.appendChild(retry);
       panel.appendChild(help); panel.classList.add("calorieapp-social-panel");
-      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load };
+      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load, retry: retry };
     }
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     renderBlogHelp(blogLocale || (config && config.initialLocale) || "en");

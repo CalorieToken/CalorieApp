@@ -19,6 +19,7 @@ FILES = (
     'assets/app-integration.js',
     'assets/blog-timeline.js',
     'assets/calorieapp-logo.svg',
+    'assets/caloriehelp-avatar.webp',
     'assets/content-data.json',
     'assets/content-language.js',
     'assets/discovery-data.json',
@@ -106,3 +107,4 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
     print(json.dumps(build(args.output_dir), indent=2))
+

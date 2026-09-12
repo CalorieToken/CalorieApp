@@ -8,6 +8,7 @@
   var dexURL = 'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP';
   var helpURL = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
   var nodes = [], hub = null, launcher = null, test = null, trust = null, frame = null, controls = null, requestedLocale = null, revoked = false, picker = null, preferenceRead = false;
+  var exchangeRequested = false;
   var preferenceKey = 'calorieapp.display-language.v1';
   var pickers = [], accountApp = null, accountWatcher = null, cookieWatcher = null, cookieAttributeWatcher = null;
   var menuLabels = new WeakMap();
@@ -74,41 +75,67 @@
     } catch (_) { return false; }
   }
   function unload() {
+    exchangeRequested = false;
     if (frame) { frame.remove(); frame = null; }
     if (controls) { controls.load.hidden = false; controls.close.hidden = true; }
   }
   function syncConsent() {
     if (!controls) return;
     var permitted = consentOK();
-    if (!permitted) unload();
+    if (!permitted && frame) unload();
     controls.load.disabled = !permitted;
+    controls.load.hidden = !permitted || !!frame;
+    controls.allow.hidden = permitted;
+    if (permitted && exchangeRequested) mountExchange();
     controls.settings.hidden = permitted;
     controls.notice.hidden = permitted;
   }
   function exchangeCard() {
     var card = section('ctstyle-external-exchange','bridgeTitle');
-    card.append(label('p','calInactive','ctstyle-discovery-badge'),label('p','bridgeText'),label('p','bridgePrivacy','ctstyle-discovery-small'));
+    card.append(label('p','calInactive','ctstyle-discovery-badge'),label('h3','bridgeLead'),label('p','bridgeText'));
+    var wallets=element('details','ctstyle-swft-wallets'),walletTitle=label('summary','bridgeWalletsTitle');
+    var names=element('ul','ctstyle-swft-wallet-list');
+    ['MetaMask','Trust Wallet','Coinbase Wallet','OKX Wallet','Bitget Wallet','Phantom','Xaman','WalletConnect'].forEach(function(name){names.append(element('li','',name));});
+    wallets.append(walletTitle,names,label('p','bridgeWalletsNote','ctstyle-discovery-small'));
+    card.append(wallets,label('p','bridgeAllChoices'),label('p','bridgePrivacy','ctstyle-discovery-small'));
     var load = label('button','loadExchange','ctstyle-discovery-action'), close = label('button','closeExchange','ctstyle-discovery-action');
     load.type = close.type = 'button'; close.hidden = true;
+    var permit = label('button','allowExchange','ctstyle-discovery-action cmplz-accept-service');
+    permit.type='button';permit.setAttribute('data-service','swft');permit.setAttribute('data-category','marketing');
     var settings = label('button','cookies','ctstyle-discovery-action cmplz-manage-consent'); settings.type = 'button';
     var notice = label('p','consentNeeded','ctstyle-discovery-small');
     var area = element('div','ctstyle-exchange-frame'); area.id = 'ctstyle-swft-frame';
     load.setAttribute('aria-controls',area.id); close.setAttribute('aria-controls',area.id);
-    var actions = element('div','ctstyle-discovery-actions'); actions.append(load,close,settings,link('openProvider',exchangeURL,true));
+    var actions = element('div','ctstyle-discovery-actions'); actions.append(permit,load,close,settings,link('openProvider',exchangeURL,true));
     card.append(actions,notice,area,label('p','providerFallback','ctstyle-discovery-small'));
-    controls = {card:card,load:load,close:close,settings:settings,notice:notice};
-    load.addEventListener('click',function () {
-      syncConsent();
-      if (!allowed() || !consentOK() || frame || !card.isConnected || card.closest(forbidden)) return;
-      frame = element('iframe'); frame.title = 'AllChainBridge / SWFT — external exchange';
-      frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');
-      frame.setAttribute('referrerpolicy','no-referrer'); frame.setAttribute('loading','lazy');
-      frame.setAttribute('width','100%'); frame.setAttribute('height','740');
-      // Fixed historical destination; no account, query-string passthrough, keys or postMessage bridge.
-      frame.src = exchangeURL; area.append(frame); load.hidden = true; close.hidden = false;
+    var route=element('details','ctstyle-swft-route'), routeTitle=label('summary','bridgeRouteTitle'),steps=element('ol','ctstyle-help-steps');
+    ['bridgeStep1','bridgeStep2','bridgeStep3'].forEach(function(key){steps.append(label('li',key));});
+    route.append(routeTitle,steps,link('openDex',dexURL,true));card.append(route);
+    var sources=element('p','ctstyle-discovery-small');sources.append(link('bridgeSourcesLabel','https://defi.swft.pro/',true));
+    card.append(sources,label('p','bridgeChecked','ctstyle-discovery-small'));
+    controls = {card:card,load:load,allow:permit,close:close,settings:settings,notice:notice,area:area};
+    permit.addEventListener('click',function(){
+      if(!allowed())return;exchangeRequested=true;
+      // Complianz's native delegated handler owns the service-consent decision.
+      window.setTimeout(syncConsent,0);
     });
+    load.addEventListener('click',function () {exchangeRequested=true;syncConsent();});
     close.addEventListener('click',function () { unload(); load.focus(); });
     return card;
+  }
+  function mountExchange() {
+    if (!allowed() || !consentOK() || frame || !controls || !controls.card.isConnected || controls.card.closest(forbidden)) return;
+    exchangeRequested=false;
+    frame = element('iframe'); frame.title = 'AllChainBridge / SWFT — external exchange';
+    frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');
+    frame.setAttribute('referrerpolicy','no-referrer'); frame.setAttribute('loading','lazy');
+    frame.setAttribute('width','100%'); frame.setAttribute('height','740');
+    frame.setAttribute('data-category','marketing');frame.setAttribute('data-service','swft');
+    // Full original destination; no pair restriction, account handoff or signing bridge.
+    // Complianz activates service-tagged frames from data-src-cmplz during its
+    // consent event. Preserve the same full URL for that native activation.
+    frame.setAttribute('data-src-cmplz',exchangeURL);
+    frame.src = exchangeURL; controls.area.append(frame); controls.load.hidden=true;controls.close.hidden=false;
   }
   function buyingPage() {
     if (Number(cfg.page) !== 4205 || !['/index.php/how-to-buy-calorie/','/how-to-buy-calorie/'].includes(window.location.pathname) || hub) return;
@@ -389,9 +416,10 @@
   });
   window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();syncCookieVisibility();watchCookieBanner();}});
   document.addEventListener('cmplz_cookie_warning_loaded',syncCookieVisibility);
-  ['cmplz_status_change','cmplz_service_status_change','cmplz_revoke','cmplz_enable_category','cmplz_enable_service'].forEach(function (name) {
+  ['cmplz_status_change','cmplz_status_change_service','cmplz_service_status_change','cmplz_revoke','cmplz_enable_category','cmplz_enable_service'].forEach(function (name) {
     document.addEventListener(name,function () {
       revoked = name === 'cmplz_revoke';
+      if(revoked)unload();
       syncConsent(); syncCookieVisibility();
     });
   });

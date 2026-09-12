@@ -37,7 +37,10 @@
   var boundPickers=new WeakSet();
   function textField(node) {return node && node.childNodes.length===1 && node.childNodes[0].nodeType===3;}
   function knownField(node,catalogue,key) {
-    return textField(node) && Object.values(catalogue).some(function (copy) {return copy && copy[key]===node.childNodes[0].data;});
+    var painted=node && node.dataset.ctstyleColorText===node.textContent &&
+      Array.from(node.childNodes).every(function(child){return child.nodeType===3 ||
+        child.nodeType===1 && child.tagName==='SPAN' && child.className==='ctstyle-word-initial' && textField(child);});
+    return (textField(node)||painted) && Object.values(catalogue).some(function (copy) {return copy && copy[key]===node.textContent;});
   }
   function translateGuide() {
     if (!ownsGuide || pageId()!==4205 || config.buyGuide?.publicPage!==true) return;
@@ -60,7 +63,10 @@
       'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP', 'https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP', 'https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market'];
     var links=Array.from(root.querySelectorAll('a'));
     if (links.length!==destinations.length || !links.every(function (node,index) {return node.getAttribute('href')===destinations[index];})) return;
-    fields.forEach(function (node) {node.childNodes[0].data=selected[node.getAttribute('data-cal-buy-copy')];});
+    fields.forEach(function (node) {
+      node.textContent=selected[node.getAttribute('data-cal-buy-copy')];
+      if(window.CalorieTokenPresentationUI)window.CalorieTokenPresentationUI.paintHeading(node);
+    });
     root.lang=locale;root.dir=direction(locale);root.setAttribute('aria-label',selected.title);
   }
   function stepText(index,label) {return (index+1)+'. '+label;}

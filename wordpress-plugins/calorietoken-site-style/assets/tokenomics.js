@@ -86,7 +86,15 @@
       target.chart.after(status); target.row.after(panel);
       view = { chart: target.chart, row: target.row, statusPanel: status, walletPanel: panel, fields: fields };
     }
-    keys.forEach(function (key) { view.fields[key].childNodes[0].data = selected.copy[key]; });
+    keys.forEach(function (key) {
+      var field=view.fields[key];
+      // The presentation layer decorates headings with spans. Update the owned
+      // field as a whole, otherwise its leading text node accumulates titles.
+      if(field.textContent!==selected.copy[key]){
+        field.textContent=selected.copy[key];
+        if(window.CalorieTokenPresentationUI)window.CalorieTokenPresentationUI.paintHeading(field);
+      }
+    });
     [view.statusPanel, view.walletPanel].forEach(function (panel) {
       panel.setAttribute("lang", selected.tag); panel.setAttribute("dir", selected.dir);
     });

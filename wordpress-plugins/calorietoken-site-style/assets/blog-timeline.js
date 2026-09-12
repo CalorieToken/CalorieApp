@@ -4,7 +4,7 @@
   if (window.CalorieTokenBlogTimeline) return;
   var source = 'https://platform.twitter.com/widgets.js', panel = null, anchor = null;
   var attempted = false, managed = false, scriptRequested = false, watcher = null, timer = null;
-  var generation = 0;
+  var generation = 0, retryAt = 0;
   var originalFrames = new Set(), ownedFrames = new Set(), anchorStyle = null;
   var protectedRoot = 'form,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],.cmplz-blocked-content-container,[hidden],[inert]';
   function allowed() {
@@ -35,7 +35,10 @@
   }
   function finishLoading() {
     if (timer) { window.clearTimeout(timer); timer = null; }
-    if (panel) panel.classList.remove('ctstyle-x-loading');
+    if (panel && panel.classList.contains('ctstyle-x-loading')) {
+      panel.classList.remove('ctstyle-x-loading');
+      document.dispatchEvent(new window.Event('calorietoken:x-state'));
+    }
   }
   function stopWatching() {
     if (watcher) { watcher.disconnect(); watcher = null; }
@@ -151,9 +154,21 @@
     anchor.setAttribute('data-ctstyle-x-anchor', ''); anchor.classList.remove('twitter-timeline');
     var script = document.createElement('script'); script.src = source; script.async = true;
     script.setAttribute('data-ctstyle-x-script', ''); script.addEventListener('load', render, {once: true});
+    script.addEventListener('error',function(){script.setAttribute('data-ctstyle-x-failed','');finishLoading();},{once:true});
     document.head.appendChild(script);
   }
-  window.CalorieTokenBlogTimeline = {refresh: refresh};
+  function retry() {
+    if(!allowed()||!consent()||!panel||!panel.isConnected||Date.now()<retryAt)return;
+    retryAt=Date.now()+15000;
+    // Only an explicit user retry; no timer or observer retries a provider call.
+    // A pre-existing CMS frame remains owned by the CMS/CMP.
+    if(frames().some(function(frame){return originalFrames.has(frame);}))return;
+    revoke();attempted=false;
+    var failed=document.querySelector('script[data-ctstyle-x-script][data-ctstyle-x-failed]');
+    if(failed){failed.remove();scriptRequested=false;}
+    refresh();
+  }
+  window.CalorieTokenBlogTimeline = {refresh: refresh,retry:retry};
   // Complianz inserts its button inside the profile anchor. Keep the native
   // consent handler, but prevent that click from also navigating away to X.
   document.addEventListener('click', function (event) {
