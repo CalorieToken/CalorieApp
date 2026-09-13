@@ -128,7 +128,7 @@ test("the actual login control resumes once after return and only after a truste
       module, exports: module.exports, window, URL, URLSearchParams, AbortController,
       Date, Number, Math, JSON, setTimeout, clearTimeout,
       navigator: { language: "en" },
-      document: { referrer: `${origin}/index.php/calorieapp/`, body: { scrollHeight: 100 }, documentElement: { scrollHeight: 100 } },
+      document: { referrer: `${origin}/index.php/calorieapp/`, querySelector: () => null, body: { scrollHeight: 100 }, documentElement: { scrollHeight: 100 } },
       process: { env: { NODE_ENV: "production" } },
       require(name) {
       if (name === "@/components/DisplayLanguageProvider") return {useDisplayLanguage:()=>({enabled:false,locale:"en"})};

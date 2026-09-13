@@ -1109,14 +1109,16 @@ export function XamanLoginPanel() {
       resolveLoginSurfaceMode(false, expectsEmbeddedBridge())
     );
 
+    // Measure the natural content box, including its padding and source footer.
+    // Document scrollHeight is at least the current iframe viewport height, so
+    // using it would keep old empty space after results or account tools close.
+    const frameContent = document.querySelector<HTMLElement>("[data-calorieapp-content]");
     const postHeight = () => {
-      if (!origin) {
+      if (!origin || !frameContent) {
         return;
       }
-      const height = Math.max(
-        document.documentElement.scrollHeight,
-        document.body?.scrollHeight ?? 0
-      );
+      const height = Math.ceil(frameContent.getBoundingClientRect().height);
+      if (!Number.isFinite(height) || height <= 0) return;
       window.parent.postMessage(
         {
           type: "calorieapp:frame:height",
@@ -1130,7 +1132,8 @@ export function XamanLoginPanel() {
 
     const resizeObserver =
       typeof ResizeObserver === "function" ? new ResizeObserver(postHeight) : null;
-    resizeObserver?.observe(document.documentElement);
+    if (frameContent) resizeObserver?.observe(frameContent);
+    window.addEventListener("resize", postHeight);
     postHeight();
 
     const handleParentMessage = async (event: MessageEvent<ParentBridgeMessage>) => {
@@ -1437,6 +1440,7 @@ export function XamanLoginPanel() {
       bridgeController.abort();
       embeddedOperationRef.current?.abort();
       resizeObserver?.disconnect();
+      window.removeEventListener("resize", postHeight);
       window.removeEventListener("message", handleParentMessage);
     };
   }, [clearCalorieAppSession, refreshCurrentUser]);

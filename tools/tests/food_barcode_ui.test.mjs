@@ -18,7 +18,7 @@ function events() {
   return {handlers, addEventListener(name, fn) {handlers.set(name, fn);}, removeEventListener(name, fn) {if (handlers.get(name) === fn) handlers.delete(name);}, emit(name, event) {handlers.get(name)?.(event);}};
 }
 function harness() {
-  const hooks = [], sessions = [], results = [], timers = new Map();
+  const hooks = [], sessions = [], photos = [], results = [], timers = new Map();
   const window = {...events(), isSecureContext: true}, document = {...events(), hidden: false};
   const navigator = {mediaDevices: {getUserMedia() {throw Error('Only the lifecycle service may request a camera');}}};
   let cursor = 0, effects = [], tree, timerId = 0, props = {locale: 'en', disabled: false, onLookup: code => results.push(code)};
@@ -41,6 +41,7 @@ function harness() {
       if (name === '@/config/barcode-copy.json') return {default: copy};
       if (name === '@/lib/foodBarcode') return {validFoodBarcode: library.exports.validFoodBarcode,
         cameraBlockedByPolicy: library.exports.cameraBlockedByPolicy,
+        readFoodBarcodePhoto(file, signal) {return new Promise((resolve, reject) => photos.push({file, signal, resolve, reject}));},
         startBarcodeCamera(video, signal, onCode, onReady) {return new Promise((resolve, reject) => sessions.push({video, signal, onCode, onReady, resolve, reject}));}};
       throw Error(`Unexpected import ${name}`);
     },
@@ -53,10 +54,10 @@ function harness() {
     return tree;
   }
   render();
-  return {window, document, navigator, sessions, results, timers, render,
+  return {window, document, navigator, sessions, photos, results, timers, render,
     get tree() {return tree;},
     click() {const result = nodes(tree, 'button')[0].props.onClick(); render(); return result;},
-    type(value) {nodes(tree, 'input')[0].props.onChange({target: {value}}); render();},
+    type(value) {nodes(tree, 'input').find(n => n.props.type === 'text').props.onChange({target: {value}}); render();},
     submit() {nodes(tree, 'form')[0].props.onSubmit({preventDefault() {}}); render();},
     unmount() {for (const h of hooks) h?.cleanup?.();},
   };
@@ -78,6 +79,23 @@ test('Rapid scan clicks share a session; language changes and one result preserv
   s.onCode('3017620422003'); s.onCode('3017620422003'); h.render();
   assert.deepEqual(h.results, ['3017620422003']); assert.equal(s.signal.aborted, true); assert.equal(h.timers.size, 0);
   s.resolve(); await pending;
+});
+
+test('Optional zoom and light controls survive a rejected setting and ignore late updates after stop', async () => {
+  const h = harness(); void h.click(); const s = h.sessions[0]; let release;
+  s.onReady({zoom: {min: 1, max: 4, step: .1, value: 1, set: () => new Promise(resolve => {release = resolve;})},
+    torch: {value: false, set: async () => null}});
+  h.render();
+  const zoom = () => nodes(h.tree, 'select')[0];
+  const light = () => nodes(h.tree, 'button').find(n => n.props['aria-pressed'] !== undefined);
+  assert.equal(nodes(zoom(), 'option')[0].props.value, 1); assert.equal(nodes(zoom(), 'option').at(-1).props.value, 4);
+  light().props.onClick(); await new Promise(setImmediate); h.render();
+  assert.ok(text(h.tree).includes(copy.en.controlError)); assert.equal(s.signal.aborted, false);
+  zoom().props.onChange({target: {value: '2'}}); h.render();
+  assert.equal(zoom().props.disabled, true);
+  void h.click(); release(2); await new Promise(setImmediate); h.render();
+  assert.equal(zoom(), undefined); assert.equal(light(), undefined);
+  s.resolve();
 });
 
 test('Stop, Escape, closing the panel, leaving/hiding, parent activity and timeout all cancel scanning', () => {
@@ -158,4 +176,42 @@ test('Visitor refusal provides localized recovery guidance; unavailable policy i
   h.document.permissionsPolicy = {allowsFeature() {return true;}};
   const retry = h.click(); assert.equal(h.sessions.length, 2);
   h.sessions[1].resolve(); await retry; h.unmount();
+});
+
+test('Taking a barcode photo stops the preview before opening the native camera and performs one lookup', async () => {
+  const h = harness(); void h.click(); const session = h.sessions[0];
+  const input = nodes(h.tree, 'input').find(n => n.props.type === 'file');
+  assert.equal(input.props.capture, 'environment'); assert.equal(input.props.accept, 'image/*');
+  input.props.onClick(); h.render(); assert.equal(session.signal.aborted, true);
+  assert.equal(h.timers.size, 0);
+  const file = {type: 'image/jpeg', size: 1000}, target = {files: [file], value: 'photo.jpg'};
+  input.props.onChange({currentTarget: target}); h.render();
+  assert.equal(target.value, ''); assert.equal(h.photos[0].file, file);
+  assert.ok(text(h.tree).includes(copy.en.photoReading));
+  h.type('034000470693'); h.submit(); assert.equal(h.results.length, 0);
+  h.photos[0].resolve('0034000470693'); await new Promise(setImmediate); h.render();
+  assert.deepEqual(h.results, ['0034000470693']); assert.equal(h.sessions.length, 1);
+  assert.ok(text(h.tree).includes(copy.en.found)); session.resolve();
+});
+
+test('An unreadable photo remains recoverable and stopping or starting a camera discards late photo results', async () => {
+  for (const reason of ['escape', 'disabled', 'close', 'unmount', 'camera']) {
+    const h = harness(), input = nodes(h.tree, 'input').find(n => n.props.type === 'file');
+    input.props.onChange({currentTarget: {files: [{type: 'image/jpeg', size: 1000}], value: ''}}); h.render();
+    if (reason === 'escape') h.window.emit('keydown', {key: 'Escape'});
+    if (reason === 'disabled') h.render({disabled: true});
+    if (reason === 'close') h.tree.props.onToggle({currentTarget: {open: false}});
+    if (reason === 'unmount') h.unmount();
+    if (reason === 'camera') void h.click();
+    assert.equal(h.photos[0].signal.aborted, true, reason);
+    h.photos[0].resolve('0034000470693'); await new Promise(setImmediate);
+    assert.deepEqual(h.results, []); h.unmount(); h.sessions.forEach(s => s.resolve());
+  }
+  for (const error of [false, true]) {
+    const h = harness(); nodes(h.tree, 'input').find(n => n.props.type === 'file').props.onChange({currentTarget: {files: [{}], value: ''}});
+    if (error) h.photos[0].reject(Error('Unreadable photo')); else h.photos[0].resolve(null);
+    await new Promise(setImmediate);
+    for (const locale of Object.keys(copy)) {h.render({locale}); assert.ok(text(h.tree).includes(copy[locale][error ? 'photoError' : 'photoNotFound']));}
+    assert.equal(h.results.length, 0); h.type('034000470693'); h.submit(); assert.deepEqual(h.results, ['034000470693']);
+  }
 });
