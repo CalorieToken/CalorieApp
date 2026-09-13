@@ -102,7 +102,8 @@
     load.type = close.type = 'button'; close.hidden = true;
     var permit = label('button','allowExchange','ctstyle-discovery-action cmplz-accept-service');
     permit.type='button';permit.setAttribute('data-service','swft');permit.setAttribute('data-category','marketing');
-    var settings = label('button','cookies','ctstyle-discovery-action cmplz-manage-consent'); settings.type = 'button';
+    var settings = label('a','cookies','ctstyle-discovery-action ctstyle-cookie-settings');
+    settings.href=window.location.origin+'/cookie-policy-eu/';
     var notice = label('p','consentNeeded','ctstyle-discovery-small');
     var area = element('div','ctstyle-exchange-frame'); area.id = 'ctstyle-swft-frame';
     load.setAttribute('aria-controls',area.id); close.setAttribute('aria-controls',area.id);

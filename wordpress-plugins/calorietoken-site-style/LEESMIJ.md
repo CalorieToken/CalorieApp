@@ -1,4 +1,22 @@
-# CalorieToken Site Style 1.4.38
+# CalorieToken Site Style 1.4.39
+
+## Cookiepagina en externe inhoud
+
+De cookiepagina houdt de oorspronkelijke Complianz-verklaring en bediening.
+Op mobiel staan servicenaam en doel onder elkaar; cookievelden en categorieknoppen
+passen binnen de beschikbare breedte. Bovenaan staat een directe instellingenlink.
+Footer, X en SWFT openen dezelfde native voorkeuren. Bij ontbrekende of geblokkeerde
+Complianz-scripts blijft de link naar de cookiepagina werken.
+
+De uitleg en rechtstreekse profielverwijzing bij X blijven zichtbaar, ook als een
+browser een leeg frame toont. De elf bestaande talen beschrijven deze terugval.
+Ingesloten X-inhoud blijft afhankelijk van toestemming, de browser en X zelf.
+De bestaande toestemming, het intrekken daarvan en het beheer van externe frames
+blijven bij Complianz en de al aanwezige controllers.
+
+De automatische cookie-inventaris en de taal van de door Complianz gegenereerde
+verklaring komen uit de bestaande Complianz-configuratie. Deze update verandert
+geen cookieclassificaties, bewaartermijnen of juridische tekst.
 
 ## Footer
 
@@ -54,9 +72,9 @@ De weergave sluit aan bij de gedeelde websiteopmaak en ondersteunt smalle scherm
 
 ## Installatie
 
-Pakket: **calorietoken-site-style-1.4.38.zip**. Upload via Plugins → Nieuwe plugin →
+Pakket: **calorietoken-site-style-1.4.39.zip**. Upload via Plugins → Nieuwe plugin →
 Plugin uploaden en vervang de bestaande Site Style-plugin. Controleer daarna de
-Usecases-pagina’s met een andere taal en daarna opnieuw in het Engels.
+cookiepagina op mobiel en de instellingenlinks bij X en CAL & Crypto.
 De afzonderlijke CalorieApp Login Repair-plugin blijft actief.
 
 De eerdere sitecorrecties blijven inbegrepen: gedeelde Brizy-menu's en footers,

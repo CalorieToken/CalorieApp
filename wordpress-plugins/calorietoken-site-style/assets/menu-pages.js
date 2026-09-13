@@ -112,23 +112,26 @@
     if (!copy || !Object.keys(blogFallback).every(function (key) {
       return typeof copy[key] === "string" && copy[key].trim();
     })) { copy = blogFallback; locale = "en"; }
-    // These three text nodes belong to the helper, outside the CMP/X subtree.
+    // These text nodes belong to the helper, outside the CMP/X subtree.
     Object.keys(blogFallback).forEach(function (key) {
       var node = blogView[key];
       if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) node.childNodes[0].data = copy[key];
     });
     blogView.help.setAttribute("lang", locale);
     blogView.help.setAttribute("dir", ["ar", "ur"].indexOf(locale) !== -1 ? "rtl" : "ltr");
-    // Complianz's delegated native button opens settings. We do not grant or
-    // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
+    // The shared settings link opens native preferences, with a policy-page
+    // fallback. A separate Blog module loads X only with service consent.
     var ready = panel.classList.contains('ctstyle-x-ready');
     function setHidden(node, value) { if (node.hidden !== value) node.hidden = value; }
-    setHidden(blogView.description, ready);
-    setHidden(blogView.settings, typeof window.cmplz_has_service_consent !== "function"
-      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner"));
+    // An iframe can have dimensions even when a browser blocks its contents.
+    // Keep the explanation and direct destination available in that case too.
+    setHidden(blogView.description, false);
+    setHidden(blogView.settings, false);
+    var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
+      && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
     var permitted=false;
     try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
-    setHidden(blogView.load, ready || permitted || blogView.settings.hidden);
+    setHidden(blogView.load, ready || permitted || !consentAvailable);
     setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }
   function refineBlogHelp() {
@@ -154,8 +157,8 @@
       link = link || label("a", "calorieapp-x-fallback", blogFallback.action);
       link.setAttribute("href", "https://x.com/CalorieToken");
       link.setAttribute("rel", "noopener noreferrer");
-      var settings = label("button", "calorieapp-x-settings cmplz-manage-consent", blogFallback.settings);
-      settings.setAttribute("type", "button"); settings.hidden = true;
+      var settings = label("a", "calorieapp-x-settings ctstyle-cookie-settings", blogFallback.settings);
+      settings.setAttribute('href',home+'/cookie-policy-eu/');
       var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
       load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
       load.setAttribute("data-category", "marketing"); load.hidden = true;

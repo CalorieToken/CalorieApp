@@ -12,6 +12,32 @@
   function text(v){return String(v||'').replace(/\s+/g,' ').trim();}
   function make(tag,cls,copy){var n=document.createElement(tag);if(cls)n.className=cls;if(copy)n.textContent=copy;return n;}
   function label(tag,key,cls){var n=make(tag,cls,cfg.copy.en[key]);labels.push({node:n,key:key});return n;}
+  function cookieSettings(event){
+    if(!allowed()||!(event.target instanceof window.Element))return;
+    var link=event.target.closest('a.ctstyle-footer-cookies,a.ctstyle-cookie-settings');
+    if(!link||link.getAttribute('href')!==window.location.origin+'/cookie-policy-eu/'||event.defaultPrevented||
+      event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+    // All owned entry points use the same native preferences panel. If the
+    // CMP is unavailable, the anchor still opens the real policy document.
+    if(typeof window.cmplz_set_banner_status!=='function')return;
+    try{window.cmplz_set_banner_status('show');}catch(_){return;}
+    if(!document.querySelector('.cmplz-cookiebanner.cmplz-show'))return;
+    event.preventDefault();
+    window.requestAnimationFrame(function(){
+      var banner=document.querySelector('.cmplz-cookiebanner.cmplz-show');
+      if(!banner||banner.classList.contains('cmplz-categories-visible'))return;
+      var preferences=banner.querySelector('button.cmplz-view-preferences');
+      if(preferences)preferences.click();
+    });
+  }
+  function cookieDocument(){
+    var doc=one('.ctstyle-document-copy #cmplz-document');
+    if(!doc||document.querySelector('.ctstyle-cookie-document-actions'))return;
+    var actions=make('p','ctstyle-cookie-document-actions');
+    var link=label('a','cookies','ctstyle-cookie-settings');
+    link.href=window.location.origin+'/cookie-policy-eu/';
+    actions.append(link);doc.before(actions);
+  }
   function routes(){
     document.querySelectorAll('.xl-card a[href]').forEach(function(a){
       if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';
@@ -195,18 +221,6 @@
           // A real destination remains usable if the consent script is blocked
           // or still loading. Only the CMP itself opens and manages preferences.
           cookies.href=window.location.origin+'/cookie-policy-eu/';
-          cookies.addEventListener('click',function(event){
-            if(typeof window.cmplz_set_banner_status!=='function')return;
-            try{window.cmplz_set_banner_status('show');}catch(_){return;}
-            if(!document.querySelector('.cmplz-cookiebanner.cmplz-show'))return;
-            event.preventDefault();
-            window.requestAnimationFrame(function(){
-              var banner=document.querySelector('.cmplz-cookiebanner.cmplz-show');
-              if(!banner||banner.classList.contains('cmplz-categories-visible'))return;
-              var preferences=banner.querySelector('button.cmplz-view-preferences');
-              if(preferences)preferences.click();
-            });
-          });
           links.append(cookies);
         }
       }
@@ -225,11 +239,12 @@
   function refresh(tag){
     if(!allowed())return;if(observer)observer.disconnect();
     locale=cfg.copy[tag]?tag:(window.CalorieTokenDiscoveryUI?window.CalorieTokenDiscoveryUI.getLocale():'en');
-    routes();paper();trustline();roadmap();faq();contact();homeMenu();sharedLayout();
+    routes();paper();trustline();roadmap();faq();contact();homeMenu();sharedLayout();cookieDocument();
     labels.forEach(function(x){var value=cfg.copy[locale][x.key];if(x.node.textContent!==value)x.node.textContent=value;x.node.lang=locale;x.node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';});
     if(observer)observer.observe(document.body,{childList:true,subtree:true});
   }
   window.CalorieTokenRefinements={refresh:refresh};
+  document.addEventListener('click',cookieSettings);
   if(typeof window.MutationObserver==='function')observer=new window.MutationObserver(function(records){
     if(pending||!records.some(function(r){return Array.from(r.addedNodes).some(function(n){return n.nodeType===1&&!n.closest?.('#ctstyle-faq-help,#ctstyle-widget-help');});}))return;
     pending=true;window.requestAnimationFrame(function(){pending=false;refresh();});
