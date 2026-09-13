@@ -1,4 +1,4 @@
-/* Public display language and an explicit guide-navigation message only. */
+/* Public display language, explicit guide navigation and scoped camera delegation. */
 (function () {
   'use strict';
   var cfg = window.CalorieTokenDiscovery, runtime = window.CalorieAppDisplayLanguage;
@@ -21,7 +21,17 @@
       var url = new URL(all[0].src);
       if (!appOrigins.includes(url.origin) || url.pathname !== '/' || url.username || url.password || !all[0].contentWindow) return [];
     } catch (_) { return []; }
-    return [{window:all[0].contentWindow,origin:url.origin}];
+    return [{window:all[0].contentWindow,origin:url.origin,node:all[0]}];
+  }
+  function cameraPermission() {
+    // Only the one verified app may ask the visitor to use its camera. Keep all
+    // existing directives, including an explicit operator camera restriction.
+    frames().forEach(function (frame) {
+      var permission=frame.node.getAttribute('allow')||'';
+      if (!permission.split(';').some(function (part) {return /^camera(?:\s|$)/i.test(part.trim());})) {
+        frame.node.setAttribute('allow',permission+(permission.trim()?'; ':'')+'camera '+frame.origin);
+      }
+    });
   }
   function trusted(event) {
     return frames().some(function (frame) { return frame.window === event.source && frame.origin === event.origin; });
@@ -33,12 +43,16 @@
   function openGuide() {
     var guide = document.querySelector('#ctstyle-testnet[data-ctstyle-testnet="1"]');
     if (!guide) return;
+    var disclosure = guide.querySelector('.ctstyle-testnet-disclosure');
+    if (disclosure) disclosure.open = true;
     if (typeof guide.scrollIntoView === 'function') guide.scrollIntoView({block:'start',behavior:'auto'});
     var heading = guide.querySelector('h2');
     if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
   }
   function init() {
-    if (!allowed() || started || !window.CalorieTokenDiscoveryUI) return;
+    if (!allowed()) return;
+    cameraPermission();
+    if (started || !window.CalorieTokenDiscoveryUI) return;
     started = true;
     // A native display controller, when already active, remains the sole host.
     if (!document.querySelector('[data-calorieapp-display-language][data-ready="1"]') &&

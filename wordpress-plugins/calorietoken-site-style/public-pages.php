@@ -7,6 +7,9 @@ final class PublicPages {
     const KEY = 'ctstyle_public_pages_142';
     public static function is_document() {
         if (is_page(array(531,586,7860,7876))) { return true; }
+        return self::is_hub();
+    }
+    public static function is_hub() {
         $id = (int) get_option('ctstyle_public_hub_id', 0);
         return $id > 0 && is_page($id) && get_post_meta($id, '_ctstyle_public_hub', true) === '1';
     }

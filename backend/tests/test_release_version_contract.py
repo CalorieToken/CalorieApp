@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import pytest
 
-from app.main import app
+from app.main import app, _build_identifier
 from app.services.open_food_facts import REQUEST_HEADERS
 
 
@@ -105,6 +106,18 @@ def test_runtime_versions_are_aligned_to_v2() -> None:
     )
     assert versioning["ds_3_means_data_safety_step_3_not_product_v3"] is True
     assert versioning["contract_directory_v1_means_contract_schema_version_not_product_v1"] is True
+
+
+def test_render_commit_fills_only_an_unconfigured_runtime_build_identifier() -> None:
+    commit = "2ad5d87e74a0169dfa069fb77babe27d592c9f8b"
+    assert _build_identifier(None, render_commit=commit) == commit
+    assert _build_identifier(" ", render_commit=" " + commit + " ") == commit
+    assert _build_identifier("release-1", render_commit=commit) == "release-1"
+    assert _build_identifier("development", render_commit=commit) == "development"
+    assert _build_identifier(None, render_commit="invalid provider text") == "development"
+    assert _build_identifier(None) == "development"
+    with pytest.raises(RuntimeError):
+        _build_identifier("invalid explicit value", render_commit=commit)
 
 
 def test_data_safety_contract_points_to_v2_completion_boundary() -> None:

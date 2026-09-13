@@ -1,3 +1,4 @@
+import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -39,6 +40,8 @@ async function loadModule(
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }

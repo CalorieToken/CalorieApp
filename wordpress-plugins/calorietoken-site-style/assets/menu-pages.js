@@ -21,6 +21,7 @@
   var contentUpdates = config.contentUpdates, usecases = config.usecases, articleNotes = config.articleNotes;
   var blogView = null, blogLocale = null;
   var blogFallback = config.blog.copy.en;
+  var blogTextKeys = ['description','action','settings','load','retry'];
   function selectedLocale() {
     var requested = new URL(window.location.href).searchParams.get('ui_lang') || document.documentElement.lang || 'en';
     var exact = config.locales.find(function (item) { return item.tag.toLowerCase() === requested.toLowerCase(); });
@@ -80,7 +81,7 @@
 
   function blogPanel() {
     if (window.CalorieTokenSiteStyleMenu?.blog?.publicPage !== true
-      || pageId() !== 1207 || window.location.pathname !== "/index.php/blog/"
+      || pageId() !== 1207 || !["/index.php/blog/", "/blog/"].includes(window.location.pathname)
       || ["https://calorietoken.net", "https://www.calorietoken.net"].indexOf(home) === -1
       || document.querySelector(".brz-ed,#brz-ed-iframe")
       || /(?:^|[?&])(?:preview|brizy-edit|brizy-edit-iframe)(?:=|&|$)/.test(window.location.search || "")) return null;
@@ -103,28 +104,37 @@
   function renderBlogHelp(locale) {
     var panel = blogPanel();
     if (!blogView || panel !== blogView.panel || blogView.help.parentElement !== panel
-      || !Object.keys(blogFallback).every(function (key) { return blogView[key].parentElement === blogView.help; })
+      || !blogTextKeys.every(function (key) { return blogView[key].parentElement === blogView.help; })
       || blogView.action.getAttribute("href") !== "https://x.com/CalorieToken") return;
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     var definition = config && Array.isArray(config.locales)
       && config.locales.find(function (item) { return item.tag === locale; });
     var copy = definition && config.copy && config.copy[locale];
-    if (!copy || !Object.keys(blogFallback).every(function (key) {
+    if (!copy || !blogTextKeys.every(function (key) {
       return typeof copy[key] === "string" && copy[key].trim();
     })) { copy = blogFallback; locale = "en"; }
-    // These three text nodes belong to the helper, outside the CMP/X subtree.
-    Object.keys(blogFallback).forEach(function (key) {
+    var permitted=false;
+    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
+    // These text nodes belong to the helper, outside the CMP/X subtree.
+    blogTextKeys.forEach(function (key) {
       var node = blogView[key];
-      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) node.childNodes[0].data = copy[key];
+      var value=key==='description'&&permitted ? (copy.consentedDescription||'X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X.') : copy[key];
+      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 && node.childNodes[0].data!==value) node.childNodes[0].data = value;
     });
     blogView.help.setAttribute("lang", locale);
     blogView.help.setAttribute("dir", ["ar", "ur"].indexOf(locale) !== -1 ? "rtl" : "ltr");
-    // Complianz's delegated native button opens settings. We do not grant or
-    // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
+    // The shared settings link opens native preferences, with a policy-page
+    // fallback. A separate Blog module loads X only with service consent.
     var ready = panel.classList.contains('ctstyle-x-ready');
-    blogView.description.hidden = ready;
-    blogView.settings.hidden = ready || typeof window.cmplz_has_service_consent !== "function"
-      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner");
+    function setHidden(node, value) { if (node.hidden !== value) node.hidden = value; }
+    // An iframe can have dimensions even when a browser blocks its contents.
+    // Keep the explanation and direct destination available in that case too.
+    setHidden(blogView.description, false);
+    setHidden(blogView.settings, false);
+    var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
+      && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
+    setHidden(blogView.load, ready || permitted || !consentAvailable);
+    setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -149,11 +159,18 @@
       link = link || label("a", "calorieapp-x-fallback", blogFallback.action);
       link.setAttribute("href", "https://x.com/CalorieToken");
       link.setAttribute("rel", "noopener noreferrer");
-      var settings = label("button", "calorieapp-x-settings cmplz-manage-consent", blogFallback.settings);
-      settings.setAttribute("type", "button"); settings.hidden = true;
-      help.appendChild(description); help.appendChild(link); help.appendChild(settings);
+      var settings = label("a", "calorieapp-x-settings ctstyle-cookie-settings", blogFallback.settings);
+      settings.setAttribute('href',home+'/cookie-policy-eu/');
+      var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
+      load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
+      load.setAttribute("data-category", "marketing"); load.hidden = true;
+      var retry=label('button','calorieapp-x-retry',blogFallback.retry);retry.type='button';retry.hidden=true;
+      retry.addEventListener('click',function(){
+        if(window.CalorieTokenBlogTimeline&&typeof window.CalorieTokenBlogTimeline.retry==='function')window.CalorieTokenBlogTimeline.retry();
+      });
+      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);help.appendChild(retry);
       panel.appendChild(help); panel.classList.add("calorieapp-social-panel");
-      blogView = { panel: panel, help: help, description: description, action: link, settings: settings };
+      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load, retry: retry };
     }
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     renderBlogHelp(blogLocale || (config && config.initialLocale) || "en");
@@ -234,7 +251,11 @@
         && candidate.rows.every(function (row, index) {
           return live.paragraphs[index] === row.paragraph
             && row.group.parentElement === row.paragraph.parentElement;
-        }) && candidate.note.parentElement === candidate.root;
+        }) && candidate.note.parentElement === candidate.root
+        && (!candidate.noteOriginal || candidate.noteOriginal.parts.every(function (part, index) {
+          return part.node.parentElement === candidate.note && part.node.childElementCount === 0
+            && part.node.textContent === candidate.notePainted[index];
+        }));
     }
     function copyForLocale() {
       var config = window.CalorieTokenSiteStyleMenu;
@@ -260,6 +281,8 @@
       text(view.note.querySelector("strong"), copy.before);
       text(view.note.querySelector("p"), copy.context);
       text(view.note.querySelector("a"), copy.toolkit);
+      view.notePainted = [copy.before, copy.context, copy.toolkit];
+      view.noteLocale = { lang: selected.tag, dir: selected.direction };
       if (view.link) {
         localize(view.link, selected);
         text(view.link, copy.signAction);
@@ -272,7 +295,23 @@
         row.group.remove();
         if (row.addedClass) row.paragraph.classList.remove("calorieapp-copy-value");
       });
-      view.note.remove();
+      if (view.noteOriginal) {
+        // The public CMS already contains this exact note. Restore only values
+        // still owned by this controller; never overwrite a later custom edit.
+        view.noteOriginal.parts.forEach(function (part, index) {
+          if (part.node.parentElement === view.note && part.node.childElementCount === 0
+              && part.node.textContent === view.notePainted[index]) {
+            text(part.node, part.text);
+          }
+        });
+        ["lang", "dir"].forEach(function (name) {
+          if (view.note.getAttribute(name) !== view.noteLocale[name]) return;
+          var original = view.noteOriginal[name];
+          if (original === null) view.note.removeAttribute(name);
+          else view.note.setAttribute(name, original);
+        });
+        view.note.removeAttribute("data-calorieapp-trustline-ui");
+      } else view.note.remove();
       if (view.link) view.link.remove();
       if (view.addedClass) view.root.classList.remove("calorieapp-trustline-details");
       view = null;
@@ -317,9 +356,29 @@
           } catch (_) { finish("manual"); }
         });
       });
-      candidate.note = contextNote("calorieapp-trustline-context", english.before, english.context, english.toolkit, "https://www.xrptoolkit.com/");
+      var existingNotes = Array.from(live.root.children).filter(function (node) {
+        if (!node.matches('aside.calorieapp-context-note#calorieapp-trustline-context')
+            || node.matches(protectedSelector) || node.hasAttribute("data-calorieapp-trustline-ui")) return false;
+        var parts = Array.from(node.children);
+        return parts.length === 3 && parts.every(function (part) { return part.childElementCount === 0; })
+          && parts[0].tagName === "STRONG" && plain(parts[0].textContent) === english.before
+          && parts[1].tagName === "P" && plain(parts[1].textContent) === english.context
+          && parts[2].tagName === "A" && plain(parts[2].textContent) === english.toolkit
+          && parts[2].getAttribute("href") === "https://www.xrptoolkit.com/";
+      });
+      if (existingNotes.length === 1) {
+        candidate.note = existingNotes[0];
+        candidate.noteOriginal = {
+          lang: candidate.note.getAttribute("lang"), dir: candidate.note.getAttribute("dir"),
+          parts: Array.from(candidate.note.children).map(function (node) { return {node: node, text: node.textContent}; })
+        };
+      } else {
+        var noteId = "calorieapp-trustline-context", sequence = 2;
+        while (document.getElementById(noteId)) noteId = "calorieapp-trustline-context-" + sequence++;
+        candidate.note = contextNote(noteId, english.before, english.context, english.toolkit, "https://www.xrptoolkit.com/");
+        live.root.appendChild(candidate.note);
+      }
       candidate.note.setAttribute("data-calorieapp-trustline-ui", "");
-      live.root.appendChild(candidate.note);
       view = candidate;
     }
     function refresh() {

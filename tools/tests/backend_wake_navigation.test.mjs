@@ -1,3 +1,4 @@
+import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -24,6 +25,8 @@ function harness() {
     module, exports: module.exports, URL, Number, JSON, process: { env: {} },
     Date: { now: () => now }, window: { sessionStorage: storage },
     require(name) {
+      if (name === "@/components/DisplayLanguageProvider") return {useDisplayLanguage:()=>({enabled:false,locale:"en"})};
+      if (name === "@/lib/authUi") return authUi;
       if (name === "@/lib/backendRequest") return { BACKEND_WAKE_BASE_URL: "/api/backend" };
       if (name === "@/lib/locales") return { resolveLocale: value => value || "en" };
       if (name === "react" || name === "react/jsx-runtime" || name.startsWith("@/components/")) return {};
@@ -128,6 +131,8 @@ test("the actual login control resumes once after return and only after a truste
       document: { referrer: `${origin}/index.php/calorieapp/`, body: { scrollHeight: 100 }, documentElement: { scrollHeight: 100 } },
       process: { env: { NODE_ENV: "production" } },
       require(name) {
+      if (name === "@/components/DisplayLanguageProvider") return {useDisplayLanguage:()=>({enabled:false,locale:"en"})};
+      if (name === "@/lib/authUi") return authUi;
         if (name === "react") return react;
         if (name === "react/jsx-runtime") return { jsx, jsxs: jsx, Fragment: "fragment" };
         if (name === "@/lib/locales") return { resolveLocale: value => value || "en" };

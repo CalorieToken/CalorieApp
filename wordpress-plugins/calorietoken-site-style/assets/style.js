@@ -33,11 +33,15 @@
     }
   }
   function styleHeader() {
+    var legacy = document.querySelector('.calorie-legacy-page');
     var styled = document.querySelector('.ctstyle-header');
-    if (styled) return styled;
+    if (styled && (!legacy || window.getComputedStyle(styled).display !== 'none')) return styled;
     var menu = document.querySelector('.brz-menu-simple');
     var header = menu && menu.closest('.brz-section,section,header');
-    if (!header) header = document.querySelector('.showcase-page-header,header.site-header,#masthead');
+    if (!header) header = document.querySelector('.showcase-page-header') || document.querySelector('header.site-header,#masthead');
+    // Older route notices hide the theme masthead in their own content CSS.
+    // That hidden node must not suppress the normal shared fallback menu.
+    if (legacy && header && window.getComputedStyle(header).display === 'none') header = null;
     if (header) {
       header.classList.add('ctstyle-header');
       if (header.classList.contains('brz-section')) {
@@ -162,7 +166,22 @@
     known.forEach(function (node) {
       if (node !== footer && !node.contains(footer)) node.classList.add('ctstyle-retired-footer');
     });
-    if (canonical) return; // The installed bridge already owns its carousel.
+    if (canonical) {
+      // Adopt the installed bridge's existing row so shared translations and
+      // cookie controls also apply. Copy only missing public template links.
+      var legal = footer.querySelector('.calorieapp-shared-legal-links');
+      if (legal) {
+        legal.classList.add('ctstyle-legal-links');
+        var present = new Set(Array.from(legal.querySelectorAll('a[href]')).map(function (a) {
+          return canonicalURL(a.getAttribute('href'));
+        }));
+        fallback.querySelectorAll('.ctstyle-legal-links a[href]').forEach(function (a) {
+          var url = canonicalURL(a.getAttribute('href'));
+          if (url && !present.has(url)) { legal.append(a.cloneNode(true)); present.add(url); }
+        });
+      }
+      return; // The installed bridge still owns its carousel and handlers.
+    }
     var track = footer.querySelector('.ctstyle-social-track');
     footer.querySelectorAll('[data-ctstyle-direction]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -310,6 +329,7 @@
           return /^(preview|customize_changeset_uuid|brizy-edit|brizy-edit-iframe|brz-edit|brz-edit-iframe)$/.test(key);
         })) {
       imageVar('--ctstyle-paper-image', cfg.paperImage);
+      imageVar('--ctstyle-header-image', cfg.headerImage);
       styleFooter();
       return;
     }

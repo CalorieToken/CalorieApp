@@ -42,6 +42,8 @@ from .capacity import (
     validate_capacity_configuration,
 )
 from .database import database_readiness, get_session, init_db
+from .food_log_view import food_log_overview
+from .schemas import FoodLogOverview
 from .data_growth import (
     DataGrowthAdmissionRejected,
     create_food_log_with_subject_budget,
@@ -106,7 +108,7 @@ from .services.identity import (
     validate_identity_start_admission_configuration,
     validate_origin_login_handoff,
 )
-from .services.open_food_facts import search_food_products
+from .services.open_food_facts import search_food_products, valid_food_barcode
 from .services.food_search_availability import FoodSearchUnavailable
 
 logger = logging.getLogger(__name__)
@@ -118,10 +120,11 @@ SESSION_IDLE_LIFETIME_SECONDS = 30 * 60
 BRIDGE_STATE_VALIDATE_CONTEXT = "login_state_validate"
 
 
-def _build_identifier(value: str | None) -> str:
+def _build_identifier(value: str | None, *, render_commit: str | None = None) -> str:
     candidate = value.strip() if value else ""
     if not candidate:
-        return "development"
+        commit = render_commit.strip() if render_commit else ""
+        return commit if re.fullmatch(r"[A-Fa-f0-9]{40}", commit) else "development"
     if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", candidate) is None:
         raise RuntimeError(
             "CALORIEAPP_BUILD_ID must be 1-64 letters, digits, dots, "
@@ -151,7 +154,9 @@ _SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {
 _SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").strip().lower()
 _CALORIEAPP_ENV_RAW = os.getenv("CALORIEAPP_ENV")
 _CALORIEAPP_ENV = _CALORIEAPP_ENV_RAW.strip().lower() if _CALORIEAPP_ENV_RAW and _CALORIEAPP_ENV_RAW.strip() else None
-_CALORIEAPP_BUILD_ID = _build_identifier(os.getenv("CALORIEAPP_BUILD_ID"))
+_CALORIEAPP_BUILD_ID = _build_identifier(
+    os.getenv("CALORIEAPP_BUILD_ID"), render_commit=os.getenv("RENDER_GIT_COMMIT")
+)
 _BRIDGE_AUTH_MAX_AGE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_AGE_SECONDS", "300"))
 _BRIDGE_AUTH_MAX_FUTURE_SECONDS = int(os.getenv("BRIDGE_AUTH_MAX_FUTURE_SECONDS", "30"))
 _BRIDGE_NONCE_RETENTION_SECONDS = int(
@@ -1640,6 +1645,20 @@ def get_logs(
     return [FoodLog.model_validate(e.model_dump()) for e in entries]
 
 
+@app.get("/logs/overview", response_model=FoodLogOverview)
+def get_log_overview(
+    session: DbSession,
+    current_user: CurrentUser,
+    response: Response,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    before: int | None = Query(default=None, ge=1),
+    limit: int = Query(default=100, ge=1, le=200),
+) -> FoodLogOverview:
+    response.headers["Cache-Control"] = "private, no-store"
+    return food_log_overview(session, current_user.id, start, end, before, limit)
+
+
 @app.delete("/logs/{log_id}")
 def delete_log(
     log_id: int,
@@ -1684,13 +1703,16 @@ def delete_all_logs(
 
 
 @app.get("/search-food", response_model=FoodSearchResponse)
-async def search_food(q: str = Query(..., min_length=1, max_length=120)) -> FoodSearchResponse:
+async def search_food(q: str = Query(..., min_length=1, max_length=120), mode: str = Query("name", pattern="^(name|barcode)$")) -> FoodSearchResponse:
     query = q.strip()
     if not query:
         raise HTTPException(status_code=422, detail="Search query must contain visible characters")
 
+    if mode == "barcode" and valid_food_barcode(query) is None:
+        raise HTTPException(status_code=422, detail="Invalid food barcode")
+
     try:
-        results = await search_food_products(query)
+        results = await search_food_products(query, barcode=True) if mode == "barcode" else await search_food_products(query)
     except FoodSearchUnavailable as exc:
         logger.warning("Open Food Facts unavailable (status=%s)", exc.status_code)
         raise HTTPException(

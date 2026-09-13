@@ -1,3 +1,4 @@
+import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -68,6 +69,7 @@ async function loadComponentModule(overrides = {}) {
     exports: module.exports,
     module,
     require(specifier) {
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return overrides.react ?? {};
       }
@@ -343,8 +345,8 @@ test("account tools stay available but collapsed below the primary app", async (
 
   assert.match(panel, /<details className="group border-t/);
   assert.match(panel, /<summary className=/);
-  assert.match(panel, /Account tools/);
-  assert.match(panel, /Export and privacy options/);
+  assert.match(panel, /authCopy\.accountTools/);
+  assert.match(panel, /authCopy\.privacyOptions/);
   assert.match(panel, /<AccountDataExportButton/);
   assert.match(panel, /<AccountDataImportPanel/);
   assert.match(panel, /<AccountErasurePanel/);

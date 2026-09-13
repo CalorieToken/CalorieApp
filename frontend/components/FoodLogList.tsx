@@ -4,10 +4,15 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { FoodSearchItem } from "@/components/foodTypes";
 import { filterLoggedFoods, getFoodLogFilterCopy } from "@/lib/foodLogFilter";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { diaryCopy } from "@/lib/foodDiary";
 import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
 
 type FoodLogListProps = {
   logs: FoodSearchItem[];
+  periodFiltered?: boolean;
+  total?: number;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
   onRefresh: () => void;
   onSelectLog: (log: FoodSearchItem) => void;
   onDeleteLog: (logId: number) => void;
@@ -20,6 +25,7 @@ type FoodLogListProps = {
 
 export function FoodLogList({
   logs,
+  periodFiltered = false, total = logs.length, hasMore = false, onLoadMore,
   onRefresh,
   onSelectLog,
   onDeleteLog,
@@ -33,6 +39,7 @@ export function FoodLogList({
   const [initialLocale, setLocale] = useState("en");
   const display = useDisplayLanguage();
   const locale = display.enabled ? display.locale : initialLocale;
+  const diaryUi = diaryCopy(locale);
   const ui = getFoodUi(display.enabled ? locale : "en");
   const filterId = useId();
   const filterInput = useRef<HTMLInputElement>(null);
@@ -72,10 +79,10 @@ export function FoodLogList({
             className="rounded-full border-2 border-red-300 bg-transparent px-4 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onDeleteAllLogs}
             disabled={
-              isLoading || isClearingAll || deletingLogId !== null || logs.length === 0 || filtering
+              isLoading || isClearingAll || deletingLogId !== null || logs.length === 0 || filtering || periodFiltered
             }
             aria-label={ui.copy.deleteAllLabel}
-            aria-describedby={filtering ? `${filterId}-delete-hint` : undefined}
+            aria-describedby={filtering || periodFiltered ? `${filterId}-delete-hint` : undefined}
           >
             {isClearingAll ? ui.copy.deleting : ui.copy.deleteAll}
           </button>
@@ -111,14 +118,14 @@ export function FoodLogList({
             </button>
           ) : null}
         </div>
-        <p id={`${filterId}-scope`} className="mt-2 text-xs text-brand-secondary/80">{copy.scope}</p>
+        <p id={`${filterId}-scope`} className="mt-2 text-xs text-brand-secondary/80">{diaryUi.listScope}</p>
         <p id={`${filterId}-count`} role="status" className="mt-1 text-xs text-brand-secondary/80">
           {copy.count
             .replace("{shown}", new Intl.NumberFormat(locale).format(visibleLogs.length))
             .replace("{total}", new Intl.NumberFormat(locale).format(logs.length))}
         </p>
-        {filtering ? (
-          <p id={`${filterId}-delete-hint`} className="mt-1 text-xs text-brand-secondary/80">{copy.delete_all_hint}</p>
+        {filtering || periodFiltered ? (
+          <p id={`${filterId}-delete-hint`} className="mt-1 text-xs text-brand-secondary/80">{diaryUi.deleteHint}</p>
         ) : null}
         {visibleLogs.length === 0 ? (
           <p className="mt-3 text-sm text-brand-primary">{copy.empty}</p>
@@ -139,6 +146,7 @@ export function FoodLogList({
                 aria-label={formatFoodUi(ui.copy.viewDetails, { product: item.product_name })}
               >
                 <p className="text-sm font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>
+                {item.created_at && Number.isFinite(Date.parse(item.created_at)) ? <p className="mt-1 text-xs text-brand-secondary/80"><time dateTime={item.created_at}><bdi>{new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(item.created_at))}</bdi></time></p> : null}
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                   <div>
                     <span className="text-brand-secondary/60">{ui.copy.calories}</span>
@@ -173,6 +181,9 @@ export function FoodLogList({
           </li>
         ))}
       </ul>
+      <p className="mt-3 text-xs text-brand-secondary/80">{formatFoodUi(diaryUi.loaded, {shown: String(logs.length), total: String(total)})}</p>
+      {hasMore ? <button type="button" disabled={isLoading || isClearingAll || deletingLogId !== null} onClick={onLoadMore}
+        className="mt-3 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-semibold text-brand-secondary disabled:opacity-50">{diaryUi.more}</button> : null}
     </div>
   );
 }

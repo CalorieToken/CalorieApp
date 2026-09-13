@@ -167,7 +167,7 @@ body.ctstyle-enabled .ctstyle-testnet-import li {padding-inline-start:8px;margin
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is([data-calorieapp-shortcut="top"],[data-calorieapp-shortcut="app"],.ctstyle-app-launcher) {
   --ct-float-bg:#008d36;--ct-float-fg:#fff;--ct-float-hover:#505ba9;--ct-float-hover-fg:#fff;
 }
-:is(body.ctstyle-enabled,body.ctstyle-footer-only) [data-calorieapp-shortcut="exchange"] {
+:is(body.ctstyle-enabled,body.ctstyle-footer-only) :is([data-calorieapp-shortcut="exchange"],[data-ctstyle-exchange-shortcut]) {
   --ct-float-bg:#f9b233;--ct-float-fg:#303449;--ct-float-hover:#008d36;--ct-float-hover-fg:#fff;
 }
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.calorieapp-page-tool,.ctstyle-app-launcher > details > summary) {
@@ -191,6 +191,17 @@ body.ctstyle-enabled .ctstyle-testnet-step h3:focus {outline:2px solid #505ba9;o
 body.ctstyle-enabled .ctstyle-testnet-navigation {display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin-top:18px;}
 body.ctstyle-enabled .ctstyle-testnet-help {margin:18px 0;}
 body.ctstyle-enabled .ctstyle-testnet-help summary {cursor:pointer;min-height:44px;padding:8px 0;font-weight:700;}
+/* Official Xaman screens stay legible in a single mobile column. */
+body.ctstyle-enabled .ctstyle-xaman-screens {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:xaman-step;list-style:none!important;padding:0!important;margin:20px 0!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li {counter-increment:xaman-step;box-sizing:border-box;min-width:0;padding:16px!important;margin:0!important;border:1px solid #d7daea;border-radius:16px;background:#fff;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li::before {content:counter(xaman-step);display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin-bottom:12px;border-radius:50%;background:#505ba9;color:#fff;font:700 18px/1 Arial,sans-serif;}
+body.ctstyle-enabled .ctstyle-xaman-screens>li>p {margin:0 0 16px!important;font-size:19px!important;line-height:1.5!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens figure {margin:0!important;padding:0!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens img {display:block;width:100%!important;max-width:372px!important;height:auto!important;margin:0 auto!important;border:1px solid #d7daea;border-radius:12px;}
+body.ctstyle-enabled .ctstyle-xaman-screens figcaption {margin-top:10px;font:400 15px/1.5 Amiri,Georgia,serif!important;}
+body.ctstyle-enabled .ctstyle-xaman-screens figcaption a {display:inline-block;min-height:44px;padding:8px 0;color:#414d94!important;text-decoration:underline;}
+body.ctstyle-enabled .ctstyle-testnet-picture-preview>h3 {margin-top:24px!important;}
+@media(max-width:767px){body.ctstyle-enabled .ctstyle-xaman-screens {grid-template-columns:minmax(0,1fr);}}
 @media(max-width:600px) {
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {right:max(6px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));}
   body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-discovery-action {min-height:52px;font-size:20px!important;}
@@ -214,6 +225,25 @@ body.ctstyle-enabled .ctstyle-testnet-help summary {cursor:pointer;min-height:44
 body.ctstyle-enabled .ctstyle-faq-item {padding:8px 0;border-top:1px solid #d4d8e7;}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) :is(.ctstyle-help-widget,.ctstyle-faq-hub) :is(input,button,a,summary):focus-visible {outline:3px solid #008d36;outline-offset:3px;}
 /* S27: visible app/language controls inside the existing Xaman card. */
+/* Live desktop review: keep shortcuts out of the central reading column.
+   Existing tablet/mobile geometry and the buttons themselves stay unchanged. */
+@media(min-width:1200px){
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {right:max(16px,env(safe-area-inset-right));}
+}
+/* A single compact mobile row leaves forms and footer links usable. */
+@media(max-width:767px){
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) {padding-bottom:calc(64px + env(safe-area-inset-bottom))!important;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tools {box-sizing:border-box;flex-direction:row-reverse!important;width:auto!important;max-width:calc(100vw - 76px);gap:4px!important;right:max(8px,env(safe-area-inset-right))!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;z-index:10000;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool-position {width:44px!important;flex:0 0 44px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool {width:44px;height:44px;padding:7px;border-radius:12px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool-icon {width:26px;height:26px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher {inset-inline-start:max(8px,env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));max-width:44px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary {width:44px;min-width:44px;height:44px;min-height:44px;padding:6px;gap:0;border-radius:12px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>.ctstyle-help-caption {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary::after {display:none;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>.ctstyle-help-icon {width:28px;height:28px;}
+ :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher-panel {width:340px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 100px);}
+}
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-account-app {
   box-sizing:border-box;width:100%;min-width:0;padding:12px;border-top:2px solid #f9b233;
   background:#fff;color:#303449;font:16px/1.45 Amiri,Georgia,serif;text-align:start;border-radius:0 0 12px 12px;
@@ -257,6 +287,7 @@ body.ctstyle-enabled .ctstyle-trustline-option .calorieapp-trustline-context {ma
 /* One aligned reading column for CAL & Crypto's three established routes. */
 body.ctstyle-enabled .ctstyle-exchange-layout {box-sizing:border-box;width:100%;max-width:1100px;margin:0 auto;text-align:start;padding:0 12px;}
 body.ctstyle-enabled .ctstyle-exchange-layout>.cal-buy-guide,
+body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-crypto-guide-route .cal-buy-guide,
 body.ctstyle-enabled .ctstyle-exchange-layout>.ctstyle-discovery-card,
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery>.ctstyle-discovery-card {box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:24px 0!important;padding:28px!important;border:2px solid #505ba9!important;border-top:5px solid #f9b233!important;border-radius:24px!important;box-shadow:0 4px 14px rgba(80,91,169,.10)!important;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-intro {max-width:760px;margin:0 auto 18px!important;padding:12px 0!important;text-align:center;font:22px/1.6 Amiri,Georgia,serif!important;}
@@ -264,8 +295,10 @@ body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs {display:g
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a {display:flex;flex-direction:column;gap:8px;min-height:92px;margin:0;padding:16px;background:#fff;border-radius:18px;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a::before {counter-increment:route;content:counter(route,decimal-leading-zero);color:#008d36;font:700 18px/1 Arial,sans-serif;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a:hover {background:#fff4da;}
-body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action {padding:14px 28px;margin-inline:0;background:#008d36;color:#fff!important;border-color:#008d36;}
-body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action:hover {background:#505ba9;border-color:#505ba9;}
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action,
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-crypto-panel-body>.ctstyle-discovery-action {padding:14px 28px;margin-inline:0;background:#008d36;color:#fff!important;border-color:#008d36;}
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action:hover,
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-crypto-panel-body>.ctstyle-discovery-action:hover {background:#505ba9;border-color:#505ba9;}
 body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-buy-trustline {width:100%;margin:22px 0 0;padding:20px;border:1px solid #d8dbe9;border-inline-start:4px solid #f9b233;border-radius:16px;background:#f7f8fc;box-shadow:none;}
 body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-buy-trustline h2 {font-size:24px!important;color:#505ba9!important;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-guide-heading {margin:32px 0 0!important;}
@@ -275,13 +308,20 @@ body.ctstyle-enabled .ctstyle-exchange-layout .cal-buy-steps>li {min-width:0;}
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs {grid-template-columns:minmax(0,1fr);gap:8px;}
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a {flex-direction:row;justify-content:flex-start;gap:14px;min-height:56px;padding:12px 16px;text-align:start;}
  body.ctstyle-enabled .ctstyle-exchange-layout>.cal-buy-guide,
+ body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-crypto-guide-route .cal-buy-guide,
  body.ctstyle-enabled .ctstyle-exchange-layout>.ctstyle-discovery-card,
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery>.ctstyle-discovery-card {padding:22px 16px!important;}
 }
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) [data-ctstyle-exchange-shortcut] {--ct-float-bg:#f9b233;--ct-float-fg:#303449;--ct-float-hover:#008d36;--ct-float-hover-fg:#fff;}
 body.ctstyle-enabled #ctstyle-testnet {max-width:960px;padding:32px;}
-body.ctstyle-enabled #ctstyle-testnet>h2 {font-size:34px!important;}
-body.ctstyle-enabled #ctstyle-testnet>.ctstyle-discovery-status {font-size:16px!important;margin:18px 0!important;border-radius:12px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary {display:flex;align-items:center;gap:16px;min-height:44px;cursor:pointer;list-style:none;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary::-webkit-details-marker {display:none;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary::after {content:'+';flex:0 0 auto;margin-inline-start:auto;color:#505ba9;font:700 30px/1 Arial,sans-serif;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure[open]>summary::after {content:'−';}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary:focus-visible {outline:3px solid #008d36;outline-offset:5px;border-radius:6px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary>h2 {min-width:0;margin:0!important;font-size:34px!important;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure[open]>summary {margin-bottom:18px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>.ctstyle-discovery-status {font-size:16px!important;margin:18px 0!important;border-radius:12px;}
 body.ctstyle-enabled .ctstyle-testnet-create {box-sizing:border-box;padding:24px;margin:24px 0;background:#f7f8fc;border:1px solid #d8dbe9;border-radius:20px;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-progress {margin:0 0 18px!important;padding:8px 16px!important;background:#505ba9;color:#fff;}
 body.ctstyle-enabled .ctstyle-testnet-create h3 {margin:0 0 12px!important;color:#008d36;font:700 28px/1.35 Amiri,Georgia,serif!important;}
@@ -292,13 +332,16 @@ body.ctstyle-enabled .ctstyle-testnet-create>.ctstyle-discovery-action:last-chil
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-navigation {padding-top:20px;border-top:1px solid #d8dbe9;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-navigation button {flex:1 1 180px;margin:0;min-height:52px;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-help {padding-top:12px;border-top:1px solid #d8dbe9;}
-body.ctstyle-enabled #ctstyle-testnet>.ctstyle-test-steps {padding-top:10px;border-top:1px solid #d8dbe9;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>.ctstyle-test-steps {padding-top:10px;border-top:1px solid #d8dbe9;}
 @media(max-width:600px) {
  body.ctstyle-enabled #ctstyle-testnet {padding:22px 16px;}
- body.ctstyle-enabled #ctstyle-testnet>h2 {font-size:28px!important;}
+ body.ctstyle-enabled .ctstyle-testnet-disclosure>summary>h2 {font-size:28px!important;}
  body.ctstyle-enabled .ctstyle-testnet-create {padding:20px 14px;}
  body.ctstyle-enabled .ctstyle-testnet-create h3 {font-size:25px!important;}
 }
 body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns {border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
 body.ctstyle-enabled .ctstyle-trustline-option>.brz-row>.brz-columns>.brz-bg {display:none!important;}
 body.ctstyle-enabled .ctstyle-trustline-option h2::before {display:none!important;}
+
+body.ctstyle-enabled.ctstyle-cookie-banner-open .calorieapp-page-tools,
+body.ctstyle-footer-only.ctstyle-cookie-banner-open .calorieapp-page-tools {visibility:hidden;}

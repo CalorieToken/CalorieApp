@@ -1,3 +1,4 @@
+import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -43,6 +44,8 @@ test("login surface fails closed until an embedded parent is trusted", async () 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -87,7 +90,8 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.match(source, /type:\s*"calorieapp:bridge:initialized"/);
   assert.match(source, /event\.data\?\.type === "calorieapp:logout"/);
   assert.match(source, /type:\s*"calorieapp:logout:request"/);
-  assert.match(source, /Log out of CalorieToken\.net and CalorieApp on this device\./);
+  assert.match(source, /authCopy\.logoutBoth/);
+  assert.match(authUi.getAuthUi("en").copy.logoutBoth, /Log out of CalorieToken\.net and CalorieApp on this device\./);
   assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 
@@ -108,6 +112,8 @@ test("logout retries the cookie-clearing endpoint after an interrupted response"
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -211,6 +217,8 @@ test("login start retries transport errors and transient responses", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -318,6 +326,8 @@ test("embedded login wakes the backend before creating login state", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -409,6 +419,8 @@ test("embedded login does not report progress after cancellation", async () => {
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -542,6 +554,8 @@ test("login status polling slows down by age, failures, and Retry-After", async 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -716,6 +730,8 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }

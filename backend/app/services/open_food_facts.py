@@ -14,10 +14,11 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError as UrllibHTTPError, URLError
 
 import httpx
+from pydantic import ValidationError
 
 from app.database import engine
 from app.provider_rate_governor import build_provider_rate_governor
-from app.schemas import FoodSearchResult
+from app.schemas import FoodLogCreate, FoodSearchResult
 from app.services.food_search_availability import (
     FoodSearchAvailability,
     FoodSearchUnavailable,
@@ -33,12 +34,14 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 OPEN_FOOD_FACTS_SEARCH_URL = "https://world.openfoodfacts.org/cgi/search.pl"
+OPEN_FOOD_FACTS_INDEX_URL = "https://search.openfoodfacts.org/search"
 REQUEST_HEADERS = {
     "User-Agent": "CalorieApp/0.2.0 (https://calorietoken.net; info@calorietoken.net)",
     "Accept": "application/json",
 }
 
 _PRIMARY_TIMEOUT_SECONDS = 10.0
+_INDEX_TIMEOUT_SECONDS = 15.0
 # One normal request plus at most one alternate-transport request. Nested
 # transport retries would amplify one user search into enough upstream traffic
 # to exhaust Open Food Facts' public per-IP search allowance.
@@ -95,7 +98,7 @@ def _repair_common_mojibake(text: str) -> str:
 
 
 def _to_float(value: Any) -> float | None:
-    if value is None:
+    if value is None or isinstance(value, bool):
         return None
     try:
         result = float(value)
@@ -104,7 +107,7 @@ def _to_float(value: Any) -> float | None:
         if result < 0:
             return None
         return round(result, 2)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
@@ -125,7 +128,11 @@ def _extract_image_url(product: dict[str, Any]) -> str | None:
 
 
 def _extract_brand(product: dict[str, Any]) -> str | None:
-    brands = _to_optional_text(product.get("brands"))
+    raw_brands = product.get("brands")
+    # Search-a-licious returns an array; the product API uses a comma-separated string.
+    if isinstance(raw_brands, list):
+        raw_brands = next((brand for brand in raw_brands if isinstance(brand, str) and brand.strip()), None)
+    brands = _to_optional_text(raw_brands)
     if not brands:
         return None
     # Open Food Facts often returns comma-separated brands; show the first clean label.
@@ -141,21 +148,24 @@ def _extract_nutri_score(product: dict[str, Any]) -> str | None:
     return normalized if normalized in {"A", "B", "C", "D", "E"} else None
 
 
-async def search_food_products(query: str, page_size: int = 10) -> list[FoodSearchResult]:
-    safe_query = query.strip()
-    cached = _OPEN_FOOD_FACTS_AVAILABILITY.get(safe_query, page_size)
+async def search_food_products(query: str, page_size: int = 10, *, barcode: bool = False) -> list[FoodSearchResult]:
+    safe_query = query.strip() if barcode else " ".join(query.split()).casefold()
+    if barcode and valid_food_barcode(safe_query) is None:
+        raise ValueError("Invalid food barcode")
+    cached = _OPEN_FOOD_FACTS_AVAILABILITY.get(safe_query, page_size, barcode=barcode)
     if cached is not None:
         return cached
     _OPEN_FOOD_FACTS_AVAILABILITY.check_provider()
     return await _OPEN_FOOD_FACTS_COALESCER.run(
-        (safe_query, page_size),
-        lambda: _search_food_products_once(safe_query, page_size),
+        (safe_query, page_size, barcode),
+        lambda: _search_food_products_once(safe_query, page_size, barcode=barcode),
     )
 
 
 async def _search_food_products_once(
     safe_query: str,
     page_size: int,
+    *, barcode: bool = False,
 ) -> list[FoodSearchResult]:
     permit = _OPEN_FOOD_FACTS_ADMISSION.begin_action()
     params = {
@@ -165,35 +175,42 @@ async def _search_food_products_once(
         "json": 1,
         "page_size": page_size,
         "fields": _OPEN_FOOD_FACTS_FIELDS,
+        # The UI does not display a total across the complete OFF database.
+        "no_count": 1,
     }
 
     try:
-        try:
+        if barcode:
             payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
-                lambda: _governed_attempt(lambda: _fetch_primary(params))
+                lambda: _governed_attempt(lambda: _fetch_product(safe_query))
             )
-        except httpx.HTTPStatusError:
-            # Do not bypass an upstream status (especially 429/503) through
-            # another transport. That would multiply load precisely when the
-            # source asks us to stop or is unavailable.
-            raise
-        except (httpx.RequestError, ValueError) as exc:
-            logger.warning(
-                "Primary Open Food Facts request failed; using fallback (%s)",
-                type(exc).__name__,
-            )
+        else:
             try:
                 payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
-                    lambda: _governed_attempt(lambda: _fetch_fallback(params))
+                    lambda: _governed_attempt(lambda: _fetch_primary(params))
                 )
-            except ValueError as fallback_exc:
-                logger.error(
-                    "Open Food Facts fallback failed (%s)",
-                    type(fallback_exc).__name__,
+            except httpx.HTTPStatusError:
+                # Do not bypass an upstream status (especially 429/503) through
+                # another transport. That would multiply load precisely when the
+                # source asks us to stop or is unavailable.
+                raise
+            except (httpx.RequestError, ValueError) as exc:
+                logger.warning(
+                    "Primary Open Food Facts request failed; using fallback (%s)",
+                    type(exc).__name__,
                 )
-                raise httpx.HTTPError(
-                    f"Open Food Facts fallback failed: {fallback_exc}"
-                ) from fallback_exc
+                try:
+                    payload = await _OPEN_FOOD_FACTS_ADMISSION.run_attempt(
+                        lambda: _governed_attempt(lambda: _fetch_fallback(params))
+                    )
+                except ValueError as fallback_exc:
+                    logger.error(
+                        "Open Food Facts fallback failed (%s)",
+                        type(fallback_exc).__name__,
+                    )
+                    raise httpx.HTTPError(
+                        f"Open Food Facts fallback failed: {fallback_exc}"
+                    ) from fallback_exc
 
         results = _normalize_products(payload)
     except httpx.HTTPStatusError as exc:
@@ -216,25 +233,71 @@ async def _search_food_products_once(
         raise
     else:
         _OPEN_FOOD_FACTS_ADMISSION.record_success(permit)
-        _OPEN_FOOD_FACTS_AVAILABILITY.remember(safe_query, page_size, results)
+        _OPEN_FOOD_FACTS_AVAILABILITY.remember(safe_query, page_size, results, barcode=barcode)
         return results
+
+
+def valid_food_barcode(value: str) -> str | None:
+    code = value.strip()
+    if not re.fullmatch(r"(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})", code) or set(code) == {"0"}:
+        return None
+    total = sum(int(digit) * (3 if index % 2 == 0 else 1)
+                for index, digit in enumerate(reversed(code[:-1])))
+    return code if (10 - total % 10) % 10 == int(code[-1]) else None
+
+
+async def _fetch_product(code: str) -> dict[str, Any]:
+    """One exact, read-only OFF v3 product request. No image upload or redirects."""
+    async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS, follow_redirects=False) as client:
+        response = await client.get(
+            f"https://world.openfoodfacts.org/api/v3/product/{code}",
+            params={"fields": _OPEN_FOOD_FACTS_FIELDS + ",product_type", "product_type": "food"},
+            headers=REQUEST_HEADERS,
+        )
+        if response.status_code == 404:
+            return {"products": []}
+        response.raise_for_status()
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise httpx.HTTPError("Invalid product response") from exc
+        if not isinstance(payload, dict) or payload.get("status") not in ("success", "success_with_warnings"):
+            raise httpx.HTTPError("Invalid product response")
+        product = payload.get("product")
+        if not isinstance(product, dict) or not isinstance(product.get("code"), str):
+            raise httpx.HTTPError("Invalid product record")
+        # OFF normalizes UPC/EAN leading zeros. Compare equivalent GTIN values
+        # as strings, rejecting any unrelated barcode or non-food result.
+        returned = valid_food_barcode(product["code"])
+        if returned is None or returned.zfill(14) != code.zfill(14) or product.get("product_type", "food") != "food":
+            raise httpx.HTTPError("Product identity mismatch")
+        if not isinstance(product.get("product_name"), str) or not isinstance(product.get("nutriments"), dict):
+            return {"products": []}
+        return {"products": [product]}
 
 
 def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
     results: list[FoodSearchResult] = []
+    products = payload.get("products", []) if isinstance(payload, dict) else None
+    if not isinstance(products, list):
+        raise httpx.HTTPError("Invalid Open Food Facts product list")
     nutrient_fields = {
         "calories": "energy-kcal",
         "protein": "proteins",
         "fat": "fat",
         "carbohydrates": "carbohydrates",
     }
-    for product in payload.get("products", []):
-        raw_product_name = (product.get("product_name") or "").strip()
+    for product in products:
+        if not isinstance(product, dict) or not isinstance(product.get("product_name"), str):
+            continue
+        raw_product_name = product["product_name"].strip()
         product_name = _repair_common_mojibake(raw_product_name)
         if not product_name:
             continue
 
-        nutriments = product.get("nutriments") or {}
+        nutriments = product.get("nutriments")
+        if not isinstance(nutriments, dict):
+            continue
         serving_size = _to_optional_text(product.get("serving_size"))
         nutrition = {
             name: _to_float(nutriments.get(f"{field}_serving"))
@@ -260,8 +323,7 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
         if any(value is None for value in nutrition.values()):
             continue
 
-        results.append(
-            FoodSearchResult(
+        result = FoodSearchResult(
                 product_name=product_name,
                 calories=nutrition["calories"],
                 protein=nutrition["protein"],
@@ -272,30 +334,44 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
                 brand=_extract_brand(product),
                 serving_size=serving_size,
                 nutri_score=_extract_nutri_score(product),
-            )
         )
+        try:
+            # Every offered result must fit the existing diary contract. Do not
+            # silently truncate a provider's product identity or source fields.
+            FoodLogCreate.model_validate(result.model_dump())
+        except ValidationError:
+            continue
+        results.append(result)
 
     return results
 
 
 async def _fetch_primary(params: dict[str, Any]) -> dict[str, Any]:
-    """Make one primary Open Food Facts request; the caller owns fallback policy."""
-    async with httpx.AsyncClient(timeout=_PRIMARY_TIMEOUT_SECONDS) as client:
-        response = await client.get(
-            OPEN_FOOD_FACTS_SEARCH_URL,
-            params=params,
+    """Use OFF's indexed full-text API; keep the bounded legacy transport fallback.
+
+    https://openfoodfacts.github.io/search-a-licious/users/ref-openapi/
+    Search is a read operation. POST keeps the query out of upstream access URLs.
+    """
+    # The app accepts product names, not Lucene filters or wildcard expressions.
+    # Escape reserved syntax while preserving separate words and Unicode text.
+    query = re.sub(r'([+\-=&|><!(){}\[\]^"~*?:\\/])', r'\\\1', params["search_terms"].casefold())
+    async with httpx.AsyncClient(timeout=_INDEX_TIMEOUT_SECONDS, follow_redirects=False) as client:
+        response = await client.post(
+            OPEN_FOOD_FACTS_INDEX_URL,
+            json={
+                "q": query,
+                "page_size": params["page_size"],
+                "fields": (_OPEN_FOOD_FACTS_FIELDS + ",images,lc").split(","),
+                "langs": ["en", "nl", "zh", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur"],
+            },
             headers=REQUEST_HEADERS,
         )
         response.raise_for_status()
         payload = response.json()
-        if not isinstance(payload, dict):
-            raise ValueError("Open Food Facts payload is not a JSON object")
-        products = payload.get("products")
-        if products is None:
-            payload["products"] = []
-        elif not isinstance(products, list):
-            raise ValueError("Open Food Facts payload 'products' field is not a list")
-        return payload
+        if (not isinstance(payload, dict) or payload.get("timed_out") is not False
+                or payload.get("errors") or not isinstance(payload.get("hits"), list)):
+            raise ValueError("Invalid or incomplete Open Food Facts search response")
+        return {"products": payload["hits"]}
 
 
 def _curl_fetch(params: dict[str, Any]) -> dict[str, Any]:

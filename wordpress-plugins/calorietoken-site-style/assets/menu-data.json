@@ -125,59 +125,92 @@
     "publicPage": true,
     "copy": {
       "en": {
-        "description": "Posts are supplied by X and may not load here. Open the profile directly or review your cookie choices.",
+        "description": "Allow X to load posts here. If the panel stays empty, your browser or X may be blocking the embedded content. You can open the profile directly on X.",
         "action": "Open @CalorieToken on X",
-        "settings": "Cookie settings"
+        "settings": "Cookie settings",
+        "load": "Load X posts (allow X)",
+        "retry": "Try loading X again",
+        "consentedDescription": "X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X."
       },
       "zh-Hans": {
-        "description": "帖子由 X 提供，可能无法在此加载。您可以直接打开主页，或查看您的 Cookie 选项。",
+        "description": "允许 X 后可在此加载帖子。如果面板仍为空白，可能是浏览器或 X 阻止了嵌入内容。你可以直接在 X 上打开该账号主页。",
         "action": "在 X 上打开 @CalorieToken",
-        "settings": "Cookie 设置"
+        "settings": "Cookie 设置",
+        "load": "加载 X 帖子（允许 X）",
+        "retry": "重新加载 X",
+        "consentedDescription": "已允许 X。如果没有显示帖子，可能是浏览器或 X 阻止了内容。请直接在 X 上打开该账号主页。"
       },
       "hi": {
-        "description": "पोस्ट X से मिलती हैं और हो सकता है कि यहाँ लोड न हों। प्रोफ़ाइल सीधे खोलें या अपनी कुकी संबंधी पसंद की समीक्षा करें।",
+        "description": "यहाँ पोस्ट लोड करने के लिए X को अनुमति दें। यदि पैनल खाली रहता है, तो आपका ब्राउज़र या X एम्बेड की गई सामग्री को रोक रहा हो सकता है। आप प्रोफ़ाइल सीधे X पर खोल सकते हैं।",
         "action": "X पर @CalorieToken खोलें",
-        "settings": "कुकी सेटिंग"
+        "settings": "कुकी सेटिंग",
+        "load": "X पोस्ट लोड करें (X को अनुमति दें)",
+        "retry": "X दोबारा लोड करें",
+        "consentedDescription": "X को अनुमति दी गई है। अगर पोस्ट नहीं दिखतीं, तो आपका ब्राउज़र या X उन्हें रोक रहा हो सकता है। प्रोफ़ाइल सीधे X पर खोलें।"
       },
       "es": {
-        "description": "X proporciona las publicaciones y es posible que no se carguen aquí. Abre el perfil directamente o revisa tus preferencias de cookies.",
+        "description": "Permite X para cargar publicaciones aquí. Si el panel sigue vacío, tu navegador o X podrían estar bloqueando el contenido integrado. Puedes abrir el perfil directamente en X.",
         "action": "Abrir @CalorieToken en X",
-        "settings": "Configuración de cookies"
+        "settings": "Configuración de cookies",
+        "load": "Cargar publicaciones (permitir X)",
+        "retry": "Volver a cargar X",
+        "consentedDescription": "X está permitido. Si no aparecen publicaciones, tu navegador o X podrían estar bloqueándolas. Abre el perfil directamente en X."
       },
       "ar": {
-        "description": "يوفّر X المنشورات، وقد لا يتم تحميلها هنا. افتح الملف الشخصي مباشرة أو راجع خيارات ملفات تعريف الارتباط.",
+        "description": "اسمح لـ X بتحميل المنشورات هنا. إذا بقيت اللوحة فارغة، فقد يكون المتصفح أو X يحظر المحتوى المضمّن. يمكنك فتح الملف الشخصي مباشرة على X.",
         "action": "افتح ⁦@CalorieToken⁩ على X",
-        "settings": "إعدادات ملفات تعريف الارتباط"
+        "settings": "إعدادات ملفات تعريف الارتباط",
+        "load": "تحميل منشورات X (السماح لـ X)",
+        "retry": "إعادة تحميل X",
+        "consentedDescription": "تم السماح لـ X. إذا لم تظهر المنشورات، فقد يكون المتصفح أو X يحظرها. افتح الملف الشخصي مباشرة على X."
       },
       "fr": {
-        "description": "Les publications sont fournies par X et peuvent ne pas se charger ici. Ouvrez directement le profil ou consultez vos choix de cookies.",
+        "description": "Autorisez X pour charger les publications ici. Si le panneau reste vide, votre navigateur ou X bloque peut-être le contenu intégré. Vous pouvez ouvrir le profil directement sur X.",
         "action": "Ouvrir @CalorieToken sur X",
-        "settings": "Paramètres des cookies"
+        "settings": "Paramètres des cookies",
+        "load": "Charger les publications (autoriser X)",
+        "retry": "Recharger X",
+        "consentedDescription": "X est autorisé. Si aucune publication ne s’affiche, votre navigateur ou X les bloque peut-être. Ouvrez le profil directement sur X."
       },
       "bn": {
-        "description": "পোস্টগুলো X থেকে আসে এবং এখানে লোড নাও হতে পারে। সরাসরি প্রোফাইল খুলুন অথবা আপনার কুকি পছন্দগুলো দেখুন।",
+        "description": "এখানে পোস্ট লোড করতে X-কে অনুমতি দিন। প্যানেল খালি থাকলে আপনার ব্রাউজার বা X এমবেড করা বিষয়বস্তু আটকে দিতে পারে। আপনি সরাসরি X-এ প্রোফাইল খুলতে পারেন।",
         "action": "X-এ @CalorieToken খুলুন",
-        "settings": "কুকি সেটিংস"
+        "settings": "কুকি সেটিংস",
+        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)",
+        "retry": "X আবার লোড করুন",
+        "consentedDescription": "X-কে অনুমতি দেওয়া হয়েছে। পোস্ট না দেখা গেলে আপনার ব্রাউজার বা X সেগুলি আটকে দিতে পারে। সরাসরি X-এ প্রোফাইল খুলুন।"
       },
       "pt": {
-        "description": "As publicações são fornecidas pelo X e podem não carregar aqui. Abra o perfil diretamente ou reveja as suas preferências de cookies.",
+        "description": "Permita o X para carregar publicações aqui. Se o painel continuar vazio, o navegador ou o X poderá estar a bloquear o conteúdo incorporado. Pode abrir o perfil diretamente no X.",
         "action": "Abrir @CalorieToken no X",
-        "settings": "Definições de cookies"
+        "settings": "Definições de cookies",
+        "load": "Carregar publicações (permitir X)",
+        "retry": "Carregar X novamente",
+        "consentedDescription": "O X está autorizado. Se não aparecerem publicações, o navegador ou o X poderá estar a bloqueá-las. Abra o perfil diretamente no X."
       },
       "id": {
-        "description": "Postingan disediakan oleh X dan mungkin tidak dimuat di sini. Buka profil secara langsung atau tinjau pilihan cookie Anda.",
+        "description": "Izinkan X untuk memuat postingan di sini. Jika panel tetap kosong, browser Anda atau X mungkin memblokir konten sematan. Anda dapat membuka profil langsung di X.",
         "action": "Buka @CalorieToken di X",
-        "settings": "Pengaturan cookie"
+        "settings": "Pengaturan cookie",
+        "load": "Muat postingan X (izinkan X)",
+        "retry": "Muat ulang X",
+        "consentedDescription": "X sudah diizinkan. Jika postingan tidak muncul, browser Anda atau X mungkin memblokirnya. Buka profil langsung di X."
       },
       "ur": {
-        "description": "پوسٹس X فراہم کرتا ہے اور ممکن ہے یہاں لوڈ نہ ہوں۔ براہ راست پروفائل کھولیں یا کوکیز کے بارے میں اپنے انتخاب کا جائزہ لیں۔",
+        "description": "یہاں پوسٹس لوڈ کرنے کے لیے X کو اجازت دیں۔ اگر پینل خالی رہے تو آپ کا براؤزر یا X ایمبیڈ کردہ مواد کو روک رہا ہو سکتا ہے۔ آپ پروفائل براہِ راست X پر کھول سکتے ہیں۔",
         "action": "X پر ⁦@CalorieToken⁩ کھولیں",
-        "settings": "کوکی کی ترتیبات"
+        "settings": "کوکی کی ترتیبات",
+        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)",
+        "retry": "X دوبارہ لوڈ کریں",
+        "consentedDescription": "X کی اجازت دی گئی ہے۔ اگر پوسٹس نظر نہیں آتیں تو آپ کا براؤزر یا X انہیں روک رہا ہو سکتا ہے۔ پروفائل براہِ راست X پر کھولیں۔"
       },
       "nl": {
-        "description": "Berichten worden door X geleverd en laden hier mogelijk niet. Open het profiel rechtstreeks of bekijk je cookievoorkeuren.",
+        "description": "Sta X toe om berichten hier te laden. Blijft het venster leeg, dan kan je browser of X de ingesloten inhoud blokkeren. Je kunt het profiel rechtstreeks op X openen.",
         "action": "Open @CalorieToken op X",
-        "settings": "Cookie-instellingen"
+        "settings": "Cookie-instellingen",
+        "load": "X-posts laden (X toestaan)",
+        "retry": "X opnieuw laden",
+        "consentedDescription": "X is toegestaan. Zie je geen berichten? Je browser of X kan ze blokkeren. Open het profiel rechtstreeks op X."
       }
     },
     "locales": [
@@ -793,7 +826,8 @@
         "walletTitle": "Consolidation wallet",
         "description": "Project wallet for consolidated CalorieToken funds. Its balance is not a statement of the remaining giveaway allocation.",
         "liquidity": "At the ledger check on 2026-09-09, this wallet held a liquidity position in the CAL/XRP AMM. The project therefore has a financial interest in this pool.",
-        "action": "View wallet on XPMarket (new tab)"
+        "action": "View wallet ↗",
+        "detailsLabel": "Wallet details"
       },
       "zh-Hans": {
         "statusTitle": "空投已完成",
@@ -802,7 +836,8 @@
         "walletTitle": "归集钱包",
         "description": "用于归集 CalorieToken 项目资金的钱包。其余额不代表剩余赠送额度。",
         "liquidity": "在 2026-09-09 的账本核查中，此钱包持有 CAL/XRP AMM 的流动性头寸。因此，项目在该资金池中具有经济利益。",
-        "action": "在 XPMarket 查看钱包（新标签页）"
+        "action": "查看钱包 ↗",
+        "detailsLabel": "钱包详情"
       },
       "hi": {
         "statusTitle": "एयरड्रॉप पूरे हो चुके हैं",
@@ -811,7 +846,8 @@
         "walletTitle": "समेकन वॉलेट",
         "description": "CalorieToken परियोजना की समेकित निधियों का वॉलेट। इसका बैलेंस शेष गिवअवे आवंटन नहीं दर्शाता।",
         "liquidity": "2026-09-09 की लेजर जाँच के समय इस वॉलेट की CAL/XRP AMM में लिक्विडिटी पोज़िशन थी। इसलिए इस पूल में परियोजना का वित्तीय हित है।",
-        "action": "XPMarket पर वॉलेट देखें (नया टैब)"
+        "action": "वॉलेट देखें ↗",
+        "detailsLabel": "वॉलेट विवरण"
       },
       "es": {
         "statusTitle": "Airdrops completados",
@@ -820,7 +856,8 @@
         "walletTitle": "Billetera de consolidación",
         "description": "Billetera del proyecto para fondos consolidados de CalorieToken. Su saldo no indica la asignación restante para sorteos y regalos.",
         "liquidity": "En la comprobación del ledger del 2026-09-09, esta billetera mantenía una posición de liquidez en el AMM CAL/XRP. Por tanto, el proyecto tiene un interés financiero en este pool.",
-        "action": "Ver billetera en XPMarket (nueva pestaña)"
+        "action": "Ver cartera ↗",
+        "detailsLabel": "Detalles de la cartera"
       },
       "ar": {
         "statusTitle": "اكتملت عمليات التوزيع المجاني",
@@ -829,7 +866,8 @@
         "walletTitle": "محفظة التجميع",
         "description": "محفظة المشروع لتجميع أموال CalorieToken. لا يمثل رصيدها المخصص المتبقي للهدايا.",
         "liquidity": "عند فحص السجل بتاريخ 2026-09-09، كانت لهذه المحفظة حصة سيولة في مجمع CAL/XRP AMM. ولذلك للمشروع مصلحة مالية في هذا المجمع.",
-        "action": "عرض المحفظة على XPMarket (علامة تبويب جديدة)"
+        "action": "عرض المحفظة ↗",
+        "detailsLabel": "تفاصيل المحفظة"
       },
       "fr": {
         "statusTitle": "Airdrops terminés",
@@ -838,7 +876,8 @@
         "walletTitle": "Portefeuille de consolidation",
         "description": "Portefeuille du projet destiné aux fonds consolidés de CalorieToken. Son solde ne représente pas le montant restant alloué aux cadeaux.",
         "liquidity": "Lors de la vérification du registre le 2026-09-09, ce portefeuille détenait une position de liquidité dans l’AMM CAL/XRP. Le projet a donc un intérêt financier dans ce pool.",
-        "action": "Voir le portefeuille sur XPMarket (nouvel onglet)"
+        "action": "Voir le portefeuille ↗",
+        "detailsLabel": "Détails du portefeuille"
       },
       "bn": {
         "statusTitle": "এয়ারড্রপ সম্পন্ন হয়েছে",
@@ -847,7 +886,8 @@
         "walletTitle": "একত্রীকরণ ওয়ালেট",
         "description": "CalorieToken প্রকল্পের একত্রিত তহবিলের ওয়ালেট। এর ব্যালেন্স গিভঅ্যাওয়ের অবশিষ্ট বরাদ্দ নির্দেশ করে না।",
         "liquidity": "2026-09-09 তারিখে লেজার যাচাইয়ের সময় এই ওয়ালেটের CAL/XRP AMM-এ লিকুইডিটি পজিশন ছিল। তাই এই পুলে প্রকল্পটির আর্থিক স্বার্থ রয়েছে।",
-        "action": "XPMarket-এ ওয়ালেট দেখুন (নতুন ট্যাব)"
+        "action": "ওয়ালেট দেখুন ↗",
+        "detailsLabel": "ওয়ালেটের বিবরণ"
       },
       "pt": {
         "statusTitle": "Airdrops concluídos",
@@ -856,7 +896,8 @@
         "walletTitle": "Carteira de consolidação",
         "description": "Carteira do projeto para fundos consolidados de CalorieToken. O seu saldo não representa a alocação restante para brindes.",
         "liquidity": "Na verificação do ledger em 2026-09-09, esta carteira mantinha uma posição de liquidez no AMM CAL/XRP. Por isso, o projeto tem um interesse financeiro neste pool.",
-        "action": "Ver carteira no XPMarket (nova aba)"
+        "action": "Ver carteira ↗",
+        "detailsLabel": "Detalhes da carteira"
       },
       "id": {
         "statusTitle": "Airdrop telah selesai",
@@ -865,7 +906,8 @@
         "walletTitle": "Dompet konsolidasi",
         "description": "Dompet proyek untuk dana CalorieToken yang dikonsolidasikan. Saldonya tidak menyatakan sisa alokasi giveaway.",
         "liquidity": "Pada pemeriksaan ledger tanggal 2026-09-09, dompet ini memiliki posisi likuiditas di AMM CAL/XRP. Karena itu, proyek memiliki kepentingan finansial dalam pool ini.",
-        "action": "Lihat dompet di XPMarket (tab baru)"
+        "action": "Lihat dompet ↗",
+        "detailsLabel": "Detail dompet"
       },
       "ur": {
         "statusTitle": "ایئرڈراپس مکمل ہو چکے ہیں",
@@ -874,7 +916,8 @@
         "walletTitle": "یکجا فنڈز کا والیٹ",
         "description": "CalorieToken منصوبے کے یکجا فنڈز کا والیٹ۔ اس کا بیلنس تحائف کے لیے باقی مختص مقدار کو ظاہر نہیں کرتا۔",
         "liquidity": "2026-09-09 کی لیجر جانچ کے وقت اس والیٹ کی CAL/XRP AMM میں لیکویڈیٹی پوزیشن تھی۔ اس لیے اس پول میں منصوبے کا مالی مفاد ہے۔",
-        "action": "XPMarket پر والیٹ دیکھیں (نیا ٹیب)"
+        "action": "والیٹ دیکھیں ↗",
+        "detailsLabel": "والیٹ کی تفصیلات"
       },
       "nl": {
         "statusTitle": "Airdrops afgerond",
@@ -883,7 +926,8 @@
         "walletTitle": "Consolidatiewallet",
         "description": "Projectwallet voor samengebrachte CalorieToken-fondsen. Het saldo geeft niet het resterende giveawaybudget aan.",
         "liquidity": "Bij de ledgercontrole op 2026-09-09 had deze wallet een liquiditeitspositie in de CAL/XRP-AMM. Het project heeft daarmee een financieel belang in deze pool.",
-        "action": "Bekijk wallet op XPMarket (nieuw tabblad)"
+        "action": "Bekijk wallet ↗",
+        "detailsLabel": "Walletgegevens"
       }
     },
     "locales": [
@@ -1715,7 +1759,10 @@
       "/donate": "Donate",
       "/merchnfts": "Merch&NFTs",
       "/privacy-policy": "Privacy Policy",
-      "/terms-conditions": "Terms & Conditions"
+      "/terms-conditions": "Terms & Conditions",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcases",
+      "/community-voting-hub-info": "Voting Hub"
     },
     "nl": {
       "/": "Home",
@@ -1731,7 +1778,10 @@
       "/donate": "Doneren",
       "/merchnfts": "Merch & NFT’s",
       "/privacy-policy": "Privacybeleid",
-      "/terms-conditions": "Algemene voorwaarden"
+      "/terms-conditions": "Algemene voorwaarden",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcases",
+      "/community-voting-hub-info": "Stemhub"
     },
     "zh-Hans": {
       "/": "首页",
@@ -1747,7 +1797,10 @@
       "/donate": "捐赠",
       "/merchnfts": "商品与 NFT",
       "/privacy-policy": "隐私政策",
-      "/terms-conditions": "条款与条件"
+      "/terms-conditions": "条款与条件",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "项目展示",
+      "/community-voting-hub-info": "投票中心"
     },
     "hi": {
       "/": "होम",
@@ -1763,7 +1816,10 @@
       "/donate": "दान करें",
       "/merchnfts": "उत्पाद और NFT",
       "/privacy-policy": "गोपनीयता नीति",
-      "/terms-conditions": "नियम और शर्तें"
+      "/terms-conditions": "नियम और शर्तें",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "झलकियाँ",
+      "/community-voting-hub-info": "मतदान केंद्र"
     },
     "es": {
       "/": "Inicio",
@@ -1779,7 +1835,10 @@
       "/donate": "Donar",
       "/merchnfts": "Productos y NFT",
       "/privacy-policy": "Política de privacidad",
-      "/terms-conditions": "Términos y condiciones"
+      "/terms-conditions": "Términos y condiciones",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Presentaciones",
+      "/community-voting-hub-info": "Centro de votación"
     },
     "ar": {
       "/": "الرئيسية",
@@ -1795,7 +1854,10 @@
       "/donate": "تبرع",
       "/merchnfts": "المنتجات وNFT",
       "/privacy-policy": "سياسة الخصوصية",
-      "/terms-conditions": "الشروط والأحكام"
+      "/terms-conditions": "الشروط والأحكام",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "العروض",
+      "/community-voting-hub-info": "مركز التصويت"
     },
     "fr": {
       "/": "Accueil",
@@ -1811,7 +1873,10 @@
       "/donate": "Faire un don",
       "/merchnfts": "Produits et NFT",
       "/privacy-policy": "Politique de confidentialité",
-      "/terms-conditions": "Conditions générales"
+      "/terms-conditions": "Conditions générales",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Présentations",
+      "/community-voting-hub-info": "Espace de vote"
     },
     "bn": {
       "/": "হোম",
@@ -1827,7 +1892,10 @@
       "/donate": "অনুদান দিন",
       "/merchnfts": "পণ্য ও NFT",
       "/privacy-policy": "গোপনীয়তা নীতি",
-      "/terms-conditions": "শর্তাবলি"
+      "/terms-conditions": "শর্তাবলি",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "প্রদর্শনী",
+      "/community-voting-hub-info": "ভোট কেন্দ্র"
     },
     "pt": {
       "/": "Início",
@@ -1843,7 +1911,10 @@
       "/donate": "Doar",
       "/merchnfts": "Produtos e NFT",
       "/privacy-policy": "Política de privacidade",
-      "/terms-conditions": "Termos e condições"
+      "/terms-conditions": "Termos e condições",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Apresentações",
+      "/community-voting-hub-info": "Central de votação"
     },
     "id": {
       "/": "Beranda",
@@ -1859,7 +1930,10 @@
       "/donate": "Donasi",
       "/merchnfts": "Produk & NFT",
       "/privacy-policy": "Kebijakan privasi",
-      "/terms-conditions": "Syarat dan ketentuan"
+      "/terms-conditions": "Syarat dan ketentuan",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "Showcase",
+      "/community-voting-hub-info": "Pusat voting"
     },
     "ur": {
       "/": "ہوم",
@@ -1875,7 +1949,10 @@
       "/donate": "عطیہ دیں",
       "/merchnfts": "مصنوعات اور NFT",
       "/privacy-policy": "رازداری کی پالیسی",
-      "/terms-conditions": "شرائط و ضوابط"
+      "/terms-conditions": "شرائط و ضوابط",
+      "/calorieapp": "CalorieApp",
+      "/showcases": "جھلکیاں",
+      "/community-voting-hub-info": "ووٹنگ مرکز"
     }
   }
 }

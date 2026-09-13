@@ -87,3 +87,22 @@ migration or verified restore.
   later without paywalling identity or personal-data rights.
 - Open Food Facts is consumed only by backend service endpoints and is the
   current adapter, not the canonical or exclusive food-data model.
+
+
+### Public product search
+
+Name searches use Open Food Facts' indexed Search-a-licious API. The request is
+read-only, sends only literal product-name text and requested nutrition/display
+fields, and supports the application's eleven display languages. One bounded
+legacy CGI transport fallback is allowed after a transport or invalid-response
+failure, never after a provider HTTP rejection (including 429/503). Barcode
+lookup continues to use the exact v3 product endpoint and GTIN verification.
+
+Successful results are cached for one hour in a 256-entry process-local cache.
+Case and repeated whitespace share one name-search key. A cached answer remains
+available during a provider cooldown, without another source request. Empty or
+failed responses are not cached. The cache is lost on restart; it is not a local
+copy of the complete OFF database. Existing shared PostgreSQL egress quotas,
+queue limits, duplicate coalescing and Retry-After pauses remain in force.
+
+Source documentation: https://openfoodfacts.github.io/search-a-licious/users/ref-openapi/

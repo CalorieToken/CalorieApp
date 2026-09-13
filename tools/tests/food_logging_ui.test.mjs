@@ -11,14 +11,14 @@ const localeRegistry = JSON.parse(await readFile(new URL("../../frontend/config/
 const usdaReference = JSON.parse(await readFile(new URL("../../frontend/data/usda-reference-foods.json", import.meta.url), "utf8"));
 const usdaCopy = JSON.parse(await readFile(new URL("../../frontend/config/usda-reference-copy.json", import.meta.url), "utf8"));
 const foodUiCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-ui-copy.json", import.meta.url), "utf8"));
-async function loadLibrary(name, imports) {
+async function loadLibrary(name, imports, globals = {}) {
   const source = await readFile(new URL(`../../frontend/lib/${name}.ts`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
   }).outputText;
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
-    module, exports: module.exports,
+    module, exports: module.exports, ...globals,
     require(specifier) {
       if (Object.hasOwn(imports, specifier)) return imports[specifier];
       throw new Error(`Unexpected filter import: ${specifier}`);
@@ -35,7 +35,18 @@ const foodUi = await loadLibrary("foodUi", {
   "@/config/food-ui-copy.json": { default: foodUiCopy },
   "@/lib/locales": locales,
 });
+const usdaMath = await loadLibrary("usdaReference", {});
+const barcode = await loadLibrary("foodBarcode", {});
+const barcodeCopy = JSON.parse(await readFile(new URL("../../frontend/config/barcode-copy.json", import.meta.url), "utf8"));
 const searchAvailability = await loadLibrary("foodSearchAvailability", {});
+const diary = await loadLibrary("foodDiary", {
+  "@/config/diary-copy.json": {default: JSON.parse(await readFile(new URL("../../frontend/config/diary-copy.json", import.meta.url), "utf8"))},
+}, {URLSearchParams});
+function overview(entries) {
+  return {entries, next_before: null, count: entries.length,
+    ...Object.fromEntries(["calories","protein","fat","carbohydrates"].map(key => [key, entries.reduce((sum, item) => sum + item[key], 0)])),
+    grades: Object.fromEntries(["A","B","C","D","E"].map(grade => [grade, entries.filter(item => item.nutri_score?.trim().toUpperCase() === grade).length]))};
+}
 const AUTH_EVENT = "test-auth-state-changed";
 const foods = Array.from({ length: 30 }, (_, index) => ({
   product_name: index === 0 ? "Banana" : `Oats ${index}`,
@@ -62,7 +73,7 @@ function button(tree, label) {
   return result[0];
 }
 
-async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse) {
+async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse, deleteResponse) {
   const source = await readFile(new URL(`../../frontend/components/${componentName}.tsx`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { jsx: typescript.JsxEmit.ReactJSX, module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
@@ -72,6 +83,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   let now = Date.parse("2026-09-10T12:00:00Z"), timerId = 0, warmups = 0;
   const timers = new Map();
   class ClockDate extends Date { static now() { return now; } }
+  const readiness = await loadLibrary("foodSearchReadiness", {
+    "@/lib/backendRequest": {
+      BACKEND_WAKE_BASE_URL: "https://backend.example",
+      waitForBackendReady: async () => { warmups++; if (warmupResponse) await warmupResponse(); },
+    },
+  }, { AbortController, Date: ClockDate });
   let confirmAnswer = false;
   const document = { body: {}, activeElement: null, documentElement: { lang: "en" } };
   document.activeElement = document.body;
@@ -128,7 +145,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "next/image") return { __esModule: true, default: "Image" };
       if (specifier === "@/components/authEvents") return { AUTH_STATE_CHANGED_EVENT: AUTH_EVENT };
       if (specifier === "@/lib/foodLogFilter") return foodLogFilter;
+      if (specifier === "@/lib/foodDiary") return diary;
       if (specifier === "@/lib/foodUi") return foodUi;
+      if (specifier === "@/lib/usdaReference") return usdaMath;
+      if (specifier === "@/lib/foodBarcode") return barcode;
+      if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };
+      if (specifier === "@/lib/foodSearchReadiness") return readiness;
       if (specifier === "@/lib/foodSearchAvailability") return {
         foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
       };
@@ -155,13 +177,14 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
             if (response.ok) saved.push({ ...JSON.parse(options.body), id: saved.length + 1 });
             return response;
           }
-          if (url.endsWith("/logs")) {
-            if (options?.method === "DELETE") {
-              saved = [];
-              return { ok: true, status: 204 };
-            }
+          if (options?.method === "DELETE" && /\/logs(?:\/\d+)?$/.test(url)) {
+            const response = deleteResponse ? await deleteResponse() : { ok: true, status: 204 };
+            if (response.ok) saved = url.endsWith('/logs') ? [] : saved.filter(item => item.id !== Number(url.split('/').at(-1)));
+            return response;
+          }
+          if (url.includes("/logs/overview?")) {
             const response = logsResponse ? await logsResponse() : null;
-            return response ?? { ok: true, json: async () => saved };
+            return response ? {...response, json: async () => { const value = await response.json(); return Array.isArray(value) ? overview(value) : value; }} : { ok: true, json: async () => overview(saved) };
           }
           throw new Error(`Unexpected request: ${url}`);
         },
@@ -209,6 +232,10 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
     },
     choose(index) { this.cards()[index].props.onLog(); render(); },
     submit() { this.controls().props.onSubmit({ preventDefault() {} }); render(); },
+    async period(value, date = diary.localDiaryDate()) {
+      nodes(tree, node => node.type === "FoodDiaryPeriod")[0].props.onChange(value, date);
+      render(); await this.flush();
+    },
     login() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: true } }); render(); },
     logout() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: false } }); render(); },
   };
@@ -268,7 +295,7 @@ test("USDA reference displays source values without combining energy methods or 
   assert.ok(text(tree).includes(usdaCopy.en.method));
   assert.equal(nodes(tree, (node) => node.type === "time")[0].props.dateTime, usdaReference.retrieved_on);
   assert.ok(nodes(tree, (node) => node.type === "a").some((node) => node.props.href === usdaReference.licence_url));
-  assert.equal(nodes(tree, (node) => ["button", "form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
+  assert.equal(nodes(tree, (node) => ["form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
   await app.flush();
   app.login();
   app.logout();
@@ -436,7 +463,7 @@ test("saving preserves the sign-in prompt or log-loading error until the log sta
       : { signIn: false, loadErrors: ["Unable to load logged foods right now."] });
     h.submit();
     assert.deepEqual(visibleLogState(), before, "Saving must preserve the unrelated log section's message.");
-    assert.doesNotMatch(text(h.tree), /Recent Log Summary/, "Do not briefly show an empty summary during the save.");
+    assert.doesNotMatch(text(h.tree), /Period overview/, "Do not briefly show an empty summary during the save.");
     assert.equal(h.requests.filter((request) => request.url.endsWith("/log-food")).length, 1);
     finish(status === 401 ? { ok: false, status: 401 } : { ok: true, status: 201 });
     await h.flush();
@@ -445,7 +472,7 @@ test("saving preserves the sign-in prompt or log-loading error until the log sta
       assert.match(h.cards()[1].props.feedback.message, /Sign in with Xaman/);
     } else {
       assert.deepEqual(visibleLogState(), { signIn: false, loadErrors: [] });
-      assert.match(text(h.tree), /Recent Log Summary/);
+      assert.match(text(h.tree), /Period overview/);
       assert.match(h.cards()[1].props.feedback.message, /Added Oats 1/);
     }
   }
@@ -462,7 +489,38 @@ test("a response arriving after logout cannot restore the former selection or su
   await h.flush();
   assert.equal(h.controls(), null);
   assert.ok(h.cards().every((card) => !card.props.feedback));
-  assert.equal(h.requests.filter((request) => request.url.endsWith("/logs")).length, 0);
+  assert.equal(h.requests.filter((request) => request.url.includes("/logs/overview?")).length, 0);
+});
+
+test('Late single/bulk delete replies and failures cannot replace the logged-out state or issue another private read', async () => {
+  for (const bulk of [false, true]) for (const outcome of [204, 401, 500, 'network']) {
+    let finish, reject;
+    const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+      () => new Promise((resolve, fail) => { finish = resolve; reject = fail; }));
+    await h.search(); h.choose(0); h.submit(); await h.flush(); h.login(); await h.flush(); await h.period("all"); h.answerConfirmation(true);
+    const list = nodes(h.tree, node => node.type === 'FoodLogList')[0];
+    const pending = bulk ? list.props.onDeleteAllLogs() : list.props.onDeleteLog(1);
+    h.logout(); const count = h.requests.length;
+    if (outcome === 'network') reject(new Error('Offline')); else finish({ok: outcome === 204, status: outcome});
+    await pending; await h.flush();
+    assert.equal(h.requests.length, count, 'A reply from the signed-out session must not fetch private logs again');
+    assert.ok(text(h.tree).includes(foodUiCopy.en.signInTitle));
+    assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 0);
+    assert.equal(nodes(h.tree, node => node.type === 'ErrorBanner').length, 0);
+  }
+});
+
+test('An old delete authorization failure does not clear a newly signed-in diary', async () => {
+  let finish;
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+    () => new Promise(resolve => { finish = resolve; }));
+  await h.search(); h.choose(0); h.submit(); await h.flush();
+  const pending = nodes(h.tree, node => node.type === 'FoodLogList')[0].props.onDeleteLog(1);
+  h.logout(); h.login(); await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  finish({ok: false, status: 401}); await pending; await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  assert.ok(!text(h.tree).includes(foodUiCopy.en.signInTitle));
 });
 
 test("expanding a card reveals its portion region once and restores keyboard focus on cancel", async () => {
@@ -527,9 +585,9 @@ test("filtering changes only the visible list and prevents ambiguous bulk deleti
   setDiaryFilter(h, "harvest");
   assert.equal(nodes(h.tree, (node) => node.type === "li").length, 1);
   assert.match(text(h.tree), /1 of 2 loaded entries/);
-  assert.match(text(h.tree), /overview uses all loaded entries/);
+  assert.ok(text(h.tree).includes(diary.diaryCopy("en").listScope));
   assert.equal(button(h.tree, "Delete All").props.disabled, true);
-  assert.match(text(h.tree), /Clear the filter before deleting all/);
+  assert.ok(text(h.tree).includes(diary.diaryCopy("en").deleteHint));
   assert.deepEqual(calls, []);
   assert.deepEqual(h.requests, []);
   nodes(h.tree, (node) => node.props?.["aria-label"] === "View details for Oats")[0].props.onClick();
@@ -829,6 +887,7 @@ test("existing save errors change display language without retrying or losing th
 test("bulk deletion keeps its explicit confirmation and uses the current display language", async () => {
   const h = await harness();
   await h.search(); h.choose(0); h.submit(); await h.flush();
+  h.login(); await h.flush(); await h.period("all");
   h.setDisplayLanguage("nl");
   const list = () => nodes(h.tree, node => node.type === "FoodLogList")[0];
   await list().props.onDeleteAllLogs();
@@ -848,7 +907,7 @@ test("bulk deletion keeps its explicit confirmation and uses the current display
   assert.ok(nodes(h.tree, node => node.type === "EmptyState").some(node => node.props.title === foodUiCopy.ar.emptyLogsTitle));
 });
 
-test("recorded product grades count entries and missing values without deriving an average or changing records", async () => {
+test("product overview places one average marker above the detailed counts without changing food records", async () => {
   const entries = ["A", "a", "B", "E", null, "", "unknown"].map((grade, index) =>
     Object.freeze({ ...foods[index], id: index + 1, nutri_score: grade, portion_percentage: index + 1 }));
   Object.freeze(entries);
@@ -862,16 +921,155 @@ test("recorded product grades count entries and missing values without deriving 
   h.login(); await h.flush();
   for (const { tag } of localeRegistry.locales) {
     h.setDisplayLanguage(tag);
-    const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreTitle)[0];
+    const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreDetails)[0];
     assert.ok(distribution, tag);
+    assert.equal(distribution.props.dir, "ltr");
+    const colors = nodes(distribution, node => node.props.style?.backgroundColor).map(node => node.props.style.backgroundColor);
+    assert.equal(new Set(colors).size, 5, `${tag}: five Nutri-Score colors remain visible after login`);
     assert.deepEqual(nodes(distribution, node => node.type === "dt").map(node => text(node)), ["A", "B", "C", "D", "E"]);
     assert.deepEqual(nodes(distribution, node => node.type === "dd").map(node => text(node)),
       [2, 1, 0, 0, 1].map(count => new Intl.NumberFormat(tag).format(count)));
     assert.ok(text(h.tree).includes(foodUiCopy[tag].scoreDescription));
+    const marker = nodes(h.tree, node => node.props["data-grade-pointer"] === "true");
+    assert.equal(marker.length, 1);
+    assert.equal(marker[0].props.style.left, "31.25%");
+    const label = foodUi.formatFoodUi(foodUiCopy[tag].scoreBetween, {lower: "B", upper: "C"});
+    const scale = nodes(h.tree, node => node.props.role === "img" && node.props["aria-label"] === label)[0];
+    assert.ok(scale, `${tag}: the position is also available as text`);
+    assert.equal(scale.props.dir, "ltr", "The green-to-red scale remains in the same order in RTL languages");
+    const details = nodes(h.tree, node => node.type === "details" && text(node).includes(foodUiCopy[tag].scoreDescription))[0];
+    assert.ok(details); assert.ok(!details.props.open, "Counts and explanation remain available without crowding the overview");
     assert.equal(h.requests.length, 1);
   }
   assert.equal(JSON.stringify(entries), before);
   assert.deepEqual(JSON.parse(JSON.stringify(foodUi.countRecordedGrades([]))), {
     grades: ["A", "B", "C", "D", "E"].map(grade => ({ grade, count: 0 })), known: 0, total: 0, missing: 0,
   });
+});
+
+
+test("Nutri-Score colors accept recorded A–E grades and never invent missing scores", () => {
+  const colors = ["A", "B", "C", "D", "E"].map(grade => foodUi.recordedGradeStyle(grade).backgroundColor);
+  assert.equal(new Set(colors).size, 5);
+  assert.equal(foodUi.recordedGradeStyle(" a "), foodUi.recordedGradeStyle("A"));
+  for (const grade of [undefined, null, "", "unknown", "F", "A/B"]) {
+    assert.equal(foodUi.recordedGradeStyle(grade), undefined);
+  }
+});
+
+test('USDA grams scale original precision, accept decimal comma and never change provider records', async () => {
+  const before = JSON.stringify(usdaReference), h = await harness('UsdaReferenceFoods');
+  let tree = h.render();
+  const weight = () => nodes(tree, n => n.type === 'input' && n.props.id === 'usda-reference-weight')[0];
+  weight().props.onChange({ target: { value: '12,5' } }); tree = h.render();
+  assert.ok(text(tree).includes('12.5 g'));
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[0]).replace(/\s+/g, ' ').trim(), '6 kcal');
+  weight().props.onChange({ target: { value: '0.1' } }); tree = h.render();
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[2]).replace(/\s+/g, ' ').trim(), '<0.01 g');
+  weight().props.onChange({ target: { value: '' } }); tree = h.render();
+  assert.equal(weight().props['aria-invalid'], true);
+  assert.ok(nodes(tree, n => n.type === 'dd').every(n => text(n) === usdaCopy.en.unavailable));
+  button(tree, usdaCopy.en.resetWeight).props.onClick(); tree = h.render();
+  assert.equal(weight().props.value, '100'); assert.equal(JSON.stringify(usdaReference), before);
+  assert.deepEqual(h.requests, []);
+});
+
+test('USDA weight validation rejects coercions, invalid ranges and unknown nutrition', () => {
+  for (const input of ['', 'NaN', 'Infinity', '1e3', '-1', '0', '0.01', '5001', '100g', '1,000.5']) assert.equal(usdaMath.parseReferenceGrams(input), null, input);
+  assert.equal(usdaMath.parseReferenceGrams('5000'), 5000);
+  assert.equal(usdaMath.parseReferenceGrams('0,1'), .1);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: null }, 'g', 250), 0);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: .2 }, 'g', 250), null);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 10, unit: 'kJ', loq: null }, 'kcal', 250), null);
+});
+
+test('Barcode lookup uses the existing search guard and shows only the matching product, without logging', async () => {
+  const item = { ...foods[0], barcode: '0034000470693' };
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [item, { ...foods[1], barcode: '3017620422003' }] }) }));
+  const scanner = () => nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0];
+  scanner().props.onLookup('034000470693'); scanner().props.onLookup('034000470693');
+  await h.flush();
+  assert.equal(h.requests.filter(r => r.url.includes('search-food')).length, 1);
+  assert.ok(h.requests.some(r => r.url.endsWith('q=034000470693&mode=barcode')));
+  assert.equal(h.cards().length, 1); assert.equal(h.cards()[0].props.item.barcode, '0034000470693');
+  assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('Barcode absence has useful translated fallback text and name search restores ordinary empty state', async () => {
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [] }) }));
+  nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693'); await h.flush();
+  for (const locale of ['en', 'nl', 'ar']) {
+    h.setDisplayLanguage(locale);
+    assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === barcodeCopy[locale].notFound));
+  }
+  await h.search('oats');
+  assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === foodUiCopy.ar.noResultsDescription));
+});
+
+
+test("the overview marker follows added and removed grades, excludes missing scores and stays absent without known scores", async () => {
+  const summarize = grades => foodUi.recordedGradePosition(foodUi.countRecordedGrades(grades.map(nutri_score => ({nutri_score}))));
+  assert.equal(summarize(["A"]).percent, 0);
+  assert.equal(summarize(["E"]).percent, 100);
+  assert.equal(summarize(["A", "E"]).percent, 50);
+  assert.ok(Math.abs(summarize(["A", "E", "E"]).percent - 200 / 3) < 1e-10);
+  assert.equal(summarize(["A", "E", "", null, "unknown"]).percent, 50);
+  assert.equal(summarize([" a ", "b"]).percent, 12.5);
+  assert.equal(summarize([]), null);
+  assert.equal(summarize([null, "unknown"]), null);
+  const h = await harness("FoodSearchPlaceholder", undefined, () => ({ok:true, json:async () => [{...foods[0],id:1,nutri_score:null}]}));
+  h.login(); await h.flush();
+  assert.equal(nodes(h.tree, node => node.props["data-grade-pointer"] === "true").length, 0);
+  assert.ok(text(h.tree).includes(foodUiCopy.en.scoreEmpty));
+  assert.equal(h.requests.length, 1);
+});
+
+test('diary totals cover the whole period, navigation clears the old period, and bulk delete is blocked in a date view', async () => {
+  let finish;
+  let calls = 0;
+  const h = await harness('FoodSearchPlaceholder', undefined, async () => {
+    calls++;
+    if(calls === 2) return new Promise(resolve => { finish = resolve; });
+    return {ok: true, json: async () => ({...overview([foods[0]]), count: 105, calories: 1050, next_before: 1})};
+  });
+  h.login(); await h.flush();
+  assert.ok(text(h.tree).includes('1,050'));
+  let list = nodes(h.tree, n => n.type === 'FoodLogList')[0];
+  assert.equal(list.props.total,105); assert.equal(list.props.hasMore,true); assert.equal(list.props.periodFiltered,true);
+  h.answerConfirmation(true); await list.props.onDeleteAllLogs();
+  assert.equal(h.confirmations.length,0); assert.equal(h.requests.filter(r=>r.options?.method==='DELETE').length,0);
+  await h.period('month','2026-09-11');
+  assert.equal(nodes(h.tree,n=>n.type==='FoodLogList').length,0,'Old day rows disappear immediately');
+  assert.ok(h.requests[1].url.includes('start='));
+  h.logout(); finish({ok:true,json:async()=>overview(foods)}); await h.flush();
+  assert.equal(nodes(h.tree,n=>n.type==='FoodLogList').length,0,'Late monthly response cannot restore private rows');
+  assert.equal(nodes(h.tree,n=>n.type==='FoodDiaryPeriod').length,0);
+});
+
+test('failed barcode lookup preserves earlier results and retries the exact barcode once after the countdown', async () => {
+  let calls=0;
+  const h=await harness('FoodSearchPlaceholder',undefined,undefined,async()=> ++calls === 2
+    ? {ok:false,status:504,headers:new Headers()} : {ok:true,json:async()=>({results:foods})});
+  await h.search('oats');
+  nodes(h.tree,n=>n.type==='FoodBarcodeScanner')[0].props.onLookup('8711000031544');
+  await h.flush();
+  assert.equal(calls,2); assert.equal(h.cards().length,foods.length);
+  assert.ok(text(h.tree).includes('Results for “oats”'));
+  assert.equal(nodes(h.tree,n=>n.type==='ErrorBanner')[0].props.message,diary.diaryCopy('en').slow);
+  h.advance(30000);
+  await button(h.tree,diary.diaryCopy('en').retry).props.onClick(); await h.flush();
+  const retried=new URL(h.requests.at(-1).url,'https://app.example');
+  assert.equal(retried.searchParams.get('mode'),'barcode'); assert.equal(retried.searchParams.get('q'),'8711000031544');
+  assert.equal(calls,3);
+});
+
+
+test('the source reference label translates in every locale without translating packaging text',()=>{
+ for(const {tag} of localeRegistry.locales){
+  const copy=foodUiCopy[tag];
+  assert.ok(copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('100 g / 100 ml (source reference)',copy),copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('1 bar (28 g)',copy),'1 bar (28 g)');
+  assert.equal(foodUi.displayServingSize('Private {product} $CAL',copy),'Private {product} $CAL');
+ }
 });

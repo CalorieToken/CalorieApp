@@ -4,7 +4,8 @@ import { FoodSearchItem } from "@/components/foodTypes";
 import Image from "next/image";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
+import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
+import { NutriScoreBar } from "@/components/NutriScoreBar";
 
 type FoodCardProps = {
   item: FoodSearchItem;
@@ -76,13 +77,13 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
               {copy.barcode}: <bdi dir="ltr">{item.barcode}</bdi>
             </p>
           ) : null}
-          {(item.serving_size || item.nutri_score) ? (
+          {item.serving_size ? (
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-secondary/75">
-              {item.serving_size ? <p>{copy.serving}: <bdi>{item.serving_size}</bdi></p> : null}
-              {item.nutri_score ? <p><bdi dir="ltr">Nutri-Score: {item.nutri_score}</bdi></p> : null}
+              {item.serving_size ? <p>{copy.serving}: <bdi>{displayServingSize(item.serving_size, copy)}</bdi></p> : null}
             </div>
           ) : null}
 
+          <NutriScoreBar grade={item.nutri_score} />
           <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
               <span className="text-brand-secondary/70">{copy.calories}</span>

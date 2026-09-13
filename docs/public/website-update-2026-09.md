@@ -16,6 +16,8 @@ The WordPress package preserves the accepted Home title banner and native identi
 
 The website and food application remain distinct. The external CAL/XRP routes do not give the food app custody or order-execution powers. CAL is temporarily unavailable in the SWFT integration according to the operator. Other supported routes may be available; check the actual provider interface. A wallet signature is not a blanket MiCA exemption. See [ESMA Q&A 2671](https://www.esma.europa.eu/print/pdf/node/222469) and the applicable project regulatory boundary.
 
+See the [Steps 1–3 audit and showcase readiness](step123-review-2026-09-10.md) for the consolidated Site Style 1.4.7 release process and the distinction between source changes, live installation and accepted showcases.
+
 ## Verification and boundaries
 
 The app continuation passed 53 focused tests covering search deadlines, rapid resubmission, provider retry pauses, food logging, locale changes, identity return and Testnet-guide handoff. Its production build passed. Website checks use captured public DOM/CSS, PHP execution and interaction fixtures. The candidate WordPress release has not been visually accepted on the live site in this session. No real Xaman signing, exchange order or live Render acceptance is claimed.
