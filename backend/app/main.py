@@ -813,6 +813,17 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
         logger.warning("WordPress bridge rejected code exchange (status=%s)", response.status_code)
         raise HTTPException(status_code=400, detail="Authorization code exchange rejected")
 
+    content_type = response.headers.get("content-type", "").partition(";")[0].strip().lower()
+    if content_type == "text/html":
+        # Hosting verification pages can return 200 before WordPress runs. A
+        # browser retry cannot complete that server-to-server check. Expose a
+        # fixed error code, never the page body, headers, URL, or credentials.
+        logger.warning("WordPress bridge returned HTML instead of identity JSON")
+        raise HTTPException(
+            status_code=502,
+            detail={"code": "wordpress_bridge_html_response"},
+        )
+
     try:
         payload = response.json()
     except ValueError as exc:
