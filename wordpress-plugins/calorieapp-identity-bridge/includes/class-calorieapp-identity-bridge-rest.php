@@ -127,7 +127,7 @@ class RestApi {
         if ($state_validation instanceof WP_Error) {
             return $state_validation;
         }
-        $state_locale = (string) $state_validation;
+        $state_locale = (string) $state_validation['locale'];
         if (
             $expected_locale !== ''
             && !hash_equals(LocaleRegistry::resolve($expected_locale), $state_locale)
@@ -156,7 +156,14 @@ class RestApi {
         $options = Plugin::get_options();
         $ttl = max(10, min(300, (int) $options['code_ttl_seconds']));
 
-        $issued = $this->storage->issue_code($user_id, $state, $xrpl_address, $ttl);
+        if ($state_validation['backend_codes']) {
+            $issued = $this->issue_backend_code($user_id, $state, $xrpl_address, $state_locale);
+            if ($issued instanceof WP_Error) {
+                return $issued;
+            }
+        } else {
+            $issued = $this->storage->issue_code($user_id, $state, $xrpl_address, $ttl);
+        }
         if (empty($issued['ok'])) {
             return new WP_Error('code_issue_failed', 'Failed to issue authorization code', ['status' => 500]);
         }
@@ -349,7 +356,82 @@ class RestApi {
             return new WP_Error('state_validation_failed', 'Backend returned an invalid locale context', ['status' => 502]);
         }
 
-        return $locale;
+        return [
+            'locale' => $locale,
+            'backend_codes' => ($body['code_transport'] ?? '') === 'backend_v1',
+        ];
+    }
+
+    /**
+     * Send the verified identity only over the configured server connection.
+     * The browser still receives just a random one-time code and its state.
+     * Older backends do not advertise this transport and keep the old flow.
+     *
+     * @return array|WP_Error
+     */
+    private function issue_backend_code(int $user_id, string $state, string $xrpl_address, string $locale) {
+        $options = Plugin::get_options();
+        $backend_url = rtrim((string) $options['calorieapp_backend_url'], '/');
+        $client_id = trim((string) $options['backend_client_id']);
+        $timestamp = (string) time();
+        $nonce = $this->generate_nonce();
+        $body = [
+            'state' => $state,
+            'external_subject' => $this->storage->build_external_subject($user_id),
+            'xrpl_address' => $xrpl_address,
+            'locale' => $locale,
+        ];
+        $canonical = wp_json_encode(
+            array_merge(
+                [
+                    'version' => 'v2',
+                    'purpose' => 'issue_login_code_v1',
+                    'client_id' => $client_id,
+                    'timestamp' => $timestamp,
+                    'nonce' => $nonce,
+                ],
+                $body
+            ),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+        $response = wp_safe_remote_post(
+            $backend_url . '/api/identity/bridge/code',
+            [
+                'timeout' => 8,
+                'redirection' => 0,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'X-CalorieApp-Client-Id' => $client_id,
+                    'X-CalorieApp-Timestamp' => $timestamp,
+                    'X-CalorieApp-Nonce' => $nonce,
+                    'X-CalorieApp-Signature' => hash_hmac('sha256', $canonical, (string) $options['bridge_secret']),
+                ],
+                'body' => wp_json_encode($body),
+            ]
+        );
+        if (is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200) {
+            return new WP_Error('code_issue_failed', 'Could not complete server authorization', ['status' => 502]);
+        }
+        $result = json_decode((string) wp_remote_retrieve_body($response), true);
+        $code = is_array($result) ? ($result['code'] ?? null) : null;
+        $jti = is_array($result) ? ($result['jti'] ?? null) : null;
+        $expires = is_array($result) && is_string($result['expires_at'] ?? null)
+            ? strtotime($result['expires_at']) : false;
+        if (
+            !is_string($code) || preg_match('/^cb1\.[A-Za-z0-9_-]{43}$/D', $code) !== 1
+            || !is_string($jti) || preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $jti) !== 1
+            || !is_string($result['locale'] ?? null) || !hash_equals($locale, $result['locale'])
+            || $expires === false || $expires <= time() || $expires > time() + 65
+        ) {
+            return new WP_Error('code_issue_failed', 'Invalid server authorization response', ['status' => 502]);
+        }
+        return [
+            'ok' => true,
+            'code' => $code,
+            'jti' => $jti,
+            'expires_at' => gmdate('Y-m-d H:i:s', $expires),
+        ];
     }
 
     private function build_state_validation_signature_payload(

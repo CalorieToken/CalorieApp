@@ -171,11 +171,28 @@ class IdentityStateValidationResponse(BaseModel):
     valid: bool
     expires_at: datetime
     locale: str
+    code_transport: Literal["backend_v1"] = "backend_v1"
 
     @field_validator("expires_at", mode="after")
     @classmethod
     def serialize_expires_at_as_utc(cls, value: datetime) -> datetime:
         return _ensure_utc(value)
+
+
+class BridgeCodeRequest(BaseModel):
+    """Identity asserted only by the authenticated WordPress server."""
+
+    state: str = Field(min_length=32, max_length=255, pattern=r"^[A-Za-z0-9._~-]+$")
+    external_subject: str = Field(min_length=1, max_length=120)
+    xrpl_address: str = Field(min_length=25, max_length=34, pattern=r"^r[1-9A-HJ-NP-Za-km-z]+$")
+    locale: str = Field(min_length=2, max_length=16)
+
+
+class BridgeCodeResponse(BaseModel):
+    code: str
+    expires_at: datetime
+    jti: str
+    locale: str
 
 
 class IdentityClaimsResponse(BaseModel):

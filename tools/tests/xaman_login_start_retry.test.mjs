@@ -646,6 +646,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   const backendRequest = async (url, options = {}) => {
     requests.push({ url, method: options.method || "GET" });
     if (url.endsWith("/api/identity/callback")) {
+      if (scenario === "hosting-html") {
+        return response(502, { detail: { code: "wordpress_bridge_html_response" } });
+      }
       if (scenario === "rate-limited") {
         return response(429, null, "30");
       }
@@ -812,6 +815,23 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     locale: "en",
   };
   const signal = () => new AbortController().signal;
+
+  scenario = "hosting-html";
+  await assert.rejects(module.exports.completeEmbeddedLogin(
+    pending, "authorization-code", pending.state, signal(), 120_000
+  ), (error) => {
+    assert.ok(error instanceof module.exports.EmbeddedBridgeUnavailableError);
+    assert.equal(module.exports.embeddedAuthorizationRefreshDelayMs(
+      error, 0, pending.expires_at, now
+    ), null);
+    return true;
+  });
+  assert.deepEqual(requests, [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+  ]);
+  assert.deepEqual(scheduledDelays, []);
+  requests.length = 0;
+  scenario = "callback-cookie";
 
   const directUser = await module.exports.completeEmbeddedLogin(
     pending,

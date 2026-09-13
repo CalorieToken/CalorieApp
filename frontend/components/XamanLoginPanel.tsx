@@ -158,6 +158,13 @@ type EmbeddedAuthorizationRefreshReason =
   | "rate-limited"
   | "callback-uncertain";
 
+export class EmbeddedBridgeUnavailableError extends Error {
+  constructor() {
+    super("The website signed you in, but its connection to CalorieApp is temporarily unavailable. Please try again later.");
+    this.name = "EmbeddedBridgeUnavailableError";
+  }
+}
+
 export class EmbeddedAuthorizationRefreshRequiredError extends Error {
   constructor(
     readonly retryAfterMs: number,
@@ -722,6 +729,17 @@ export async function completeEmbeddedLogin(
 
   if (!response.ok) {
     const callbackStatus = response.status;
+    if (callbackStatus === 502) {
+      let failure: { detail?: { code?: unknown } } | null = null;
+      try {
+        failure = await response.json();
+      } catch {
+        // An unclassified gateway failure keeps the existing bounded recovery.
+      }
+      if (failure?.detail?.code === "wordpress_bridge_html_response") {
+        throw new EmbeddedBridgeUnavailableError();
+      }
+    }
     const isRateLimited = callbackStatus === 429;
     const isUncertain = [502, 503, 504].includes(callbackStatus);
     const retryDelayMs =
@@ -962,6 +980,8 @@ export function XamanLoginPanel() {
   const { copy: authCopy, locale: authLocale, direction: authDirection } = getAuthUi(
     display.enabled ? display.locale : displayLocale
   );
+  const authCopyRef = useRef(authCopy);
+  authCopyRef.current = authCopy;
   const loginAbortController = useRef<AbortController | null>(null);
   const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
@@ -1407,10 +1427,18 @@ export function XamanLoginPanel() {
           return;
         }
 
-        const message = backendUnavailableMessage(
-          requestError,
-          "WordPress is signed in, but CalorieApp could not finish. Please try again."
-        );
+        const bridgeUnavailable =
+          requestError instanceof EmbeddedBridgeUnavailableError;
+        if (bridgeUnavailable) {
+          embeddedLoginStart.current = null;
+          clearPendingLogin();
+        }
+        const message = bridgeUnavailable
+          ? requestError.message
+          : backendUnavailableMessage(
+              requestError,
+              "WordPress is signed in, but CalorieApp could not finish. Please try again."
+            );
         setError(message);
         setLoginStatus(null);
         setIsLoading(false);
@@ -1418,7 +1446,7 @@ export function XamanLoginPanel() {
           {
             type: "calorieapp:login:backend-error",
             requestId: embeddedRequestId.current,
-            message,
+            message: translateAuthMessage(message, authCopyRef.current),
             locale: pending.locale,
           },
           origin

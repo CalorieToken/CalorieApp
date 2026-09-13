@@ -55,6 +55,7 @@ ROUTE_RATE_POLICIES: dict[tuple[str, str], RouteRatePolicy] = {
         120,
     ),
     ("POST", "/api/identity/callback"): RouteRatePolicy("identity_callback", 30),
+    ("POST", "/api/identity/bridge/code"): RouteRatePolicy("identity_bridge_code", 120),
     ("POST", "/api/identity/login/status"): RouteRatePolicy(
         "identity_login_status",
         240,

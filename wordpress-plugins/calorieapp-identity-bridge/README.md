@@ -30,6 +30,14 @@ code for CalorieApp backend exchange.
 
 ## Endpoints
 
+New backends advertise `backend_v1` code transport during signed state
+validation. The bridge then sends the verified identity in a timestamped,
+nonce-protected HMAC request to the configured backend's
+`POST /api/identity/bridge/code`. The browser receives the same code/state
+contract and finishes through the existing callback. This transport does not
+require an inbound HTTP exchange from Render to WordPress. Older backends
+retain the existing exchange flow. Deploy the backend before this plugin.
+
 - Browser authorize: `/?calorieapp_authorize=1&state=...` in the normal WordPress request lifecycle
 - Server exchange: POST `/calorieapp/v1/exchange` under the site's canonical WordPress REST root
 - Legacy/debug REST authorize: GET `/calorieapp/v1/authorize` remains registered, but normal browser login must use the browser authorize URL because WordPress REST cookie authentication requires a REST nonce.

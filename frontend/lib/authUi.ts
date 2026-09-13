@@ -9,7 +9,7 @@ export function getAuthUi(value?: string | null) {
 const messageKeys: (keyof AuthUiCopy)[] = [
   "restoring", "complete", "restoreFailed", "preparing", "starting", "retrying",
   "busy", "activating", "reconnecting", "signedBoth", "languageMismatch",
-  "responseMismatch", "finishFailed", "prepareFailed", "logoutFailed", "serviceSlow", "signedOutApp",
+  "responseMismatch", "finishFailed", "bridgeUnavailable", "prepareFailed", "logoutFailed", "serviceSlow", "signedOutApp",
 ];
 const messages = new Map<string, keyof AuthUiCopy>(
   messageKeys.map(key => [translations.en[key], key]),
