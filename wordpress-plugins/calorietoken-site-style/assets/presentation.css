@@ -479,6 +479,7 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled .ctstyle-document-copy #cmplz-document .cmplz-service-header h3 {font:700 28px/1.3 Amiri,Georgia,serif!important;}
  body.ctstyle-enabled .ctstyle-document-copy #cmplz-document .cmplz-service-header p {font:400 18px/1.5 Amiri,Georgia,serif!important;text-align:start!important;}
  body.ctstyle-enabled .ctstyle-cookie-document-actions {margin:0 0 24px!important;}
+ body.ctstyle-enabled #cmplz-document #cmplz-manage-consent-container {scroll-margin-top:72px;}
  body.ctstyle-enabled .ctstyle-cookie-document-actions>a {display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border:2px solid #505ba9;border-radius:16px;background:#f9b233;color:#303449;font:700 20px/1.4 Amiri,Georgia,serif;text-decoration:none;}
  body.ctstyle-enabled a.ctstyle-cookie-settings:focus-visible {outline:3px solid #008d36;outline-offset:3px;}
  @media(max-width:767px) {

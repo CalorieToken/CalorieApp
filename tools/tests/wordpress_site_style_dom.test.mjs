@@ -129,6 +129,7 @@ test('Footer cookie access opens native preferences, avoids re-toggling them, an
   box.innerHTML='<div id="cmplz-manage-consent"><button class="cmplz-manage-consent">Manage consent</button></div><div class="cmplz-cookiebanner"><button class="cmplz-view-preferences">View preferences</button><input type="checkbox" checked></div>';
   h.document.body.append(box);
   const banner=box.querySelector('.cmplz-cookiebanner'),choice=box.querySelector('input');
+  banner.getBoundingClientRect=()=>({width:400,height:300}); // Model visibility only; not a device layout test.
   let shown=0,preferences=0;
   h.window.cmplz_set_banner_status=status=>{assert.equal(status,'show');shown++;banner.classList.add('cmplz-show');};
   box.querySelector('.cmplz-manage-consent').addEventListener('click',()=>h.window.cmplz_set_banner_status('show'));
@@ -287,6 +288,7 @@ test('X, SWFT and the cookie document open the same preferences and preserve con
     native.innerHTML='<div id="cmplz-cookiebanner-container"><div class="cmplz-cookiebanner"><button class="cmplz-view-preferences">Preferences</button><input id="saved-choice" type="checkbox" checked></div></div>';
     h.document.body.append(native);
     const banner=native.querySelector('.cmplz-cookiebanner'),checkbox=native.querySelector('#saved-choice');
+    banner.getBoundingClientRect=()=>({width:400,height:300});
     const policy=h.document.querySelector('#cmplz-document'),before=policy?.outerHTML;
     let opened=0,expanded=0;
     h.window.cmplz_set_banner_status=status=>{assert.equal(status,'show');opened++;banner.classList.add('cmplz-show');};
@@ -324,6 +326,68 @@ test('A blocked consent script leaves X help and policy access in every website 
     assert.equal(help.querySelector('.calorieapp-x-fallback').href,'https://x.com/CalorieToken');
     assert.equal(help.querySelector('.calorieapp-x-load').hidden,true,'No consent action is offered without the CMP');
     assert.equal(h.calls.length,0);
+  }
+});
+
+test('Browser-hidden consent banners retain working policy navigation and existing choices',()=>{
+  const h=sharedFooterFixture({hub:false});h.run('style.js');h.run('refinements.js');
+  const link=h.document.querySelector('.ctstyle-footer-cookies');
+  const host=h.document.createElement('div');
+  host.innerHTML='<div class="cmplz-cookiebanner"><input type="checkbox" checked></div>';
+  h.document.body.append(host);
+  const banner=host.firstElementChild,choice=banner.querySelector('input');
+  let dimensions={width:400,height:300};banner.getBoundingClientRect=()=>dimensions;
+  h.window.cmplz_set_banner_status=()=>banner.classList.add('cmplz-show');
+  const cases=[
+    ()=>{banner.style.display='none';},
+    ()=>{banner.style.display='block';banner.style.visibility='hidden';},
+    ()=>{banner.style.visibility='visible';host.hidden=true;},
+    ()=>{host.hidden=false;dimensions={width:0,height:0};},
+  ];
+  for(const hide of cases){
+    hide();const click=new h.window.Event('click',{bubbles:true,cancelable:true});link.dispatchEvent(click);h.flush();
+    assert.equal(click.defaultPrevented,false,'A CSS or browser-hidden panel must not swallow the navigation');
+    assert.equal(link.href,'https://calorietoken.net/cookie-policy-eu/');
+    assert.equal(banner.querySelector('input'),choice);assert.ok(choice.hasAttribute('checked'));
+  }
+});
+
+test('X explains existing service consent in every language without asking visitors to grant it again',()=>{
+  const h=blogFixture({permitted:true});h.run('menu-pages.js');
+  for(const tag of Object.keys(menu.blog.copy)){
+    h.window.CalorieAppBlogX.setLocale(tag);
+    const help=h.document.querySelector('.calorieapp-x-help');
+    assert.ok(menu.blog.copy[tag].consentedDescription?.trim());
+    assert.equal(help.querySelector('.calorieapp-x-description').textContent,menu.blog.copy[tag].consentedDescription);
+    assert.equal(help.querySelector('.calorieapp-x-load').hidden,true);
+    assert.equal(help.querySelector('.calorieapp-x-fallback').hidden,false);
+  }
+  h.consent(false);h.window.CalorieAppBlogX.setLocale('nl');
+  assert.equal(h.document.querySelector('.calorieapp-x-description').textContent,menu.blog.copy.nl.description);
+});
+
+test('Cookie policy settings jump to its native inline controls without reloading or changing consent',()=>{
+  for(const route of ['/cookie-policy-eu/','/index.php/cookie-policy-eu/?lang=nl#previous']){
+    const h=fixture('<article class="ctstyle-document-copy"><div id="cmplz-document"><p>Original cookie statement</p><div id="cmplz-manage-consent-container"><input id="saved-inline-choice" class="cmplz-consent-checkbox" type="checkbox" checked></div></div></article><footer><a class="ctstyle-footer-cookies" href="https://calorietoken.net/cookie-policy-eu/">Cookie settings</a></footer>',{page:7876,route:'cookie-policy-eu'});
+    h.window.location=new URL('https://calorietoken.net'+route);
+    const doc=h.document.querySelector('#cmplz-document'),before=doc.outerHTML;
+    const choice=h.document.querySelector('#saved-inline-choice');
+    h.window.cmplz_set_banner_status=()=>assert.fail('The policy page uses inline controls, not a banner');
+    h.run('refinements.js');
+    const target=h.window.location.href.split('#')[0]+'#cmplz-manage-consent-container';
+    const top=h.document.querySelector('.ctstyle-cookie-document-actions a');
+    assert.equal(top.href,target,'The top link must target the existing controls on the same document');
+    const footerLink=h.document.querySelector('.ctstyle-footer-cookies');
+    const modified=new h.window.Event('click',{bubbles:true,cancelable:true});modified.ctrlKey=true;footerLink.dispatchEvent(modified);
+    assert.equal(modified.defaultPrevented,false);assert.equal(footerLink.href,'https://calorietoken.net/cookie-policy-eu/');
+    for(const link of [top,footerLink]){
+      const click=new h.window.Event('click',{bubbles:true,cancelable:true});link.dispatchEvent(click);
+      assert.equal(click.defaultPrevented,false,'Use ordinary browser anchor navigation');
+      assert.equal(link.href,target);
+    }
+    assert.equal(doc.outerHTML,before);assert.equal(h.document.querySelector('#saved-inline-choice'),choice);
+    assert.ok(choice.hasAttribute('checked'),'Navigation must preserve the native consent choice');
+    h.window.CalorieTokenRefinements.refresh();assert.equal(h.document.querySelectorAll('.ctstyle-cookie-document-actions').length,1);
   }
 });
 

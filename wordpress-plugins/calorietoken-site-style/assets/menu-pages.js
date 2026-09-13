@@ -21,6 +21,7 @@
   var contentUpdates = config.contentUpdates, usecases = config.usecases, articleNotes = config.articleNotes;
   var blogView = null, blogLocale = null;
   var blogFallback = config.blog.copy.en;
+  var blogTextKeys = ['description','action','settings','load','retry'];
   function selectedLocale() {
     var requested = new URL(window.location.href).searchParams.get('ui_lang') || document.documentElement.lang || 'en';
     var exact = config.locales.find(function (item) { return item.tag.toLowerCase() === requested.toLowerCase(); });
@@ -103,19 +104,22 @@
   function renderBlogHelp(locale) {
     var panel = blogPanel();
     if (!blogView || panel !== blogView.panel || blogView.help.parentElement !== panel
-      || !Object.keys(blogFallback).every(function (key) { return blogView[key].parentElement === blogView.help; })
+      || !blogTextKeys.every(function (key) { return blogView[key].parentElement === blogView.help; })
       || blogView.action.getAttribute("href") !== "https://x.com/CalorieToken") return;
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     var definition = config && Array.isArray(config.locales)
       && config.locales.find(function (item) { return item.tag === locale; });
     var copy = definition && config.copy && config.copy[locale];
-    if (!copy || !Object.keys(blogFallback).every(function (key) {
+    if (!copy || !blogTextKeys.every(function (key) {
       return typeof copy[key] === "string" && copy[key].trim();
     })) { copy = blogFallback; locale = "en"; }
+    var permitted=false;
+    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
     // These text nodes belong to the helper, outside the CMP/X subtree.
-    Object.keys(blogFallback).forEach(function (key) {
+    blogTextKeys.forEach(function (key) {
       var node = blogView[key];
-      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) node.childNodes[0].data = copy[key];
+      var value=key==='description'&&permitted ? (copy.consentedDescription||'X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X.') : copy[key];
+      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 && node.childNodes[0].data!==value) node.childNodes[0].data = value;
     });
     blogView.help.setAttribute("lang", locale);
     blogView.help.setAttribute("dir", ["ar", "ur"].indexOf(locale) !== -1 ? "rtl" : "ltr");
@@ -129,8 +133,6 @@
     setHidden(blogView.settings, false);
     var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
       && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
-    var permitted=false;
-    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
     setHidden(blogView.load, ready || permitted || !consentAvailable);
     setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }

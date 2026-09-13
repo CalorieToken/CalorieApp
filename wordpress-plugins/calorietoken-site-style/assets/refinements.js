@@ -12,16 +12,31 @@
   function text(v){return String(v||'').replace(/\s+/g,' ').trim();}
   function make(tag,cls,copy){var n=document.createElement(tag);if(cls)n.className=cls;if(copy)n.textContent=copy;return n;}
   function label(tag,key,cls){var n=make(tag,cls,cfg.copy.en[key]);labels.push({node:n,key:key});return n;}
+  function cookieSettingsDestination(){
+    // Complianz uses inline controls instead of a banner on its policy page.
+    // Keep the current route so this anchor does not reload the document.
+    if(/^\/(?:index\.php\/)?cookie-policy-eu\/?$/.test(window.location.pathname)&&
+      document.querySelector('#cmplz-document #cmplz-manage-consent-container'))
+      return window.location.href.split('#')[0]+'#cmplz-manage-consent-container';
+    return window.location.origin+'/cookie-policy-eu/';
+  }
   function cookieSettings(event){
     if(!allowed()||!(event.target instanceof window.Element))return;
     var link=event.target.closest('a.ctstyle-footer-cookies,a.ctstyle-cookie-settings');
     if(!link||link.getAttribute('href')!==window.location.origin+'/cookie-policy-eu/'||event.defaultPrevented||
       event.button>0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
-    // All owned entry points use the same native preferences panel. If the
-    // CMP is unavailable, the anchor still opens the real policy document.
+    var destination=cookieSettingsDestination();
+    if(destination!==link.getAttribute('href')){link.href=destination;return;}
+    // Other pages use the native preferences panel. If the CMP is unavailable,
+    // the anchor still opens the real policy document.
     if(typeof window.cmplz_set_banner_status!=='function')return;
     try{window.cmplz_set_banner_status('show');}catch(_){return;}
-    if(!document.querySelector('.cmplz-cookiebanner.cmplz-show'))return;
+    var shown=document.querySelector('.cmplz-cookiebanner.cmplz-show');
+    if(!shown||shown.closest('[hidden],[inert]'))return;
+    var appearance=window.getComputedStyle(shown),box=shown.getBoundingClientRect();
+    // A browser may hide consent banners even after the CMP marks them open.
+    // Respect that choice and keep navigation to the policy available.
+    if(appearance.display==='none'||appearance.visibility==='hidden'||box.width<=0||box.height<=0)return;
     event.preventDefault();
     window.requestAnimationFrame(function(){
       var banner=document.querySelector('.cmplz-cookiebanner.cmplz-show');
@@ -35,7 +50,7 @@
     if(!doc||document.querySelector('.ctstyle-cookie-document-actions'))return;
     var actions=make('p','ctstyle-cookie-document-actions');
     var link=label('a','cookies','ctstyle-cookie-settings');
-    link.href=window.location.origin+'/cookie-policy-eu/';
+    link.href=cookieSettingsDestination();
     actions.append(link);doc.before(actions);
   }
   function routes(){
