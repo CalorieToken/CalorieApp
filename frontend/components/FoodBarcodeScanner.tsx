@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import translations from "@/config/barcode-copy.json";
-import { cameraBlockedByPolicy, startBarcodeCamera, validFoodBarcode } from "@/lib/foodBarcode";
+import { BarcodeCameraControls, cameraBlockedByPolicy, startBarcodeCamera, validFoodBarcode } from "@/lib/foodBarcode";
 
 type Status = "opening" | "scanning" | "denied" | "policyBlocked" | "unavailable" | "invalid" | "found" | "paused" | "cameraError";
 
@@ -13,6 +13,11 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
   const [barcode, setBarcode] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
   const [active, setActive] = useState(false);
+  const [controls, setControls] = useState<BarcodeCameraControls>({});
+  const [zoom, setZoom] = useState(1);
+  const [torch, setTorch] = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
+  const [controlError, setControlError] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const camera = useRef<AbortController | null>(null);
   const deadline = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -20,7 +25,7 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
     camera.current?.abort(); camera.current = null;
     if (deadline.current !== null) clearTimeout(deadline.current);
     deadline.current = null;
-    setActive(false); setStatus(next);
+    setActive(false); setStatus(next); setControls({}); setAdjusting(false); setControlError(false);
   }, []);
 
   useEffect(() => {
@@ -51,13 +56,29 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
       await startBarcodeCamera(video.current, controller.signal, code => {
         if (camera.current !== controller) return;
         setBarcode(code); stop("found"); onLookup(code);
-      }, () => { if (camera.current === controller) setStatus("scanning"); });
+      }, (available = {}) => {
+        if (camera.current !== controller) return;
+        setControls(available); setZoom(available.zoom?.value ?? 1); setTorch(available.torch?.value ?? false);
+        setStatus("scanning");
+      });
     } catch (error) {
       if (camera.current !== controller) return;
       const name = error && typeof error === "object" && "name" in error ? error.name : "";
       stop(cameraBlockedByPolicy(document) ? "policyBlocked"
         : name === "NotAllowedError" || name === "SecurityError" ? "denied" : "cameraError");
     }
+  }
+
+  async function adjust(kind: "zoom" | "torch", value: number | boolean) {
+    const controller = camera.current;
+    if (!controller || adjusting) return;
+    setAdjusting(true); setControlError(false);
+    const actual = kind === "zoom" ? await controls.zoom?.set(Number(value)) : await controls.torch?.set(Boolean(value));
+    if (camera.current !== controller) return;
+    if (typeof actual === "number") setZoom(actual);
+    else if (typeof actual === "boolean") setTorch(actual);
+    else setControlError(true);
+    setAdjusting(false);
   }
 
   function lookup(event: FormEvent<HTMLFormElement>) {
@@ -67,6 +88,9 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
     if (!code) { setStatus("invalid"); return; }
     stop("found"); setBarcode(code); onLookup(code);
   }
+
+  const zoomOptions = controls.zoom ? Array.from(new Set([controls.zoom.min, zoom, 1, 1.5, 2, 3, 4, controls.zoom.max]
+    .filter(value => value >= controls.zoom!.min && value <= controls.zoom!.max))).sort((a, b) => a - b) : [];
 
   return (
     <details className="mt-4 min-w-0 rounded-xl border border-brand-secondary/20 bg-brand-bg"
@@ -79,9 +103,24 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
           {active ? copy.stop : copy.scan}
         </button>
         <div hidden={!active} className="relative overflow-hidden rounded-xl bg-black">
-          <video ref={video} muted playsInline aria-label={copy.title} className="aspect-video w-full object-cover" />
+          <video ref={video} muted playsInline aria-label={copy.title} className="aspect-[4/3] w-full object-cover sm:aspect-video" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-[10%] inset-y-[28%] rounded-lg border-2 border-white shadow-[0_0_0_100px_#0005]" />
         </div>
+        {active && (controls.zoom || controls.torch) ? <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          {controls.zoom ? <label className="flex min-h-11 items-center gap-2">
+            <span>{copy.zoom}</span>
+            <select value={zoom}
+              disabled={adjusting} onChange={event => { void adjust("zoom", Number(event.target.value)); }}
+              className="min-h-11 rounded-lg border border-brand-secondary/30 bg-white px-3 text-base">
+              {zoomOptions.map(value => <option key={value} value={value}>{value}×</option>)}
+            </select>
+          </label> : null}
+          {controls.torch ? <button type="button" aria-pressed={torch} disabled={adjusting}
+            onClick={() => { void adjust("torch", !torch); }}
+            className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 font-semibold disabled:opacity-60">{copy.light}</button> : null}
+        </div> : null}
+        {active && controls.zoom ? <p className="text-xs leading-relaxed">{copy.zoomHelp}</p> : null}
+        {active && controlError ? <p role="status" className="text-xs leading-relaxed">{copy.controlError}</p> : null}
         {status ? <p id="food-barcode-status" role="status" aria-live="polite">{copy[status]}</p> : null}
         {status === "denied" ? <p className="text-xs leading-relaxed">{copy.permissionHelp}</p> : null}
         <form onSubmit={lookup} className="space-y-2">

@@ -7,7 +7,7 @@
     "scan": "Start camera",
     "stop": "Stop camera",
     "opening": "Opening camera…",
-    "scanning": "Move closer until the barcode fills most of the frame, keeping the white space on both sides visible. Hold still until the bars are sharp.",
+    "scanning": "Keep the whole barcode and both white margins visible. If it looks blurry, move a little farther away and hold still. Tilt shiny packaging slightly to avoid reflections.",
     "denied": "Camera access is blocked. Check the camera permission for this website in your browser settings.",
     "unavailable": "Camera unavailable. Enter the barcode below.",
     "invalid": "Enter a valid barcode with 8, 12, 13 or 14 digits.",
@@ -17,7 +17,13 @@
     "privacy": "Camera images stay on your device. Only the barcode is used to look up the food in Open Food Facts.",
     "notFound": "No product with complete nutrition was found for this barcode. Try searching by food name.",
     "permissionHelp": "On a phone, also check that your browser may use the camera in the phone settings. Then return here and tap Start camera. You do not need to sign in.",
-    "policyBlocked": "This page does not allow camera use. Enter the barcode below; signing in is not required."
+    "policyBlocked": "This page does not allow camera use. Enter the barcode below; signing in is not required.",
+    "zoom": "Zoom",
+    "light": "Light",
+    "zoomHelp": "Use zoom to keep the camera farther from a small barcode.",
+    "controlError": "This camera setting could not be changed. You can keep scanning.",
+    "contributeHint": "Missing a product or nutrition details?",
+    "contributeLink": "Add or improve it on Open Food Facts"
   },
   "nl": {
     "title": "Scan een voedselbarcode",
@@ -27,7 +33,7 @@
     "scan": "Start camera",
     "stop": "Stop camera",
     "opening": "Camera openen…",
-    "scanning": "Kom dichterbij tot de barcode bijna het hele kader vult. Houd de witte ruimte aan beide kanten zichtbaar en wacht even tot de streepjes scherp zijn.",
+    "scanning": "Houd de hele barcode en de witte randen zichtbaar. Is het beeld wazig? Houd de camera iets verder weg en even stil. Kantel glanzende verpakkingen een beetje om reflecties te vermijden.",
     "denied": "Cameratoegang is geblokkeerd. Controleer in je browserinstellingen de cameratoestemming voor deze website.",
     "unavailable": "Camera niet beschikbaar. Vul de barcode hieronder in.",
     "invalid": "Vul een geldige barcode met 8, 12, 13 of 14 cijfers in.",
@@ -37,7 +43,13 @@
     "privacy": "Camerabeelden blijven op je apparaat. Alleen de barcode wordt gebruikt om het voedsel in Open Food Facts op te zoeken.",
     "notFound": "Voor deze barcode is geen product met volledige voedingswaarden gevonden. Zoek op de naam van het voedsel.",
     "permissionHelp": "Controleer op je telefoon ook of je browser de camera mag gebruiken in de telefooninstellingen. Kom daarna terug en tik op Start camera. Inloggen is niet nodig.",
-    "policyBlocked": "Deze pagina staat cameragebruik niet toe. Vul de barcode hieronder in; inloggen is niet nodig."
+    "policyBlocked": "Deze pagina staat cameragebruik niet toe. Vul de barcode hieronder in; inloggen is niet nodig.",
+    "zoom": "Zoom",
+    "light": "Licht",
+    "zoomHelp": "Gebruik zoom om meer afstand te houden bij een kleine barcode.",
+    "controlError": "Deze camerainstelling kon niet worden aangepast. Je kunt blijven scannen.",
+    "contributeHint": "Ontbreekt een product of voedingsinformatie?",
+    "contributeLink": "Voeg het toe of vul het aan op Open Food Facts"
   },
   "zh-Hans": {
     "title": "扫描食品条码",
@@ -47,7 +59,7 @@
     "scan": "启动相机",
     "stop": "停止相机",
     "opening": "正在打开相机…",
-    "scanning": "靠近一些，让条码占满框内大部分区域，同时保留两侧的空白。保持稳定，等条纹清晰。",
+    "scanning": "让整个条码及两侧白边保持可见。如果画面模糊，请将相机稍微移远并保持稳定。轻轻倾斜有光泽的包装以避免反光。",
     "denied": "相机访问被阻止。请在浏览器设置中检查此网站的相机权限。",
     "unavailable": "相机不可用。请在下方输入条码。",
     "invalid": "请输入有效的 8、12、13 或 14 位条码。",
@@ -57,7 +69,13 @@
     "privacy": "相机图像保留在您的设备上。仅使用条码在 Open Food Facts 中查询食品。",
     "notFound": "未找到具有完整营养数据的对应产品。请尝试按食品名称搜索。",
     "permissionHelp": "如果使用手机，请同时检查手机设置是否允许浏览器使用相机。然后返回此页并点击启动相机。无需登录。",
-    "policyBlocked": "此页面不允许使用相机。请在下方输入条码，无需登录。"
+    "policyBlocked": "此页面不允许使用相机。请在下方输入条码，无需登录。",
+    "zoom": "变焦",
+    "light": "补光",
+    "zoomHelp": "扫描小条码时，可使用变焦让相机离远一些。",
+    "controlError": "无法更改此相机设置。您可以继续扫描。",
+    "contributeHint": "缺少产品或营养信息？",
+    "contributeLink": "在 Open Food Facts 上添加或完善"
   },
   "hi": {
     "title": "भोजन का बारकोड स्कैन करें",
@@ -67,7 +85,7 @@
     "scan": "कैमरा शुरू करें",
     "stop": "कैमरा रोकें",
     "opening": "कैमरा खुल रहा है…",
-    "scanning": "पास लाएँ ताकि बारकोड फ्रेम का अधिकतर हिस्सा भर दे और दोनों ओर की सफेद जगह दिखे। धारियाँ साफ होने तक स्थिर रखें।",
+    "scanning": "पूरा बारकोड और दोनों सफेद किनारे दिखने दें। धुंधला दिखे तो कैमरा थोड़ा दूर करें और स्थिर रखें। चमकीली पैकिंग को थोड़ा झुकाएँ ताकि रोशनी न चमके।",
     "denied": "कैमरे का उपयोग अवरुद्ध है। ब्राउज़र सेटिंग में इस वेबसाइट की कैमरा अनुमति जाँचें।",
     "unavailable": "कैमरा उपलब्ध नहीं है। नीचे बारकोड दर्ज करें।",
     "invalid": "8, 12, 13 या 14 अंकों का मान्य बारकोड दर्ज करें।",
@@ -77,7 +95,13 @@
     "privacy": "कैमरे की छवियाँ आपके डिवाइस पर रहती हैं। Open Food Facts में भोजन खोजने के लिए केवल बारकोड का उपयोग होता है।",
     "notFound": "इस बारकोड का पूरा पोषण डेटा वाला उत्पाद नहीं मिला। भोजन के नाम से खोजें।",
     "permissionHelp": "फ़ोन पर, फ़ोन की सेटिंग में भी जाँचें कि ब्राउज़र को कैमरे की अनुमति है। फिर यहाँ लौटकर कैमरा शुरू करें दबाएँ। लॉग इन करना ज़रूरी नहीं है।",
-    "policyBlocked": "यह पेज कैमरे का उपयोग नहीं करने देता। नीचे बारकोड दर्ज करें; लॉग इन करना ज़रूरी नहीं है।"
+    "policyBlocked": "यह पेज कैमरे का उपयोग नहीं करने देता। नीचे बारकोड दर्ज करें; लॉग इन करना ज़रूरी नहीं है।",
+    "zoom": "ज़ूम",
+    "light": "रोशनी",
+    "zoomHelp": "छोटे बारकोड से कैमरा दूर रखने के लिए ज़ूम का उपयोग करें।",
+    "controlError": "कैमरे की यह सेटिंग नहीं बदल सकी। आप स्कैन जारी रख सकते हैं।",
+    "contributeHint": "उत्पाद या पोषण संबंधी जानकारी नहीं है?",
+    "contributeLink": "Open Food Facts पर जोड़ें या जानकारी पूरी करें"
   },
   "es": {
     "title": "Escanea un código de alimentos",
@@ -87,7 +111,7 @@
     "scan": "Iniciar cámara",
     "stop": "Detener cámara",
     "opening": "Abriendo la cámara…",
-    "scanning": "Acércate hasta que el código ocupe casi todo el recuadro, dejando visible el espacio blanco a ambos lados. Mantén la cámara quieta hasta que las barras estén nítidas.",
+    "scanning": "Mantén visibles el código completo y ambos márgenes blancos. Si se ve borroso, aleja un poco la cámara y mantenla quieta. Inclina ligeramente los envases brillantes para evitar reflejos.",
     "denied": "El acceso a la cámara está bloqueado. Revisa el permiso de cámara de este sitio en los ajustes del navegador.",
     "unavailable": "Cámara no disponible. Introduce el código abajo.",
     "invalid": "Introduce un código válido de 8, 12, 13 o 14 dígitos.",
@@ -97,7 +121,13 @@
     "privacy": "Las imágenes permanecen en tu dispositivo. Solo se usa el código para buscar el alimento en Open Food Facts.",
     "notFound": "No se encontró un producto con nutrición completa para este código. Busca por el nombre del alimento.",
     "permissionHelp": "En el móvil, comprueba también que el navegador pueda usar la cámara en los ajustes del teléfono. Después vuelve aquí y pulsa Iniciar cámara. No necesitas iniciar sesión.",
-    "policyBlocked": "Esta página no permite usar la cámara. Introduce el código abajo; no necesitas iniciar sesión."
+    "policyBlocked": "Esta página no permite usar la cámara. Introduce el código abajo; no necesitas iniciar sesión.",
+    "zoom": "Zoom",
+    "light": "Luz",
+    "zoomHelp": "Usa el zoom para mantener la cámara más lejos de un código pequeño.",
+    "controlError": "No se pudo cambiar este ajuste de cámara. Puedes seguir escaneando.",
+    "contributeHint": "¿Falta un producto o información nutricional?",
+    "contributeLink": "Añádelo o complétalo en Open Food Facts"
   },
   "ar": {
     "title": "امسح رمز الطعام الشريطي",
@@ -107,7 +137,7 @@
     "scan": "تشغيل الكاميرا",
     "stop": "إيقاف الكاميرا",
     "opening": "جارٍ فتح الكاميرا…",
-    "scanning": "اقترب حتى يملأ الرمز معظم الإطار، مع إبقاء المساحة البيضاء على الجانبين ظاهرة. ثبّت الكاميرا حتى تتضح الخطوط.",
+    "scanning": "أبقِ الرمز كاملًا والهامشين الأبيضين ظاهرين. إذا بدت الصورة ضبابية، أبعد الكاميرا قليلًا وثبّتها. أمل العبوة اللامعة قليلًا لتجنب الانعكاسات.",
     "denied": "الوصول إلى الكاميرا محظور. تحقق من إذن الكاميرا لهذا الموقع في إعدادات المتصفح.",
     "unavailable": "الكاميرا غير متاحة. أدخل الرمز أدناه.",
     "invalid": "أدخل رمزًا صالحًا من 8 أو 12 أو 13 أو 14 رقمًا.",
@@ -117,7 +147,13 @@
     "privacy": "تبقى صور الكاميرا على جهازك. يُستخدم الرمز فقط للبحث عن الطعام في Open Food Facts.",
     "notFound": "لم يُعثر على منتج ببيانات غذائية مكتملة لهذا الرمز. جرّب البحث باسم الطعام.",
     "permissionHelp": "على الهاتف، تحقق أيضًا من السماح للمتصفح باستخدام الكاميرا في إعدادات الهاتف. ثم عُد إلى هنا واضغط تشغيل الكاميرا. لا تحتاج إلى تسجيل الدخول.",
-    "policyBlocked": "هذه الصفحة لا تسمح باستخدام الكاميرا. أدخل الرمز أدناه؛ لا يلزم تسجيل الدخول."
+    "policyBlocked": "هذه الصفحة لا تسمح باستخدام الكاميرا. أدخل الرمز أدناه؛ لا يلزم تسجيل الدخول.",
+    "zoom": "التكبير",
+    "light": "الإضاءة",
+    "zoomHelp": "استخدم التكبير لإبقاء الكاميرا أبعد عن الرمز الصغير.",
+    "controlError": "تعذر تغيير إعداد الكاميرا هذا. يمكنك متابعة المسح.",
+    "contributeHint": "هل ينقص منتج أو معلومات غذائية؟",
+    "contributeLink": "أضفه أو أكمله على Open Food Facts"
   },
   "fr": {
     "title": "Scanner un code-barres alimentaire",
@@ -127,7 +163,7 @@
     "scan": "Démarrer la caméra",
     "stop": "Arrêter la caméra",
     "opening": "Ouverture de la caméra…",
-    "scanning": "Rapprochez le code pour qu’il remplisse presque le cadre, en gardant les marges blanches visibles des deux côtés. Restez immobile jusqu’à ce que les barres soient nettes.",
+    "scanning": "Gardez le code entier et ses deux marges blanches visibles. Si l’image est floue, éloignez un peu la caméra et restez immobile. Inclinez légèrement les emballages brillants pour éviter les reflets.",
     "denied": "L’accès à la caméra est bloqué. Vérifiez l’autorisation de ce site dans les paramètres du navigateur.",
     "unavailable": "Caméra indisponible. Saisissez le code ci-dessous.",
     "invalid": "Saisissez un code valide de 8, 12, 13 ou 14 chiffres.",
@@ -137,7 +173,13 @@
     "privacy": "Les images restent sur votre appareil. Seul le code sert à rechercher l’aliment dans Open Food Facts.",
     "notFound": "Aucun produit avec des données nutritionnelles complètes n’a été trouvé pour ce code. Recherchez par nom d’aliment.",
     "permissionHelp": "Sur téléphone, vérifiez aussi que le navigateur peut utiliser la caméra dans les paramètres du téléphone. Revenez ensuite ici et appuyez sur Démarrer la caméra. Aucune connexion n’est nécessaire.",
-    "policyBlocked": "Cette page n’autorise pas la caméra. Saisissez le code ci-dessous ; aucune connexion n’est nécessaire."
+    "policyBlocked": "Cette page n’autorise pas la caméra. Saisissez le code ci-dessous ; aucune connexion n’est nécessaire.",
+    "zoom": "Zoom",
+    "light": "Éclairage",
+    "zoomHelp": "Utilisez le zoom pour éloigner la caméra d’un petit code-barres.",
+    "controlError": "Ce réglage de la caméra n’a pas pu être modifié. Vous pouvez continuer à scanner.",
+    "contributeHint": "Un produit ou des informations nutritionnelles manquent ?",
+    "contributeLink": "Ajoutez-les ou complétez-les sur Open Food Facts"
   },
   "bn": {
     "title": "খাবারের বারকোড স্ক্যান করুন",
@@ -147,7 +189,7 @@
     "scan": "ক্যামেরা চালু করুন",
     "stop": "ক্যামেরা বন্ধ করুন",
     "opening": "ক্যামেরা খুলছে…",
-    "scanning": "কাছে আনুন যাতে বারকোড ফ্রেমের বেশির ভাগ জুড়ে থাকে এবং দুই পাশের সাদা ফাঁকা জায়গা দেখা যায়। দাগগুলো স্পষ্ট হওয়া পর্যন্ত স্থির রাখুন।",
+    "scanning": "পুরো বারকোড এবং দুই পাশের সাদা ফাঁকা জায়গা দৃশ্যমান রাখুন। ঝাপসা হলে ক্যামেরা একটু দূরে সরিয়ে স্থির রাখুন। প্রতিফলন এড়াতে চকচকে প্যাকেট সামান্য কাত করুন।",
     "denied": "ক্যামেরার প্রবেশাধিকার অবরুদ্ধ। ব্রাউজারের সেটিংসে এই ওয়েবসাইটের ক্যামেরার অনুমতি দেখুন।",
     "unavailable": "ক্যামেরা নেই। নিচে বারকোড লিখুন।",
     "invalid": "৮, ১২, ১৩ বা ১৪ সংখ্যার বৈধ বারকোড লিখুন।",
@@ -157,7 +199,13 @@
     "privacy": "ক্যামেরার ছবি আপনার ডিভাইসেই থাকে। শুধু বারকোড দিয়ে Open Food Facts-এ খাবার খোঁজা হয়।",
     "notFound": "এই বারকোডে সম্পূর্ণ পুষ্টিতথ্যসহ পণ্য পাওয়া যায়নি। খাবারের নাম দিয়ে খুঁজুন।",
     "permissionHelp": "ফোনে, ফোনের সেটিংসেও দেখুন ব্রাউজারকে ক্যামেরা ব্যবহার করতে দেওয়া হয়েছে কি না। তারপর এখানে ফিরে ক্যামেরা চালু করুন চাপুন। সাইন ইন করার দরকার নেই।",
-    "policyBlocked": "এই পৃষ্ঠায় ক্যামেরা ব্যবহার অনুমোদিত নয়। নিচে বারকোড লিখুন; সাইন ইন করার দরকার নেই।"
+    "policyBlocked": "এই পৃষ্ঠায় ক্যামেরা ব্যবহার অনুমোদিত নয়। নিচে বারকোড লিখুন; সাইন ইন করার দরকার নেই।",
+    "zoom": "জুম",
+    "light": "আলো",
+    "zoomHelp": "ছোট বারকোড থেকে ক্যামেরা দূরে রাখতে জুম ব্যবহার করুন।",
+    "controlError": "ক্যামেরার এই সেটিং পরিবর্তন করা যায়নি। আপনি স্ক্যান চালিয়ে যেতে পারেন।",
+    "contributeHint": "পণ্য বা পুষ্টির তথ্য নেই?",
+    "contributeLink": "Open Food Facts-এ যোগ করুন বা তথ্য সম্পূর্ণ করুন"
   },
   "pt": {
     "title": "Digitalizar um código alimentar",
@@ -167,7 +215,7 @@
     "scan": "Iniciar câmara",
     "stop": "Parar câmara",
     "opening": "A abrir a câmara…",
-    "scanning": "Aproxime até o código ocupar quase toda a moldura, mantendo visível o espaço branco dos dois lados. Segure firme até as barras ficarem nítidas.",
+    "scanning": "Mantenha o código inteiro e as duas margens brancas visíveis. Se estiver desfocado, afaste um pouco a câmara e mantenha-a firme. Incline ligeiramente embalagens brilhantes para evitar reflexos.",
     "denied": "O acesso à câmera está bloqueado. Confira a permissão de câmera deste site nas configurações do navegador.",
     "unavailable": "Câmara indisponível. Introduza o código abaixo.",
     "invalid": "Introduza um código válido com 8, 12, 13 ou 14 dígitos.",
@@ -177,7 +225,13 @@
     "privacy": "As imagens ficam no seu dispositivo. Só o código é usado para procurar o alimento no Open Food Facts.",
     "notFound": "Não foi encontrado um produto com dados nutricionais completos para este código. Pesquise pelo nome do alimento.",
     "permissionHelp": "No celular, confira também se o navegador pode usar a câmera nas configurações do aparelho. Depois volte aqui e toque em Iniciar câmera. Não é necessário entrar na conta.",
-    "policyBlocked": "Esta página não permite usar a câmera. Digite o código abaixo; não é necessário entrar na conta."
+    "policyBlocked": "Esta página não permite usar a câmera. Digite o código abaixo; não é necessário entrar na conta.",
+    "zoom": "Zoom",
+    "light": "Luz",
+    "zoomHelp": "Use o zoom para manter a câmara mais afastada de um código pequeno.",
+    "controlError": "Não foi possível alterar esta definição da câmara. Pode continuar a digitalizar.",
+    "contributeHint": "Falta um produto ou informação nutricional?",
+    "contributeLink": "Adicione ou complete no Open Food Facts"
   },
   "id": {
     "title": "Pindai kode batang makanan",
@@ -187,7 +241,7 @@
     "scan": "Mulai kamera",
     "stop": "Hentikan kamera",
     "opening": "Membuka kamera…",
-    "scanning": "Dekatkan hingga kode memenuhi sebagian besar bingkai, dengan ruang putih di kedua sisi tetap terlihat. Pegang dengan stabil sampai garis terlihat tajam.",
+    "scanning": "Pastikan seluruh kode dan kedua tepi putih terlihat. Jika buram, jauhkan kamera sedikit dan tahan dengan stabil. Miringkan kemasan mengilap sedikit untuk menghindari pantulan.",
     "denied": "Akses kamera diblokir. Periksa izin kamera untuk situs ini di pengaturan browser.",
     "unavailable": "Kamera tidak tersedia. Masukkan kode di bawah.",
     "invalid": "Masukkan kode yang valid dengan 8, 12, 13, atau 14 digit.",
@@ -197,7 +251,13 @@
     "privacy": "Gambar kamera tetap di perangkat Anda. Hanya kode yang digunakan untuk mencari makanan di Open Food Facts.",
     "notFound": "Tidak ditemukan produk dengan gizi lengkap untuk kode ini. Coba cari berdasarkan nama makanan.",
     "permissionHelp": "Di ponsel, periksa juga apakah browser boleh memakai kamera di pengaturan ponsel. Lalu kembali ke sini dan ketuk Mulai kamera. Anda tidak perlu masuk.",
-    "policyBlocked": "Halaman ini tidak mengizinkan penggunaan kamera. Masukkan kode di bawah; Anda tidak perlu masuk."
+    "policyBlocked": "Halaman ini tidak mengizinkan penggunaan kamera. Masukkan kode di bawah; Anda tidak perlu masuk.",
+    "zoom": "Zoom",
+    "light": "Lampu",
+    "zoomHelp": "Gunakan zoom agar kamera bisa lebih jauh dari kode batang kecil.",
+    "controlError": "Pengaturan kamera ini tidak dapat diubah. Anda dapat terus memindai.",
+    "contributeHint": "Produk atau informasi gizi belum tersedia?",
+    "contributeLink": "Tambahkan atau lengkapi di Open Food Facts"
   },
   "ur": {
     "title": "کھانے کا بارکوڈ اسکین کریں",
@@ -207,7 +267,7 @@
     "scan": "کیمرہ شروع کریں",
     "stop": "کیمرہ بند کریں",
     "opening": "کیمرہ کھل رہا ہے…",
-    "scanning": "قریب لائیں تاکہ بارکوڈ فریم کا زیادہ تر حصہ بھر دے اور دونوں طرف کی سفید جگہ نظر آئے۔ لکیریں واضح ہونے تک کیمرہ ساکن رکھیں۔",
+    "scanning": "پورا بارکوڈ اور دونوں سفید کنارے نظر آنے دیں۔ دھندلا ہو تو کیمرہ تھوڑا دور کریں اور ساکن رکھیں۔ چمکدار پیکٹ کو ذرا جھکائیں تاکہ روشنی کا عکس نہ پڑے۔",
     "denied": "کیمرے تک رسائی مسدود ہے۔ براؤزر کی ترتیبات میں اس ویب سائٹ کے کیمرے کی اجازت دیکھیں۔",
     "unavailable": "کیمرہ دستیاب نہیں۔ نیچے بارکوڈ درج کریں۔",
     "invalid": "8، 12، 13 یا 14 ہندسوں کا درست بارکوڈ درج کریں۔",
@@ -217,6 +277,12 @@
     "privacy": "کیمرے کی تصاویر آپ کے آلے پر رہتی ہیں۔ Open Food Facts میں کھانا تلاش کرنے کے لیے صرف بارکوڈ استعمال ہوتا ہے۔",
     "notFound": "اس بارکوڈ کے لیے مکمل غذائی معلومات والی پروڈکٹ نہیں ملی۔ کھانے کے نام سے تلاش کریں۔",
     "permissionHelp": "فون پر، فون کی ترتیبات میں بھی دیکھیں کہ براؤزر کو کیمرہ استعمال کرنے کی اجازت ہے۔ پھر یہاں واپس آ کر کیمرہ شروع کریں دبائیں۔ سائن ان ضروری نہیں ہے۔",
-    "policyBlocked": "یہ صفحہ کیمرہ استعمال کرنے کی اجازت نہیں دیتا۔ نیچے بارکوڈ درج کریں؛ سائن ان ضروری نہیں ہے۔"
+    "policyBlocked": "یہ صفحہ کیمرہ استعمال کرنے کی اجازت نہیں دیتا۔ نیچے بارکوڈ درج کریں؛ سائن ان ضروری نہیں ہے۔",
+    "zoom": "زوم",
+    "light": "روشنی",
+    "zoomHelp": "چھوٹے بارکوڈ سے کیمرہ دور رکھنے کے لیے زوم استعمال کریں۔",
+    "controlError": "کیمرے کی یہ ترتیب تبدیل نہیں ہو سکی۔ آپ اسکین جاری رکھ سکتے ہیں۔",
+    "contributeHint": "پروڈکٹ یا غذائی معلومات موجود نہیں؟",
+    "contributeLink": "Open Food Facts پر شامل کریں یا معلومات مکمل کریں"
   }
 }

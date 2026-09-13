@@ -877,6 +877,13 @@ export function FoodSearchPlaceholder() {
               title={copy.noResultsTitle}
               description={barcodeSearch ? barcodeCopy.notFound : copy.noResultsDescription}
             />
+            <p className="mt-2 text-xs leading-relaxed text-brand-secondary/80">
+              {barcodeCopy.contributeHint}{" "}
+              <a href="https://world.openfoodfacts.org/contribute" target="_blank" rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center font-medium text-brand-secondary underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-brand-primary">
+                {barcodeCopy.contributeLink}
+              </a>
+            </p>
           </div>
         ) : null}
 

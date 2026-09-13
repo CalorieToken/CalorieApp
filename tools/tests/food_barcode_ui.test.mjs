@@ -80,6 +80,23 @@ test('Rapid scan clicks share a session; language changes and one result preserv
   s.resolve(); await pending;
 });
 
+test('Optional zoom and light controls survive a rejected setting and ignore late updates after stop', async () => {
+  const h = harness(); void h.click(); const s = h.sessions[0]; let release;
+  s.onReady({zoom: {min: 1, max: 4, step: .1, value: 1, set: () => new Promise(resolve => {release = resolve;})},
+    torch: {value: false, set: async () => null}});
+  h.render();
+  const zoom = () => nodes(h.tree, 'select')[0];
+  const light = () => nodes(h.tree, 'button').find(n => n.props['aria-pressed'] !== undefined);
+  assert.equal(nodes(zoom(), 'option')[0].props.value, 1); assert.equal(nodes(zoom(), 'option').at(-1).props.value, 4);
+  light().props.onClick(); await new Promise(setImmediate); h.render();
+  assert.ok(text(h.tree).includes(copy.en.controlError)); assert.equal(s.signal.aborted, false);
+  zoom().props.onChange({target: {value: '2'}}); h.render();
+  assert.equal(zoom().props.disabled, true);
+  void h.click(); release(2); await new Promise(setImmediate); h.render();
+  assert.equal(zoom(), undefined); assert.equal(light(), undefined);
+  s.resolve();
+});
+
 test('Stop, Escape, closing the panel, leaving/hiding, parent activity and timeout all cancel scanning', () => {
   for (const reason of ['stop', 'escape', 'close', 'leave', 'hide', 'disabled', 'timeout', 'unmount']) {
     const h = harness(); void h.click(); const s = h.sessions[0];

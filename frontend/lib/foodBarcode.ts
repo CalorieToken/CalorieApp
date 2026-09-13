@@ -39,7 +39,8 @@ export async function createFoodBarcodeReader(): Promise<Reader> {
   const wideReader = new BrowserMultiFormatReader(hints);
   const focusedReader = new BrowserMultiFormatReader(new Map([...hints, [DecodeHintType.TRY_HARDER, true]]));
   let native: NativeReader | null = null, busy = false, closed = false, detected: string | null = null;
-  let canvas: HTMLCanvasElement | undefined, frames = 0;
+  let canvas: HTMLCanvasElement | undefined, rotated: HTMLCanvasElement | undefined, frames = 0;
+  const angles = [12, -12, 90];
   const formats = ["ean_13", "ean_8", "upc_a", "itf"];
   const Native = typeof window === "undefined" ? undefined
     : (window as Window & { BarcodeDetector?: NativeReaderConstructor }).BarcodeDetector;
@@ -84,10 +85,27 @@ export async function createFoodBarcodeReader(): Promise<Reader> {
       if (!context) throw new Error("Camera frame could not be read.");
       context.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
       const code = attempt(() => focusedReader.decodeFromCanvas(canvas!).getText());
-      // Periodically retain a wider search for a code just outside the guide.
-      return code ?? (++frames % 4 === 0 ? attempt(() => wideReader.decode(video).getText()) : null);
+      if (code || ++frames % 4 !== 0) return code;
+      // Retain the full-frame search, then occasionally straighten a tilted or
+      // vertical label. TRY_HARDER alone cannot rotate browser canvas pixels.
+      const wide = attempt(() => wideReader.decode(video).getText());
+      if (wide) return wide;
+      const angle = angles[(frames / 4 - 1) % angles.length] * Math.PI / 180;
+      rotated ??= document.createElement("canvas");
+      rotated.width = Math.ceil(Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle)));
+      rotated.height = Math.ceil(Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle)));
+      const rotation = rotated.getContext("2d", { willReadFrequently: true });
+      if (!rotation) return null;
+      rotation.fillStyle = "white"; rotation.fillRect(0, 0, rotated.width, rotated.height);
+      rotation.translate(rotated.width / 2, rotated.height / 2); rotation.rotate(angle);
+      rotation.drawImage(video, -width / 2, -height / 2, width, height);
+      return attempt(() => focusedReader.decodeFromCanvas(rotated!).getText());
     },
-    dispose() { closed = true; native = null; detected = null; if (canvas) { canvas.width = 0; canvas.height = 0; } canvas = undefined; },
+    dispose() {
+      closed = true; native = null; detected = null;
+      for (const buffer of [canvas, rotated]) if (buffer) { buffer.width = 0; buffer.height = 0; }
+      canvas = rotated = undefined;
+    },
   };
 }
 
@@ -100,6 +118,54 @@ export async function focusBarcodeCamera(stream: MediaStream): Promise<void> {
       await track!.applyConstraints({ advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet] });
     }
   } catch { /* Keep the working camera and its existing focus mode. */ }
+}
+
+export type BarcodeCameraControls = {
+  zoom?: { min: number; max: number; step: number; value: number; set: (value: number) => Promise<number | null> };
+  torch?: { value: boolean; set: (value: boolean) => Promise<boolean | null> };
+};
+
+/** Expose only controls already available on the granted track; never ask for extra access. */
+export function barcodeCameraControls(stream: MediaStream, isActive: () => boolean): BarcodeCameraControls {
+  const controls: BarcodeCameraControls = {};
+  try {
+    const track = stream.getVideoTracks?.()[0];
+    if (!track?.getCapabilities || !track.getSettings || !track.applyConstraints) return controls;
+    type Settings = MediaTrackSettings & { zoom?: number; torch?: boolean };
+    const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
+      zoom?: { min?: number; max?: number; step?: number }; torch?: boolean;
+    };
+    const settings = track.getSettings() as Settings;
+    let changing = false;
+    const usable = () => isActive() && track.readyState !== "ended";
+    async function apply(value: { zoom: number } | { torch: boolean }): Promise<Settings | null> {
+      if (changing || !usable()) return null;
+      changing = true;
+      try {
+        await track.applyConstraints({ advanced: [value as MediaTrackConstraintSet] });
+        return usable() ? track.getSettings() as Settings : null;
+      } catch { return null; }
+      finally { changing = false; }
+    }
+    const range = capabilities.zoom;
+    if (range && Number.isFinite(range.min) && Number.isFinite(range.max) && Number.isFinite(settings.zoom)) {
+      const min = range.min!, max = Math.min(range.max!, Math.max(4, settings.zoom!));
+      const step = Number.isFinite(range.step) && range.step! > 0 ? range.step! : 0.1;
+      if (min < max) controls.zoom = { min, max, step, value: settings.zoom!, async set(value) {
+        if (!Number.isFinite(value)) return null;
+        const zoom = Math.max(min, Math.min(max, min + Math.round((value - min) / step) * step));
+        const actual = (await apply({ zoom }))?.zoom;
+        return Number.isFinite(actual) ? actual! : null;
+      } };
+    }
+    if (capabilities.torch === true && typeof settings.torch === "boolean") {
+      controls.torch = { value: settings.torch, async set(torch) {
+        const actual = (await apply({ torch }))?.torch;
+        return typeof actual === "boolean" ? actual : null;
+      } };
+    }
+  } catch { /* Capability access is optional; scanning remains available. */ }
+  return controls;
 }
 
 type CameraDependencies = {
@@ -116,7 +182,7 @@ const cameraDependencies: CameraDependencies = {
 /** Own and release this session's tracks, including a permission grant after cancellation. */
 export async function startBarcodeCamera(
   video: HTMLVideoElement, signal: AbortSignal, onCode: (code: string) => void,
-  onReady: () => void, dependencies: CameraDependencies = cameraDependencies,
+  onReady: (controls: BarcodeCameraControls) => void, dependencies: CameraDependencies = cameraDependencies,
 ): Promise<void> {
   let stream: MediaStream | undefined, reader: Reader | undefined, stopped = false;
   let timer: ReturnType<typeof setTimeout> | undefined, finish: (() => void) | undefined;
@@ -146,7 +212,7 @@ export async function startBarcodeCamera(
       throw Object.assign(new Error("The camera preview could not play."), { name: "CameraPlaybackError", cause });
     }
     if (stopped) { stop(); return; }
-    onReady();
+    onReady(barcodeCameraControls(stream, () => !stopped && !signal.aborted));
     await new Promise<void>((resolve, reject) => {
       finish = resolve;
       const tick = () => {

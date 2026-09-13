@@ -992,18 +992,26 @@ test('Barcode lookup uses the existing search guard and shows only the matching 
   assert.equal(h.requests.filter(r => r.url.includes('search-food')).length, 1);
   assert.ok(h.requests.some(r => r.url.endsWith('q=034000470693&mode=barcode')));
   assert.equal(h.cards().length, 1); assert.equal(h.cards()[0].props.item.barcode, '0034000470693');
+  assert.equal(nodes(h.tree, n => n.type === 'a' && n.props.href === 'https://world.openfoodfacts.org/contribute').length, 0);
   assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
 });
 
 test('Barcode absence has useful translated fallback text and name search restores ordinary empty state', async () => {
   const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [] }) }));
+  const links = () => nodes(h.tree, n => n.type === 'a' && n.props.href === 'https://world.openfoodfacts.org/contribute');
+  assert.equal(links().length, 0);
   nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693'); await h.flush();
-  for (const locale of ['en', 'nl', 'ar']) {
+  for (const locale of Object.keys(barcodeCopy)) {
     h.setDisplayLanguage(locale);
     assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === barcodeCopy[locale].notFound));
+    assert.equal(links().length, 1); assert.equal(text(links()[0]), barcodeCopy[locale].contributeLink);
+    assert.equal(links()[0].props.target, '_blank'); assert.equal(links()[0].props.rel, 'noopener noreferrer');
+    assert.ok(text(h.tree).includes(barcodeCopy[locale].contributeHint));
   }
+  h.setDisplayLanguage('ar');
   await h.search('oats');
   assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === foodUiCopy.ar.noResultsDescription));
+  assert.equal(links().length, 1);
 });
 
 
