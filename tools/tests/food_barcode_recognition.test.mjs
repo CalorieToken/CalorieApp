@@ -18,10 +18,10 @@ function bitmap(image) {
   return new z.BinaryBitmap(new z.HybridBinarizer(new z.RGBLuminanceSource(image.pixels, image.width, image.height)));
 }
 class RasterReader extends BrowserMultiFormatReader {
-  decode(video) { return this.decodeBitmap(bitmap({...video, width: video.videoWidth, height: video.videoHeight})); }
+  decode(video) { return this.decodeBitmap(bitmap({...video, width: video.videoWidth ?? video.width, height: video.videoHeight ?? video.height})); }
   decodeFromCanvas(canvas) { return this.decodeBitmap(bitmap(canvas)); }
 }
-function load(Native, Reader = RasterReader) {
+function load(Native, Reader = RasterReader, createImageBitmap) {
   const captures = [], canvases = [], module = {exports: {}};
   const document = {createElement(name) {
     assert.equal(name, 'canvas');
@@ -31,20 +31,21 @@ function load(Native, Reader = RasterReader) {
       return {
         fillRect() {canvas.pixels.fill(255);}, translate(x, y) {tx = x; ty = y;}, rotate(a) {angle = a;},
         drawImage(video, ...args) {
-          const [sx, sy, sw, sh, dx, dy, dw, dh] = args.length === 8 ? args : [0, 0, video.videoWidth, video.videoHeight, ...args];
+          const width = video.videoWidth ?? video.width, height = video.videoHeight ?? video.height;
+          const [sx, sy, sw, sh, dx, dy, dw, dh] = args.length === 8 ? args : [0, 0, width, height, ...args];
           captures.push({sx, sy, sw, sh});
           for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width; x++) {
             const u = (x + .5 - tx) * Math.cos(angle) + (y + .5 - ty) * Math.sin(angle);
             const v = -(x + .5 - tx) * Math.sin(angle) + (y + .5 - ty) * Math.cos(angle);
             if (u < dx || v < dy || u >= dx + dw || v >= dy + dh) continue;
-            canvas.pixels[y * canvas.width + x] = video.pixels[Math.floor(sy + (v - dy) * sh / dh) * video.videoWidth + Math.floor(sx + (u - dx) * sw / dw)];
+            canvas.pixels[y * canvas.width + x] = video.pixels[Math.floor(sy + (v - dy) * sh / dh) * width + Math.floor(sx + (u - dx) * sw / dw)];
           }
         },
       };
     }};
     canvases.push(canvas); return canvas;
   }};
-  vm.runInNewContext(source, {module, exports: module.exports, document, window: {BarcodeDetector: Native}, setTimeout, clearTimeout,
+  vm.runInNewContext(source, {module, exports: module.exports, document, window: {BarcodeDetector: Native}, setTimeout, clearTimeout, createImageBitmap,
     require(name) {return name === '@zxing/browser' ? {BrowserMultiFormatReader: Reader} : require(name);}});
   return {...module.exports, captures, canvases};
 }
@@ -185,4 +186,55 @@ test('Continuous focus is requested only if supported; a rejection is harmless',
     attempts++; assert.equal(options.advanced[0].focusMode, 'continuous'); throw Error('Camera does not accept tuning');
   }};
   await focusBarcodeCamera({getVideoTracks: () => [track]}); assert.equal(attempts, 1);
+});
+
+test('Camera preparation uses real zoom settings before autofocus; ignored zoom and cancellation stay safe', async () => {
+  const {prepareBarcodeCamera} = load(); let active = true, changes = [], settings = {zoom: 1};
+  const track = {readyState: 'live', getCapabilities: () => ({zoom: {min: 1, max: 4, step: .1}, focusMode: ['continuous']}),
+    getSettings: () => settings, async applyConstraints({advanced: [change]}) {changes.push(change); settings = {...settings, ...change};}};
+  const stream = {getVideoTracks: () => [track]};
+  assert.equal((await prepareBarcodeCamera(stream, () => active)).zoom.value, 2);
+  assert.deepEqual(changes.map(x => Object.keys(x)[0]), ['zoom', 'focusMode']);
+  settings = {zoom: 1}; changes = [];
+  track.applyConstraints = async () => {};
+  assert.equal((await prepareBarcodeCamera(stream, () => active)).zoom.value, 1);
+  track.applyConstraints = async () => {active = false;};
+  await prepareBarcodeCamera(stream, () => active);
+  assert.deepEqual(changes, []);
+});
+
+test('Refocus is offered only for a supported autofocus sweep and never revives a stopped camera', async () => {
+  const {barcodeCameraControls} = load(); let active = true, mode = 'continuous', calls = 0;
+  const track = {readyState: 'live', getCapabilities: () => ({focusMode: ['continuous', 'single-shot']}),
+    getSettings: () => ({focusMode: mode}), async applyConstraints({advanced: [change]}) {calls++; mode = change.focusMode;}};
+  const controls = barcodeCameraControls({getVideoTracks: () => [track]}, () => active);
+  assert.equal(await controls.refocus(), true); assert.equal(mode, 'single-shot');
+  active = false; assert.equal(await controls.refocus(), false); assert.equal(calls, 1);
+  track.getCapabilities = () => ({focusMode: ['continuous']});
+  assert.equal(barcodeCameraControls({getVideoTracks: () => [track]}, () => true).refocus, undefined);
+});
+
+test('A full-resolution photo is read locally with the real decoder and its pixel buffers are released', async () => {
+  let closed = 0;
+  const raw = barcode(frame(1280, 960), 530, 830, 70);
+  const h = load(undefined, RasterReader, async (file, options) => {
+    assert.equal(file.type, 'image/jpeg'); assert.equal(options.imageOrientation, 'from-image');
+    return {width: 1280, height: 960, pixels: raw.pixels, close() {closed++;}};
+  });
+  const found = await h.readFoodBarcodePhoto({type: 'image/jpeg', size: 1000}, new AbortController().signal);
+  assert.equal(found, code); assert.equal(closed, 1);
+  assert.ok(h.canvases.every(c => c.width === 0 && c.height === 0));
+});
+
+test('Photo size limits and late cancellation cannot publish a result or retain a bitmap', async () => {
+  let opened = 0, closed = 0, release;
+  const h = load(undefined, RasterReader, () => {opened++; return new Promise(resolve => {release = resolve;});});
+  for (const file of [{type: 'text/plain', size: 10}, {type: 'image/jpeg', size: 26 * 1024 * 1024}, {type: 'image/png', size: 0}]) {
+    await assert.rejects(h.readFoodBarcodePhoto(file, new AbortController().signal), /25 MB/);
+  }
+  assert.equal(opened, 0);
+  const controller = new AbortController();
+  const pending = h.readFoodBarcodePhoto({type: 'image/jpeg', size: 10}, controller.signal);
+  controller.abort(); release({width: 4000, height: 3000, close() {closed++;}});
+  assert.equal(await pending, null); assert.equal(closed, 1); assert.equal(h.canvases.length, 0);
 });

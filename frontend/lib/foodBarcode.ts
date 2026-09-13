@@ -22,8 +22,9 @@ export function cameraBlockedByPolicy(page: Document): boolean {
   }
 }
 
-type Reader = { decode: (video: HTMLVideoElement) => string | null; dispose?: () => void };
-type NativeReader = { detect: (video: HTMLVideoElement) => Promise<{ rawValue: string; format: string }[]> };
+type BarcodeFrame = HTMLVideoElement | HTMLCanvasElement;
+type Reader = { decode: (frame: BarcodeFrame) => string | null; dispose?: () => void };
+type NativeReader = { detect: (frame: BarcodeFrame) => Promise<{ rawValue: string; format: string }[]> };
 type NativeReaderConstructor = {
   new(options: { formats: string[] }): NativeReader;
   getSupportedFormats: () => Promise<string[]>;
@@ -70,7 +71,8 @@ export async function createFoodBarcodeReader(): Promise<Reader> {
             .map(result => validFoodBarcode(result.rawValue)).find(code => code !== null) ?? null;
         }).catch(() => { native = null; }).finally(() => { busy = false; });
       }
-      const width = video.videoWidth, height = video.videoHeight;
+      const width = "videoWidth" in video ? video.videoWidth : video.width;
+      const height = "videoHeight" in video ? video.videoHeight : video.height;
       if (!width || !height) return null;
       canvas ??= document.createElement("canvas");
       // Map the visible object-cover preview to source pixels, including portrait video.
@@ -88,7 +90,8 @@ export async function createFoodBarcodeReader(): Promise<Reader> {
       if (code || ++frames % 4 !== 0) return code;
       // Retain the full-frame search, then occasionally straighten a tilted or
       // vertical label. TRY_HARDER alone cannot rotate browser canvas pixels.
-      const wide = attempt(() => wideReader.decode(video).getText());
+      const wide = attempt(() => ("videoWidth" in video ? wideReader.decode(video)
+        : focusedReader.decodeFromCanvas(video)).getText());
       if (wide) return wide;
       const angle = angles[(frames / 4 - 1) % angles.length] * Math.PI / 180;
       rotated ??= document.createElement("canvas");
@@ -123,6 +126,7 @@ export async function focusBarcodeCamera(stream: MediaStream): Promise<void> {
 export type BarcodeCameraControls = {
   zoom?: { min: number; max: number; step: number; value: number; set: (value: number) => Promise<number | null> };
   torch?: { value: boolean; set: (value: boolean) => Promise<boolean | null> };
+  refocus?: () => Promise<boolean>;
 };
 
 /** Expose only controls already available on the granted track; never ask for extra access. */
@@ -131,14 +135,14 @@ export function barcodeCameraControls(stream: MediaStream, isActive: () => boole
   try {
     const track = stream.getVideoTracks?.()[0];
     if (!track?.getCapabilities || !track.getSettings || !track.applyConstraints) return controls;
-    type Settings = MediaTrackSettings & { zoom?: number; torch?: boolean };
+    type Settings = MediaTrackSettings & { zoom?: number; torch?: boolean; focusMode?: string };
     const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
-      zoom?: { min?: number; max?: number; step?: number }; torch?: boolean;
+      zoom?: { min?: number; max?: number; step?: number }; torch?: boolean; focusMode?: string[];
     };
     const settings = track.getSettings() as Settings;
     let changing = false;
     const usable = () => isActive() && track.readyState !== "ended";
-    async function apply(value: { zoom: number } | { torch: boolean }): Promise<Settings | null> {
+    async function apply(value: { zoom: number } | { torch: boolean } | { focusMode: string }): Promise<Settings | null> {
       if (changing || !usable()) return null;
       changing = true;
       try {
@@ -164,8 +168,58 @@ export function barcodeCameraControls(stream: MediaStream, isActive: () => boole
         return typeof actual === "boolean" ? actual : null;
       } };
     }
+    // A single sweep is a real autofocus request; reapplying an unchanged
+    // continuous setting does not reliably retrigger focus on a phone.
+    if (capabilities.focusMode?.includes("single-shot")) {
+      controls.refocus = async () => (await apply({ focusMode: "single-shot" }))?.focusMode === "single-shot";
+    }
   } catch { /* Capability access is optional; scanning remains available. */ }
   return controls;
+}
+
+/** Start farther from a small label so the rear lens has room to focus. */
+export async function prepareBarcodeCamera(stream: MediaStream, isActive: () => boolean): Promise<BarcodeCameraControls> {
+  const controls = barcodeCameraControls(stream, isActive);
+  if (isActive() && controls.zoom && controls.zoom.value < 2 && controls.zoom.min <= 2 && controls.zoom.max >= 2) {
+    const actual = await controls.zoom.set(2);
+    if (actual !== null) controls.zoom.value = actual;
+  }
+  if (isActive()) await focusBarcodeCamera(stream);
+  return controls;
+}
+
+/** Decode a user-selected camera photo locally, with bounded working canvases. */
+export async function readFoodBarcodePhoto(file: Blob, signal: AbortSignal): Promise<string | null> {
+  if (signal.aborted) return null;
+  if (!file.size || file.size > 25 * 1024 * 1024 || (file.type && !file.type.startsWith("image/"))) {
+    throw new Error("Choose an image up to 25 MB.");
+  }
+  let bitmap: ImageBitmap | undefined, canvas: HTMLCanvasElement | undefined, reader: Reader | undefined;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    if (signal.aborted) return null;
+    if (!bitmap.width || !bitmap.height) throw new Error("Empty image.");
+    const scale = Math.min(1, 2560 / Math.max(bitmap.width, bitmap.height));
+    canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error("Photo could not be read.");
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close(); bitmap = undefined;
+    reader = await createFoodBarcodeReader();
+    // All existing full-frame/rotation passes also run on the still image.
+    // Yield between attempts so cancellation and the native detector can finish.
+    for (let pass = 0; pass < 13 && !signal.aborted; pass++) {
+      const code = reader.decode(canvas);
+      if (code) return signal.aborted ? null : validFoodBarcode(code);
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+    }
+    return null;
+  } finally {
+    bitmap?.close(); reader?.dispose?.();
+    if (canvas) { canvas.width = 0; canvas.height = 0; }
+  }
 }
 
 type CameraDependencies = {
@@ -202,7 +256,6 @@ export async function startBarcodeCamera(
     if (stopped) { reader.dispose?.(); return; }
     stream = await dependencies.openStream();
     if (stopped) { stop(); return; }
-    void focusBarcodeCamera(stream);
     video.muted = true; video.defaultMuted = true; video.playsInline = true;
     video.srcObject = stream;
     try { await video.play(); }
@@ -212,7 +265,9 @@ export async function startBarcodeCamera(
       throw Object.assign(new Error("The camera preview could not play."), { name: "CameraPlaybackError", cause });
     }
     if (stopped) { stop(); return; }
-    onReady(barcodeCameraControls(stream, () => !stopped && !signal.aborted));
+    const controls = await prepareBarcodeCamera(stream, () => !stopped && !signal.aborted);
+    if (stopped) { stop(); return; }
+    onReady(controls);
     await new Promise<void>((resolve, reject) => {
       finish = resolve;
       const tick = () => {
