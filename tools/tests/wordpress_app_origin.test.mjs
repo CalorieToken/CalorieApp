@@ -12,7 +12,8 @@ function adapter(src, count = 1, initialPermission = "") {
   const frame = { src, contentWindow: frameWindow, closest: () => null, getAttribute: key => attributes.get(key) ?? null, setAttribute: (key, value) => attributes.set(key, value) };
   frameWindow.postMessage = (data, origin) => sent.push({ data, origin });
   let host, scrolls = 0;
-  const guide = { scrollIntoView: () => scrolls++, querySelector: () => null };
+  const disclosure = {open:false};
+  const guide = { scrollIntoView: () => {assert.equal(disclosure.open,true);scrolls++;}, querySelector: selector => selector==='.ctstyle-testnet-disclosure'?disclosure:null };
   const document = {
     body: { matches: () => true }, readyState: 'complete',
     querySelector: selector => selector.startsWith('#ctstyle-testnet') ? guide : null,
@@ -32,7 +33,7 @@ function adapter(src, count = 1, initialPermission = "") {
     },
   };
   runInNewContext(source, { window, document, URL });
-  return { frame, frameWindow, host, sent, scrolls: () => scrolls,
+  return { frame, frameWindow, host, sent, disclosure, scrolls: () => scrolls,
     message: (origin, sourceWindow = frameWindow, extra = {}) => events.get('message')({
       origin, source: sourceWindow, data: { type: 'calorieapp:testnet-guide:open', version: 1, ...extra },
     }),
@@ -50,6 +51,7 @@ for (const origin of origins) {
     assert.equal(h.sent[0].origin, origin);
     h.message(origin);
     assert.equal(h.scrolls(), 1);
+    assert.equal(h.disclosure.open,true,'The app guide button opens the collapsed website block before scrolling');
     assert.equal(h.frame.src, src, 'display messages do not reload or rewrite login parameters');
   });
 }
@@ -82,6 +84,7 @@ test('A known origin still needs the actual current iframe window and exact guid
   h.message(origins[0], {});
   h.message(origins[0], h.frameWindow, { account: 'forged' });
   assert.equal(h.scrolls(), 0);
+  assert.equal(h.disclosure.open,false);
   h.frame.contentWindow = {};
   h.message(origins[0]);
   assert.equal(h.scrolls(), 0, 'retired iframe window is rejected');

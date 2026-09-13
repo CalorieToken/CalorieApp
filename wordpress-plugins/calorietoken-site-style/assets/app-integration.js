@@ -43,6 +43,8 @@
   function openGuide() {
     var guide = document.querySelector('#ctstyle-testnet[data-ctstyle-testnet="1"]');
     if (!guide) return;
+    var disclosure = guide.querySelector('.ctstyle-testnet-disclosure');
+    if (disclosure) disclosure.open = true;
     if (typeof guide.scrollIntoView === 'function') guide.scrollIntoView({block:'start',behavior:'auto'});
     var heading = guide.querySelector('h2');
     if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }

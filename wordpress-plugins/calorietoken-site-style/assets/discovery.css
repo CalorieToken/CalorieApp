@@ -314,8 +314,14 @@ body.ctstyle-enabled .ctstyle-exchange-layout .cal-buy-steps>li {min-width:0;}
 }
 :is(body.ctstyle-enabled,body.ctstyle-footer-only) [data-ctstyle-exchange-shortcut] {--ct-float-bg:#f9b233;--ct-float-fg:#303449;--ct-float-hover:#008d36;--ct-float-hover-fg:#fff;}
 body.ctstyle-enabled #ctstyle-testnet {max-width:960px;padding:32px;}
-body.ctstyle-enabled #ctstyle-testnet>h2 {font-size:34px!important;}
-body.ctstyle-enabled #ctstyle-testnet>.ctstyle-discovery-status {font-size:16px!important;margin:18px 0!important;border-radius:12px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary {display:flex;align-items:center;gap:16px;min-height:44px;cursor:pointer;list-style:none;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary::-webkit-details-marker {display:none;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary::after {content:'+';flex:0 0 auto;margin-inline-start:auto;color:#505ba9;font:700 30px/1 Arial,sans-serif;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure[open]>summary::after {content:'−';}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary:focus-visible {outline:3px solid #008d36;outline-offset:5px;border-radius:6px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>summary>h2 {min-width:0;margin:0!important;font-size:34px!important;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure[open]>summary {margin-bottom:18px;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>.ctstyle-discovery-status {font-size:16px!important;margin:18px 0!important;border-radius:12px;}
 body.ctstyle-enabled .ctstyle-testnet-create {box-sizing:border-box;padding:24px;margin:24px 0;background:#f7f8fc;border:1px solid #d8dbe9;border-radius:20px;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-progress {margin:0 0 18px!important;padding:8px 16px!important;background:#505ba9;color:#fff;}
 body.ctstyle-enabled .ctstyle-testnet-create h3 {margin:0 0 12px!important;color:#008d36;font:700 28px/1.35 Amiri,Georgia,serif!important;}
@@ -326,10 +332,10 @@ body.ctstyle-enabled .ctstyle-testnet-create>.ctstyle-discovery-action:last-chil
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-navigation {padding-top:20px;border-top:1px solid #d8dbe9;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-navigation button {flex:1 1 180px;margin:0;min-height:52px;}
 body.ctstyle-enabled .ctstyle-testnet-create .ctstyle-testnet-help {padding-top:12px;border-top:1px solid #d8dbe9;}
-body.ctstyle-enabled #ctstyle-testnet>.ctstyle-test-steps {padding-top:10px;border-top:1px solid #d8dbe9;}
+body.ctstyle-enabled .ctstyle-testnet-disclosure>.ctstyle-test-steps {padding-top:10px;border-top:1px solid #d8dbe9;}
 @media(max-width:600px) {
  body.ctstyle-enabled #ctstyle-testnet {padding:22px 16px;}
- body.ctstyle-enabled #ctstyle-testnet>h2 {font-size:28px!important;}
+ body.ctstyle-enabled .ctstyle-testnet-disclosure>summary>h2 {font-size:28px!important;}
  body.ctstyle-enabled .ctstyle-testnet-create {padding:20px 14px;}
  body.ctstyle-enabled .ctstyle-testnet-create h3 {font-size:25px!important;}
 }

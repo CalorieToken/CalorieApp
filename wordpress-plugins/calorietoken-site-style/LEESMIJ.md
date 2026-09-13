@@ -1,4 +1,24 @@
-# CalorieToken Site Style 1.4.40
+# CalorieToken Site Style 1.4.41
+
+## Compacte CalorieApp-pagina
+
+Het testnetaccountblok staat standaard ingeklapt en kan met de titel worden
+geopend en gesloten. De bestaande gidsknop in de app en directe links naar
+`#ctstyle-testnet` openen het blok automatisch. Inklappen bewaart de huidige
+stap en het aangemaakte testaccount zolang het tabblad open blijft.
+De bestaande XPMarket-widget staat direct onder het testnetblok.
+
+## Overzichtelijke Voting Hub
+
+De actuele status blijft bovenaan zichtbaar. Toekomstige deelname, historische
+illustraties en voorbereiding krijgen elk een eigen uitklapbaar onderdeel.
+De geschiedenis en voorbereiding zijn standaard gesloten. De bestaande teksten,
+afbeeldingen, links en elf talen blijven behouden.
+
+## Blog op mobiel
+
+De artikelkaarten krijgen 28 pixels ruimte tussen de rijen. Elke kaart volgt
+zijn eigen inhoudshoogte, zodat de kaders op mobiel niet tegen elkaar staan.
 
 ## Cookiepagina en externe inhoud
 
@@ -76,7 +96,7 @@ De weergave sluit aan bij de gedeelde websiteopmaak en ondersteunt smalle scherm
 
 ## Installatie
 
-Pakket: **calorietoken-site-style-1.4.40.zip**. Upload via Plugins → Nieuwe plugin →
+Pakket: **calorietoken-site-style-1.4.41.zip**. Upload via Plugins → Nieuwe plugin →
 Plugin uploaden en vervang de bestaande Site Style-plugin. Controleer daarna de
 cookiepagina op mobiel en de instellingenlinks bij X en CAL & Crypto.
 De afzonderlijke CalorieApp Login Repair-plugin blijft actief.

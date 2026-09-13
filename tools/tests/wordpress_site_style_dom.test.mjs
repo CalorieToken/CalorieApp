@@ -146,6 +146,48 @@ test('Footer cookie access opens native preferences, avoids re-toggling them, an
 });
 
 const blogPanelMarkup = '<div class="brz-wp-shortcode" data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"><a class="twitter-timeline" href="https://x.com/CalorieToken">Tweets by CalorieToken</a></div>';
+
+test('The compact Testnet guide preserves the installed market widget and remains reachable by links and language changes',()=>{
+  for(const linked of [false,true]){
+    const h=fixture('<div class="calorieapp-shared-page-ending"><aside class="calorieapp-page-market"><div data-calorieapp-xpmarket-widget="1"><a href="https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY">CAL</a></div></aside><div class="ctstyle-app-ending"><section data-ctstyle-app-info>CalorieApp</section></div></div>',{page:7880,route:'calorieapp'});
+    if(linked)h.window.location.hash='#ctstyle-testnet';
+    const market=h.document.querySelector('.calorieapp-page-market');let clicks=0;
+    market.querySelector('a').addEventListener('click',()=>clicks++);
+    h.run('discovery.js');
+    const guide=h.document.querySelector('#ctstyle-testnet'),disclosure=guide.querySelector('.ctstyle-testnet-disclosure');
+    assert.equal(!!disclosure.open,linked);
+    assert.equal(guide.nextElementSibling,market);
+    assert.equal(market.nextElementSibling.getAttribute('data-ctstyle-app-info'),'');
+    market.querySelector('a').dispatchEvent(new h.window.Event('click'));assert.equal(clicks,1);
+    disclosure.open=true;
+    for(const locale of Object.keys(copy)){
+      h.window.CalorieTokenDiscoveryUI.refresh(locale);
+      assert.equal(disclosure.querySelector('summary h2').textContent,copy[locale].testTitle);
+      assert.equal(disclosure.open,true);
+      assert.equal(h.document.querySelector('.calorieapp-page-market'),market);
+    }
+    disclosure.open=false;h.window.location.hash='#ctstyle-testnet';h.emit('hashchange');
+    assert.equal(disclosure.open,true);
+    assert.equal(h.document.querySelectorAll('#ctstyle-testnet').length,1);
+  }
+});
+
+test('The Voting Hub groups existing content without losing translations, images or links',()=>{
+  const html=readFileSync(new URL('../../wordpress-plugins/calorietoken-site-style/content/community.html',import.meta.url),'utf8');
+  const h=fixture('<article class="ctstyle-document-copy">'+html+'</article>',{page:9000,route:'community-voting-hub-info'});
+  const article=h.document.querySelector('article'),status=article.querySelector('.ctstyle-community-status');
+  const original=[...article.querySelectorAll('h2,p,li,a,img,figcaption')];
+  h.run('refinements.js');
+  const sections=article.querySelectorAll('.ctstyle-hub-section');
+  assert.equal(sections.length,3);assert.equal(status.parentElement,article);
+  assert.deepEqual([...sections].map(n=>!!n.open),[true,false,false]);
+  assert.ok(original.every(n=>article.contains(n)));
+  assert.equal(sections[1].querySelectorAll('img').length,2);
+  for(const locale of Object.keys(copy))h.window.CalorieTokenRefinements.refresh(locale);
+  assert.equal(article.querySelectorAll('.ctstyle-hub-section').length,3);
+  h.window.location.hash='#ctstyle-hub-history';h.emit('hashchange');assert.equal(sections[1].open,true);
+});
+
 function blogFixture({permitted = true, cmsFrame = false, nativeObservers = false} = {}) {
   const h = fixture(blogPanelMarkup, {page:1207,route:'blog',nativeObservers});
   h.window.CalorieTokenSiteStyleMenu = structuredClone(menu);

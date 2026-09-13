@@ -235,16 +235,28 @@
     if (!safe(reference)) return;
     test = section('ctstyle-testnet','testTitle');
     test.setAttribute('data-ctstyle-testnet','1');
-    test.append(label('p','testIntro'),label('p','testLimit','ctstyle-discovery-status'));
+    var disclosure = element('details','ctstyle-testnet-disclosure');
+    var toggle = element('summary'); toggle.append(test.firstElementChild);
+    disclosure.append(toggle,label('p','testIntro'),label('p','testLimit','ctstyle-discovery-status'));
     var details = element('details','ctstyle-test-steps'), summary = label('summary','testOpen'); details.append(summary);
     var list = element('ol');
     ['testNetwork','testReturn'].forEach(function (key) { list.append(label('li',key)); });
     details.append(list,link('officialHelp',helpURL,true),link('installXaman','https://xaman.app/',true));
-    test.append(details); reference.before(test);
-    if (window.location.hash === '#ctstyle-testnet') {
-      details.open = true;
+    disclosure.append(details); test.append(disclosure); reference.before(test);
+    // Keep the installed live market widget and its listeners; only change its
+    // position within the same shared ending on the CalorieApp page.
+    var ending = test.closest('.calorieapp-shared-page-ending');
+    var markets = ending && ending.querySelectorAll('.calorieapp-page-market');
+    if (markets && markets.length === 1 && markets[0].parentElement === ending &&
+        markets[0].querySelector('[data-calorieapp-xpmarket-widget="1"]') &&
+        !markets[0].querySelector('form,iframe,[contenteditable],[data-calorieapp-embed]')) test.after(markets[0]);
+    function revealLinkedGuide() {
+      if (!allowed() || window.location.hash !== '#ctstyle-testnet') return;
+      disclosure.open = true;
       if (typeof test.scrollIntoView === 'function') test.scrollIntoView({block:'start'});
     }
+    revealLinkedGuide();
+    window.addEventListener('hashchange',revealLinkedGuide);
   }
   function cookieVisible() {
     function visible(node) {

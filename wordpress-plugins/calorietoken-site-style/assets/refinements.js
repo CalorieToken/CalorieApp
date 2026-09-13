@@ -53,6 +53,36 @@
     link.href=cookieSettingsDestination();
     actions.append(link);doc.before(actions);
   }
+  function votingHub(){
+    if(!/^\/(?:index\.php\/)?community-voting-hub-info\/?$/.test(window.location.pathname))return;
+    var article=one('.ctstyle-document-copy'),status=article&&article.querySelector('.ctstyle-community-status');
+    if(!article||!status||status.parentElement!==article||article.querySelector('.ctstyle-hub-sections')||
+      article.querySelector('form,input,iframe,[contenteditable],[data-calorieapp-embed]'))return;
+    var groups=[],current=null;
+    for(var node=status.nextElementSibling;node;node=node.nextElementSibling){
+      if(node.tagName==='H2'){current=[];groups.push(current);}
+      if(!current)return;
+      current.push(node);
+    }
+    if(groups.length!==3||!groups[0].some(function(n){return n.matches('.ctstyle-community-links');})||
+      !groups[1].some(function(n){return n.matches('.ctstyle-community-history');})||
+      !groups[2].some(function(n){return n.tagName==='OL';}))return;
+    var sections=make('div','ctstyle-hub-sections');status.after(sections);
+    groups.forEach(function(nodes,index){
+      var disclosure=make('details','ctstyle-hub-section'),summary=make('summary');
+      disclosure.id=['ctstyle-hub-participation','ctstyle-hub-history','ctstyle-hub-preparation'][index];
+      summary.append(nodes[0]);disclosure.append(summary);
+      nodes.slice(1).forEach(function(n){disclosure.append(n);});
+      disclosure.open=index===0;sections.append(disclosure);
+    });
+    article.classList.add('ctstyle-hub-copy');
+    function revealLinkedSection(){
+      if(!allowed())return;
+      var section=Array.from(sections.children).find(function(n){return '#'+n.id===window.location.hash;});
+      if(section){section.open=true;if(typeof section.scrollIntoView==='function')section.scrollIntoView({block:'start'});}
+    }
+    revealLinkedSection();window.addEventListener('hashchange',revealLinkedSection);
+  }
   function routes(){
     document.querySelectorAll('.xl-card a[href]').forEach(function(a){
       if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';
@@ -254,7 +284,7 @@
   function refresh(tag){
     if(!allowed())return;if(observer)observer.disconnect();
     locale=cfg.copy[tag]?tag:(window.CalorieTokenDiscoveryUI?window.CalorieTokenDiscoveryUI.getLocale():'en');
-    routes();paper();trustline();roadmap();faq();contact();homeMenu();sharedLayout();cookieDocument();
+    routes();paper();trustline();roadmap();faq();contact();homeMenu();sharedLayout();cookieDocument();votingHub();
     labels.forEach(function(x){var value=cfg.copy[locale][x.key];if(x.node.textContent!==value)x.node.textContent=value;x.node.lang=locale;x.node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';});
     if(observer)observer.observe(document.body,{childList:true,subtree:true});
   }

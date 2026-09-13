@@ -323,7 +323,13 @@ body.ctstyle-enabled #calorie-showcase-page :is(.showcase-intro,.showcase-next){
  body.ctstyle-enabled .ctstyle-x-timeline:has(.calorieapp-x-load:not([hidden])) a.cmplz-blocked-content-container {display:none!important;}
  body.ctstyle-enabled .ctstyle-x-timeline .cmplz-blocked-content-notice a {color:#414d94!important;}
  body.ctstyle-enabled .calorieapp-x-retry {min-height:44px;padding:10px 14px;border:1px solid #505ba9;border-radius:12px;background:#fff;color:#505ba9;font:700 18px/1.4 Amiri,Georgia,serif;cursor:pointer;}
- @media(max-width:767px){body.ctstyle-enabled .ctstyle-blog-card {width:100%!important;margin-block:0 20px!important;}}
+ /* Put mobile spacing between the flex rows. A margin inside Brizy's
+    full-height columns does not reliably separate the outer cards. */
+ @media(max-width:767px){
+  body.ctstyle-enabled.page-id-1207 .brz-posts__wrapper {row-gap:28px!important;align-items:flex-start!important;}
+  body.ctstyle-enabled.page-id-1207 .brz-posts__item>.brz-columns {height:auto!important;}
+  body.ctstyle-enabled .ctstyle-blog-card {width:100%!important;height:auto!important;margin-block:0!important;}
+ }
 }
 
 /* WooCommerce's fixed-quantity donation still needs a readable table value. */
