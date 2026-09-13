@@ -137,6 +137,37 @@
     frame.setAttribute('data-src-cmplz',exchangeURL);
     frame.src = exchangeURL; controls.area.append(frame); controls.load.hidden=true;controls.close.hidden=false;
   }
+  function mobileBuyingRoutes(layout, panels, nav) {
+    // Keep the original controls in the same panel. Collapsing only changes
+    // presentation, so an opened exchange retains its frame and consent owner.
+    panels.forEach(function (item) {
+      var panel=item[0], key=item[1], body=element('div','ctstyle-crypto-panel-body');
+      body.id=panel.id+'-body';
+      var toggle=element('button','ctstyle-crypto-route-toggle');toggle.type='button';
+      toggle.setAttribute('aria-controls',body.id);toggle.setAttribute('aria-expanded','false');
+      var text=element('span','ctstyle-crypto-route-copy');
+      text.append(label('strong',key),label('span',key+'Text','ctstyle-crypto-route-description'));
+      toggle.append(text);
+      var host=panel;
+      // The guide's translator deliberately rejects embedded controls. Keep
+      // its disclosure outside the owned article, without relaxing that guard.
+      if(panel.classList.contains('cal-buy-guide')){
+        host=element('div','ctstyle-crypto-guide-route');panel.before(host);body.append(panel);
+      }else{while(panel.firstChild)body.append(panel.firstChild);}
+      host.append(toggle,body);host.classList.add('ctstyle-crypto-route-panel');
+      toggle.addEventListener('click',function(){toggle.setAttribute('aria-expanded',toggle.getAttribute('aria-expanded')==='true'?'false':'true');});
+    });
+    layout.classList.add('ctstyle-mobile-routes');
+    function reveal(hash) {
+      var id;try{id=decodeURIComponent((hash||'').replace(/^#/,''));}catch(_){return;}
+      var target=id&&document.getElementById(id);
+      var panel=target&&target.closest('.ctstyle-crypto-route-panel');
+      if(panel&&layout.contains(panel))panel.querySelector('.ctstyle-crypto-route-toggle').setAttribute('aria-expanded','true');
+    }
+    nav.querySelectorAll('a[href]').forEach(function(a){a.addEventListener('click',function(){reveal(a.getAttribute('href'));});});
+    window.addEventListener('hashchange',function(){reveal(window.location.hash);});
+    reveal(window.location.hash);
+  }
   function buyingPage() {
     if (Number(cfg.page) !== 4205 || !['/index.php/how-to-buy-calorie/','/how-to-buy-calorie/'].includes(window.location.pathname) || hub) return;
     var guide = unique('.cal-buy-guide[data-calorieapp-buy-guide="1"]');
@@ -164,7 +195,9 @@
     dex.append(label('p','dexStatus','ctstyle-discovery-badge'),label('p','dexText'),link('openDex',dexURL,true),link('openSwap','https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market',true),trustlineCard('ctstyle-buy-trustline'));
     hub.append(dex,label('h2','guideTitle','ctstyle-guide-heading'));
     var layout=element('div','ctstyle-exchange-layout');guide.before(layout);
-    layout.append(hub,guide,exchangeCard());guide.classList.add('ctstyle-second-route');
+    var exchange=exchangeCard();
+    layout.append(hub,guide,exchange);guide.classList.add('ctstyle-second-route');
+    mobileBuyingRoutes(layout,[[dex,'routeTrade'],[guide,'routeLearn'],[exchange,'routeOther']],nav);
     var heading = unique('.ctstyle-title h1');
     if (safe(heading) && /^how\s*to\s*buy(?:\s*(calorie|cal))?$/i.test(heading.textContent.trim())) {
       // Only a recognized old title. Preserve heading element, banner and inherited font.

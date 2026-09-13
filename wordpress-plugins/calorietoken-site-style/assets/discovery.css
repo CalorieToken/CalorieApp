@@ -287,6 +287,7 @@ body.ctstyle-enabled .ctstyle-trustline-option .calorieapp-trustline-context {ma
 /* One aligned reading column for CAL & Crypto's three established routes. */
 body.ctstyle-enabled .ctstyle-exchange-layout {box-sizing:border-box;width:100%;max-width:1100px;margin:0 auto;text-align:start;padding:0 12px;}
 body.ctstyle-enabled .ctstyle-exchange-layout>.cal-buy-guide,
+body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-crypto-guide-route .cal-buy-guide,
 body.ctstyle-enabled .ctstyle-exchange-layout>.ctstyle-discovery-card,
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery>.ctstyle-discovery-card {box-sizing:border-box!important;width:100%!important;max-width:none!important;margin:24px 0!important;padding:28px!important;border:2px solid #505ba9!important;border-top:5px solid #f9b233!important;border-radius:24px!important;box-shadow:0 4px 14px rgba(80,91,169,.10)!important;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-intro {max-width:760px;margin:0 auto 18px!important;padding:12px 0!important;text-align:center;font:22px/1.6 Amiri,Georgia,serif!important;}
@@ -294,8 +295,10 @@ body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs {display:g
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a {display:flex;flex-direction:column;gap:8px;min-height:92px;margin:0;padding:16px;background:#fff;border-radius:18px;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a::before {counter-increment:route;content:counter(route,decimal-leading-zero);color:#008d36;font:700 18px/1 Arial,sans-serif;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a:hover {background:#fff4da;}
-body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action {padding:14px 28px;margin-inline:0;background:#008d36;color:#fff!important;border-color:#008d36;}
-body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action:hover {background:#505ba9;border-color:#505ba9;}
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action,
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-crypto-panel-body>.ctstyle-discovery-action {padding:14px 28px;margin-inline:0;background:#008d36;color:#fff!important;border-color:#008d36;}
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-discovery-action:hover,
+body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-own-dex>.ctstyle-crypto-panel-body>.ctstyle-discovery-action:hover {background:#505ba9;border-color:#505ba9;}
 body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-buy-trustline {width:100%;margin:22px 0 0;padding:20px;border:1px solid #d8dbe9;border-inline-start:4px solid #f9b233;border-radius:16px;background:#f7f8fc;box-shadow:none;}
 body.ctstyle-enabled .ctstyle-exchange-layout #ctstyle-buy-trustline h2 {font-size:24px!important;color:#505ba9!important;}
 body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-guide-heading {margin:32px 0 0!important;}
@@ -305,6 +308,7 @@ body.ctstyle-enabled .ctstyle-exchange-layout .cal-buy-steps>li {min-width:0;}
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs {grid-template-columns:minmax(0,1fr);gap:8px;}
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery-tabs a {flex-direction:row;justify-content:flex-start;gap:14px;min-height:56px;padding:12px 16px;text-align:start;}
  body.ctstyle-enabled .ctstyle-exchange-layout>.cal-buy-guide,
+ body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-crypto-guide-route .cal-buy-guide,
  body.ctstyle-enabled .ctstyle-exchange-layout>.ctstyle-discovery-card,
  body.ctstyle-enabled .ctstyle-exchange-layout .ctstyle-discovery>.ctstyle-discovery-card {padding:22px 16px!important;}
 }

@@ -184,9 +184,31 @@
     }
     var footer=one('.ctstyle-footer');
     if(footer){
+      footer.querySelectorAll('.ctstyle-legal-links a[href]').forEach(function(a){
+        var url;try{url=new URL(a.getAttribute('href'),window.location.href);}catch(_){return;}
+        if(url.origin===window.location.origin&&/^\/(?:index\.php\/)?community-voting-hub-info\/?$/.test(url.pathname))a.remove();
+      });
       if(!footer.querySelector('.ctstyle-footer-cookies')){
         var links=footer.querySelector('.ctstyle-legal-links');
-        if(links){var cookies=label('button','cookies','ctstyle-footer-cookies cmplz-manage-consent');cookies.type='button';links.append(cookies);}
+        if(links){
+          var cookies=label('a','cookies','ctstyle-footer-cookies');
+          // A real destination remains usable if the consent script is blocked
+          // or still loading. Only the CMP itself opens and manages preferences.
+          cookies.href=window.location.origin+'/cookie-policy-eu/';
+          cookies.addEventListener('click',function(event){
+            if(typeof window.cmplz_set_banner_status!=='function')return;
+            try{window.cmplz_set_banner_status('show');}catch(_){return;}
+            if(!document.querySelector('.cmplz-cookiebanner.cmplz-show'))return;
+            event.preventDefault();
+            window.requestAnimationFrame(function(){
+              var banner=document.querySelector('.cmplz-cookiebanner.cmplz-show');
+              if(!banner||banner.classList.contains('cmplz-categories-visible'))return;
+              var preferences=banner.querySelector('button.cmplz-view-preferences');
+              if(preferences)preferences.click();
+            });
+          });
+          links.append(cookies);
+        }
       }
       if(!document.querySelector('.ctstyle-footer-tail')){
         var tail=make('div','ctstyle-footer-tail');tail.setAttribute('aria-hidden','true');footer.after(tail);

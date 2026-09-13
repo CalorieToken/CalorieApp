@@ -80,7 +80,7 @@ function sharedFooterFixture({hub = true, custom = false} = {}) {
   return h;
 }
 
-test('The installed bridge footer gains the public hub and cookie controls without replacing native handlers', () => {
+test('The installed bridge footer keeps legal links and working cookie access without adding the public hub', () => {
   const h = sharedFooterFixture();
   const original = h.document.querySelector('footer');
   const privacy = h.document.querySelector('#original-privacy'), carousel = h.document.querySelector('#original-carousel');
@@ -91,12 +91,12 @@ test('The installed bridge footer gains the public hub and cookie controls witho
   const links = original.querySelector('.ctstyle-legal-links');
   assert.ok(links, 'The adopted bridge legal row participates in Site Style footer controls');
   assert.equal(links.querySelectorAll('a').length,3);
-  assert.equal(links.querySelectorAll('a[href$="community-voting-hub-info/"]').length,1);
-  assert.equal(links.querySelectorAll('button.cmplz-manage-consent').length,1);
+  assert.equal(links.querySelectorAll('a[href$="community-voting-hub-info/"]').length,0);
+  assert.equal(links.querySelectorAll('a.ctstyle-footer-cookies').length,1);
   h.run('style.js');
   for(const locale of Object.keys(copy))h.window.CalorieTokenRefinements.refresh(locale);
   assert.equal(links.querySelectorAll('a').length,3);
-  assert.equal(links.querySelectorAll('button').length,1);
+  assert.equal(links.querySelectorAll('button').length,0);
   assert.equal(h.document.querySelectorAll('.calorieapp-shared-social').length,7);
   carousel.dispatchEvent(new h.window.Event('click'));
   assert.equal(clicks,1,'The bridge retains ownership of the existing carousel');
@@ -106,8 +106,8 @@ test('An adopted footer does not invent a hub URL when WordPress has no publishe
   const h = sharedFooterFixture({hub:false});
   h.run('style.js'); h.run('refinements.js');
   const footer = h.document.querySelector('footer');
-  assert.equal(footer.querySelectorAll('.calorieapp-shared-legal-links a').length,2);
-  assert.equal(footer.querySelectorAll('button.cmplz-manage-consent').length,1);
+  assert.equal(footer.querySelectorAll('.calorieapp-shared-legal-links a').length,3);
+  assert.equal(footer.querySelectorAll('a.ctstyle-footer-cookies').length,1);
 });
 
 test('An unfamiliar customized bridge footer is retained without adding or hiding controls', () => {
@@ -116,6 +116,32 @@ test('An unfamiliar customized bridge footer is retained without adding or hidin
   h.run('style.js'); h.run('refinements.js');
   assert.equal(h.document.querySelector('footer'),footer);
   assert.equal(footer.outerHTML,before);
+});
+
+test('Footer cookie access opens native preferences, avoids re-toggling them, and retains a script-free destination',()=>{
+  const h=sharedFooterFixture({hub:false});
+  h.run('style.js');h.run('refinements.js');
+  const link=h.document.querySelector('.ctstyle-footer-cookies');
+  assert.equal(link.getAttribute('href'),'https://calorietoken.net/cookie-policy-eu/');
+  const fallback=new h.window.Event('click',{bubbles:true,cancelable:true});link.dispatchEvent(fallback);
+  assert.equal(fallback.defaultPrevented,false,'Without the CMP, the real cookie policy link still works');
+  const box=h.document.createElement('div');
+  box.innerHTML='<div id="cmplz-manage-consent"><button class="cmplz-manage-consent">Manage consent</button></div><div class="cmplz-cookiebanner"><button class="cmplz-view-preferences">View preferences</button><input type="checkbox" checked></div>';
+  h.document.body.append(box);
+  const banner=box.querySelector('.cmplz-cookiebanner'),choice=box.querySelector('input');
+  let shown=0,preferences=0;
+  h.window.cmplz_set_banner_status=status=>{assert.equal(status,'show');shown++;banner.classList.add('cmplz-show');};
+  box.querySelector('.cmplz-manage-consent').addEventListener('click',()=>h.window.cmplz_set_banner_status('show'));
+  box.querySelector('.cmplz-view-preferences').addEventListener('click',()=>{preferences++;banner.classList.add('cmplz-categories-visible');});
+  for(let i=0;i<2;i++){
+    const event=new h.window.Event('click',{bubbles:true,cancelable:true});link.dispatchEvent(event);h.flush();
+    assert.equal(event.defaultPrevented,true);assert.ok(banner.classList.contains('cmplz-show'));
+  }
+  assert.equal(shown,2);assert.equal(preferences,1,'An open preferences panel must not be toggled shut');
+  assert.equal(box.querySelector('input'),choice);assert.ok(choice.hasAttribute('checked'),'Opening preferences leaves consent choices untouched');
+  h.window.cmplz_set_banner_status=()=>{throw Error('CMP initialization pending');};
+  const pending=new h.window.Event('click',{bubbles:true,cancelable:true});link.dispatchEvent(pending);
+  assert.equal(pending.defaultPrevented,false,'An uninitialized CMP must not leave the footer link inert');
 });
 
 const blogPanelMarkup = '<div class="brz-wp-shortcode" data-brz-custom-id="amfuxnhsfmkknesyuldlbdorcvqsardaetus"><a class="twitter-timeline" href="https://x.com/CalorieToken">Tweets by CalorieToken</a></div>';
@@ -484,7 +510,27 @@ test('The full CAL guide/discovery/translation sequence retains exact routes and
       assert.ok(h.document.querySelector(a.getAttribute('href')));
     });
     assert.ok(h.document.querySelector('.ctstyle-crypto-intro').textContent.includes(copy[locale].appWithoutCAL));
+    const toggles=[...h.document.querySelectorAll('.ctstyle-crypto-route-toggle')];
+    assert.equal(toggles.length,3);
+    toggles.forEach((toggle,index)=>{
+      const key=['routeTrade','routeLearn','routeOther'][index];
+      assert.equal(toggle.querySelector('strong').textContent,copy[locale][key]);
+      assert.equal(toggle.querySelector('.ctstyle-crypto-route-description').textContent,copy[locale][key+'Text']);
+      assert.ok(h.document.getElementById(toggle.getAttribute('aria-controls')));
+    });
   }
+  const toggle=h.document.querySelector('#ctstyle-external-exchange .ctstyle-crypto-route-toggle');
+  const frame=h.document.createElement('iframe');frame.setAttribute('src','https://example.test/provider-fixture');
+  h.document.querySelector('#ctstyle-swft-frame').append(frame);
+  toggle.click();assert.equal(toggle.getAttribute('aria-expanded'),'true');
+  toggle.click();assert.equal(toggle.getAttribute('aria-expanded'),'false');
+  assert.equal(h.document.querySelector('iframe'),frame,'Collapsing must retain an existing provider frame');
+  assert.equal(frame.getAttribute('src'),'https://example.test/provider-fixture');
+  const learn=h.document.querySelector('.ctstyle-discovery-tabs a[href="#'+guide.id+'"]');
+  learn.click();assert.equal(guide.closest('.ctstyle-crypto-route-panel').querySelector('button').getAttribute('aria-expanded'),'true');
+  h.window.location.hash='#ctstyle-buy-trustline';h.emit('hashchange');
+  assert.equal(h.document.querySelector('#ctstyle-own-dex .ctstyle-crypto-route-toggle').getAttribute('aria-expanded'),'true');
+  assert.equal(guide.querySelectorAll('button').length,0,'Keep controls outside the protected guide translator');
 });
 
 
@@ -510,6 +556,31 @@ test('Home token copy and legal footer translate in every offered language and r
  assert.equal(h.document.querySelector('#copyright').textContent,originalCopyright);
 });
 
+
+test('All six usecase descriptions follow the language event with page-scoped copy and preserve their links',()=>{
+ const catalogue=JSON.parse(source('content-data.json'));
+ const label=catalogue.entries.find(row=>row.source==='Future use concept');
+ const action=catalogue.entries.find(row=>row.source==='Open CalorieApp');
+ for(const note of menu.usecases){
+  const h=fixture('<section data-brz-custom-id="'+note.element+'"><img id="usecase-art" src="/original-usecase.png" alt="Original illustration"></section>',{page:note.page,route:'delivery'});
+  h.window.CalorieTokenContentLanguage={locales:Object.keys(copy),entries:catalogue.entries.filter(row=>row.pages.includes('*')||row.pages.includes(note.page))};
+  h.run('menu-pages.js');h.run('content-language.js');
+  const panel=h.document.getElementById(note.key),link=panel.querySelector('a'),art=h.document.querySelector('#usecase-art');
+  const href=link.getAttribute('href'),row=catalogue.entries.find(entry=>entry.source===note.text);
+  assert.ok(row,'The generated description must be in the catalogue for page '+note.page);
+  for(const locale of [...Object.keys(copy),'en']){
+   h.document.dispatchEvent(new h.window.CustomEvent('calorietoken:display-language',{detail:{locale}}));
+   h.window.CalorieTokenMenuPages.refresh();
+   assert.equal(panel.querySelector('p').textContent,locale==='en'?note.text:row.translations[locale]);
+   assert.equal(panel.querySelector('strong').textContent,locale==='en'?label.source:label.translations[locale]);
+   assert.equal(link.textContent,locale==='en'?action.source:action.translations[locale]);
+   if(locale!=='en')assert.equal(panel.querySelector('p').getAttribute('dir'),['ar','ur'].includes(locale)?'rtl':'ltr');
+   assert.equal(panel.querySelector('a'),link);assert.equal(link.getAttribute('href'),href);
+   assert.equal(h.document.querySelector('#usecase-art'),art);
+   assert.equal(h.document.querySelectorAll('#'+note.key).length,1);
+  }
+ }
+});
 
 test('Hidden legacy mastheads do not suppress the shared header or clone native account controls',()=>{
   const headerTemplate='<template id="ctstyle-header-template"><header class="ctstyle-header ctstyle-header-fallback"><nav><a href="/">Home</a></nav><div class="ctstyle-header-account" hidden></div></header></template>';

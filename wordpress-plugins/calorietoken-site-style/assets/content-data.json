@@ -34,6 +34,12 @@
         "nl": "CalorieApp openen"
       },
       "pages": [
+        1119,
+        1121,
+        1123,
+        1125,
+        1127,
+        1129,
         1205,
         4205,
         7880
@@ -9565,6 +9571,137 @@
       },
       "pages": [
         1207
+      ]
+    },
+    {
+      "source": "Future use concept",
+      "translations": {
+        "nl": "Toekomstig gebruiksconcept",
+        "zh-Hans": "未来应用构想",
+        "hi": "भविष्य में उपयोग की अवधारणा",
+        "es": "Concepto de uso futuro",
+        "ar": "تصوّر لاستخدام مستقبلي",
+        "fr": "Concept d’usage futur",
+        "bn": "ভবিষ্যৎ ব্যবহারের ধারণা",
+        "pt": "Conceito de uso futuro",
+        "id": "Konsep penggunaan masa depan",
+        "ur": "مستقبل میں استعمال کا تصور"
+      },
+      "pages": [
+        1119,
+        1121,
+        1123,
+        1125,
+        1127,
+        1129
+      ]
+    },
+    {
+      "source": "This illustration explores a possible future use of Calorie in food delivery. Ordering and merchant payment services would require further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent een mogelijk toekomstig gebruik van Calorie bij maaltijdbezorging. Bestel- en betaaldiensten voor ondernemers vereisen verdere ontwikkeling en deelnemende bedrijven. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来在餐饮配送中的一种可能用途。订餐和商户支付服务还需要进一步开发，并需要商家参与。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र भोजन की डिलीवरी में Calorie के एक संभावित भविष्य के उपयोग को दर्शाता है। ऑर्डर और व्यापारियों को भुगतान की सेवाओं के लिए आगे विकास और व्यवसायों की भागीदारी आवश्यक होगी। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora un posible uso futuro de Calorie en el reparto de comida. Los servicios de pedidos y pagos a comercios requerirían más desarrollo y empresas participantes. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامًا مستقبليًا محتملًا لـ Calorie في توصيل الطعام. ستتطلب خدمات الطلب والدفع للتجار مزيدًا من التطوير ومشاركة الشركات. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore un usage futur possible de Calorie dans la livraison de repas. Les services de commande et de paiement aux commerçants nécessiteraient des développements supplémentaires et la participation d’entreprises. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে খাবার ডেলিভারিতে Calorie-এর একটি সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে। অর্ডার ও ব্যবসায়ীদের পেমেন্টের সেবার জন্য আরও উন্নয়ন এবং ব্যবসাপ্রতিষ্ঠানের অংশগ্রহণ প্রয়োজন হবে। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora um possível uso futuro de Calorie na entrega de refeições. Os serviços de pedidos e pagamentos a comerciantes exigiriam mais desenvolvimento e empresas participantes. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan dalam layanan antar makanan. Layanan pemesanan dan pembayaran kepada pedagang memerlukan pengembangan lebih lanjut serta partisipasi pelaku usaha. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر کھانے کی ڈیلیوری میں Calorie کے مستقبل کے ایک ممکنہ استعمال کو پیش کرتی ہے۔ آرڈر اور تاجروں کو ادائیگی کی خدمات کے لیے مزید ترقیاتی کام اور کاروباروں کی شرکت درکار ہوگی۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1119
+      ]
+    },
+    {
+      "source": "This illustration explores possible future uses of Calorie in cafes and bars. Payment applications and a Calorie debit card are concepts, rather than services offered by the current CalorieApp. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent mogelijke toekomstige toepassingen van Calorie in cafés en bars. Betaaltoepassingen en een Calorie-betaalpas zijn concepten en geen diensten van de huidige CalorieApp. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来在咖啡馆和酒吧中的可能用途。支付应用和 Calorie 借记卡仍是构想，并非当前 CalorieApp 提供的服务。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र कैफ़े और बार में Calorie के संभावित भविष्य के उपयोगों को दर्शाता है। भुगतान ऐप और Calorie डेबिट कार्ड अभी अवधारणाएँ हैं, मौजूदा CalorieApp की सेवाएँ नहीं। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora posibles usos futuros de Calorie en cafeterías y bares. Las aplicaciones de pago y una tarjeta de débito Calorie son conceptos, no servicios de la versión actual de CalorieApp. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامات مستقبلية محتملة لـ Calorie في المقاهي والحانات. تطبيقات الدفع وبطاقة الخصم Calorie هي أفكار وليست خدمات يقدّمها CalorieApp حاليًا. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore des usages futurs possibles de Calorie dans les cafés et les bars. Les applications de paiement et une carte de débit Calorie sont des concepts, et non des services proposés par la version actuelle de CalorieApp. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে ক্যাফে ও বারে Calorie-এর সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে। পেমেন্ট অ্যাপ ও Calorie ডেবিট কার্ড এখনো ধারণা, বর্তমান CalorieApp-এর সেবা নয়। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora possíveis usos futuros de Calorie em cafés e bares. As aplicações de pagamento e um cartão de débito Calorie são conceitos, e não serviços oferecidos pela versão atual de CalorieApp. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan di kafe dan bar. Aplikasi pembayaran dan kartu debit Calorie masih berupa konsep, bukan layanan yang ditawarkan CalorieApp saat ini. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر کیفے اور بار میں Calorie کے مستقبل کے ممکنہ استعمالات کو پیش کرتی ہے۔ ادائیگی کی ایپس اور Calorie ڈیبٹ کارڈ ابھی تصورات ہیں، موجودہ CalorieApp کی خدمات نہیں۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1121
+      ]
+    },
+    {
+      "source": "This illustration explores a possible future use of Calorie for takeaway orders. Ordering and payment services would require further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent een mogelijk toekomstig gebruik van Calorie voor afhaalbestellingen. Bestel- en betaaldiensten vereisen verdere ontwikkeling en deelnemende bedrijven. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来用于自取餐点订单的一种可能用途。订餐和支付服务还需要进一步开发，并需要商家参与。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र टेकअवे ऑर्डर के लिए Calorie के एक संभावित भविष्य के उपयोग को दर्शाता है। ऑर्डर और भुगतान सेवाओं के लिए आगे विकास और व्यवसायों की भागीदारी आवश्यक होगी। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora un posible uso futuro de Calorie para pedidos de comida para llevar. Los servicios de pedidos y pagos requerirían más desarrollo y empresas participantes. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامًا مستقبليًا محتملًا لـ Calorie لطلبات الطعام للاستلام. ستتطلب خدمات الطلب والدفع مزيدًا من التطوير ومشاركة الشركات. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore un usage futur possible de Calorie pour les commandes à emporter. Les services de commande et de paiement nécessiteraient des développements supplémentaires et la participation d’entreprises. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে টেকঅ্যাওয়ে অর্ডারের জন্য Calorie-এর একটি সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে। অর্ডার ও পেমেন্টের সেবার জন্য আরও উন্নয়ন এবং ব্যবসাপ্রতিষ্ঠানের অংশগ্রহণ প্রয়োজন হবে। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora um possível uso futuro de Calorie em pedidos de refeições para levar. Os serviços de pedidos e pagamentos exigiriam mais desenvolvimento e empresas participantes. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan untuk pesanan makanan yang dibawa pulang. Layanan pemesanan dan pembayaran memerlukan pengembangan lebih lanjut serta partisipasi pelaku usaha. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر ٹیک اوے آرڈرز کے لیے Calorie کے مستقبل کے ایک ممکنہ استعمال کو پیش کرتی ہے۔ آرڈر اور ادائیگی کی خدمات کے لیے مزید ترقیاتی کام اور کاروباروں کی شرکت درکار ہوگی۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1123
+      ]
+    },
+    {
+      "source": "This illustration explores possible future uses of Calorie in restaurants, including supplier payments and sharing bills. These functions belong to the longer-term vision. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent mogelijke toekomstige toepassingen van Calorie in restaurants, waaronder betalingen aan leveranciers en het delen van rekeningen. Deze functies behoren tot de visie voor de langere termijn. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来在餐厅中的可能用途，包括向供应商付款和分摊账单。这些功能属于长期愿景。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र रेस्तराँ में Calorie के संभावित भविष्य के उपयोगों को दर्शाता है, जिनमें आपूर्तिकर्ताओं को भुगतान और बिल बाँटना शामिल हैं। ये सुविधाएँ दीर्घकालिक दृष्टि का हिस्सा हैं। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora posibles usos futuros de Calorie en restaurantes, incluidos los pagos a proveedores y el reparto de cuentas. Estas funciones forman parte de la visión a largo plazo. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامات مستقبلية محتملة لـ Calorie في المطاعم، بما فيها الدفع للمورّدين وتقاسم الفواتير. تندرج هذه الوظائف ضمن الرؤية طويلة المدى. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore des usages futurs possibles de Calorie dans les restaurants, notamment le paiement des fournisseurs et le partage de l’addition. Ces fonctions font partie de la vision à long terme. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে রেস্তোরাঁয় Calorie-এর সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে, যার মধ্যে সরবরাহকারীদের পেমেন্ট ও বিল ভাগ করা অন্তর্ভুক্ত। এসব সুবিধা দীর্ঘমেয়াদি পরিকল্পনার অংশ। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora possíveis usos futuros de Calorie em restaurantes, incluindo pagamentos a fornecedores e a divisão de contas. Estas funções fazem parte da visão de longo prazo. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan di restoran, termasuk pembayaran kepada pemasok dan pembagian tagihan. Fungsi-fungsi ini merupakan bagian dari visi jangka panjang. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر ریستورانوں میں Calorie کے مستقبل کے ممکنہ استعمالات کو پیش کرتی ہے، جن میں سپلائرز کو ادائیگی اور بل تقسیم کرنا شامل ہیں۔ یہ سہولتیں طویل مدتی تصور کا حصہ ہیں۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1125
+      ]
+    },
+    {
+      "source": "This illustration explores possible future uses of Calorie in grocery shopping and loyalty programmes. Store payments, rewards and debit cards remain concepts that need further development and participating businesses. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent mogelijke toekomstige toepassingen van Calorie bij boodschappen en loyaliteitsprogramma’s. Winkelbetalingen, beloningen en betaalpassen blijven concepten die verdere ontwikkeling en deelnemende bedrijven vereisen. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来在食品杂货购物和顾客忠诚度计划中的可能用途。店内支付、奖励和借记卡仍是需要进一步开发及商家参与的构想。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र किराने की खरीदारी और ग्राहक लॉयल्टी कार्यक्रमों में Calorie के संभावित भविष्य के उपयोगों को दर्शाता है। दुकानों में भुगतान, पुरस्कार और डेबिट कार्ड अभी अवधारणाएँ हैं, जिनके लिए आगे विकास और व्यवसायों की भागीदारी आवश्यक है। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora posibles usos futuros de Calorie en la compra de alimentos y los programas de fidelización. Los pagos en tiendas, las recompensas y las tarjetas de débito siguen siendo conceptos que requieren más desarrollo y empresas participantes. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامات مستقبلية محتملة لـ Calorie في شراء المواد الغذائية وبرامج الولاء. لا تزال المدفوعات في المتاجر والمكافآت وبطاقات الخصم أفكارًا تحتاج إلى مزيد من التطوير ومشاركة الشركات. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore des usages futurs possibles de Calorie pour les courses alimentaires et les programmes de fidélité. Les paiements en magasin, les récompenses et les cartes de débit restent des concepts nécessitant des développements supplémentaires et la participation d’entreprises. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে মুদি কেনাকাটা ও গ্রাহক লয়্যালটি কর্মসূচিতে Calorie-এর সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে। দোকানে পেমেন্ট, পুরস্কার ও ডেবিট কার্ড এখনো ধারণা, যেগুলোর জন্য আরও উন্নয়ন এবং ব্যবসাপ্রতিষ্ঠানের অংশগ্রহণ প্রয়োজন। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora possíveis usos futuros de Calorie nas compras de alimentos e nos programas de fidelização. Os pagamentos em lojas, as recompensas e os cartões de débito continuam a ser conceitos que exigem mais desenvolvimento e empresas participantes. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan untuk belanja bahan makanan dan program loyalitas. Pembayaran di toko, imbalan, dan kartu debit masih berupa konsep yang memerlukan pengembangan lebih lanjut serta partisipasi pelaku usaha. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر گروسری کی خریداری اور صارفین کے لائلٹی پروگراموں میں Calorie کے مستقبل کے ممکنہ استعمالات کو پیش کرتی ہے۔ دکانوں میں ادائیگیاں، انعامات اور ڈیبٹ کارڈ ابھی تصورات ہیں جن کے لیے مزید ترقیاتی کام اور کاروباروں کی شرکت درکار ہے۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1127
+      ]
+    },
+    {
+      "source": "This illustration explores possible future uses of Calorie between farmers, wholesalers and hospitality businesses. Supplier payments and business integrations belong to the longer-term vision. Today, CalorieApp provides food search, nutrition information and a personal food log.",
+      "translations": {
+        "nl": "Deze illustratie verkent mogelijke toekomstige toepassingen van Calorie tussen boeren, groothandels en horecabedrijven. Betalingen aan leveranciers en koppelingen met bedrijfssystemen behoren tot de visie voor de langere termijn. CalorieApp biedt momenteel een zoekfunctie voor voedingsproducten, voedingsinformatie en een persoonlijk eetdagboek.",
+        "zh-Hans": "这幅插图探索了 Calorie 未来在农户、批发商和餐饮企业之间的可能用途。供应商付款和企业系统集成属于长期愿景。目前，CalorieApp 提供食品搜索、营养信息和个人饮食记录功能。",
+        "hi": "यह चित्र किसानों, थोक विक्रेताओं और आतिथ्य व्यवसायों के बीच Calorie के संभावित भविष्य के उपयोगों को दर्शाता है। आपूर्तिकर्ताओं को भुगतान और व्यावसायिक प्रणालियों का एकीकरण दीर्घकालिक दृष्टि का हिस्सा हैं। फिलहाल CalorieApp भोजन खोजने, पोषण संबंधी जानकारी देखने और व्यक्तिगत भोजन डायरी रखने की सुविधा देता है।",
+        "es": "Esta ilustración explora posibles usos futuros de Calorie entre agricultores, mayoristas y empresas de hostelería. Los pagos a proveedores y las integraciones empresariales forman parte de la visión a largo plazo. Actualmente, CalorieApp permite buscar alimentos, consultar información nutricional y llevar un diario de alimentación personal.",
+        "ar": "يستكشف هذا الرسم استخدامات مستقبلية محتملة لـ Calorie بين المزارعين وتجار الجملة وشركات الضيافة. تندرج مدفوعات المورّدين وتكامل الأنظمة التجارية ضمن الرؤية طويلة المدى. يوفّر CalorieApp حاليًا البحث عن الأطعمة ومعلومات التغذية وسجلًا شخصيًا للطعام.",
+        "fr": "Cette illustration explore des usages futurs possibles de Calorie entre agriculteurs, grossistes et entreprises du secteur de l’hôtellerie-restauration. Le paiement des fournisseurs et les intégrations aux systèmes d’entreprise font partie de la vision à long terme. Actuellement, CalorieApp permet de rechercher des aliments, de consulter des informations nutritionnelles et de tenir un journal alimentaire personnel.",
+        "bn": "এই চিত্রে কৃষক, পাইকারি বিক্রেতা ও আতিথেয়তা ব্যবসার মধ্যে Calorie-এর সম্ভাব্য ভবিষ্যৎ ব্যবহার তুলে ধরা হয়েছে। সরবরাহকারীদের পেমেন্ট ও ব্যবসায়িক ব্যবস্থার সংযোগ দীর্ঘমেয়াদি পরিকল্পনার অংশ। বর্তমানে CalorieApp-এ খাবার খোঁজা, পুষ্টির তথ্য দেখা এবং ব্যক্তিগত খাবারের ডায়েরি রাখা যায়।",
+        "pt": "Esta ilustração explora possíveis usos futuros de Calorie entre agricultores, grossistas e empresas de hotelaria e restauração. Os pagamentos a fornecedores e as integrações com sistemas empresariais fazem parte da visão de longo prazo. Atualmente, CalorieApp permite pesquisar alimentos, consultar informações nutricionais e manter um diário alimentar pessoal.",
+        "id": "Ilustrasi ini mengeksplorasi kemungkinan penggunaan Calorie di masa depan antara petani, pedagang grosir, dan pelaku usaha perhotelan serta kuliner. Pembayaran kepada pemasok dan integrasi sistem bisnis merupakan bagian dari visi jangka panjang. Saat ini, CalorieApp menyediakan pencarian makanan, informasi gizi, dan catatan makanan pribadi.",
+        "ur": "یہ تصویر کسانوں، تھوک فروشوں اور مہمان نوازی کے کاروباروں کے درمیان Calorie کے مستقبل کے ممکنہ استعمالات کو پیش کرتی ہے۔ سپلائرز کو ادائیگی اور کاروباری نظاموں کا انضمام طویل مدتی تصور کا حصہ ہیں۔ فی الحال CalorieApp کھانے کی تلاش، غذائیت کی معلومات اور ذاتی خوراک کی ڈائری کی سہولت فراہم کرتا ہے۔"
+      },
+      "pages": [
+        1129
       ]
     }
   ]

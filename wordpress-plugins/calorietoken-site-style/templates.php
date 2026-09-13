@@ -69,10 +69,6 @@ if (!defined('ABSPATH')) { exit; }
                     <p class="ctstyle-legal-links">
                         <a href="<?php echo esc_url(home_url('/index.php/privacy-policy/')); ?>">Privacy Policy</a>
                         <a href="<?php echo esc_url(home_url('/index.php/terms-conditions/')); ?>">Terms &amp; Conditions</a>
-                        <?php $ctstyle_hub_id = (int) get_option('ctstyle_public_hub_id', 0); ?>
-                        <?php if ($ctstyle_hub_id && get_post_status($ctstyle_hub_id) === 'publish' && get_post_meta($ctstyle_hub_id, '_ctstyle_public_hub', true) === '1') : ?>
-                        <a href="<?php echo esc_url(get_permalink($ctstyle_hub_id)); ?>">Community Voting Hub</a>
-                        <?php endif; ?>
                     </p>
                 </div>
             </footer>

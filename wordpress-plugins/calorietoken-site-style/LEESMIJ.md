@@ -1,4 +1,32 @@
-# CalorieToken Site Style 1.4.37
+# CalorieToken Site Style 1.4.38
+
+## Footer
+
+De Voting Hub staat in het Community-menu en wordt uit de footer verwijderd.
+Cookie-instellingen opent rechtstreeks de voorkeuren van Complianz. Wanneer dat
+script nog niet beschikbaar is, blijft de link naar het cookiebeleid bruikbaar.
+Deze actie verandert geen toestemmingskeuzes.
+
+## Voting Hub en mobiele pagina’s
+
+De openbare Voting Hub krijgt de bestaande XPMarket-widget onder de inhoud.
+De al geïnstalleerde widget verzorgt gegevens en de terugval naar XPMarket.
+Een bestaande widget in de pagina-inhoud wordt niet verdubbeld.
+
+Op mobiel verbinden lijnen en pijlen de opeenvolgende Roadmap-kaarten.
+Showcases gebruikt gelijke marges en kaartbreedtes, ook rond de overgang bij
+767 pixels. CAL & Crypto toont drie uitklapbare routes; de desktopinhoud blijft
+uitgevouwen. Taalwissels, verwijzingen naar onderdelen en bestaande handelslinks
+blijven werken. Inklappen verwijdert geen geopend SWFT-venster; de bestaande
+cookie-instellingen blijven de externe inhoud beheren.
+
+## Usecases
+
+De beschrijvingen en het label voor toekomstig gebruik op Delivery, Cafes,
+Takeaway, Restaurants, Groceries en Wholesalers volgen nu de bestaande taalkeuze.
+Alle elf websitetalen zijn beschikbaar. Ook de link naar CalorieApp in deze
+beschrijvingen wordt vertaald. Terugschakelen naar Engels herstelt de originele
+inhoud en links.
 
 ## Donations
 
@@ -26,9 +54,10 @@ De weergave sluit aan bij de gedeelde websiteopmaak en ondersteunt smalle scherm
 
 ## Installatie
 
-Pakket: **calorietoken-site-style-1.4.37.zip**. Upload via Plugins → Nieuwe plugin →
+Pakket: **calorietoken-site-style-1.4.38.zip**. Upload via Plugins → Nieuwe plugin →
 Plugin uploaden en vervang de bestaande Site Style-plugin. Controleer daarna de
-Donations-pagina en de WordPress-geplande taken. Maak een database- en bestandenback-up.
+Usecases-pagina’s met een andere taal en daarna opnieuw in het Engels.
+De afzonderlijke CalorieApp Login Repair-plugin blijft actief.
 
 De eerdere sitecorrecties blijven inbegrepen: gedeelde Brizy-menu's en footers,
 responsive paginaopmaak, Caloriehelp, Testnet-uitleg, CAL & Crypto en de bestaande
