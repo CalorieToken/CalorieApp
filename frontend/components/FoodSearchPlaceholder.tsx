@@ -406,7 +406,8 @@ export function FoodSearchPlaceholder() {
     await runSearch(query);
   }
 
-  async function runSearch(searchQuery: string, barcode = false) {
+  async function runSearch(searchQuery: string, barcode = validFoodBarcode(searchQuery) !== null) {
+    // Pasted codes and resubmitted scanner results use the same exact lookup.
     // Enter-key submissions and rapid clicks must not cancel/restart a cold start.
     if (logMutationInFlightRef.current || searchInFlightRef.current || Date.now() < searchRetryAtRef.current) return;
     cancelPortionLogging();

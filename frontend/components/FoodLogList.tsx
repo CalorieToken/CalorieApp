@@ -147,6 +147,11 @@ export function FoodLogList({
               >
                 <p className="text-sm font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>
                 {item.created_at && Number.isFinite(Date.parse(item.created_at)) ? <p className="mt-1 text-xs text-brand-secondary/80"><time dateTime={item.created_at}><bdi>{new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(item.created_at))}</bdi></time></p> : null}
+                {typeof item.portion_percentage === "number" && Number.isFinite(item.portion_percentage) && item.portion_percentage >= 1 && item.portion_percentage <= 100 ? (
+                  <p className="mt-1 text-xs text-brand-secondary/80">
+                    {ui.copy.portionEaten}: <bdi>{new Intl.NumberFormat(locale, {style: "percent", maximumFractionDigits: 2}).format(item.portion_percentage / 100)}</bdi>
+                  </p>
+                ) : null}
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                   <div>
                     <span className="text-brand-secondary/60">{ui.copy.calories}</span>
