@@ -602,6 +602,24 @@ test("filtering changes only the visible list and prevents ambiguous bulk deleti
   assert.equal(h.document.activeElement, filterInput(h).props.ref.current);
 });
 
+test("diary rows reveal recorded portions in every language without inventing a portion for old entries", async () => {
+  const h = await harness("FoodLogList");
+  const entries = [25, 50, 55.5, 100, undefined, NaN, Infinity, -1, 101].map((portion_percentage, i) =>
+    ({...foods[0], id: i + 1, portion_percentage}));
+  h.render(diaryProps({logs: entries}));
+  for (const {tag} of localeRegistry.locales) {
+    h.setDisplayLanguage(tag);
+    const rows = nodes(h.tree, node => node.type === "li");
+    entries.forEach((item, i) => {
+      const portion = nodes(rows[i], node => node.type === "p" && text(node).includes(foodUiCopy[tag].portionEaten));
+      assert.equal(portion.length, i < 4 ? 1 : 0);
+      if (i < 4) assert.ok(text(portion[0]).includes(new Intl.NumberFormat(tag, {style: "percent", maximumFractionDigits: 2}).format(item.portion_percentage / 100)));
+    });
+  }
+  assert.deepEqual(h.requests, []);
+  assert.equal(entries[2].portion_percentage, 55.5);
+});
+
 test("an empty filtered result remains clearable by keyboard and reacts to refreshed logs", async () => {
   const h = await harness("FoodLogList");
   const props = diaryProps();
@@ -994,6 +1012,33 @@ test('Barcode lookup uses the existing search guard and shows only the matching 
   assert.equal(h.cards().length, 1); assert.equal(h.cards()[0].props.item.barcode, '0034000470693');
   assert.equal(nodes(h.tree, n => n.type === 'a' && n.props.href === 'https://world.openfoodfacts.org/contribute').length, 0);
   assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('The upper search button repeats a scanned barcode using the exact same lookup route', async () => {
+  const item = { ...foods[0], barcode: '0034000470693' };
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [item, { ...foods[1], barcode: '3017620422003' }] }) }));
+  nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693');
+  await h.flush();
+  const upper = nodes(h.tree, n => n.type === 'SearchBar')[0];
+  assert.equal(upper.props.query, '034000470693');
+  await upper.props.onSubmit({ preventDefault() {} });
+  h.render();
+  const requests = h.requests.filter(r => r.url.includes('/search-food?'));
+  assert.equal(requests.length, 2);
+  assert.equal(requests[1].url, requests[0].url);
+  assert.equal(h.cards().length, 1);
+  assert.equal(h.cards()[0].props.item.barcode, item.barcode);
+  assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('Pasted GTINs retain their zeros while product names and mixed numeric names use text search', async () => {
+  const h = await harness('FoodSearchPlaceholder');
+  for (const [input, mode] of [[' 0034000470693 ', 'barcode'], ['8711200428953', 'barcode'], ['7UP 330 ml', null], ['oats', null], ['0034000470694', null]]) {
+    await h.search(input);
+    const url = new URL(h.requests.at(-1).url, 'https://app.example');
+    assert.equal(url.searchParams.get('q'), input.trim());
+    assert.equal(url.searchParams.get('mode'), mode);
+  }
 });
 
 test('Barcode absence has useful translated fallback text and name search restores ordinary empty state', async () => {
