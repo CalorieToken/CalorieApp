@@ -1,0 +1,142 @@
+name: Read-only live review 20260915
+on:
+  push:
+    branches: [qa/live-review-20260915]
+    paths: [.github/workflows/live-review-20260915.yml]
+permissions:
+  contents: read
+concurrency:
+  group: calorie-live-review-20260915
+  cancel-in-progress: false
+jobs:
+  public-browser-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the same browser tool version used for the repair tests
+        run: |
+          python -m pip install 'playwright==1.57.0'
+          python -m playwright install --with-deps chromium
+      - name: Inspect public pages without signing in or saving anything
+        shell: bash
+        run: |
+          mkdir -p live-review-evidence
+          python - <<'PY'
+          import json, time, traceback
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          from playwright.sync_api import sync_playwright, expect
+          OUT=Path('live-review-evidence')
+          COPY=json.loads(Path('frontend/config/food-experience-copy.json').read_text())
+          report={'mode':'Fresh public browser, real deployed frontend; no mocked responses, no sign-in, no saves', 'expected_application_commit':'d74baa42fffb10191eff1bcfc9a967f3c5e4c03a','checks':[], 'failures':[], 'errors':[], 'blocked_writes':[], 'pages':[], 'videos':[]}
+          def check(name, value):
+              report['checks'].append({'name':name,'passed':bool(value)})
+              if not value: report['failures'].append(name)
+          def guard(route):
+              request=route.request
+              if request.method not in ('GET','HEAD','OPTIONS'):
+                  report['blocked_writes'].append({'method':request.method,'host':urlsplit(request.url).hostname,'path':urlsplit(request.url).path})
+                  route.abort()
+              else: route.continue_()
+          def persist():
+              (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              try:
+                  for locale in COPY:
+                      ctx=browser.new_context(viewport={'width':412,'height':915},record_video_dir=str(OUT/'recordings'),record_video_size={'width':412,'height':915},service_workers='block')
+                      ctx.route('**/*',guard)
+                      page=ctx.new_page(); page.set_default_timeout(12000)
+                      page.on('pageerror',lambda e: report['errors'].append(str(e)))
+                      try:
+                          response=page.goto('https://app.calorietoken.net/?ui_lang='+locale,wait_until='domcontentloaded',timeout=25000)
+                          check(locale+' app HTTP 200',response is not None and response.status==200)
+                          expect(page.locator('html')).to_have_attribute('lang',locale)
+                          usda=page.get_by_test_id('usda-food-search')
+                          usda.locator(':scope > summary').click()
+                          usda.locator('input[type="search"]').fill('168878')
+                          usda.locator('form button[type="submit"]').click()
+                          usda.get_by_role('button').filter(has_text='FDC 168878').click()
+                          chosen=page.get_by_test_id('usda-selected-food')
+                          chosen.locator('input[inputmode="decimal"]').fill('75')
+                          chosen.scroll_into_view_if_needed(); page.wait_for_timeout(700)
+                          page.screenshot(path=str(OUT/(locale+'-usda-selected-412.png')),full_page=True)
+                          chosen.get_by_role('button',name=COPY[locale]['reviewAmount'],exact=True).click()
+                          expect(chosen.locator('form')).to_be_visible()
+                          expect(chosen.get_by_role('heading',name=COPY[locale]['confirmTitle'],exact=True)).to_be_visible()
+                          expect(chosen.locator('input[inputmode="decimal"]')).to_have_value('75')
+                          page.wait_for_timeout(1000)
+                          usda.screenshot(path=str(OUT/(locale+'-usda-confirmation-412.png')))
+                          check(locale+' real inline review reached without saving',True)
+                          check(locale+' 412px no horizontal overflow',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                          report['pages'].append({'locale':locale,'url':page.url,'title':page.title(),'actual_lang':page.locator('html').get_attribute('lang'),'app_text':usda.inner_text(),'scripts':page.locator('script[src]').evaluate_all('(xs)=>xs.map(x=>x.src)')})
+                          chosen.locator('input[inputmode="decimal"]').fill('0')
+                          expect(chosen.locator('form')).to_have_count(0)
+                          expect(chosen.get_by_role('button',name=COPY[locale]['reviewAmount'],exact=True)).to_be_disabled()
+                          check(locale+' invalid amount clears stale confirmation',True)
+                      except Exception as e:
+                          report['failures'].append(locale+': '+str(e)[:1200])
+                          try:
+                              page.screenshot(path=str(OUT/(locale+'-failure.png')),full_page=True)
+                              (OUT/(locale+'-failure.txt')).write_text(page.locator('body').inner_text())
+                          except Exception: pass
+                      finally:
+                          video=page.video
+                          ctx.close()
+                          if video:
+                              video.save_as(str(OUT/('live-usda-'+locale+'.webm')))
+                              report['videos'].append('live-usda-'+locale+'.webm')
+                          persist()
+                      print(json.dumps({'locale':locale,'checked':len(report['checks']),'failures_so_far':len(report['failures'])}),flush=True)
+                      if len(report['pages'])==0 and len(report['failures'])>=2:
+                          report['failures'].append('Stopped repeated navigation after two unavailable locale attempts')
+                          break
+                  ctx=browser.new_context(viewport={'width':360,'height':900},service_workers='block')
+                  ctx.route('**/*',guard); page=ctx.new_page(); page.set_default_timeout(10000)
+                  for name,url in [('app','https://app.calorietoken.net/?ui_lang=nl'),('home','https://calorietoken.net/'),('embedded-app','https://calorietoken.net/calorieapp/'),('showcases','https://calorietoken.net/showcases/'),('contact','https://calorietoken.net/contact/')]:
+                      try:
+                          response=page.goto(url,wait_until='domcontentloaded',timeout=25000); page.wait_for_timeout(2200)
+                          body=page.locator('body').inner_text()
+                          check(name+' public HTTP 200',response is not None and response.status==200)
+                          report['pages'].append({'name':name,'url':page.url,'title':page.title(),'status':response.status if response else None,'frames':[f.url for f in page.frames],'text':body,'scripts':page.locator('script[src]').evaluate_all('(xs)=>xs.map(x=>x.src)')})
+                          for width in [360,412,1440]:
+                              page.set_viewport_size({'width':width,'height':1000}); page.wait_for_timeout(400)
+                              check(name+' '+str(width)+'px no page overflow',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                              page.screenshot(path=str(OUT/(name+'-'+str(width)+'.png')),full_page=True)
+                          if name=='embedded-app':
+                              frames=[f for f in page.frames if urlsplit(f.url).hostname in ('app.calorietoken.net','calorieapp-frontend.onrender.com')]
+                              check('WordPress embeds the real app domain',bool(frames))
+                              if frames:
+                                  check('Embedded USDA component exists',frames[0].get_by_test_id('usda-food-search').count()==1)
+                          if name=='app':
+                              for locale in ['nl','ar','en']:
+                                  selector=page.locator('#calorieapp-display-language')
+                                  if selector.count():
+                                      selector.select_option(locale)
+                                      expect(page.locator('html')).to_have_attribute('lang',locale)
+                                      check('Real language switch '+locale,True)
+                      except Exception as e: report['failures'].append(name+': '+str(e)[:1200])
+                      persist()
+                  ctx.close()
+              finally:
+                  browser.close()
+                  report['completed_utc']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
+                  report['status']='passed' if not report['failures'] else 'needs-attention'
+                  persist()
+          print(json.dumps({'status':report['status'],'checks':len(report['checks']),'failures':report['failures'],'runtime_errors':report['errors'],'video_count':len(report['videos'])},ensure_ascii=False))
+          if report['failures']: raise SystemExit(1)
+          PY
+      - name: Retain evidence only; do not deploy or publish
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-review-20260915
+          path: live-review-evidence/
+          retention-days: 3
+          if-no-files-found: error
