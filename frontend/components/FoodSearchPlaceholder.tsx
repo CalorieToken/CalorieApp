@@ -14,12 +14,14 @@ import { FoodDiaryPeriod } from "@/components/FoodDiaryPeriod";
 import { DiaryPeriod, DiaryOverview, diaryCopy, diaryParams, emptyDiary, localDiaryDate } from "@/lib/foodDiary";
 import { FoodLogList } from "@/components/FoodLogList";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
+import { RecordedGradeSummary } from "@/components/RecordedGradeSummary";
+import { foodExperience, displayUsdaGramAmount } from "@/lib/foodExperience";
 import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import Image from "next/image";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { displayServingSize, formatFoodUi, getFoodUi, recordedGradePosition, recordedGradeStyle, translateFoodStatus } from "@/lib/foodUi";
+import { displayServingSize, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
 import {
   AUTH_STATE_CHANGED_EVENT,
@@ -168,6 +170,8 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
 export function FoodSearchPlaceholder() {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
+  const experience = foodExperience(locale);
+  const portionFormRef = useRef<HTMLFormElement>(null);
   const numbers = useMemo(() => ({
     decimal: new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: false }),
     integer: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
@@ -266,14 +270,9 @@ export function FoodSearchPlaceholder() {
     const known = grades.reduce((sum, item) => sum + item.count, 0);
     return {grades, known, total: diaryOverview.count, missing: diaryOverview.count - known};
   }, [diaryOverview]);
-  const gradePosition = recordedGradePosition(recordedGrades);
-  const gradePositionLabel = gradePosition
-    ? formatFoodUi(gradePosition.lower === gradePosition.upper ? copy.scoreAt : copy.scoreBetween,
-      { grade: gradePosition.lower, lower: gradePosition.lower, upper: gradePosition.upper })
-    : copy.scoreEmpty;
   const selectedPortionPercentage = useMemo(
-    () => getPortionPercentage(portionOption, customPortion),
-    [portionOption, customPortion]
+    () => pendingLogIndex === -1 ? 100 : getPortionPercentage(portionOption, customPortion),
+    [portionOption, customPortion, pendingLogIndex]
   );
   const portionPreview = useMemo(() => {
     if (!pendingLogItem || selectedPortionPercentage === null) {
@@ -697,13 +696,24 @@ export function FoodSearchPlaceholder() {
     }
   }
 
+  useEffect(() => {
+    if (!pendingLogItem) return;
+    portionFormRef.current?.focus({ preventScroll: true });
+    portionFormRef.current?.scrollIntoView({ block: "nearest", behavior: "auto" });
+  }, [pendingLogItem, pendingLogIndex]);
+
   const portionControls = pendingLogItem ? (
     <form
-      className="mt-4 rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5"
+      ref={portionFormRef}
+      tabIndex={-1}
+      className={`mt-4 focus-visible:ring-2 focus-visible:ring-brand-secondary ${pendingLogIndex === -1 ? "border-t border-brand-secondary/20 pt-4" : "rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5"}`}
       onSubmit={(event) => { event.preventDefault(); void confirmPortionLogging(); }}
       aria-busy={isLogging !== null}
     >
-      <h3 className="text-sm font-bold text-brand-primary">{copy.portionTitle}</h3>
+      <h3 className="text-sm font-bold text-brand-primary">{pendingLogIndex === -1 ? experience.copy.confirmTitle : copy.portionTitle}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{pendingLogIndex === -1 ? experience.copy.confirmAmount : experience.copy.portionBasis}</p>
+      {pendingLogIndex !== -1 && pendingLogItem.serving_size ? <p className="mt-2 text-sm text-brand-secondary">{copy.serving}: <bdi>{displayServingSize(pendingLogItem.serving_size, copy)}</bdi></p> : null}
+      {pendingLogIndex !== -1 ? <>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <button
           type="button"
@@ -789,16 +799,19 @@ export function FoodSearchPlaceholder() {
         </p>
       ) : null}
 
+      </> : null}
       {portionPreview ? (
         <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-white p-3">
-          <p className="text-xs text-brand-secondary/80">{formatFoodUi(copy.portionPreview, { percentage: displayPercentage(selectedPortionPercentage ?? 100) })}</p>
+          <p className="text-sm text-brand-secondary/80">{pendingLogIndex === -1
+            ? formatFoodUi(experience.copy.selectedAmount, { amount: displayUsdaGramAmount(pendingLogItem.serving_size, locale) })
+            : formatFoodUi(copy.portionPreview, { percentage: displayPercentage(selectedPortionPercentage ?? 100) })}</p>
           <p className="mt-1 break-words text-sm font-bold text-brand-primary"><bdi>{pendingLogItem.product_name}</bdi></p>
           {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80"><bdi>{pendingLogItem.brand}</bdi></p> : null}
           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi>{displayNumber(portionPreview.calories)} kcal</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi>{displayNumber(portionPreview.protein)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi>{displayNumber(portionPreview.fat)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi>{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.calories)} kcal</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.protein)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.fat)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
           </div>
         </div>
       ) : null}
@@ -825,10 +838,26 @@ export function FoodSearchPlaceholder() {
     </form>
   ) : null;
 
+  function goToSection(id: string) {
+    const section = document.getElementById(id);
+    if (!section) return;
+    if (section instanceof HTMLDetailsElement) section.open = true;
+    section.focus({ preventScroll: true });
+    section.scrollIntoView({ block: "start", behavior: "auto" });
+  }
+
   return (
     <section className="space-y-6" lang={locale} dir={direction}>
+      <nav aria-label={experience.copy.navigation} className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3">
+        {[["calorie-packaged-foods", copy.searchTitle], ["calorie-basic-foods", experience.copy.sourceTitle], ["calorie-diary", diaryUi.title]].map(([id, label]) => (
+          <button key={id} type="button" onClick={() => goToSection(id)} aria-controls={id}
+            className="min-h-12 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-secondary/10 focus-visible:ring-2 focus-visible:ring-brand-secondary">
+            {label}
+          </button>
+        ))}
+      </nav>
       {/* Search Section */}
-      <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
+      <div id="calorie-packaged-foods" tabIndex={-1} className="scroll-mt-4 rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
         <h2 className="text-lg font-bold text-brand-primary">{copy.searchTitle}</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
           {copy.searchIntro}
@@ -921,14 +950,18 @@ export function FoodSearchPlaceholder() {
       </div>
 
       <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading}
-        onEditing={() => { if (pendingLogIndex === -1) cancelPortionLogging(); }}
-        onChoose={food => onLogFood(food, -1)} />
-      {pendingLogIndex === -1 ? portionControls : null}
-      {logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
-        className="text-sm font-semibold text-brand-primary">{logFeedback.added
-          ? formatFoodUi(copy.addedFeedback, { product: logFeedback.added.product, percentage: displayPercentage(logFeedback.added.percentage) })
-          : translateFoodStatus(logFeedback.message, copy)}</p> : null}
+        onEditing={() => {
+          if (pendingLogIndex === -1) cancelPortionLogging();
+          setLogFeedback(current => current?.index === -1 ? null : current);
+        }}
+        onChoose={food => onLogFood(food, -1)}
+        confirmation={pendingLogIndex === -1 ? portionControls : null}
+        feedback={logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
+          className="mt-3 text-sm font-semibold text-brand-primary">{logFeedback.added
+            ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
+            : translateFoodStatus(logFeedback.message, copy)}</p> : null} />
 
+      <div id="calorie-diary" tabIndex={-1} className="scroll-mt-4 space-y-6">
       {/* Logged Foods Section */}
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
         <div
@@ -966,9 +999,6 @@ export function FoodSearchPlaceholder() {
       {!logError && !isLogsLoading ? (
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
           <h3 className="text-lg font-bold text-brand-primary">{diaryUi.summary}</h3>
-          <p className="mt-1 text-sm text-brand-secondary/80">
-            {diaryUi.scope}
-          </p>
           <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
               <dt className="text-brand-secondary/70">{copy.totalCalories}</dt>
@@ -992,38 +1022,7 @@ export function FoodSearchPlaceholder() {
             </div>
           </dl>
 
-          <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-3">
-            <p className="text-sm font-semibold text-brand-primary">{copy.scoreTitle}</p>
-            <p className="mt-2 text-sm font-semibold text-brand-secondary">{gradePositionLabel}</p>
-            <div className="mx-2 mt-3" role="img" aria-label={gradePositionLabel} dir="ltr">
-              <div className="relative pt-4">
-                {gradePosition ? <span aria-hidden="true" data-grade-pointer="true"
-                  className="absolute top-0 -translate-x-1/2 border-x-[7px] border-t-[10px] border-x-transparent border-t-brand-secondary"
-                  style={{ left: `${gradePosition.percent}%` }} /> : null}
-                <div aria-hidden="true" className="h-5 rounded-full border border-brand-secondary/20"
-                  style={{ background: "linear-gradient(to right, #038141 0%, #85bb2f 25%, #fecb02 50%, #ee8100 75%, #c9382a 100%)" }} />
-              </div>
-              <div aria-hidden="true" className="mt-1 flex justify-between text-xs font-bold text-brand-secondary">
-                {["A", "B", "C", "D", "E"].map(grade => <span key={grade}>{grade}</span>)}
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-brand-secondary/75">
-              {formatFoodUi(copy.scoreCoverage, { known: displayInteger(recordedGrades.known), total: displayInteger(recordedGrades.total) })}
-            </p>
-            <p className="mt-2 text-xs text-brand-secondary/75">{copy.scoreMissing}: <bdi>{displayInteger(recordedGrades.missing)}</bdi></p>
-            <details className="mt-3 text-xs text-brand-secondary">
-              <summary className="min-h-11 cursor-pointer py-3 font-semibold">{copy.scoreDetails}</summary>
-              <p className="leading-relaxed">{copy.scoreDescription}</p>
-              <dl className="mt-3 grid grid-cols-5 overflow-hidden rounded-xl text-center text-sm" aria-label={copy.scoreDetails} dir="ltr">
-                {recordedGrades.grades.map(({ grade, count }) => (
-                  <div key={grade} className="min-w-0 border-r border-white/40 px-1 py-3 last:border-r-0" style={recordedGradeStyle(grade)}>
-                    <dt className="font-bold"><bdi dir="ltr">{grade}</bdi></dt>
-                    <dd className="mt-1"><bdi>{displayInteger(count)}</bdi></dd>
-                  </div>
-                ))}
-              </dl>
-            </details>
-          </div>
+          <RecordedGradeSummary summary={recordedGrades} locale={locale} />
         </div>
       ) : null}
 
@@ -1064,7 +1063,7 @@ export function FoodSearchPlaceholder() {
               {selectedLog.brand ? <p className="mt-1 text-sm text-brand-secondary/80"><bdi>{selectedLog.brand}</bdi></p> : null}
               {selectedLog.barcode ? <p className="mt-2 text-xs text-brand-secondary/75">{copy.barcode}: <bdi dir="ltr">{selectedLog.barcode}</bdi></p> : null}
               {selectedLog.serving_size ? (
-                <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{displayServingSize(selectedLog.serving_size, copy)}</bdi></p>
+                <p className="mt-1 text-xs text-brand-secondary/75">{copy.serving}: <bdi>{displayUsdaGramAmount(displayServingSize(selectedLog.serving_size, copy), locale)}</bdi></p>
               ) : null}
               <NutriScoreBar grade={selectedLog.nutri_score} />
               <p className="mt-1 text-xs text-brand-secondary/75">
@@ -1130,6 +1129,7 @@ export function FoodSearchPlaceholder() {
           formatNumber={displayNumber}
         />
       ) : null}
+      </div>
     </section>
   );
 }

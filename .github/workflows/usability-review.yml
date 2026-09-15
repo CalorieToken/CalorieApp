@@ -1,0 +1,67 @@
+name: Isolated usability review
+
+on:
+  push:
+    branches: [review/usability-20260915]
+    paths:
+      - frontend/**
+      - tools/tests/**
+      - .github/workflows/usability-review.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: isolated-usability-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.ref == 'refs/heads/review/usability-20260915'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_BACKEND_URL: http://127.0.0.1:8000
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Export exact tracked review source
+        run: |
+          mkdir -p /tmp/calorie-review
+          git archive --format=zip -o /tmp/calorie-review/source.zip HEAD
+          git rev-parse HEAD > /tmp/calorie-review/commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: usability-source-${{ github.sha }}
+          path: /tmp/calorie-review
+          retention-days: 3
+      - name: Install locked frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Retain locked dependencies for isolated offline browser verification
+        run: tar -czf /tmp/calorie-review/frontend-node-modules.tar.gz -C frontend node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: usability-dependencies-${{ github.sha }}
+          path: /tmp/calorie-review/frontend-node-modules.tar.gz
+          retention-days: 1
+      - name: Type check
+        working-directory: frontend
+        run: npx tsc --noEmit
+      - name: Run existing frontend and WordPress tests
+        run: node --test tools/tests/*.test.mjs
+      - name: Build complete frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Confirm read-only review
+        run: |
+          git diff --exit-code
+          echo 'No merge, deployment, diary writes, or campaign publishing in this workflow.'

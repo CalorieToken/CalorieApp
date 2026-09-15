@@ -27,6 +27,10 @@ function loadModule(path, imports, globals = {}) {
 const locales = loadModule("../../frontend/lib/locales.ts", {
   "@/config/locales.json": { default: registry },
 });
+const experienceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-experience-copy.json", import.meta.url)));
+const foodExperience = loadModule("../../frontend/lib/foodExperience.ts", {
+  "@/config/food-experience-copy.json": {default: experienceCopy}, "@/lib/locales": locales,
+});
 function load(enabled) {
   return loadModule("../../frontend/components/DisplayLanguageProvider.tsx", {
     "@/lib/displayLanguageRuntime": require("../contracts/display-language/v1/runtime.js"),
@@ -139,7 +143,7 @@ test("actual food controls render the eleven languages and escape literal produc
   });
   const display = { enabled: true, locale: "en" };
   const imports = {
-    "@/lib/foodUi": foodUi,
+    "@/lib/foodUi": foodUi, "@/lib/foodExperience": foodExperience,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
@@ -183,7 +187,7 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
   });
-  const imports = { "@/lib/foodUi": foodUi,
+  const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": foodExperience,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;
@@ -194,11 +198,38 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
         item: { product_name: "Tea", calories: 20, protein: 1, fat: 0, carbohydrates: 4, nutri_score: grade },
         isLogging: false, isDisabled, onLog() {}, formatNumber: String,
       }));
-      assert.ok(html.includes(`aria-label="Nutri-Score: ${grade.trim().toUpperCase()}"`));
+      assert.ok(html.includes(`data-product-grade="${grade.trim().toUpperCase()}"`));
+      assert.ok(html.includes(renderedText(foodUi.formatFoodUi(experienceCopy.nl.productGrade, {grade: grade.trim().toUpperCase()}))));
       assert.equal((html.match(/background-color:/g) || []).length, 5);
     }
   }
   for (const grade of [undefined, null, "", "unknown"]) {
-    assert.equal(renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade })), "");
+    const html = renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade }));
+    assert.ok(html.includes('data-product-grade="unavailable"'));
+    assert.ok(html.includes(renderedText(experienceCopy.nl.gradeUnavailable)));
+    assert.equal((html.match(/background-color:/g) || []).length, 0);
+  }
+});
+
+
+test("actual grade distribution renders localized counts and no average in all eleven languages", () => {
+  const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
+  const foodUi = loadModule("../../frontend/lib/foodUi.ts", {"@/config/food-ui-copy.json": {default: copy}, "@/lib/locales": locales});
+  const {RecordedGradeSummary} = loadModule("../../frontend/components/RecordedGradeSummary.tsx", {
+    "@/lib/foodUi": foodUi, "@/lib/foodExperience": foodExperience,
+  });
+  const summary = {grades: ["A", "B", "C", "D", "E"].map((grade,i) => ({grade,count:[2,1,0,0,1][i]})),known:4,total:7,missing:3};
+  for (const {tag, direction} of registry.locales) {
+    const html = renderToStaticMarkup(React.createElement(RecordedGradeSummary, {summary, locale:tag}));
+    const count = new Intl.NumberFormat(tag);
+    assert.ok(html.includes(`lang="${tag}"`)); assert.ok(html.includes(`dir="${direction}"`));
+    assert.ok(html.includes(renderedText(experienceCopy[tag].gradeScope)));
+    assert.ok(html.includes(renderedText(foodUi.formatFoodUi(experienceCopy[tag].coverage,{known:count.format(4),total:count.format(7)}))));
+    assert.equal((html.match(/background-color:/g) || []).length, 5);
+    assert.ok(html.includes('<dl')); assert.ok(html.includes('dir="ltr"'));
+    assert.doesNotMatch(html, /data-grade-pointer|role="img"/);
+    const bad = renderToStaticMarkup(React.createElement(RecordedGradeSummary,{summary:{...summary,total:1},locale:tag}));
+    assert.ok(bad.includes(renderedText(experienceCopy[tag].coverageUnavailable)));
+    assert.equal((bad.match(/background-color:/g) || []).length, 0);
   }
 });
