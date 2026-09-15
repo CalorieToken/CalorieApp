@@ -34,6 +34,16 @@ Current application stack:
 - External food data: Open Food Facts search adapter; a separate three-food USDA reference selection
 - Identity/authentication: server-side identity flow with session cookies
 
+### Prepared food-discovery update — 15 September 2026
+
+The continuation branch adds a separate search of 8,156 dated USDA Foundation
+and SR Legacy records, an edible-gram preview, and optional similar-name food
+choices. Interface text covers the existing eleven display languages. Selecting
+a food opens the existing portion confirmation; it does not save automatically.
+The current production barcode flow is the starting point. These additions are
+prepared for review and are not yet deployed. See the
+[feature and validation record](docs/public/food-discovery-2026-09.md).
+
 ## Current Status
 
 ### Implemented in the repository (V2 completion in progress)

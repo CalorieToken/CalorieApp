@@ -8,6 +8,8 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "re
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { FoodCard } from "@/components/FoodCard";
+import { SimilarFoods } from "@/components/SimilarFoods";
+import { UsdaFoodSearch } from "@/components/UsdaFoodSearch";
 import { FoodDiaryPeriod } from "@/components/FoodDiaryPeriod";
 import { DiaryPeriod, DiaryOverview, diaryCopy, diaryParams, emptyDiary, localDiaryDate } from "@/lib/foodDiary";
 import { FoodLogList } from "@/components/FoodLogList";
@@ -905,6 +907,10 @@ export function FoodSearchPlaceholder() {
                 } : null}
                 onLog={() => onLogFood(item, index)}
                 formatNumber={displayNumber}
+                comparison={<SimilarFoods item={item} foods={results} locale={locale}
+                  disabled={isLogging !== null || isLoading || searchWaitSeconds > 0}
+                  onChoose={food => { const selectedIndex = results.indexOf(food); if (selectedIndex >= 0) onLogFood(food, selectedIndex); }}
+                  onSearch={food => { setQuery(food); void runSearch(food, false); }} />}
               >
                 {pendingLogIndex === index ? portionControls : null}
               </FoodCard>
@@ -913,6 +919,15 @@ export function FoodSearchPlaceholder() {
         ) : null}
 
       </div>
+
+      <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading}
+        onEditing={() => { if (pendingLogIndex === -1) cancelPortionLogging(); }}
+        onChoose={food => onLogFood(food, -1)} />
+      {pendingLogIndex === -1 ? portionControls : null}
+      {logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
+        className="text-sm font-semibold text-brand-primary">{logFeedback.added
+          ? formatFoodUi(copy.addedFeedback, { product: logFeedback.added.product, percentage: displayPercentage(logFeedback.added.percentage) })
+          : translateFoodStatus(logFeedback.message, copy)}</p> : null}
 
       {/* Logged Foods Section */}
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (

@@ -14,10 +14,11 @@ type FoodCardProps = {
   onLog: () => void;
   formatNumber: (value: number) => string;
   children?: ReactNode;
+  comparison?: ReactNode;
   feedback?: { message: string; isError: boolean } | null;
 };
 
-export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNumber, children, feedback }: FoodCardProps) {
+export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNumber, children, comparison, feedback }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const [imageFailed, setImageFailed] = useState(false);
@@ -137,6 +138,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
           {feedback.message}
         </p>
       ) : null}
+      {comparison}
     </li>
   );
 }
