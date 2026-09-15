@@ -22,4 +22,4 @@ Temporary encoded transfer files and the write-enabled bootstrap were removed. T
 
 ## Still open before release
 
-Passing tests is not full visual/linguistic acceptance. Singular/plural wording in grade counts still merits polishing. Complete WordPress page/subpage checks, real authorized sign-in/save acceptance, physical-camera acceptance, coordinated CalorieHelp/legal-copy updates, controlled deployment and dependent campaign recordings remain separate work. Preserve the owner's one overall campaign-publication approval gate.
+Passing tests is not full visual/linguistic acceptance. Grade-count labels now avoid noun inflection around numerals in all eleven locales, so counts such as 1 no longer produce a plural-label mismatch; native-speaker review of the complete interface remains advisable. Complete WordPress page/subpage checks, real authorized sign-in/save acceptance, physical-camera acceptance, coordinated CalorieHelp/legal-copy updates, controlled deployment and dependent campaign recordings remain separate work. Preserve the owner's one overall campaign-publication approval gate.
