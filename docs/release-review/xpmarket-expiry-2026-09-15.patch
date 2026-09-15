@@ -1,0 +1,144 @@
+--- a/calorieapp-identity-bridge/assets/calorieapp-page-ending.js
++++ b/calorieapp-identity-bridge/assets/calorieapp-page-ending.js
+@@ -2,6 +2,10 @@
+   "use strict";
+   var xpMarketWidgetRequest = null;
+   var xpMarketWidgetPayload = null;
++  var xpMarketPayloadExpiresAt = 0;
++  var xpMarketRefreshTimer = null;
++  var XP_MARKET_FRESH_AGE = 5 * 60 * 1000;
++  var XP_MARKET_MAX_AGE = 30 * 60 * 1000;
+   var xpMarketRetryTimer = null;
+   var xpMarketRetryAttempt = 0;
+   var xpMarketNextAttemptAt = 0;
+@@ -110,6 +114,13 @@
+       throw new Error("XPMarket widget payload is incomplete");
+     }
+ 
++    var fetchedAt = Date.parse(data.fetched_at);
++    if (data.cache_status === "stale" && !Number.isFinite(fetchedAt)) {
++      throw new Error("Cached XPMarket data requires a source timestamp");
++    }
++    if (Number.isFinite(fetchedAt) && (Date.now() - fetchedAt > XP_MARKET_MAX_AGE || fetchedAt > Date.now() + 60000)) {
++      throw new Error("XPMarket data timestamp is outside the accepted age window");
++    }
+     var setText = function (selector, value) {
+       var target = widget.querySelector(selector);
+       if (target) {
+@@ -139,7 +150,7 @@
+       ".calorieapp-xpmarket-holders",
+       formatCompactNumber(data.holders)
+     );
+-    setXpMarketState(widget, data.cache_status === "stale" ? "cached" : "fresh");
++    setXpMarketState(widget, data.cache_status === "stale" || (Number.isFinite(fetchedAt) && Date.now() - fetchedAt >= XP_MARKET_FRESH_AGE) ? "cached" : "fresh");
+     var retry = widget.querySelector(".calorieapp-xpmarket-retry");
+     if (retry) retry.hidden = true;
+     if (typeof data.fetched_at === "string" && !Number.isNaN(Date.parse(data.fetched_at))) {
+@@ -250,6 +261,7 @@
+     });
+     updateXpMarketLabels();
+ 
++    expireXpMarketPayload();
+     if (xpMarketWidgetPayload) {
+       widgets.forEach(function (widget) {
+         renderXpMarketWidget(widget, xpMarketWidgetPayload);
+@@ -265,6 +277,39 @@
+     }
+ 
+     requestXpMarketWidget(endpoint, false);
++  }
++
++  // A successful request is not a permanent in-tab cache. Invalidate before
++  // rendering again and refresh only while visible and online.
++  function expireXpMarketPayload() {
++    if (xpMarketWidgetPayload && Date.now() >= xpMarketPayloadExpiresAt) {
++      xpMarketWidgetPayload = null;
++      xpMarketPayloadExpiresAt = 0;
++    }
++  }
++
++  function scheduleXpMarketRefresh(endpoint, payload) {
++    if (xpMarketRefreshTimer !== null) window.clearTimeout(xpMarketRefreshTimer);
++    var now = Date.now();
++    var sourceTime = Date.parse(payload.data.fetched_at);
++    var stale = payload.data.cache_status === "stale" ||
++      (Number.isFinite(sourceTime) && now - sourceTime >= XP_MARKET_FRESH_AGE);
++    var delay = stale ? 15000 : XP_MARKET_FRESH_AGE;
++    if (Number.isFinite(sourceTime)) {
++      delay = Math.min(delay, sourceTime + (stale ? XP_MARKET_MAX_AGE : XP_MARKET_FRESH_AGE) - now);
++    }
++    xpMarketPayloadExpiresAt = now + Math.max(1000, delay);
++    xpMarketRefreshTimer = window.setTimeout(function () {
++      xpMarketRefreshTimer = null;
++      expireXpMarketPayload();
++      if (document.hidden || (window.navigator && window.navigator.onLine === false)) {
++        document.querySelectorAll("[data-calorieapp-xpmarket-widget='1']").forEach(function (widget) {
++          showXpMarketFallback(widget, false);
++        });
++        return;
++      }
++      requestXpMarketWidget(endpoint, false);
++    }, Math.max(1000, delay));
+   }
+ 
+   function showXpMarketFallback(widget, retrying) {
+@@ -285,6 +330,7 @@
+   }
+ 
+   function requestXpMarketWidget(endpoint, force) {
++    expireXpMarketPayload();
+     if (xpMarketWidgetPayload || xpMarketWidgetRequest || !endpoint || typeof window.fetch !== "function") {
+       return;
+     }
+@@ -303,8 +349,14 @@
+ 
+     xpMarketRetryAttempt += 1;
+     var controller = typeof window.AbortController === "function" ? new window.AbortController() : null;
+-    var timer = controller ? window.setTimeout(function () { controller.abort(); }, XP_MARKET_REQUEST_TIMEOUT) : null;
+-    xpMarketWidgetRequest = window.fetch(endpoint, {
++    var timer = null;
++    var timeout = new Promise(function (_resolve, reject) {
++      timer = window.setTimeout(function () {
++        if (controller) controller.abort();
++        reject(new Error("XPMarket widget request timed out"));
++      }, XP_MARKET_REQUEST_TIMEOUT);
++    });
++    xpMarketWidgetRequest = Promise.race([timeout, window.fetch(endpoint, {
+       cache: "no-store",
+       credentials: "omit",
+       signal: controller ? controller.signal : undefined,
+@@ -321,7 +373,7 @@
+         }
+         return payload;
+       });
+-    });
++    })]);
+ 
+     xpMarketWidgetRequest
+       .then(function (payload) {
+@@ -334,6 +386,7 @@
+         xpMarketWidgetPayload = payload;
+         xpMarketRetryAttempt = 0;
+         xpMarketNextAttemptAt = 0;
++        scheduleXpMarketRefresh(endpoint, payload);
+       })
+       .catch(function (error) {
+         var retrying = xpMarketRetryAttempt < XP_MARKET_MAX_AUTOMATIC_ATTEMPTS;
+@@ -362,6 +415,7 @@
+   }
+ 
+   function retryXpMarketAfterConnectionReturns() {
++    expireXpMarketPayload();
+     if (xpMarketWidgetPayload || xpMarketWidgetRequest) return;
+     var config = window.calorieappPageEnding || {};
+     xpMarketRetryAttempt = 0;
+@@ -466,6 +520,9 @@
+     window.addEventListener("load", enhanceXpMarketPriceWidgets);
+     window.addEventListener("pageshow", enhanceXpMarketPriceWidgets);
+     window.addEventListener("online", retryXpMarketAfterConnectionReturns);
++    document.addEventListener("visibilitychange", function () {
++      if (!document.hidden) retryXpMarketAfterConnectionReturns();
++    });
+     document.addEventListener("change", function (event) {
+       if (event.target && event.target.matches && event.target.matches("#ctstyle-language-select, #ctstyle-account-language")) {
+         updateXpMarketLabels();
