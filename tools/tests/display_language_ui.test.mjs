@@ -27,6 +27,10 @@ function loadModule(path, imports, globals = {}) {
 const locales = loadModule("../../frontend/lib/locales.ts", {
   "@/config/locales.json": { default: registry },
 });
+const experienceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-experience-copy.json", import.meta.url)));
+const experience = loadModule("../../frontend/lib/foodExperience.ts", {
+  "@/config/food-experience-copy.json": { default: experienceCopy }, "@/lib/locales": locales,
+});
 function load(enabled) {
   return loadModule("../../frontend/components/DisplayLanguageProvider.tsx", {
     "@/lib/displayLanguageRuntime": require("../contracts/display-language/v1/runtime.js"),
@@ -139,7 +143,7 @@ test("actual food controls render the eleven languages and escape literal produc
   });
   const display = { enabled: true, locale: "en" };
   const imports = {
-    "@/lib/foodUi": foodUi,
+    "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
@@ -183,7 +187,7 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
   });
-  const imports = { "@/lib/foodUi": foodUi,
+  const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;
@@ -194,11 +198,15 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
         item: { product_name: "Tea", calories: 20, protein: 1, fat: 0, carbohydrates: 4, nutri_score: grade },
         isLogging: false, isDisabled, onLog() {}, formatNumber: String,
       }));
-      assert.ok(html.includes(`aria-label="Nutri-Score: ${grade.trim().toUpperCase()}"`));
+      assert.ok(html.includes(`data-product-grade="${grade.trim().toUpperCase()}"`));
+      assert.ok(html.includes(renderedText(experienceCopy.nl.productGrade.replace("{grade}",grade.trim().toUpperCase()))));
       assert.equal((html.match(/background-color:/g) || []).length, 5);
     }
   }
   for (const grade of [undefined, null, "", "unknown"]) {
-    assert.equal(renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade })), "");
+    const html=renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade }));
+    assert.ok(html.includes('data-product-grade="unavailable"'));
+    assert.ok(html.includes(renderedText(experienceCopy.nl.gradeUnavailable)));
+    assert.doesNotMatch(html,/background-color:/);
   }
 });
