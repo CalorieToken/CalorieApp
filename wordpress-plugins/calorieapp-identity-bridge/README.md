@@ -41,7 +41,18 @@ The browser endpoint is intentionally not REST. XUMM Login establishes a normal 
 
 Details are in SECURITY.md and CONFIGURATION.md.
 
-## Current review candidate: 0.3.44
+## Current review candidate: 0.3.45
+
+An unsuccessful XPMarket browser request no longer remains cached for the
+whole page lifetime. Existing fallback cards participate in later load,
+page-restore and guarded DOM retries, while successful cards still share one
+request. WordPress keeps the fresh origin snapshot for five minutes and one
+validated last-known-good snapshot for at most one hour. That fallback is
+explicitly labelled in the card and sent with `no-store`; it is never presented
+as current data. Provider destinations, authentication, signing and release
+boundaries remain unchanged.
+
+## Previous review candidate: 0.3.44
 
 The optional shared language control validates its required, unique DOM nodes
 and locale definitions before creating a store. It snapshots supported text

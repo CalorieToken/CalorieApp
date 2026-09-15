@@ -21,9 +21,11 @@ class MarketWidget {
     private const TOKEN = 'Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY';
     public const TOKEN_PAGE = 'https://xpmarket.com/token/' . self::TOKEN;
     private const API_URL = 'https://api.xpmarket.com/api/currency/widget?token=' . self::TOKEN;
-    private const CACHE_KEY = 'calorieapp_xpmarket_widget_v2';
-    private const ERROR_CACHE_KEY = 'calorieapp_xpmarket_widget_error_v1';
+    private const CACHE_KEY = 'calorieapp_xpmarket_widget_v3';
+    private const LAST_GOOD_CACHE_KEY = 'calorieapp_xpmarket_widget_last_good_v1';
+    private const ERROR_CACHE_KEY = 'calorieapp_xpmarket_widget_error_v2';
     private const CACHE_TTL_SECONDS = 5 * MINUTE_IN_SECONDS;
+    private const LAST_GOOD_TTL_SECONDS = HOUR_IN_SECONDS;
 
     public function register_hooks(): void {
         add_action('rest_api_init', [$this, 'register_route']);
@@ -61,13 +63,20 @@ class MarketWidget {
      * @return WP_REST_Response|WP_Error
      */
     public function get_widget() {
-        $cached = get_transient(self::CACHE_KEY);
-        if (is_array($cached)) {
-            return $this->response($cached);
+        $cached = self::sanitize_snapshot(
+            get_transient(self::CACHE_KEY),
+            self::CACHE_TTL_SECONDS
+        );
+        if ($cached !== null) {
+            return $this->response($cached, 'fresh');
         }
 
+        $last_good = self::sanitize_snapshot(
+            get_transient(self::LAST_GOOD_CACHE_KEY),
+            self::LAST_GOOD_TTL_SECONDS
+        );
         if (get_transient(self::ERROR_CACHE_KEY)) {
-            return $this->unavailable();
+            return $this->last_good_or_unavailable($last_good);
         }
 
         $upstream = wp_safe_remote_get(
@@ -83,19 +92,22 @@ class MarketWidget {
 
         if (is_wp_error($upstream) || (int) wp_remote_retrieve_response_code($upstream) !== 200) {
             set_transient(self::ERROR_CACHE_KEY, true, MINUTE_IN_SECONDS);
-            return $this->unavailable();
+            return $this->last_good_or_unavailable($last_good);
         }
 
         $payload = json_decode((string) wp_remote_retrieve_body($upstream), true);
         $data = self::sanitize_payload($payload);
         if ($data === null) {
             set_transient(self::ERROR_CACHE_KEY, true, MINUTE_IN_SECONDS);
-            return $this->unavailable();
+            return $this->last_good_or_unavailable($last_good);
         }
 
-        set_transient(self::CACHE_KEY, $data, self::CACHE_TTL_SECONDS);
+        $snapshot = ['data' => $data, 'fetched_at' => time()];
+        set_transient(self::CACHE_KEY, $snapshot, self::CACHE_TTL_SECONDS);
+        set_transient(self::LAST_GOOD_CACHE_KEY, $snapshot, self::LAST_GOOD_TTL_SECONDS);
+        delete_transient(self::ERROR_CACHE_KEY);
 
-        return $this->response($data);
+        return $this->response($snapshot, 'fresh');
     }
 
     public static function sanitize_payload($payload): ?array {
@@ -160,6 +172,49 @@ class MarketWidget {
         ];
     }
 
+    private static function sanitize_snapshot($snapshot, int $maximum_age): ?array {
+        if (
+            !is_array($snapshot)
+            || !isset($snapshot['data'], $snapshot['fetched_at'])
+            || !is_array($snapshot['data'])
+            || !is_int($snapshot['fetched_at'])
+            || $snapshot['fetched_at'] <= 0
+            || $snapshot['fetched_at'] > time() + MINUTE_IN_SECONDS
+            || time() - $snapshot['fetched_at'] > $maximum_age
+        ) {
+            return null;
+        }
+
+        $cached = $snapshot['data'];
+        if (
+            ($cached['source'] ?? null) !== 'XPMarket'
+            || ($cached['token'] ?? null) !== self::TOKEN
+            || ($cached['token_url'] ?? null) !== self::TOKEN_PAGE
+        ) {
+            return null;
+        }
+
+        $data = self::sanitize_payload([
+            'success' => true,
+            'data' => [
+                'code' => $cached['code'] ?? null,
+                'issuer' => $cached['issuer'] ?? null,
+                'title' => $cached['title'] ?? null,
+                'logo' => $cached['logo'] ?? null,
+                'price' => $cached['price_xrp'] ?? null,
+                'priceUsd' => $cached['price_usd'] ?? null,
+                'marketcap' => $cached['market_cap_usd'] ?? null,
+                'holders' => $cached['holders'] ?? null,
+                'rank' => $cached['rank'] ?? null,
+            ],
+        ]);
+        if ($data === null) {
+            return null;
+        }
+
+        return ['data' => $data, 'fetched_at' => $snapshot['fetched_at']];
+    }
+
     private function unavailable(): WP_Error {
         return new WP_Error(
             'calorieapp_xpmarket_unavailable',
@@ -168,11 +223,32 @@ class MarketWidget {
         );
     }
 
-    private function response(array $data): WP_REST_Response {
-        $response = new WP_REST_Response(['success' => true, 'data' => $data], 200);
+    /**
+     * @return WP_REST_Response|WP_Error
+     */
+    private function last_good_or_unavailable(?array $last_good) {
+        return $last_good === null
+            ? $this->unavailable()
+            : $this->response($last_good, 'last_known');
+    }
+
+    private function response(array $snapshot, string $state): WP_REST_Response {
+        $response = new WP_REST_Response([
+            'success' => true,
+            'data' => $snapshot['data'],
+            'meta' => [
+                'snapshot' => $state,
+                'fetched_at' => $snapshot['fetched_at'],
+            ],
+        ], 200);
         // Reuse the origin transient, but do not add another browser/CDN
         // freshness window to an already cached market snapshot.
-        $response->header('Cache-Control', 'public, max-age=0, must-revalidate');
+        $response->header(
+            'Cache-Control',
+            $state === 'last_known'
+                ? 'no-store'
+                : 'public, max-age=0, must-revalidate'
+        );
         return $response;
     }
 }

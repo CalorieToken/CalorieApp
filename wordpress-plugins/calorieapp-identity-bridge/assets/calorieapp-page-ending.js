@@ -37,7 +37,9 @@
 
   function renderXpMarketWidget(widget, payload) {
     var data = payload && payload.data;
+    var snapshotState = payload && payload.meta && payload.meta.snapshot;
     if (!payload || !payload.success || !data || !widget ||
+        (snapshotState && snapshotState !== "fresh" && snapshotState !== "last_known") ||
         data.code !== "Calorie" ||
         data.issuer !== "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY" ||
         !["price_usd", "price_xrp", "market_cap_usd", "rank", "holders"].every(function (key) {
@@ -75,8 +77,22 @@
       ".calorieapp-xpmarket-holders",
       formatCompactNumber(data.holders)
     );
-    setText(".calorieapp-xpmarket-state", "XPMarket data");
-    widget.setAttribute("data-state", "ready");
+    var lastKnown = snapshotState === "last_known";
+    setText(
+      ".calorieapp-xpmarket-state",
+      lastKnown ? "Last known XPMarket data" : "XPMarket data"
+    );
+    widget.setAttribute("data-state", lastKnown ? "stale" : "ready");
+  }
+
+  function showXpMarketFallback(widget) {
+    var status = widget.querySelector(".calorieapp-xpmarket-state");
+    if (widget.getAttribute("data-state") === "stale") {
+      if (status) status.textContent = "Last known XPMarket data";
+      return;
+    }
+    if (status) status.textContent = "Open XPMarket";
+    widget.setAttribute("data-state", "fallback");
   }
 
   function plainFooterText(value) {
@@ -268,8 +284,6 @@
       }
       normalizeMarketHost(widget);
       return widget;
-    }).filter(function (widget) {
-      return widget.getAttribute("data-calorieapp-xpmarket-widget") !== "1";
     });
     if (!widgets.length) {
       return;
@@ -307,20 +321,33 @@
       var link = widget.querySelector(".calorieapp-xpmarket-link");
       if (link) {
         link.setAttribute("href", tokenUrl);
-        link.setAttribute("aria-label", "View live Calorie Token data on XPMarket");
+        link.setAttribute("aria-label", "View Calorie Token on XPMarket");
       }
     });
 
-    if (!endpoint || typeof window.fetch !== "function") {
-      widgets.forEach(function (widget) {
-        var status = widget.querySelector(".calorieapp-xpmarket-state");
-        if (status) {
-          status.textContent = "Open XPMarket";
-        }
-        widget.setAttribute("data-state", "fallback");
-      });
+    var pendingWidgets = widgets.filter(function (widget) {
+      return widget.getAttribute("data-state") !== "ready";
+    });
+    if (!pendingWidgets.length) {
       return;
     }
+
+    if (!endpoint || typeof window.fetch !== "function") {
+      pendingWidgets.forEach(showXpMarketFallback);
+      return;
+    }
+
+    pendingWidgets.forEach(function (widget) {
+      var status = widget.querySelector(".calorieapp-xpmarket-state");
+      if (status) {
+        status.textContent = widget.getAttribute("data-state") === "stale"
+          ? "Refreshing XPMarket…"
+          : "Loading…";
+      }
+      if (widget.getAttribute("data-state") !== "stale") {
+        widget.setAttribute("data-state", "loading");
+      }
+    });
 
     if (!xpMarketWidgetRequest) {
       var controller = typeof window.AbortController === "function" ? new window.AbortController() : null;
@@ -341,20 +368,21 @@
         });
     }
 
-    xpMarketWidgetRequest
+    var request = xpMarketWidgetRequest;
+    request
       .then(function (payload) {
-        widgets.forEach(function (widget) {
+        pendingWidgets.forEach(function (widget) {
           renderXpMarketWidget(widget, payload);
         });
+        if (payload && payload.meta && payload.meta.snapshot === "last_known" && xpMarketWidgetRequest === request) {
+          xpMarketWidgetRequest = null;
+        }
       })
       .catch(function () {
-        widgets.forEach(function (widget) {
-          var status = widget.querySelector(".calorieapp-xpmarket-state");
-          if (status) {
-            status.textContent = "Open XPMarket";
-          }
-          widget.setAttribute("data-state", "fallback");
-        });
+        if (xpMarketWidgetRequest === request) {
+          xpMarketWidgetRequest = null;
+        }
+        pendingWidgets.forEach(showXpMarketFallback);
       });
   }
 

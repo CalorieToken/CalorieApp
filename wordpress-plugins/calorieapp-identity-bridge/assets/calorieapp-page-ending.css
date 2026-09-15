@@ -236,6 +236,12 @@
   white-space: nowrap;
 }
 
+.calorieapp-xpmarket-widget[data-state="stale"]
+  .calorieapp-xpmarket-state {
+  background: #fff4d6;
+  color: #765000;
+}
+
 .calorieapp-xpmarket-prices {
   display: flex;
   align-items: baseline;

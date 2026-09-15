@@ -35,8 +35,9 @@ const good = () => ({ success: true, data: {
   title: 'Calorie Token', logo: 'https://xpcdn.xpmarket.com/storage/logo/calorie.webp',
   price_usd: 0.00000007, price_xrp: 0.00000005, market_cap_usd: 4000, rank: 300, holders: 14000,
 } });
+const lastKnown = () => ({ ...good(), meta: { snapshot: 'last_known', fetched_at: 1789488000 } });
 async function settle() { for (let i = 0; i < 10; i++) await Promise.resolve(); }
-function run({ response = { ok: true, json: async () => good() }, fetchError, stalled = false, reduced = false, rtl = false, empty = false, endpoint = true, legacy = false, mixedHost = false, mixedColumn = false } = {}) {
+function run({ response = { ok: true, json: async () => good() }, responses, fetchError, stalled = false, reduced = false, rtl = false, empty = false, endpoint = true, legacy = false, mixedHost = false, mixedColumn = false } = {}) {
   const widget = element();
   const widgets = [widget];
   const oldWidget = widget;
@@ -102,7 +103,11 @@ function run({ response = { ok: true, json: async () => good() }, fetchError, st
       requests.push({ url, options });
       if (fetchError) throw fetchError;
       if (stalled) return new Promise((resolve, reject) => options.signal.addEventListener('abort', () => reject(new Error('aborted'))));
-      return response;
+      const selected = responses
+        ? responses[Math.min(requests.length - 1, responses.length - 1)]
+        : response;
+      if (selected instanceof Error) throw selected;
+      return selected;
     },
     AbortController,
     setTimeout(fn) { timers.set(1, fn); return 1; },
@@ -151,6 +156,34 @@ test('failed and incomplete feeds keep the fallback link without inventing price
     assert.equal(h.widget.querySelector('.calorieapp-xpmarket-link').getAttribute('href'), tokenUrl);
     assert.equal(h.widget.querySelector('.calorieapp-xpmarket-price').textContent, '');
   }
+});
+test('a failed request is released so the same initialized card can recover', async () => {
+  const h = run({ responses: [
+    { ok: false },
+    { ok: true, json: async () => good() },
+  ] });
+  await settle();
+  assert.equal(h.widget.getAttribute('data-calorieapp-xpmarket-widget'), '1');
+  assert.equal(h.widget.getAttribute('data-state'), 'fallback');
+  assert.equal(h.requests.length, 1);
+  h.event('pageshow'); await settle();
+  assert.equal(h.requests.length, 2);
+  assert.equal(h.widget.getAttribute('data-state'), 'ready');
+  assert.equal(h.widget.querySelector('.calorieapp-xpmarket-price').textContent, '$0.00000007');
+});
+test('last-known figures are labelled and remain retryable', async () => {
+  const h = run({ responses: [
+    { ok: true, json: async () => lastKnown() },
+    { ok: true, json: async () => good() },
+  ] });
+  await settle();
+  assert.equal(h.widget.getAttribute('data-state'), 'stale');
+  assert.equal(h.widget.querySelector('.calorieapp-xpmarket-state').textContent, 'Last known XPMarket data');
+  assert.equal(h.widget.querySelector('.calorieapp-xpmarket-price').textContent, '$0.00000007');
+  h.event('pageshow'); await settle();
+  assert.equal(h.requests.length, 2);
+  assert.equal(h.widget.getAttribute('data-state'), 'ready');
+  assert.equal(h.widget.querySelector('.calorieapp-xpmarket-state').textContent, 'XPMarket data');
 });
 test('unexpected token data is rejected before filling the card', async () => {
   const data = good(); data.data.issuer = 'different-token';

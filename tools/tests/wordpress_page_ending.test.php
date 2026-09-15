@@ -2,6 +2,7 @@
 /** Execute the production page renderer and market route with offline WordPress fixtures. */
 define('ABSPATH', __DIR__);
 define('MINUTE_IN_SECONDS', 60);
+define('HOUR_IN_SECONDS', 3600);
 define('CALORIEAPP_IDENTITY_BRIDGE_FILE', __FILE__);
 define('CALORIEAPP_IDENTITY_BRIDGE_VERSION', 'test');
 $page = 'calorieapp';
@@ -62,6 +63,7 @@ function __($value, $domain): string { return $value; }
 function sanitize_text_field($value): string { return strip_tags($value); }
 function get_transient($key) { return $GLOBALS['cache'][$key]['value'] ?? false; }
 function set_transient($key, $value, $ttl): void { $GLOBALS['cache'][$key] = compact('value', 'ttl'); }
+function delete_transient($key): void { unset($GLOBALS['cache'][$key]); }
 function wp_safe_remote_get($url, $options) { $GLOBALS['requests'][] = compact('url', 'options'); return $GLOBALS['upstream']; }
 function wp_remote_retrieve_response_code($response): int { return $response['status']; }
 function wp_remote_retrieve_body($response): string { return $response['body']; }
@@ -267,15 +269,17 @@ foreach (['holders', 'rank'] as $key) {
         check($normalized !== null && $normalized[$key] === (int) $value, 'Preserve zero and bounded integer counts: ' . $key);
     }
 }
-$cache['calorieapp_xpmarket_widget_v1'] = ['value' => ['holders' => -1], 'ttl' => 300];
+$cache['calorieapp_xpmarket_widget_v2'] = ['value' => ['holders' => -1], 'ttl' => 300];
 $upstream = ['status' => 200, 'body' => json_encode($payload)];
 $response = $market->get_widget();
 check($response instanceof WP_REST_Response && $response->status === 200, 'Successful public data is returned.');
+check($response->data['meta']['snapshot'] === 'fresh' && is_int($response->data['meta']['fetched_at']), 'Fresh data is explicitly identified with its fetch time.');
 check(count($requests) === 1 && $requests[0]['options']['redirection'] === 0, 'Only the fixed XPMarket endpoint is fetched.');
 check($requests[0]['url'] === 'https://api.xpmarket.com/api/currency/widget?token=Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY', 'The shared token identifier preserves the exact CAL data endpoint.');
 check($requests[0]['options']['limit_response_size'] === 16384, 'Bound the upstream response size.');
 check($response->headers['Cache-Control'] === 'public, max-age=0, must-revalidate', 'Browser and shared caches must revalidate instead of adding another freshness window.');
-check($cache['calorieapp_xpmarket_widget_v2']['ttl'] === 300, 'Origin caching still limits upstream requests to once per five minutes and skips the older validation cache.');
+check($cache['calorieapp_xpmarket_widget_v3']['ttl'] === 300, 'Origin caching still limits upstream requests to once per five minutes and skips the older validation cache.');
+check($cache['calorieapp_xpmarket_widget_last_good_v1']['ttl'] === 3600, 'Keep one bounded last-known-good snapshot for temporary provider failures.');
 $cached_response = $market->get_widget();
 check($cached_response->headers === $response->headers, 'Transient hits retain the same revalidation policy.');
 check(count($requests) === 1, 'Cached requests must not refetch XPMarket.');
@@ -283,6 +287,28 @@ foreach ([new WP_Error('offline', 'offline', []), ['status' => 503, 'body' => ''
     $cache = $requests = [];
     check($market->get_widget() instanceof WP_Error, 'Failed upstream data must not become fake figures.');
     check($market->get_widget() instanceof WP_Error && count($requests) === 1, 'Back off for a minute after an upstream failure.');
+}
+$cache = ['calorieapp_xpmarket_widget_last_good_v1' => [
+    'value' => ['data' => $safe, 'fetched_at' => time()],
+    'ttl' => 3600,
+]];
+$requests = [];
+$upstream = new WP_Error('offline', 'offline', []);
+$last_known_response = $market->get_widget();
+check($last_known_response instanceof WP_REST_Response, 'A recent validated snapshot bridges a temporary provider failure.');
+check($last_known_response->data['meta']['snapshot'] === 'last_known', 'Fallback figures are explicitly labelled as last known.');
+check($last_known_response->headers['Cache-Control'] === 'no-store', 'A last-known response cannot gain another browser or CDN cache window.');
+$backoff_response = $market->get_widget();
+check($backoff_response instanceof WP_REST_Response && $backoff_response->data === $last_known_response->data, 'The error backoff can reuse only the same validated snapshot.');
+check(count($requests) === 1, 'Last-known fallback still honors the one-minute provider backoff.');
+foreach ([
+    ['data' => ['holders' => 14000], 'fetched_at' => time()],
+    ['data' => $safe, 'fetched_at' => time() - HOUR_IN_SECONDS - 1],
+] as $invalid_snapshot) {
+    $cache = ['calorieapp_xpmarket_widget_last_good_v1' => ['value' => $invalid_snapshot, 'ttl' => 3600]];
+    $requests = [];
+    $upstream = new WP_Error('offline', 'offline', []);
+    check($market->get_widget() instanceof WP_Error, 'Malformed or expired snapshots cannot become fallback figures.');
 }
 // Additive Tokenomics helper receives only public copy and no native signing readiness.
 $page = 1209; $admin = $feed = $embed = $ajax = $preview = false;
