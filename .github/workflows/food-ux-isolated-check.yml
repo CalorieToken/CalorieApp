@@ -1,0 +1,51 @@
+name: Food UX isolated check
+
+on:
+  push:
+    branches: [repair/food-ux-integration-20260915]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: food-ux-isolated-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve exact public source for local integration
+        run: |
+          mkdir -p ux-check-evidence
+          git rev-parse HEAD > ux-check-evidence/commit.txt
+          git archive --format=tar.gz -o ux-check-evidence/source.tar.gz HEAD
+          sha256sum frontend/package-lock.json > ux-check-evidence/lockfile.sha256
+      - name: Install locked frontend dependencies
+        run: npm ci --prefix frontend --no-audit --no-fund
+      - name: Preserve dependencies for the isolated offline workbench
+        run: tar -czf ux-check-evidence/frontend-dependencies.tar.gz -C frontend node_modules
+      - name: Typecheck and build the complete frontend
+        working-directory: frontend
+        run: |
+          set -o pipefail
+          npx --no-install tsc --noEmit 2>&1 | tee ../ux-check-evidence/typecheck.log
+          npm run build 2>&1 | tee ../ux-check-evidence/build.log
+      - name: Save verification evidence only (no deployment)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: food-ux-isolated-workbench
+          path: ux-check-evidence/
+          retention-days: 3
+          if-no-files-found: error
