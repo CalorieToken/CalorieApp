@@ -1,0 +1,98 @@
+name: Focused live English and language follow-up
+on:
+  push:
+    branches: [qa/live-review-20260915]
+    paths: [.github/workflows/live-english-followup-20260915.yml]
+permissions:
+  contents: read
+jobs:
+  follow-up:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install 'playwright==1.57.0'
+          python -m playwright install --with-deps chromium
+      - name: Check ready controls, then record real English review without saving
+        run: |
+          python - <<'PY'
+          import json,time
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright,expect
+          out=Path('live-followup-evidence');out.mkdir()
+          copy=json.loads(Path('frontend/config/food-experience-copy.json').read_text())
+          report={'mode':'Real public app, fresh guest session, no mocks, no sign-in, no save','checks':[],'errors':[],'blocked_writes':0,'earlier_run':'34964525387','initial_pre_hydration_input_loss':'not yet established as an application defect'}
+          def check(name,value=True):
+              assert value,name
+              report['checks'].append(name)
+          def guard(route):
+              if route.request.method not in ['GET','HEAD','OPTIONS']:
+                  report['blocked_writes']+=1;route.abort()
+              else:route.continue_()
+          with sync_playwright() as p:
+              browser=p.chromium.launch()
+              context=browser.new_context(viewport={'width':412,'height':915},record_video_dir=str(out/'recordings'),record_video_size={'width':412,'height':915},service_workers='block')
+              context.route('**/*',guard);page=context.new_page();page.set_default_timeout(15000)
+              page.on('pageerror',lambda e:report['errors'].append(str(e)))
+              try:
+                  response=page.goto('https://app.calorietoken.net/?ui_lang=en',wait_until='networkidle',timeout=30000)
+                  check('Public app returns HTTP 200',response.status==200)
+                  # Observe a real language change as evidence that React's control handlers are ready.
+                  select=page.locator('#calorieapp-display-language')
+                  select.select_option('nl');expect(page.locator('html')).to_have_attribute('lang','nl')
+                  select.select_option('en');expect(page.locator('html')).to_have_attribute('lang','en')
+                  usda=page.get_by_test_id('usda-food-search');usda.locator(':scope > summary').click()
+                  query=usda.locator('input[type="search"]');query.fill('168878');expect(query).to_have_value('168878')
+                  expect(usda.locator('form button[type="submit"]')).to_be_enabled();usda.locator('form button[type="submit"]').click()
+                  usda.get_by_role('button').filter(has_text='FDC 168878').click()
+                  chosen=page.get_by_test_id('usda-selected-food');chosen.locator('input[inputmode="decimal"]').fill('75')
+                  expect(chosen.get_by_test_id('usda-nutrition-preview')).to_contain_text('97.5')
+                  page.wait_for_timeout(1200)
+                  chosen.get_by_role('button',name=copy['en']['reviewAmount'],exact=True).click()
+                  expect(chosen.get_by_role('heading',name=copy['en']['confirmTitle'],exact=True)).to_be_visible()
+                  check('English search and inline 75g confirmation work after ready controls')
+                  page.wait_for_timeout(1500);usda.screenshot(path=str(out/'en-usda-confirmation-412.png'))
+                  (out/'en-confirmation.txt').write_text(usda.inner_text())
+                  report['scripts']=page.locator('script[src]').evaluate_all('(xs)=>xs.map(x=>x.src)')
+                  for locale in copy:
+                      select.select_option(locale);expect(page.locator('html')).to_have_attribute('lang',locale)
+                      expect(chosen.locator('input[inputmode="decimal"]')).to_have_value('75')
+                      expect(chosen.get_by_role('heading',name=copy[locale]['confirmTitle'],exact=True)).to_be_visible()
+                      check(locale+' switch preserves 75 grams and translated confirmation')
+                  select.select_option('en');page.wait_for_timeout(500)
+                  for width in [360,412,1440]:
+                      page.set_viewport_size({'width':width,'height':1000});page.wait_for_timeout(300)
+                      check('English '+str(width)+'px no horizontal overflow',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+                      page.screenshot(path=str(out/('en-full-'+str(width)+'.png')),full_page=True)
+                  chosen.locator('input[inputmode="decimal"]').fill('0')
+                  expect(chosen.locator('form')).to_have_count(0)
+                  expect(chosen.get_by_role('button',name=copy['en']['reviewAmount'],exact=True)).to_be_disabled()
+                  check('English invalid amount clears stale review')
+                  check('No mutating HTTP requests attempted',report['blocked_writes']==0)
+                  check('No JavaScript runtime errors',not report['errors'])
+                  report['status']='passed'
+              except Exception as e:
+                  report['status']='failed';report['failure']=str(e)
+                  try:page.screenshot(path=str(out/'failure.png'),full_page=True)
+                  except Exception:pass
+              finally:
+                  video=page.video;context.close()
+                  if video:video.save_as(str(out/'live-english-followup.webm'))
+                  browser.close();report['completed_utc']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
+                  (out/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False))
+          if report['status']!='passed':raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-english-followup-20260915
+          path: live-followup-evidence/
+          retention-days: 3
+          if-no-files-found: error
