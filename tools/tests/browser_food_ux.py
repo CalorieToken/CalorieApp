@@ -86,6 +86,9 @@ with sync_playwright() as p:
         payload=report['writes'][0]
         ok('Saved grams are not double-scaled',payload['calories']==97.5 and payload['protein']==2.02 and payload['fat']==0.21 and payload['carbohydrates']==21.15 and payload['portion_percentage']==100)
         ok('No invented Nutri-Score for USDA',payload['nutri_score'] is None)
+        saved_food=page.get_by_role('button',name=C['nl']['viewDetails'].replace('{product}',payload['product_name']),exact=True)
+        expect(saved_food).to_contain_text('Gegeten portie: 75 g')
+        ok('The saved USDA diary card shows actual grams rather than an unexplained 100 percent')
         coverage=page.get_by_role('heading',name=X['nl']['gradeTitle'],exact=True).locator('..')
         expect(coverage).to_contain_text('1 van 2')
         ok('Diary shows one known score out of two entries after USDA save')

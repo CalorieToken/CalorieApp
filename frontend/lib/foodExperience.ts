@@ -40,3 +40,17 @@ export function displayUsdaGramAmount(value: string | null | undefined, locale: 
   if (!Number.isFinite(grams) || grams < 0.1 || grams > 5000) return value;
   return `${new Intl.NumberFormat(resolveLocale(locale), { maximumFractionDigits: 3 }).format(grams)} g`;
 }
+
+/** Show the actual logged USDA grams, including older percentage-based records. */
+export function loggedUsdaGramAmount(item: {
+  brand?: string | null; serving_size?: string | null; portion_percentage?: number | null;
+}, locale: string): string | null {
+  if (!/^USDA FoodData Central \u00b7 FDC \d+$/.test(item.brand ?? "")) return null;
+  const match = /^(\d+(?:\.\d+)?) g edible \u00b7 .+$/u.exec(item.serving_size ?? "");
+  const percentage = item.portion_percentage ?? 100;
+  if (!match || !Number.isFinite(percentage) || percentage < 1 || percentage > 100) return null;
+  const referenceGrams = Number(match[1]);
+  if (!Number.isFinite(referenceGrams) || referenceGrams < 0.1 || referenceGrams > 5000) return null;
+  const grams = referenceGrams * percentage / 100;
+  return `${new Intl.NumberFormat(resolveLocale(locale), { maximumFractionDigits: 3 }).format(grams)} g`;
+}

@@ -73,3 +73,14 @@ test('USDA amount labels localize generated grams without reinterpreting packagi
   for(const value of ['100 ml','2 tbsp','0 g edible \u00b7 source','10000 g edible \u00b7 source','75 g'])assert.equal(experience.displayUsdaGramAmount(value,'nl'),value);
   assert.equal(experience.displayUsdaGramAmount(null,'en'),'');
 });
+
+test('logged USDA amounts show actual grams and preserve historical percentage scaling',()=>{
+  const item={brand:'USDA FoodData Central \u00b7 FDC 168878',serving_size:'75 g edible \u00b7 2018-04',portion_percentage:100};
+  assert.equal(experience.loggedUsdaGramAmount(item,'nl'),'75 g');
+  assert.equal(experience.loggedUsdaGramAmount({...item,portion_percentage:50},'nl'),'37,5 g');
+  assert.equal(experience.loggedUsdaGramAmount({...item,portion_percentage:25},'en'),'18.75 g');
+  assert.equal(experience.loggedUsdaGramAmount({...item,portion_percentage:undefined},'en'),'75 g');
+  for(const pct of [0,-1,101,Infinity,NaN])assert.equal(experience.loggedUsdaGramAmount({...item,portion_percentage:pct},'nl'),null);
+  for(const patch of [{brand:'Another brand'},{serving_size:'75 g'},{serving_size:'0 g edible \u00b7 source'},{serving_size:'5001 g edible \u00b7 source'}])assert.equal(experience.loggedUsdaGramAmount({...item,...patch},'nl'),null);
+  for(const locale of Object.keys(copy))assert.equal(experience.loggedUsdaGramAmount({...item,portion_percentage:50},locale),new Intl.NumberFormat(locale,{maximumFractionDigits:3}).format(37.5)+' g');
+});
