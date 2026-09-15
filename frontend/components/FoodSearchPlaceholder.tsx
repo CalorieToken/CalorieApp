@@ -706,7 +706,7 @@ export function FoodSearchPlaceholder() {
     <form
       ref={portionFormRef}
       tabIndex={-1}
-      className="mt-4 rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5 focus-visible:ring-2 focus-visible:ring-brand-secondary"
+      className={`mt-4 focus-visible:ring-2 focus-visible:ring-brand-secondary ${pendingLogIndex === -1 ? "border-t border-brand-secondary/20 pt-4" : "rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5"}`}
       onSubmit={(event) => { event.preventDefault(); void confirmPortionLogging(); }}
       aria-busy={isLogging !== null}
     >
@@ -808,10 +808,10 @@ export function FoodSearchPlaceholder() {
           <p className="mt-1 break-words text-sm font-bold text-brand-primary"><bdi>{pendingLogItem.product_name}</bdi></p>
           {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80"><bdi>{pendingLogItem.brand}</bdi></p> : null}
           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi>{displayNumber(portionPreview.calories)} kcal</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi>{displayNumber(portionPreview.protein)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi>{displayNumber(portionPreview.fat)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi>{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.calories)} kcal</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.protein)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.fat)} g</bdi></p>
+            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
           </div>
         </div>
       ) : null}
@@ -838,10 +838,26 @@ export function FoodSearchPlaceholder() {
     </form>
   ) : null;
 
+  function goToSection(id: string) {
+    const section = document.getElementById(id);
+    if (!section) return;
+    if (section instanceof HTMLDetailsElement) section.open = true;
+    section.focus({ preventScroll: true });
+    section.scrollIntoView({ block: "start", behavior: "auto" });
+  }
+
   return (
     <section className="space-y-6" lang={locale} dir={direction}>
+      <nav aria-label={experience.copy.navigation} className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3">
+        {[["calorie-packaged-foods", copy.searchTitle], ["calorie-basic-foods", experience.copy.sourceTitle], ["calorie-diary", diaryUi.title]].map(([id, label]) => (
+          <button key={id} type="button" onClick={() => goToSection(id)} aria-controls={id}
+            className="min-h-12 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-secondary/10 focus-visible:ring-2 focus-visible:ring-brand-secondary">
+            {label}
+          </button>
+        ))}
+      </nav>
       {/* Search Section */}
-      <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
+      <div id="calorie-packaged-foods" tabIndex={-1} className="scroll-mt-4 rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
         <h2 className="text-lg font-bold text-brand-primary">{copy.searchTitle}</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
           {copy.searchIntro}
@@ -945,6 +961,7 @@ export function FoodSearchPlaceholder() {
             ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
             : translateFoodStatus(logFeedback.message, copy)}</p> : null} />
 
+      <div id="calorie-diary" tabIndex={-1} className="scroll-mt-4 space-y-6">
       {/* Logged Foods Section */}
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
         <div
@@ -982,9 +999,6 @@ export function FoodSearchPlaceholder() {
       {!logError && !isLogsLoading ? (
         <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
           <h3 className="text-lg font-bold text-brand-primary">{diaryUi.summary}</h3>
-          <p className="mt-1 text-sm text-brand-secondary/80">
-            {diaryUi.scope}
-          </p>
           <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
               <dt className="text-brand-secondary/70">{copy.totalCalories}</dt>
@@ -1115,6 +1129,7 @@ export function FoodSearchPlaceholder() {
           formatNumber={displayNumber}
         />
       ) : null}
+      </div>
     </section>
   );
 }

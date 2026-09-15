@@ -21,7 +21,8 @@
     "useBasic": "Looking for an ingredient? Open basic foods (USDA).",
     "selectedAmount": "Amount to add: {amount}",
     "coverageUnavailable": "Grade counts are unavailable.",
-    "addedFood": "Added {product} to your food log."
+    "addedFood": "Added {product} to your food log.",
+    "navigation": "Go to"
   },
   "nl": {
     "productGrade": "Nutri-Score van dit product: {grade}",
@@ -45,7 +46,8 @@
     "useBasic": "Zoek je een ingrediënt? Open basisvoeding (USDA).",
     "selectedAmount": "Toe te voegen hoeveelheid: {amount}",
     "coverageUnavailable": "De aantallen per score zijn niet beschikbaar.",
-    "addedFood": "{product} is aan je eetdagboek toegevoegd."
+    "addedFood": "{product} is aan je eetdagboek toegevoegd.",
+    "navigation": "Ga naar"
   },
   "zh-Hans": {
     "productGrade": "该产品的 Nutri-Score：{grade}",
@@ -69,7 +71,8 @@
     "useBasic": "在找食材？打开基础食物（USDA）。",
     "selectedAmount": "将添加的食用量：{amount}",
     "coverageUnavailable": "等级计数不可用。",
-    "addedFood": "已将 {product} 添加到饮食记录。"
+    "addedFood": "已将 {product} 添加到饮食记录。",
+    "navigation": "前往"
   },
   "hi": {
     "productGrade": "इस उत्पाद का Nutri-Score: {grade}",
@@ -93,7 +96,8 @@
     "useBasic": "कोई सामग्री खोज रहे हैं? सामान्य खाद्य पदार्थ (USDA) खोलें।",
     "selectedAmount": "जोड़ने की मात्रा: {amount}",
     "coverageUnavailable": "ग्रेड की गिनती उपलब्ध नहीं है।",
-    "addedFood": "{product} को आपकी भोजन डायरी में जोड़ दिया गया।"
+    "addedFood": "{product} को आपकी भोजन डायरी में जोड़ दिया गया।",
+    "navigation": "पर जाएँ"
   },
   "es": {
     "productGrade": "Nutri-Score del producto: {grade}",
@@ -117,7 +121,8 @@
     "useBasic": "¿Buscas un ingrediente? Abre alimentos básicos (USDA).",
     "selectedAmount": "Cantidad que se añadirá: {amount}",
     "coverageUnavailable": "Los recuentos por clasificación no están disponibles.",
-    "addedFood": "Se ha añadido {product} a tu diario."
+    "addedFood": "Se ha añadido {product} a tu diario.",
+    "navigation": "Ir a"
   },
   "ar": {
     "productGrade": "Nutri-Score لهذا المنتج: {grade}",
@@ -141,7 +146,8 @@
     "useBasic": "تبحث عن مكوّن؟ افتح الأطعمة الأساسية (USDA).",
     "selectedAmount": "الكمية التي ستُضاف: {amount}",
     "coverageUnavailable": "أعداد الدرجات غير متاحة.",
-    "addedFood": "تمت إضافة {product} إلى سجل طعامك."
+    "addedFood": "تمت إضافة {product} إلى سجل طعامك.",
+    "navigation": "انتقال إلى"
   },
   "fr": {
     "productGrade": "Nutri-Score du produit : {grade}",
@@ -165,7 +171,8 @@
     "useBasic": "Vous cherchez un ingrédient ? Ouvrez les aliments de base (USDA).",
     "selectedAmount": "Quantité à ajouter : {amount}",
     "coverageUnavailable": "Le nombre de produits par classe est indisponible.",
-    "addedFood": "{product} a été ajouté à votre journal."
+    "addedFood": "{product} a été ajouté à votre journal.",
+    "navigation": "Aller à"
   },
   "bn": {
     "productGrade": "এই পণ্যের Nutri-Score: {grade}",
@@ -189,7 +196,8 @@
     "useBasic": "কোনো উপকরণ খুঁজছেন? সাধারণ খাবার (USDA) খুলুন।",
     "selectedAmount": "যে পরিমাণ যোগ হবে: {amount}",
     "coverageUnavailable": "গ্রেডের গণনা পাওয়া যাচ্ছে না।",
-    "addedFood": "আপনার খাবারের ডায়েরিতে {product} যোগ করা হয়েছে।"
+    "addedFood": "আপনার খাবারের ডায়েরিতে {product} যোগ করা হয়েছে।",
+    "navigation": "যান"
   },
   "pt": {
     "productGrade": "Nutri-Score do produto: {grade}",
@@ -213,7 +221,8 @@
     "useBasic": "Procura um ingrediente? Abra os alimentos básicos (USDA).",
     "selectedAmount": "Quantidade a adicionar: {amount}",
     "coverageUnavailable": "As contagens por classificação não estão disponíveis.",
-    "addedFood": "{product} foi adicionado ao seu diário."
+    "addedFood": "{product} foi adicionado ao seu diário.",
+    "navigation": "Ir para"
   },
   "id": {
     "productGrade": "Nutri-Score produk: {grade}",
@@ -237,7 +246,8 @@
     "useBasic": "Mencari bahan makanan? Buka makanan dasar (USDA).",
     "selectedAmount": "Jumlah yang akan ditambahkan: {amount}",
     "coverageUnavailable": "Jumlah per peringkat tidak tersedia.",
-    "addedFood": "{product} telah ditambahkan ke catatan makanan Anda."
+    "addedFood": "{product} telah ditambahkan ke catatan makanan Anda.",
+    "navigation": "Buka"
   },
   "ur": {
     "productGrade": "اس پروڈکٹ کا Nutri-Score: {grade}",
@@ -261,6 +271,7 @@
     "useBasic": "کوئی جزو تلاش کر رہے ہیں؟ بنیادی غذائیں (USDA) کھولیں۔",
     "selectedAmount": "شامل کی جانے والی مقدار: {amount}",
     "coverageUnavailable": "گریڈ کی گنتی دستیاب نہیں ہے۔",
-    "addedFood": "{product} کو آپ کی خوراک کی ڈائری میں شامل کر دیا گیا۔"
+    "addedFood": "{product} کو آپ کی خوراک کی ڈائری میں شامل کر دیا گیا۔",
+    "navigation": "پر جائیں"
   }
 }

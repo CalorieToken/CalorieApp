@@ -91,7 +91,7 @@ export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirma
     queryInput.current?.focus();
   }
 
-  return <details data-testid="usda-food-search" id="calorie-basic-foods" className="min-w-0 rounded-xl border border-brand-secondary/20 bg-white p-4 sm:p-5" lang={ui.locale} dir={ui.direction}>
+  return <details data-testid="usda-food-search" id="calorie-basic-foods" tabIndex={-1} className="min-w-0 rounded-xl border border-brand-secondary/20 bg-white p-4 sm:p-5" lang={ui.locale} dir={ui.direction}>
     <summary className="min-h-11 cursor-pointer py-2 text-lg font-bold text-brand-primary focus-visible:ring-2 focus-visible:ring-brand-secondary">{ui.copy.sourceTitle} <span className="text-sm font-normal">(USDA)</span></summary>
     {!selected ? <>
       <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{ui.copy.sourceIntro}</p>
