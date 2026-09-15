@@ -67,6 +67,17 @@ test('all eleven actual React summaries render real counts, missing coverage, la
   }
 });
 
+test('grade count labels remain grammatical for a single selected entry',()=>{
+  const one={grades:summary.grades.map((entry,index)=>({...entry,count:index===0?1:0})),known:1,total:1,missing:0};
+  for(const [locale,c] of Object.entries(copy)){
+    const html=renderToStaticMarkup(React.createElement(RecordedGradeSummary,{summary:one,locale}));
+    const expected=c.coverage.replace('{known}',new Intl.NumberFormat(locale).format(1)).replace('{total}',new Intl.NumberFormat(locale).format(1));
+    assert.ok(html.includes(escaped(expected)));
+  }
+  assert.doesNotMatch(copy.en.coverage,/entries/);
+  assert.doesNotMatch(copy.nl.coverage,/vermeldingen/);
+});
+
 test('USDA amount labels localize generated grams without reinterpreting packaging text',()=>{
   assert.equal(experience.displayUsdaGramAmount('1000 g edible \u00b7 SR Legacy','nl'),'1.000 g');
   assert.equal(experience.displayUsdaGramAmount('75 g edible \u00b7 SR Legacy','en'),'75 g');
