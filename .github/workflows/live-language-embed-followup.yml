@@ -1,0 +1,139 @@
+name: Live language and embed follow-up
+on:
+  push:
+    branches: [review/live-acceptance-20260915]
+    paths: [.github/workflows/live-language-embed-followup.yml]
+permissions:
+  contents: read
+concurrency:
+  group: calorie-live-language-followup
+  cancel-in-progress: false
+jobs:
+  language-embed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install browser
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Check live language and embedded app
+        run: |
+          mkdir -p evidence
+          cat > /tmp/followup.py <<'PY'
+          import json, traceback
+          from pathlib import Path
+          from datetime import datetime, timezone
+          from urllib.parse import urlsplit
+          from playwright.sync_api import sync_playwright, expect
+          OUT=Path('evidence')
+          APP='https://calorieapp-frontend.onrender.com'
+          WP='https://calorietoken.net/calorieapp/'
+          BUILD='d74baa42fffb10191eff1bcfc9a967f3c5e4c03a'
+          LOCALES=['nl','en','zh-Hans','hi','es','ar','fr','bn','pt','id','ur']
+          R={'started':datetime.now(timezone.utc).isoformat(),'scope':'Read-only logged-out live browser. Real frontend and website. No fixture responses. Non-read network methods blocked. No login, save or transaction.','checks':[],'initial_language':[],'errors':[],'blocked_writes':[]}
+          def check(name,ok,detail=None):
+              item={'name':name,'passed':bool(ok),'detail':detail};R['checks'].append(item);print(json.dumps(item,ensure_ascii=False),flush=True)
+          def guard(route):
+              if route.request.method not in ['GET','HEAD','OPTIONS']:
+                  R['blocked_writes'].append({'method':route.request.method,'path':urlsplit(route.request.url).path});route.abort()
+              else:route.continue_()
+          def context(browser):
+              ctx=browser.new_context(viewport={'width':412,'height':915},locale='en-US',service_workers='block')
+              ctx.route('**/*',guard);return ctx
+          def select_food(frame):
+              usda=frame.get_by_test_id('usda-food-search');expect(usda).to_be_visible(timeout=25000)
+              if usda.get_attribute('open') is None:usda.locator(':scope > summary').click()
+              usda.locator('input[type=search]').fill('168878');usda.locator('form button[type=submit]').click()
+              usda.get_by_role('button').filter(has_text='FDC 168878').click()
+              chosen=frame.get_by_test_id('usda-selected-food');chosen.locator('input[inputmode=decimal]').fill('75');return usda,chosen
+          def snap(page,name):
+              page.screenshot(path=str(OUT/(name+'.png')),full_page=True,timeout=20000)
+              (OUT/(name+'.txt')).write_text(page.locator('body').inner_text(),encoding='utf-8')
+          with sync_playwright() as p:
+              browser=p.chromium.launch()
+              try:
+                  for lang in ['nl','hi','ar','pt','ur']:
+                      ctx=context(browser);page=ctx.new_page();page.set_default_timeout(10000)
+                      try:
+                          page.goto(APP+'/?ui_lang='+lang,wait_until='domcontentloaded',timeout=30000)
+                          first=page.locator('html').get_attribute('lang')
+                          expect(page.locator('html')).to_have_attribute('lang',lang,timeout=10000)
+                          settled=page.locator('html').get_attribute('lang');R['initial_language'].append({'requested':lang,'initial':first,'settled':settled})
+                          check('Initial language settles: '+lang,settled==lang,{'initial':first,'settled':settled})
+                      except Exception as e:check('Initial language settles: '+lang,False,str(e));snap(page,'initial-failed-'+lang)
+                      finally:ctx.close()
+                  ctx=context(browser);page=ctx.new_page();page.set_default_timeout(10000)
+                  try:
+                      page.goto(APP+'/?ui_lang=nl',wait_until='domcontentloaded',timeout=30000)
+                      expect(page.locator('html')).to_have_attribute('lang','nl')
+                      usda,chosen=select_food(page)
+                      picker=page.locator('select[aria-describedby="calorieapp-language-preview-note"]')
+                      check('Standalone picker is present',picker.count()==1)
+                      for lang in LOCALES:
+                          picker.select_option(lang);expect(page.locator('html')).to_have_attribute('lang',lang)
+                          expected_dir='rtl' if lang in ['ar','ur'] else 'ltr'
+                          expect(page.locator('html')).to_have_attribute('dir',expected_dir)
+                          check('Standalone language, direction, amount: '+lang,chosen.locator('input[inputmode=decimal]').input_value()=='75',{'lang':lang,'dir':expected_dir,'grams':chosen.locator('input[inputmode=decimal]').input_value()})
+                      snap(page,'standalone-switch-final')
+                  except Exception as e:check('Standalone switches complete',False,str(e));snap(page,'standalone-failed')
+                  finally:ctx.close()
+                  ctx=context(browser);page=ctx.new_page();page.set_default_timeout(10000)
+                  try:
+                      page.goto(WP+'?ui_lang=nl',wait_until='domcontentloaded',timeout=40000)
+                      page.on('pageerror',lambda e:R['errors'].append(str(e)))
+                      iframe=page.locator('[data-calorieapp-embed] iframe');expect(iframe).to_have_count(1)
+                      iframe.scroll_into_view_if_needed();frame=iframe.element_handle().content_frame()
+                      expect(frame.locator('[data-calorieapp-build-id]').first).to_have_attribute('data-calorieapp-build-id',BUILD,timeout=30000)
+                      check('WordPress embedded app is the approved build',True,BUILD)
+                      expect(frame.locator('html')).to_have_attribute('lang','nl',timeout=12000)
+                      pickers=page.locator('[data-calorieapp-display-language][data-ready="1"] select:visible, .ctstyle-language-picker:visible')
+                      expect(pickers.first).to_be_visible(timeout=15000)
+                      usda,chosen=select_food(frame)
+                      page.wait_for_timeout(500)
+                      check('Embedded app hides its duplicate picker',frame.locator('select[aria-describedby="calorieapp-language-preview-note"]').count()==0)
+                      for lang in LOCALES:
+                          try:
+                              pickers.first.select_option(lang)
+                              expect(frame.locator('html')).to_have_attribute('lang',lang,timeout=10000)
+                              direction='rtl' if lang in ['ar','ur'] else 'ltr'
+                              expect(frame.locator('html')).to_have_attribute('dir',direction)
+                              host=page.evaluate('window.CalorieTokenDiscoveryUI && window.CalorieTokenDiscoveryUI.getLocale()')
+                              grams=chosen.locator('input[inputmode=decimal]').input_value()
+                              check('Website and iframe synchronized: '+lang,host==lang and grams=='75',{'website':host,'iframe':frame.locator('html').get_attribute('lang'),'dir':direction,'grams':grams})
+                              usda.screenshot(path=str(OUT/('embed-usda-'+lang+'.png')),timeout=20000)
+                          except Exception as e:check('Website and iframe synchronized: '+lang,False,str(e))
+                      pickers.first.select_option('nl');expect(frame.locator('html')).to_have_attribute('lang','nl')
+                      for width in [360,412,1440]:
+                          page.set_viewport_size({'width':width,'height':1000});page.wait_for_timeout(600)
+                          host=page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
+                          guest=frame.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight})')
+                          check('Embedded responsive widths '+str(width),host['scroll']<=host['width']+1 and guest['scroll']<=guest['width']+1,{'host':host,'app':guest})
+                          snap(page,'website-app-nl-'+str(width))
+                      page.set_viewport_size({'width':412,'height':1000});page.wait_for_timeout(500)
+                      before=iframe.bounding_box()['height'];usda.locator(':scope > summary').click();page.wait_for_timeout(1200)
+                      after=iframe.bounding_box()['height'];check('Iframe shrinks when USDA closes',after<before,{'expanded':before,'collapsed':after})
+                      usda.locator(':scope > summary').click();page.wait_for_timeout(1200)
+                      reopened=iframe.bounding_box()['height'];check('Iframe grows when USDA reopens',reopened>after,{'collapsed':after,'reopened':reopened})
+                      snap(page,'website-app-nl-final')
+                      R['iframe_url']=iframe.get_attribute('src')
+                      R['iframe_allow']=iframe.get_attribute('allow')
+                  except Exception as e:
+                      check('Website iframe completion',False,str(e));R['errors'].append(traceback.format_exc());snap(page,'website-iframe-failed')
+                  finally:ctx.close()
+              finally:
+                  browser.close();R['finished']=datetime.now(timezone.utc).isoformat()
+                  R['passed']=sum(i['passed'] for i in R['checks']);R['failed']=sum(not i['passed'] for i in R['checks'])
+                  (OUT/'followup-report.json').write_text(json.dumps(R,ensure_ascii=False,indent=2),encoding='utf-8')
+                  print('FOLLOWUP_REPORT '+json.dumps(R,ensure_ascii=False),flush=True)
+          if R['failed']:raise SystemExit(1)
+          PY
+          python /tmp/followup.py
+      - name: Retain evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calorie-language-embed-followup
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
