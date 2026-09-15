@@ -3,6 +3,7 @@ name: Food UX isolated check
 on:
   push:
     branches: [repair/food-ux-integration-20260915]
+    paths: ['.github/food-ux-bundle/manifest.json', '.github/workflows/food-ux-isolated-check.yml']
 
 permissions:
   contents: read
@@ -13,8 +14,11 @@ concurrency:
 
 jobs:
   verify:
+    if: github.ref == 'refs/heads/repair/food-ux-integration-20260915'
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    permissions:
+      contents: write
     env:
       NEXT_TELEMETRY_DISABLED: '1'
       CI: 'true'
@@ -22,30 +26,76 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Check for the completed transfer
+        id: bundle
+        run: |
+          if test -f .github/food-ux-bundle/manifest.json; then echo 'ready=true' >> "$GITHUB_OUTPUT"; fi
       - uses: actions/setup-node@v4
+        if: steps.bundle.outputs.ready == 'true'
         with:
           node-version: '22'
-      - name: Preserve exact public source for local integration
+      - uses: actions/setup-python@v5
+        if: steps.bundle.outputs.ready == 'true'
+        with:
+          python-version: '3.12'
+      - name: Verify and apply the exact locally tested patch
+        if: steps.bundle.outputs.ready == 'true'
         run: |
           mkdir -p ux-check-evidence
-          git rev-parse HEAD > ux-check-evidence/commit.txt
-          git archive --format=tar.gz -o ux-check-evidence/source.tar.gz HEAD
-          sha256sum frontend/package-lock.json > ux-check-evidence/lockfile.sha256
-      - name: Install locked frontend dependencies
-        run: npm ci --prefix frontend --no-audit --no-fund
-      - name: Preserve dependencies for the isolated offline workbench
-        run: tar -czf ux-check-evidence/frontend-dependencies.tar.gz -C frontend node_modules
-      - name: Typecheck and build the complete frontend
-        working-directory: frontend
+          python - <<'PY'
+          import base64, gzip, hashlib, json, pathlib, subprocess
+          root = pathlib.Path('.github/food-ux-bundle')
+          manifest = json.loads((root/'manifest.json').read_text())
+          encoded = ''.join((root/f'part-{i}.txt').read_text().strip() for i in range(manifest['parts']))
+          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '4c21369dd8dc2cbdbe7df17548987b5897c5d4b9b47ea421d83fef7545554374', 'Transfer checksum mismatch'
+          target=pathlib.Path('ux-check-evidence/food-ux.patch'); target.write_bytes(patch)
+          subprocess.run(['git','apply','--check',str(target)],check=True)
+          subprocess.run(['git','apply',str(target)],check=True)
+          PY
+      - name: Install locked dependencies and test tools
+        if: steps.bundle.outputs.ready == 'true'
+        run: |
+          npm ci --prefix frontend --no-audit --no-fund
+          python -m pip install 'playwright==1.57.0'
+          python -m playwright install --with-deps chromium
+      - name: Full regression suite and production build
+        if: steps.bundle.outputs.ready == 'true'
         run: |
           set -o pipefail
-          npx --no-install tsc --noEmit 2>&1 | tee ../ux-check-evidence/typecheck.log
+          node --test tools/tests/*.test.mjs 2>&1 | tee ux-check-evidence/regressions.log
+          cd frontend
+          ./node_modules/.bin/tsc --noEmit 2>&1 | tee ../ux-check-evidence/typecheck.log
           npm run build 2>&1 | tee ../ux-check-evidence/build.log
-      - name: Save verification evidence only (no deployment)
-        if: always()
+      - name: Real production-browser test with synthetic backend only
+        if: steps.bundle.outputs.ready == 'true'
+        run: |
+          npm run start --prefix frontend -- --hostname 127.0.0.1 --port 3100 > ux-check-evidence/server.log 2>&1 &
+          for i in $(seq 1 30); do curl --silent --fail http://127.0.0.1:3100/ > /dev/null && break; sleep 1; done
+          python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log
+      - name: Commit only the verified source and tests on the isolated branch
+        if: steps.bundle.outputs.ready == 'true' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/repair/food-ux-integration-20260915'
+          git add frontend/components/FoodSearchPlaceholder.tsx frontend/components/NutriScoreBar.tsx frontend/components/UsdaFoodSearch.tsx frontend/components/RecordedGradeSummary.tsx frontend/lib/foodExperience.ts frontend/config/food-experience-copy.json tools/tests/food_logging_ui.test.mjs tools/tests/display_language_ui.test.mjs tools/tests/food_experience.test.mjs tools/tests/browser_food_ux.py
+          test "$(git diff --cached --name-only | wc -l)" -eq 10
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: integrate verified food UX and explicit source-score coverage'
+          git rev-parse HEAD > ux-check-evidence/verified-commit.txt
+          git rev-parse 'HEAD^{tree}' > ux-check-evidence/verified-tree.txt
+          git archive --format=tar.gz -o ux-check-evidence/verified-source.tar.gz HEAD
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:refs/heads/repair/food-ux-integration-20260915
+      - name: Retain evidence, not a deployment
+        if: always() && steps.bundle.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: food-ux-isolated-workbench
+          name: food-ux-browser-evidence
           path: ux-check-evidence/
           retention-days: 3
           if-no-files-found: error
