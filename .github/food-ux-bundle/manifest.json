@@ -1,0 +1,1 @@
+{"parts":14,"patch_sha256":"4c21369dd8dc2cbdbe7df17548987b5897c5d4b9b47ea421d83fef7545554374","base":"873d622930a086591b4d7622f6b541cda0f9f697","scope":"10 frontend source/test files; synthetic API browser check; isolated repair branch only; no deployment"}
