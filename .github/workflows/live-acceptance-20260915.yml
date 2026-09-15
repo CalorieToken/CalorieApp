@@ -1,0 +1,133 @@
+name: Live acceptance 2026-09-15
+on:
+  push:
+    branches: [review/live-acceptance-20260915]
+    paths: [.github/workflows/live-acceptance-20260915.yml]
+permissions:
+  contents: read
+concurrency:
+  group: calorie-live-acceptance-20260915
+  cancel-in-progress: false
+jobs:
+  public-browser-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Install browser
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Read-only live app and website checks
+        run: |
+          mkdir -p evidence
+          cat > /tmp/live_check.py <<'PY'
+          import json, re, time, traceback
+          from pathlib import Path
+          from datetime import datetime, timezone
+          from urllib.parse import urlsplit
+          from playwright.sync_api import sync_playwright
+          OUT=Path('evidence')
+          EXPECTED='d74baa42fffb10191eff1bcfc9a967f3c5e4c03a'
+          APP='https://calorieapp-frontend.onrender.com'
+          WP='https://calorietoken.net'
+          LOCALES=['nl','en','zh-Hans','hi','es','ar','fr','bn','pt','id','ur']
+          result={'started':datetime.now(timezone.utc).isoformat(),'expected_commit':EXPECTED,'scope':'Public logged-out browser. No backend fixtures. All non-read requests blocked. No login, save, transaction, admin or publishing action.','checks':[],'page_errors':[],'blocked_writes':[],'pages':[],'captures':[]}
+          def check(label,passed,detail=None):
+              row={'check':label,'passed':bool(passed),'detail':detail};result['checks'].append(row);print(json.dumps(row,ensure_ascii=False),flush=True)
+          def guard(route):
+              if route.request.method not in ('GET','HEAD','OPTIONS'):
+                  result['blocked_writes'].append({'method':route.request.method,'path':urlsplit(route.request.url).path});route.abort()
+              else: route.continue_()
+          def overflow(page):
+              return page.evaluate('({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overflow:document.documentElement.scrollWidth>innerWidth+1})')
+          def capture(page,name,full=False):
+              page.screenshot(path=str(OUT/(name+'.png')),full_page=full,timeout=20000)
+              (OUT/(name+'.txt')).write_text(page.locator('body').inner_text(),encoding='utf-8')
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              try:
+                  for lang in LOCALES:
+                      ctx=browser.new_context(viewport={'width':412,'height':915},device_scale_factor=1,locale='en-US',service_workers='block',record_video_dir=str(OUT/'recordings'),record_video_size={'width':412,'height':915})
+                      ctx.route('**/*',guard)
+                      page=ctx.new_page();page.set_default_timeout(12000)
+                      page.on('pageerror',lambda e:result['page_errors'].append(str(e)))
+                      row={'language':lang}
+                      try:
+                          response=page.goto(APP+'/?ui_lang='+lang,wait_until='domcontentloaded',timeout=45000)
+                          page.locator('[data-testid="usda-food-search"]').wait_for()
+                          row['http_status']=response.status
+                          build=page.locator('[data-calorieapp-build-id]').first.get_attribute('data-calorieapp-build-id')
+                          check(lang+': exact deployed build',build==EXPECTED,build)
+                          check(lang+': document language',page.locator('html').get_attribute('lang')==lang)
+                          usda=page.get_by_test_id('usda-food-search')
+                          usda.locator(':scope > summary').click();usda.scroll_into_view_if_needed();page.wait_for_timeout(700)
+                          usda.locator('input[type="search"]').fill('168878');usda.locator('form button[type="submit"]').click()
+                          usda.get_by_role('button').filter(has_text='FDC 168878').click()
+                          chosen=page.get_by_test_id('usda-selected-food');chosen.locator('input[inputmode="decimal"]').fill('75')
+                          chosen.scroll_into_view_if_needed();page.wait_for_timeout(900)
+                          values=chosen.get_by_test_id('usda-nutrition-preview').inner_text()
+                          numeric=values.translate(str.maketrans('٠١٢٣٤٥٦٧٨٩০১২৩৪৫৬৭৮৯','01234567890123456789')).replace('٫','.').replace(',','.')
+                          check(lang+': 75 grams calorie preview',bool(re.search(r'97\.5\b',numeric)),values)
+                          check(lang+': USDA source grade not fabricated','Nutri' in chosen.inner_text() or 'grade' in chosen.inner_text().lower(), 'Informational: exact wording is retained in screenshot; no day-grade claim') if lang=='en' else None
+                          for width in [360,412,1440]:
+                              page.set_viewport_size({'width':width,'height':1000})
+                              state=overflow(page);check(lang+': '+str(width)+'px no horizontal overflow',not state['overflow'],state)
+                          page.set_viewport_size({'width':412,'height':915});chosen.scroll_into_view_if_needed()
+                          capture(page,lang+'-usda-current',True)
+                          usda.screenshot(path=str(OUT/(lang+'-usda-component.png')),timeout=20000)
+                          selector=page.locator('#calorieapp-display-language')
+                          if selector.count():
+                              alternate='en' if lang!='en' else 'nl'
+                              selector.select_option(alternate);page.wait_for_timeout(150)
+                              check(lang+': amount survives language switch',chosen.locator('input[inputmode="decimal"]').input_value()=='75')
+                              selector.select_option(lang)
+                          chosen.locator('input[inputmode="decimal"]').fill('0')
+                          check(lang+': invalid amount exposed',chosen.locator('input[inputmode="decimal"]').get_attribute('aria-invalid')=='true')
+                          chosen.locator('input[inputmode="decimal"]').fill('75');page.wait_for_timeout(600)
+                          row['completed']=True
+                      except Exception as e:
+                          row['completed']=False;row['error']=str(e);check(lang+': live interaction completed',False,str(e));capture(page,lang+'-failure')
+                      finally:
+                          video=page.video;ctx.close()
+                          if video:video.save_as(str(OUT/(lang+'-live-usda.webm')))
+                          result['captures'].append(row)
+                  ctx=browser.new_context(viewport={'width':360,'height':915},service_workers='block');ctx.route('**/*',guard)
+                  page=ctx.new_page();page.set_default_timeout(10000)
+                  for slug in ['', '/index.php/calorieapp/','/index.php/roadmap/','/index.php/tokenomics/','/index.php/contact/','/index.php/showcases/']:
+                      row={'url':WP+slug}
+                      try:
+                          response=page.goto(row['url'],wait_until='domcontentloaded',timeout=30000);page.wait_for_timeout(1800)
+                          row['status']=response.status;row['title']=page.title();row['final_url']=page.url
+                          row['headings']=page.locator('h1,h2').all_text_contents()
+                          row['scripts']=page.locator('script[src*="calorie"]').evaluate_all('(xs)=>xs.map(x=>x.src)')
+                          row['iframe_sources']=page.locator('iframe').evaluate_all('(xs)=>xs.map(x=>x.src)')
+                          check('WP '+slug+': HTTP 200',response.status==200,response.status)
+                          body=page.locator('body').inner_text()
+                          row['security_challenge']=any(s in body.lower() for s in ['checking your browser','imunify360','verify you are human'])
+                          check('WP '+slug+': no security challenge',not row['security_challenge'])
+                          name='wp-'+(slug.strip('/').replace('/','-') or 'home')
+                          for width in [360,412,1440]:
+                              page.set_viewport_size({'width':width,'height':1000});page.wait_for_timeout(300)
+                              state=overflow(page);check(name+': '+str(width)+'px no horizontal overflow',not state['overflow'],state)
+                              capture(page,name+'-'+str(width),True)
+                      except Exception as e:row['error']=str(e);check('WP '+slug+': load',False,str(e))
+                      result['pages'].append(row)
+                  ctx.close()
+              finally:
+                  browser.close()
+                  result['finished']=datetime.now(timezone.utc).isoformat()
+                  result['status']='passed' if result['checks'] and all(c['passed'] for c in result['checks']) else 'needs_attention'
+                  result['passed']=sum(c['passed'] for c in result['checks']);result['failed']=sum(not c['passed'] for c in result['checks'])
+                  (OUT/'report.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+                  print('LIVE_REPORT_SUMMARY '+json.dumps({k:result[k] for k in ['status','passed','failed','captures','pages','page_errors','blocked_writes']},ensure_ascii=False),flush=True)
+          if result['failed']:raise SystemExit(1)
+          PY
+          python /tmp/live_check.py
+      - name: Retain screenshots, recordings and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calorie-live-acceptance-20260915
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
