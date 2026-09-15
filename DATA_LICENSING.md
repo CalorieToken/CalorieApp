@@ -56,7 +56,7 @@ The current frontend bundles three dated reference-food records from USDA FoodDa
 
 The interface does not silently combine alternative energy methods, treat missing data as measured zero, or import these examples into a private diary. USDA reference provenance remains separate from Open Food Facts licensing and private user records. External names and marks retain their own rights.
 
-## Prepared USDA search catalogue
+## USDA search catalogue — live since 15 September 2026
 
 The food-discovery continuation adds a separate, dated snapshot in
 `frontend/public/data/usda-search-foods.json`: 363 Foundation records from April

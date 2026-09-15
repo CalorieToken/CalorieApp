@@ -1,11 +1,34 @@
 # September 2026 website and CalorieApp update
 
-Updated 10 September 2026. This is a source and release-scope record, not proof of the latest live installation or a production-readiness certificate.
+Updated 15 September 2026. The live continuation below supersedes the older
+10 September food-source and deployment statements. The remaining sections
+retain the earlier release scope and its acceptance limits.
+
+## Live continuation on 15 September
+
+- The food app update at `40ed5f4fe6d7326158787d7c71004f02cd889979` is live on
+  the existing frontend. USDA ingredient/FDC search now covers 8,156 dated
+  Foundation and SR Legacy records. Comparable-food choices and edible-gram
+  calculation are available; saving still requires explicit confirmation.
+- All eleven interface languages were checked live while retaining the same
+  record and amount. The 69 focused tests and production build passed. New
+  physical-camera and authenticated live-save acceptance remain open.
+- CalorieHelp is live in Site Style 1.4.46, with the two new food guides,
+  eleven language sets, its existing avatar and clearer XRPL/CAL history.
+  Four targeted files were updated from the real live 1.4.43 baseline.
+- Full mobile acceptance across all WordPress pages, complete legal-copy
+  alignment and updated campaign recordings remain open. Source snapshots
+  of four changed plugin files are not a complete installable WordPress ZIP.
+
+See [food discovery](food-discovery-2026-09.md) and
+[CalorieHelp](caloriehelp-2026-09.md) for the current behavior and evidence.
+
+## Earlier scope, recorded 10 September
 
 | Area | Implemented or prepared | Remaining acceptance |
 | --- | --- | --- |
 | Food search | Pending-search guard, bounded startup feedback and provider-aware retry pause; query survives language changes | Actual host availability and the owner's current device journey |
-| Food sources | Open Food Facts search; three attributed, dated USDA FoodData Central reference foods | Broader USDA search is not implemented |
+| Food sources | Earlier scope: Open Food Facts and three USDA examples | Superseded by the live 15 September catalogue search described above |
 | Language | Eleven-language UI and synchronized website/app preference; known public-copy catalogue | Complete historical CMS/blog/legal copy is not available in all eleven languages |
 | Website | Shared chrome, donation/Trustline/Contact/FAQ corrections and continuous paper background | New ZIP installation and mobile/desktop visual acceptance |
 | CAL & Crypto | Verified external XPMarket CAL/XRP routes, buying guide, then SWFT interface | External provider availability; no own order-execution engine |

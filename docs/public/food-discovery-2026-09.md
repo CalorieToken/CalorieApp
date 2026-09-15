@@ -1,8 +1,14 @@
-# Food discovery — prepared update, 15 September 2026
+# Food discovery — live update, 15 September 2026
 
-Status: source and local validation prepared; no deployment or live acceptance
-of these new features is claimed. The baseline is the existing main-field
-barcode repair at `1cfdd99bf7b1ffdd82a4964f797e03dfae096afa`.
+The food discovery update is live. App commit
+`40ed5f4fe6d7326158787d7c71004f02cd889979` was deployed to the existing
+frontend on 15 September and checked in both the standalone app and the
+WordPress embedding. The barcode-repair baseline is
+`1cfdd99bf7b1ffdd82a4964f797e03dfae096afa`.
+
+The catalogue contains 8,156 records: 363 Foundation records from April 2026
+and 7,793 SR Legacy records from April 2018. It is a dated selection, not a
+live search of every FoodData Central dataset.
 
 The updated food screen offers two distinct sources. Open Food Facts retains its
 existing search and barcode flow. USDA search uses a dated, first-party catalogue
@@ -37,12 +43,24 @@ retailer settlement, on-chain publication of food diaries or a DAO.
 Validation includes actual component event tests for explicit selection and save,
 language changes, invalid amounts, stale confirmations and duplicate clicks;
 numeric/source tests; and existing barcode, portion and diary regressions.
-TypeScript and production compilation pass. No physical-device, native-speaker,
-new authenticated live-save or complete WordPress-site acceptance is claimed.
+All 69 focused tests and the production build passed. Live FDC search 168878
+returned the expected cooked white rice record: 75 g gives 97.5 kcal, 2.02 g
+protein, 0.21 g fat and 21.15 g carbohydrate. Three comparable records appeared.
+Zero grams disabled selection. The selected record and amount survived all
+eleven interface-language changes; Arabic and Urdu used right-to-left layout.
+The existing barcode 3017620422003 also returned the expected result after
+deployment. No physical-camera, native-speaker, new authenticated live-save
+or complete mobile WordPress-site acceptance is claimed.
 
-The corresponding WordPress terms/privacy snippets are source drafts. Apply them
-with the app release after approval; do not install an older complete Site Style
-package over the live 1.4.43 installation to deliver these snippets.
+CalorieHelp on WordPress now includes USDA and comparable-food guides in the
+eleven interface languages. Its existing avatar is retained. Site Style 1.4.46
+was applied as four targeted file updates from the actual live 1.4.43 baseline;
+this does not establish acceptance of every other page or mobile layout.
+See [CalorieHelp and the new food steps](caloriehelp-2026-09.md).
+
+The corresponding WordPress terms/privacy snippets remain source drafts. The
+complete live legal-copy and eleven-language alignment is still open. Do not
+install an older complete Site Style package to deliver those snippets.
 
 Sources: [USDA downloads](https://fdc.nal.usda.gov/download-datasets/),
 [USDA documentation](https://fdc.nal.usda.gov/data-documentation/),
