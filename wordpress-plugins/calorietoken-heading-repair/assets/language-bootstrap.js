@@ -29,11 +29,19 @@
   document.documentElement.lang=locale;
   document.documentElement.dir=['ar','ur'].indexOf(locale)>=0?'rtl':'ltr';
   document.documentElement.dataset.ctDisplayLocale=locale;
+  function syncEmbeds(){document.querySelectorAll('[data-calorieapp-embed]').forEach(function(root){
+    var frame=root.querySelector('iframe[title="CalorieApp"]');if(!frame)return;
+    try{var url=new URL(frame.getAttribute('src')||frame.src,window.location.href);if(!['https://app.calorietoken.net','https://calorieapp-frontend.onrender.com'].includes(url.origin)||url.pathname!=='/'||url.username||url.password)return;}catch(_){return;}
+    // This header script registered its DOMContentLoaded listener before the
+    // footer identity bridge. Updating only the bridge root keeps the resolved
+    // login/display locale aligned without aborting the iframe's first load.
+    root.dataset.locale=locale;
+  });}
   function reconcile(){
     var ui=window.CalorieTokenContentLanguageUI;
     if(ui&&typeof ui.refresh==='function')ui.refresh(locale);
   }
-  function schedule(){[0,250,1000].forEach(function(delay){window.setTimeout(reconcile,delay);});}
+  function schedule(){syncEmbeds();[0,250,1000].forEach(function(delay){window.setTimeout(reconcile,delay);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   window.addEventListener('load',schedule,{once:true});
   window.addEventListener('pageshow',schedule);

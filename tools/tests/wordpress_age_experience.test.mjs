@@ -10,6 +10,7 @@ const source=readFileSync(new URL('../../wordpress-plugins/calorietoken-heading-
 
 function page(url,{stored=null,crypto=false,showcases=false,faqFinancial=false,trustline=false,donation=false,legacy=false,appInfo=false}={}){
   const {window,document}=parseHTML(`<!doctype html><html lang="en"><body class="ctstyle-enabled page-id-7880">
+    <header class="ctstyle-site-header"><section class="xl-card xl-no-wallet"><button>Header login</button></section></header>
     <main><section class="xl-card calorieapp-identity-card"><div class="xl-card-body"></div></section>
       ${crypto?`<div class="ctstyle-exchange-layout">
         <div id="ctstyle-cal-crypto"><a href="https://xpmarket.com/dex/test">Trade</a></div>
@@ -56,6 +57,7 @@ test('relevant WordPress pages require one neutral three-button choice and send 
   assert.equal(env.values.get('calorieapp.age-band.v1'),'child');
   assert.equal(env.document.body.dataset.ctAgeBand,'child');
   assert.equal(env.document.querySelector('.xl-card').hidden,true);
+  assert.equal(env.document.querySelector('.ctstyle-site-header .xl-card').hidden,true);
   assert.equal(env.document.getElementById('ct-age-page-status'),null);
   assert.deepEqual(JSON.parse(JSON.stringify(env.sent)),[{message:{type:'calorieapp:age-band',version:1,band:'child'},origin:'https://app.calorietoken.net'}]);
   assert.equal(Object.hasOwn(env.sent[0].message,'birthDate'),false);
@@ -87,6 +89,7 @@ test('adult crypto view restores all routes hidden during a previous minor selec
   env.document.querySelector('#ct-age-gate [data-band="adult"]').click();
   assert.equal(env.document.querySelector('.ctstyle-exchange-layout').hidden,false);
   assert.equal(env.document.getElementById('ctstyle-external-exchange').hidden,false);
+  assert.equal(env.document.querySelector('.ctstyle-site-header .xl-card').hidden,false);
   assert.equal(env.document.getElementById('ct-age-finance-notice').hidden,true);
 });
 
@@ -125,7 +128,10 @@ test('minor modes protect Trustline, donation and legacy buying routes while pub
 
     const legacy=page('https://calorietoken.net/how-to-buy-dex/',{stored,legacy:true});
     assert.equal(Array.from(legacy.document.querySelectorAll('.calorie-legacy-page section')).find(node=>node.id!=='ct-age-finance-notice').hidden,true);
-    assert.equal(legacy.document.getElementById('ct-age-finance-notice').hidden,false);
+    const notice=legacy.document.getElementById('ct-age-finance-notice');
+    assert.equal(notice.hidden,false);
+    assert.equal(notice.querySelector('h1').tagName,'H1');
+    assert.equal(notice.hasAttribute('data-ct-age-hidden'),false);
   }
 });
 

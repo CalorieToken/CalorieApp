@@ -49,7 +49,11 @@
   function repairEmbed(frame){
     if(!frame||embedRepairs.has(frame))return;embedRepairs.add(frame);
     var desired=locale(),root=frame.closest('[data-calorieapp-embed]');if(root)root.dataset.locale=desired;
-    try{var url=new URL(frame.getAttribute('src')||frame.src,window.location.href);if(allowedOrigins.includes(url.origin)&&url.pathname==='/'&&url.searchParams.get('locale')!==desired){url.searchParams.set('locale',desired);frame.src=url.href;}}catch(_){}
+    // Do not rewrite an already loading iframe merely to change its display
+    // locale. Aborting Next.js' first document can surface a harmless but noisy
+    // "Connection closed" error. The trusted host protocol sends the resolved
+    // display language, while language-bootstrap synchronises this root before
+    // the identity bridge captures its login locale.
     localizeEmbedLoader(frame,desired);
     var stage=frame.closest('[data-calorieapp-frame-stage]'),loader=stage&&stage.querySelector('[data-calorieapp-embed-loading]'),reveal=loader&&loader.querySelector('[data-calorieapp-loading-reveal]');
     if(!loader||!reveal)return;

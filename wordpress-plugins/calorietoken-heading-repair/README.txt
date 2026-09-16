@@ -1,12 +1,33 @@
-CalorieToken Heading and Language Repair 1.6.1
+CalorieToken Heading and Language Repair 1.6.4
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
 
-This release is locally tested, NOT live-site accepted. It applies only to exact
-known source hashes from the saved Site Style 1.4.46 or prepared 1.4.47 candidate.
-If an admin warning says that files differ, the affected override is not applied.
-Do not disable the compatibility checks. Reconcile the current source instead.
+Version 1.6.4 absorbs the live Additional CSS v4 regression repair into the
+versioned companion. It restores the original account/login controls, aligns the
+mobile header at one breakpoint, preserves 44-pixel controls and makes the top
+and bottom shortcut arrows match their actions. On age-restricted routes it also
+hides the native header login card even when the installed bridge omits the newer
+identity-card class, then restores that same untouched card for adults. The
+existing live override can
+remain as a byte-for-byte behavioural fallback until this package has completed
+backup, CI and live visual acceptance; removing that duplicate is a separate,
+reversible cleanup.
+
+Version 1.6.3 reconciles the reviewed source with the repair currently served on
+the live site. It keeps the first CalorieApp document load intact while syncing
+the resolved language before the identity bridge starts, avoiding a harmless but
+noisy aborted-iframe error. It also keeps the public minor notice outside the
+adult-only legacy buying sections, gives that notice the route's primary heading,
+and supplies a hidden Twenty Nineteen compatibility target on headerless pages.
+The missing-home-heading repair now also works when no conventional main wrapper
+exists. The four changed browser assets are byte-identical to the reviewed live
+1.6.3 assets.
+
+The companion applies only to exact known source hashes from the saved Site Style
+1.4.46 or prepared 1.4.47 candidate. If an admin warning says that files differ,
+the affected override is not applied. Do not disable the compatibility checks.
+Reconcile the current source instead.
 
 Version 1.6.1 is the final pre-campaign UX polish pass. It safely accepts common
 marketing parameters such as UTM and click identifiers, so the existing Help,

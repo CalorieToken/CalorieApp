@@ -59,7 +59,7 @@ body.ctstyle-enabled .ctstyle-faq-hub>.ctstyle-faq-item>div{padding:0 2px 14px}
 @media (max-width:460px){:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-form,:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-topics{grid-template-columns:1fr!important}:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-help-form button{width:100%!important}:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary{padding:4px!important}:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>.ctstyle-help-icon.ctstyle-help-mascot,:is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary>.ctstyle-help-mascot>.ctstyle-help-avatar{width:34px!important;height:34px!important;min-width:34px!important}}
 
 /* The selector appears only on CalorieApp, CAL & Crypto, Showcases, or when CalorieHelp opens. */
-body.ct-age-gate-open{overflow:hidden!important;overscroll-behavior:none!important}.ct-age-gate{position:fixed;z-index:2147483550;inset:0;display:grid;place-items:center;box-sizing:border-box;padding:16px;background:rgba(20,27,57,.72);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ct-age-gate-panel{box-sizing:border-box;width:min(760px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid rgba(80,91,169,.25);border-radius:20px;background:#fff;padding:clamp(18px,4vw,32px);color:#27325f;box-shadow:0 24px 80px rgba(12,18,46,.28)}.ct-age-gate-panel h2{margin:0;color:#173c24;font-size:clamp(22px,4vw,32px);line-height:1.2}.ct-age-gate-panel>p{margin:.65rem 0 0;line-height:1.55}.ct-age-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:1rem 0 0}.ct-age-options button{min-width:0;min-height:132px;border:2px solid rgba(80,91,169,.28);border-radius:14px;background:#f8f9ff;padding:14px;color:#27325f;text-align:start;cursor:pointer}.ct-age-options button[data-band="child"]{border-block-start:4px solid #008d36}.ct-age-options button[data-band="teen"]{border-block-start:4px solid #505ba9}.ct-age-options button[data-band="adult"]{border-block-start:4px solid #f2b544}.ct-age-options button:hover{border-color:#008d36;background:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(22,33,77,.08)}.ct-age-options button:focus-visible,.ct-age-change:focus-visible,.ct-age-cancel:focus-visible{outline:3px solid #f2b544;outline-offset:3px}.ct-age-options strong,.ct-age-options span{display:block;overflow-wrap:anywhere}.ct-age-options strong{color:#173c24;font-size:15px}.ct-age-options span{margin-top:7px;font-size:13px;line-height:1.4}.ct-age-privacy{color:#53607d;font-size:12px}.ct-age-cancel{display:block;min-height:44px;margin:14px 0 0 auto;border:2px solid #505ba9;border-radius:999px;background:#fff;padding:8px 18px;color:#27325f;font:700 13px/1.25 inherit;cursor:pointer}.ct-age-cancel[hidden]{display:none!important}.ct-age-status{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;width:min(1100px,calc(100% - 24px));margin:12px auto;border:1px solid rgba(80,91,169,.24);border-inline-start:4px solid #505ba9;border-radius:12px;background:#f8f9ff;padding:10px 12px;color:#27325f;font:600 13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 3px 12px rgba(22,33,77,.05)}.ct-age-status[data-band="child"]{border-inline-start-color:#008d36;background:#f2faf5}.ct-age-status[data-band="teen"]{border-inline-start-color:#505ba9}.ct-age-status[data-band="adult"]{border-inline-start-color:#f2b544;background:#fffaf0}.ct-age-status-copy{min-width:0;margin:0}.ct-age-change{min-height:44px;flex:0 0 auto;border:2px solid #505ba9;border-radius:999px;background:#fff;padding:8px 14px;color:#27325f;font:700 12px/1.25 inherit;cursor:pointer}.ctstyle-help-widget>.ct-age-status,.ctstyle-faq-hub>.ct-age-status{width:100%;margin:0 0 12px}.ct-age-finance-notice{box-sizing:border-box;width:min(1100px,calc(100% - 24px));margin:18px auto;border:2px solid rgba(80,91,169,.25);border-radius:16px;background:#fff;padding:clamp(18px,4vw,28px);color:#27325f;font:500 15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ct-age-finance-notice h2{margin:0;color:#173c24;font-size:clamp(20px,3vw,28px)}.ct-age-finance-notice p{margin:.7rem 0 0}.ct-age-financial-action{display:none!important}[data-ct-age-hidden]{display:none!important}
+body.ct-age-gate-open{overflow:hidden!important;overscroll-behavior:none!important}.ct-age-gate{position:fixed;z-index:2147483550;inset:0;display:grid;place-items:center;box-sizing:border-box;padding:16px;background:rgba(20,27,57,.72);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ct-age-gate-panel{box-sizing:border-box;width:min(760px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid rgba(80,91,169,.25);border-radius:20px;background:#fff;padding:clamp(18px,4vw,32px);color:#27325f;box-shadow:0 24px 80px rgba(12,18,46,.28)}.ct-age-gate-panel h2{margin:0;color:#173c24;font-size:clamp(22px,4vw,32px);line-height:1.2}.ct-age-gate-panel>p{margin:.65rem 0 0;line-height:1.55}.ct-age-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:1rem 0 0}.ct-age-options button{min-width:0;min-height:132px;border:2px solid rgba(80,91,169,.28);border-radius:14px;background:#f8f9ff;padding:14px;color:#27325f;text-align:start;cursor:pointer}.ct-age-options button[data-band="child"]{border-block-start:4px solid #008d36}.ct-age-options button[data-band="teen"]{border-block-start:4px solid #505ba9}.ct-age-options button[data-band="adult"]{border-block-start:4px solid #f2b544}.ct-age-options button:hover{border-color:#008d36;background:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(22,33,77,.08)}.ct-age-options button:focus-visible,.ct-age-change:focus-visible,.ct-age-cancel:focus-visible{outline:3px solid #f2b544;outline-offset:3px}.ct-age-options strong,.ct-age-options span{display:block;overflow-wrap:anywhere}.ct-age-options strong{color:#173c24;font-size:15px}.ct-age-options span{margin-top:7px;font-size:13px;line-height:1.4}.ct-age-privacy{color:#53607d;font-size:12px}.ct-age-cancel{display:block;min-height:44px;margin:14px 0 0 auto;border:2px solid #505ba9;border-radius:999px;background:#fff;padding:8px 18px;color:#27325f;font:700 13px/1.25 inherit;cursor:pointer}.ct-age-cancel[hidden]{display:none!important}.ct-age-status{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;width:min(1100px,calc(100% - 24px));margin:12px auto;border:1px solid rgba(80,91,169,.24);border-inline-start:4px solid #505ba9;border-radius:12px;background:#f8f9ff;padding:10px 12px;color:#27325f;font:600 13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 3px 12px rgba(22,33,77,.05)}.ct-age-status[data-band="child"]{border-inline-start-color:#008d36;background:#f2faf5}.ct-age-status[data-band="teen"]{border-inline-start-color:#505ba9}.ct-age-status[data-band="adult"]{border-inline-start-color:#f2b544;background:#fffaf0}.ct-age-status-copy{min-width:0;margin:0}.ct-age-change{min-height:44px;flex:0 0 auto;border:2px solid #505ba9;border-radius:999px;background:#fff;padding:8px 14px;color:#27325f;font:700 12px/1.25 inherit;cursor:pointer}.ctstyle-help-widget>.ct-age-status,.ctstyle-faq-hub>.ct-age-status{width:100%;margin:0 0 12px}.ct-age-finance-notice{box-sizing:border-box;width:min(1100px,calc(100% - 24px));margin:18px auto;border:2px solid rgba(80,91,169,.25);border-radius:16px;background:#fff;padding:clamp(18px,4vw,28px);color:#27325f;font:500 15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ct-age-finance-notice :is(h1,h2){margin:0;color:#173c24;font-size:clamp(20px,3vw,28px)}.ct-age-finance-notice p{margin:.7rem 0 0}.ct-age-financial-action{display:none!important}[data-ct-age-hidden]{display:none!important}
 @media (max-width:640px){.ct-age-options{grid-template-columns:1fr}.ct-age-options button{min-height:0}.ct-age-status{align-items:stretch;flex-direction:column}.ct-age-change{width:100%}}
 .ct-age-gate-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.ct-age-gate-heading h2{min-width:0}.ct-age-gate-heading .ct-age-cancel{flex:0 0 auto;margin:0}.ctstyle-help-widget>.ct-age-status,.ctstyle-faq-hub>.ct-age-status{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 8px;font-size:11px;box-shadow:none}.ctstyle-help-widget>.ct-age-status .ct-age-change,.ctstyle-faq-hub>.ct-age-status .ct-age-change{min-height:40px;padding:6px 10px;font-size:11px}
 @media (max-width:640px){.ct-age-gate{align-items:start;overflow:auto}.ct-age-gate-heading{position:sticky;z-index:1;top:0;margin:-4px -4px 0;padding:4px;background:#fff}.ctstyle-help-widget>.ct-age-status,.ctstyle-faq-hub>.ct-age-status{grid-template-columns:minmax(0,1fr) auto}.ctstyle-help-widget>.ct-age-status .ct-age-change,.ctstyle-faq-hub>.ct-age-status .ct-age-change{width:auto}}
@@ -137,7 +137,7 @@ body.ctstyle-enabled .ctstyle-faq-hub>.ctstyle-faq-item>div{padding:0 2px 10px;f
 .ct-age-options{gap:7px;margin:.75rem 0 0}.ct-age-options button{min-height:100px;padding:10px;border-radius:12px}.ct-age-options strong{font-size:14px}.ct-age-options span{margin-top:4px;font-size:12px;line-height:1.3}
 .ct-age-privacy{font-size:11px!important}.ct-age-cancel{min-height:40px;padding:6px 12px}
 .ct-age-status{width:min(880px,calc(100% - 16px));margin:8px auto;padding:6px 8px;font-size:11px;line-height:1.3;box-shadow:none}
-.ct-age-change{min-height:38px;padding:5px 9px;font-size:11px}.ct-age-finance-notice{width:min(880px,calc(100% - 16px));margin:12px auto;padding:14px;border-width:1px;border-radius:14px;font-size:14px!important;line-height:1.45!important}.ct-age-finance-notice h2{font-size:19px!important}.ct-age-finance-notice p{margin:.4rem 0 0}
+.ct-age-change{min-height:38px;padding:5px 9px;font-size:11px}.ct-age-finance-notice{width:min(880px,calc(100% - 16px));margin:12px auto;padding:14px;border-width:1px;border-radius:14px;font-size:14px!important;line-height:1.45!important}.ct-age-finance-notice :is(h1,h2){font-size:19px!important}.ct-age-finance-notice p{margin:.4rem 0 0}
 body[data-ct-age-band="child"] [data-ctstyle-exchange-shortcut],body[data-ct-age-band="teen"] [data-ctstyle-exchange-shortcut]{display:none!important}
 
 /* Adult CAL routes remain available but no longer use poster-sized type/cards. */
@@ -219,3 +219,91 @@ body.ctstyle-enabled.page-id-3243 :is(.calorieapp-richlist-filter,.calorieapp-ri
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .ctstyle-app-launcher>details>summary{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
   .ct-age-showcase-note{margin-block:10px 14px;padding:12px;font-size:13px}
 }
+
+/* BEGIN CalorieToken UX regression hotfix 2026-09-16 v4
+   Restore the existing account controls; keep the original login/logout handlers
+   and age-hidden ancestors intact. Canonical copy of the live Additional CSS. */
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) {
+  box-sizing:border-box!important;min-width:0!important;min-height:0!important;
+  width:100%!important;max-width:340px!important;margin:0 auto!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) :is(.xl-card-header,.xl-card-balance,.xl-card-rank,.xl-card-footer) {
+  display:block!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card).xl-no-wallet :is(.xl-card-header,.xl-card-balance,.xl-card-rank) {
+  display:none!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-wallet {
+  font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:normal!important;overflow-wrap:anywhere!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-body {
+  display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;
+  gap:4px 10px!important;padding:10px!important;align-items:center!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-body>div.xl-card-avatar {
+  grid-column:1!important;grid-row:1 / span 3!important;
+  width:44px!important;max-width:44px!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card).xl-no-wallet .xl-card-body>div.xl-card-avatar {grid-row:1!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-avatar :is(img,svg) {width:44px!important;height:44px!important;object-fit:contain!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-avatar a {display:block!important;min-width:44px!important;min-height:44px!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .xl-card-body>:is(.xl-card-note,.xl-card-balance,.xl-card-rank) {grid-column:2!important;font:14px/1.4 Arial,sans-serif!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-app {
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  align-items:center;gap:8px!important;padding:10px!important;margin:0!important;
+  border-top:1px solid #dddfea!important;font:14px/1.4 Arial,sans-serif!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-app>.ctstyle-account-app-brand {display:none!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-app>.ctstyle-widget-language {
+  display:block!important;position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-app>.ctstyle-discovery-action {
+  min-height:44px!important;margin:0!important;padding:8px!important;font:700 13px/1.3 Arial,sans-serif!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-language {
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;min-height:44px!important;
+  margin:0!important;padding:8px!important;border:1px solid #505ba9!important;border-radius:8px!important;
+  background:#fff!important;color:#27325f!important;font:16px/1.3 Arial,sans-serif!important;
+}
+body.ct-calorieapp-page :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) #ctstyle-account-language {grid-column:1 / -1}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .ct-calorieapp-session-indicator {
+  grid-column:1 / -1;margin:0!important;padding:8px 10px!important;font:600 13px/1.3 Arial,sans-serif!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .ct-calorieapp-session-copy {flex-direction:row;flex-wrap:wrap;gap:4px 8px}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .ct-calorieapp-nutrition-summary {grid-column:1 / -1}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card)>.calorieapp-site-session-actions {margin:0!important;padding:8px 10px!important;min-height:0!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only):is(.ct-account-compact,.ct-calorieapp-page) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) .calorieapp-site-logout {min-height:44px!important;padding:8px 14px!important;font-size:14px!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card) :is(a,button,select):focus-visible {outline:3px solid #f9b233!important;outline-offset:3px!important}
+/* Use one breakpoint for the mobile toggle, its panel and its submenus. */
+@media (max-width:1050px) {
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-site-header .brz-menu-simple__toggle--mobile>.ctstyle-menu-toggle {display:flex!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-site-header .ctstyle-menu-category>ul {position:static!important;inset:auto!important;width:100%!important;min-width:0!important;max-width:100%!important;box-shadow:none!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-account-column {max-width:340px!important}
+}
+@media (min-width:1051px) {
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-site-header .brz-menu-simple__toggle--mobile>.ctstyle-menu-toggle {display:none!important}
+}
+@media (max-width:767px) {
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) :is(.ctstyle-compact-header .ctstyle-header-content,.ctstyle-native-header>.brz-section__content) {padding:16px 16px 20px!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid {grid-template-columns:100px minmax(0,1fr)!important;row-gap:14px!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-logo-column>.brz-column__items {min-height:96px!important;padding:12px 8px 12px 16px!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid>.ctstyle-menu-column>.brz-column__items {min-height:96px!important;padding:12px 16px 12px 0!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid:has(.brz-input:checked)>.ctstyle-logo-column {display:none!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid:has(.brz-input:checked)>.ctstyle-menu-column {grid-column:1 / -1!important;border-radius:26px!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid:has(.brz-input:checked)>.ctstyle-menu-column>.brz-column__items {padding:12px 16px!important}
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) .ctstyle-header-grid .brz-menu-simple__toggle>.brz-input:checked~div {max-height:65vh;max-height:65dvh;overflow-y:auto!important;overscroll-behavior:contain}
+}
+/* Match arrow direction to the existing scroll action. */
+body:is(.ctstyle-enabled,.ctstyle-footer-only) a.calorieapp-page-tool[data-calorieapp-scroll] svg {visibility:hidden!important}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) a.calorieapp-page-tool[data-calorieapp-scroll] {
+  background-repeat:no-repeat!important;background-position:center!important;background-size:26px 26px!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) a.calorieapp-page-tool[data-calorieapp-scroll="top"] {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V4M5 11l7-7 7 7'/%3E%3C/svg%3E")!important;
+}
+body:is(.ctstyle-enabled,.ctstyle-footer-only) a.calorieapp-page-tool[data-calorieapp-scroll="bottom"] {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16M5 13l7 7 7-7'/%3E%3C/svg%3E")!important;
+}
+/* END CalorieToken UX regression hotfix 2026-09-16 v4 */

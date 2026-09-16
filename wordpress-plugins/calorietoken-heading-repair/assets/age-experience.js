@@ -29,7 +29,19 @@
   function hideForAge(node,hidden){if(!node)return;if(hidden){if(!node.hasAttribute('data-ct-age-hidden'))node.setAttribute('data-ct-age-hidden',node.hidden?'1':'0');node.hidden=true;}else if(node.hasAttribute('data-ct-age-hidden')){node.hidden=node.getAttribute('data-ct-age-hidden')==='1';node.removeAttribute('data-ct-age-hidden');}}
   function statusNode(container){if(!container)return null;var id=(container.id||'ct-age-help')+'-age-status',node=container.querySelector('#'+id);if(!node){node=document.createElement('aside');node.id=id;node.className='ct-age-status';node.setAttribute('role','note');node.setAttribute('aria-live','polite');var text=document.createElement('p'),button=document.createElement('button');text.className='ct-age-status-copy';button.type='button';button.className='ct-age-change';button.addEventListener('click',function(){showGate(container.closest('#ctstyle-app-launcher details'),true);});node.append(text,button);var header=container.querySelector('.ctstyle-help-header');if(header)header.after(node);else container.prepend(node);}return node;}
   function renderStatus(node){if(!node||!band)return;var c=labels(),name=c[band]||'';node.dataset.band=band;node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';node.querySelector('.ct-age-status-copy').textContent=c.current+': '+name;node.querySelector('.ct-age-change').textContent=c.change;}
-  function financeNotice(kind){var selectors={crypto:'.ctstyle-exchange-layout,#ctstyle-cal-crypto,.cal-buy-guide',trustline:'.ctstyle-trustline-methods,.ctstyle-trustline-options,.ctstyle-market-layout,.calorieapp-xpmarket-layout',donation:'#calorieapp-donation-steps,.ctstyle-donation-balance,.product,.woocommerce',legacyCrypto:'.calorie-legacy-page section'};var anchor=document.querySelector(selectors[kind]||selectors.crypto)||document.querySelector('main,#main,.entry-content');if(!anchor)return;var node=document.getElementById('ct-age-finance-notice');if(!node){node=document.createElement('section');node.id='ct-age-finance-notice';node.className='ct-age-finance-notice';node.innerHTML='<h2></h2><p></p>';anchor.before(node);}var c=labels();node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';node.querySelector('h2').textContent=c.financeTitle;node.querySelector('p').textContent=c.financeText;node.hidden=band==='adult';}
+  function financeNotice(kind){
+    var selectors={crypto:'.ctstyle-exchange-layout,#ctstyle-cal-crypto,.cal-buy-guide',trustline:'.ctstyle-trustline-methods,.ctstyle-trustline-options,.ctstyle-market-layout,.calorieapp-xpmarket-layout',donation:'#calorieapp-donation-steps,.ctstyle-donation-balance,.product,.woocommerce',legacyCrypto:'.calorie-legacy-page section:not(#ct-age-finance-notice)'};
+    var anchor=document.querySelector(selectors[kind]||selectors.crypto)||document.querySelector('main,#main,.entry-content');if(!anchor)return;
+    var node=document.getElementById('ct-age-finance-notice'),tag=kind==='legacyCrypto'?'H1':'H2';
+    if(!node){node=document.createElement('section');node.id='ct-age-finance-notice';node.className='ct-age-finance-notice';anchor.before(node);}
+    var heading=node.querySelector('h1,h2');
+    if(!heading||heading.tagName!==tag){var replacement=document.createElement(tag.toLowerCase());if(heading)heading.replaceWith(replacement);else node.prepend(replacement);heading=replacement;}
+    var paragraph=node.querySelector('p');if(!paragraph){paragraph=document.createElement('p');node.append(paragraph);}
+    // A previous refresh must never make this public minor notice part of the
+    // adult-only legacy section set. Remove any stale marker before rendering.
+    node.removeAttribute('data-ct-age-hidden');
+    var c=labels();node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';heading.textContent=c.financeTitle;paragraph.textContent=c.financeText;node.hidden=band==='adult';
+  }
   function applyCrypto(restricted){
     // Treat the complete buying/trading route as one adult-only surface. The
     // discovery script creates SWFT, DEX and guide nodes after DOM ready, so
@@ -40,7 +52,7 @@
     financeNotice('crypto');
   }
   function setPublicTitle(restricted){var heading=document.querySelector('main h1,#main h1,.entry-title,h1');if(!heading)return;if(restricted){if(!heading.hasAttribute('data-ct-age-original-title'))heading.setAttribute('data-ct-age-original-title',heading.textContent);heading.textContent=labels().financeTitle;}else if(heading.hasAttribute('data-ct-age-original-title')){heading.textContent=heading.getAttribute('data-ct-age-original-title');heading.removeAttribute('data-ct-age-original-title');}}
-  function applyAdultRoute(kind,restricted){var selectors={trustline:['.ctstyle-trustline-methods','.ctstyle-trustline-options','.ctstyle-market-layout','.calorieapp-xpmarket-layout'],donation:['#calorieapp-donation-steps','a[href*="/product/donation/"]','a[href*="bithomp.com"]','.product .cart','.woocommerce .cart'],legacyCrypto:['.calorie-legacy-page section']};(selectors[kind]||[]).forEach(function(selector){document.querySelectorAll(selector).forEach(function(node){hideForAge(node,!!restricted);});});setPublicTitle(restricted);financeNotice(kind);}
+  function applyAdultRoute(kind,restricted){var selectors={trustline:['.ctstyle-trustline-methods','.ctstyle-trustline-options','.ctstyle-market-layout','.calorieapp-xpmarket-layout'],donation:['#calorieapp-donation-steps','a[href*="/product/donation/"]','a[href*="bithomp.com"]','.product .cart','.woocommerce .cart'],legacyCrypto:['.calorie-legacy-page section:not(#ct-age-finance-notice)']};(selectors[kind]||[]).forEach(function(selector){document.querySelectorAll(selector).forEach(function(node){hideForAge(node,!!restricted);});});setPublicTitle(restricted);financeNotice(kind);}
   function applyPublicAppCopy(restricted){document.querySelectorAll('.calorieapp-app-info').forEach(function(root){var paragraph=Array.from(root.querySelectorAll('p')).find(function(node){return !node.closest('.ctstyle-app-sources,.ctstyle-app-ending')&&!node.querySelector('a');});if(!paragraph)return;if(restricted){if(!paragraph.hasAttribute('data-ct-age-original-copy'))paragraph.setAttribute('data-ct-age-original-copy',paragraph.textContent);var c=labels();paragraph.textContent=(c[band+'Note']||c.childNote)+' '+c.limited;paragraph.lang=locale();paragraph.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';}else if(paragraph.hasAttribute('data-ct-age-original-copy')){paragraph.textContent=paragraph.getAttribute('data-ct-age-original-copy');paragraph.removeAttribute('data-ct-age-original-copy');paragraph.removeAttribute('lang');paragraph.removeAttribute('dir');}});}
   function applyShowcases(restricted){
     document.querySelectorAll('.showcase-auth').forEach(function(node){hideForAge(node,!!restricted);});
@@ -53,7 +65,7 @@
     if(band)document.body.dataset.ctAgeBand=band;else delete document.body.dataset.ctAgeBand;
     var restricted=band!=='adult',kind=pageKind();
     var pageStatus=document.getElementById('ct-age-page-status');if(pageStatus)pageStatus.remove();
-    if(kind&&kind!=='faq'){document.querySelectorAll('.xl-card.calorieapp-identity-card').forEach(function(node){hideForAge(node,!!restricted);});}
+    if(kind&&kind!=='faq'){document.querySelectorAll('.xl-card.calorieapp-identity-card,.ctstyle-site-header .xl-card').forEach(function(node){hideForAge(node,!!restricted);});}
     if(kind==='crypto')applyCrypto(restricted);
     if(kind==='trustline'||kind==='donation'||kind==='legacyCrypto')applyAdultRoute(kind,restricted);
     if(kind==='showcases')applyShowcases(restricted);

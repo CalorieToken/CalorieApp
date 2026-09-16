@@ -182,7 +182,7 @@ test('summary renders beside the app instead of enlarging Xaman and clears stale
   assert.equal(summary.hidden, true);
 });
 
-test('unrelated pages keep only the compact original sign-in card and receive no app-only additions', () => {
+test('unrelated pages preserve the original account markup and receive no app-only additions', () => {
   const {document,window}=parseHTML(`<!doctype html><html><body><section class="xl-card calorieapp-identity-card xl-no-wallet"><div class="xl-card-body"></div><footer class="xl-card-footer"><div id="ctstyle-account-app"></div></footer></section><iframe title="CalorieApp" src="https://app.calorietoken.net/"></iframe></body></html>`);
   Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/faq/'),configurable:true});
   Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
@@ -196,10 +196,12 @@ test('unrelated pages keep only the compact original sign-in card and receive no
   assert.equal(document.getElementById('ct-calorieapp-session-indicator'),null);
   assert.equal(document.getElementById('ct-calorieapp-nutrition-summary'),null);
   assert.equal(document.getElementById('ct-calorieapp-focus-toolbar'),null);
-  assert.match(css,/body\.ct-account-compact \.xl-card\.calorieapp-identity-card \.xl-card-footer\{display:none!important\}/);
+  const liveHotfix=css.indexOf('BEGIN CalorieToken UX regression hotfix 2026-09-16 v4');
+  assert.ok(liveHotfix>css.indexOf('body.ct-account-compact .xl-card.calorieapp-identity-card .xl-card-footer{display:none!important}'));
+  assert.match(css.slice(liveHotfix),/:is\(\.xl-card-header,\.xl-card-balance,\.xl-card-rank,\.xl-card-footer\) \{\s*display:block!important/);
 });
 
-test('CalorieApp embed inherits the resolved language and a loaded legacy cover reveals itself', () => {
+test('CalorieApp embed prepares the resolved language without restarting its first document', () => {
   const {document,window}=parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled page-id-7880">
     <select id="ctstyle-language-select"><option value="nl" selected>Nederlands</option></select>
     <section><div id="ctstyle-account-app"><div class="ctstyle-account-app-brand">CalorieApp</div></div></section>
@@ -217,7 +219,7 @@ test('CalorieApp embed inherits the resolved language and a loaded legacy cover 
   window.setTimeout=callback=>{callback();return 1;};window.clearTimeout=()=>{};window.requestAnimationFrame=callback=>{callback(0);return 1;};window.scrollTo=()=>{};window.matchMedia=()=>({matches:false});
   vm.runInContext(appFocusSource,vm.createContext({window,document,URL,MutationObserver:window.MutationObserver,getComputedStyle:()=>({display:'block'}),setTimeout:window.setTimeout,clearTimeout:window.clearTimeout}),{filename:'app-focus.js'});
   assert.equal(document.querySelector('[data-calorieapp-embed]').dataset.locale,'nl');
-  assert.equal(new URL(frame.src).searchParams.get('locale'),'nl');
+  assert.equal(new URL(frame.src).searchParams.get('locale'),'en');
   assert.equal(loader.querySelector('strong').textContent,'CalorieApp wordt gestart');
   assert.equal(loader.querySelector('[data-calorieapp-loading-reveal]').textContent,'App tonen');
   assert.equal(reveals,1);
@@ -356,6 +358,22 @@ test('language bootstrap resolves URL, saved and browser choices before widgets 
   assert.equal(run({languages:['fr-FR']}).writes,0,'inferred choices are never persisted');
 });
 
+test('language bootstrap synchronises only a trusted root and leaves iframe URLs intact', () => {
+  const {document,window}=parseHTML(`<!doctype html><html lang="en"><body>
+    <div id="trusted" data-calorieapp-embed data-locale="en"><iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1&amp;locale=en"></iframe></div>
+    <div id="untrusted" data-calorieapp-embed data-locale="en"><iframe title="CalorieApp" src="https://evil.example/?embedded=1&amp;locale=en"></iframe></div>
+  </body></html>`);
+  Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/calorieapp/?ui_lang=nl'),configurable:true});
+  Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
+  Object.defineProperty(window,'localStorage',{value:{getItem:()=>null,setItem(){},removeItem(){}},configurable:true});
+  window.setTimeout=callback=>{callback();return 1;};
+  const trustedFrame=document.querySelector('#trusted iframe'),trustedSrc=trustedFrame.getAttribute('src');
+  vm.runInContext(languageBootstrap,vm.createContext({window,document,URL,navigator:{languages:[],language:''},Date}),{filename:'language-bootstrap.js'});
+  assert.equal(document.getElementById('trusted').dataset.locale,'nl');
+  assert.equal(trustedFrame.getAttribute('src'),trustedSrc);
+  assert.equal(document.getElementById('untrusted').dataset.locale,'en');
+});
+
 test('CalorieHelp creates the missing USDA knowledge topic from reviewed local copy', () => {
   const copy=JSON.parse(JSON.stringify(baseHelpData));
   const context={window:{
@@ -417,8 +435,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.1/);
-  assert.match(php, /const VERSION = '1\.6\.1'/);
+  assert.match(php, /Version: 1\.6\.4/);
+  assert.match(php, /const VERSION = '1\.6\.4'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
@@ -435,10 +453,17 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(css, /\.ct-calorieapp-nutrition-summary\[hidden\]\{display:none!important\}/);
   assert.match(css, /body\[data-ct-age-band="child"\] \.ct-age-financial-action/);
   assert.match(css, /\.ct-age-showcase-note/);
+  assert.match(css, /\.ct-age-finance-notice :is\(h1,h2\)/);
+  assert.match(css, /BEGIN CalorieToken UX regression hotfix 2026-09-16 v4/);
+  assert.match(css, /@media \(max-width:1050px\)/);
+  assert.match(css, /data-calorieapp-scroll="top"/);
+  assert.match(css, /data-calorieapp-scroll="bottom"/);
   assert.match(appFocusSource, /calorieapp:testnet-guide:/);
   assert.match(appFocusSource, /\[data-calorieapp-embed\] iframe\[title="CalorieApp"\]/);
   assert.match(appFocusSource, /url\.pathname==='\/'/);
-  assert.match(appFocusSource, /url\.searchParams\.set\('locale',desired\)/);
+  assert.doesNotMatch(appFocusSource, /frame\.src\s*=/);
+  assert.match(languageBootstrap, /function syncEmbeds\(\)/);
+  assert.match(languageBootstrap, /root\.dataset\.locale=locale/);
   assert.match(appFocusSource, /data-calorieapp-loading-reveal/);
   assert.match(appFocusSource, /event\.stopPropagation\(\)/);
   assert.match(appFocusSource, /if\(age!=='adult'/);

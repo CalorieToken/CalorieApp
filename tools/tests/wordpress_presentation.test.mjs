@@ -101,6 +101,17 @@ test('page semantics remove duplicate H1s, mark English legal copy and supply th
 
  const home=fixture('<main><section><h2>Welcome</h2></section></main>',true);home.document.body.classList.add('page-id-1090');home.window.location=new URL('https://calorietoken.net/');home.run('presentation.js');
  const generated=home.document.querySelector('[data-ct-home-h1="1"]');assert.ok(generated);assert.equal(generated.textContent,'CalorieToken');assert.ok(generated.classList.contains('ct-heading-repair-sr-only'));
+
+ const headerless=fixture('<section><h2>Welcome</h2></section>',true);headerless.document.body.classList.add('page-id-1090');headerless.window.location=new URL('https://calorietoken.net/');headerless.run('presentation.js');
+ const guard=headerless.document.querySelector('.site-branding.ct-heading-repair-theme-guard');assert.ok(guard);assert.equal(guard.hidden,true);assert.equal(guard.getAttribute('aria-hidden'),'true');
+ const fallback=headerless.document.querySelector('[data-ct-home-h1="1"]');assert.ok(fallback);assert.equal(fallback.parentElement,headerless.document.body);
+});
+
+test('legacy finance notice stays outside shared adult-route presentation panels',()=>{
+ const h=fixture('<main><div class="calorie-legacy-page"><section id="ct-age-finance-notice"><h1>Public notice</h1><p>Public information</p></section><section id="adult-route"><h1>Buy CAL</h1></section></div></main>',true);
+ h.window.location=new URL('https://calorietoken.net/how-to-buy-dex/');h.run('presentation.js');
+ assert.equal(h.document.getElementById('ct-age-finance-notice').classList.contains('ctstyle-shared-panel'),false);
+ assert.equal(h.document.getElementById('adult-route').classList.contains('ctstyle-shared-panel'),true);
 });
 
 test('contact card H5 titles receive level-two heading semantics without markup replacement',()=>{
