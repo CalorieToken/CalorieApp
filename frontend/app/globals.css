@@ -16,6 +16,10 @@
   box-sizing: border-box;
 }
 
+html[data-calorieapp-language-pending="1"] [data-calorieapp-content] {
+  visibility: hidden;
+}
+
 html,
 body {
   margin: 0;
@@ -36,3 +40,10 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

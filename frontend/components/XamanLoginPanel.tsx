@@ -1076,7 +1076,7 @@ export function XamanLoginPanel() {
     publishSessionState("checking");
     setIsLoading(false);
     setLoginStatus(null);
-    setLogoutNeedsRetry(true);
+    setLogoutNeedsRetry(false);
     const pending = requestCalorieAppLogout().then(() => {
       logoutCompleteRef.current = true;
       setLogoutNeedsRetry(false);
@@ -1086,6 +1086,7 @@ export function XamanLoginPanel() {
       await pending;
       publishSessionState("signed_out");
     } catch (error) {
+      setLogoutNeedsRetry(true);
       publishSessionState("unavailable");
       throw error;
     }
@@ -1700,17 +1701,17 @@ export function XamanLoginPanel() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/70">
-            {currentUser ? authCopy.connectedAccount : authCopy.optionalAccount}
+          {currentUser ? authCopy.connectedAccount : isLoggingOut ? authCopy.loggingOut : authCopy.optionalAccount}
           </p>
           <h2 className="mt-0.5 text-base font-bold text-brand-primary">
-            {currentUser ? authCopy.signedIn : authCopy.signIn}
+            {currentUser ? authCopy.signedIn : isLoggingOut ? authCopy.loggingOut : authCopy.signIn}
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-brand-secondary/90">
             {currentUser
               ? loginSurfaceMode === "embedded"
                 ? authCopy.sessionsConnected
                 : authCopy.sessionActive
-              : authCopy.signInDescription}
+              : isLoggingOut ? authCopy.connectingView : authCopy.signInDescription}
           </p>
         </div>
         {currentUser ? (
@@ -1721,18 +1722,19 @@ export function XamanLoginPanel() {
         ) : null}
       </div>
 
-      {!currentUser ? (
-        <div
-          role="note"
-          className="mt-4 rounded-2xl border border-amber-300/80 bg-amber-50 px-3.5 py-3 text-xs leading-relaxed text-amber-950"
-        >
-          <span className="font-semibold">{authCopy.onPhone}</span>{" "}
-          {loginSurfaceMode === "embedded"
-            ? authCopy.phoneInstructions
-            : loginSurfaceMode === "standalone"
-              ? authCopy.websiteInstructions
-              : authCopy.connectingView}
-        </div>
+      {!currentUser && !isLoggingOut && !logoutNeedsRetry ? (
+        <details className="group mt-3 rounded-xl border border-amber-300/80 bg-amber-50 text-xs text-amber-950">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 [&::-webkit-details-marker]:hidden">
+            <span>{authCopy.onPhone}</span><span aria-hidden="true" className="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p role="note" className="border-t border-amber-300/70 px-3 py-2 leading-relaxed">
+            {loginSurfaceMode === "embedded"
+              ? authCopy.phoneInstructions
+              : loginSurfaceMode === "standalone"
+                ? authCopy.websiteInstructions
+                : authCopy.connectingView}
+          </p>
+        </details>
       ) : null}
 
       {currentUser ? (

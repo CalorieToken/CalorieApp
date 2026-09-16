@@ -11,7 +11,12 @@ const source=readFileSync(new URL('../../wordpress-plugins/calorietoken-heading-
 function page(url,{stored=null,crypto=false}={}){
   const {window,document}=parseHTML(`<!doctype html><html lang="en"><body class="ctstyle-enabled page-id-7880">
     <main><section class="xl-card calorieapp-identity-card"><div class="xl-card-body"></div></section>
-      ${crypto?'<div id="ctstyle-cal-crypto"><a href="https://xpmarket.com/dex/test">Trade</a></div>':''}
+      ${crypto?`<div class="ctstyle-exchange-layout">
+        <div id="ctstyle-cal-crypto"><a href="https://xpmarket.com/dex/test">Trade</a></div>
+        <section id="ctstyle-own-dex">DEX wallet route</section>
+        <article id="ctstyle-cal-options" class="cal-buy-guide">Buy guide</article>
+        <section id="ctstyle-external-exchange"><button>SWFT toestaan en openen</button><iframe src="https://defi.swft.pro/"></iframe></section>
+      </div>`:''}
       <iframe title="CalorieApp" src="https://app.calorietoken.net/"></iframe>
     </main>
     <aside id="ctstyle-app-launcher"><details><summary>CalorieHelp</summary><div class="ctstyle-app-launcher-panel">
@@ -48,19 +53,44 @@ test('relevant WordPress pages require one neutral three-button choice and send 
   assert.equal(Object.hasOwn(env.sent[0].message,'birthDate'),false);
 });
 
-test('minor CAL and Crypto view hides the transaction guide and links but keeps a clear explanation',()=>{
-  const env=page('https://calorietoken.net/how-to-buy-calorie/',{stored:'teen',crypto:true});
-  assert.equal(env.document.getElementById('ct-age-gate'),null);
-  assert.equal(env.document.getElementById('ctstyle-cal-crypto').hidden,true);
+test('both minor CAL and Crypto views hide every DEX, guide and SWFT route but keep one explanation',()=>{
+  for(const stored of ['child','teen']){
+    const env=page('https://calorietoken.net/how-to-buy-calorie/',{stored,crypto:true});
+    assert.equal(env.document.getElementById('ct-age-gate'),null);
+    for(const selector of ['.ctstyle-exchange-layout','#ctstyle-cal-crypto','#ctstyle-own-dex','#ctstyle-cal-options','#ctstyle-external-exchange','.cal-buy-guide']){
+      assert.equal(env.document.querySelector(selector).hidden,true,`${stored} ${selector}`);
+    }
+    assert.equal(env.document.getElementById('ct-age-finance-notice').hidden,false);
+    assert.equal(env.document.getElementById('ct-age-finance-notice').parentElement,env.document.querySelector('main'));
+    assert.match(env.document.getElementById('ct-age-finance-notice').textContent,/crypto services intended for adults/i);
+    assert.ok(env.document.querySelector('a[href*="xpmarket.com"]').classList.contains('ct-age-financial-action'));
+    assert.equal(env.document.querySelector('[data-topic="exchange"]').hidden,true);
+    assert.equal(env.document.querySelector('[data-topic="app"]').hidden,false);
+    const helpStatus=env.document.getElementById('ctstyle-widget-help-age-status');
+    assert.equal(helpStatus.dataset.band,stored);
+    assert.doesNotMatch(helpStatus.textContent,/Wallet, trading, trustline and test-fund instructions/i);
+  }
+});
+
+test('adult crypto view restores all routes hidden during a previous minor selection',()=>{
+  const env=page('https://calorietoken.net/how-to-buy-calorie/',{stored:'child',crypto:true});
+  env.window.CalorieTokenAgeExperience.getBand();
+  env.document.querySelector('#ctstyle-widget-help-age-status .ct-age-change').click();
+  env.document.querySelector('#ct-age-gate [data-band="adult"]').click();
+  assert.equal(env.document.querySelector('.ctstyle-exchange-layout').hidden,false);
+  assert.equal(env.document.getElementById('ctstyle-external-exchange').hidden,false);
+  assert.equal(env.document.getElementById('ct-age-finance-notice').hidden,true);
+});
+
+test('a SWFT route inserted after the age script is immediately covered for minors',async()=>{
+  const env=page('https://calorietoken.net/how-to-buy-calorie/',{stored:'teen'});
+  const layout=env.document.createElement('div');layout.className='ctstyle-exchange-layout';
+  layout.innerHTML='<section id="ctstyle-external-exchange"><button>Open SWFT</button></section>';
+  env.document.querySelector('main').append(layout);
+  await Promise.resolve();await Promise.resolve();
+  assert.equal(layout.hidden,true);
+  assert.equal(env.document.getElementById('ctstyle-external-exchange').hidden,true);
   assert.equal(env.document.getElementById('ct-age-finance-notice').hidden,false);
-  assert.match(env.document.getElementById('ct-age-finance-notice').textContent,/crypto services intended for adults/i);
-  assert.ok(env.document.querySelector('a[href*="xpmarket.com"]').classList.contains('ct-age-financial-action'));
-  assert.equal(env.document.querySelector('[data-topic="exchange"]').hidden,true);
-  assert.equal(env.document.querySelector('[data-topic="app"]').hidden,false);
-  const helpStatus=env.document.getElementById('ctstyle-widget-help-age-status');
-  assert.equal(helpStatus.dataset.band,'teen');
-  assert.match(helpStatus.textContent,/Age experience: Young person · 13–17/i);
-  assert.doesNotMatch(helpStatus.textContent,/Wallet, trading, trustline and test-fund instructions/i);
 });
 
 test('changing an existing choice is dismissible and preserves the current band until replacement',()=>{

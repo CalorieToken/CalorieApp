@@ -24,6 +24,7 @@ FILES = (
     "assets/help-link-labels.json",
     "assets/help-topic-additions.json",
     "assets/help.js",
+    "assets/language-bootstrap.js",
     "assets/nutrition-summary.js",
     "assets/presentation.js",
     "calorietoken-heading-repair.php",

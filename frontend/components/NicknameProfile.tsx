@@ -67,10 +67,14 @@ export function NicknameProfile() {
   }
 
   return (
-    <section className="mb-4 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-4"
-      lang={locale} dir={localeDirection(locale)} aria-labelledby="nickname-profile-title">
-      <h2 id="nickname-profile-title" className="text-base font-bold text-brand-primary">{copy.profileTitle}</h2>
-      <p className="mt-1 text-xs leading-relaxed text-brand-secondary">{copy.profileDescription}</p>
+    <details className="group mt-3 rounded-2xl border border-brand-secondary/20 bg-brand-bg"
+      lang={locale} dir={localeDirection(locale)}>
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary [&::-webkit-details-marker]:hidden">
+        <h2 id="nickname-profile-title" className="text-sm font-bold text-brand-primary">{copy.profileTitle}{nickname ? ` · ${nickname}` : ""}</h2>
+        <span aria-hidden="true" className="text-brand-secondary transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="border-t border-brand-secondary/15 p-4" aria-labelledby="nickname-profile-title">
+      <p className="text-xs leading-relaxed text-brand-secondary">{copy.profileDescription}</p>
       {nickname ? <p className="mt-3 text-sm font-bold text-brand-primary">{copy.hello.replace("{nickname}", nickname)}</p> : null}
       <form className="mt-3 flex flex-wrap items-end gap-2" onSubmit={save}>
         <label className="min-w-0 flex-1 basis-48 text-xs font-bold text-brand-primary">{copy.nicknameLabel}
@@ -85,6 +89,7 @@ export function NicknameProfile() {
       </form>
       {error ? <p role="alert" className="mt-2 text-xs font-semibold text-red-700">{error}</p> : null}
       {status ? <p role="status" className="mt-2 text-xs font-semibold text-green-800">{status}</p> : null}
-    </section>
+      </div>
+    </details>
   );
 }

@@ -1,4 +1,4 @@
-CalorieToken Heading and Language Repair 1.5.4
+CalorieToken Heading and Language Repair 1.5.5
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
@@ -7,6 +7,16 @@ This release is locally tested, NOT live-site accepted. It applies only to exact
 known source hashes from the saved Site Style 1.4.46 or prepared 1.4.47 candidate.
 If an admin warning says that files differ, the affected override is not applied.
 Do not disable the compatibility checks. Reconcile the current source instead.
+
+Version 1.5.5 completes the mobile repair pass. It resolves an explicit or saved
+display language before public widgets are built, then uses the browser language
+and Dutch site default as safe fallbacks. The embedded app stays visually pending
+until its trusted host language arrives, preventing a flash of the wrong language.
+For both 0–12 and 13–17 modes the complete dynamically inserted CAL/SWFT/DEX,
+wallet and buying route is now hidden, including nodes added after page load.
+It also compacts app tabs, search/results, login and nickname controls; prevents
+logout-state contradictions; and reduces overlapping, oversized mobile controls,
+dialogs, FAQ/help cards and test-account guidance.
 
 Version 1.0.1 additionally accepted the exact live 1.4.46 presentation script
 whose only byte difference is removal of the final empty newline by WordPress.

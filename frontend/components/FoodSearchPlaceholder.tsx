@@ -978,12 +978,12 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
         ) : null}
 
         {hasResults ? <h3 ref={resultsHeadingRef} tabIndex={-1}
-          className="scroll-mt-3 mt-4 text-sm font-semibold text-brand-primary outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
+          className="scroll-mt-24 mt-4 rounded-lg bg-brand-primary/5 px-3 py-2 text-sm font-semibold text-brand-primary outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
           {formatFoodUi(diaryUi.resultsFor, {query: resultsQuery})}
         </h3> : null}
         {hasResults ? (
           <div className="mt-4 min-w-0">
-          <ul className="space-y-3 pe-1 sm:max-h-[62vh] sm:overflow-y-auto sm:overscroll-contain">
+          <ul className="max-h-[60dvh] space-y-3 overflow-y-auto overscroll-contain pe-1">
             {results.map((item, index) => (
               <FoodCard
                 key={`${item.product_name}-${index}`}

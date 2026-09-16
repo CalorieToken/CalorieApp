@@ -79,7 +79,7 @@ export function CalorieAppWorkspace() {
       <div
         role="tablist"
         aria-label={`${experience.copy.navigation} CalorieApp`}
-        className={`mb-5 grid min-w-0 grid-cols-2 gap-2 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 ${allowPersonalFeatures ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+        className="mb-5 flex min-w-0 snap-x gap-2 overflow-x-auto rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 [scrollbar-width:thin]"
       >
         {tabs.map((tab, index) => (
           <button
@@ -93,13 +93,13 @@ export function CalorieAppWorkspace() {
             tabIndex={visibleTab === tab.id ? 0 : -1}
             onClick={() => selectTab(tab.id)}
             onKeyDown={(event) => handleTabKey(event, index)}
-            className={`min-h-12 min-w-0 rounded-xl px-3 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 ${
+            className={`min-h-11 min-w-[9.5rem] flex-1 snap-start rounded-xl px-3 py-2 text-xs font-bold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 sm:min-w-0 sm:text-sm ${
               visibleTab === tab.id
                 ? "bg-brand-primary text-white shadow-sm"
                 : "bg-white text-brand-primary hover:bg-brand-secondary/10"
             }`}
           >
-            <span className="block break-words"><bdi>{tab.label}</bdi></span>
+            <span className="block"><bdi>{tab.label}</bdi></span>
           </button>
         ))}
       </div>
@@ -110,8 +110,8 @@ export function CalorieAppWorkspace() {
         aria-labelledby="calorie-tab-account"
         hidden={visibleTab !== "account"}
       >
-        <NicknameProfile />
         <XamanLoginPanel />
+        <NicknameProfile />
       </section> : null}
 
       {allowPersonalFeatures ? <section

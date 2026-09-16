@@ -14,6 +14,7 @@ const php = fs.readFileSync(new URL('calorietoken-heading-repair.php', root), 'u
 const readme = fs.readFileSync(new URL('README.txt', root), 'utf8');
 const helpBootstrap = fs.readFileSync(new URL('assets/help-label-bootstrap.js', root), 'utf8');
 const helpSource = fs.readFileSync(new URL('assets/help.js', root), 'utf8');
+const languageBootstrap = fs.readFileSync(new URL('assets/language-bootstrap.js', root), 'utf8');
 const helpLabels = JSON.parse(fs.readFileSync(new URL('assets/help-link-labels.json', root), 'utf8'));
 const helpTopics = JSON.parse(fs.readFileSync(new URL('assets/help-topic-additions.json', root), 'utf8'));
 const mascot = fs.readFileSync(new URL('assets/caloriehelp-mascot-v2.png', root));
@@ -295,7 +296,7 @@ test('CalorieHelp additions cover all locales and append without replacing exist
     CalorieTokenHelp: {copy},
     CalorieTokenHeadingRepairLabels: helpLabels,
     CalorieTokenHeadingRepairTopics: helpTopics,
-    CalorieTokenHeadingRepairAvatar: 'https://calorietoken.net/wp-content/plugins/calorietoken-heading-repair/assets/caloriehelp-mascot-v2.png?ver=1.5.4',
+    CalorieTokenHeadingRepairAvatar: 'https://calorietoken.net/wp-content/plugins/calorietoken-heading-repair/assets/caloriehelp-mascot-v2.png?ver=1.5.5',
   }};
   vm.runInNewContext(helpBootstrap, context, {filename: 'help-label-bootstrap.js'});
   vm.runInNewContext(helpBootstrap, context, {filename: 'help-label-bootstrap.js'});
@@ -306,7 +307,27 @@ test('CalorieHelp additions cover all locales and append without replacing exist
     assert.equal(topic.steps.filter(step => step === helpTopics[tag][key].step).length, 1);
     assert.deepEqual(topic.links, [key]);
   }
-  assert.match(context.window.CalorieTokenHelp.avatar, /caloriehelp-mascot-v2\.png\?ver=1\.5\.4$/);
+  assert.match(context.window.CalorieTokenHelp.avatar, /caloriehelp-mascot-v2\.png\?ver=1\.5\.5$/);
+});
+
+test('language bootstrap resolves URL, saved and browser choices before widgets are built', () => {
+  function run({url='https://calorietoken.net/faq/',saved=null,languages=[],language='',html='en'}={}){
+    const {document,window}=parseHTML(`<!doctype html><html lang="${html}"><body></body></html>`);
+    Object.defineProperty(window,'location',{value:new URL(url),configurable:true});
+    let writes=0;
+    Object.defineProperty(window,'localStorage',{value:{getItem:()=>saved,setItem(){writes+=1;},removeItem(){writes+=1;}},configurable:true});
+    vm.runInContext(languageBootstrap,vm.createContext({window,document,URL,navigator:{languages,language},Date}),{filename:'language-bootstrap.js'});
+    return {locale:document.documentElement.lang,direction:document.documentElement.dir,dataset:document.documentElement.dataset.ctDisplayLocale,writes};
+  }
+  const fresh=Date.now();
+  assert.equal(run({url:'https://calorietoken.net/?ui_lang=nl',saved:JSON.stringify({locale:'fr',savedAt:fresh}),languages:['ar']}).locale,'nl');
+  assert.equal(run({url:'https://calorietoken.net/?locale=fr',saved:JSON.stringify({locale:'nl',savedAt:fresh}),languages:['ar']}).locale,'fr');
+  assert.equal(run({url:'https://calorietoken.net/?ui_lang=made-up',languages:['nl-NL']}).locale,'nl');
+  assert.equal(run({saved:JSON.stringify({locale:'fr',savedAt:fresh}),languages:['nl-NL']}).locale,'fr');
+  assert.equal(run({languages:['ar-SA'],html:'en'}).direction,'rtl');
+  assert.equal(run({languages:['nl-NL'],html:'en'}).dataset,'nl');
+  assert.equal(run({languages:[],language:'',html:'xx'}).locale,'nl');
+  assert.equal(run({languages:['fr-FR']}).writes,0,'inferred choices are never persisted');
 });
 
 test('CalorieHelp creates the missing USDA knowledge topic from reviewed local copy', () => {
@@ -370,8 +391,10 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.5\.4/);
-  assert.match(php, /const VERSION = '1\.5\.4'/);
+  assert.match(php, /Version: 1\.5\.5/);
+  assert.match(php, /const VERSION = '1\.5\.5'/);
+  assert.match(php, /calorietoken-language-bootstrap/);
+  assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
   assert.match(php, /calorietoken-nutrition-summary/);
   assert.match(php, /array\('calorietoken-app-focus'\)/);

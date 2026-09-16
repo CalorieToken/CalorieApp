@@ -861,7 +861,7 @@ test("search button shows a translated countdown without reporting a request as 
   for (const { tag } of localeRegistry.locales) {
     h.setDisplayLanguage(tag);
     const tree = h.render({ query: "oats", isLoading: false, retrySeconds: 60, onQueryChange() {}, onSubmit() {} });
-    const search = nodes(tree, n => n.type === "button")[0];
+    const search = nodes(tree, n => n.type === "button" && n.props.type === "submit")[0];
     assert.equal(search.props.disabled, true);
     assert.equal(search.props["aria-busy"], false);
     assert.equal(text(search), foodUi.formatFoodUi(foodUiCopy[tag].searchWait, { seconds: new Intl.NumberFormat(tag).format(60) }));

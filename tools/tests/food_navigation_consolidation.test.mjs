@@ -44,11 +44,9 @@ test('tab keyboard behavior is complete and switching preserves mounted task sta
   assert.match(component,/onOpenAccount/);
   assert.match(component,/type="button" onClick=\{onOpenAccount\}/);
   assert.match(usda,/return <section data-testid="usda-food-search"/);
-  assert.match(component,/max-h-\[62vh\].*overflow-y-auto/);
-  assert.match(read('frontend/components/FoodLogList.tsx'),/max-h-\[60vh\].*overflow-y-auto/);
-  assert.match(component,/sm:max-h-\[62vh\].*sm:overflow-y-auto/);
-  assert.match(usda,/sm:max-h-\[55vh\].*sm:overflow-y-auto/);
-  assert.match(read('frontend/components/FoodLogList.tsx'),/sm:max-h-\[60vh\].*sm:overflow-y-auto/);
+  assert.match(component,/max-h-\[60dvh\].*overflow-y-auto/);
+  assert.match(usda,/max-h-\[55dvh\].*overflow-y-auto/);
+  assert.match(read('frontend/components/FoodLogList.tsx'),/max-h-\[60dvh\].*overflow-y-auto/);
   assert.match(component,/pendingLogIndex === index \? portionControls : null/);
 });
 

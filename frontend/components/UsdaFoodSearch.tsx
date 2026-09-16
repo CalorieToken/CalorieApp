@@ -111,7 +111,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
         className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{state === "loading" ? copy.loading : copy.search}</button>
     </form>
     <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
-    {!selected && matches.length ? <ul className="mt-3 space-y-2 pe-1 sm:max-h-[55vh] sm:overflow-y-auto sm:overscroll-contain">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
+    {!selected && matches.length ? <ul className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
       <button type="button" disabled={disabled} onClick={() => choose(food)}
         className="min-h-11 w-full rounded-lg border border-brand-secondary/20 p-3 text-start text-sm text-brand-primary hover:bg-brand-bg disabled:opacity-50">
         <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
