@@ -1,9 +1,6 @@
-import { FoodSearchPlaceholder } from "@/components/FoodSearchPlaceholder";
-import { UsdaReferenceFoods } from "@/components/UsdaReferenceFoods";
-import { XamanLoginPanel } from "@/components/XamanLoginPanel";
 import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
 import { AppIntroduction, AppSourceFooter } from "@/components/AppIntroduction";
-import { TestnetEntry } from "@/components/TestnetEntry";
+import { CalorieAppWorkspace } from "@/components/CalorieAppWorkspace";
 
 export default function Home() {
   return (
@@ -14,15 +11,7 @@ export default function Home() {
           <DisplayLanguagePicker />
           <AppIntroduction />
 
-          <div>
-            <XamanLoginPanel />
-            <TestnetEntry />
-          </div>
-
-          <div className="mt-6">
-            <FoodSearchPlaceholder />
-          </div>
-          <UsdaReferenceFoods />
+          <CalorieAppWorkspace />
         </div>
       </div>
 

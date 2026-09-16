@@ -188,7 +188,7 @@ test("actual food controls render the eleven languages and escape literal produc
   assert.ok(renderToStaticMarkup(React.createElement(LoadingState, { variant: "search" })).includes(copy.en.loadingSearch));
 });
 
-test("the actual Nutri-Score bar renders five colors and a recorded grade regardless of login controls", () => {
+test("the actual Nutri-Score control renders one compact recorded-grade badge regardless of login controls", () => {
   const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
@@ -207,7 +207,8 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
       }));
       assert.ok(html.includes(`data-product-grade="${grade.trim().toUpperCase()}"`));
       assert.ok(html.includes(renderedText(experienceCopy.nl.productGrade.replace("{grade}",grade.trim().toUpperCase()))));
-      assert.equal((html.match(/background-color:/g) || []).length, 5);
+      assert.equal((html.match(/background-color:/g) || []).length, 1);
+      assert.equal((html.match(/<details/g) || []).length, 1);
     }
   }
   for (const grade of [undefined, null, "", "unknown"]) {

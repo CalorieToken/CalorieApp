@@ -44,6 +44,8 @@ iframe{{display:none}}
 <script>{SCRIPT}</script>
 </body></html>"""
 child_html = """<!doctype html><html><body><script>
+window.lastNutritionPeriod = null;
+window.addEventListener('message', event => { window.lastNutritionPeriod = event.data; });
 window.sendNutrition = message => parent.postMessage(message, 'https://calorietoken.net');
 </script></body></html>"""
 
@@ -121,9 +123,21 @@ with sync_playwright() as playwright:
         source_values = page.locator("[data-ct-nutrition-source] dd").all_text_contents()
         ok("The Xaman card shows the exact OFF, USDA and other source counts", source_values == ["5", "1", "1"])
         ok("USDA is excluded from OFF Nutri-Score coverage", "5" in summary.locator(".ct-calorieapp-nutrition-coverage").inner_text())
+        ok("Source details start collapsed", not summary.locator(".ct-calorieapp-nutrition-details").evaluate("node => node.open"))
+
+        summary.locator('[data-ct-nutrition-period="month"]').click()
+        page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').dataset.state === 'loading'")
+        received = app_frame.evaluate("window.lastNutritionPeriod")
+        ok("Period control sends only the fixed preset to the exact app frame", received == {
+            "type": "calorieapp:nutrition-period", "version": 1, "period": "month",
+        })
+        ok("Loading hides stale aggregate counts", summary.locator(".ct-calorieapp-nutrition-body").is_hidden())
+        app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "period": "month"})
+        page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').dataset.state === 'ready'")
+        ok("A matching ready summary restores the compact counts")
 
         page.set_viewport_size({"width": 360, "height": 900})
-        app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "locale": "nl"})
+        app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "locale": "nl", "period": "month"})
         page.locator(".xl-card").screenshot(path=str(OUT / "nl-xaman-nutrition-360.png"))
         app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "locale": "ar"})
         page.locator(".xl-card").screenshot(path=str(OUT / "ar-xaman-nutrition-360.png"))

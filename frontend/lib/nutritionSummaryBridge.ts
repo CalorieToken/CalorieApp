@@ -1,4 +1,5 @@
 export const NUTRITION_SUMMARY_MESSAGE = "calorieapp:nutrition-summary";
+export const NUTRITION_PERIOD_MESSAGE = "calorieapp:nutrition-period";
 
 const GRADE_KEYS = ["A", "B", "C", "D", "E"] as const;
 const SUPPORTED_LOCALES = new Set([
@@ -19,6 +20,8 @@ type SummaryInput = {
     sources?: unknown;
   };
 };
+
+export type NutritionPeriod = "day" | "week" | "month" | "all";
 
 export type NutritionSummaryMessage = {
   type: typeof NUTRITION_SUMMARY_MESSAGE;
@@ -125,4 +128,18 @@ export function postNutritionSummaryToParent(message: NutritionSummaryMessage): 
   if (!origin) return false;
   window.parent.postMessage(message, origin);
   return true;
+}
+
+/**
+ * Accept a period preset only from the exact WordPress parent that embeds this
+ * app. No diary date or private value crosses the frame boundary.
+ */
+export function nutritionPeriodFromParent(event: MessageEvent<unknown>): NutritionPeriod | null {
+  const origin = trustedWordPressParentOrigin();
+  if (!origin || event.origin !== origin || event.source !== window.parent ||
+      !event.data || typeof event.data !== "object" || Array.isArray(event.data)) return null;
+  const data = event.data as Record<string, unknown>;
+  if (data.type !== NUTRITION_PERIOD_MESSAGE || data.version !== 1 ||
+      typeof data.period !== "string" || !SUPPORTED_PERIODS.has(data.period)) return null;
+  return data.period as NutritionPeriod;
 }

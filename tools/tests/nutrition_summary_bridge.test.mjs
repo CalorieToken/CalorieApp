@@ -20,7 +20,7 @@ function load(referrer = 'https://calorietoken.net/index.php/calorieapp/') {
     module, exports: module.exports, URL,
     window, document: {referrer},
   });
-  return {bridge: module.exports, sent};
+  return {bridge: module.exports, sent, parent, window};
 }
 
 const overview = {
@@ -90,9 +90,30 @@ test('summary posts only to an exact approved parent origin', () => {
   }
 });
 
+test('period presets are accepted only from the exact WordPress parent and contain no date', () => {
+  const approved = load('https://calorietoken.net/calorieapp/');
+  for (const period of ['day', 'week', 'month', 'all']) {
+    const event = {
+      source: approved.parent,
+      origin: 'https://calorietoken.net',
+      data: {type: 'calorieapp:nutrition-period', version: 1, period},
+    };
+    assert.equal(approved.bridge.nutritionPeriodFromParent(event), period);
+    assert.equal(Object.hasOwn(event.data, 'date'), false);
+  }
+  for (const event of [
+    {source: approved.parent, origin: 'https://evil.example', data: {type: 'calorieapp:nutrition-period', version: 1, period: 'week'}},
+    {source: {}, origin: 'https://calorietoken.net', data: {type: 'calorieapp:nutrition-period', version: 1, period: 'week'}},
+    {source: approved.parent, origin: 'https://calorietoken.net', data: {type: 'calorieapp:nutrition-period', version: 1, period: 'year'}},
+    {source: approved.parent, origin: 'https://calorietoken.net', data: {type: 'calorieapp:nutrition-period', version: 2, period: 'week'}},
+  ]) assert.equal(approved.bridge.nutritionPeriodFromParent(event), null);
+});
+
 test('the food screen publishes the summary from the authenticated diary state', () => {
   const component = readFileSync(new URL('../../frontend/components/FoodSearchPlaceholder.tsx', import.meta.url), 'utf8');
   assert.match(component, /postNutritionSummaryToParent\(nutritionSummaryMessage\(/);
   assert.match(component, /authenticated:\s*diaryAuthenticatedRef\.current/);
   assert.match(component, /unavailable:\s*Boolean\(logError/);
+  assert.match(component, /nutritionPeriodFromParent\(event\)/);
+  assert.match(component, /setDiaryDate\(localDiaryDate\(\)\)|const today = localDiaryDate\(\)/);
 });

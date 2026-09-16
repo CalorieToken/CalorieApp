@@ -20,6 +20,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
 import { FoodImage } from "@/components/FoodImage";
+import { UsdaReferenceFoods } from "@/components/UsdaReferenceFoods";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { displayServingSize, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
@@ -27,7 +28,11 @@ import {
   AUTH_STATE_CHANGED_EVENT,
 } from "@/components/authEvents";
 import type { AuthStateChangedDetail } from "@/components/authEvents";
-import { nutritionSummaryMessage, postNutritionSummaryToParent } from "@/lib/nutritionSummaryBridge";
+import {
+  nutritionPeriodFromParent,
+  nutritionSummaryMessage,
+  postNutritionSummaryToParent,
+} from "@/lib/nutritionSummaryBridge";
 import { validFoodSourceCounts } from "@/lib/foodSource";
 import {
   BACKEND_WAKE_BASE_URL,
@@ -169,7 +174,12 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
   return date.toLocaleString(locale);
 }
 
-export function FoodSearchPlaceholder() {
+export type FoodWorkspaceView = "packaged" | "basic" | "diary";
+
+export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
+  activeView: FoodWorkspaceView | null;
+  onOpenAccount: () => void;
+}) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const experience = foodExperience(locale);
@@ -284,6 +294,7 @@ export function FoodSearchPlaceholder() {
       overview: diaryOverview,
     }));
   }, [diaryOverview, diaryPeriod, isLogsLoading, locale, logError]);
+
   const selectedPortionPercentage = useMemo(
     () => pendingLogIndex === -1 ? 100 : getPortionPercentage(portionOption, customPortion),
     [portionOption, customPortion, pendingLogIndex]
@@ -374,7 +385,7 @@ export function FoodSearchPlaceholder() {
     if (diaryAuthenticatedRef.current) void fetchLogs();
   }, [fetchLogs]);
 
-  function changeDiaryPeriod(period: DiaryPeriod, date: string) {
+  const changeDiaryPeriod = useCallback((period: DiaryPeriod, date: string) => {
     if (period === diaryPeriod && date === diaryDate) return;
     logsRequestIdRef.current += 1;
     logsAbortRef.current?.abort();
@@ -384,7 +395,24 @@ export function FoodSearchPlaceholder() {
     setIsLogsLoading(true);
     setDiaryPeriod(period);
     setDiaryDate(date);
-  }
+  }, [diaryDate, diaryPeriod]);
+
+  useEffect(() => {
+    function handleNutritionPeriod(event: MessageEvent<unknown>) {
+      const period = nutritionPeriodFromParent(event);
+      if (!period) return;
+      // The WordPress card deliberately sends no date. Its presets always mean
+      // the current day/week/month, keeping exact diary dates inside the app.
+      const today = localDiaryDate();
+      if (period === diaryPeriod && (period === "all" || diaryDate === today)) {
+        if (diaryAuthenticatedRef.current) void fetchLogs();
+        return;
+      }
+      changeDiaryPeriod(period, today);
+    }
+    window.addEventListener("message", handleNutritionPeriod);
+    return () => window.removeEventListener("message", handleNutritionPeriod);
+  }, [changeDiaryPeriod, diaryDate, diaryPeriod, fetchLogs]);
 
   useEffect(() => {
     return () => {
@@ -853,26 +881,12 @@ export function FoodSearchPlaceholder() {
     </form>
   ) : null;
 
-  function goToSection(id: string) {
-    const section = document.getElementById(id);
-    if (!section) return;
-    if (section instanceof HTMLDetailsElement) section.open = true;
-    section.focus({ preventScroll: true });
-    section.scrollIntoView({ block: "start", behavior: "auto" });
-  }
-
   return (
-    <section className="space-y-6" lang={locale} dir={direction}>
-      <nav aria-label={experience.copy.navigation} className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3">
-        {[["calorie-packaged-foods", copy.searchTitle], ["calorie-basic-foods", experience.copy.sourceTitle], ["calorie-diary", diaryUi.title]].map(([id, label]) => (
-          <button key={id} type="button" onClick={() => goToSection(id)} aria-controls={id}
-            className="min-h-12 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg px-3 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-secondary/10 focus-visible:ring-2 focus-visible:ring-brand-secondary">
-            {label}
-          </button>
-        ))}
-      </nav>
+    <section lang={locale} dir={direction}>
       {/* Search Section */}
-      <div id="calorie-packaged-foods" tabIndex={-1} className="scroll-mt-4 rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md transition duration-200">
+      <div id="calorie-panel-packaged" role="tabpanel" aria-labelledby="calorie-tab-packaged"
+        hidden={activeView !== "packaged"}
+        className="rounded-2xl border border-brand-secondary/20 bg-white p-5 shadow-md transition duration-200 sm:p-6">
         <h2 className="text-lg font-bold text-brand-primary">{copy.searchTitle}</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
           {copy.searchIntro}
@@ -964,19 +978,24 @@ export function FoodSearchPlaceholder() {
 
       </div>
 
-      <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading}
-        onEditing={() => {
-          if (pendingLogIndex === -1) cancelPortionLogging();
-          setLogFeedback(current => current?.index === -1 ? null : current);
-        }}
-        onChoose={food => onLogFood(food, -1)}
-        confirmation={pendingLogIndex === -1 ? portionControls : null}
-        feedback={logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
-          className="mt-3 text-sm font-semibold text-brand-primary">{logFeedback.added
-            ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
-            : translateFoodStatus(logFeedback.message, copy)}</p> : null} />
+      <div id="calorie-panel-basic" role="tabpanel" aria-labelledby="calorie-tab-basic"
+        hidden={activeView !== "basic"} className="space-y-5">
+        <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading}
+          onEditing={() => {
+            if (pendingLogIndex === -1) cancelPortionLogging();
+            setLogFeedback(current => current?.index === -1 ? null : current);
+          }}
+          onChoose={food => onLogFood(food, -1)}
+          confirmation={pendingLogIndex === -1 ? portionControls : null}
+          feedback={logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
+            className="mt-3 text-sm font-semibold text-brand-primary">{logFeedback.added
+              ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
+              : translateFoodStatus(logFeedback.message, copy)}</p> : null} />
+        <UsdaReferenceFoods />
+      </div>
 
-      <div id="calorie-diary" tabIndex={-1} className="scroll-mt-4 space-y-6">
+      <div id="calorie-panel-diary" role="tabpanel" aria-labelledby="calorie-tab-diary"
+        hidden={activeView !== "diary"} className="space-y-6">
       {/* Logged Foods Section */}
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
         <div
@@ -990,6 +1009,10 @@ export function FoodSearchPlaceholder() {
           <p className="mt-2 text-xs leading-relaxed">
             {copy.signInReturn}
           </p>
+          <button type="button" onClick={onOpenAccount}
+            className="mt-3 min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
+            {copy.signInTitle}
+          </button>
         </div>
       ) : logError ? (
         <div className="space-y-3">

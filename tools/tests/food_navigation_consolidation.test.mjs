@@ -1,45 +1,49 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
-import vm from 'node:vm';
 const root = new URL('../../', import.meta.url);
 const read = path => readFileSync(new URL(path,root),'utf8');
 const component=read('frontend/components/FoodSearchPlaceholder.tsx');
+const workspace=read('frontend/components/CalorieAppWorkspace.tsx');
 const usda=read('frontend/components/UsdaFoodSearch.tsx');
 const copy=JSON.parse(read('frontend/config/food-experience-copy.json'));
 const diary=JSON.parse(read('frontend/config/diary-copy.json'));
+const auth=JSON.parse(read('frontend/config/auth-ui-copy.json'));
 const expected=['en','nl','zh-Hans','hi','es','ar','fr','bn','pt','id','ur'];
 
-test('consolidated quick navigation has complete labels for exactly the eleven supported locales',()=>{
+test('the task tabs have complete labels for exactly the eleven supported locales',()=>{
   assert.deepEqual(Object.keys(copy).sort(),expected.toSorted());
   for(const locale of expected){
     assert.ok(copy[locale].navigation?.trim(),locale);
     assert.ok(diary[locale].scope?.trim(),locale);
+    assert.ok(auth[locale].accountTools?.trim(),locale);
   }
-  assert.match(component, /aria-label=\{experience\.copy\.navigation\}/);
+  assert.match(workspace, /role="tablist"/);
+  assert.match(workspace, /experience\.copy\.navigation/);
   assert.match(read('frontend/components/FoodDiaryPeriod.tsx'), /\{copy\.scope\}/);
 });
 
-test('every navigation target is unique and keyboard-focusable',()=>{
-  const combined=component+'\n'+usda;
-  for(const id of ['calorie-packaged-foods','calorie-basic-foods','calorie-diary']){
-    assert.equal(combined.split(`id="${id}"`).length-1,1,id);
-    assert.match(combined,new RegExp(`id="${id}" tabIndex=\\{-1\\}`));
+test('account, packaged food, basic food and diary are real exclusive tab panels',()=>{
+  const combined=workspace+'\n'+component;
+  for(const id of ['account','packaged','basic','diary']){
+    assert.equal(combined.split(`id="calorie-panel-${id}"`).length-1,1,id);
+    assert.ok(combined.includes(`aria-labelledby="calorie-tab-${id}"`),id);
   }
-  assert.match(component,/type="button" onClick=\{\(\) => goToSection\(id\)\}/);
+  assert.match(workspace,/aria-selected=\{activeTab === tab\.id\}/);
+  assert.match(workspace,/tabIndex=\{activeTab === tab\.id \? 0 : -1\}/);
+  assert.match(component,/hidden=\{activeView !== "packaged"\}/);
+  assert.match(component,/hidden=\{activeView !== "basic"\}/);
+  assert.match(component,/hidden=\{activeView !== "diary"\}/);
+  assert.doesNotMatch(component,/goToSection/);
 });
 
-test('actual navigation handler opens details, focuses and scrolls without saving or fetching',()=>{
-  const match=component.match(/function goToSection\(id: string\) \{([\s\S]*?)\n  \}/);
-  assert.ok(match,'navigation handler');
-  class Details {open=false; focus(options){this.focusOptions=options;} scrollIntoView(options){this.scrollOptions=options;}}
-  const target=new Details(); let requests=0;
-  const context={document:{getElementById:id=>id==='calorie-basic-foods'?target:null},HTMLDetailsElement:Details,fetch(){requests++;throw new Error('Navigation must not fetch');}};
-  vm.runInNewContext(`function goToSection(id){${match[1]}\n}\ngoToSection('calorie-basic-foods');goToSection('missing');`,context);
-  assert.equal(target.open,true);
-  assert.equal(target.focusOptions.preventScroll,true);
-  assert.equal(target.scrollOptions.block,'start');
-  assert.equal(requests,0);
+test('tab keyboard behavior is complete and switching preserves mounted task state',()=>{
+  for(const key of ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End']) assert.ok(workspace.includes(`"${key}"`),key);
+  assert.match(workspace,/requestAnimationFrame\(\(\) => tabRefs\.current\[index\]\?\.focus\(\)\)/);
+  assert.match(workspace,/activeView=\{activeTab === "account" \? null : activeTab\}/);
+  assert.match(component,/onOpenAccount/);
+  assert.match(component,/type="button" onClick=\{onOpenAccount\}/);
+  assert.match(usda,/return <section data-testid="usda-food-search"/);
 });
 
 test('diary explanation refers to grade counts, not the removed average/product bar',()=>{

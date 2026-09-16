@@ -1,4 +1,4 @@
-CalorieToken Heading and Language Repair 1.3.0
+CalorieToken Heading and Language Repair 1.4.0
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
@@ -44,6 +44,13 @@ The same release appends two short, translated notes to the existing CalorieHelp
 CalorieApp and USDA answers: local alternative images are not source photos,
 and USDA nutrient entries are separate from the OFF A-E product grades. Existing
 help answers, steps, links and the original character are preserved.
+
+Version 1.4.0 makes the summary compact and adds Today, This week, This month
+and All period presets in all eleven interface languages. A preset sends only
+its fixed name to the exact approved CalorieApp iframe; no diary date crosses
+the frame boundary. The app returns the same bounded aggregate counts for that
+period. Source counts and explanation remain available in a collapsed details
+section, while loading and unavailable states clear the previous counts.
 
 Task buttons inside the compatible CalorieApp can also request scrolling to a
 fixed Account, Add food, Food log or Navigation target. The companion accepts

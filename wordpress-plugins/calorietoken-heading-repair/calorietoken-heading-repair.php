@@ -2,14 +2,14 @@
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
  * Description: Reversible, hash-gated heading repair plus CalorieApp focus view, read-only login status and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 function source_matches($name, $hashes) {
     $path = WP_PLUGIN_DIR . '/calorietoken-site-style/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
