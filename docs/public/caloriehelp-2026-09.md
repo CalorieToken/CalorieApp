@@ -2,6 +2,15 @@
 
 Updated 15 September 2026 for live Site Style 1.4.46.
 
+Prepared 16 September follow-up (not live): the separately reversible Heading
+Repair 1.3.0 companion keeps the existing character, topics, answers and links,
+then appends two short explanations in all eleven languages. A neutral local
+image means that a source photo was missing, broken or rejected; it is not a
+replacement source photo. The diary overview counts OFF, USDA and other entries
+together in nutrient totals, while A–E remains an OFF product-grade distribution.
+USDA food data is never assigned an inferred Nutri-Score. This follow-up remains
+behind the single total-GO and live-acceptance boundary.
+
 Open CalorieHelp on the CalorieToken website and choose **Find foods with USDA**
 or **Also compare**. The same eleven language choices are available as in the
 food application. The original CalorieHelp character remains the guide.

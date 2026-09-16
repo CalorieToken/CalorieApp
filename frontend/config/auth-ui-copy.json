@@ -41,7 +41,8 @@
     "logoutFailed": "Unable to log out right now. Please try again.",
     "serviceSlow": "The CalorieApp service is taking longer than expected to start. Please wait a few minutes before trying again; repeated refreshes can slow startup.",
     "signedOutApp": "CalorieApp is signed out on this device.",
-    "retryLogout": "Retry logout"
+    "retryLogout": "Retry logout",
+    "bridgeUnavailable": "The website signed you in, but its connection to CalorieApp is temporarily unavailable. Please try again later."
   },
   "nl": {
     "connectedAccount": "Verbonden account",
@@ -85,7 +86,8 @@
     "logoutFailed": "Uitloggen lukt nu niet. Probeer opnieuw.",
     "serviceSlow": "Het opstarten van CalorieApp duurt langer dan verwacht. Wacht enkele minuten voordat je het opnieuw probeert; herhaald vernieuwen kan het opstarten vertragen.",
     "signedOutApp": "CalorieApp is uitgelogd op dit apparaat.",
-    "retryLogout": "Uitloggen opnieuw proberen"
+    "retryLogout": "Uitloggen opnieuw proberen",
+    "bridgeUnavailable": "Je bent ingelogd op de website, maar de verbinding met CalorieApp is tijdelijk niet beschikbaar. Probeer het later opnieuw."
   },
   "es": {
     "connectedAccount": "Cuenta conectada",
@@ -129,7 +131,8 @@
     "logoutFailed": "No se puede cerrar sesión ahora. Inténtalo de nuevo.",
     "serviceSlow": "CalorieApp tarda más de lo esperado en iniciarse. Espera unos minutos antes de volver a intentarlo; actualizar repetidamente puede retrasar el inicio.",
     "signedOutApp": "Se ha cerrado la sesión de CalorieApp en este dispositivo.",
-    "retryLogout": "Reintentar cierre de sesión"
+    "retryLogout": "Reintentar cierre de sesión",
+    "bridgeUnavailable": "Has iniciado sesión en el sitio web, pero su conexión con CalorieApp no está disponible temporalmente. Inténtalo de nuevo más tarde."
   },
   "fr": {
     "connectedAccount": "Compte connecté",
@@ -173,7 +176,8 @@
     "logoutFailed": "Impossible de se déconnecter maintenant. Réessayez.",
     "serviceSlow": "CalorieApp met plus de temps que prévu à démarrer. Patientez quelques minutes avant de réessayer ; des actualisations répétées peuvent ralentir le démarrage.",
     "signedOutApp": "CalorieApp est déconnectée sur cet appareil.",
-    "retryLogout": "Réessayer la déconnexion"
+    "retryLogout": "Réessayer la déconnexion",
+    "bridgeUnavailable": "Vous êtes connecté au site, mais sa connexion à CalorieApp est temporairement indisponible. Veuillez réessayer plus tard."
   },
   "pt": {
     "connectedAccount": "Conta conectada",
@@ -217,7 +221,8 @@
     "logoutFailed": "Não foi possível sair agora. Tente novamente.",
     "serviceSlow": "O CalorieApp está a demorar mais do que o previsto a iniciar. Aguarde alguns minutos antes de tentar novamente; atualizar repetidamente pode atrasar o início.",
     "signedOutApp": "A sessão do CalorieApp foi encerrada neste dispositivo.",
-    "retryLogout": "Tentar sair novamente"
+    "retryLogout": "Tentar sair novamente",
+    "bridgeUnavailable": "Você entrou no site, mas a conexão dele com o CalorieApp está temporariamente indisponível. Tente novamente mais tarde."
   },
   "zh-Hans": {
     "connectedAccount": "已连接的账户",
@@ -261,7 +266,8 @@
     "logoutFailed": "目前无法退出登录。请重试。",
     "serviceSlow": "CalorieApp 服务启动时间超出预期。请等待几分钟再重试；反复刷新可能会减慢启动速度。",
     "signedOutApp": "已在此设备上退出 CalorieApp。",
-    "retryLogout": "重试退出"
+    "retryLogout": "重试退出",
+    "bridgeUnavailable": "你已登录网站，但网站与 CalorieApp 的连接暂时不可用。请稍后重试。"
   },
   "id": {
     "connectedAccount": "Akun terhubung",
@@ -305,7 +311,8 @@
     "logoutFailed": "Tidak dapat keluar sekarang. Coba lagi.",
     "serviceSlow": "Layanan CalorieApp memerlukan waktu lebih lama dari perkiraan untuk dimulai. Tunggu beberapa menit sebelum mencoba lagi; memuat ulang berulang kali dapat memperlambat prosesnya.",
     "signedOutApp": "CalorieApp sudah keluar di perangkat ini.",
-    "retryLogout": "Coba keluar lagi"
+    "retryLogout": "Coba keluar lagi",
+    "bridgeUnavailable": "Anda sudah masuk ke situs web, tetapi koneksinya ke CalorieApp sedang tidak tersedia. Silakan coba lagi nanti."
   },
   "hi": {
     "connectedAccount": "जुड़ा हुआ खाता",
@@ -349,7 +356,8 @@
     "logoutFailed": "अभी लॉग आउट नहीं हो सका। फिर कोशिश करें।",
     "serviceSlow": "CalorieApp सेवा शुरू होने में अपेक्षा से अधिक समय ले रही है। फिर कोशिश करने से पहले कुछ मिनट रुकें; बार-बार रीफ़्रेश करने से शुरू होने में और समय लग सकता है।",
     "signedOutApp": "इस डिवाइस पर CalorieApp से लॉग आउट हो गया है।",
-    "retryLogout": "लॉग आउट फिर आज़माएँ"
+    "retryLogout": "लॉग आउट फिर आज़माएँ",
+    "bridgeUnavailable": "वेबसाइट पर आपका साइन-इन हो गया है, लेकिन CalorieApp से उसका कनेक्शन फ़िलहाल उपलब्ध नहीं है। कृपया बाद में फिर कोशिश करें।"
   },
   "bn": {
     "connectedAccount": "সংযুক্ত অ্যাকাউন্ট",
@@ -393,7 +401,8 @@
     "logoutFailed": "এখন লগ আউট করা যায়নি। আবার চেষ্টা করুন।",
     "serviceSlow": "CalorieApp চালু হতে প্রত্যাশার চেয়ে বেশি সময় লাগছে। আবার চেষ্টা করার আগে কয়েক মিনিট অপেক্ষা করুন; বারবার রিফ্রেশ করলে চালু হতে আরও সময় লাগতে পারে।",
     "signedOutApp": "এই ডিভাইসে CalorieApp থেকে লগ আউট হয়েছে।",
-    "retryLogout": "লগ আউট আবার চেষ্টা করুন"
+    "retryLogout": "লগ আউট আবার চেষ্টা করুন",
+    "bridgeUnavailable": "ওয়েবসাইটে আপনার সাইন-ইন হয়েছে, কিন্তু CalorieApp-এর সঙ্গে এর সংযোগ সাময়িকভাবে অনুপলব্ধ। অনুগ্রহ করে পরে আবার চেষ্টা করুন।"
   },
   "ar": {
     "connectedAccount": "الحساب المتصل",
@@ -437,7 +446,8 @@
     "logoutFailed": "تعذر تسجيل الخروج الآن. حاول مجددًا.",
     "serviceSlow": "تستغرق خدمة CalorieApp وقتًا أطول من المتوقع لبدء التشغيل. انتظر بضع دقائق قبل المحاولة مجددًا؛ قد يؤدي التحديث المتكرر إلى إبطاء بدء التشغيل.",
     "signedOutApp": "تم تسجيل الخروج من CalorieApp على هذا الجهاز.",
-    "retryLogout": "إعادة محاولة تسجيل الخروج"
+    "retryLogout": "إعادة محاولة تسجيل الخروج",
+    "bridgeUnavailable": "تم تسجيل دخولك إلى الموقع، لكن اتصاله بـ CalorieApp غير متاح مؤقتًا. يُرجى المحاولة لاحقًا."
   },
   "ur": {
     "connectedAccount": "منسلک اکاؤنٹ",
@@ -481,6 +491,7 @@
     "logoutFailed": "ابھی لاگ آؤٹ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
     "serviceSlow": "CalorieApp سروس شروع ہونے میں توقع سے زیادہ وقت لے رہی ہے۔ دوبارہ کوشش کرنے سے پہلے چند منٹ انتظار کریں؛ بار بار ریفریش کرنے سے آغاز میں مزید دیر ہو سکتی ہے۔",
     "signedOutApp": "اس آلے پر CalorieApp سے لاگ آؤٹ ہو گیا ہے۔",
-    "retryLogout": "لاگ آؤٹ دوبارہ آزمائیں"
+    "retryLogout": "لاگ آؤٹ دوبارہ آزمائیں",
+    "bridgeUnavailable": "آپ ویب سائٹ پر سائن ان ہو گئے ہیں، لیکن CalorieApp سے اس کا رابطہ عارضی طور پر دستیاب نہیں ہے۔ براہِ کرم بعد میں دوبارہ کوشش کریں۔"
   }
 }

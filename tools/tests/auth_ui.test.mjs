@@ -38,7 +38,7 @@ test('Owned progress and errors translate; arbitrary server or product text rema
   for(const key of ['logout','signIn','continueXaman','connectedAccount','preparingXaman']){
    assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),authCopy.en[key],tag+'.'+key);
   }
-  for(const key of ['restoring','complete','restoreFailed','preparing','starting','retrying','busy','activating','reconnecting','signedBoth','languageMismatch','responseMismatch','finishFailed','prepareFailed','logoutFailed','serviceSlow']){
+  for(const key of ['restoring','complete','restoreFailed','preparing','starting','retrying','busy','activating','reconnecting','signedBoth','languageMismatch','responseMismatch','finishFailed','bridgeUnavailable','prepareFailed','logoutFailed','serviceSlow']){
    assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),localized[key],tag+'.'+key);
   }
  }

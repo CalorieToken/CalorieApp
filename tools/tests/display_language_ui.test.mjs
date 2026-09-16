@@ -15,7 +15,7 @@ function loadModule(path, imports, globals = {}) {
   }}).outputText;
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
-    ...globals, module, exports: module.exports,
+    URL, ...globals, module, exports: module.exports,
     require(specifier) {
       if (["react", "react/jsx-runtime", "next/image"].includes(specifier)) return require(specifier);
       if (Object.hasOwn(imports, specifier)) return imports[specifier];
@@ -30,6 +30,10 @@ const locales = loadModule("../../frontend/lib/locales.ts", {
 const experienceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-experience-copy.json", import.meta.url)));
 const experience = loadModule("../../frontend/lib/foodExperience.ts", {
   "@/config/food-experience-copy.json": { default: experienceCopy }, "@/lib/locales": locales,
+});
+const sourceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-source-copy.json", import.meta.url)));
+const foodSource = loadModule("../../frontend/lib/foodSource.ts", {
+  "@/config/food-source-copy.json": { default: sourceCopy }, "@/lib/locales": locales,
 });
 function load(enabled) {
   return loadModule("../../frontend/components/DisplayLanguageProvider.tsx", {
@@ -143,9 +147,10 @@ test("actual food controls render the eleven languages and escape literal produc
   });
   const display = { enabled: true, locale: "en" };
   const imports = {
-    "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience,
+    "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
+  imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   const { SearchBar } = loadModule("../../frontend/components/SearchBar.tsx", imports);
   const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);
@@ -166,7 +171,8 @@ test("actual food controls render the eleven languages and escape literal produc
       isLogging: false, onLog() {}, formatNumber: String,
     }));
     assert.ok(card.includes(renderedText(foodUi.formatFoodUi(copy[tag].logProduct, { product }))), tag);
-    assert.ok(card.includes(renderedText(copy[tag].noImage)), tag);
+    assert.ok(card.includes(renderedText(foodUi.formatFoodUi(sourceCopy[tag].fallbackAlt, { product }))), tag);
+    assert.ok(card.includes("food-placeholder-off.svg"), tag);
     assert.ok(card.includes(renderedText(copy[tag].logFood)), tag);
     assert.ok(card.includes('<bdi dir="ltr">00123</bdi>'), tag);
     assert.doesNotMatch(card, /<b>Tea<\/b>/, tag);
@@ -187,8 +193,9 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
   });
-  const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience,
+  const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
+  imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;
   const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);

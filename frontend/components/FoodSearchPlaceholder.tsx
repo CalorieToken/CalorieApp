@@ -19,7 +19,7 @@ import { foodExperience, displayUsdaGramAmount } from "@/lib/foodExperience";
 import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
-import Image from "next/image";
+import { FoodImage } from "@/components/FoodImage";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { displayServingSize, formatFoodUi, getFoodUi, translateFoodStatus } from "@/lib/foodUi";
 import { foodSearchRetryAt } from "@/lib/foodSearchAvailability";
@@ -27,6 +27,8 @@ import {
   AUTH_STATE_CHANGED_EVENT,
 } from "@/components/authEvents";
 import type { AuthStateChangedDetail } from "@/components/authEvents";
+import { nutritionSummaryMessage, postNutritionSummaryToParent } from "@/lib/nutritionSummaryBridge";
+import { validFoodSourceCounts } from "@/lib/foodSource";
 import {
   BACKEND_WAKE_BASE_URL,
   FOOD_SEARCH_TIMEOUT_MS,
@@ -268,8 +270,20 @@ export function FoodSearchPlaceholder() {
   const recordedGrades = useMemo(() => {
     const grades = ["A", "B", "C", "D", "E"].map(grade => ({grade, count: diaryOverview.grades[grade] ?? 0}));
     const known = grades.reduce((sum, item) => sum + item.count, 0);
-    return {grades, known, total: diaryOverview.count, missing: diaryOverview.count - known};
+    const total = diaryOverview.sources?.open_food_facts ?? Number.NaN;
+    return {grades, known, total, missing: total - known};
   }, [diaryOverview]);
+
+  useEffect(() => {
+    postNutritionSummaryToParent(nutritionSummaryMessage({
+      authenticated: diaryAuthenticatedRef.current,
+      loading: isLogsLoading,
+      unavailable: Boolean(logError && logError !== SIGN_IN_REQUIRED_LOG_MESSAGE),
+      locale,
+      period: diaryPeriod,
+      overview: diaryOverview,
+    }));
+  }, [diaryOverview, diaryPeriod, isLogsLoading, locale, logError]);
   const selectedPortionPercentage = useMemo(
     () => pendingLogIndex === -1 ? 100 : getPortionPercentage(portionOption, customPortion),
     [portionOption, customPortion, pendingLogIndex]
@@ -332,12 +346,13 @@ export function FoodSearchPlaceholder() {
       }
       const data = (await response.json()) as DiaryOverview;
       if (!Array.isArray(data.entries) || !Number.isFinite(data.count) || !data.grades) throw new Error("Invalid diary response");
+      const sources = validFoodSourceCounts(data.sources, data.count);
       if (requestId !== logsRequestIdRef.current) {
         return;
       }
       const entries = normalizeFoodItems(data.entries);
       setLogs(current => before ? [...current, ...entries.filter(item => !current.some(old => old.id === item.id))] : entries);
-      setDiaryOverview(data);
+      setDiaryOverview({...data, sources});
       setLogError(null);
     } catch (requestError) {
       if (requestId === logsRequestIdRef.current) {
@@ -1022,7 +1037,7 @@ export function FoodSearchPlaceholder() {
             </div>
           </dl>
 
-          <RecordedGradeSummary summary={recordedGrades} locale={locale} />
+          <RecordedGradeSummary summary={recordedGrades} sources={diaryOverview.sources} locale={locale} />
         </div>
       ) : null}
 
@@ -1040,23 +1055,7 @@ export function FoodSearchPlaceholder() {
           </div>
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-            <div className="h-28 w-full shrink-0 overflow-hidden rounded-lg border border-brand-secondary/15 bg-brand-bg sm:h-28 sm:w-28">
-              {selectedLog.image_url ? (
-                <Image
-                  src={selectedLog.image_url}
-                  alt={formatFoodUi(copy.productImage, { product: selectedLog.product_name })}
-                  className="h-full w-full object-contain"
-                  width={112}
-                  height={112}
-                  sizes="112px"
-                  unoptimized
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs font-medium text-brand-secondary/60">
-                  {copy.noImage}
-                </div>
-              )}
-            </div>
+            <FoodImage item={selectedLog} size={112} className="h-28 w-full shrink-0 sm:h-28 sm:w-28" />
 
             <div className="min-w-0 flex-1">
               <p className="text-base font-semibold text-brand-primary"><bdi>{selectedLog.product_name}</bdi></p>

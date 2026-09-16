@@ -9,7 +9,7 @@ import subprocess
 from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar
 
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError as UrllibHTTPError, URLError
 
@@ -119,10 +119,17 @@ def _to_optional_text(value: Any) -> str | None:
 
 
 def _extract_image_url(product: dict[str, Any]) -> str | None:
-    """Prefer higher-quality Open Food Facts image fields when available."""
+    """Prefer an exact OFF image host; unsafe/missing values use the UI fallback."""
     for key in ("image_front_url", "image_url", "image_small_url", "image_front_small_url"):
         image_url = _to_optional_text(product.get(key))
         if image_url:
+            try:
+                parsed = urlsplit(image_url)
+            except ValueError:
+                continue
+            if (parsed.scheme != "https" or parsed.hostname != "images.openfoodfacts.org"
+                    or not parsed.path.startswith("/images/products/")):
+                continue
             return image_url
     return None
 

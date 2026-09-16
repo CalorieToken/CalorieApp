@@ -1,11 +1,11 @@
 "use client";
 
 import { FoodSearchItem } from "@/components/foodTypes";
-import Image from "next/image";
-import { ReactNode, useEffect, useId, useRef, useState } from "react";
+import { ReactNode, useEffect, useId, useRef } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
+import { FoodImage } from "@/components/FoodImage";
 
 type FoodCardProps = {
   item: FoodSearchItem;
@@ -21,13 +21,11 @@ type FoodCardProps = {
 export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNumber, children, comparison, feedback }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
-  const [imageFailed, setImageFailed] = useState(false);
   const portionId = useId();
   const portionRef = useRef<HTMLDivElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
   const wasExpandedRef = useRef(false);
   const isExpanded = Boolean(children);
-  const showImage = Boolean(item.image_url) && !imageFailed;
 
   useEffect(() => {
     if (isExpanded && !wasExpandedRef.current) {
@@ -47,24 +45,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
   return (
     <li lang={locale} dir={direction} className={`rounded-xl border bg-white p-4 sm:p-5 shadow-sm transition duration-200 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="h-24 w-full shrink-0 overflow-hidden rounded-lg border border-brand-secondary/15 bg-brand-bg sm:h-24 sm:w-24">
-          {showImage ? (
-            <Image
-              src={item.image_url ?? ""}
-              alt={formatFoodUi(copy.productImage, { product: item.product_name })}
-              className="h-full w-full object-contain"
-              width={96}
-              height={96}
-              sizes="96px"
-              unoptimized
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs font-medium text-brand-secondary/60">
-              {copy.noImage}
-            </div>
-          )}
-        </div>
+        <FoodImage item={item} size={96} className="h-24 w-full shrink-0 sm:h-24 sm:w-24" />
 
         <div className="min-w-0 flex-1">
           <p className="text-base font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>

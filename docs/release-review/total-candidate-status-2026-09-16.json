@@ -1,0 +1,110 @@
+{
+  "schema": "calorietoken.total-candidate-status.v1",
+  "date": "2026-09-16",
+  "status": "integrated_local_candidate_complete_live_partially_updated",
+  "decision_boundary": "one_explicit_total_go",
+  "production_mutated": false,
+  "publication_authorized": false,
+  "scheduling_authorized": false,
+  "canonical_pr": 146,
+  "candidate_base": {
+    "merge_base": "3845de6eb1eaba5a2a6069c7037a11c12486f505",
+    "live_backend_commit": "187b8c041ce2af093cebd5aab95b0ee689ba302a",
+    "frontend_feature_commit": "ac724aabf1534e51e819ef5d84df04f246eeea23",
+    "integrated_runtime_tree_before_status_refresh": "923d2a552df16ef642b08c7d8d9ac701b78e9b56",
+    "direct_backend_deploy_of_frontend_feature_branch_allowed": false
+  },
+  "steps": {
+    "1": "integrated_candidate_complete_live_partial",
+    "2": "candidate_complete_not_live",
+    "3": "candidate_complete_live_acceptance_pending",
+    "4": "review_package_complete_open_checks_preserved",
+    "5": "release_bundle_complete_total_go_pending"
+  },
+  "food_sources": {
+    "period_counts": ["open_food_facts", "usda", "other"],
+    "nutrient_totals_include_all_sources": true,
+    "grades_apply_only_to": "open_food_facts_source_supplied_nutri_score",
+    "usda_grade_inferred": false,
+    "database_migration": false
+  },
+  "fallback_images": {
+    "local_variants": ["open_food_facts", "usda", "other"],
+    "missing_and_broken_supported": true,
+    "remote_image_origin": "https://images.openfoodfacts.org/images/products/"
+  },
+  "wordpress": {
+    "plugin": "calorietoken-heading-repair",
+    "version": "1.3.0",
+    "files": 12,
+    "sha256": "5c7736741570bafd1247ef4a42d855d682e9bcbe352ef13d9d668c0ccbe6f5e5",
+    "replaces_existing_login_or_style_plugin": false,
+    "stores_private_summary": false
+  },
+  "tests": {
+    "node": {"passed": 303, "failed": 0},
+    "typescript": "passed",
+    "next_production_build": "passed",
+    "release_builder": {"passed": 5, "failed": 0},
+    "backend_pytest": {
+      "passed": 1069,
+      "skipped": 24,
+      "failed": 0,
+      "third_party_warnings": 1
+    },
+    "targeted_login_food_integration": {
+      "passed": 224,
+      "failed": 0
+    },
+    "python_tool_tests": {"passed": 82, "failed": 0},
+    "python_syntax": "passed",
+    "npm_audit_known_vulnerabilities": 0,
+    "pip_audit_known_vulnerabilities": 0,
+    "chromium_browser": "prepared_in_ci_local_browser_download_blocked_by_network",
+    "php_lint": "prepared_in_ci_local_runtime_unavailable"
+  },
+  "final_audit_fix": {
+    "production_code_changed": false,
+    "changed_files": [
+      "backend/tests/test_open_food_facts_normalization.py",
+      "tools/build_total_review_package.py",
+      "tools/tests/test_build_total_review_package.py",
+      "release-check.sh",
+      ".github/workflows/ci.yml"
+    ],
+    "fixed_contracts": [
+      "rejected_or_oversized_remote_image_uses_local_fallback_without_dropping_valid_food",
+      "indexed_off_image_fixture_uses_approved_images_products_path",
+      "source_candidate_excludes_test_caches_virtual_environments_and_local_databases"
+    ]
+  },
+  "review": {
+    "proposals": 97,
+    "without_open_checks": 38,
+    "with_open_checks": 59,
+    "publication_authorized": 0,
+    "scheduled": 0,
+    "media_replaced": 0,
+    "referenced_media_and_subtitle_paths": 214
+  },
+  "live_delta": {
+    "frontend_commit": "ac724aabf1534e51e819ef5d84df04f246eeea23",
+    "backend_commit": "187b8c041ce2af093cebd5aab95b0ee689ba302a",
+    "identity_bridge": "0.3.29",
+    "login_repair": "1.0.0",
+    "site_style": "1.4.46",
+    "heading_language_repair": "1.1.0",
+    "nutrition_summary_visible_in_wordpress": false,
+    "step_3_live_acceptance_complete": false,
+    "paused_wordpress_drafts": [8079, 8080]
+  },
+  "external_changes": {
+    "github_uploaded": false,
+    "branch_changed": false,
+    "pull_request_changed": false,
+    "deployment_changed": false,
+    "private_wordpress_drafts_created": [8079, 8080],
+    "public_content_changed": false,
+    "reason": "explicit owner approval required by external write safety gate"
+  }
+}

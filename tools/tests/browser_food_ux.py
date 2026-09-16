@@ -4,9 +4,10 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright, expect
 ROOT=Path(__file__).resolve().parents[2]; OUT=Path(os.environ.get('UX_EVIDENCE_DIR', str(ROOT/'ux-check-evidence/browser')))
 OUT.mkdir(parents=True,exist_ok=True)
-X=json.loads((ROOT/'frontend/config/food-experience-copy.json').read_text()); C=json.loads((ROOT/'frontend/config/food-ui-copy.json').read_text()); D=json.loads((ROOT/'frontend/config/food-discovery-copy.json').read_text())
+X=json.loads((ROOT/'frontend/config/food-experience-copy.json').read_text()); C=json.loads((ROOT/'frontend/config/food-ui-copy.json').read_text()); D=json.loads((ROOT/'frontend/config/food-discovery-copy.json').read_text()); S=json.loads((ROOT/'frontend/config/food-source-copy.json').read_text())
 report={'mode':'Local Next.js production build; synthetic API and diary; no live writes','checks':[], 'writes':[], 'errors':[], 'blocked_external':[]}
-food={'id':1,'product_name':'Synthetic oats','calories':200,'protein':10,'fat':4,'carbohydrates':32,'nutri_score':'A','portion_percentage':100,'barcode':'0012345678905','brand':'Test fixture','serving_size':'100 g','created_at':'2026-09-15T12:00:00Z'}
+food={'id':1,'product_name':'Synthetic oats','calories':200,'protein':10,'fat':4,'carbohydrates':32,'nutri_score':'A','portion_percentage':100,'barcode':'0012345678905','brand':'Test fixture','serving_size':'100 g','image_url':'https://tracker.example/pixel.gif','created_at':'2026-09-15T12:00:00Z'}
+broken_food={**food,'id':2,'product_name':'Broken source photo','barcode':'0099999999999','image_url':'https://images.openfoodfacts.org/images/products/009/999/missing.jpg'}
 entries=[]; logged_in=False; save_status=201
 
 def ok(name,condition=True):
@@ -26,8 +27,9 @@ def routing(route):
     elif path.endswith('/logs/overview'):
         if not logged_in: status=401; data={'detail':'Isolated guest fixture'}
         else:
-            data={'entries':entries,'next_before':None,'count':len(entries),'grades':{g:sum(f.get('nutri_score')==g for f in entries) for g in 'ABCDE'},**{k:sum(f[k] for f in entries) for k in ['calories','protein','fat','carbohydrates']}}
-    elif path.endswith('/search-food'): data={'results':[food]}
+            off=sum(bool(f.get('barcode')) for f in entries); usda=sum(not f.get('barcode') and str(f.get('brand','')).startswith('USDA FoodData Central · FDC ') for f in entries)
+            data={'entries':entries,'next_before':None,'count':len(entries),'grades':{g:sum(bool(f.get('barcode')) and f.get('nutri_score')==g for f in entries) for g in 'ABCDE'},'sources':{'open_food_facts':off,'usda':usda,'other':len(entries)-off-usda},**{k:sum(f[k] for f in entries) for k in ['calories','protein','fat','carbohydrates']}}
+    elif path.endswith('/search-food'): data={'results':[food,broken_food]}
     elif path.endswith('/log-food'):
         status=save_status; payload=req.post_data_json; report['writes'].append(payload)
         if status==201:
@@ -43,10 +45,17 @@ with sync_playwright() as p:
     page=context.new_page(); page.on('pageerror',lambda e:report['errors'].append(str(e)))
     try:
         page.goto('http://127.0.0.1:3100/?ui_lang=nl',wait_until='networkidle'); page.locator('html[lang="nl"]').wait_for()
+        page.locator('#food-search').fill('oats'); page.get_by_role('button',name=C['nl']['search'],exact=True).click()
+        expect(page.locator('img[src*="food-placeholder-off.svg"]')).to_have_count(2)
+        ok('OFF results with rejected or broken photos get the local product illustration')
+        ok('Rejected image URLs are not requested',not any('tracker.example' in url for url in report['blocked_external']))
+        ok('A failed request to the trusted OFF image host falls back without breaking the product card',any('images.openfoodfacts.org' in url for url in report['blocked_external']))
         usda=page.get_by_test_id('usda-food-search'); usda.locator(':scope > summary').click()
         usda.locator('input[type="search"]').fill('168878'); usda.locator('form button[type="submit"]').click()
         usda.get_by_role('button').filter(has_text='FDC 168878').click()
         chosen=page.get_by_test_id('usda-selected-food'); chosen.locator('input[inputmode="decimal"]').fill('75')
+        expect(chosen.locator('img[src*="food-placeholder-usda.svg"]')).to_be_visible()
+        ok('USDA food without a source photo gets the local alternative illustration')
         expect(chosen.get_by_test_id('usda-nutrition-preview')).to_contain_text('97,5')
         ok('Exact FDC 168878 / 75 grams produces 97.5 kcal from the actual local USDA catalogue')
         chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True).click()
@@ -78,7 +87,7 @@ with sync_playwright() as p:
         ok('Cancel performs no write',len(report['writes'])==0)
         logged_in=True; entries=[dict(food)]
         page.evaluate("window.dispatchEvent(new CustomEvent('calorieapp:auth-state-changed',{detail:{authenticated:true}}))")
-        expect(page.get_by_role('heading',name=X['nl']['gradeTitle'],exact=True)).to_be_visible()
+        expect(page.get_by_role('heading',name=S['nl']['sourcesTitle'],exact=True)).to_be_visible()
         chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True).click()
         chosen.locator('form button[type="submit"]').dblclick()
         expect(chosen.get_by_role('status')).to_contain_text('eetdagboek')
@@ -89,9 +98,10 @@ with sync_playwright() as p:
         saved_food=page.get_by_role('button',name=C['nl']['viewDetails'].replace('{product}',payload['product_name']),exact=True)
         expect(saved_food).to_contain_text('Gegeten portie: 75 g')
         ok('The saved USDA diary card shows actual grams rather than an unexplained 100 percent')
-        coverage=page.get_by_role('heading',name=X['nl']['gradeTitle'],exact=True).locator('..')
-        expect(coverage).to_contain_text('1 van 2')
-        ok('Diary shows one known score out of two entries after USDA save')
+        coverage=page.get_by_role('heading',name=S['nl']['sourcesTitle'],exact=True).locator('..')
+        expect(coverage).to_contain_text('1 van 1')
+        expect(coverage).to_contain_text('USDA FoodData Central')
+        ok('Diary separates one OFF grade from the USDA entry without treating USDA as an ungraded product')
         coverage.screenshot(path=str(OUT/'nl-diary-360.png'))
         page.screenshot(path=str(OUT/'nl-full-app-360.png'),full_page=True)
         page.set_viewport_size({'width':1440,'height':1000}); page.screenshot(path=str(OUT/'nl-full-app-1440.png'),full_page=True)

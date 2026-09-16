@@ -5,6 +5,7 @@ import type { FoodSearchItem } from "@/components/foodTypes";
 import { discoveryCopy, edibleGrams, searchUsda, similarFoodNames, usdaLogItem, usdaNutrition } from "@/lib/foodDiscovery";
 import type { UsdaCatalogue, UsdaFood } from "@/lib/foodDiscovery";
 import { foodExperience } from "@/lib/foodExperience";
+import { FoodImage } from "@/components/FoodImage";
 
 /** The existing source, gram calculation and explicit-save callback are retained. */
 export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirmation, feedback }: {
@@ -117,8 +118,15 @@ export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirma
     {!selected && matches.length > limit ? <button type="button" disabled={disabled} onClick={() => setLimit(value => value + 6)} className="mt-3 min-h-11 rounded-full border border-brand-secondary px-4 py-2 text-sm text-brand-secondary">{copy.more}</button> : null}
     {selected && values ? <div ref={detail} data-testid="usda-selected-food" tabIndex={-1} className="mt-5 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg p-4 focus-visible:ring-2 focus-visible:ring-brand-secondary">
       <button type="button" onClick={changeFood} disabled={disabled} className="mb-3 min-h-11 rounded-full border border-brand-secondary bg-white px-4 py-2 text-sm font-semibold text-brand-secondary disabled:opacity-50">{ui.copy.changeFood}</button>
-      <p className="text-sm text-brand-secondary">{copy.selected}</p>
-      <h3 className="mt-1 break-words font-bold text-brand-primary"><bdi lang="en">{selected.description}</bdi></h3>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <FoodImage item={{ product_name: selected.description, image_url: null, barcode: null,
+          brand: `USDA FoodData Central · FDC ${selected.fdc_id}` }} size={96}
+          className="h-24 w-full shrink-0 sm:w-24" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-brand-secondary">{copy.selected}</p>
+          <h3 className="mt-1 break-words font-bold text-brand-primary"><bdi lang="en">{selected.description}</bdi></h3>
+        </div>
+      </div>
       <p className="mt-2 text-sm text-brand-secondary">{copy.amountNote}</p>
       <label className="mt-3 block text-sm font-semibold text-brand-primary">{copy.grams}
         <input type="text" inputMode="decimal" value={amount} maxLength={9} dir="ltr" disabled={disabled}

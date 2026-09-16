@@ -11,6 +11,7 @@ const localeRegistry = JSON.parse(await readFile(new URL("../../frontend/config/
 const usdaReference = JSON.parse(await readFile(new URL("../../frontend/data/usda-reference-foods.json", import.meta.url), "utf8"));
 const usdaCopy = JSON.parse(await readFile(new URL("../../frontend/config/usda-reference-copy.json", import.meta.url), "utf8"));
 const foodUiCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-ui-copy.json", import.meta.url), "utf8"));
+const foodSourceCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-source-copy.json", import.meta.url), "utf8"));
 async function loadLibrary(name, imports, globals = {}) {
   const source = await readFile(new URL(`../../frontend/lib/${name}.ts`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
@@ -27,6 +28,9 @@ async function loadLibrary(name, imports, globals = {}) {
   return module.exports;
 }
 const locales = await loadLibrary("locales", { "@/config/locales.json": { default: localeRegistry } });
+const foodSource = await loadLibrary("foodSource", {
+  "@/config/food-source-copy.json": { default: foodSourceCopy }, "@/lib/locales": locales,
+}, {URL});
 const discoveryTranslations = JSON.parse(await readFile(new URL("../../frontend/config/food-discovery-copy.json", import.meta.url), "utf8"));
 const discoveryCatalogue = JSON.parse(await readFile(new URL("../../frontend/public/data/usda-search-foods.json", import.meta.url), "utf8"));
 const discovery = await loadLibrary("foodDiscovery", {
@@ -52,9 +56,12 @@ const diary = await loadLibrary("foodDiary", {
   "@/config/diary-copy.json": {default: JSON.parse(await readFile(new URL("../../frontend/config/diary-copy.json", import.meta.url), "utf8"))},
 }, {URLSearchParams});
 function overview(entries) {
+  const usda = entries.filter(item => !item.barcode && /^USDA FoodData Central · FDC \d+$/.test(item.brand ?? "")).length;
+  const openFoodFacts = entries.filter(item => typeof item.barcode === "string" && item.barcode.trim()).length;
   return {entries, next_before: null, count: entries.length,
     ...Object.fromEntries(["calories","protein","fat","carbohydrates"].map(key => [key, entries.reduce((sum, item) => sum + item[key], 0)])),
-    grades: Object.fromEntries(["A","B","C","D","E"].map(grade => [grade, entries.filter(item => item.nutri_score?.trim().toUpperCase() === grade).length]))};
+    grades: Object.fromEntries(["A","B","C","D","E"].map(grade => [grade, entries.filter(item => item.barcode && item.nutri_score?.trim().toUpperCase() === grade).length])),
+    sources: {open_food_facts: openFoodFacts, usda, other: entries.length - openFoodFacts - usda}};
 }
 const AUTH_EVENT = "test-auth-state-changed";
 const foods = Array.from({ length: 30 }, (_, index) => ({
@@ -163,6 +170,11 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/lib/foodDiary") return diary;
       if (specifier === "@/lib/foodUi") return foodUi;
       if (specifier === "@/lib/foodExperience") return experience;
+      if (specifier === "@/lib/foodSource") return foodSource;
+      if (specifier === "@/lib/nutritionSummaryBridge") return {
+        nutritionSummaryMessage: (input) => input,
+        postNutritionSummaryToParent: () => false,
+      };
       if (specifier === "@/lib/usdaReference") return usdaMath;
       if (specifier === "@/lib/foodBarcode") return barcode;
       if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };

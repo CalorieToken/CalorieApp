@@ -53,6 +53,7 @@ jobs:
           python tools/sync_identity_contracts.py --check
           python -m unittest tools.tests.test_identity_contracts
           python -m unittest tools.tests.test_localization_contracts
+          python -m unittest tools.tests.test_build_total_review_package
 
       - name: Test mobile, offline custody and tracked-secret guards
         run: |

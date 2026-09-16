@@ -21,6 +21,13 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from . import database as db_module
+from .bridge_codes import (
+    BACKEND_CODE_PREFIX,
+    BRIDGE_CODE_CONTEXT,
+    bridge_code_canonical_payload,
+    consume_bridge_code,
+    issue_bridge_code,
+)
 from .account_data_import import (
     AccountDataImportSafetyError,
     plan_account_data_import,
@@ -79,6 +86,8 @@ from .schemas import (
     AccountExportImportReceipt,
     AccountExportLoginHandoff,
     CurrentUserResponse,
+    BridgeCodeRequest,
+    BridgeCodeResponse,
     FoodLog,
     FoodLogCreate,
     IdentityCallbackResponse,
@@ -510,11 +519,12 @@ def _reserve_bridge_auth_nonce(
     return True
 
 
-def _authenticate_bridge_state_validate_request(
+def _authenticate_bridge_request(
     *,
     request: Request,
     session: Session,
     state: str,
+    code_payload: Optional[BridgeCodeRequest] = None,
 ) -> tuple[bool, str]:
     if not _WORDPRESS_BRIDGE_SECRET:
         return False, "missing_config"
@@ -557,6 +567,10 @@ def _authenticate_bridge_state_validate_request(
         nonce=nonce,
         state=state,
     )
+    if code_payload is not None:
+        canonical_payload = bridge_code_canonical_payload(
+            client_id=client_id, timestamp=timestamp, nonce=nonce, payload=code_payload
+        )
     expected_signature = _bridge_auth_signature(canonical_payload, _WORDPRESS_BRIDGE_SECRET)
     if not compare_digest(signature.lower(), expected_signature):
         return False, "invalid_signature"
@@ -566,7 +580,7 @@ def _authenticate_bridge_state_validate_request(
         session,
         client_id=client_id,
         nonce=nonce,
-        context=BRIDGE_STATE_VALIDATE_CONTEXT,
+        context=BRIDGE_CODE_CONTEXT if code_payload is not None else BRIDGE_STATE_VALIDATE_CONTEXT,
     )
     if not reserved:
         return False, "replayed_nonce"
@@ -813,6 +827,17 @@ def _exchange_code_for_claims(code: str, state: str) -> IdentityClaimsResponse:
         logger.warning("WordPress bridge rejected code exchange (status=%s)", response.status_code)
         raise HTTPException(status_code=400, detail="Authorization code exchange rejected")
 
+    content_type = response.headers.get("content-type", "").partition(";")[0].strip().lower()
+    if content_type == "text/html":
+        # Hosting verification pages can return 200 before WordPress runs. A
+        # browser retry cannot complete that server-to-server check. Expose a
+        # fixed error code, never the page body, headers, URL, or credentials.
+        logger.warning("WordPress bridge returned HTML instead of identity JSON")
+        raise HTTPException(
+            status_code=502,
+            detail={"code": "wordpress_bridge_html_response"},
+        )
+
     try:
         payload = response.json()
     except ValueError as exc:
@@ -930,7 +955,7 @@ def identity_validate_pending_state(
     session: DbSession,
 ) -> IdentityStateValidationResponse:
     """Server-to-server endpoint for bridge validation of pending login state."""
-    authenticated, reason = _authenticate_bridge_state_validate_request(
+    authenticated, reason = _authenticate_bridge_request(
         request=request,
         session=session,
         state=payload.state,
@@ -968,6 +993,26 @@ def identity_validate_pending_state(
     )
 
 
+@app.post("/api/identity/bridge/code", response_model=BridgeCodeResponse)
+def identity_issue_bridge_code(
+    request: Request,
+    payload: BridgeCodeRequest,
+    session: DbSession,
+) -> BridgeCodeResponse:
+    """Accept a signed WordPress assertion and issue only a one-time code."""
+    authenticated, reason = _authenticate_bridge_request(
+        request=request, session=session, state=payload.state, code_payload=payload
+    )
+    if not authenticated:
+        if reason == "missing_config":
+            raise HTTPException(500, "Bridge authentication is not configured")
+        raise HTTPException(403, "Bridge authentication failed")
+    subject_prefix = "wp:" + str(urlsplit(_WORDPRESS_URL).hostname).lower() + ":"
+    if not re.fullmatch(re.escape(subject_prefix) + r"[1-9][0-9]*", payload.external_subject):
+        raise HTTPException(400, "Invalid WordPress identity subject")
+    return issue_bridge_code(session, payload, client_id=_CALORIEAPP_CLIENT_ID)
+
+
 @app.post("/api/identity/callback", response_model=IdentityCallbackResponse)
 def identity_callback(
     payload: IdentityCallbackRequest,
@@ -999,7 +1044,10 @@ def identity_callback(
         raise HTTPException(status_code=400, detail="Unknown login state")
 
     try:
-        claims = _exchange_code_for_claims(code=code, state=state)
+        if code.startswith(BACKEND_CODE_PREFIX):
+            claims = consume_bridge_code(session, code=code, state=state)
+        else:
+            claims = _exchange_code_for_claims(code=code, state=state)
     except HTTPException as exc:
         if exc.status_code in {429, 502, 503, 504}:
             restored = restore_pending_login_state_after_transient_failure(session, state)

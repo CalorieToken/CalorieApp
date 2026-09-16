@@ -1,14 +1,17 @@
 import translations from "@/config/diary-copy.json";
 import type { FoodSearchItem } from "@/components/foodTypes";
+import type { FoodSourceCounts } from "@/lib/foodSource";
 
 export type DiaryPeriod = "day" | "week" | "month" | "all";
 export type DiaryOverview = {
   entries: FoodSearchItem[]; next_before: number | null; count: number;
   calories: number; protein: number; fat: number; carbohydrates: number;
   grades: Record<string, number>;
+  sources: FoodSourceCounts | null;
 };
 export const emptyDiary: DiaryOverview = {entries: [], next_before: null, count: 0,
-  calories: 0, protein: 0, fat: 0, carbohydrates: 0, grades: {A: 0, B: 0, C: 0, D: 0, E: 0}};
+  calories: 0, protein: 0, fat: 0, carbohydrates: 0, grades: {A: 0, B: 0, C: 0, D: 0, E: 0},
+  sources: {open_food_facts: 0, usda: 0, other: 0}};
 export function diaryCopy(locale: string) {
   return translations[locale as keyof typeof translations] ?? translations.en;
 }

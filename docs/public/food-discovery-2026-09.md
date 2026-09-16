@@ -1,5 +1,28 @@
 # Food discovery — live update, 15 September 2026
 
+## Prepared follow-up for total review — 16 September (not live)
+
+The current release candidate adds a clearer combined source overview without
+changing stored diary rows. Period totals now separate Open Food Facts, USDA and
+other/unknown entries. All three remain part of calorie and nutrient totals.
+The A–E distribution is explicitly limited to Nutri-Score letters supplied for
+OFF products; USDA supplies nutrient data here and is not counted as an OFF
+product with a missing grade. No overall diet or personal health score is made.
+
+Products without a usable source photo receive a neutral local illustration for
+their recorded lane (OFF product, USDA basic food or other/unknown). The same
+fallback replaces a broken image. An external product image is displayed only
+from the exact Open Food Facts image origin; rejected URLs are not requested.
+
+The small WordPress view prepared for the existing Xaman card receives only
+aggregate OFF/USDA/other counts and OFF A–E counts. It receives no product names,
+dates, nutrients, account or wallet identifiers and clears immediately on
+sign-out, iframe reload or invalid data. Heading Repair 1.3.0 also appends this
+explanation to the existing CalorieHelp app/USDA answers in all eleven interface
+languages. These changes remain a reviewed candidate until the owner's single
+total GO and live acceptance; the 15 September facts below describe the current
+live baseline.
+
 The food discovery update is live. App commit
 `40ed5f4fe6d7326158787d7c71004f02cd889979` was deployed to the existing
 frontend on 15 September and checked in both the standalone app and the

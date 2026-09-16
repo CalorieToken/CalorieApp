@@ -1,0 +1,112 @@
+{
+  "en": {
+    "app": {
+      "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label.",
+      "step": "In the period overview, OFF, USDA and other entries all count in nutrient totals. Only source-supplied OFF Nutri-Score letters appear in the A–E distribution."
+    },
+    "usda": {
+      "text": "USDA supplies nutrient data here, not a product Nutri-Score. A USDA entry is therefore shown as USDA and is not treated as an OFF product with a missing grade.",
+      "step": "Check the source count and nutrient totals separately from the OFF A–E product-grade distribution."
+    }
+  },
+  "nl": {
+    "app": {
+      "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron.",
+      "step": "In het periodeoverzicht tellen OFF, USDA en overig allemaal mee in de voedingstotalen. Alleen door OFF aangeleverde Nutri-Score-letters staan in de A–E-verdeling."
+    },
+    "usda": {
+      "text": "USDA levert hier voedingsgegevens, geen Nutri-Score voor het product. Een USDA-registratie staat daarom als USDA en niet als OFF-product met een ontbrekende score.",
+      "step": "Bekijk het bronaantal en de voedingstotalen los van de OFF A–E-productscoreverdeling."
+    }
+  },
+  "zh-Hans": {
+    "app": {
+      "text": "当来源照片缺失、损坏或网址不受信任时，应用会显示带有 OFF、USDA 或其他来源标签的本地中性插图。",
+      "step": "在时段概览中，OFF、USDA 和其他记录都计入营养总量。A–E 分布只显示 OFF 来源提供的 Nutri-Score 等级。"
+    },
+    "usda": {
+      "text": "USDA 在此提供营养数据，不提供产品 Nutri-Score。因此 USDA 记录会标为 USDA，而不会被视为缺少等级的 OFF 产品。",
+      "step": "请分别查看来源计数和营养总量，以及 OFF A–E 产品等级分布。"
+    }
+  },
+  "hi": {
+    "app": {
+      "text": "स्रोत की फोटो न होने, टूटने या URL भरोसेमंद न होने पर ऐप OFF, USDA या अन्य स्रोत लेबल के साथ एक तटस्थ स्थानीय चित्र दिखाता है।",
+      "step": "अवधि के सारांश में OFF, USDA और अन्य सभी प्रविष्टियाँ पोषण योग में शामिल हैं। A–E वितरण में केवल OFF द्वारा दिए Nutri-Score अक्षर आते हैं।"
+    },
+    "usda": {
+      "text": "USDA यहाँ पोषक डेटा देता है, उत्पाद Nutri-Score नहीं। इसलिए USDA प्रविष्टि USDA के रूप में दिखती है, न कि ग्रेड-विहीन OFF उत्पाद के रूप में।",
+      "step": "स्रोत की गिनती और पोषण योग को OFF A–E उत्पाद-ग्रेड वितरण से अलग देखें।"
+    }
+  },
+  "es": {
+    "app": {
+      "text": "Si falta la foto de la fuente, está rota o su URL no es de confianza, la app muestra una ilustración local neutra con la etiqueta OFF, USDA u otra fuente.",
+      "step": "En el resumen del período, las entradas OFF, USDA y otras cuentan en los totales nutricionales. La distribución A–E solo muestra letras Nutri-Score proporcionadas por OFF."
+    },
+    "usda": {
+      "text": "USDA aporta aquí datos nutricionales, no un Nutri-Score del producto. Por eso una entrada USDA aparece como USDA y no como producto OFF sin clasificación.",
+      "step": "Consulta el recuento por fuente y los totales nutricionales por separado de la distribución de productos OFF A–E."
+    }
+  },
+  "ar": {
+    "app": {
+      "text": "إذا كانت صورة المصدر مفقودة أو معطلة أو كان عنوانها غير موثوق، يعرض التطبيق رسماً محلياً محايداً مع تصنيف OFF أو USDA أو مصدر آخر.",
+      "step": "في ملخص الفترة تدخل سجلات OFF وUSDA والمصادر الأخرى كلها في مجاميع العناصر الغذائية. يعرض توزيع A–E فقط درجات Nutri-Score التي يوفرها OFF."
+    },
+    "usda": {
+      "text": "توفر USDA هنا بيانات غذائية وليس Nutri-Score للمنتج. لذلك يظهر سجل USDA بصفته USDA ولا يعامل كمنتج OFF بلا درجة.",
+      "step": "راجع عدد المصادر ومجاميع العناصر الغذائية بصورة منفصلة عن توزيع درجات منتجات OFF من A إلى E."
+    }
+  },
+  "fr": {
+    "app": {
+      "text": "Si la photo source manque, ne fonctionne pas ou vient d’une URL non fiable, l’app affiche une illustration locale neutre avec l’étiquette OFF, USDA ou autre source.",
+      "step": "Dans le récapitulatif de la période, les entrées OFF, USDA et autres comptent dans les totaux nutritionnels. La répartition A–E montre uniquement les lettres Nutri-Score fournies par OFF."
+    },
+    "usda": {
+      "text": "USDA fournit ici des données nutritionnelles, pas un Nutri-Score du produit. Une entrée USDA est donc indiquée comme USDA et non comme un produit OFF sans classe.",
+      "step": "Consultez séparément le nombre par source et les totaux nutritionnels, puis la répartition des produits OFF A–E."
+    }
+  },
+  "bn": {
+    "app": {
+      "text": "উৎসের ছবি না থাকলে, নষ্ট হলে বা URL বিশ্বস্ত না হলে অ্যাপ OFF, USDA বা অন্য উৎসের লেবেলসহ একটি নিরপেক্ষ স্থানীয় ছবি দেখায়।",
+      "step": "সময়কালের সারাংশে OFF, USDA ও অন্যান্য সব এন্ট্রি পুষ্টির মোট হিসাবে থাকে। A–E বণ্টনে শুধু OFF-এর দেওয়া Nutri-Score অক্ষর দেখানো হয়।"
+    },
+    "usda": {
+      "text": "USDA এখানে পুষ্টির তথ্য দেয়, পণ্যের Nutri-Score নয়। তাই USDA এন্ট্রি USDA হিসেবেই দেখানো হয়, গ্রেডহীন OFF পণ্য হিসেবে নয়।",
+      "step": "উৎসের সংখ্যা ও পুষ্টির মোট হিসাব OFF A–E পণ্য-গ্রেড বণ্টন থেকে আলাদা করে দেখুন।"
+    }
+  },
+  "pt": {
+    "app": {
+      "text": "Se a fotografia da fonte estiver ausente, danificada ou vier de um URL não confiável, a app mostra uma ilustração local neutra com a etiqueta OFF, USDA ou outra fonte.",
+      "step": "No resumo do período, entradas OFF, USDA e outras contam nos totais nutricionais. A distribuição A–E mostra apenas letras Nutri-Score fornecidas pelo OFF."
+    },
+    "usda": {
+      "text": "A USDA fornece aqui dados nutricionais, não um Nutri-Score do produto. Por isso uma entrada USDA aparece como USDA e não como produto OFF sem classificação.",
+      "step": "Consulte a contagem por fonte e os totais nutricionais separadamente da distribuição de produtos OFF A–E."
+    }
+  },
+  "id": {
+    "app": {
+      "text": "Jika foto sumber tidak ada, rusak, atau URL-nya tidak tepercaya, aplikasi menampilkan ilustrasi lokal netral dengan label OFF, USDA, atau sumber lain.",
+      "step": "Dalam ringkasan periode, entri OFF, USDA, dan lainnya semuanya masuk dalam total gizi. Distribusi A–E hanya menampilkan huruf Nutri-Score dari OFF."
+    },
+    "usda": {
+      "text": "USDA menyediakan data gizi di sini, bukan Nutri-Score produk. Karena itu entri USDA ditampilkan sebagai USDA, bukan sebagai produk OFF tanpa peringkat.",
+      "step": "Lihat jumlah sumber dan total gizi secara terpisah dari distribusi peringkat produk OFF A–E."
+    }
+  },
+  "ur": {
+    "app": {
+      "text": "اگر ماخذ کی تصویر موجود نہ ہو، خراب ہو یا URL قابلِ اعتماد نہ ہو تو ایپ OFF، USDA یا دیگر ماخذ کے لیبل کے ساتھ غیر جانب دار مقامی تصویر دکھاتی ہے۔",
+      "step": "مدت کے خلاصے میں OFF، USDA اور دیگر تمام اندراجات غذائی مجموعوں میں شامل ہیں۔ A–E تقسیم میں صرف OFF کے فراہم کردہ Nutri-Score حروف دکھتے ہیں۔"
+    },
+    "usda": {
+      "text": "USDA یہاں غذائی ڈیٹا دیتا ہے، پروڈکٹ Nutri-Score نہیں۔ اس لیے USDA اندراج USDA کے طور پر دکھتا ہے، بغیر گریڈ والے OFF پروڈکٹ کے طور پر نہیں۔",
+      "step": "ماخذ کی گنتی اور غذائی مجموعوں کو OFF A–E پروڈکٹ گریڈ تقسیم سے الگ دیکھیں۔"
+    }
+  }
+}

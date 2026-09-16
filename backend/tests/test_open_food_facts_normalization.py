@@ -18,6 +18,7 @@ from app.services.open_food_facts import (
     _OPEN_FOOD_FACTS_AVAILABILITY,
     _PRIMARY_MAX_ATTEMPTS,
     _FALLBACK_MAX_ATTEMPTS,
+    _extract_image_url,
     _extract_nutri_score,
     _curl_fetch,
     _to_float,
@@ -81,6 +82,27 @@ def test_extract_nutri_score_only_returns_supported_grades(
     assert _extract_nutri_score({"nutriscore_grade": value}) == expected
 
 
+def test_image_url_accepts_only_the_exact_off_image_origin() -> None:
+    valid = "https://images.openfoodfacts.org/images/products/001/234/front_en.4.400.jpg"
+    assert _extract_image_url({"image_front_url": valid}) == valid
+    for value in [
+        "http://images.openfoodfacts.org/images/products/001/234/front.jpg",
+        "https://images.openfoodfacts.org.evil.example/images/products/x.jpg",
+        "https://images.openfoodfacts.org/not-products/pixel.gif",
+        "javascript:alert(1)",
+        None,
+    ]:
+        assert _extract_image_url({"image_front_url": value}) is None
+
+
+def test_image_url_skips_an_unsafe_preferred_field_for_a_safe_fallback_field() -> None:
+    valid = "https://images.openfoodfacts.org/images/products/001/234/front.jpg"
+    assert _extract_image_url({
+        "image_front_url": "https://tracker.example/pixel.gif",
+        "image_small_url": valid,
+    }) == valid
+
+
 @patch("app.services.open_food_facts._fetch_primary", new_callable=AsyncMock)
 def test_search_omits_products_with_unknown_nutrition(primary: AsyncMock) -> None:
     primary.return_value = {
@@ -127,11 +149,20 @@ def test_search_results_can_be_saved_without_truncating_provider_identity(primar
     good = {"product_name": "Oats", "nutriments": {
         "energy-kcal_100g": 375, "proteins_100g": 13, "fat_100g": 7, "carbohydrates_100g": 60,
     }}
+    fallback_image = {
+        **good,
+        "product_name": "Fallback oats",
+        "image_url": "https://example.test/" + "x" * 500,
+    }
     primary.return_value = {"products": [good, {**good, "product_name": "x" * 121},
-        {**good, "brands": "x" * 161}, {**good, "image_url": "https://example.test/" + "x" * 500}]}
+        {**good, "brands": "x" * 161}, fallback_image]}
     results = asyncio.run(search_food_products("oats"))
-    assert [result.product_name for result in results] == ["Oats"]
-    assert FoodLogCreate.model_validate(results[0].model_dump()).product_name == "Oats"
+    assert [result.product_name for result in results] == ["Oats", "Fallback oats"]
+    assert results[1].image_url is None
+    assert [
+        FoodLogCreate.model_validate(result.model_dump()).product_name
+        for result in results
+    ] == ["Oats", "Fallback oats"]
 
 
 @patch("app.services.open_food_facts._fetch_fallback", new_callable=AsyncMock)
@@ -419,7 +450,8 @@ def test_indexed_search_uses_literal_multilingual_query_and_preserves_food_data(
     from app.services.open_food_facts import _fetch_primary, _normalize_products
     seen = []
     product = {'code': '7622210410900', 'product_name': 'Evergreen Krenten',
-               'brands': ['Liga', 'Other brand'], 'image_front_url': 'https://images.openfoodfacts.org/example.jpg',
+               'brands': ['Liga', 'Other brand'],
+               'image_front_url': 'https://images.openfoodfacts.org/images/products/762/221/041/0900/front_en.1.400.jpg',
                'nutriments': {'energy-kcal_100g': 383, 'proteins_100g': 6.9, 'fat_100g': 9.1, 'carbohydrates_100g': 65}}
     def respond(request):
         seen.append(request)
