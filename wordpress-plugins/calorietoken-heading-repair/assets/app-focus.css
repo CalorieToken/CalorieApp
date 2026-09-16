@@ -98,7 +98,7 @@ body.ct-account-compact .calorieapp-site-session-actions :is(a,button){min-heigh
 
 /* The app focus control is a utility, not a second hero. */
 .ct-calorieapp-focus-toolbar{gap:.45rem;margin:.5rem 0;padding:.5rem;border-radius:12px}
-.ct-calorieapp-focus-toggle{min-height:42px;padding:.55rem .8rem;font-size:13px}.ct-calorieapp-focus-note{font-size:12px}
+.ct-calorieapp-focus-toggle{min-height:44px;padding:.55rem .8rem;font-size:13px}.ct-calorieapp-focus-note{font-size:12px}
 body.ct-calorieapp-focus #ct-calorieapp-focus-toolbar{inset-inline-end:max(8px,env(safe-area-inset-right));top:calc(var(--ct-calorieapp-focus-top,0px) + env(safe-area-inset-top) + 8px);width:44px!important;max-width:44px!important}
 body.ct-calorieapp-focus #ct-calorieapp-focus-toggle{box-sizing:border-box;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border-radius:12px}
 body.ct-calorieapp-focus #ct-calorieapp-focus-toggle .ct-calorieapp-focus-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
@@ -200,6 +200,17 @@ body[data-ct-age-band="child"] :is(.ct-age-status,.ctstyle-help-widget,.ctstyle-
 body[data-ct-age-band="child"] :is(.ctstyle-help-widget,.ctstyle-faq-hub,.showcase-card) :is(button,a,summary){border-radius:14px!important}
 body[data-ct-age-band="teen"] :is(.ct-age-status,.ctstyle-help-widget,.ctstyle-faq-hub,.ct-age-showcase-note){border-color:rgba(80,91,169,.32)!important;background:linear-gradient(125deg,rgba(80,91,169,.08),transparent 42%),linear-gradient(305deg,rgba(0,141,54,.06),transparent 44%),#f7f8ff!important}
 body[data-ct-age-band="adult"] :is(.ct-age-status,.ctstyle-help-widget,.ctstyle-faq-hub){background:linear-gradient(135deg,#fff,#fffaf0)!important;border-color:rgba(249,178,51,.3)!important}
+
+/* The on-chain Richlist is a browsable data set, not a 14,000-row page. */
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px;border:1px solid rgba(80,91,169,.22);border-radius:14px;background:rgba(255,255,255,.97);box-shadow:0 5px 16px rgba(22,33,77,.08);pointer-events:auto}
+body.ctstyle-enabled.page-id-3243 .calorieapp-own-rank-jump{margin:0}
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-pager{display:grid;grid-template-columns:minmax(190px,1fr) auto minmax(110px,auto) auto;align-items:center;gap:6px;min-width:min(100%,560px);flex:1 1 560px}
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-filter{box-sizing:border-box;min-width:0;min-height:44px;border:2px solid rgba(80,91,169,.5);border-radius:10px;background:#fff;padding:8px 11px;color:#27325f;font:600 14px/1.25 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page{min-height:44px;border:2px solid #505ba9;border-radius:10px;background:#fff;padding:8px 12px;color:#27325f;font:800 13px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page:disabled{cursor:not-allowed;opacity:.45}
+body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page-status{min-width:0;color:#43506f;font:700 13px/1.3 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-align:center}
+body.ctstyle-enabled.page-id-3243 :is(.calorieapp-richlist-filter,.calorieapp-richlist-page):focus-visible{outline:3px solid #f2b544;outline-offset:2px}
+@media(max-width:620px){body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-pager{grid-template-columns:1fr 1fr}body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-filter{grid-column:1/-1}body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page-status{grid-column:1/-1;grid-row:3}body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page:first-of-type{grid-column:1}body.ctstyle-enabled.page-id-3243 .calorieapp-richlist-page:last-of-type{grid-column:2}}
 
 @media(max-width:767px){
   :is(body.ctstyle-enabled,body.ctstyle-footer-only) .calorieapp-page-tool-position{width:44px!important;flex-basis:44px!important}

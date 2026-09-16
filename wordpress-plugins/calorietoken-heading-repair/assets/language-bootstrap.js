@@ -29,4 +29,13 @@
   document.documentElement.lang=locale;
   document.documentElement.dir=['ar','ur'].indexOf(locale)>=0?'rtl':'ltr';
   document.documentElement.dataset.ctDisplayLocale=locale;
+  function reconcile(){
+    var ui=window.CalorieTokenContentLanguageUI;
+    if(ui&&typeof ui.refresh==='function')ui.refresh(locale);
+  }
+  function schedule(){[0,250,1000].forEach(function(delay){window.setTimeout(reconcile,delay);});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+  window.addEventListener('load',schedule,{once:true});
+  window.addEventListener('pageshow',schedule);
+  document.addEventListener('calorietoken:display-language',function(event){locale=resolve(event.detail&&event.detail.locale)||locale;schedule();});
 })();

@@ -1,4 +1,4 @@
-CalorieToken Heading and Language Repair 1.6.0
+CalorieToken Heading and Language Repair 1.6.1
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
@@ -7,6 +7,18 @@ This release is locally tested, NOT live-site accepted. It applies only to exact
 known source hashes from the saved Site Style 1.4.46 or prepared 1.4.47 candidate.
 If an admin warning says that files differ, the affected override is not applied.
 Do not disable the compatibility checks. Reconcile the current source instead.
+
+Version 1.6.1 is the final pre-campaign UX polish pass. It safely accepts common
+marketing parameters such as UTM and click identifiers, so the existing Help,
+CalorieApp, discovery, Testnet and page enhancements remain available from
+campaign links while preview/editor and unknown parameters remain blocked. It
+also paginates and filters the 14,000-row Richlist, repairs duplicate/missing
+heading semantics and document language metadata, keeps 44-pixel controls, and
+prevents the theme's document-click handler from crashing on the automatic app
+reveal. Child and teen modes now use public-only app wording and also protect
+Trustline, donation and legacy buying routes while preserving public project and
+transparency information. The paired app uses public search wording until the
+adult experience is selected.
 
 Version 1.6.0 adds the final age-aware and account-journey UX pass. Child and
 teen modes now hide the complete Showcases account/wallet block, the personal

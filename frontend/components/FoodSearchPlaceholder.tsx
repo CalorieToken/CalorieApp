@@ -948,7 +948,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           <div className="mt-4">
             <EmptyState
               title={copy.readyTitle}
-              description={copy.readyDescription}
+              description={allowPersonalLog ? copy.readyDescription : copy.readyDescriptionPublic}
             />
           </div>
         ) : null}

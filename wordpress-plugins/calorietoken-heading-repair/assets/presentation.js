@@ -178,12 +178,32 @@
       });
     });
   }
+  function structuralPolish(){
+    // Restore before re-evaluating so translated headings and late builder
+    // content remain authoritative.
+    document.querySelectorAll('[data-ct-duplicate-h1="1"]').forEach(function(node){
+      node.hidden=node.dataset.ctDuplicateWasHidden==='1';delete node.dataset.ctDuplicateWasHidden;delete node.dataset.ctDuplicateH1;
+    });
+    if(document.body.matches('.page-id-7860,.page-id-1209')){
+      var h1s=Array.from(document.querySelectorAll('h1')).filter(function(node){return !node.hidden&&!node.closest('[hidden],[inert],[aria-hidden="true"]');});
+      if(h1s.length>1){
+        var first=h1s[0].textContent.replace(/\s+/g,' ').trim().toLocaleLowerCase(locale);
+        h1s.slice(1).forEach(function(node){if(node.textContent.replace(/\s+/g,' ').trim().toLocaleLowerCase(locale)===first){node.dataset.ctDuplicateWasHidden=node.hidden?'1':'0';node.dataset.ctDuplicateH1='1';node.hidden=true;}});
+      }
+    }
+    var generated=document.querySelector('[data-ct-home-h1="1"]');
+    if(document.body.classList.contains('page-id-1090')&&!document.querySelector('h1:not([hidden])')){
+      if(!generated){generated=document.createElement('h1');generated.dataset.ctHomeH1='1';generated.className='ct-heading-repair-sr-only';generated.textContent='CalorieToken';var main=document.querySelector('main,#main,.site-content');if(main)main.prepend(generated);}
+    }else if(generated)generated.remove();
+    document.querySelectorAll('.page-id-1213 h5').forEach(function(node){if(!node.closest('header,footer,nav,[hidden]')){node.setAttribute('role','heading');node.setAttribute('aria-level','2');}});
+    document.querySelectorAll('.page-id-531 .ctstyle-document-copy,.page-id-586 .ctstyle-document-copy,.page-id-7860 .ctstyle-document-copy').forEach(function(node){node.lang='en';node.dir='ltr';});
+  }
   function refresh(tag){
     if(!allowed())return;
     locale=resolveLocale(tag)||resolveLocale(window.CalorieTokenDiscoveryUI&&window.CalorieTokenDiscoveryUI.getLocale())||resolveLocale(document.documentElement.lang)||locale;if(!cfg.copy[locale])locale='en';
     if(observer)observer.disconnect();
     [['paper',cfg.paperImage],['header',cfg.headerImage],['title',cfg.titleImage]].forEach(function(pair){if(/^https?:\/\//.test(pair[1]||''))document.body.style.setProperty('--ctstyle-'+pair[0]+'-image','url('+JSON.stringify(pair[1])+')');});
-    pruneHeadings();sharedHeader();widgetLabels();
+    pruneHeadings();sharedHeader();widgetLabels();structuralPolish();
     document.querySelectorAll('.showcase-hero h1,.showcase-title-banner h1').forEach(function(node){node.classList.add('ctstyle-heading');var box=node.closest('.showcase-hero,.showcase-title-banner');if(box)box.classList.add('ctstyle-shared-banner');});
     sharedPanels();
     // These observed builder section titles are paragraphs/spans rather than
@@ -218,4 +238,3 @@
   window.addEventListener('pagehide',function(){if(observer)observer.disconnect();if(headingHighlight)headingHighlight.clear();highlightedHeadings.clear();headingRangeMap=new WeakMap();});
   window.addEventListener('pageshow',function(){refresh();});
 })();
-

@@ -62,9 +62,11 @@ test("the default feature renders a labeled native selector with eleven choices 
 });
 
 const introductionCopy = JSON.parse(readFileSync(new URL("../../frontend/config/app-introduction-copy.json", import.meta.url)));
+let introductionAge = "adult";
 function introduction(display) {
   return loadModule("../../frontend/components/AppIntroduction.tsx", {
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
+    "@/components/AgeExperienceControl": { useAgeExperience: () => [introductionAge, () => {}, true] },
     "@/lib/locales": locales,
     "@/config/app-introduction-copy.json": { default: introductionCopy },
   });
@@ -90,6 +92,7 @@ test("all eleven introduction translations retain each source/licence token exac
 });
 
 test("the actual introduction/footer render every selected language with intact links and RTL metadata", () => {
+  introductionAge = "adult";
   const display = { enabled: true, locale: "en" };
   const { AppIntroduction, AppSourceFooter } = introduction(display);
   const expectedLinks = [
@@ -128,6 +131,7 @@ test("the actual introduction/footer render every selected language with intact 
 });
 
 test("disabled or unsupported display language preserves an English introduction and footer", () => {
+  introductionAge = "adult";
   const display = { enabled: false, locale: "en" };
   const { AppIntroduction, AppSourceFooter } = introduction(display);
   const render = () => renderToStaticMarkup(React.createElement(React.Fragment, null,
@@ -138,6 +142,23 @@ test("disabled or unsupported display language preserves an English introduction
   display.enabled = true;
   display.locale = "unsupported";
   assert.equal(render(), english);
+});
+
+test("child and teen introductions stay public-only in every language", () => {
+  const display = { enabled: true, locale: "en" };
+  const { AppIntroduction, AppSourceFooter } = introduction(display);
+  for (const age of ["child", "teen"]) {
+    introductionAge = age;
+    for (const {tag} of registry.locales) {
+      display.locale = tag;
+      const html = renderToStaticMarkup(React.createElement(React.Fragment, null,
+        React.createElement(AppIntroduction), React.createElement(AppSourceFooter)));
+      assert.ok(html.includes(renderedText(introductionCopy[tag].publicIntro)), `${age} ${tag}`);
+      assert.ok(html.includes(renderedText(introductionCopy[tag].publicScope)), `${age} ${tag}`);
+      assert.ok(!html.includes(renderedText(introductionCopy[tag].intro)), `${age} ${tag}`);
+    }
+  }
+  introductionAge = "adult";
 });
 
 test("actual food controls render the eleven languages and escape literal product and query text", () => {

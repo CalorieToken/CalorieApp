@@ -417,8 +417,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.0/);
-  assert.match(php, /const VERSION = '1\.6\.0'/);
+  assert.match(php, /Version: 1\.6\.1/);
+  assert.match(php, /const VERSION = '1\.6\.1'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
@@ -440,6 +440,7 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(appFocusSource, /url\.pathname==='\/'/);
   assert.match(appFocusSource, /url\.searchParams\.set\('locale',desired\)/);
   assert.match(appFocusSource, /data-calorieapp-loading-reveal/);
+  assert.match(appFocusSource, /event\.stopPropagation\(\)/);
   assert.match(appFocusSource, /if\(age!=='adult'/);
   assert.match(appFocusSource, /exactGuideMessage\(event\.data,'open'\)/);
   assert.match(appFocusSource, /postMessage\(\{type:guidePrefix\+type,version:1\}/);
@@ -452,6 +453,10 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(readme, /Nothing is stored in\s+WordPress or browser storage/i);
   assert.match(php, /help-topic-additions\.json/);
   assert.match(php, /caloriehelp-mascot-v2\.png/);
+  for (const asset of ['app-integration','blog-timeline','discovery','menu-pages','ready-languages','testnet','tokenomics']) {
+    assert.match(php, new RegExp(`source_matches\\('assets/${asset}\\.js'`));
+    assert.match(php, new RegExp(`site-${asset}\\.js`));
+  }
   assert.equal(mascot.subarray(1, 4).toString('ascii'), 'PNG');
   assert.equal(mascot.readUInt32BE(16), 512);
   assert.equal(mascot.readUInt32BE(20), 512);

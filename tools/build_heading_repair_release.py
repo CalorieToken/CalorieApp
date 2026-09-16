@@ -27,6 +27,13 @@ FILES = (
     "assets/language-bootstrap.js",
     "assets/nutrition-summary.js",
     "assets/presentation.js",
+    "assets/site-app-integration.js",
+    "assets/site-blog-timeline.js",
+    "assets/site-discovery.js",
+    "assets/site-menu-pages.js",
+    "assets/site-ready-languages.js",
+    "assets/site-testnet.js",
+    "assets/site-tokenomics.js",
     "calorietoken-heading-repair.php",
     "index.php",
 )

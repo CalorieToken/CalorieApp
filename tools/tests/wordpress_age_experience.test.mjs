@@ -8,7 +8,7 @@ const require=createRequire(new URL('../../frontend/package.json',import.meta.ur
 const {parseHTML}=require('linkedom');
 const source=readFileSync(new URL('../../wordpress-plugins/calorietoken-heading-repair/assets/age-experience.js',import.meta.url),'utf8');
 
-function page(url,{stored=null,crypto=false,showcases=false,faqFinancial=false}={}){
+function page(url,{stored=null,crypto=false,showcases=false,faqFinancial=false,trustline=false,donation=false,legacy=false,appInfo=false}={}){
   const {window,document}=parseHTML(`<!doctype html><html lang="en"><body class="ctstyle-enabled page-id-7880">
     <main><section class="xl-card calorieapp-identity-card"><div class="xl-card-body"></div></section>
       ${crypto?`<div class="ctstyle-exchange-layout">
@@ -21,6 +21,10 @@ function page(url,{stored=null,crypto=false,showcases=false,faqFinancial=false}=
       <aside class="showcase-auth"><div class="xl-card xl-no-wallet"><a href="https://xaman.app/">Wallet login</a></div></aside>
       <div class="showcase-grid"><article class="showcase-card">Search</article><article class="showcase-card">Understand</article><article class="showcase-card">Build your personal log</article></div>`:''}
       ${faqFinancial?`<a id="faq-market" href="https://xpmarket.com/dex/test">XPMarket</a>`:''}
+      ${trustline?`<h1>Trustline</h1><section class="ctstyle-trustline-methods">Methods</section><section class="ctstyle-trustline-options">Options</section><div class="ctstyle-market-layout"><a href="https://xpmarket.com">Market</a></div>`:''}
+      ${donation?`<h1>Donate</h1><nav id="calorieapp-donation-steps">Donation steps</nav><section class="ctstyle-donation-balance">Public balance</section><a id="donate-action" href="/product/donation/">Donate now</a><a id="explorer" href="https://bithomp.com/explorer/test">Explorer</a>`:''}
+      ${legacy?`<h1>How to buy</h1><div class="calorie-legacy-page"><section>Adult buying route</section></div>`:''}
+      ${appInfo?`<article class="calorieapp-app-info"><div><h2>CalorieApp</h2><p>Search foods and keep a personal diary.</p><div class="ctstyle-app-sources"><p>Source</p></div></div></article>`:''}
       <iframe title="CalorieApp" src="https://app.calorietoken.net/"></iframe>
     </main>
     <aside id="ctstyle-app-launcher"><details><summary>CalorieHelp</summary><div class="ctstyle-app-launcher-panel">
@@ -100,6 +104,38 @@ test('minor Showcases views hide wallet identity, the personal journey and finan
     assert.match(env.document.getElementById('ct-age-showcase-note').textContent,/public food search|public information/i);
     assert.ok(env.document.querySelector('a[href*="xaman.app"]').classList.contains('ct-age-financial-action'));
   }
+});
+
+test('minor modes protect Trustline, donation and legacy buying routes while public information remains',()=>{
+  for(const stored of ['child','teen']){
+    const trust=page('https://calorietoken.net/trustline/',{stored,trustline:true,appInfo:true});
+    assert.equal(trust.document.querySelector('.ctstyle-trustline-methods').hidden,true);
+    assert.equal(trust.document.querySelector('.ctstyle-trustline-options').hidden,true);
+    assert.equal(trust.document.querySelector('.ctstyle-market-layout').hidden,true);
+    assert.match(trust.document.querySelector('h1').textContent,/CAL information/i);
+    assert.match(trust.document.querySelector('.calorieapp-app-info p').textContent,/hidden/i);
+    assert.equal(trust.document.getElementById('ct-age-finance-notice').hidden,false);
+
+    const donate=page('https://calorietoken.net/donate/',{stored,donation:true});
+    assert.equal(donate.document.getElementById('calorieapp-donation-steps').hidden,true);
+    assert.equal(donate.document.getElementById('donate-action').hidden,true);
+    assert.equal(donate.document.getElementById('explorer').hidden,true);
+    assert.equal(donate.document.querySelector('.ctstyle-donation-balance').hidden,false);
+    assert.equal(donate.document.getElementById('ct-age-finance-notice').hidden,false);
+
+    const legacy=page('https://calorietoken.net/how-to-buy-dex/',{stored,legacy:true});
+    assert.equal(Array.from(legacy.document.querySelectorAll('.calorie-legacy-page section')).find(node=>node.id!=='ct-age-finance-notice').hidden,true);
+    assert.equal(legacy.document.getElementById('ct-age-finance-notice').hidden,false);
+  }
+});
+
+test('adult selection restores protected route titles and public-app copy',()=>{
+  const env=page('https://calorietoken.net/trustline/',{stored:'child',trustline:true,appInfo:true});
+  env.document.querySelector('#ctstyle-widget-help-age-status .ct-age-change').click();
+  env.document.querySelector('#ct-age-gate [data-band="adult"]').click();
+  assert.equal(env.document.querySelector('.ctstyle-trustline-methods').hidden,false);
+  assert.equal(env.document.querySelector('h1').textContent,'Trustline');
+  assert.equal(env.document.querySelector('.calorieapp-app-info p').textContent,'Search foods and keep a personal diary.');
 });
 
 test('FAQ stays public but applies page-wide financial filtering after a minor choice',()=>{

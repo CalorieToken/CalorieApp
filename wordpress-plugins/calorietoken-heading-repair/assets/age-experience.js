@@ -18,7 +18,7 @@
   var band=null,overlay=null,resumeHelp=null,lastFocus=null,overlayDismissible=false;
   function valid(value){return bands.indexOf(value)>=0?value:null;}
   function path(){return window.location.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'')||'/';}
-  function pageKind(){var value=path();return value==='/calorieapp'?'app':value==='/how-to-buy-calorie'?'crypto':value==='/showcases'?'showcases':value==='/faq'?'faq':null;}
+  function pageKind(){var value=path();return value==='/calorieapp'?'app':value==='/how-to-buy-calorie'?'crypto':value==='/trustline'?'trustline':value==='/donate'||value==='/product/donation'?'donation':value==='/how-to-buy-dex'||value==='/how-to-buy-cex'?'legacyCrypto':value==='/showcases'?'showcases':value==='/faq'?'faq':null;}
   function locale(){var picker=document.querySelector('#ctstyle-language-select,#ctstyle-account-language'),value=picker&&picker.value||document.documentElement.lang||'en';if(/^zh(?:-|$)/i.test(value))return 'zh-Hans';value=value.split('-')[0];return copy[value]?value:'en';}
   function labels(){return copy[locale()]||copy.en;}
   function read(){try{return valid(window.sessionStorage.getItem(storageKey));}catch(_){return null;}}
@@ -29,15 +29,19 @@
   function hideForAge(node,hidden){if(!node)return;if(hidden){if(!node.hasAttribute('data-ct-age-hidden'))node.setAttribute('data-ct-age-hidden',node.hidden?'1':'0');node.hidden=true;}else if(node.hasAttribute('data-ct-age-hidden')){node.hidden=node.getAttribute('data-ct-age-hidden')==='1';node.removeAttribute('data-ct-age-hidden');}}
   function statusNode(container){if(!container)return null;var id=(container.id||'ct-age-help')+'-age-status',node=container.querySelector('#'+id);if(!node){node=document.createElement('aside');node.id=id;node.className='ct-age-status';node.setAttribute('role','note');node.setAttribute('aria-live','polite');var text=document.createElement('p'),button=document.createElement('button');text.className='ct-age-status-copy';button.type='button';button.className='ct-age-change';button.addEventListener('click',function(){showGate(container.closest('#ctstyle-app-launcher details'),true);});node.append(text,button);var header=container.querySelector('.ctstyle-help-header');if(header)header.after(node);else container.prepend(node);}return node;}
   function renderStatus(node){if(!node||!band)return;var c=labels(),name=c[band]||'';node.dataset.band=band;node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';node.querySelector('.ct-age-status-copy').textContent=c.current+': '+name;node.querySelector('.ct-age-change').textContent=c.change;}
-  function financeNotice(){var layout=document.querySelector('.ctstyle-exchange-layout'),anchor=layout||document.getElementById('ctstyle-cal-crypto')||document.querySelector('.cal-buy-guide');if(!anchor)return;var node=document.getElementById('ct-age-finance-notice');if(!node){node=document.createElement('section');node.id='ct-age-finance-notice';node.className='ct-age-finance-notice';node.innerHTML='<h2></h2><p></p>';anchor.before(node);}var c=labels();node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';node.querySelector('h2').textContent=c.financeTitle;node.querySelector('p').textContent=c.financeText;node.hidden=band==='adult';}
+  function financeNotice(kind){var selectors={crypto:'.ctstyle-exchange-layout,#ctstyle-cal-crypto,.cal-buy-guide',trustline:'.ctstyle-trustline-methods,.ctstyle-trustline-options,.ctstyle-market-layout,.calorieapp-xpmarket-layout',donation:'#calorieapp-donation-steps,.ctstyle-donation-balance,.product,.woocommerce',legacyCrypto:'.calorie-legacy-page section'};var anchor=document.querySelector(selectors[kind]||selectors.crypto)||document.querySelector('main,#main,.entry-content');if(!anchor)return;var node=document.getElementById('ct-age-finance-notice');if(!node){node=document.createElement('section');node.id='ct-age-finance-notice';node.className='ct-age-finance-notice';node.innerHTML='<h2></h2><p></p>';anchor.before(node);}var c=labels();node.lang=locale();node.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';node.querySelector('h2').textContent=c.financeTitle;node.querySelector('p').textContent=c.financeText;node.hidden=band==='adult';}
   function applyCrypto(restricted){
     // Treat the complete buying/trading route as one adult-only surface. The
     // discovery script creates SWFT, DEX and guide nodes after DOM ready, so
     // every old and new container is covered rather than just its first hub.
     var selectors=['.ctstyle-exchange-layout','#ctstyle-cal-crypto','#ctstyle-own-dex','#ctstyle-cal-options','#ctstyle-external-exchange','.cal-buy-guide'];
     document.querySelectorAll(selectors.join(',')).forEach(function(node){hideForAge(node,!!restricted);});
-    financeNotice();
+    setPublicTitle(restricted);
+    financeNotice('crypto');
   }
+  function setPublicTitle(restricted){var heading=document.querySelector('main h1,#main h1,.entry-title,h1');if(!heading)return;if(restricted){if(!heading.hasAttribute('data-ct-age-original-title'))heading.setAttribute('data-ct-age-original-title',heading.textContent);heading.textContent=labels().financeTitle;}else if(heading.hasAttribute('data-ct-age-original-title')){heading.textContent=heading.getAttribute('data-ct-age-original-title');heading.removeAttribute('data-ct-age-original-title');}}
+  function applyAdultRoute(kind,restricted){var selectors={trustline:['.ctstyle-trustline-methods','.ctstyle-trustline-options','.ctstyle-market-layout','.calorieapp-xpmarket-layout'],donation:['#calorieapp-donation-steps','a[href*="/product/donation/"]','a[href*="bithomp.com"]','.product .cart','.woocommerce .cart'],legacyCrypto:['.calorie-legacy-page section']};(selectors[kind]||[]).forEach(function(selector){document.querySelectorAll(selector).forEach(function(node){hideForAge(node,!!restricted);});});setPublicTitle(restricted);financeNotice(kind);}
+  function applyPublicAppCopy(restricted){document.querySelectorAll('.calorieapp-app-info').forEach(function(root){var paragraph=Array.from(root.querySelectorAll('p')).find(function(node){return !node.closest('.ctstyle-app-sources,.ctstyle-app-ending')&&!node.querySelector('a');});if(!paragraph)return;if(restricted){if(!paragraph.hasAttribute('data-ct-age-original-copy'))paragraph.setAttribute('data-ct-age-original-copy',paragraph.textContent);var c=labels();paragraph.textContent=(c[band+'Note']||c.childNote)+' '+c.limited;paragraph.lang=locale();paragraph.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';}else if(paragraph.hasAttribute('data-ct-age-original-copy')){paragraph.textContent=paragraph.getAttribute('data-ct-age-original-copy');paragraph.removeAttribute('data-ct-age-original-copy');paragraph.removeAttribute('lang');paragraph.removeAttribute('dir');}});}
   function applyShowcases(restricted){
     document.querySelectorAll('.showcase-auth').forEach(function(node){hideForAge(node,!!restricted);});
     var cards=Array.from(document.querySelectorAll('.showcase-grid>.showcase-card'));cards.forEach(function(node,index){hideForAge(node,!!restricted&&index===2);});
@@ -51,7 +55,9 @@
     var pageStatus=document.getElementById('ct-age-page-status');if(pageStatus)pageStatus.remove();
     if(kind&&kind!=='faq'){document.querySelectorAll('.xl-card.calorieapp-identity-card').forEach(function(node){hideForAge(node,!!restricted);});}
     if(kind==='crypto')applyCrypto(restricted);
+    if(kind==='trustline'||kind==='donation'||kind==='legacyCrypto')applyAdultRoute(kind,restricted);
     if(kind==='showcases')applyShowcases(restricted);
+    applyPublicAppCopy(restricted);
     var financialScope=kind&&(kind!=='faq'||!!band)?document:document.getElementById('ctstyle-app-launcher');if(financialScope)financialScope.querySelectorAll('a[href*="xpmarket.com"],a[href*="xaman.app"],a[href*="xumm.app"],a[href*="/trustline/"],a[href*="/how-to-buy-calorie/"]').forEach(function(node){node.classList.toggle('ct-age-financial-action',!!restricted);});
     applyHelp();sendAll();if(window.CalorieTokenHelpUI&&typeof window.CalorieTokenHelpUI.refresh==='function')window.CalorieTokenHelpUI.refresh();
   }
@@ -63,7 +69,7 @@
   function ready(){
     band=read();protectHelp();apply();
     var kind=pageKind();if(kind&&kind!=='faq'&&!band)showGate(null,false);
-    var relevantSelector='#ctstyle-app-launcher,iframe[title="CalorieApp"],#ctstyle-widget-help,#ctstyle-faq-help,.ctstyle-exchange-layout,#ctstyle-cal-crypto,#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange,.cal-buy-guide,.showcase-auth,.showcase-grid';
+    var relevantSelector='#ctstyle-app-launcher,iframe[title="CalorieApp"],#ctstyle-widget-help,#ctstyle-faq-help,.ctstyle-exchange-layout,#ctstyle-cal-crypto,#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange,.cal-buy-guide,.ctstyle-trustline-methods,.ctstyle-trustline-options,.ctstyle-market-layout,.calorieapp-xpmarket-layout,#calorieapp-donation-steps,.ctstyle-donation-balance,.calorie-legacy-page,.calorieapp-app-info,.showcase-auth,.showcase-grid';
     var observer=new MutationObserver(function(records){var relevant=records.some(function(record){return Array.from(record.addedNodes||[]).some(function(node){return node.nodeType===1&&(node.matches(relevantSelector)||node.querySelector(relevantSelector));});});if(!relevant)return;protectHelp();apply();eligibleFrames().forEach(function(frame){if(frame.dataset.ctAgeBound!=='1'){frame.dataset.ctAgeBound='1';frame.addEventListener('load',function(){send(frame);});}});});observer.observe(document.body,{childList:true,subtree:true});
     eligibleFrames().forEach(function(frame){frame.dataset.ctAgeBound='1';frame.addEventListener('load',function(){send(frame);});});
   }

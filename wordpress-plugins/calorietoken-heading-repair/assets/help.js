@@ -1,6 +1,7 @@
 /* Calorie help: fixed first-party answers, processed on this page. GPL-2.0-or-later. */
 (function () {
   'use strict';
+  function safeQueryKey(key){return key==='ui_lang'||/^(?:utm_(?:source|medium|campaign|term|content|id)|gclid|dclid|fbclid|msclkid|ttclid|twclid)$/.test(key);}
   var cfg = window.CalorieTokenHelp;
   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
   var views = [], locale = 'en';
@@ -49,7 +50,7 @@
       !document.body.matches('.page-id-8001,.brz-ed') && !document.querySelector('.brz-ed,#brz-ed-iframe,[contenteditable="true"]') &&
       ['https://calorietoken.net','https://www.calorietoken.net'].includes(window.location.origin) &&
       !/\/wp-admin\//.test(window.location.pathname) &&
-      Array.from(new URL(window.location.href).searchParams.keys()).every(function (key) { return key === 'ui_lang'; });
+      Array.from(new URL(window.location.href).searchParams.keys()).every(safeQueryKey);
   }
   function el(tag,text,cls) { var node = document.createElement(tag); if (text) node.textContent = text; if (cls) node.className = cls; return node; }
   function resolveLocale(value) {

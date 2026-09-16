@@ -2,14 +2,14 @@
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.6.0
+ * Version: 1.6.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.6.0';
+const VERSION = '1.6.1';
 function source_matches($name, $hashes) {
     $path = WP_PLUGIN_DIR . '/calorietoken-site-style/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
@@ -32,7 +32,14 @@ function compatibility() {
         'help' => $main && source_matches('assets/help.js', array(
             'c9671113ca157cc52b81b02fe23f79c287670f582a70bff2261f26bd8ae2b527',
             '4f854c6254612c0b6569ed41ef989b90f09af69b3849a43b7977294fe230cac4'
-        ))
+        )),
+        'app-integration' => $main && source_matches('assets/app-integration.js', array('5ffc9f400e98573ade9aa49e516fa24a678373e9a1ce13b3c3aea3352875dd50')),
+        'blog-timeline' => $main && source_matches('assets/blog-timeline.js', array('7a3c971f02551f27d81afe0fedae7dd58bb29f009648a4e7fca1c42b57e47fae')),
+        'discovery' => $main && source_matches('assets/discovery.js', array('55791503ecac567b7b046568c6c8a1a67ba2fa27371cca889e1aa018bc4cfe29')),
+        'menu-pages' => $main && source_matches('assets/menu-pages.js', array('ed1f0e17e4c89d1f469612026be4d9e9a3ecb293f41afffa580278fc4f76a0f7')),
+        'ready-languages' => $main && source_matches('assets/ready-languages.js', array('47cb40c56c2eef2e819a582e60e72bdbb832e9362a70e458429d44004eafdd21')),
+        'testnet' => $main && source_matches('assets/testnet.js', array('8c353fc0dfb66b5cc1b7d71f83681dd15e859f4f0e3c185b4190ce195aee4b9b')),
+        'tokenomics' => $main && source_matches('assets/tokenomics.js', array('cb36d6d0247b53e20536b99cbb6ec34deda5d8aff4363673f7cb85a86556f48d'))
     );
 }
 function asset_url($file) { return add_query_arg('ver', VERSION, plugins_url('assets/' . $file, __FILE__)); }
@@ -43,7 +50,7 @@ function enqueue() {
     $ok = compatibility();
     $map = array();
     if ($ok['presentation'] && wp_script_is('calorietoken-presentation', 'enqueued') && !wp_script_is('calorietoken-presentation', 'done')) {
-        $map['calorietoken-presentation'] = 'presentation.js';
+        $map['calorietoken-presentation'] = array('source' => 'presentation.js', 'replacement' => 'presentation.js');
         wp_enqueue_style('calorietoken-heading-repair', asset_url('heading-repair.css'), array('calorietoken-presentation'), VERSION);
     }
     if ($ok['help'] && wp_script_is('calorietoken-help', 'enqueued') && !wp_script_is('calorietoken-help', 'done')) {
@@ -53,7 +60,7 @@ function enqueue() {
         $topics = is_string($topic_raw) ? json_decode($topic_raw, true) : null;
         $bootstrap = file_get_contents(__DIR__ . '/assets/help-label-bootstrap.js');
         if (is_array($labels) && is_array($topics) && is_string($bootstrap)) {
-            $map['calorietoken-help'] = 'help.js';
+            $map['calorietoken-help'] = array('source' => 'help.js', 'replacement' => 'help.js');
             wp_add_inline_script('calorietoken-help',
                 'window.CalorieTokenHeadingRepairLabels=' . wp_json_encode($labels, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';' .
                 'window.CalorieTokenHeadingRepairTopics=' . wp_json_encode($topics, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';' .
@@ -68,6 +75,20 @@ function enqueue() {
         wp_enqueue_script('calorietoken-app-focus', asset_url('app-focus.js'), array('calorietoken-age-experience'), VERSION, true);
         wp_enqueue_script('calorietoken-nutrition-summary', asset_url('nutrition-summary.js'), array('calorietoken-app-focus'), VERSION, true);
     }
+    $site_overrides = array(
+        'app-integration' => array('handle' => 'calorietoken-app-integration', 'source' => 'app-integration.js', 'replacement' => 'site-app-integration.js'),
+        'blog-timeline' => array('handle' => 'calorietoken-blog-timeline', 'source' => 'blog-timeline.js', 'replacement' => 'site-blog-timeline.js'),
+        'discovery' => array('handle' => 'calorietoken-discovery', 'source' => 'discovery.js', 'replacement' => 'site-discovery.js'),
+        'menu-pages' => array('handle' => 'calorietoken-menu-pages', 'source' => 'menu-pages.js', 'replacement' => 'site-menu-pages.js'),
+        'ready-languages' => array('handle' => 'calorietoken-ready-languages', 'source' => 'ready-languages.js', 'replacement' => 'site-ready-languages.js'),
+        'testnet' => array('handle' => 'calorietoken-testnet', 'source' => 'testnet.js', 'replacement' => 'site-testnet.js'),
+        'tokenomics' => array('handle' => 'calorietoken-tokenomics', 'source' => 'tokenomics.js', 'replacement' => 'site-tokenomics.js')
+    );
+    foreach ($site_overrides as $key => $entry) {
+        if ($ok[$key] && wp_script_is($entry['handle'], 'enqueued') && !wp_script_is($entry['handle'], 'done')) {
+            $map[$entry['handle']] = array('source' => $entry['source'], 'replacement' => $entry['replacement']);
+        }
+    }
     if (!$map) { return; }
     // Keep the original handle, dependencies, data, and inline scripts. Only the
     // URL of the exact known asset is substituted. The installed files are untouched.
@@ -76,18 +97,17 @@ function enqueue() {
         $source_host = strtolower((string) wp_parse_url($src, PHP_URL_HOST));
         if (!in_array($source_host, array('calorietoken.net', 'www.calorietoken.net'), true)) { return $src; }
         $path = (string) wp_parse_url($src, PHP_URL_PATH);
-        $ending = '/calorietoken-site-style/assets/' . $map[$handle];
+        $ending = '/calorietoken-site-style/assets/' . $map[$handle]['source'];
         if (substr($path, -strlen($ending)) !== $ending) { return $src; }
-        return asset_url($map[$handle]);
+        return asset_url($map[$handle]['replacement']);
     }, 1000, 2);
 }
 function admin_notice() {
     if (!current_user_can('activate_plugins')) { return; }
     $ok = compatibility();
-    if ($ok['presentation'] && $ok['help']) { return; }
-    $message = 'CalorieToken repair: the installed source differs from the saved, tested files or Site Style is missing. ';
-    $message .= !$ok['presentation'] ? 'Heading repair was not enabled. ' : 'Heading repair matches the saved source. ';
-    $message .= !$ok['help'] ? 'Help-link repair was not enabled. ' : '';
+    if (!in_array(false, $ok, true)) { return; }
+    $message = 'CalorieToken repair: one or more installed sources differ from the saved, tested Site Style 1.4.46 files or Site Style is missing. ';
+    $message .= 'Only exact matching assets were enabled; non-matching overrides stayed off. ';
     $message .= 'No installed files were overwritten. Reconcile the current source before changing the compatibility checks.';
     echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
 }

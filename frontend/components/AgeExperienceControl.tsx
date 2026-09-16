@@ -12,6 +12,8 @@ import {
   storeSessionAgeBand,
 } from "@/lib/ageExperience";
 
+const LOCAL_AGE_EVENT = "calorieapp:age-band:local";
+
 export function useAgeExperience(): [AgeBand | null, (value: AgeBand | null) => void, boolean] {
   const [band, setBand] = useState<AgeBand | null>(null);
   const [resolved, setResolved] = useState(false);
@@ -29,7 +31,14 @@ export function useAgeExperience(): [AgeBand | null, (value: AgeBand | null) => 
       setBand(received);
       setResolved(true);
     }
+    function onLocal(event: Event) {
+      const value = (event as CustomEvent<AgeBand | null>).detail;
+      if (value !== null && value !== "child" && value !== "teen" && value !== "adult") return;
+      setBand(value);
+      setResolved(true);
+    }
     window.addEventListener("message", onMessage);
+    window.addEventListener(LOCAL_AGE_EVENT, onLocal);
     const parentRequested = requestAgeBandFromParent();
     let wait: ReturnType<typeof setTimeout> | undefined;
     if (!stored) {
@@ -38,6 +47,7 @@ export function useAgeExperience(): [AgeBand | null, (value: AgeBand | null) => 
     }
     return () => {
       window.removeEventListener("message", onMessage);
+      window.removeEventListener(LOCAL_AGE_EVENT, onLocal);
       if (wait) clearTimeout(wait);
     };
   }, []);
@@ -46,6 +56,7 @@ export function useAgeExperience(): [AgeBand | null, (value: AgeBand | null) => 
     storeSessionAgeBand(value);
     setBand(value);
     setResolved(true);
+    window.dispatchEvent(new CustomEvent<AgeBand | null>(LOCAL_AGE_EVENT, {detail: value}));
     if (value) postAgeBandToParent(value);
   }
   return [band, update, resolved];

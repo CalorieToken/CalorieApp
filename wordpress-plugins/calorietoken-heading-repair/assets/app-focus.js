@@ -53,7 +53,12 @@
     localizeEmbedLoader(frame,desired);
     var stage=frame.closest('[data-calorieapp-frame-stage]'),loader=stage&&stage.querySelector('[data-calorieapp-embed-loading]'),reveal=loader&&loader.querySelector('[data-calorieapp-loading-reveal]');
     if(!loader||!reveal)return;
-    var show=function(){if(loader.isConnected&&!loader.hidden&&!reveal.disabled)reveal.click();};
+    var show=function(){if(loader.isConnected&&!loader.hidden&&!reveal.disabled){
+      // Twenty Nineteen's document click handler assumes a menu target and
+      // crashes when this automatic first-party reveal bubbles to document.
+      // Keep the loader's own click handler intact while containing the event.
+      reveal.addEventListener('click',function(event){event.stopPropagation();},{once:true});reveal.click();
+    }};
     frame.addEventListener('load',function(){window.setTimeout(show,350);});
     var observer=new MutationObserver(function(){if(loader.dataset.loadingReady==='1'){observer.disconnect();window.setTimeout(show,0);}});
     observer.observe(loader,{attributes:true,attributeFilter:['data-loading-ready']});
