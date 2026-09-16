@@ -1,13 +1,18 @@
-# CalorieToken — live herstel stap 1 t/m 4
+# CalorieToken — live herstel en gerichte stap 4–5-publicatie
 
 Datum: 16 september 2026
-Status: stap 1–3 staan live en de openbare technische acceptatie is geslaagd; stap 4 is op die live toestand bijgewerkt; stap 5 en publicatie blijven geblokkeerd.
+Status: stap 1–3 staan live; stap 4 is gericht afgerond voor Jubileum en
+CalorieApp/Ecosysteem/CalorieToken-WP; de WordPress-uitvoering van stap 5 is
+live/gepland en de externe socialqueue is handmatig publicatieklaar.
 
 ## Beslisgrens
 
-De toestemming voor het herstellen van stap 1–3 is uitgevoerd. Die toestemming
-is geen toestemming om campagne-items of WordPress-berichten te publiceren. De
-concepten 8079 en 8080 zijn niet gewijzigd, gepland of gepubliceerd.
+Op 16 september 2026 gaf Pieter een nieuwe, expliciete campagneopdracht:
+uitsluitend `C1` CalorieApp/Ecosysteem/CalorieToken-WP en `C2` Jubileum nu
+volledig uitwerken en publiceren/plannen. `C3`, `C4` en `C5` blijven tot
+volgende week buiten scope. Die gerichte toestemming vervangt voor deze twee
+campagnelijnen de eerdere publicatieblokkade; zij is geen algemene GO voor de
+uitgestelde onderdelen.
 
 De volgende vaste eisen blijven leidend:
 
@@ -31,7 +36,7 @@ De volgende vaste eisen blijven leidend:
 | WordPress | Heading Repair 1.3.0 actief; Identity Bridge 0.3.29, Login Repair 1.0.0 en Site Style 1.4.46 behouden; cache geleegd |
 | WordPress/CalorieApp-koppeling | iframe op `https://app.calorietoken.net`; status eindigt afgemeld op `Not signed in` in plaats van vast te blijven op `Checking…` |
 | Privacyweergave | het samenvattingsblok bestaat maar is afgemeld verborgen; het wordt alleen zichtbaar na een geldig bericht uit het exacte app-frame met intern consistente totalen |
-| Conceptposts | 8079 en 8080 staan nog op `draft`, met ongewijzigde wijzigingstijden 06:34:49 en 06:34:59 UTC |
+| WordPresscampagne | 8079 live; 8080, 8084, 8085 en 8086 met gecontroleerde UTC-datums gepland |
 
 Rollback blijft mogelijk zonder datamigratie: backenddeploy
 `dep-daj0i1m7bikc73aaop4g`; voor de frontend is de direct voorafgaande bewezen
@@ -103,26 +108,27 @@ De geïsoleerde browserpoort controleerde tevens 360, 412 en 1440 pixels,
 toetsenbord-/focuscontracten, elf talen, RTL, fallbacks en stale-data-clearing.
 Fysieke mobiele browsers blijven een menselijke eindcontrole.
 
-## Stap 4 — complete review aangepast op live
+## Stap 4 — gerichte campagnereview afgerond
 
-De reviewlaag verwijst nu naar de werkelijk geïnstalleerde versies, commits,
-deploys en acceptatieresultaten hierboven. Eerder werk blijft behouden:
+De volledige reviewbron blijft ongewijzigd als auditspoor, maar de actieve
+publicatiescope is teruggebracht tot `C1` en `C2`. Voor deze twee lijnen zijn:
 
-- 97 voorstellen;
-- 10 posters, 5 GIFs, 120 extra kanaalteksten en 7 bestaande gesproken-taalmedia;
-- 11 nieuwe feature-/campagnesets en 132 Help-onderwerpen uit R3;
-- alle 214 gebruikte beeld-, video- en ondertitelpaden;
-- de bestaande reviewtelling van 38 voorstellen zonder resterende controle en
-  59 met één of meer open controles;
-- 0 publicaties geautoriseerd, 0 gepland en 0 media als vervangen gemarkeerd.
+- kanaalteksten herschreven op de werkelijk live functies;
+- Jubileumbeeld, vijf video's/shorts, één App-poster en alle bijbehorende
+  Engelse VTT-bestanden visueel/inhoudelijk en op bestandshash gecontroleerd;
+- oudere BigchainDB/IPFS-visuals, een oude App-Testnetfoto, verouderde
+  vier-talenmedia en het PR-#144-item uitgesloten;
+- huidige, historische en toekomstige functionaliteit expliciet gescheiden;
+- niet uitgevoerde Xaman-, ingelogde samenvattings- en fysieke cameracontroles
+  buiten de gepubliceerde bewijsclaims gehouden;
+- alle C3-, C4- en C5-items aantoonbaar uitgesteld.
 
-De live-deploymentcontrole is op statusniveau gesloten. Voorstelgebonden open
-controles worden niet stilzwijgend herschreven: native redactie, definitieve
-beeldcontrole, openbare bestemmingsmedia, één mogelijke X-overlap en uitgesteld
-Patreon-werk blijven zichtbaar waar ze al stonden. Historische voorgestelde
-datums worden niet automatisch ingehaald.
+De complete copybank, mediakeuze, kalender en uitsluitingen staan in
+`FOCUSED-CAMPAIGN-STEP4-5-2026-09-16.md`. Historische datums zijn niet
+automatisch ingehaald en de mogelijke X-overlap is vermeden door deze run niet
+op X te plannen.
 
-## Stap 5 — nog geblokkeerd
+## Stap 5 — gerichte WordPress-uitvoering afgerond
 
 Technisch bewijs:
 
@@ -138,7 +144,21 @@ Technisch bewijs:
 | GitHub Food UX isolated check | run `35070538678` geslaagd |
 | Heading Repair releasebuilder | 5/5 geslaagd; ZIP-hash stabiel |
 
-Stap 5 blijft geblokkeerd totdat de echte Xaman sign/return, een minimale
-ingelogde dagboek-/samenvattingscontrole en de resterende menselijke review zijn
-afgerond en Pieter daarna één expliciete totale publicatie-GO geeft. Tot die tijd
-blijven posts 8079 en 8080 concept en wordt niets ingepland of gepubliceerd.
+Binnen de expliciet beperkte `C1`/`C2`-scope is stap 5 uitgevoerd:
+
+- post 8079 is gepubliceerd op
+  <https://calorietoken.net/2026/09/16/five-years-of-calorietoken/>;
+- post 8080 staat gepland voor 17 september 17:00 UTC;
+- posts 8084, 8085 en 8086 staan gepland voor 18, 21 en 23 september om
+  08:00 UTC;
+- de live jubileumpagina geeft HTTP 200;
+- mobiele Lighthouse: toegankelijkheid 90, best practices 96 en SEO 85;
+- de geselecteerde socialqueue voor 16–24 september is copy- en mediaklaar.
+
+Externe socials zijn niet foutief als ingepland gemarkeerd: er is geen
+gekoppelde publisher voor LinkedIn, YouTube, Instagram, Facebook of TikTok.
+Daarom is daarvoor een exacte handmatige queue opgeleverd. De echte Xaman
+sign/return, ingelogde dagboek-/WordPress-samenvatting en fysieke camera blijven
+open productacceptaties; de gerichte campagne gebruikt daar geen onbewezen
+resultaatclaim voor. Een latere totale publicatie-GO blijft nodig voor C3–C5 en
+de rest van de oorspronkelijke review.

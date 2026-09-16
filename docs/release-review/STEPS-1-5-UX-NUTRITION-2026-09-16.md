@@ -1,7 +1,9 @@
 # Stappen 1–5 — UX en veilige Nutri-samenvatting
 
-Status op 16 september 2026: stap 1–3 live hersteld; stap 4 aangepast op de
-werkelijke live toestand; stap 5 en alle publicatie blijven geblokkeerd.
+Status op 16 september 2026: stap 1–3 live hersteld; stap 4 gericht afgerond
+voor Jubileum en CalorieApp/Ecosysteem/CalorieToken-WP; stap 5 is voor die
+beperkte scope op WordPress live/gepland en voor externe socials handmatig
+publicatieklaar.
 
 ## Harde acceptatie-eisen
 
@@ -54,33 +56,38 @@ De GitHub-browserpoort controleerde 360/412/1440, elf talen, RTL, toetsenbord,
 fallbacks, originblokkade en stale clearing. Fysieke mobiele browsers blijven
 een menselijke eindcontrole.
 
-## Stap 4 — complete review op live toestand
+## Stap 4 — focusreview C1 en C2 afgerond
 
-De review gebruikt nu:
+De review gebruikt nog steeds releasecommit `62001b6`, frontend-hotfix
+`176a4e6`, de live deploys, actieve WordPress-versies en groene GitHub-runs.
+Daarbovenop geldt de planwijziging:
 
-- geïntegreerde releasecommit `62001b6`;
-- frontend-hotfix `176a4e6` en live deploy `dep-dal4kogae00c73fi7obg`;
-- live backenddeploy `dep-dal42jmk1f9s73dkmc50`;
-- actieve WordPress-versies en de bewezen live controles hierboven;
-- geslaagde GitHub-runs `35066924812` en `35070538678`.
+- actief: `C1` CalorieApp/Ecosysteem/CalorieToken-WP en `C2` Jubileum;
+- uitgesteld: `C3`, `C4` en `C5` tot volgende week;
+- huidige, historische en toekomstige claims zijn uit elkaar gehouden;
+- verouderde vier-talen-, BigchainDB/IPFS-, oude Testnetfoto- en PR-#144-media
+  zijn uit de gerichte queue gehaald;
+- geselecteerde PNG/MP4/VTT-bestanden zijn inhoudelijk, technisch en op hash
+  gecontroleerd.
 
-Alle 97 voorstellen, 214 mediapaden en bestaande open controles blijven
-behouden. Historische datums worden niet ingehaald. De telling blijft 38 zonder
-open controle en 59 met minstens één open controle totdat de voorstelreview zelf
-wordt afgerond. Er is niets gepubliceerd, gepland of vervangen.
+De oorspronkelijke 97 voorstellen, 214 mediapaden en open controles blijven
+als auditbron behouden; ze zijn niet stilzwijgend herschreven. Alleen de
+expliciet gekozen C1/C2-queue is nu vrijgegeven.
 
-## Stap 5 — geblokkeerd
+## Stap 5 — uitgevoerd voor de gerichte scope
 
 Na de sessiestatusfix slagen 305/305 Node-regressies, ESLint, TypeScript,
 Next.js-productiebouw en de GitHub Food UX isolated check. De bestaande backend-
 en releasecontroles blijven groen.
 
-Stap 5 mag pas verder na:
+Post 8079 staat live. Post 8080 is voor 17 september gepland; nieuwe C1-posts
+8084, 8085 en 8086 volgen op 18, 21 en 23 september. De geselecteerde
+socialqueue voor 16–24 september is met definitieve copy, CTA's, media en VTT
+opgeleverd, maar kan zonder gekoppelde platformpublishers niet vanuit deze
+omgeving worden ingepland.
 
-1. echte Xaman sign/return;
-2. minimale ingelogde dagboek- en WordPress-samenvattingscontrole;
-3. resterende menselijke/native/beeldcontroles;
-4. één expliciete totale publicatie-GO van Pieter.
-
-Posts 8079 en 8080 blijven tot dan `draft`; er wordt niets automatisch gepland
-of gepubliceerd.
+De echte Xaman sign/return, een ingelogde dagboek-/WordPress-samenvatting en de
+fysieke camerascan blijven open productacceptaties. De campagne omzeilt die
+niet: zij beperkt haar claims tot publiek bewezen functies. C3–C5 en de rest
+van de oorspronkelijke review wachten op de volgende afwerkingsronde en een
+latere totale publicatie-GO.
