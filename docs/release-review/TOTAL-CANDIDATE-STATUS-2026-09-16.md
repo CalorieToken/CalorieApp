@@ -1,204 +1,144 @@
-# CalorieToken — totale kandidaat stap 1 t/m 5
+# CalorieToken — live herstel stap 1 t/m 4
 
-Datum: 16 september 2026<br>
-Status: geïntegreerde lokale review- en releasekandidaat; live omgeving is slechts gedeeltelijk bijgewerkt.<br>
-Beslisgrens: één expliciete totale GO van Pieter voor externe upload, CI, deployment en live acceptatie.
+Datum: 16 september 2026
+Status: stap 1–3 staan live en de openbare technische acceptatie is geslaagd; stap 4 is op die live toestand bijgewerkt; stap 5 en publicatie blijven geblokkeerd.
 
-## Richtlijnen van Pieter — expliciet en leidend
+## Beslisgrens
 
-Deze kandidaat is getoetst aan de volgende vaste eisen. Ze mogen in een vervolg
-niet stilzwijgend worden geschrapt, versmald of als ‘later’ worden behandeld:
+De toestemming voor het herstellen van stap 1–3 is uitgevoerd. Die toestemming
+is geen toestemming om campagne-items of WordPress-berichten te publiceren. De
+concepten 8079 en 8080 zijn niet gewijzigd, gepland of gepubliceerd.
 
-1. Werk in volgorde 1 → 2 → 3 → 4 → 5; rond eerst 1 en 2 volledig af.
-2. Neem alle eerder voorbereide functies, inhoud en bouwstenen mee; maak geen
-   nieuwe concurrerende versie en laat onderdelen niet half achter.
-3. Gebruikerservaring, gebruiksvriendelijkheid, overzicht, duidelijke taal en
-   zo weinig mogelijk onnodige handelingen zijn acceptatie-eisen, geen extraatjes.
-4. Een product zonder bruikbare foto krijgt een begrijpelijk alternatief beeld.
-5. OFF en USDA worden samen overzichtelijk getoond, maar inhoudelijk correct:
-   USDA krijgt geen verzonnen Nutri-Score.
-6. De bestaande Xaman-login blijft de hoofdlogin. De minimale voedingsweergave
-   staat in dezelfde WordPress/Xaman-kaart buiten het app-iframe als dat veilig kan.
-7. Bestaande Identity Bridge 0.3.29, Login Repair 1.0.0, Site Style 1.4.46,
-   historische huisstijl, logo’s, CalorieHelp en bestaande content blijven behouden.
-8. Exact elf talen: en, nl, zh-Hans, hi, es, ar, fr, bn, pt, id en ur.
-9. Geen persoonlijke gezondheidsscore, geen onjuiste bronclaim en geen
-   toekomstige Web3-functie als al werkend presenteren.
-10. Geen nieuwe betaalde dienst; Patreon blijft uitgesteld; Render blijft binnen
-    het afgesproken maximum van 14 dollar per maand.
-11. Geen losse goedkeuring per onderdeel en geen automatisch inhalen van oude
-    publicatiedata. Eén totaalreview en daarna één totale GO.
-12. ICTHendrikse wordt niet aangepast of vervangen.
+De volgende vaste eisen blijven leidend:
 
-## Correctie na controle van de echte live omgeving
+1. volgorde 1 → 2 → 3 → 4 → 5;
+2. bestaande Xaman-login, Identity Bridge 0.3.29, Login Repair 1.0.0, Site Style
+   1.4.46, huisstijl, logo’s, CalorieHelp en bestaande content behouden;
+3. OFF en USDA samen duidelijk tonen zonder een USDA Nutri-Score te verzinnen;
+4. een ontbrekende, kapotte of niet-toegestane productfoto vervangen door een
+   lokale bronherkenbare illustratie;
+5. exact elf talen behouden: en, nl, zh-Hans, hi, es, ar, fr, bn, pt, id en ur;
+6. geen persoonlijke gezondheidsscore, geen nieuwe betaalde dienst, geen
+   automatische inhaalpublicatie en geen wijziging van ICTHendrikse.
 
-De eerdere formulering ‘stap 1–3 afgerond’ gold voor de losse lokale kandidaat,
-niet voor de totale live werking. De controle van 16 september 2026 bevestigde:
+## Bewezen live toestand
 
-| Onderdeel | Live | Kandidaat / vereiste correctie |
-|---|---|---|
-| CalorieApp-frontend | `ac724aab` | featurebasis staat live; finale fallback- en samenvattingsdelta moet nog mee |
-| Productiebackend | `187b8c04` | veilige WordPress-login behouden en voedingsdelta daarop integreren |
-| Identity Bridge | 0.3.29 | behouden |
-| Login Repair | 1.0.0 | behouden |
-| Site Style | 1.4.46 | behouden |
-| Heading/Language Repair | 1.1.0 | gecontroleerde companion 1.3.0 nog installeren |
-| WordPress-kaart | iframe en Xaman zichtbaar | bron-/OFF A–E-samenvatting ontbreekt live |
-| Showcases / FAQ / CalorieHelp | eerdere gedeeltelijke inhoud | stap-3-uitleg en visuele liveacceptatie nog uitvoeren |
+| Onderdeel | Live bewijs |
+|---|---|
+| Geïntegreerde backend | commit `62001b6db401356cc5f5fda1faca4db1f0586230`; deploy `dep-dal42jmk1f9s73dkmc50`; `/health` 200; schema `20260902_0016` |
+| CalorieApp-frontend | commit `176a4e6debfad3e033736e3cfe08dc106a1d8df0`; deploy `dep-dal4kogae00c73fi7obg` live |
+| GitHub-controle | run `35066924812` op de geïntegreerde kandidaat en run `35070538678` op de sessiestatusfix: beide geslaagd |
+| WordPress | Heading Repair 1.3.0 actief; Identity Bridge 0.3.29, Login Repair 1.0.0 en Site Style 1.4.46 behouden; cache geleegd |
+| WordPress/CalorieApp-koppeling | iframe op `https://app.calorietoken.net`; status eindigt afgemeld op `Not signed in` in plaats van vast te blijven op `Checking…` |
+| Privacyweergave | het samenvattingsblok bestaat maar is afgemeld verborgen; het wordt alleen zichtbaar na een geldig bericht uit het exacte app-frame met intern consistente totalen |
+| Conceptposts | 8079 en 8080 staan nog op `draft`, met ongewijzigde wijzigingstijden 06:34:49 en 06:34:59 UTC |
 
-De twee voorbereide jubileumberichten, WordPress-concepten 8079 en 8080, blijven
-concept. Publicatie is gepauzeerd totdat stap 1–3 live zijn uitgerold en samen
-zijn geaccepteerd.
-
-De gecorrigeerde kandidaat combineert de live backendcommit `187b8c04` met de
-frontend-/voedingsfeaturecommit `ac724aab`. Hun gemeenschappelijke basis is
-`3845de6e`. Hierdoor blijven de eenmalige login-codes en oorsprong-/sessiegrenzen
-uit de live backend behouden; een rechtstreekse backenddeploy van de losse
-`ac724aab`-branch is uitdrukkelijk niet toegestaan.
+Rollback blijft mogelijk zonder datamigratie: backenddeploy
+`dep-daj0i1m7bikc73aaop4g`; voor de frontend is de direct voorafgaande bewezen
+deploy `dep-dal43eijnfac73cdn0mg` op commit `62001b6` beschikbaar. Heading Repair
+1.3.0 kan afzonderlijk worden gedeactiveerd.
 
 ## Stap 1 — CalorieApp en voedingsdagboek
 
-Volledig in de kandidaat opgenomen:
+Live uitgerold en openbaar gevalideerd:
 
-- bestaande OFF-naam- en barcodesearch, bronhoeveelheid en portiekeuze;
-- bestaande USDA-catalogusroute met FDC-nummer, bereidingsomschrijving, eetbare
-  grammen, één controle en één expliciete opslaghandeling;
-- periodekeuze dag/week/maand/alles, periodebrede totalen, paginering, filter,
-  detail, verwijderen en duidelijke laad-/leeg-/fout-/sessiestaten;
-- logout en accountwisseling wissen privé dagboekstatus onmiddellijk; late
-  antwoorden mogen de oude gegevens niet herstellen;
-- lokale alternatiefillustraties voor OFF, USDA en overig/onbekend bij een
-  ontbrekende, afgewezen of kapotte foto, inclusief bronlabel en toegankelijke alttekst;
-- externe productfoto’s alleen vanaf exact `images.openfoodfacts.org/images/products/`;
-- één bronoverzicht met OFF, USDA en overig/onbekend over de volledige periode;
-- alle bronnen tellen mee in calorie- en nutriënttotalen;
-- A–E telt alleen brongeleverde OFF Nutri-Score-letters; USDA is niet ‘ontbrekend’
-  en krijgt geen afgeleide letter;
-- oudere niet-herleidbare regels blijven behouden als overig/onbekend;
-- alle nieuwe bediening en uitleg in de elf overeengekomen talen, inclusief RTL.
+- OFF-naam- en barcodesearch met bronhoeveelheid, portiekeuze en expliciete
+  opslaghandeling;
+- afzonderlijke USDA-catalogusroute met FDC-nummer, 100-g-bronwaarden en
+  invoer in werkelijke eetbare grammen;
+- periodekeuze, totalen, filter, paginering, detail, verwijderen en duidelijke
+  laad-, leeg-, fout- en sessiestaten;
+- OFF, USDA en overig/onbekend tellen mee in nutriënttotalen; A–E bevat alleen
+  door OFF aangeleverde Nutri-Score-letters;
+- lokale alternatieve illustraties voor OFF, USDA en overig als een foto
+  ontbreekt, kapot is of buiten de toegestane OFF-image-origin valt;
+- elf talen en RTL-weergave.
 
-De bronindeling gebruikt bestaande opgeslagen velden en vereist geen
-databasemigratie: een OFF-log bevat de productbarcode; de vaste USDA-stroom bevat
-de exacte FDC-bronmarkering zonder barcode. Niet-bewijsbare herkomst blijft overig.
+Live is onder meer gecontroleerd dat `coca cola` OFF-resultaten met bron,
+barcode, portie, nutriënten en A–E toont en dat een resultaat zonder bronfoto
+de lokale OFF-illustratie gebruikt. De USDA-zoekroute leverde `rice`-resultaten,
+waaronder FDC 2710825 met bronlink en 100-g-waarden.
+
+Niet als uitgevoerd geclaimd: een echte Xaman-walletsignering, een muterende
+dagboekhandeling met een echt account en een fysieke camerascanner. Daarvoor is
+menselijke bediening nodig; er is tijdens deze run geen privésessie of data
+aangemaakt.
 
 ## Stap 2 — WordPress, Xaman en minimale voedingsweergave
 
-Volledig in de kandidaat opgenomen:
+Live uitgerold:
 
-- Heading Repair 1.3.0 blijft een afzonderlijk deactiveerbare, bronhash-gebonden
-  companion en vervangt geen bestaande login- of Site Style-plugin;
-- het blok staat in `ctstyle-account-app` binnen de bestaande zichtbare Xaman-kaart;
-- compacte OFF/USDA/overig-aantallen plus OFF A–E en dekking voor de in de app
-  gekozen periode;
-- geen voedselnamen, maaltijden, datums, calorieën, macro’s, account-ID,
-  walletadres, token, sessiegeheim of persoonlijke score buiten het iframe;
-- alleen het exacte CalorieApp-frame en de twee goedgekeurde origins mogen sturen;
-- tellingen moeten intern kloppen: bronnen samen = totaal en bekende + ontbrekende
-  OFF-score = OFF-aantal; anders wordt niets getoond;
-- signed-out, laden, fout, iframe reload en pagehide verwijderen de samenvatting;
-- geen fetch en geen opslag in WordPress, localStorage of sessionStorage;
-- responsief op 360/412/1440, toetsenbordfocus, reduced motion en RTL;
-- CalorieHelp behoudt bestaande antwoorden, stappen, links en karakter en krijgt
-  in elf talen alleen de twee gecontroleerde uitlegtoevoegingen.
+- het deterministische pakket `calorietoken-heading-repair-1.3.0.zip` is actief
+  (12 bestanden; SHA-256
+  `5c7736741570bafd1247ef4a42d855d682e9bcbe352ef13d9d668c0ccbe6f5e5`);
+- de companion vervangt geen login- of Site Style-plugin;
+- focusmodus werkt heen en terug en CalorieHelp blijft beschikbaar;
+- de app publiceert nu een versie-1 sessiestatus naar uitsluitend de vertrouwde
+  WordPress-ouder; afgemeld wordt aantoonbaar `signed_out`/`Not signed in`;
+- het voedingsblok accepteert alleen het exacte iframe en goedgekeurde origins,
+  bewaart niets in WordPress of browseropslag en wist/verbergt oude data bij
+  fout, reload, logout of ongeldige totalen;
+- buiten het iframe komen alleen bronaantallen, OFF A–E-aantallen, dekking,
+  periode, taal en toestand. Geen voedselnamen, maaltijden, calorieën, macro’s,
+  datums, walletadres, account-ID, token of persoonlijke score.
 
-Deterministisch pluginpakket:
+De afgemelde live controle bewijst bewust dat het privéblok verborgen blijft.
+Het zichtbaar worden met echte dagboektotalen blijft onderdeel van de nog open
+menselijke Xaman-acceptatie.
 
-- `calorietoken-heading-repair-1.3.0.zip`
-- 12 bestanden
-- SHA-256 `5c7736741570bafd1247ef4a42d855d682e9bcbe352ef13d9d668c0ccbe6f5e5`
-- geen migratie, setting, credential, betaalde dienst of externe call.
+## Stap 3 — website, FAQ, CalorieHelp en toegankelijkheid
 
-## Stap 3 — website, CalorieHelp en toegankelijkheid
+Live uitgerold en openbaar gevalideerd:
 
-De kandidaat sluit de nieuwe uitleg aan op de reeds voorbereide site- en
-Help-structuur:
+- FAQ & snelle antwoorden, inclusief CalorieApp-, USDA-, vergelijkings-,
+  fallbackbeeld- en OFF A–E-uitleg;
+- de CalorieApp-FAQ-actie opent een volledig antwoord met stappen en bronnen;
+- Showcases toont de nieuwe voedselreis en app-CTA’s;
+- taalwissel werkt; de Arabische FAQ-shell is `rtl` en toont Arabische labels;
+- de CalorieApp-focusknop wisselt correct tussen maximaliseren en terugkeren;
+- bestaande header, accountkaart, Help-launcher, footer, cookiebediening en
+  links zijn behouden.
 
-- app, USDA, bronoverzicht, alternatief beeld en OFF A–E gebruiken dezelfde betekenis;
-- bronfoto en lokale illustratie worden niet met elkaar verward;
-- Help blijft lokaal en bewaart geen vraaggeschiedenis;
-- bestaande focusweergave, appnavigatie, taalwissel, Help-launcher, cookie- en
-  footerbediening blijven gescheiden en toetsenbordbruikbaar;
-- publieke documentatie labelt deze 16-septemberuitbreiding uitdrukkelijk als
-  kandidaat en de 15-septemberbasis als huidige live informatie;
-- fysieke mobiele sitecontrole, echte Xaman-sessie en live WordPress-visuele
-  acceptatie blijven een releasecontrole na GO en worden niet vooraf geclaimd.
+De geïsoleerde browserpoort controleerde tevens 360, 412 en 1440 pixels,
+toetsenbord-/focuscontracten, elf talen, RTL, fallbacks en stale-data-clearing.
+Fysieke mobiele browsers blijven een menselijke eindcontrole.
 
-## Stap 4 — complete review en eerder werk behouden
+## Stap 4 — complete review aangepast op live
 
-De volledige review bewaart de bestaande creatieve voorbereiding:
+De reviewlaag verwijst nu naar de werkelijk geïnstalleerde versies, commits,
+deploys en acceptatieresultaten hierboven. Eerder werk blijft behouden:
 
 - 97 voorstellen;
 - 10 posters, 5 GIFs, 120 extra kanaalteksten en 7 bestaande gesproken-taalmedia;
-- 11 nieuwe featuretekst-/campagnesets en 132 Help-onderwerpen uit R3;
-- alle 214 door het reviewdocument gebruikte beeld-, video- en ondertitelpaden;
-- 38 voorstellen zonder resterende controle en 59 met één of meer open controles;
+- 11 nieuwe feature-/campagnesets en 132 Help-onderwerpen uit R3;
+- alle 214 gebruikte beeld-, video- en ondertitelpaden;
+- de bestaande reviewtelling van 38 voorstellen zonder resterende controle en
+  59 met één of meer open controles;
 - 0 publicaties geautoriseerd, 0 gepland en 0 media als vervangen gemarkeerd.
 
-Open controles blijven zichtbaar. Ze worden niet automatisch als klaar gezet:
-native redactie, uiteindelijke beeldcontrole, openbare bestemmingsmedia,
-deployment/live retest, één mogelijke X-overlap en uitgesteld Patreon-werk.
-Historische voorgestelde datums zijn context en worden niet automatisch ingehaald.
+De live-deploymentcontrole is op statusniveau gesloten. Voorstelgebonden open
+controles worden niet stilzwijgend herschreven: native redactie, definitieve
+beeldcontrole, openbare bestemmingsmedia, één mogelijke X-overlap en uitgesteld
+Patreon-werk blijven zichtbaar waar ze al stonden. Historische voorgestelde
+datums worden niet automatisch ingehaald.
 
-## Stap 5 — bewijs, één besluit en veilige release
+## Stap 5 — nog geblokkeerd
 
-### Lokaal geslaagd
+Technisch bewijs:
 
 | Controle | Resultaat |
 |---|---:|
-| Volledige Node-regressies | 303/303 geslaagd |
-| Volledige backend-pytest | 1069 geslaagd, 24 expliciet overgeslagen, 0 mislukt |
+| Node-regressies na live sessiestatusfix | 305/305 geslaagd |
+| Backend-pytest op geïntegreerde kandidaat | 1069 geslaagd, 24 overgeslagen, 0 mislukt |
 | Gerichte login + voeding-integratie | 224/224 geslaagd |
 | Python tool-/releasecontroles | 82/82 geslaagd |
 | TypeScript `tsc --noEmit` | geslaagd |
-| Next.js 15.5.25 productie-build | geslaagd |
-| Heading Repair releasebuilder | 5/5 geslaagd en deterministisch |
-| WordPress parser/DOM | opgenomen in de 303 tests; geslaagd |
-| Python syntaxis nieuwe backend/browserbestanden | geslaagd |
-| NPM- en Python-dependencyaudit | 0 bekende kwetsbaarheden |
+| ESLint | 0 waarschuwingen, 0 fouten |
+| Next.js 15.5.25 productiebuild | geslaagd |
+| GitHub Food UX isolated check | run `35070538678` geslaagd |
+| Heading Repair releasebuilder | 5/5 geslaagd; ZIP-hash stabiel |
 
-De finale audit heeft twee verouderde OFF-testverwachtingen gecorrigeerd. Een
-afgewezen of te lange externe afbeelding-URL houdt een verder geldig product
-terecht logbaar met de lokale fallbackillustratie. De geïndexeerde OFF-fixture
-gebruikt nu ook het werkelijk toegestane pad onder
-`images.openfoodfacts.org/images/products/`. Productiecode hoefde hiervoor niet
-te veranderen. De complete backendrun is daarna zonder fouten herhaald.
-De bronpakketbouwer sluit nu bovendien testcaches, lokale virtuele omgevingen en
-alle `.db`, `.sqlite` en `.sqlite3`-bestanden expliciet uit. Een nieuwe
-regressietest en de lokale/GitHub-releasepoorten bewaken deze gegevensgrens.
-
-### Eerlijk nog uit te voeren via de voorbereide CI/livepoort
-
-- nieuw Chromium pixel-/interactiebewijs kon lokaal niet draaien omdat de
-  browserbinary-download in deze werkcontainer time-outte en door de netwerkpoort
-  werd geweigerd; de voorbereide workflow installeert Chromium en controleert
-  11 talen, 360/412/1440, fallbacks, bronverdeling, originblokkade en stale clearing;
-- native PHP-lint is voorbereid in dezelfde workflow; lokaal is geen PHP-runtime;
-- GitHub-bronupload is niet uitgevoerd nadat de beveiligingspoort daarvoor
-  expliciete eigenaarstoestemming vereiste. Er is geen branch, commit, PR,
-  deployment of productiedata gewijzigd.
-
-Geïntegreerde kandidaatbasis: live backend
-`187b8c041ce2af093cebd5aab95b0ee689ba302a` plus frontend-/featurekop
-`ac724aabf1534e51e819ef5d84df04f246eeea23`. De geïntegreerde runtime- en
-pakketboom vóór deze statuscorrectie is `923d2a552df16ef642b08c7d8d9ac701b78e9b56`. Bestaande draft PR #146
-blijft de canonieke route; de live backendwijzigingen moeten daarin worden
-geïntegreerd en er wordt geen concurrerende app-PR gemaakt.
-
-## Uitvoering na de ene totale GO
-
-1. De kandidaat op de bestaande PR #146 plaatsen en exacte commit/tree vastleggen.
-2. CI volledig groen: Node, backend, PHP, typecheck, build en beide browserchecks.
-3. Huidige live frontend/backend en rollback-ID opnieuw uitlezen vóór deployment.
-4. Achterwaarts compatibele backend deployen; geen migratie uitvoeren.
-5. Frontend deployen en build-ID tegen de goedgekeurde commit controleren.
-6. Heading Repair 1.3.0 installeren/activeren; Identity Bridge, Login Repair en
-   Site Style niet vervangen.
-7. Normale cacheverversing; echte login/logout, bronoverzicht, fallbackbeeld,
-   talen/RTL, Help, 360/412/1440 en privacy-clearing controleren.
-8. Bij enige afwijking: companion deactiveren en vorige frontend/backenddeploy
-   herstellen; geen campagne publiceren.
-9. Alleen na geslaagde live acceptatie de bewaarde campagne volgens de zichtbare
-   individuele open controles verwerken; niets automatisch inhalen.
-
-Dit document is de complete uitvoerings- en acceptatiegrens. ‘Kandidaat afgerond’
-betekent niet ‘live’, ‘gepubliceerd’ of ‘campagne geautoriseerd’.
+Stap 5 blijft geblokkeerd totdat de echte Xaman sign/return, een minimale
+ingelogde dagboek-/samenvattingscontrole en de resterende menselijke review zijn
+afgerond en Pieter daarna één expliciete totale publicatie-GO geeft. Tot die tijd
+blijven posts 8079 en 8080 concept en wordt niets ingepland of gepubliceerd.
