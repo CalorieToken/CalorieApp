@@ -47,3 +47,100 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Age-aware presentation stays decorative: permissions are enforced by the
+   component tree, while these rules make each safe surface feel intentional. */
+.calorie-age-picker [data-age-option="child"] {
+  border-top-color: var(--brand-primary);
+  background: linear-gradient(145deg, #ffffff 55%, #edf9f1);
+}
+
+.calorie-age-picker [data-age-option="teen"] {
+  border-top-color: var(--brand-secondary);
+  background: linear-gradient(145deg, #ffffff 55%, #f0f1fb);
+}
+
+.calorie-age-picker [data-age-option="adult"] {
+  border-top-color: var(--brand-accent);
+  background: linear-gradient(145deg, #ffffff 55%, #fff8e9);
+}
+
+.calorie-age-shell[data-age-band="child"] {
+  --age-surface: #f1fbf4;
+  --age-outline: rgba(0, 141, 54, .28);
+}
+
+.calorie-age-shell[data-age-band="teen"] {
+  --age-surface: #f3f4fc;
+  --age-outline: rgba(80, 91, 169, .3);
+}
+
+.calorie-age-shell[data-age-band="adult"] {
+  --age-surface: #fffaf0;
+  --age-outline: rgba(249, 178, 51, .32);
+}
+
+.calorie-age-shell[data-age-band="child"] .calorie-workspace-tabs {
+  border-color: var(--age-outline);
+  border-radius: 1.5rem;
+  background-color: var(--age-surface);
+  background-image:
+    radial-gradient(circle at 12px 12px, rgba(249, 178, 51, .24) 0 3px, transparent 3.5px),
+    radial-gradient(circle at 36px 28px, rgba(0, 141, 54, .14) 0 4px, transparent 4.5px);
+  background-size: 52px 42px;
+}
+
+.calorie-age-shell[data-age-band="child"] [role="tabpanel"] > section,
+.calorie-age-shell[data-age-band="child"] .calorie-account-card {
+  border-color: var(--age-outline);
+  border-radius: 1.75rem;
+}
+
+.calorie-age-shell[data-age-band="teen"] .calorie-workspace-tabs {
+  border-color: var(--age-outline);
+  background:
+    linear-gradient(120deg, rgba(80, 91, 169, .08), transparent 38%),
+    linear-gradient(300deg, rgba(0, 141, 54, .07), transparent 42%),
+    var(--age-surface);
+}
+
+.calorie-age-shell[data-age-band="adult"] .calorie-workspace-tabs {
+  border-color: var(--age-outline);
+  background: linear-gradient(135deg, #fff, var(--age-surface));
+}
+
+.calorie-journey-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.calorie-journey-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent), var(--brand-secondary));
+  content: "";
+}
+
+.calorie-journey-panel:focus-visible {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .calorie-age-picker {
+    border-radius: 1.25rem;
+    padding: 1rem;
+  }
+
+  .calorie-age-picker [data-age-option] {
+    min-height: 5.5rem;
+    padding: .9rem;
+  }
+
+  .calorie-journey-steps {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+}

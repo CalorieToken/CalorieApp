@@ -18,7 +18,7 @@
   var band=null,overlay=null,resumeHelp=null,lastFocus=null,overlayDismissible=false;
   function valid(value){return bands.indexOf(value)>=0?value:null;}
   function path(){return window.location.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'')||'/';}
-  function pageKind(){var value=path();return value==='/calorieapp'?'app':value==='/how-to-buy-calorie'?'crypto':value==='/showcases'?'showcases':null;}
+  function pageKind(){var value=path();return value==='/calorieapp'?'app':value==='/how-to-buy-calorie'?'crypto':value==='/showcases'?'showcases':value==='/faq'?'faq':null;}
   function locale(){var picker=document.querySelector('#ctstyle-language-select,#ctstyle-account-language'),value=picker&&picker.value||document.documentElement.lang||'en';if(/^zh(?:-|$)/i.test(value))return 'zh-Hans';value=value.split('-')[0];return copy[value]?value:'en';}
   function labels(){return copy[locale()]||copy.en;}
   function read(){try{return valid(window.sessionStorage.getItem(storageKey));}catch(_){return null;}}
@@ -38,14 +38,21 @@
     document.querySelectorAll(selectors.join(',')).forEach(function(node){hideForAge(node,!!restricted);});
     financeNotice();
   }
+  function applyShowcases(restricted){
+    document.querySelectorAll('.showcase-auth').forEach(function(node){hideForAge(node,!!restricted);});
+    var cards=Array.from(document.querySelectorAll('.showcase-grid>.showcase-card'));cards.forEach(function(node,index){hideForAge(node,!!restricted&&index===2);});
+    var intro=document.querySelector('.showcase-intro'),introCopy=intro&&Array.from(intro.children).find(function(node){return node.tagName==='P'&&!node.classList.contains('eyebrow')&&!node.querySelector('a');});hideForAge(introCopy,!!restricted);
+    var grid=document.querySelector('.showcase-grid'),notice=document.getElementById('ct-age-showcase-note');if(grid&&!notice){notice=document.createElement('aside');notice.id='ct-age-showcase-note';notice.className='ct-age-showcase-note';notice.setAttribute('role','note');grid.before(notice);}if(notice){var c=labels();notice.lang=locale();notice.dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';notice.textContent=restricted?((c[band+'Note']||c.childNote)+' '+c.limited):'';notice.hidden=!restricted;}
+  }
   function applyHelp(){var restricted=band!=='adult',keys=['test','exchange','trustline','donations'];document.querySelectorAll('#ctstyle-widget-help,#ctstyle-faq-help').forEach(function(root){root.dataset.ctHelpBand=band||'unselected';keys.forEach(function(key){root.querySelectorAll('[data-topic="'+key+'"]').forEach(function(node){node.hidden=restricted;});});root.querySelectorAll('.ctstyle-faq-item').forEach(function(node){var summary=(node.querySelector('summary')||{}).textContent||'';if(/wallet|trade|trading|crypto|trustline|test fund|testnet|swft|swap|buy|sell|kopen|verkopen|handelen|cal\s*&/i.test(summary))node.hidden=restricted;});var existing=root.querySelector(':scope>.ct-age-status');if(band){var status=statusNode(root);renderStatus(status);}else if(existing)existing.remove();});}
   function apply(){
     if(band)document.body.dataset.ctAgeBand=band;else delete document.body.dataset.ctAgeBand;
     var restricted=band!=='adult',kind=pageKind();
     var pageStatus=document.getElementById('ct-age-page-status');if(pageStatus)pageStatus.remove();
-    if(kind){document.querySelectorAll('.xl-card.calorieapp-identity-card').forEach(function(node){hideForAge(node,!!restricted);});}
+    if(kind&&kind!=='faq'){document.querySelectorAll('.xl-card.calorieapp-identity-card').forEach(function(node){hideForAge(node,!!restricted);});}
     if(kind==='crypto')applyCrypto(restricted);
-    var financialScope=kind?document:document.getElementById('ctstyle-app-launcher');if(financialScope)financialScope.querySelectorAll('a[href*="xpmarket.com"],a[href*="xaman.app"],a[href*="xumm.app"],a[href*="/trustline/"]').forEach(function(node){node.classList.toggle('ct-age-financial-action',!!restricted);});
+    if(kind==='showcases')applyShowcases(restricted);
+    var financialScope=kind&&(kind!=='faq'||!!band)?document:document.getElementById('ctstyle-app-launcher');if(financialScope)financialScope.querySelectorAll('a[href*="xpmarket.com"],a[href*="xaman.app"],a[href*="xumm.app"],a[href*="/trustline/"],a[href*="/how-to-buy-calorie/"]').forEach(function(node){node.classList.toggle('ct-age-financial-action',!!restricted);});
     applyHelp();sendAll();if(window.CalorieTokenHelpUI&&typeof window.CalorieTokenHelpUI.refresh==='function')window.CalorieTokenHelpUI.refresh();
   }
   function renderOverlay(){if(!overlay)return;var c=labels(),dir=['ar','ur'].indexOf(locale())>=0?'rtl':'ltr';overlay.lang=locale();overlay.dir=dir;overlay.querySelector('[data-copy="title"]').textContent=c.title;overlay.querySelector('[data-copy="intro"]').textContent=c.intro;overlay.querySelector('[data-copy="privacy"]').textContent=c.privacy;overlay.querySelector('[data-copy="close"]').textContent=c.close;bands.forEach(function(value){overlay.querySelector('[data-band="'+value+'"] strong').textContent=c[value];overlay.querySelector('[data-band="'+value+'"] span').textContent=c[value+'Note'];});}
@@ -55,8 +62,8 @@
   function protectHelp(){var details=document.querySelector('#ctstyle-app-launcher>details');if(details&&details.dataset.ctAgeBound!=='1'){details.dataset.ctAgeBound='1';details.addEventListener('toggle',function(){if(details.open&&!band){details.open=false;showGate(details,true);}});}if(document.documentElement.dataset.ctAgeHelpBound==='1')return;document.documentElement.dataset.ctAgeHelpBound='1';document.addEventListener('click',function(event){var target=event.target&&event.target.closest&&event.target.closest('#ctstyle-widget-help button[data-topic],#ctstyle-faq-help button[data-topic],#ctstyle-faq-help .ctstyle-faq-item>summary');if(!target||band)return;event.preventDefault();event.stopImmediatePropagation();showGate(target.closest('#ctstyle-app-launcher details'),true);},true);document.addEventListener('submit',function(event){var form=event.target;if(!(form instanceof HTMLFormElement)||!form.closest('#ctstyle-widget-help,#ctstyle-faq-help'))return;if(!band){event.preventDefault();event.stopImmediatePropagation();showGate(form.closest('#ctstyle-app-launcher details'),true);return;}if(band==='adult')return;var input=form.querySelector('input'),query=input&&input.value||'';if(!/(?:wallet|xaman|xumm|crypto|trade|trading|trustline|testnet|test fund|buy|sell|swap|kopen|verkopen|handelen|wallet|portemonnee)/i.test(query))return;event.preventDefault();event.stopImmediatePropagation();var root=form.closest('#ctstyle-widget-help,#ctstyle-faq-help'),reply=root.querySelector('.ctstyle-help-reply'),c=labels();if(reply){reply.hidden=false;reply.querySelector('h3').textContent=c.helpTitle;var body=reply.querySelector('div');body.replaceChildren();var p=document.createElement('p');p.textContent=c.helpText;body.append(p);}input.value='';},true);}
   function ready(){
     band=read();protectHelp();apply();
-    if(pageKind()&&!band)showGate(null,false);
-    var relevantSelector='#ctstyle-app-launcher,iframe[title="CalorieApp"],#ctstyle-widget-help,#ctstyle-faq-help,.ctstyle-exchange-layout,#ctstyle-cal-crypto,#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange,.cal-buy-guide';
+    var kind=pageKind();if(kind&&kind!=='faq'&&!band)showGate(null,false);
+    var relevantSelector='#ctstyle-app-launcher,iframe[title="CalorieApp"],#ctstyle-widget-help,#ctstyle-faq-help,.ctstyle-exchange-layout,#ctstyle-cal-crypto,#ctstyle-own-dex,#ctstyle-cal-options,#ctstyle-external-exchange,.cal-buy-guide,.showcase-auth,.showcase-grid';
     var observer=new MutationObserver(function(records){var relevant=records.some(function(record){return Array.from(record.addedNodes||[]).some(function(node){return node.nodeType===1&&(node.matches(relevantSelector)||node.querySelector(relevantSelector));});});if(!relevant)return;protectHelp();apply();eligibleFrames().forEach(function(frame){if(frame.dataset.ctAgeBound!=='1'){frame.dataset.ctAgeBound='1';frame.addEventListener('load',function(){send(frame);});}});});observer.observe(document.body,{childList:true,subtree:true});
     eligibleFrames().forEach(function(frame){frame.dataset.ctAgeBound='1';frame.addEventListener('load',function(){send(frame);});});
   }

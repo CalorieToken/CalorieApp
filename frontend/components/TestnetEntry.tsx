@@ -95,14 +95,14 @@ export function TestnetEntry({ onNavigate, onOpenAccountTools }: TestnetEntryPro
   };
 
   return (
-    <section className="rounded-2xl border border-brand-secondary/20 bg-white p-4 shadow-sm sm:p-6"
+    <section className="calorie-journey-card rounded-2xl border border-brand-secondary/20 bg-white p-4 shadow-sm sm:p-6"
       lang={locale} dir={localeDirection(locale)} aria-labelledby="account-journey-title">
       <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/70">{copy.journeyTab}</p>
       <h2 id="account-journey-title" className="mt-1 text-xl font-bold text-brand-primary">{copy.journeyTitle}</h2>
       <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.journeyIntro}</p>
 
       <div role="tablist" aria-label={copy.journeyTitle}
-        className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-brand-bg p-2 sm:grid-cols-4">
+        className="calorie-journey-steps mt-5 grid grid-cols-2 gap-2 rounded-xl bg-brand-bg p-2 sm:grid-cols-4">
         {steps.map((item, index) => (
           <button key={item} ref={node => { tabRefs.current[index] = node; }} type="button"
             id={`account-journey-tab-${item}`} role="tab" aria-selected={step === item}
@@ -114,11 +114,22 @@ export function TestnetEntry({ onNavigate, onOpenAccountTools }: TestnetEntryPro
         ))}
       </div>
 
-      <p className="mt-3 text-xs font-semibold text-brand-secondary" aria-live="polite">{stepIndex + 1} / {steps.length}</p>
+      <div
+        className="mt-3 h-2 overflow-hidden rounded-full bg-brand-secondary/10"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={steps.length}
+        aria-valuenow={stepIndex + 1}
+        aria-label={copy.journeyTitle}
+      >
+        <span className="block h-full rounded-full bg-brand-primary transition-[width]"
+          style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }} />
+      </div>
+      <p className="mt-2 text-xs font-semibold text-brand-secondary" aria-live="polite">{stepIndex + 1} / {steps.length}</p>
       {notice ? <p role="status" className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-900">{notice}</p> : null}
 
       <div id="account-journey-panel-test" role="tabpanel" aria-labelledby="account-journey-tab-test"
-        hidden={step !== "test"} className="mt-4">
+        hidden={step !== "test"} className="calorie-journey-panel mt-4">
         <h3 className="text-base font-bold text-brand-primary">{copy.title}</h3>
         <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.description}</p>
         <div role="note" className="mt-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-3 text-sm leading-relaxed text-amber-950">
@@ -133,7 +144,7 @@ export function TestnetEntry({ onNavigate, onOpenAccountTools }: TestnetEntryPro
       </div>
 
       <div id="account-journey-panel-practice" role="tabpanel" aria-labelledby="account-journey-tab-practice"
-        hidden={step !== "practice"} className="mt-4">
+        hidden={step !== "practice"} className="calorie-journey-panel mt-4">
         <h3 className="text-base font-bold text-brand-primary">{copy.practiceStep}</h3>
         <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.practiceText}</p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -145,25 +156,28 @@ export function TestnetEntry({ onNavigate, onOpenAccountTools }: TestnetEntryPro
       </div>
 
       <div id="account-journey-panel-move" role="tabpanel" aria-labelledby="account-journey-tab-move"
-        hidden={step !== "move"} className="mt-4">
+        hidden={step !== "move"} className="calorie-journey-panel mt-4">
         <h3 className="text-base font-bold text-brand-primary">{copy.moveStep}</h3>
         <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-950">{copy.moveText}</p>
-        <ol className="mt-4 list-decimal space-y-2 ps-5 text-sm leading-relaxed text-brand-secondary">
-          {copy.moveSteps.map(item => <li key={item}>{item}</li>)}
+        <ol className="mt-4 space-y-2 text-sm leading-relaxed text-brand-secondary">
+          {copy.moveSteps.map((item, index) => <li key={item} className="flex items-start gap-3 rounded-xl border border-brand-secondary/15 bg-white p-3">
+            <span aria-hidden="true" className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-secondary text-xs font-bold text-white">{index + 1}</span>
+            <span className="pt-0.5">{item}</span>
+          </li>)}
         </ol>
         <p className={`mt-4 rounded-lg px-3 py-2 text-xs leading-relaxed ${importEnabled ? "bg-green-50 text-green-900" : "bg-brand-bg text-brand-secondary"}`}>
           {importEnabled ? copy.importReady : copy.importPending}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={onOpenAccountTools}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openTools}</button>
+            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{importEnabled ? copy.openTools : copy.openExportTools}</button>
           <a href="https://xaman.app/" target="_blank" rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center rounded-full border-2 border-brand-secondary bg-white px-5 py-2 text-sm font-bold text-brand-secondary">{copy.openXaman}</a>
         </div>
       </div>
 
       <div id="account-journey-panel-finish" role="tabpanel" aria-labelledby="account-journey-tab-finish"
-        hidden={step !== "finish"} className="mt-4">
+        hidden={step !== "finish"} className="calorie-journey-panel mt-4">
         <h3 className="text-base font-bold text-brand-primary">{copy.finishStep}</h3>
         <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.finishText}</p>
         <button type="button" onClick={() => onNavigate("packaged")}

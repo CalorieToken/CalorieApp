@@ -25,6 +25,7 @@
       "When the reviewed import gate is active, import the export. Only food-log snapshots move; wallet, identity, sessions and nickname do not."
     ],
     "openTools": "Open export/import tools",
+    "openExportTools": "Open export tools",
     "openXaman": "Open Xaman",
     "importReady": "The reviewed import control is present in Account tools for this build.",
     "importPending": "Export is available now. Import remains fail-closed until its reviewed server-side safety gate is explicitly activated.",
@@ -72,6 +73,7 @@
       "Importeer de export wanneer de gecontroleerde importpoort actief is. Alleen momentopnamen uit het voedingslogboek gaan mee; wallet, identiteit, sessies en nickname niet."
     ],
     "openTools": "Open export-/importbeheer",
+    "openExportTools": "Open exportbeheer",
     "openXaman": "Open Xaman",
     "importReady": "De gecontroleerde importfunctie staat voor deze build in Accountbeheer.",
     "importPending": "Export is nu beschikbaar. Import blijft veilig geblokkeerd totdat de gecontroleerde serverpoort uitdrukkelijk wordt geactiveerd.",
@@ -119,6 +121,7 @@
       "经审核的导入开关启用后再导入。只转移饮食日志快照，不转移钱包、身份、会话或昵称。"
     ],
     "openTools": "打开导出/导入工具",
+    "openExportTools": "打开导出工具",
     "openXaman": "打开 Xaman",
     "importReady": "此版本的账户工具中已有经审核的导入控件。",
     "importPending": "现在可以导出。导入在经审核的服务器安全开关被明确启用前保持关闭。",
@@ -166,6 +169,7 @@
       "समीक्षित इम्पोर्ट गेट सक्रिय होने पर फ़ाइल इम्पोर्ट करें। केवल भोजन-लॉग स्नैपशॉट जाते हैं; वॉलेट, पहचान, सत्र और निकनेम नहीं।"
     ],
     "openTools": "एक्सपोर्ट/इम्पोर्ट टूल खोलें",
+    "openExportTools": "एक्सपोर्ट टूल खोलें",
     "openXaman": "Xaman खोलें",
     "importReady": "इस बिल्ड के Account tools में समीक्षित इम्पोर्ट नियंत्रण मौजूद है।",
     "importPending": "एक्सपोर्ट अभी उपलब्ध है। समीक्षित सर्वर सुरक्षा गेट सक्रिय होने तक इम्पोर्ट बंद रहेगा।",
@@ -213,6 +217,7 @@
       "Cuando se active la puerta de importación revisada, importa el archivo. Solo pasan instantáneas del diario; no la cartera, identidad, sesiones ni apodo."
     ],
     "openTools": "Abrir exportación/importación",
+    "openExportTools": "Abrir herramientas de exportación",
     "openXaman": "Abrir Xaman",
     "importReady": "El control de importación revisado está presente en las herramientas de cuenta de esta versión.",
     "importPending": "La exportación ya está disponible. La importación seguirá bloqueada hasta activar expresamente su puerta de seguridad revisada.",
@@ -260,6 +265,7 @@
       "عند تفعيل بوابة الاستيراد المراجعة، استورد الملف. تنتقل لقطات سجل الطعام فقط؛ لا تنتقل المحفظة أو الهوية أو الجلسات أو الاسم المستعار."
     ],
     "openTools": "فتح أدوات التصدير/الاستيراد",
+    "openExportTools": "فتح أدوات التصدير",
     "openXaman": "فتح Xaman",
     "importReady": "يتوفر عنصر الاستيراد المراجع في أدوات الحساب لهذا الإصدار.",
     "importPending": "التصدير متاح الآن. يبقى الاستيراد مغلقًا بأمان حتى تفعيل بوابة الخادم المراجعة صراحةً.",
@@ -307,6 +313,7 @@
       "Lorsque la porte d’importation examinée est active, importez le fichier. Seuls les instantanés du journal passent ; pas le portefeuille, l’identité, les sessions ni le surnom."
     ],
     "openTools": "Ouvrir export/import",
+    "openExportTools": "Ouvrir les outils d’export",
     "openXaman": "Ouvrir Xaman",
     "importReady": "Le contrôle d’importation examiné est présent dans les outils du compte de cette version.",
     "importPending": "L’export est disponible. L’import reste bloqué jusqu’à l’activation explicite de sa porte de sécurité serveur examinée.",
@@ -354,6 +361,7 @@
       "পর্যালোচিত ইমপোর্ট গেট চালু হলে ফাইল ইমপোর্ট করুন। শুধু খাদ্য-লগ স্ন্যাপশট যায়; ওয়ালেট, পরিচয়, সেশন বা ডাকনাম নয়।"
     ],
     "openTools": "এক্সপোর্ট/ইমপোর্ট টুল খুলুন",
+    "openExportTools": "এক্সপোর্ট টুল খুলুন",
     "openXaman": "Xaman খুলুন",
     "importReady": "এই বিল্ডের Account tools-এ পর্যালোচিত ইমপোর্ট নিয়ন্ত্রণ রয়েছে।",
     "importPending": "এক্সপোর্ট এখন পাওয়া যায়। পর্যালোচিত সার্ভার সুরক্ষা গেট স্পষ্টভাবে চালু না হওয়া পর্যন্ত ইমপোর্ট বন্ধ থাকবে।",
@@ -401,6 +409,7 @@
       "Quando a porta de importação revista estiver ativa, importe o ficheiro. Só passam instantâneos do diário; não passam carteira, identidade, sessões ou alcunha."
     ],
     "openTools": "Abrir exportação/importação",
+    "openExportTools": "Abrir ferramentas de exportação",
     "openXaman": "Abrir Xaman",
     "importReady": "O controlo de importação revisto está presente nas ferramentas da conta desta versão.",
     "importPending": "A exportação já está disponível. A importação permanece bloqueada até a porta de segurança revista ser ativada explicitamente.",
@@ -448,6 +457,7 @@
       "Saat gerbang impor yang ditinjau aktif, impor berkas. Hanya snapshot catatan makanan yang berpindah; dompet, identitas, sesi, dan nama panggilan tidak."
     ],
     "openTools": "Buka alat ekspor/impor",
+    "openExportTools": "Buka alat ekspor",
     "openXaman": "Buka Xaman",
     "importReady": "Kontrol impor yang ditinjau tersedia di alat akun untuk build ini.",
     "importPending": "Ekspor tersedia sekarang. Impor tetap tertutup sampai gerbang keamanan server yang ditinjau diaktifkan secara tegas.",
@@ -495,6 +505,7 @@
       "نظرثانی شدہ امپورٹ گیٹ فعال ہونے پر فائل امپورٹ کریں۔ صرف خوراک لاگ اسنیپ شاٹس منتقل ہوتے ہیں؛ والٹ، شناخت، سیشن اور نک نیم نہیں۔"
     ],
     "openTools": "ایکسپورٹ/امپورٹ ٹول کھولیں",
+    "openExportTools": "ایکسپورٹ ٹول کھولیں",
     "openXaman": "Xaman کھولیں",
     "importReady": "اس بلڈ کے Account tools میں نظرثانی شدہ امپورٹ کنٹرول موجود ہے۔",
     "importPending": "ایکسپورٹ ابھی دستیاب ہے۔ نظرثانی شدہ سرور حفاظتی گیٹ واضح طور پر فعال ہونے تک امپورٹ بند رہے گا۔",

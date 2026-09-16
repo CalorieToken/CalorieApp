@@ -28,6 +28,14 @@ async function compiledLoginModule() {
   };
 }
 
+test("guided account tools request gives signed-out users a focused explanation", async () => {
+  const { source } = await compiledLoginModule();
+  assert.match(source, /setAccountToolsRequested\(true\)/);
+  assert.match(source, /accountToolsNoticeRef\.current\?\.focus/);
+  assert.match(source, /authCopy\.signInForTools/);
+  assert.match(source, /role="status"/);
+});
+
 test("login surface fails closed until an embedded parent is trusted", async () => {
   const { compiled, source } = await compiledLoginModule();
   const module = { exports: {} };

@@ -68,7 +68,7 @@ export function AgeExperienceControl({band, onChange}: {
   const current = band ? options.find(option => option.band === band)! : null;
 
   if (band && !editing) return (
-    <div lang={locale} dir={direction} className="mb-3 flex justify-end">
+    <div lang={locale} dir={direction} className="calorie-age-summary mb-3 flex justify-end" data-age-band={band}>
       <button type="button" onClick={() => setEditing(true)}
         className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-brand-secondary/25 bg-white px-3 py-2 text-xs font-semibold text-brand-secondary shadow-sm transition hover:border-brand-secondary/50 hover:bg-brand-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
         <span className="truncate"><bdi>{current?.label}</bdi></span>
@@ -80,7 +80,7 @@ export function AgeExperienceControl({band, onChange}: {
 
   return (
     <section aria-labelledby={titleId} lang={locale} dir={direction}
-      className="mb-6 rounded-2xl border-2 border-brand-primary/25 bg-brand-bg p-4 shadow-sm sm:p-6">
+      className="calorie-age-picker mb-6 rounded-2xl border-2 border-brand-primary/25 bg-brand-bg p-4 shadow-sm sm:p-6">
       <div className="flex items-start justify-between gap-3">
         <h2 id={titleId} className="text-xl font-bold text-brand-primary">{copy.title}</h2>
         {band ? <button type="button" onClick={() => setEditing(false)}
@@ -89,7 +89,7 @@ export function AgeExperienceControl({band, onChange}: {
       </div>
       <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.intro}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {options.map(option => <button key={option.band} type="button" onClick={() => { onChange(option.band); setEditing(false); }}
+        {options.map(option => <button key={option.band} type="button" data-age-option={option.band} onClick={() => { onChange(option.band); setEditing(false); }}
           aria-pressed={band === option.band}
           className="min-h-28 rounded-xl border-2 border-brand-secondary/30 bg-white p-4 text-start transition hover:border-brand-primary hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2">
           <span className="block font-bold text-brand-primary"><bdi>{option.label}</bdi></span>

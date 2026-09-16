@@ -976,10 +976,12 @@ export function XamanLoginPanel() {
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const [accountToolsRequested, setAccountToolsRequested] = useState(false);
   const [loginSurfaceMode, setLoginSurfaceMode] =
     useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
   const accountToolsRef = useRef<HTMLDetailsElement | null>(null);
+  const accountToolsNoticeRef = useRef<HTMLDivElement | null>(null);
   const parentOrigin = useRef<string | null>(null);
   const activeLocale = useRef(displayLocale);
   const sessionBridgeState = useRef<SessionBridgeState>("checking");
@@ -1017,13 +1019,22 @@ export function XamanLoginPanel() {
 
   useEffect(() => {
     function openAccountTools() {
-      if (!currentUser || !accountToolsRef.current) return;
+      if (!currentUser || !accountToolsRef.current) {
+        setAccountToolsRequested(true);
+        window.requestAnimationFrame(() => accountToolsNoticeRef.current?.focus({ preventScroll: false }));
+        return;
+      }
+      setAccountToolsRequested(false);
       accountToolsRef.current.open = true;
       const summary = accountToolsRef.current.querySelector<HTMLElement>("summary");
       window.requestAnimationFrame(() => summary?.focus({ preventScroll: true }));
     }
     window.addEventListener("calorieapp:open-account-tools", openAccountTools);
     return () => window.removeEventListener("calorieapp:open-account-tools", openAccountTools);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) setAccountToolsRequested(false);
   }, [currentUser]);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
@@ -1682,7 +1693,7 @@ export function XamanLoginPanel() {
     <section
       lang={authLocale}
       dir={authDirection}
-      className={`rounded-3xl border p-4 shadow-sm sm:p-5 ${
+      className={`calorie-account-card rounded-3xl border p-4 shadow-sm sm:p-5 ${
         currentUser
           ? "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white"
           : "border-brand-secondary/20 bg-brand-primary/5"
@@ -1721,6 +1732,18 @@ export function XamanLoginPanel() {
           </span>
         ) : null}
       </div>
+
+      {!currentUser && accountToolsRequested ? (
+        <div
+          ref={accountToolsNoticeRef}
+          tabIndex={-1}
+          role="status"
+          className="mt-3 rounded-xl border-2 border-brand-accent bg-amber-50 px-3 py-3 text-sm leading-relaxed text-amber-950 outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary"
+        >
+          <strong className="block text-brand-primary">{authCopy.accountTools}</strong>
+          <span className="mt-1 block">{authCopy.signInForTools}</span>
+        </div>
+      ) : null}
 
       {!currentUser && !isLoggingOut && !logoutNeedsRetry ? (
         <details className="group mt-3 rounded-xl border border-amber-300/80 bg-amber-50 text-xs text-amber-950">

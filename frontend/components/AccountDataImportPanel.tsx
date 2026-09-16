@@ -95,6 +95,14 @@ export function AccountDataImportPanel({
   const [success, setSuccess] = useState<string | null>(null);
   const requestController = useRef<AbortController | null>(null);
   const fileInput = useRef<HTMLInputElement | null>(null);
+  const fileReady = selectedFile !== null && selectedFile.size > 0
+    && selectedFile.size <= ACCOUNT_IMPORT_MAX_BYTES;
+  const sourceReady = sourceConfirmation.length > 0
+    && sourceConfirmation === sourceConfirmation.trim()
+    && new TextEncoder().encode(sourceConfirmation).byteLength <= ACCOUNT_IMPORT_MAX_USER_ID_BYTES;
+  const targetReady = targetConfirmation === userId;
+  const readiness = [fileReady, sourceReady, targetReady, acknowledged];
+  const readinessCount = readiness.filter(Boolean).length;
 
   useEffect(() => {
     return () => requestController.current?.abort();
@@ -241,6 +249,32 @@ export function AccountDataImportPanel({
         {view.description}
       </p>
 
+      <div className="mt-3 rounded-xl border border-brand-secondary/15 bg-white/80 p-3">
+        <div className="flex items-center justify-between gap-3 text-xs font-semibold text-brand-secondary">
+          <span>{view.title}</span>
+          <span aria-live="polite">{readinessCount} / {readiness.length}</span>
+        </div>
+        <div
+          className="mt-2 h-2 overflow-hidden rounded-full bg-brand-secondary/10"
+          role="progressbar"
+          aria-label={view.section_label}
+          aria-valuemin={0}
+          aria-valuemax={readiness.length}
+          aria-valuenow={readinessCount}
+        >
+          <span className="block h-full rounded-full bg-brand-primary transition-[width]"
+            style={{ width: `${(readinessCount / readiness.length) * 100}%` }} />
+        </div>
+        <ol className="mt-3 grid gap-2 sm:grid-cols-2">
+          {[view.file_label, view.source_confirmation, view.target_account_identifier, view.button_confirm].map((label, index) => (
+            <li key={label} className={`flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] leading-snug ${readiness[index] ? "bg-green-50 text-green-800" : "bg-brand-bg text-brand-secondary"}`}>
+              <span aria-hidden="true" className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-bold ${readiness[index] ? "bg-green-600 text-white" : "bg-white text-brand-secondary"}`}>{readiness[index] ? "✓" : index + 1}</span>
+              <span className="min-w-0">{label}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
       <form className="mt-3 space-y-3" onSubmit={handleImport}>
         <label className="block text-xs font-semibold text-brand-primary">
           {view.file_label}
@@ -254,6 +288,9 @@ export function AccountDataImportPanel({
             onChange={handleFileChange}
             className="mt-1 block w-full text-xs text-brand-secondary file:me-3 file:rounded-md file:border-0 file:bg-brand-secondary file:px-4 file:py-2 file:font-semibold file:text-white"
           />
+          {selectedFile ? <span dir="ltr" className="mt-2 block break-all rounded-md bg-white px-2 py-1.5 font-mono text-[11px] font-normal text-brand-secondary">
+            <bdi>{selectedFile.name}</bdi> · {(selectedFile.size / 1024).toFixed(1)} KiB
+          </span> : null}
         </label>
 
         <label className="block text-xs font-semibold text-brand-primary">
@@ -274,7 +311,7 @@ export function AccountDataImportPanel({
         <p className="text-xs leading-relaxed text-brand-secondary/90">
           {view.target_confirmation}
         </p>
-        <code dir="ltr" className="block break-all rounded-md bg-white px-2 py-1.5 text-xs text-brand-primary">
+        <code dir="ltr" className="block select-all break-all rounded-md border border-brand-secondary/15 bg-white px-2 py-2 text-xs text-brand-primary">
           <bdi>{userId}</bdi>
         </code>
         <label className="block text-xs font-semibold text-brand-primary">
@@ -314,7 +351,7 @@ export function AccountDataImportPanel({
               selectedFile
             )
           }
-          className="inline-flex items-center justify-center rounded-md bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isImporting ? view.button_busy : view.button_confirm}
         </button>

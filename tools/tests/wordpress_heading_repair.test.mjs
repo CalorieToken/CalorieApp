@@ -199,6 +199,32 @@ test('unrelated pages keep only the compact original sign-in card and receive no
   assert.match(css,/body\.ct-account-compact \.xl-card\.calorieapp-identity-card \.xl-card-footer\{display:none!important\}/);
 });
 
+test('CalorieApp embed inherits the resolved language and a loaded legacy cover reveals itself', () => {
+  const {document,window}=parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled page-id-7880">
+    <select id="ctstyle-language-select"><option value="nl" selected>Nederlands</option></select>
+    <section><div id="ctstyle-account-app"><div class="ctstyle-account-app-brand">CalorieApp</div></div></section>
+    <div data-calorieapp-embed data-locale="en"><div data-calorieapp-frame-stage data-calorieapp-frame-loading="1" aria-busy="true">
+      <div data-calorieapp-embed-loading data-loading-ready="1"><strong>CalorieApp is starting</strong><p data-calorieapp-loading-message></p>
+        <button data-calorieapp-loading-retry>Try again</button><button data-calorieapp-loading-reveal>Show app</button></div>
+      <iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1&amp;locale=en"></iframe>
+    </div></div>
+  </body></html>`);
+  Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/calorieapp/?ui_lang=nl'),configurable:true});
+  Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
+  const frame=document.querySelector('iframe'),loader=document.querySelector('[data-calorieapp-embed-loading]'),stage=document.querySelector('[data-calorieapp-frame-stage]');
+  Object.defineProperty(frame,'contentWindow',{value:{postMessage(){}}});
+  let reveals=0;document.querySelector('[data-calorieapp-loading-reveal]').addEventListener('click',()=>{reveals+=1;loader.hidden=true;delete stage.dataset.calorieappFrameLoading;stage.setAttribute('aria-busy','false');});
+  window.setTimeout=callback=>{callback();return 1;};window.clearTimeout=()=>{};window.requestAnimationFrame=callback=>{callback(0);return 1;};window.scrollTo=()=>{};window.matchMedia=()=>({matches:false});
+  vm.runInContext(appFocusSource,vm.createContext({window,document,URL,MutationObserver:window.MutationObserver,getComputedStyle:()=>({display:'block'}),setTimeout:window.setTimeout,clearTimeout:window.clearTimeout}),{filename:'app-focus.js'});
+  assert.equal(document.querySelector('[data-calorieapp-embed]').dataset.locale,'nl');
+  assert.equal(new URL(frame.src).searchParams.get('locale'),'nl');
+  assert.equal(loader.querySelector('strong').textContent,'CalorieApp wordt gestart');
+  assert.equal(loader.querySelector('[data-calorieapp-loading-reveal]').textContent,'App tonen');
+  assert.equal(reveals,1);
+  assert.equal(loader.hidden,true);
+  assert.equal(stage.getAttribute('aria-busy'),'false');
+});
+
 test('adult account journey opens the original guide as a strict, seed-free dialog bridge', () => {
   const {document, window} = parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled page-id-7880">
     <section class="xl-card"><div id="ctstyle-account-app"><div class="ctstyle-account-app-brand">CalorieApp</div></div></section>
@@ -391,8 +417,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.5\.5/);
-  assert.match(php, /const VERSION = '1\.5\.5'/);
+  assert.match(php, /Version: 1\.6\.0/);
+  assert.match(php, /const VERSION = '1\.6\.0'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
@@ -407,9 +433,13 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(css, /\.ct-calorieapp-nutrition-periods\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css, /\.ct-calorieapp-nutrition-sources\{display:grid;grid-template-columns:1fr/);
   assert.match(css, /\.ct-calorieapp-nutrition-summary\[hidden\]\{display:none!important\}/);
+  assert.match(css, /body\[data-ct-age-band="child"\] \.ct-age-financial-action/);
+  assert.match(css, /\.ct-age-showcase-note/);
   assert.match(appFocusSource, /calorieapp:testnet-guide:/);
   assert.match(appFocusSource, /\[data-calorieapp-embed\] iframe\[title="CalorieApp"\]/);
   assert.match(appFocusSource, /url\.pathname==='\/'/);
+  assert.match(appFocusSource, /url\.searchParams\.set\('locale',desired\)/);
+  assert.match(appFocusSource, /data-calorieapp-loading-reveal/);
   assert.match(appFocusSource, /if\(age!=='adult'/);
   assert.match(appFocusSource, /exactGuideMessage\(event\.data,'open'\)/);
   assert.match(appFocusSource, /postMessage\(\{type:guidePrefix\+type,version:1\}/);

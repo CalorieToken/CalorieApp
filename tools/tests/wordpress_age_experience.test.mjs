@@ -8,7 +8,7 @@ const require=createRequire(new URL('../../frontend/package.json',import.meta.ur
 const {parseHTML}=require('linkedom');
 const source=readFileSync(new URL('../../wordpress-plugins/calorietoken-heading-repair/assets/age-experience.js',import.meta.url),'utf8');
 
-function page(url,{stored=null,crypto=false}={}){
+function page(url,{stored=null,crypto=false,showcases=false,faqFinancial=false}={}){
   const {window,document}=parseHTML(`<!doctype html><html lang="en"><body class="ctstyle-enabled page-id-7880">
     <main><section class="xl-card calorieapp-identity-card"><div class="xl-card-body"></div></section>
       ${crypto?`<div class="ctstyle-exchange-layout">
@@ -17,6 +17,10 @@ function page(url,{stored=null,crypto=false}={}){
         <article id="ctstyle-cal-options" class="cal-buy-guide">Buy guide</article>
         <section id="ctstyle-external-exchange"><button>SWFT toestaan en openen</button><iframe src="https://defi.swft.pro/"></iframe></section>
       </div>`:''}
+      ${showcases?`<section class="showcase-intro ctstyle-shared-panel"><p class="eyebrow">Project</p><h1>Showcases</h1><p>Search food and keep a personal diary.</p><p><a href="/calorieapp/">Try the app</a></p></section>
+      <aside class="showcase-auth"><div class="xl-card xl-no-wallet"><a href="https://xaman.app/">Wallet login</a></div></aside>
+      <div class="showcase-grid"><article class="showcase-card">Search</article><article class="showcase-card">Understand</article><article class="showcase-card">Build your personal log</article></div>`:''}
+      ${faqFinancial?`<a id="faq-market" href="https://xpmarket.com/dex/test">XPMarket</a>`:''}
       <iframe title="CalorieApp" src="https://app.calorietoken.net/"></iframe>
     </main>
     <aside id="ctstyle-app-launcher"><details><summary>CalorieHelp</summary><div class="ctstyle-app-launcher-panel">
@@ -80,6 +84,33 @@ test('adult crypto view restores all routes hidden during a previous minor selec
   assert.equal(env.document.querySelector('.ctstyle-exchange-layout').hidden,false);
   assert.equal(env.document.getElementById('ctstyle-external-exchange').hidden,false);
   assert.equal(env.document.getElementById('ct-age-finance-notice').hidden,true);
+});
+
+test('minor Showcases views hide wallet identity, the personal journey and financial shortcuts',()=>{
+  for(const stored of ['child','teen']){
+    const env=page('https://calorietoken.net/showcases/',{stored,showcases:true});
+    assert.equal(env.document.querySelector('.showcase-auth').hidden,true,stored);
+    const cards=env.document.querySelectorAll('.showcase-card');
+    assert.equal(cards[0].hidden,false,stored);
+    assert.equal(cards[1].hidden,false,stored);
+    assert.equal(cards[2].hidden,true,stored);
+    const introCopy=Array.from(env.document.querySelector('.showcase-intro').children).find(node=>node.tagName==='P'&&!node.classList.contains('eyebrow')&&!node.querySelector('a'));
+    assert.equal(introCopy.hidden,true,stored);
+    assert.equal(env.document.getElementById('ct-age-showcase-note').hidden,false,stored);
+    assert.match(env.document.getElementById('ct-age-showcase-note').textContent,/public food search|public information/i);
+    assert.ok(env.document.querySelector('a[href*="xaman.app"]').classList.contains('ct-age-financial-action'));
+  }
+});
+
+test('FAQ stays public but applies page-wide financial filtering after a minor choice',()=>{
+  const env=page('https://calorietoken.net/faq/',{faqFinancial:true});
+  assert.equal(env.document.getElementById('ct-age-gate'),null);
+  assert.equal(env.document.getElementById('faq-market').classList.contains('ct-age-financial-action'),false);
+  const details=env.document.querySelector('#ctstyle-app-launcher>details');
+  details.open=true;details.dispatchEvent(new env.window.Event('toggle'));
+  env.document.querySelector('#ct-age-gate [data-band="child"]').click();
+  assert.equal(env.document.body.dataset.ctAgeBand,'child');
+  assert.ok(env.document.getElementById('faq-market').classList.contains('ct-age-financial-action'));
 });
 
 test('a SWFT route inserted after the age script is immediately covered for minors',async()=>{

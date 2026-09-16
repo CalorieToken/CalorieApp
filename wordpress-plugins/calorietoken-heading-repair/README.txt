@@ -1,4 +1,4 @@
-CalorieToken Heading and Language Repair 1.5.5
+CalorieToken Heading and Language Repair 1.6.0
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
@@ -7,6 +7,28 @@ This release is locally tested, NOT live-site accepted. It applies only to exact
 known source hashes from the saved Site Style 1.4.46 or prepared 1.4.47 candidate.
 If an admin warning says that files differ, the affected override is not applied.
 Do not disable the compatibility checks. Reconcile the current source instead.
+
+Version 1.6.0 adds the final age-aware and account-journey UX pass. Child and
+teen modes now hide the complete Showcases account/wallet block, the personal
+logbook journey and every internal or external financial shortcut. FAQ links
+are filtered as soon as an age is selected without forcing an age dialog on an
+otherwise public FAQ page. Child, teen and adult surfaces receive restrained,
+brand-safe visual cues, while mobile floating controls keep 44-pixel targets.
+
+The companion remains paired with the updated CalorieApp frontend: its guided
+test-account route now has visible progress, numbered migration steps and an
+export-only label while import is safely disabled. A logged-out export request
+no longer fails silently; it returns to Account tools, explains that sign-in is
+needed and moves focus to that message. Export/import panels use full-width
+actions, a selected-file receipt and a four-part readiness indicator without
+weakening exact-account confirmations or the reviewed server safety gate.
+
+Version 1.5.6 completes the live embed hand-off. On the CalorieApp page it
+synchronizes the already resolved display language with both the trusted iframe
+URL and identity-bridge locale before that bridge starts. Its short loading card
+uses the same one of eleven interface languages. If the trusted embed reports
+that it loaded but the older bridge keeps its loading cover open, the companion
+uses that bridge's own existing Show app action to reveal it automatically.
 
 Version 1.5.5 completes the mobile repair pass. It resolves an explicit or saved
 display language before public widgets are built, then uses the browser language

@@ -73,13 +73,18 @@ export function CalorieAppWorkspace() {
   }
 
   return (
-    <div lang={locale} dir={direction}>
+    <div
+      lang={locale}
+      dir={direction}
+      className="calorie-age-shell"
+      data-age-band={ageBand ?? "unselected"}
+    >
       {ageResolved ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
       {!ageResolved || !ageBand ? null : <>
       <div
         role="tablist"
         aria-label={`${experience.copy.navigation} CalorieApp`}
-        className="mb-5 flex min-w-0 snap-x gap-2 overflow-x-auto rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 [scrollbar-width:thin]"
+        className="calorie-workspace-tabs mb-5 flex min-w-0 snap-x gap-2 overflow-x-auto rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 [scrollbar-width:thin]"
       >
         {tabs.map((tab, index) => (
           <button
@@ -109,6 +114,7 @@ export function CalorieAppWorkspace() {
         role="tabpanel"
         aria-labelledby="calorie-tab-account"
         hidden={visibleTab !== "account"}
+        className="calorie-workspace-panel"
       >
         <XamanLoginPanel />
         <NicknameProfile />
@@ -119,6 +125,7 @@ export function CalorieAppWorkspace() {
         role="tabpanel"
         aria-labelledby="calorie-tab-journey"
         hidden={visibleTab !== "journey"}
+        className="calorie-workspace-panel"
       >
         <TestnetEntry
           onNavigate={destination => selectTab(destination, true)}
