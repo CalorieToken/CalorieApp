@@ -79,10 +79,11 @@ test('all eleven actual React summaries render real counts, missing coverage, la
     assert.ok(html.includes(escaped(sourceCopy[locale].sourcesTitle)));
     assert.ok(html.includes(escaped(sourceCopy[locale].gradeHeading)));
     assert.ok(html.includes(escaped(sourceCopy[locale].gradeScope)));
-    assert.equal((html.match(/background-color:/g)||[]).length,5);
+    assert.equal((html.match(/background-color:/g)||[]).length,8);
     assert.equal((html.match(/<dt /g)||[]).length,8);
     assert.ok(html.includes(escaped(c.coverage.replace('{known}',new Intl.NumberFormat(locale).format(4)).replace('{total}',new Intl.NumberFormat(locale).format(7)))));
-    assert.doesNotMatch(html,/data-grade-pointer|role="img"/);
+    assert.doesNotMatch(html,/data-grade-pointer/);
+    assert.match(html,/role="img"/);
     const emptySources={open_food_facts:3,usda:0,other:0};
     const empty=renderToStaticMarkup(React.createElement(RecordedGradeSummary,{summary:{grades:summary.grades.map(e=>({...e,count:0})),total:3,known:0,missing:3},sources:emptySources,locale}));
     assert.ok(empty.includes(escaped(c.noGrades)));assert.doesNotMatch(empty,/background-color:/);

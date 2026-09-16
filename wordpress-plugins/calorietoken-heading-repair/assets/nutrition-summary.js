@@ -1,4 +1,4 @@
-/* Private aggregate product-grade summary for the existing account card. GPL-2.0-or-later. */
+/* Private aggregate product-grade summary beside the CalorieApp frame. GPL-2.0-or-later. */
 (function(){'use strict';
   var allowedOrigins=['https://app.calorietoken.net','https://calorieapp-frontend.onrender.com'];
   var periods=['day','week','month','all'];
@@ -16,6 +16,8 @@
     ur:{title:'آپ کی خوراک کی ڈائری ایک نظر میں',scope:'صرف مجموعے؛ مصنوعات کی تفصیل CalorieApp میں رہتی ہے۔',periodTitle:'مدت',day:'آج',week:'یہ ہفتہ',month:'یہ مہینہ',all:'سب',loading:'خلاصہ اپ ڈیٹ ہو رہا ہے…',unavailable:'خلاصہ عارضی طور پر دستیاب نہیں۔',details:'ذرائع اور وضاحت',coverage:'OFF Nutri-Score دستیاب: {off} OFF پروڈکٹس میں سے {known}۔',empty:'اس مدت کے لیے کسی OFF پروڈکٹ کا Nutri-Score دستیاب نہیں۔',off:'Open Food Facts',usda:'USDA',other:'دیگر',note:'تمام ذرائع ایپ کے غذائی مجموعوں میں شامل ہیں۔ A–E صرف OFF کے فراہم کردہ پروڈکٹ گریڈز پر لاگو ہے۔'}
   };
   var node=null,summary=null,state='hidden',selectedPeriod='day';
+  function pagePath(){return window.location.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'')||'/';}
+  function isCalorieAppPage(){return document.body.classList.contains('page-id-7880')||pagePath()==='/calorieapp';}
   function locale(preferred){
     var picker=document.querySelector('#ctstyle-language-select,#ctstyle-account-language');
     var value=typeof preferred==='string'&&preferred||picker&&picker.value||document.documentElement.lang||'en';
@@ -59,6 +61,10 @@
     node.querySelector('.ct-calorieapp-nutrition-note').textContent=c.note;
     if(!summary||state!=='ready')return;
     node.querySelector('.ct-calorieapp-nutrition-coverage').textContent=summary.sources.open_food_facts===0?c.empty:format(c.coverage,{known:number.format(summary.known),off:number.format(summary.sources.open_food_facts),total:number.format(summary.total)});
+    var bar=node.querySelector('.ct-calorieapp-nutrition-bar'),grades=['A','B','C','D','E'];bar.replaceChildren();
+    bar.setAttribute('aria-label',c.title+' · '+grades.map(function(grade){return grade+': '+number.format(summary.counts[grade]);}).join(', '));
+    if(summary.known){grades.forEach(function(grade){var value=summary.counts[grade];if(!value)return;var segment=document.createElement('span');segment.className='ct-calorieapp-nutrition-segment ct-grade-'+grade.toLowerCase();segment.style.width=(value/summary.known*100)+'%';segment.title=grade+': '+number.format(value);segment.setAttribute('aria-hidden','true');segment.textContent=grade;bar.append(segment);});}
+    else{var empty=document.createElement('span');empty.className='ct-calorieapp-nutrition-segment-empty';empty.setAttribute('aria-hidden','true');bar.append(empty);}
     [['open_food_facts','off'],['usda','usda'],['other','other']].forEach(function(pair){var item=node.querySelector('[data-ct-nutrition-source="'+pair[0]+'"]');item.querySelector('dt').textContent=c[pair[1]];item.querySelector('dd').textContent=number.format(summary.sources[pair[0]]);});
     node.querySelectorAll('[data-ct-nutrition-grade]').forEach(function(item){var grade=item.dataset.ctNutritionGrade;item.querySelector('dd').textContent=number.format(summary.counts[grade]);});
   }
@@ -69,15 +75,16 @@
     frame.contentWindow.postMessage({type:'calorieapp:nutrition-period',version:1,period:period},origin);
   }
   function install(){
+    if(!isCalorieAppPage())return true;
     if(node&&node.isConnected)return true;
-    var account=document.getElementById('ctstyle-account-app'),frame=eligibleFrame();if(!account||!frame)return false;
-    var section=document.createElement('section'),title=document.createElement('strong'),scope=document.createElement('p'),controls=document.createElement('div'),status=document.createElement('p'),body=document.createElement('div'),coverage=document.createElement('p'),grid=document.createElement('dl'),details=document.createElement('details'),detailsLabel=document.createElement('summary'),sourceGrid=document.createElement('dl'),note=document.createElement('p');
+    var frame=eligibleFrame();if(!frame)return false;
+    var section=document.createElement('section'),title=document.createElement('strong'),scope=document.createElement('p'),controls=document.createElement('div'),status=document.createElement('p'),body=document.createElement('div'),coverage=document.createElement('p'),bar=document.createElement('div'),grid=document.createElement('dl'),details=document.createElement('details'),detailsLabel=document.createElement('summary'),sourceGrid=document.createElement('dl'),note=document.createElement('p');
     section.id='ct-calorieapp-nutrition-summary';section.className='ct-calorieapp-nutrition-summary';section.hidden=true;
-    title.className='ct-calorieapp-nutrition-title';scope.className='ct-calorieapp-nutrition-scope';controls.className='ct-calorieapp-nutrition-periods';controls.setAttribute('role','group');status.className='ct-calorieapp-nutrition-status';status.setAttribute('aria-live','polite');body.className='ct-calorieapp-nutrition-body';coverage.className='ct-calorieapp-nutrition-coverage';grid.className='ct-calorieapp-nutrition-counts';grid.dir='ltr';details.className='ct-calorieapp-nutrition-details';detailsLabel.className='ct-calorieapp-nutrition-details-label';sourceGrid.className='ct-calorieapp-nutrition-sources';note.className='ct-calorieapp-nutrition-note';
+    title.className='ct-calorieapp-nutrition-title';scope.className='ct-calorieapp-nutrition-scope';controls.className='ct-calorieapp-nutrition-periods';controls.setAttribute('role','group');status.className='ct-calorieapp-nutrition-status';status.setAttribute('aria-live','polite');body.className='ct-calorieapp-nutrition-body';coverage.className='ct-calorieapp-nutrition-coverage';bar.className='ct-calorieapp-nutrition-bar';bar.setAttribute('role','img');grid.className='ct-calorieapp-nutrition-counts';grid.dir='ltr';details.className='ct-calorieapp-nutrition-details';detailsLabel.className='ct-calorieapp-nutrition-details-label';sourceGrid.className='ct-calorieapp-nutrition-sources';note.className='ct-calorieapp-nutrition-note';
     periods.forEach(function(period){var button=document.createElement('button');button.type='button';button.dataset.ctNutritionPeriod=period;button.addEventListener('click',function(){sendPeriod(period);});controls.append(button);});
     ['A','B','C','D','E'].forEach(function(grade){var item=document.createElement('div'),key=document.createElement('dt'),value=document.createElement('dd');item.dataset.ctNutritionGrade=grade;item.className='ct-calorieapp-nutrition-grade ct-grade-'+grade.toLowerCase();key.textContent=grade;value.textContent='0';item.append(key,value);grid.append(item);});
     ['open_food_facts','usda','other'].forEach(function(source){var item=document.createElement('div'),key=document.createElement('dt'),value=document.createElement('dd');item.dataset.ctNutritionSource=source;key.textContent=source;value.textContent='0';item.append(key,value);sourceGrid.append(item);});
-    details.append(detailsLabel,sourceGrid,note);body.append(coverage,grid,details);section.append(title,scope,controls,status,body);account.append(section);node=section;
+    details.append(detailsLabel,sourceGrid,note);body.append(coverage,bar,grid,details);section.append(title,scope,controls,status,body);frame.before(section);node=section;
     if(frame.dataset.ctNutritionLoadBound!=='1'){frame.dataset.ctNutritionLoadBound='1';frame.addEventListener('load',clear);}
     render();return true;
   }

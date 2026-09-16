@@ -148,6 +148,7 @@ test("actual food controls render the eleven languages and escape literal produc
   const display = { enabled: true, locale: "en" };
   const imports = {
     "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
+    "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
@@ -188,12 +189,13 @@ test("actual food controls render the eleven languages and escape literal produc
   assert.ok(renderToStaticMarkup(React.createElement(LoadingState, { variant: "search" })).includes(copy.en.loadingSearch));
 });
 
-test("the actual Nutri-Score control renders one compact recorded-grade badge regardless of login controls", () => {
+test("the actual Nutri-Score control renders a recorded badge and an A–E indicator regardless of login controls", () => {
   const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
   });
   const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
+    "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
@@ -207,14 +209,15 @@ test("the actual Nutri-Score control renders one compact recorded-grade badge re
       }));
       assert.ok(html.includes(`data-product-grade="${grade.trim().toUpperCase()}"`));
       assert.ok(html.includes(renderedText(experienceCopy.nl.productGrade.replace("{grade}",grade.trim().toUpperCase()))));
-      assert.equal((html.match(/background-color:/g) || []).length, 1);
-      assert.equal((html.match(/<details/g) || []).length, 1);
+      assert.equal((html.match(/background-color:/g) || []).length, 6);
+      assert.match(html, /role="img"/);
+      assert.equal((html.match(/<details/g) || []).length, 0, "Search cards keep source notes collapsed into the optional detail view.");
     }
   }
   for (const grade of [undefined, null, "", "unknown"]) {
     const html=renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade }));
     assert.ok(html.includes('data-product-grade="unavailable"'));
     assert.ok(html.includes(renderedText(experienceCopy.nl.gradeUnavailable)));
-    assert.doesNotMatch(html,/background-color:/);
+    assert.equal((html.match(/background-color:/g) || []).length, 5);
   }
 });

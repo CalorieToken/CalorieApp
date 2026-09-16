@@ -84,11 +84,11 @@ with sync_playwright() as playwright:
     page = context.new_page()
     page.on("pageerror", lambda error: report["errors"].append(str(error)))
     try:
-        page.goto("https://calorietoken.net/nutrition-fixture", wait_until="networkidle")
+        page.goto("https://calorietoken.net/calorieapp/", wait_until="networkidle")
         app_frame = next(frame for frame in page.frames if frame.url.startswith("https://app.calorietoken.net/"))
         evil_frame = next(frame for frame in page.frames if frame.url.startswith("https://evil.example/"))
         summary = page.locator("#ct-calorieapp-nutrition-summary")
-        ok("Summary is installed inside the existing Xaman account block", summary.count() == 1)
+        ok("Summary is installed beside CalorieApp instead of inside the Xaman account block", summary.count() == 1 and summary.locator("xpath=ancestor::*[contains(concat(' ',normalize-space(@class),' '),' xl-card ')]").count() == 0)
         ok("Summary is hidden before trusted private data arrives", summary.is_hidden())
 
         evil_frame.evaluate("message => window.sendNutrition(message)", ready)
@@ -108,12 +108,12 @@ with sync_playwright() as playwright:
             for width in [360, 412, 1440]:
                 page.set_viewport_size({"width": width, "height": 900})
                 geometry = page.evaluate("""() => {
-                  const card=document.querySelector('.xl-card'), summary=document.querySelector('#ct-calorieapp-nutrition-summary');
-                  const c=card.getBoundingClientRect(), s=summary.getBoundingClientRect();
+                  const summary=document.querySelector('#ct-calorieapp-nutrition-summary');
+                  const s=summary.getBoundingClientRect();
                   return {
                     pageOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
                     summaryOverflow: summary.scrollWidth > summary.clientWidth,
-                    inside: s.left >= c.left && s.right <= c.right + 0.5,
+                    inside: s.left >= 0 && s.right <= document.documentElement.clientWidth + 0.5,
                   };
                 }""")
                 ok(f"{locale} {width}px: no page or summary overflow", not geometry["pageOverflow"] and not geometry["summaryOverflow"] and geometry["inside"])
@@ -122,6 +122,7 @@ with sync_playwright() as playwright:
         page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').lang === 'nl'")
         source_values = page.locator("[data-ct-nutrition-source] dd").all_text_contents()
         ok("The Xaman card shows the exact OFF, USDA and other source counts", source_values == ["5", "1", "1"])
+        ok("The exact A-E counts also render as one proportional indicator bar", summary.locator(".ct-calorieapp-nutrition-bar .ct-calorieapp-nutrition-segment").count() == 3)
         ok("USDA is excluded from OFF Nutri-Score coverage", "5" in summary.locator(".ct-calorieapp-nutrition-coverage").inner_text())
         ok("Source details start collapsed", not summary.locator(".ct-calorieapp-nutrition-details").evaluate("node => node.open"))
 
@@ -139,9 +140,9 @@ with sync_playwright() as playwright:
 
         page.set_viewport_size({"width": 360, "height": 900})
         app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "locale": "nl", "period": "month"})
-        page.locator(".xl-card").screenshot(path=str(OUT / "nl-xaman-nutrition-360.png"))
+        page.locator("body").screenshot(path=str(OUT / "nl-xaman-nutrition-360.png"))
         app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "locale": "ar"})
-        page.locator(".xl-card").screenshot(path=str(OUT / "ar-xaman-nutrition-360.png"))
+        page.locator("body").screenshot(path=str(OUT / "ar-xaman-nutrition-360.png"))
 
         app_frame.evaluate("message => window.sendNutrition(message)", {**ready, "status": "signed_out"})
         page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').hidden")

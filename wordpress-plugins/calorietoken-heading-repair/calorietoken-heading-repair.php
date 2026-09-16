@@ -1,15 +1,15 @@
 <?php
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
- * Description: Reversible, hash-gated heading repair plus CalorieApp focus view, read-only login status and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.4.0
+ * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
+ * Version: 1.5.4
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.4.0';
+const VERSION = '1.5.4';
 function source_matches($name, $hashes) {
     $path = WP_PLUGIN_DIR . '/calorietoken-site-style/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
@@ -57,12 +57,14 @@ function enqueue() {
             wp_add_inline_script('calorietoken-help',
                 'window.CalorieTokenHeadingRepairLabels=' . wp_json_encode($labels, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';' .
                 'window.CalorieTokenHeadingRepairTopics=' . wp_json_encode($topics, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';' .
+                'window.CalorieTokenHeadingRepairAvatar=' . wp_json_encode(asset_url('caloriehelp-mascot-v2.png'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';' .
                 $bootstrap, 'before');
         }
     }
     if ($ok['presentation'] && $ok['help']) {
         wp_enqueue_style('calorietoken-app-focus', asset_url('app-focus.css'), array(), VERSION);
-        wp_enqueue_script('calorietoken-app-focus', asset_url('app-focus.js'), array(), VERSION, true);
+        wp_enqueue_script('calorietoken-age-experience', asset_url('age-experience.js'), array(), VERSION, true);
+        wp_enqueue_script('calorietoken-app-focus', asset_url('app-focus.js'), array('calorietoken-age-experience'), VERSION, true);
         wp_enqueue_script('calorietoken-nutrition-summary', asset_url('nutrition-summary.js'), array('calorietoken-app-focus'), VERSION, true);
     }
     if (!$map) { return; }

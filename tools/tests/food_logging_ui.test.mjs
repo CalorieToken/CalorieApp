@@ -175,6 +175,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
         nutritionSummaryMessage: (input) => input,
         postNutritionSummaryToParent: () => false,
       };
+      if (specifier === "@/lib/navigationBridge") return { postNavigationTarget: () => false };
       if (specifier === "@/lib/usdaReference") return usdaMath;
       if (specifier === "@/lib/foodBarcode") return barcode;
       if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };
@@ -251,7 +252,10 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
     setDisplayLanguage(locale) { displayLanguage = { enabled: true, locale }; return render(); },
     get tree() { return tree; },
     cards() { return nodes(tree, (node) => node.type === "FoodCard"); },
-    controls() { return this.cards().find((card) => card.props.children)?.props.children ?? null; },
+    controls() {
+      return nodes(tree, (node) => node.type === "form" &&
+        ["calorieapp-packaged-portion-editor", "calorieapp-basic-portion-editor"].includes(node.props?.id))[0] ?? null;
+    },
     async flush() { await new Promise(setImmediate); return render(); },
     async search(query = "oats") {
       nodes(tree, (node) => node.type === "SearchBar")[0].props.onQueryChange(query);
@@ -372,18 +376,23 @@ test("USDA reference preserves all eleven locales, RTL and the supplied English 
   }
 });
 
-test("a portion opens inside the chosen result, with its product identity beside confirmation", async () => {
+test("one nearby portion editor follows the chosen result and keeps its product identity", async () => {
   const h = await harness();
   await h.search();
   h.choose(0);
   assert.equal(h.cards().length, 30);
-  assert.equal(h.cards()[0].props.children.type, "form");
-  assert.equal(h.cards().filter((card) => card.props.children).length, 1);
+  assert.equal(h.controls().type, "form");
+  assert.equal(h.cards()[0].props.isSelected, true);
+  assert.equal(h.cards().filter((card) => card.props.isSelected).length, 1);
+  assert.equal(h.cards()[0].props.children, h.controls(), "The portion editor must stay inside the chosen product card.");
+  assert.equal(h.cards().slice(1).every((card) => !card.props.children), true);
   assert.match(text(h.controls()), /Banana/);
   assert.match(text(h.controls()), /Brand 0/);
   assert.equal(button(h.controls(), "Add to food log").props.disabled, false);
   h.choose(15);
-  assert.equal(h.cards()[0].props.children, null);
+  assert.equal(h.cards()[0].props.isSelected, false);
+  assert.equal(h.cards()[15].props.isSelected, true);
+  assert.equal(h.cards()[15].props.children, h.controls());
   assert.match(text(h.controls()), /Oats 15/);
   button(h.controls(), "Cancel").props.onClick();
   h.render();
@@ -1159,7 +1168,8 @@ test('Similar choices preserve the normal portion flow and never save merely by 
   const compared=app.cards()[1].props.comparison;
   const selected=app.cards()[2].props.item;
   compared.props.onChoose(selected);app.render();
-  assert.equal(app.cards()[2].props.children.type,'form');
+  assert.equal(app.cards()[2].props.isSelected,true);
+  assert.equal(app.controls().type,'form');
   assert.equal(app.requests.filter(r=>r.options?.method==='POST').length,0);
   const card=await harness('FoodCard');const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,comparison:{type:'details',props:{children:'Compare'}}});
   assert.equal(nodes(tree,n=>n.type==='button')[0].props['aria-expanded'],false);

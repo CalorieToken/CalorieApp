@@ -979,6 +979,7 @@ export function XamanLoginPanel() {
   const [loginSurfaceMode, setLoginSurfaceMode] =
     useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
+  const accountToolsRef = useRef<HTMLDetailsElement | null>(null);
   const parentOrigin = useRef<string | null>(null);
   const activeLocale = useRef(displayLocale);
   const sessionBridgeState = useRef<SessionBridgeState>("checking");
@@ -1013,6 +1014,17 @@ export function XamanLoginPanel() {
   const embeddedAuthorizationRefreshes = useRef(0);
   const embeddedAuthorizationInFlight = useRef(false);
   const beginLoginRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    function openAccountTools() {
+      if (!currentUser || !accountToolsRef.current) return;
+      accountToolsRef.current.open = true;
+      const summary = accountToolsRef.current.querySelector<HTMLElement>("summary");
+      window.requestAnimationFrame(() => summary?.focus({ preventScroll: true }));
+    }
+    window.addEventListener("calorieapp:open-account-tools", openAccountTools);
+    return () => window.removeEventListener("calorieapp:open-account-tools", openAccountTools);
+  }, [currentUser]);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     const revision = authRevisionRef.current;
@@ -1748,8 +1760,8 @@ export function XamanLoginPanel() {
             </button>
           </div>
 
-          <details className="group border-t border-brand-secondary/10 pt-3">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30 [&::-webkit-details-marker]:hidden">
+          <details id="calorieapp-account-tools" ref={accountToolsRef} className="group border-t border-brand-secondary/10 pt-3">
+            <summary id="calorieapp-account-tools-summary" className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/60">
                   {authCopy.accountTools}

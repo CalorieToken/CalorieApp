@@ -25,6 +25,19 @@ export function RecordedGradeSummary({ summary, sources, locale }: {
           {formatFoodUi(ui.copy.coverage, { known: number.format(counts.known), total: number.format(counts.total) })}
         </p>
         {counts.known ? (
+          <>
+          <div role="img"
+            aria-label={counts.grades.map(({grade, count}) => `${grade}: ${number.format(count)}`).join(", ")}
+            className="mt-3 flex h-8 w-full overflow-hidden rounded-full border-2 border-white bg-white shadow-sm ring-1 ring-brand-secondary/20"
+            dir="ltr">
+            {counts.grades.filter(({count}) => count > 0).map(({grade, count}) => (
+              <span key={grade} style={{...recordedGradeStyle(grade), width: `${(count / counts.known) * 100}%`}}
+                className="flex h-full min-w-0 items-center justify-center overflow-hidden text-xs font-extrabold"
+                title={`${grade}: ${number.format(count)}`}>
+                <span aria-hidden="true">{grade}</span>
+              </span>
+            ))}
+          </div>
           <dl className="mt-2 grid grid-cols-5 gap-1 text-center" dir="ltr">
             {counts.grades.map(({ grade, count }) => (
               <div key={grade} className="min-w-0 overflow-hidden rounded-lg border border-brand-secondary/20 bg-white">
@@ -33,6 +46,7 @@ export function RecordedGradeSummary({ summary, sources, locale }: {
               </div>
             ))}
           </dl>
+          </>
         ) : <p className="mt-3 text-sm text-brand-secondary">{ui.copy.noGrades}</p>}
         <p className="mt-2 text-xs leading-relaxed text-brand-secondary">
           {formatFoodUi(ui.copy.missing, { missing: number.format(counts.missing) })}

@@ -15,8 +15,10 @@ SLUG = "calorietoken-heading-repair"
 PLUGIN = ROOT / "wordpress-plugins" / SLUG
 FILES = (
     "README.txt",
+    "assets/age-experience.js",
     "assets/app-focus.css",
     "assets/app-focus.js",
+    "assets/caloriehelp-mascot-v2.png",
     "assets/heading-repair.css",
     "assets/help-label-bootstrap.js",
     "assets/help-link-labels.json",

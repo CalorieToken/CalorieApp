@@ -5,6 +5,12 @@
   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
   var views = [], locale = 'en';
   var visibleTopics = ['app','usda','compare','test','history','exchange','trustline','donations','docs','troubleshoot','legal'];
+  var adultOnlyTopics = ['test','exchange','trustline','donations'];
+  var primaryTopics = {
+    child:['app','usda','docs','legal'],
+    teen:['app','usda','docs','legal'],
+    adult:['app','usda','test','docs']
+  };
   var protectedArea = 'form,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],[hidden],[inert]';
   var routes = {
     app:['CalorieApp','/index.php/calorieapp/'], test:['XRPL Testnet','/index.php/calorieapp/#ctstyle-testnet'],
@@ -24,10 +30,10 @@
     xaman:['Xaman · Testnet','https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger']
   };
   var keywords = {
-    usda:['usda','fdc','foundation','sr legacy','ingredient','ingredients','ingrediënt','ingrediënten','basisvoeding','食材','सामग्री','مكون','مكوّن','উপকরণ','ingrediente','ingrédient','bahan','اجزا'],
+    usda:['usda','fdc','foundation','sr legacy','nutri-score','nutri score','nutriscore','ingredient','ingredients','ingrediënt','ingrediënten','basisvoeding','食材','सामग्री','مكون','مكوّن','উপকরণ','ingrediente','ingrédient','bahan','اجزا'],
     compare:['compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
     donations:['donation','donations','donate','donatie','donaties','doneren','donation balance','donatiesaldo','consolidation','consolidatie','捐赠','दान','تبرع','অনুদান','donación','donaciones','dons','donativos','donasi','عطیات'],
-    test:['test','testnet','faucet','proberen','oefenen','testaccount','测试','परीक्ष','اختبار','পরীক্ষা','آزمائش','uji'],
+    test:['test','testnet','faucet','proberen','oefenen','testaccount','nickname','bijnaam','export','import','overzetten','echt account','real account','mainnet','recovery seed','herstelcode','private key','测试','昵称','导出','导入','परीक्ष','उपनाम','निर्यात','आयात','اختبار','اسم مستعار','تصدير','استيراد','পরীক্ষা','ডাকনাম','রপ্তানি','আমদানি','apodo','exportar','importar','surnom','exporter','importer','alcunha','ekspor','impor','آزمائش','نک نیم'],
     trustline:['trustline','trust set','issuer','uitgever','hex','信任','ट्रस्ट','ثقة','ট্রাস্ট','ٹرسٹ'],
     exchange:['exchange','swft','dex','kopen','verkopen','wisselen','buy','sell','swap','bitcoin','btc','eth','兑换','खरीद','شراء','বিনিময়','trocar','tukar','خرید'],
     legal:['privacy','licence','license','licentie','legal','juridisch','mica','cookie','terms','voorwaarden','copyright','disclosure','garantie','profit','rendement','隐私','गोपनीय','خصوص','গোপনীয়','privacidade','lisensi','شرائط'],
@@ -76,18 +82,26 @@
     var text=String(query||'').slice(0,160).normalize('NFKC').toLowerCase().trim();
     if (!text) return null;
     var candidates=Object.keys(keywords).filter(function (key) {
+      var title=cfg.copy[locale].topics[key]?.title || (key==='voice'?cfg.copy[locale].voiceTitle:'');
       return keywords[key].some(function (word) {
         if (/^[a-z0-9 -]+$/.test(word)) return new RegExp('(?:^|[^a-z0-9])'+word.replace(/ /g,'\\s+')+'(?:$|[^a-z0-9])','i').test(text);
         return text.includes(word);
-      }) || text === (cfg.copy[locale].topics[key]?.title || cfg.copy[locale].voiceTitle).normalize('NFKC').toLowerCase();
+      }) || (typeof title==='string'&&title&&text===title.normalize('NFKC').toLowerCase());
     });
     // Contact is returned only when explicitly requested, never as a failure path.
-    if (candidates.includes('legal') && !candidates.includes('troubleshoot')) return 'legal';
-    if (candidates.includes('compare')) return 'compare';
-    if (candidates.includes('usda')) return 'usda';
-    if (candidates.includes('test')) return 'test';
-    return candidates.length===1 ? candidates[0] : null;
+    var selected=null;
+    if (candidates.includes('legal') && !candidates.includes('troubleshoot')) selected='legal';
+    else if (candidates.includes('compare')) selected='compare';
+    else if (candidates.includes('usda')) selected='usda';
+    else if (candidates.includes('test')) selected='test';
+    else if(candidates.length===1)selected=candidates[0];
+    var age=getAgeBand();
+    return age!=='adult'&&adultOnlyTopics.includes(selected)?'ageSafety':selected;
   }
+  function getAgeApi() { return window.CalorieTokenAgeExperience || null; }
+  function getAgeBand() { var api=getAgeApi(); return api&&api.getBand?api.getBand():null; }
+  function getAgeCopy() { var api=getAgeApi(); return api&&api.copy?api.copy():null; }
+  function topicAllowed(key) { return getAgeBand()==='adult'||!adultOnlyTopics.includes(key); }
   function avatar() {
     if (!cfg.avatar) return null;
     var image=el('img',null,'ctstyle-help-avatar'); image.src=cfg.avatar;
@@ -102,14 +116,23 @@
     }
     var sources=el('div',null,'ctstyle-help-links');
     (data.links || []).forEach(function(id){if(routes[id])sources.append(link(id));});
-    if(sources.childNodes.length) container.append(el('p',copy.sourcesLabel,'ctstyle-help-source-label'),sources);
+    if(sources.childNodes.length) container.append(el('p',copy.sourcesLabel||copy.docsTitle||'','ctstyle-help-source-label'),sources);
+  }
+  function topicData(key) {
+    var copy=cfg.copy[locale],data=copy.topics[key],age=getAgeBand(),ageCopy=getAgeCopy();
+    if(key==='voice')return copy.voiceTitle&&copy.voiceText?{title:copy.voiceTitle,text:[copy.voiceText,copy.voiceNote].filter(Boolean).join(' '),links:[]}:null;
+    if(key==='ageSafety')return ageCopy?{title:ageCopy.helpTitle,text:ageCopy.helpText,links:[]}:{title:'Age-appropriate help',text:'Wallet and transaction instructions are not shown in this age setting.',links:[]};
+    if(key==='app'&&age!=='adult'&&ageCopy){
+      var note=ageCopy[(age==='teen'?'teen':'child')+'Note'];
+      return {title:data.title,text:[note,ageCopy.helpText].filter(Boolean).join(' '),links:['app','faq']};
+    }
+    return data;
   }
   function answer(view,key,focusReply) {
-    view.selected=key; var copy=cfg.copy[locale], data=copy.topics[key];
-    if(key==='voice') data={title:copy.voiceTitle,text:copy.voiceText+' '+copy.voiceNote,links:[]};
+    view.selected=key; var copy=cfg.copy[locale],data=topicData(key);
     view.replyTitle.textContent=data?data.title:copy.examplesLabel;
     bodyContent(view.replyBody,data || {text:copy.unknown,links:['faq','docs']},copy);
-    view.reply.hidden=false; view.clear.hidden=false;
+    view.reply.hidden=false; view.clear.hidden=!view.hasClear;
     view.choices.forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.topic===key));});
     if(focusReply){
       view.replyTitle.setAttribute('tabindex','-1');
@@ -130,17 +153,31 @@
     view.selected=null; view.clear.hidden=true;
     view.choices.forEach(function(button){button.setAttribute('aria-pressed','false');});
   }
+  function applyAudience(view) {
+    var band=getAgeBand(),group=band==='adult'?'adult':band==='teen'?'teen':'child',primary=primaryTopics[group],secondary=0;
+    view.root.dataset.ctHelpBand=band||'unselected';
+    view.choices.forEach(function(button){
+      var key=button.dataset.topic,allowed=topicAllowed(key);button.hidden=!allowed;
+      if(!allowed)return;
+      if(primary.includes(key))view.quick.append(button);else{view.moreTopics.append(button);secondary+=1;}
+    });
+    view.more.hidden=secondary===0;
+    view.faq.forEach(function(item){item.root.hidden=!topicAllowed(item.key);});
+    if(view.selected&&adultOnlyTopics.includes(view.selected)&&band!=='adult')clear(view);
+  }
   function render(view) {
-    var copy=cfg.copy[locale]; view.root.lang=locale; view.root.dir=['ar','ur'].includes(locale)?'rtl':'ltr';
+    var copy=cfg.copy[locale],age=getAgeBand(),ageCopy=getAgeCopy(); view.root.lang=locale; view.root.dir=['ar','ur'].includes(locale)?'rtl':'ltr';
     view.title.textContent=view.inline?copy.faqTitle:copy.title;
-    view.intro.textContent=copy.intro; view.label.textContent=copy.question; view.input.placeholder=copy.placeholder;
+    view.intro.textContent=copy.intro; view.label.textContent=copy.question;
+    view.input.placeholder=age!=='adult'&&ageCopy&&ageCopy.safePlaceholder?ageCopy.safePlaceholder:copy.placeholder;
     view.input.lang=locale; view.input.dir=view.root.dir;
     view.submit.textContent=copy.ask; view.privacy.textContent=copy.privacy;
-    view.voiceTitle.textContent=copy.voiceTitle; view.voiceText.textContent=copy.voiceText;
-    view.voiceNote.textContent=copy.voiceNote; view.clear.textContent=copy.clear;
-    view.examples.textContent=copy.examplesLabel; view.updated.textContent=copy.updatedLabel;
+    view.voice.hidden=!(copy.voiceTitle&&copy.voiceText);view.voiceTitle.textContent=copy.voiceTitle||'';view.voiceText.textContent=copy.voiceText||'';
+    view.voiceNote.textContent=copy.voiceNote||'';view.hasClear=typeof copy.clear==='string'&&!!copy.clear.trim();view.clear.textContent=view.hasClear?copy.clear:'';if(!view.hasClear)view.clear.hidden=true;
+    view.examples.textContent=copy.examplesLabel||copy.faqTitle; view.moreTitle.textContent=ageCopy&&ageCopy.moreTopics?ageCopy.moreTopics:copy.faqTitle; view.updated.textContent=copy.updatedLabel||'';view.updated.hidden=!copy.updatedLabel;
     view.choices.forEach(function(button){button.textContent=copy.topics[button.dataset.topic].title;});
-    view.faq.forEach(function(item){item.title.textContent=copy.topics[item.key].title;bodyContent(item.body,copy.topics[item.key],copy);});
+    view.faq.forEach(function(item){item.title.textContent=copy.topics[item.key].title;bodyContent(item.body,topicData(item.key),copy);});
+    applyAudience(view);
     if(!view.reply.hidden) answer(view,view.selected);
   }
   function make(inline) {
@@ -155,23 +192,25 @@
     input.setAttribute('autocapitalize','sentences');input.setAttribute('enterkeyhint','search');
     label.htmlFor=input.id;submit.type='submit';form.append(label,input,submit);
     // No action, field name, raw-question echo, history, persistence, analytics or provider call.
-    var examples=el('h3'),quick=el('div',null,'ctstyle-help-topics'),choices=[];
+    var examples=el('h3'),quick=el('div',null,'ctstyle-help-topics ctstyle-help-topics-primary'),choices=[];
     visibleTopics.filter(function(key){return cfg.copy[locale].topics[key];}).forEach(function(key){var b=el('button');b.type='button';b.dataset.topic=key;b.setAttribute('aria-pressed','false');quick.append(b);choices.push(b);});
+    var more=el('details',null,'ctstyle-help-more'),moreTitle=el('summary'),moreTopics=el('div',null,'ctstyle-help-topics ctstyle-help-topics-secondary');more.append(moreTitle,moreTopics);
     var reply=el('div',null,'ctstyle-help-reply'),replyTitle=el('h3'),replyBody=el('div'),reset=el('button',null,'ctstyle-help-clear');
     reply.hidden=true;reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');reset.type='button';reset.hidden=true;
     reply.append(replyTitle,replyBody);reset.addEventListener('click',function(){clear(view);input.focus();});
     var voice=el('details',null,'ctstyle-help-voice'),voiceTitle=el('summary'),voiceText=el('p'),voiceNote=el('p',null,'ctstyle-discovery-small');
     voice.append(voiceTitle,voiceText,voiceNote);
     var privacy=el('p',null,'ctstyle-discovery-small'),updated=el('p',null,'ctstyle-help-updated');
-    root.append(header,intro,form,reply,reset,examples,quick,voice,privacy,updated);
+    root.append(header,intro,form,reply,reset,examples,quick,more,voice,privacy,updated);
     var faq=[];
     if(inline) visibleTopics.filter(function(key){return cfg.copy[locale].topics[key];}).forEach(function(key){
-      var details=el('details',null,'ctstyle-faq-item'),summary=el('summary'),body=el('div');
-      details.append(summary,body);root.append(details);faq.push({key:key,title:summary,body:body});
+      var details=el('details',null,'ctstyle-faq-item'),summary=el('summary'),body=el('div');details.dataset.topic=key;
+      details.append(summary,body);root.append(details);faq.push({key:key,root:details,title:summary,body:body});
     });
     var view={root:root,title:title,intro:intro,label:label,input:input,submit:submit,privacy:privacy,
       reply:reply,replyTitle:replyTitle,replyBody:replyBody,clear:reset,choices:choices,faq:faq,inline:inline,selected:null,
-      voiceTitle:voiceTitle,voiceText:voiceText,voiceNote:voiceNote,examples:examples,updated:updated};
+      voice:voice,voiceTitle:voiceTitle,voiceText:voiceText,voiceNote:voiceNote,examples:examples,quick:quick,hasClear:false,
+      more:more,moreTitle:moreTitle,moreTopics:moreTopics,updated:updated};
     form.addEventListener('submit',function(event){event.preventDefault();if(!allowed())return;var key=topic(input.value);input.value='';answer(view,key,true);});
     choices.forEach(function(button){button.addEventListener('click',function(){if(!allowed())return;input.value='';answer(view,button.dataset.topic,true);});});
     views.push(view);render(view);return root;
@@ -204,4 +243,3 @@
   document.addEventListener('calorietoken:display-language',function(event){if(event.detail)refresh(event.detail.locale);});
   window.addEventListener('pagehide',function(){views.forEach(clear);});
 })();
-

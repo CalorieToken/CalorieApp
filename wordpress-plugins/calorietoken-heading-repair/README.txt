@@ -1,4 +1,4 @@
-CalorieToken Heading and Language Repair 1.4.0
+CalorieToken Heading and Language Repair 1.5.4
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
@@ -58,11 +58,81 @@ only those four target names, a finite in-frame offset and the exact approved
 iframe window/origin. No account, wallet, login or individual food-log records
 are sent.
 
-It also adds a read-only CalorieApp login indicator to the existing account card.
+It also adds a read-only CalorieApp login indicator to the existing account card
+on the CalorieApp page only.
 The indicator accepts only a fixed state value from the exact approved iframe
 window and origin. It receives no wallet address, account ID, token or food-log
 content. Until a compatible CalorieApp build confirms state, it says that it is
-checking; on pages without the app it asks the visitor to open CalorieApp.
+checking.
+
+Version 1.5.0 removes the added CalorieApp status, nutrition overview and language
+block from account cards on unrelated pages. Signed-out balance and rank placeholders
+are also hidden there, while the original QR sign-in control remains available.
+On the CalorieApp page, duplicate app branding, app link and language selector are
+hidden from the account card; its short session status remains. The nutrition overview
+is a separate panel beside the embedded app instead of part of the Xaman card. The OFF
+A-E totals now include a proportional colour bar as well as exact counts.
+
+The same release adds a selective three-band age experience to CalorieApp, CAL &
+Crypto, Showcases and the CalorieHelp launcher. The bands are 0–12, 13–17 and 18+.
+No date of birth is requested. Only the fixed band is stored in sessionStorage and
+is removed when that browser tab closes; it is not identity or age verification.
+For the two minor bands, wallet login, transaction links, crypto instructions and
+personal diary features are hidden while public nutrition search and general site
+content remain available. Most WordPress pages are not gated. Communication with
+the embedded app contains only the fixed band and uses the exact approved iframe
+window and origin.
+
+Version 1.5.1 integrates the established first-party Testnet account guide into
+the adult CalorieApp guided-setup journey. The original guide is moved from the
+long section below the app into a keyboard-accessible dialog and returns the
+visitor to the next in-app step when its final Back button is used. Only exact
+two-field ready/open/available/complete/closed messages pass between the one
+approved root-path CalorieApp iframe and WordPress. A recovery seed, address,
+account identifier, nickname or export content never crosses that bridge. The
+original Testnet controls remain responsible for creating, showing and clearing
+the seed, and the guide cannot open until the adult age band is selected.
+
+Version 1.5.2 gives CalorieHelp an open-C mascot that follows the CalorieApp/C
+identity: the right side stays visibly open around the fork and knife, while the
+character keeps its face, arms and legs. The same local transparent asset is used
+in the launcher and Help header. The Help panel is wider and calmer, keeps the
+most useful topics immediately visible and places remaining allowed topics in one
+native expandable section. Answers, example text, topic visibility and the
+page/Help context banner follow the selected 0–12, 13–17 or 18+ mode. Minor modes
+receive public food, nutrition, project and privacy help without adult wallet,
+trading, trustline, test-fund, account or diary instructions. Relevant WordPress
+pages show the selected environment plus a plain-language summary of what is
+available; ordinary pages remain open and ungated.
+
+Version 1.5.3 applies the final live visual review: the compact Help age banner
+now follows the character heading and states only the selected environment and
+available scope. The longer restriction explanation remains available exactly
+where it is useful: in a blocked-topic answer and in the relevant page banner.
+
+Version 1.5.4 removes the persistent age banner from the relevant WordPress
+pages after a visitor has chosen a band. Changing an existing choice no longer
+clears it first: the current band stays active until a replacement is selected,
+and the change dialog has a top close control, Escape support and backdrop close
+even on CalorieApp, CAL & Crypto and Showcases. The small age control remains
+inside CalorieHelp so the choice can still be reviewed without occupying the
+page above the app.
+
+The coordinated CalorieApp candidate adds five adult task tabs: Account, Guided
+setup, Packaged food, Basic food and Diary. Its optional nickname remains only
+in sessionStorage for the current browser tab, is not exported and is removed
+on sign-out. Product results and diary entries use bounded internal lists; the
+selected portion editor and selected diary detail are brought close to the
+current task to reduce long up/down page scrolling. CalorieHelp and inline FAQ
+answers in all eleven supported languages explain the tabs, nickname boundary,
+seed isolation and the safe test-to-real data route.
+
+A Testnet wallet is not converted into a Mainnet wallet. The safe route is a
+private CalorieApp export, complete sign-out, a fresh Mainnet account in Xaman,
+an empty destination account and then food-log-only import. Export is available;
+import remains fail-closed unless the separately reviewed server-side safety
+gate and matching client control are explicitly enabled. Wallet, identity,
+session, notice history and nickname are never transferred by that import.
 
 It replaces cosmetic heading wrapping with CSS Custom Highlights, retaining text
 nodes for language rendering, and includes the prepared menu/help-label repairs.

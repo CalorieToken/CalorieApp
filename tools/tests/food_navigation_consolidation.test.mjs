@@ -23,14 +23,14 @@ test('the task tabs have complete labels for exactly the eleven supported locale
   assert.match(read('frontend/components/FoodDiaryPeriod.tsx'), /\{copy\.scope\}/);
 });
 
-test('account, packaged food, basic food and diary are real exclusive tab panels',()=>{
+test('account, guided setup, packaged food, basic food and diary are real exclusive tab panels',()=>{
   const combined=workspace+'\n'+component;
-  for(const id of ['account','packaged','basic','diary']){
+  for(const id of ['account','journey','packaged','basic','diary']){
     assert.equal(combined.split(`id="calorie-panel-${id}"`).length-1,1,id);
     assert.ok(combined.includes(`aria-labelledby="calorie-tab-${id}"`),id);
   }
-  assert.match(workspace,/aria-selected=\{activeTab === tab\.id\}/);
-  assert.match(workspace,/tabIndex=\{activeTab === tab\.id \? 0 : -1\}/);
+  assert.match(workspace,/aria-selected=\{visibleTab === tab\.id\}/);
+  assert.match(workspace,/tabIndex=\{visibleTab === tab\.id \? 0 : -1\}/);
   assert.match(component,/hidden=\{activeView !== "packaged"\}/);
   assert.match(component,/hidden=\{activeView !== "basic"\}/);
   assert.match(component,/hidden=\{activeView !== "diary"\}/);
@@ -40,10 +40,16 @@ test('account, packaged food, basic food and diary are real exclusive tab panels
 test('tab keyboard behavior is complete and switching preserves mounted task state',()=>{
   for(const key of ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End']) assert.ok(workspace.includes(`"${key}"`),key);
   assert.match(workspace,/requestAnimationFrame\(\(\) => tabRefs\.current\[index\]\?\.focus\(\)\)/);
-  assert.match(workspace,/activeView=\{activeTab === "account" \? null : activeTab\}/);
+  assert.match(workspace,/activeView=\{visibleTab === "account" \|\| visibleTab === "journey" \? null : visibleTab\}/);
   assert.match(component,/onOpenAccount/);
   assert.match(component,/type="button" onClick=\{onOpenAccount\}/);
   assert.match(usda,/return <section data-testid="usda-food-search"/);
+  assert.match(component,/max-h-\[62vh\].*overflow-y-auto/);
+  assert.match(read('frontend/components/FoodLogList.tsx'),/max-h-\[60vh\].*overflow-y-auto/);
+  assert.match(component,/sm:max-h-\[62vh\].*sm:overflow-y-auto/);
+  assert.match(usda,/sm:max-h-\[55vh\].*sm:overflow-y-auto/);
+  assert.match(read('frontend/components/FoodLogList.tsx'),/sm:max-h-\[60vh\].*sm:overflow-y-auto/);
+  assert.match(component,/pendingLogIndex === index \? portionControls : null/);
 });
 
 test('diary explanation refers to grade counts, not the removed average/product bar',()=>{

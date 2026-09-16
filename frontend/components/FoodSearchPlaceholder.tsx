@@ -33,6 +33,7 @@ import {
   nutritionSummaryMessage,
   postNutritionSummaryToParent,
 } from "@/lib/nutritionSummaryBridge";
+import { postNavigationTarget } from "@/lib/navigationBridge";
 import { validFoodSourceCounts } from "@/lib/foodSource";
 import {
   BACKEND_WAKE_BASE_URL,
@@ -176,14 +177,17 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
 
 export type FoodWorkspaceView = "packaged" | "basic" | "diary";
 
-export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
+export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonalLog = true }: {
   activeView: FoodWorkspaceView | null;
   onOpenAccount: () => void;
+  allowPersonalLog?: boolean;
 }) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const experience = foodExperience(locale);
   const portionFormRef = useRef<HTMLFormElement>(null);
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const selectedLogRef = useRef<HTMLDivElement>(null);
   const numbers = useMemo(() => ({
     decimal: new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: false }),
     integer: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
@@ -335,7 +339,25 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
     }
   }, [logs, selectedLogId]);
 
+  useEffect(() => {
+    if (!selectedLog) return;
+    selectedLogRef.current?.focus({ preventScroll: true });
+    selectedLogRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    postNavigationTarget("calorieapp-diary", selectedLogRef.current);
+  }, [selectedLog]);
+
+  useEffect(() => {
+    if (activeView !== "packaged" || !hasResults) return;
+    resultsHeadingRef.current?.focus({ preventScroll: true });
+    resultsHeadingRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    postNavigationTarget("calorieapp-add", resultsHeadingRef.current);
+  }, [activeView, hasResults, resultsQuery]);
+
   const fetchLogs = useCallback(async (before?: number) => {
+    if (!allowPersonalLog) {
+      clearPrivateLogState();
+      return;
+    }
     logsAbortRef.current?.abort();
     const controller = new AbortController();
     logsAbortRef.current = controller;
@@ -379,11 +401,11 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
         setIsLogsLoading(false);
       }
     }
-  }, [clearPrivateLogState, diaryDate, diaryPeriod]);
+  }, [allowPersonalLog, clearPrivateLogState, diaryDate, diaryPeriod]);
 
   useEffect(() => {
-    if (diaryAuthenticatedRef.current) void fetchLogs();
-  }, [fetchLogs]);
+    if (allowPersonalLog && diaryAuthenticatedRef.current) void fetchLogs();
+  }, [allowPersonalLog, fetchLogs]);
 
   const changeDiaryPeriod = useCallback((period: DiaryPeriod, date: string) => {
     if (period === diaryPeriod && date === diaryDate) return;
@@ -398,6 +420,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
   }, [diaryDate, diaryPeriod]);
 
   useEffect(() => {
+    if (!allowPersonalLog) return;
     function handleNutritionPeriod(event: MessageEvent<unknown>) {
       const period = nutritionPeriodFromParent(event);
       if (!period) return;
@@ -412,7 +435,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
     }
     window.addEventListener("message", handleNutritionPeriod);
     return () => window.removeEventListener("message", handleNutritionPeriod);
-  }, [changeDiaryPeriod, diaryDate, diaryPeriod, fetchLogs]);
+  }, [allowPersonalLog, changeDiaryPeriod, diaryDate, diaryPeriod, fetchLogs]);
 
   useEffect(() => {
     return () => {
@@ -424,6 +447,10 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
   }, []);
 
   useEffect(() => {
+    if (!allowPersonalLog) {
+      clearPrivateLogState();
+      return;
+    }
     function handleAuthStateChanged(event: Event) {
       const authEvent = event as CustomEvent<AuthStateChangedDetail>;
       if (authEvent.detail?.authenticated) {
@@ -443,7 +470,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
     return () => {
       window.removeEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthStateChanged);
     };
-  }, [clearPrivateLogState, fetchLogs]);
+  }, [allowPersonalLog, clearPrivateLogState, fetchLogs]);
 
   async function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -560,7 +587,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
   }
 
   function onLogFood(item: FoodSearchItem, index: number) {
-    if (logMutationInFlightRef.current || isLoading) return;
+    if (!allowPersonalLog || logMutationInFlightRef.current || isLoading) return;
     logSelectionIdRef.current += 1;
     setPendingLogItem(item);
     setPendingLogIndex(index);
@@ -580,7 +607,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
   }
 
   async function confirmPortionLogging() {
-    if (logMutationInFlightRef.current) {
+    if (!allowPersonalLog || logMutationInFlightRef.current) {
       return;
     }
 
@@ -740,14 +767,16 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
   }
 
   useEffect(() => {
-    if (!pendingLogItem) return;
+    if (!pendingLogItem || pendingLogIndex !== -1) return;
     portionFormRef.current?.focus({ preventScroll: true });
-    portionFormRef.current?.scrollIntoView({ block: "nearest", behavior: "auto" });
+    portionFormRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    postNavigationTarget("calorieapp-add", portionFormRef.current);
   }, [pendingLogItem, pendingLogIndex]);
 
   const portionControls = pendingLogItem ? (
     <form
       ref={portionFormRef}
+      id={pendingLogIndex === -1 ? "calorieapp-basic-portion-editor" : "calorieapp-packaged-portion-editor"}
       tabIndex={-1}
       className={`mt-4 focus-visible:ring-2 focus-visible:ring-brand-secondary ${pendingLogIndex === -1 ? "border-t border-brand-secondary/20 pt-4" : "rounded-xl border border-brand-secondary/20 bg-brand-bg p-4 sm:p-5"}`}
       onSubmit={(event) => { event.preventDefault(); void confirmPortionLogging(); }}
@@ -948,15 +977,22 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
           </div>
         ) : null}
 
-        {hasResults ? <p className="mt-4 text-sm font-semibold text-brand-primary">{formatFoodUi(diaryUi.resultsFor, {query: resultsQuery})}</p> : null}
+        {hasResults ? <h3 ref={resultsHeadingRef} tabIndex={-1}
+          className="scroll-mt-3 mt-4 text-sm font-semibold text-brand-primary outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
+          {formatFoodUi(diaryUi.resultsFor, {query: resultsQuery})}
+        </h3> : null}
         {hasResults ? (
-          <ul className="mt-5 space-y-3">
+          <div className="mt-4 min-w-0">
+          <ul className="space-y-3 pe-1 sm:max-h-[62vh] sm:overflow-y-auto sm:overscroll-contain">
             {results.map((item, index) => (
               <FoodCard
                 key={`${item.product_name}-${index}`}
                 item={item}
                 isLogging={isLogging === index}
                 isDisabled={isLogging !== null || isLoading}
+                canLog={allowPersonalLog}
+                isSelected={pendingLogIndex === index}
+                controlsId="calorieapp-packaged-portion-editor"
                 feedback={logFeedback?.index === index ? {
                   ...logFeedback,
                   message: logFeedback.added
@@ -967,26 +1003,27 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
                 formatNumber={displayNumber}
                 comparison={<SimilarFoods item={item} foods={results} locale={locale}
                   disabled={isLogging !== null || isLoading || searchWaitSeconds > 0}
+                  canChoose={allowPersonalLog}
                   onChoose={food => { const selectedIndex = results.indexOf(food); if (selectedIndex >= 0) onLogFood(food, selectedIndex); }}
-                  onSearch={food => { setQuery(food); void runSearch(food, false); }} />}
-              >
+                  onSearch={food => { setQuery(food); void runSearch(food, false); }} />}>
                 {pendingLogIndex === index ? portionControls : null}
               </FoodCard>
             ))}
           </ul>
+          </div>
         ) : null}
 
       </div>
 
       <div id="calorie-panel-basic" role="tabpanel" aria-labelledby="calorie-tab-basic"
         hidden={activeView !== "basic"} className="space-y-5">
-        <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading}
+        <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading} canLog={allowPersonalLog}
           onEditing={() => {
             if (pendingLogIndex === -1) cancelPortionLogging();
             setLogFeedback(current => current?.index === -1 ? null : current);
           }}
           onChoose={food => onLogFood(food, -1)}
-          confirmation={pendingLogIndex === -1 ? portionControls : null}
+          confirmation={allowPersonalLog && pendingLogIndex === -1 ? portionControls : null}
           feedback={logFeedback?.index === -1 ? <p role={logFeedback.isError ? "alert" : "status"}
             className="mt-3 text-sm font-semibold text-brand-primary">{logFeedback.added
               ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
@@ -994,7 +1031,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
         <UsdaReferenceFoods />
       </div>
 
-      <div id="calorie-panel-diary" role="tabpanel" aria-labelledby="calorie-tab-diary"
+      {allowPersonalLog ? <div id="calorie-panel-diary" role="tabpanel" aria-labelledby="calorie-tab-diary"
         hidden={activeView !== "diary"} className="space-y-6">
       {/* Logged Foods Section */}
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
@@ -1065,7 +1102,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
       ) : null}
 
       {selectedLog ? (
-        <div className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
+        <div ref={selectedLogRef} tabIndex={-1}
+          className="scroll-mt-3 rounded-2xl border border-brand-secondary/20 bg-white p-5 outline-none shadow-md focus-visible:ring-2 focus-visible:ring-brand-secondary sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-lg font-bold text-brand-primary">{copy.detailsTitle}</h3>
             <button
@@ -1151,7 +1189,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount }: {
           formatNumber={displayNumber}
         />
       ) : null}
-      </div>
+      </div> : null}
     </section>
   );
 }

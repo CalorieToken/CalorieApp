@@ -343,8 +343,8 @@ test("account erasure UI is doubly disabled and sends no confirmation elsewhere"
 test("account tools stay available but collapsed below the primary app", async () => {
   const panel = await readFile(PANEL_PATH, "utf8");
 
-  assert.match(panel, /<details className="group border-t/);
-  assert.match(panel, /<summary className=/);
+  assert.match(panel, /<details id="calorieapp-account-tools" ref={accountToolsRef} className="group border-t/);
+  assert.match(panel, /<summary id="calorieapp-account-tools-summary" className=/);
   assert.match(panel, /authCopy\.accountTools/);
   assert.match(panel, /authCopy\.privacyOptions/);
   assert.match(panel, /<AccountDataExportButton/);

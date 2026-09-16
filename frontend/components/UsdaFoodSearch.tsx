@@ -6,11 +6,13 @@ import { discoveryCopy, edibleGrams, searchUsda, similarFoodNames, usdaLogItem, 
 import type { UsdaCatalogue, UsdaFood } from "@/lib/foodDiscovery";
 import { foodExperience } from "@/lib/foodExperience";
 import { FoodImage } from "@/components/FoodImage";
+import { postNavigationTarget } from "@/lib/navigationBridge";
 
 /** The existing source, gram calculation and explicit-save callback are retained. */
-export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirmation, feedback }: {
+export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEditing, confirmation, feedback }: {
   locale: string;
   disabled: boolean;
+  canLog?: boolean;
   onChoose: (food: FoodSearchItem) => void;
   onEditing: () => void;
   confirmation?: ReactNode;
@@ -46,7 +48,8 @@ export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirma
   useEffect(() => {
     if (!selected) return;
     detail.current?.focus({ preventScroll: true });
-    detail.current?.scrollIntoView({ block: "nearest", behavior: "auto" });
+    detail.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    postNavigationTarget("calorieapp-add", detail.current);
   }, [selected]);
 
   function editQuery(value: string) {
@@ -108,7 +111,7 @@ export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirma
         className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{state === "loading" ? copy.loading : copy.search}</button>
     </form>
     <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
-    {!selected && matches.length ? <ul className="mt-3 space-y-2">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
+    {!selected && matches.length ? <ul className="mt-3 space-y-2 pe-1 sm:max-h-[55vh] sm:overflow-y-auto sm:overscroll-contain">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
       <button type="button" disabled={disabled} onClick={() => choose(food)}
         className="min-h-11 w-full rounded-lg border border-brand-secondary/20 p-3 text-start text-sm text-brand-primary hover:bg-brand-bg disabled:opacity-50">
         <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
@@ -138,10 +141,10 @@ export function UsdaFoodSearch({ locale, disabled, onChoose, onEditing, confirma
         <dt className="text-sm text-brand-secondary">{label}</dt><dd className="mt-1 font-semibold text-brand-primary">{values[key] === null ? copy.unavailable : <bdi>{number.format(values[key]!)} {unit}</bdi>}</dd>
       </div>)}</dl> : null}
       <p className="mt-3 text-sm text-brand-secondary">{ui.copy.gradeUnavailable}</p>
-      {!logItem && grams !== null ? <p className="mt-2 text-sm text-brand-secondary">{copy.cannotLog}</p> : null}
-      {confirmation || <button type="button" disabled={disabled || !logItem} onClick={() => { if (!disabled && logItem) onChoose(logItem); }}
-        className="mt-4 min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{ui.copy.reviewAmount}</button>}
-      {feedback}
+      {canLog && !logItem && grams !== null ? <p className="mt-2 text-sm text-brand-secondary">{copy.cannotLog}</p> : null}
+      {canLog ? confirmation || <button type="button" disabled={disabled || !logItem} onClick={() => { if (!disabled && logItem) onChoose(logItem); }}
+        className="mt-4 min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{ui.copy.reviewAmount}</button> : null}
+      {canLog ? feedback : null}
       <a href={`https://fdc.nal.usda.gov/food-details/${selected.fdc_id}/nutrients`} target="_blank" rel="noopener noreferrer"
         className="mt-2 block min-h-11 break-words py-2 text-sm font-semibold text-brand-secondary underline">{copy.source} &middot; <bdi>FDC {selected.fdc_id}</bdi></a>
       {alternatives.length ? <details className="mt-3 border-t border-brand-secondary/20 pt-2"><summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-brand-primary">{copy.alternatives}</summary>

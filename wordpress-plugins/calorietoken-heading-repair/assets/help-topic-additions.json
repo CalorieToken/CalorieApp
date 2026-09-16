@@ -1,112 +1,156 @@
 {
   "en": {
     "app": {
-      "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label.",
-      "step": "In the period overview, OFF, USDA and other entries all count in nutrient totals. Only source-supplied OFF Nutri-Score letters appear in the A–E distribution."
+      "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label. Product results and diary entries now stay inside bounded lists, while portion controls and selected details are brought into view so you do not have to move repeatedly between the top and bottom of the page.",
+      "step": "In the period overview, OFF, USDA and other entries all count in nutrient totals. Only source-supplied OFF Nutri-Score letters appear in the A–E distribution. Use the main tabs for Account, Guided setup, Packaged food, Basic food and Diary; selecting a product opens one nearby portion editor."
     },
     "usda": {
       "text": "USDA supplies nutrient data here, not a product Nutri-Score. A USDA entry is therefore shown as USDA and is not treated as an OFF product with a missing grade.",
       "step": "Check the source count and nutrient totals separately from the OFF A–E product-grade distribution."
+    },
+    "test": {
+      "text": "The Guided setup tab contains the integrated Testnet route and a nickname that stays only in the current tab. The recovery seed remains in the secure WordPress guide and is never sent to CalorieApp, Help or an export.",
+      "step": "A Testnet wallet cannot become a Mainnet wallet: export eligible food history, fully log out, create a fresh Mainnet account in Xaman, sign in to an empty CalorieApp account and import only when the reviewed server gate is active."
     }
   },
   "nl": {
     "app": {
-      "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron.",
-      "step": "In het periodeoverzicht tellen OFF, USDA en overig allemaal mee in de voedingstotalen. Alleen door OFF aangeleverde Nutri-Score-letters staan in de A–E-verdeling."
+      "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron. Productresultaten en dagboekregels blijven nu in begrensde lijsten, terwijl de portiekeuze en geselecteerde details in beeld worden gebracht; je hoeft daardoor niet steeds van boven naar beneden te scrollen.",
+      "step": "In het periodeoverzicht tellen OFF, USDA en overig allemaal mee in de voedingstotalen. Alleen door OFF aangeleverde Nutri-Score-letters staan in de A–E-verdeling. Gebruik de hoofdtabbladen Account, Begeleide start, Verpakte voeding, Basisvoeding en Eetdagboek; na productselectie opent één portiekeuze dichtbij."
     },
     "usda": {
       "text": "USDA levert hier voedingsgegevens, geen Nutri-Score voor het product. Een USDA-registratie staat daarom als USDA en niet als OFF-product met een ontbrekende score.",
       "step": "Bekijk het bronaantal en de voedingstotalen los van de OFF A–E-productscoreverdeling."
+    },
+    "test": {
+      "text": "Het tabblad Begeleide start bevat de geïntegreerde Testnet-route en een nickname die alleen in het huidige tabblad blijft. De herstelcode blijft in de beveiligde WordPress-hulp en gaat nooit naar CalorieApp, Help of een export.",
+      "step": "Een Testnet-wallet kan geen Mainnet-wallet worden: exporteer geschikte voedingsgeschiedenis, log volledig uit, maak in Xaman een nieuw Mainnet-account, log in bij een leeg CalorieApp-account en importeer alleen wanneer de gecontroleerde serverpoort actief is."
     }
   },
   "zh-Hans": {
     "app": {
-      "text": "当来源照片缺失、损坏或网址不受信任时，应用会显示带有 OFF、USDA 或其他来源标签的本地中性插图。",
-      "step": "在时段概览中，OFF、USDA 和其他记录都计入营养总量。A–E 分布只显示 OFF 来源提供的 Nutri-Score 等级。"
+      "text": "当来源照片缺失、损坏或网址不受信任时，应用会显示带有 OFF、USDA 或其他来源标签的本地中性插图。 产品结果和日记条目现在位于有界滚动列表中，份量控件和所选详情会自动进入视野，无需反复滚动页面顶部和底部。",
+      "step": "在时段概览中，OFF、USDA 和其他记录都计入营养总量。A–E 分布只显示 OFF 来源提供的 Nutri-Score 等级。 使用“账户、引导设置、包装食品、基础食品和日记”主标签；选择产品后会在附近打开一个份量编辑器。"
     },
     "usda": {
       "text": "USDA 在此提供营养数据，不提供产品 Nutri-Score。因此 USDA 记录会标为 USDA，而不会被视为缺少等级的 OFF 产品。",
       "step": "请分别查看来源计数和营养总量，以及 OFF A–E 产品等级分布。"
+    },
+    "test": {
+      "text": "“引导设置”标签包含集成的测试网流程和仅保留在当前标签页的昵称。恢复密钥只存在于安全的 WordPress 指南中，绝不会发送给 CalorieApp、帮助或导出文件。",
+      "step": "测试网钱包不能变成主网钱包：导出符合条件的饮食记录，完全退出，使用 Xaman 创建全新主网账户，登录空的 CalorieApp 账户，并仅在经审核的服务器开关启用后导入。"
     }
   },
   "hi": {
     "app": {
-      "text": "स्रोत की फोटो न होने, टूटने या URL भरोसेमंद न होने पर ऐप OFF, USDA या अन्य स्रोत लेबल के साथ एक तटस्थ स्थानीय चित्र दिखाता है।",
-      "step": "अवधि के सारांश में OFF, USDA और अन्य सभी प्रविष्टियाँ पोषण योग में शामिल हैं। A–E वितरण में केवल OFF द्वारा दिए Nutri-Score अक्षर आते हैं।"
+      "text": "स्रोत की फोटो न होने, टूटने या URL भरोसेमंद न होने पर ऐप OFF, USDA या अन्य स्रोत लेबल के साथ एक तटस्थ स्थानीय चित्र दिखाता है। उत्पाद परिणाम और डायरी प्रविष्टियाँ अब सीमित सूचियों में रहती हैं और मात्रा नियंत्रण व चुना विवरण सामने लाया जाता है, इसलिए ऊपर-नीचे बार-बार स्क्रॉल नहीं करना पड़ता।",
+      "step": "अवधि के सारांश में OFF, USDA और अन्य सभी प्रविष्टियाँ पोषण योग में शामिल हैं। A–E वितरण में केवल OFF द्वारा दिए Nutri-Score अक्षर आते हैं। Account, Guided setup, Packaged food, Basic food और Diary मुख्य टैब उपयोग करें; उत्पाद चुनने पर पास में एक मात्रा संपादक खुलता है।"
     },
     "usda": {
       "text": "USDA यहाँ पोषक डेटा देता है, उत्पाद Nutri-Score नहीं। इसलिए USDA प्रविष्टि USDA के रूप में दिखती है, न कि ग्रेड-विहीन OFF उत्पाद के रूप में।",
       "step": "स्रोत की गिनती और पोषण योग को OFF A–E उत्पाद-ग्रेड वितरण से अलग देखें।"
+    },
+    "test": {
+      "text": "Guided setup टैब में एकीकृत Testnet मार्ग और केवल वर्तमान टैब में रहने वाला निकनेम है। रिकवरी सीड सुरक्षित WordPress गाइड में ही रहता है और CalorieApp, Help या एक्सपोर्ट को कभी नहीं भेजा जाता।",
+      "step": "Testnet वॉलेट Mainnet वॉलेट नहीं बन सकता: योग्य भोजन इतिहास एक्सपोर्ट करें, पूरी तरह लॉग आउट करें, Xaman में नया Mainnet खाता बनाएँ, खाली CalorieApp खाते में साइन इन करें और समीक्षित सर्वर गेट सक्रिय होने पर ही इम्पोर्ट करें।"
     }
   },
   "es": {
     "app": {
-      "text": "Si falta la foto de la fuente, está rota o su URL no es de confianza, la app muestra una ilustración local neutra con la etiqueta OFF, USDA u otra fuente.",
-      "step": "En el resumen del período, las entradas OFF, USDA y otras cuentan en los totales nutricionales. La distribución A–E solo muestra letras Nutri-Score proporcionadas por OFF."
+      "text": "Si falta la foto de la fuente, está rota o su URL no es de confianza, la app muestra una ilustración local neutra con la etiqueta OFF, USDA u otra fuente. Los resultados y las entradas del diario permanecen en listas acotadas; los controles de porción y el detalle seleccionado se acercan a la vista para evitar desplazamientos repetidos entre arriba y abajo.",
+      "step": "En el resumen del período, las entradas OFF, USDA y otras cuentan en los totales nutricionales. La distribución A–E solo muestra letras Nutri-Score proporcionadas por OFF. Usa las pestañas Cuenta, Configuración guiada, Alimentos envasados, Alimentos básicos y Diario; al elegir un producto se abre cerca un único editor de porción."
     },
     "usda": {
       "text": "USDA aporta aquí datos nutricionales, no un Nutri-Score del producto. Por eso una entrada USDA aparece como USDA y no como producto OFF sin clasificación.",
       "step": "Consulta el recuento por fuente y los totales nutricionales por separado de la distribución de productos OFF A–E."
+    },
+    "test": {
+      "text": "La pestaña Configuración guiada contiene la ruta Testnet integrada y un apodo que solo permanece en la pestaña actual. La semilla se queda en la guía segura de WordPress y nunca se envía a CalorieApp, Ayuda ni a una exportación.",
+      "step": "Una cartera Testnet no puede convertirse en Mainnet: exporta el historial compatible, cierra completamente la sesión, crea una cuenta Mainnet nueva en Xaman, entra en una cuenta CalorieApp vacía e importa solo cuando la puerta revisada del servidor esté activa."
     }
   },
   "ar": {
     "app": {
-      "text": "إذا كانت صورة المصدر مفقودة أو معطلة أو كان عنوانها غير موثوق، يعرض التطبيق رسماً محلياً محايداً مع تصنيف OFF أو USDA أو مصدر آخر.",
-      "step": "في ملخص الفترة تدخل سجلات OFF وUSDA والمصادر الأخرى كلها في مجاميع العناصر الغذائية. يعرض توزيع A–E فقط درجات Nutri-Score التي يوفرها OFF."
+      "text": "إذا كانت صورة المصدر مفقودة أو معطلة أو كان عنوانها غير موثوق، يعرض التطبيق رسماً محلياً محايداً مع تصنيف OFF أو USDA أو مصدر آخر. تبقى نتائج المنتجات وإدخالات اليوميات داخل قوائم محدودة، وتظهر أدوات الحصة والتفاصيل المحددة قريبًا لتجنب التمرير المتكرر بين أعلى الصفحة وأسفلها.",
+      "step": "في ملخص الفترة تدخل سجلات OFF وUSDA والمصادر الأخرى كلها في مجاميع العناصر الغذائية. يعرض توزيع A–E فقط درجات Nutri-Score التي يوفرها OFF. استخدم علامات الحساب والإعداد الموجّه والطعام المعبأ والطعام الأساسي واليوميات؛ يفتح محرر حصة واحد قريبًا بعد اختيار المنتج."
     },
     "usda": {
       "text": "توفر USDA هنا بيانات غذائية وليس Nutri-Score للمنتج. لذلك يظهر سجل USDA بصفته USDA ولا يعامل كمنتج OFF بلا درجة.",
       "step": "راجع عدد المصادر ومجاميع العناصر الغذائية بصورة منفصلة عن توزيع درجات منتجات OFF من A إلى E."
+    },
+    "test": {
+      "text": "تتضمن علامة الإعداد الموجّه مسار Testnet المدمج واسمًا مستعارًا يبقى في علامة التبويب الحالية فقط. يبقى مفتاح الاسترداد في دليل WordPress الآمن ولا يُرسل إلى CalorieApp أو المساعدة أو التصدير.",
+      "step": "لا تتحول محفظة Testnet إلى Mainnet: صدّر سجل الطعام المؤهل، سجّل الخروج بالكامل، أنشئ حساب Mainnet جديدًا في Xaman، ادخل إلى حساب CalorieApp فارغ واستورد فقط عند تفعيل بوابة الخادم المراجعة."
     }
   },
   "fr": {
     "app": {
-      "text": "Si la photo source manque, ne fonctionne pas ou vient d’une URL non fiable, l’app affiche une illustration locale neutre avec l’étiquette OFF, USDA ou autre source.",
-      "step": "Dans le récapitulatif de la période, les entrées OFF, USDA et autres comptent dans les totaux nutritionnels. La répartition A–E montre uniquement les lettres Nutri-Score fournies par OFF."
+      "text": "Si la photo source manque, ne fonctionne pas ou vient d’une URL non fiable, l’app affiche une illustration locale neutre avec l’étiquette OFF, USDA ou autre source. Les résultats et entrées du journal restent dans des listes bornées ; les contrôles de portion et le détail sélectionné sont rapprochés de la vue pour éviter les allers-retours en haut et en bas.",
+      "step": "Dans le récapitulatif de la période, les entrées OFF, USDA et autres comptent dans les totaux nutritionnels. La répartition A–E montre uniquement les lettres Nutri-Score fournies par OFF. Utilisez les onglets Compte, Configuration guidée, Aliments emballés, Aliments de base et Journal ; un seul éditeur de portion s’ouvre à proximité après la sélection."
     },
     "usda": {
       "text": "USDA fournit ici des données nutritionnelles, pas un Nutri-Score du produit. Une entrée USDA est donc indiquée comme USDA et non comme un produit OFF sans classe.",
       "step": "Consultez séparément le nombre par source et les totaux nutritionnels, puis la répartition des produits OFF A–E."
+    },
+    "test": {
+      "text": "L’onglet Configuration guidée contient le parcours Testnet intégré et un surnom limité à l’onglet actuel. La graine reste dans le guide WordPress sécurisé et n’est jamais envoyée à CalorieApp, à l’aide ou à un export.",
+      "step": "Un portefeuille Testnet ne devient pas Mainnet : exportez l’historique admissible, déconnectez-vous complètement, créez un nouveau compte Mainnet dans Xaman, connectez un compte CalorieApp vide et importez seulement lorsque la porte serveur examinée est active."
     }
   },
   "bn": {
     "app": {
-      "text": "উৎসের ছবি না থাকলে, নষ্ট হলে বা URL বিশ্বস্ত না হলে অ্যাপ OFF, USDA বা অন্য উৎসের লেবেলসহ একটি নিরপেক্ষ স্থানীয় ছবি দেখায়।",
-      "step": "সময়কালের সারাংশে OFF, USDA ও অন্যান্য সব এন্ট্রি পুষ্টির মোট হিসাবে থাকে। A–E বণ্টনে শুধু OFF-এর দেওয়া Nutri-Score অক্ষর দেখানো হয়।"
+      "text": "উৎসের ছবি না থাকলে, নষ্ট হলে বা URL বিশ্বস্ত না হলে অ্যাপ OFF, USDA বা অন্য উৎসের লেবেলসহ একটি নিরপেক্ষ স্থানীয় ছবি দেখায়। পণ্যের ফলাফল ও ডায়েরি এন্ট্রি এখন সীমাবদ্ধ তালিকায় থাকে এবং পরিমাণ নিয়ন্ত্রণ ও নির্বাচিত বিস্তারিত সামনে আসে, তাই বারবার ওপর-নিচে স্ক্রল করতে হয় না।",
+      "step": "সময়কালের সারাংশে OFF, USDA ও অন্যান্য সব এন্ট্রি পুষ্টির মোট হিসাবে থাকে। A–E বণ্টনে শুধু OFF-এর দেওয়া Nutri-Score অক্ষর দেখানো হয়। Account, Guided setup, Packaged food, Basic food ও Diary প্রধান ট্যাব ব্যবহার করুন; পণ্য বাছলে কাছেই একটি পরিমাণ সম্পাদক খোলে।"
     },
     "usda": {
       "text": "USDA এখানে পুষ্টির তথ্য দেয়, পণ্যের Nutri-Score নয়। তাই USDA এন্ট্রি USDA হিসেবেই দেখানো হয়, গ্রেডহীন OFF পণ্য হিসেবে নয়।",
       "step": "উৎসের সংখ্যা ও পুষ্টির মোট হিসাব OFF A–E পণ্য-গ্রেড বণ্টন থেকে আলাদা করে দেখুন।"
+    },
+    "test": {
+      "text": "Guided setup ট্যাবে সমন্বিত Testnet পথ এবং শুধু বর্তমান ট্যাবে থাকা ডাকনাম রয়েছে। রিকভারি সিড নিরাপদ WordPress নির্দেশিকাতেই থাকে এবং CalorieApp, Help বা এক্সপোর্টে কখনো পাঠানো হয় না।",
+      "step": "Testnet ওয়ালেট Mainnet হয় না: উপযুক্ত খাদ্য ইতিহাস এক্সপোর্ট করুন, পুরোপুরি লগআউট করুন, Xaman-এ নতুন Mainnet অ্যাকাউন্ট বানান, খালি CalorieApp অ্যাকাউন্টে লগইন করুন এবং পর্যালোচিত সার্ভার গেট সক্রিয় হলেই ইমপোর্ট করুন।"
     }
   },
   "pt": {
     "app": {
-      "text": "Se a fotografia da fonte estiver ausente, danificada ou vier de um URL não confiável, a app mostra uma ilustração local neutra com a etiqueta OFF, USDA ou outra fonte.",
-      "step": "No resumo do período, entradas OFF, USDA e outras contam nos totais nutricionais. A distribuição A–E mostra apenas letras Nutri-Score fornecidas pelo OFF."
+      "text": "Se a fotografia da fonte estiver ausente, danificada ou vier de um URL não confiável, a app mostra uma ilustração local neutra com a etiqueta OFF, USDA ou outra fonte. Os resultados e registos do diário ficam em listas limitadas, enquanto os controlos de porção e os detalhes selecionados são trazidos para perto, evitando deslocações repetidas entre o topo e o fundo.",
+      "step": "No resumo do período, entradas OFF, USDA e outras contam nos totais nutricionais. A distribuição A–E mostra apenas letras Nutri-Score fornecidas pelo OFF. Use os separadores Conta, Configuração guiada, Alimentos embalados, Alimentos básicos e Diário; ao escolher um produto abre-se um único editor de porção próximo."
     },
     "usda": {
       "text": "A USDA fornece aqui dados nutricionais, não um Nutri-Score do produto. Por isso uma entrada USDA aparece como USDA e não como produto OFF sem classificação.",
       "step": "Consulte a contagem por fonte e os totais nutricionais separadamente da distribuição de produtos OFF A–E."
+    },
+    "test": {
+      "text": "O separador Configuração guiada contém o percurso Testnet integrado e uma alcunha que fica apenas no separador atual. A seed permanece no guia WordPress seguro e nunca é enviada à CalorieApp, Ajuda ou exportação.",
+      "step": "Uma carteira Testnet não se torna Mainnet: exporte o histórico elegível, termine totalmente a sessão, crie uma nova conta Mainnet no Xaman, entre numa conta CalorieApp vazia e importe apenas quando a porta revista do servidor estiver ativa."
     }
   },
   "id": {
     "app": {
-      "text": "Jika foto sumber tidak ada, rusak, atau URL-nya tidak tepercaya, aplikasi menampilkan ilustrasi lokal netral dengan label OFF, USDA, atau sumber lain.",
-      "step": "Dalam ringkasan periode, entri OFF, USDA, dan lainnya semuanya masuk dalam total gizi. Distribusi A–E hanya menampilkan huruf Nutri-Score dari OFF."
+      "text": "Jika foto sumber tidak ada, rusak, atau URL-nya tidak tepercaya, aplikasi menampilkan ilustrasi lokal netral dengan label OFF, USDA, atau sumber lain. Hasil produk dan entri catatan kini berada dalam daftar terbatas; kontrol porsi dan detail pilihan dibawa ke tampilan agar tidak perlu berulang kali menggulir dari atas ke bawah.",
+      "step": "Dalam ringkasan periode, entri OFF, USDA, dan lainnya semuanya masuk dalam total gizi. Distribusi A–E hanya menampilkan huruf Nutri-Score dari OFF. Gunakan tab Akun, Penyiapan terpandu, Makanan kemasan, Makanan dasar, dan Catatan; memilih produk membuka satu editor porsi di dekatnya."
     },
     "usda": {
       "text": "USDA menyediakan data gizi di sini, bukan Nutri-Score produk. Karena itu entri USDA ditampilkan sebagai USDA, bukan sebagai produk OFF tanpa peringkat.",
       "step": "Lihat jumlah sumber dan total gizi secara terpisah dari distribusi peringkat produk OFF A–E."
+    },
+    "test": {
+      "text": "Tab Penyiapan terpandu memuat jalur Testnet terintegrasi dan nama panggilan yang hanya tinggal di tab saat ini. Seed tetap di panduan WordPress yang aman dan tidak pernah dikirim ke CalorieApp, Bantuan, atau ekspor.",
+      "step": "Dompet Testnet tidak dapat menjadi Mainnet: ekspor riwayat yang memenuhi syarat, keluar sepenuhnya, buat akun Mainnet baru di Xaman, masuk ke akun CalorieApp kosong, dan impor hanya saat gerbang server yang ditinjau aktif."
     }
   },
   "ur": {
     "app": {
-      "text": "اگر ماخذ کی تصویر موجود نہ ہو، خراب ہو یا URL قابلِ اعتماد نہ ہو تو ایپ OFF، USDA یا دیگر ماخذ کے لیبل کے ساتھ غیر جانب دار مقامی تصویر دکھاتی ہے۔",
-      "step": "مدت کے خلاصے میں OFF، USDA اور دیگر تمام اندراجات غذائی مجموعوں میں شامل ہیں۔ A–E تقسیم میں صرف OFF کے فراہم کردہ Nutri-Score حروف دکھتے ہیں۔"
+      "text": "اگر ماخذ کی تصویر موجود نہ ہو، خراب ہو یا URL قابلِ اعتماد نہ ہو تو ایپ OFF، USDA یا دیگر ماخذ کے لیبل کے ساتھ غیر جانب دار مقامی تصویر دکھاتی ہے۔ پروڈکٹ نتائج اور ڈائری اندراجات اب محدود فہرستوں میں رہتے ہیں اور مقدار کے کنٹرول و منتخب تفصیل سامنے آتے ہیں، اس لیے بار بار اوپر نیچے اسکرول نہیں کرنا پڑتا۔",
+      "step": "مدت کے خلاصے میں OFF، USDA اور دیگر تمام اندراجات غذائی مجموعوں میں شامل ہیں۔ A–E تقسیم میں صرف OFF کے فراہم کردہ Nutri-Score حروف دکھتے ہیں۔ Account، Guided setup، Packaged food، Basic food اور Diary ٹیب استعمال کریں؛ پروڈکٹ چننے پر قریب ہی ایک مقدار ایڈیٹر کھلتا ہے۔"
     },
     "usda": {
       "text": "USDA یہاں غذائی ڈیٹا دیتا ہے، پروڈکٹ Nutri-Score نہیں۔ اس لیے USDA اندراج USDA کے طور پر دکھتا ہے، بغیر گریڈ والے OFF پروڈکٹ کے طور پر نہیں۔",
       "step": "ماخذ کی گنتی اور غذائی مجموعوں کو OFF A–E پروڈکٹ گریڈ تقسیم سے الگ دیکھیں۔"
+    },
+    "test": {
+      "text": "Guided setup ٹیب میں مربوط Testnet راستہ اور صرف موجودہ ٹیب میں رہنے والا نک نیم ہے۔ ریکوری سیڈ محفوظ WordPress رہنما میں رہتا ہے اور CalorieApp، Help یا ایکسپورٹ کو کبھی نہیں بھیجا جاتا۔",
+      "step": "Testnet والٹ Mainnet نہیں بنتا: اہل خوراک کی تاریخ ایکسپورٹ کریں، مکمل لاگ آؤٹ کریں، Xaman میں نیا Mainnet اکاؤنٹ بنائیں، خالی CalorieApp اکاؤنٹ میں سائن اِن کریں اور نظرثانی شدہ سرور گیٹ فعال ہونے پر ہی امپورٹ کریں۔"
     }
   }
 }

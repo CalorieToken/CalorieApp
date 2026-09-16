@@ -133,7 +133,7 @@ export function FoodLogList({
         ) : null}
       </div>
 
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-4 space-y-2 pe-1 sm:max-h-[60vh] sm:overflow-y-auto sm:overscroll-contain">
         {visibleLogs.map((item, index) => (
           <li
             key={item.id ?? `${item.product_name}-log-${index}`}
