@@ -45,7 +45,7 @@ with sync_playwright() as p:
     page=context.new_page(); page.on('pageerror',lambda e:report['errors'].append(str(e)))
     try:
         page.goto('http://127.0.0.1:3100/?ui_lang=nl',wait_until='networkidle'); page.locator('html[lang="nl"]').wait_for()
-        page.get_by_role('button',name='Volwassene · 18+',exact=True).click()
+        page.locator('button[data-age-option="adult"]').click()
         ok('Adult selection explicitly opens the full account and diary environment')
         expect(page.locator('[id^="calorie-tab-"]')).to_have_count(5)
         ok('Adult workspace has five bounded task tabs')

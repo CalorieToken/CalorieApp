@@ -60,6 +60,7 @@ test('the actual selector has three equal choices, no birth-date field and an al
   const selector=renderToStaticMarkup(React.createElement(Control,{band:null,onChange(){}}));
   assert.equal((selector.match(/<button/g)||[]).length,3);
   assert.equal((selector.match(/<input/g)||[]).length,0);
+  for(const band of ['child','teen','adult'])assert.match(selector,new RegExp(`data-age-option="${band}"`));
   for(const text of ['Kind · 0–12','Jongere · 13–17','Volwassene · 18+'])assert.ok(selector.includes(text));
   assert.match(selector,/geen bewijs van leeftijd/i);
   const selected=renderToStaticMarkup(React.createElement(Control,{band:'child',onChange(){}}));
