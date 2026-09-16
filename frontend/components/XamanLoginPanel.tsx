@@ -198,6 +198,11 @@ export function embeddedAuthorizationRefreshDelayMs(
 }
 
 type LoginSurfaceMode = "checking" | "embedded" | "standalone";
+type SessionBridgeState =
+  | "checking"
+  | "authenticated"
+  | "signed_out"
+  | "unavailable";
 
 function initialLocale(): string {
   if (typeof window === "undefined") {
@@ -974,6 +979,9 @@ export function XamanLoginPanel() {
   const [loginSurfaceMode, setLoginSurfaceMode] =
     useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
+  const parentOrigin = useRef<string | null>(null);
+  const activeLocale = useRef(displayLocale);
+  const sessionBridgeState = useRef<SessionBridgeState>("checking");
   const display = useDisplayLanguage();
   // Presentation follows the shared selector. The established login locale,
   // callback checks, request keys and activeLocale remain unchanged.
@@ -982,14 +990,29 @@ export function XamanLoginPanel() {
   );
   const authCopyRef = useRef(authCopy);
   authCopyRef.current = authCopy;
+  const publishSessionState = useCallback(
+    (status: SessionBridgeState, targetOrigin?: string) => {
+      sessionBridgeState.current = status;
+      const origin = targetOrigin || parentOrigin.current;
+      if (!origin) return;
+      window.parent.postMessage(
+        {
+          type: "calorieapp:session:state",
+          version: 1,
+          status,
+          locale: activeLocale.current,
+        },
+        origin
+      );
+    },
+    []
+  );
   const loginAbortController = useRef<AbortController | null>(null);
-  const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
   const embeddedAuthorizationRefreshes = useRef(0);
   const embeddedAuthorizationInFlight = useRef(false);
   const beginLoginRef = useRef<() => void>(() => {});
-  const activeLocale = useRef(displayLocale);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     const revision = authRevisionRef.current;
@@ -1003,6 +1026,9 @@ export function XamanLoginPanel() {
         setCurrentUser(null);
         if (response.status === 401) {
           announceAuthState(false);
+          publishSessionState("signed_out");
+        } else {
+          publishSessionState("unavailable");
         }
         return null;
       }
@@ -1011,15 +1037,17 @@ export function XamanLoginPanel() {
       logoutCompleteRef.current = false;
       setCurrentUser(data);
       announceAuthState(true);
+      publishSessionState("authenticated");
       return data;
     } catch {
       if (signal?.aborted || revision !== authRevisionRef.current) {
         return null;
       }
       setCurrentUser(null);
+      publishSessionState("unavailable");
       return null;
     }
-  }, []);
+  }, [publishSessionState]);
 
   const clearCalorieAppSession = useCallback(async () => {
     if (logoutRequestRef.current) return logoutRequestRef.current;
@@ -1033,6 +1061,7 @@ export function XamanLoginPanel() {
     try { clearPendingLogin(); } catch { /* Storage restrictions must not block logout. */ }
     setCurrentUser(null);
     announceAuthState(false);
+    publishSessionState("checking");
     setIsLoading(false);
     setLoginStatus(null);
     setLogoutNeedsRetry(true);
@@ -1041,9 +1070,15 @@ export function XamanLoginPanel() {
       setLogoutNeedsRetry(false);
     });
     logoutRequestRef.current = pending;
-    try { await pending; }
+    try {
+      await pending;
+      publishSessionState("signed_out");
+    } catch (error) {
+      publishSessionState("unavailable");
+      throw error;
+    }
     finally { if (logoutRequestRef.current === pending) logoutRequestRef.current = null; }
-  }, []);
+  }, [publishSessionState]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1094,6 +1129,7 @@ export function XamanLoginPanel() {
         }
         setCurrentUser(restoredUser);
         announceAuthState(true);
+        publishSessionState("authenticated");
         setSuccessNotice(
           "Sign-in completed. Your session was restored in this browser."
         );
@@ -1119,7 +1155,7 @@ export function XamanLoginPanel() {
       cancelled = true;
       controller.abort();
     };
-  }, [refreshCurrentUser]);
+  }, [publishSessionState, refreshCurrentUser]);
 
   useEffect(() => {
     const bridgeController = new AbortController();
@@ -1175,6 +1211,7 @@ export function XamanLoginPanel() {
           { type: "calorieapp:bridge:initialized", locale: nextLocale },
           event.origin
         );
+        publishSessionState(sessionBridgeState.current, event.origin);
         postHeight();
         if (consumeBackendWakeReturn(event.origin, nextLocale)) {
           beginLoginRef.current();
@@ -1285,6 +1322,7 @@ export function XamanLoginPanel() {
               logoutCompleteRef.current = false;
               setCurrentUser(restoredUser);
               announceAuthState(true);
+              publishSessionState("authenticated");
 
               embeddedLoginStart.current = null;
               clearPendingLogin();
@@ -1371,6 +1409,7 @@ export function XamanLoginPanel() {
         logoutCompleteRef.current = false;
         setCurrentUser(restoredUser);
         announceAuthState(true);
+        publishSessionState("authenticated");
         setError(null);
         setLoginStatus(null);
         setIsLoading(false);
@@ -1471,7 +1510,7 @@ export function XamanLoginPanel() {
       window.removeEventListener("resize", postHeight);
       window.removeEventListener("message", handleParentMessage);
     };
-  }, [clearCalorieAppSession, refreshCurrentUser]);
+  }, [clearCalorieAppSession, publishSessionState, refreshCurrentUser]);
 
   function handleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
     if (logoutRequestRef.current || logoutNeedsRetry || isLoggingOut) { event.preventDefault(); return; }
@@ -1500,6 +1539,7 @@ export function XamanLoginPanel() {
 
     if (parentOrigin.current) {
       const embeddedParentOrigin = parentOrigin.current;
+      publishSessionState("checking");
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
       embeddedLoginStart.current = null;
@@ -1731,6 +1771,7 @@ export function XamanLoginPanel() {
                 onAuthenticationLost={(message) => {
                   setCurrentUser(null);
                   announceAuthState(false);
+                  publishSessionState("signed_out");
                   setError(message);
                 }}
               />
@@ -1741,6 +1782,7 @@ export function XamanLoginPanel() {
                   onAuthenticationLost={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(message);
                   }}
                 />
@@ -1752,11 +1794,13 @@ export function XamanLoginPanel() {
                   onAuthenticationLost={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(message);
                   }}
                   onErased={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(null);
                     setSuccessNotice(message);
                   }}

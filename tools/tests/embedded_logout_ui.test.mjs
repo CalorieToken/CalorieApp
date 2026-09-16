@@ -91,6 +91,30 @@ test('height reporting waits for a trusted parent when the browser omits the ref
   assert.equal(heights().at(-1).data.height,900);
  }finally{h.close();}
 });
+test('the embedded app publishes its resolved session state to the trusted parent',async()=>{
+ const authenticated=await fixture();
+ try{
+  const states=authenticated.sent.filter(m=>m.data.type==='calorieapp:session:state');
+  assert.ok(states.some(m=>m.data.version===1&&m.data.status==='authenticated'&&m.data.locale==='en'&&m.origin==='https://calorietoken.net'));
+ }finally{authenticated.close();}
+
+ const signedOut=await fixture({me:async()=>({ok:false,status:401})});
+ try{
+  const states=signedOut.sent.filter(m=>m.data.type==='calorieapp:session:state');
+  assert.ok(states.some(m=>m.data.version===1&&m.data.status==='signed_out'&&m.origin==='https://calorietoken.net'));
+  assert.equal(signedOut.announcements.at(-1),false);
+ }finally{signedOut.close();}
+});
+test('a late trusted handshake receives the already resolved app session',async()=>{
+ const h=await fixture({referrer:'',initialize:false});
+ try{
+  assert.equal(h.sent.filter(m=>m.data.type==='calorieapp:session:state').length,0);
+  await h.message('calorieapp:bridge:init');
+  const state=h.sent.filter(m=>m.data.type==='calorieapp:session:state').at(-1);
+  assert.equal(state.data.status,'authenticated');
+  assert.equal(state.origin,'https://calorietoken.net');
+ }finally{h.close();}
+});
 test('simultaneous trusted logout commands share one request; untrusted sources cannot log out',async()=>{
  const request=deferred();const h=await fixture({logout:()=>request.promise});
  try{
