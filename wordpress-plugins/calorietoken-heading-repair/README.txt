@@ -1,4 +1,13 @@
-CalorieToken Heading and Language Repair 1.6.9
+CalorieToken Heading and Language Repair 1.6.10
+
+Version 1.6.10 gives public-content cards, nested panels, notices, FAQ answers,
+CalorieHelp and login card surfaces the original faded CalorieToken logo paper.
+It reuses Site Style's existing paper image, with its original upload as a
+fallback. Background blending retains pale notice and inset colors without
+fading text, controls or images. Dynamic cards receive the same treatment.
+Historical illustrations, title banners, header/menu surroundings, blue footer
+and page backgrounds stay intact. No CalorieApp frontend changes are included.
+All 1.6.9 corrections below are included. Retain 1.6.9 for rollback.
 
 Version 1.6.9 adds button variants using the existing browser-tab age choice.
 Children get rounder buttons with light green and purple-blue fills and dark

@@ -202,6 +202,29 @@
   body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats strong { font-size:18px!important; white-space:normal!important; overflow:visible!important; text-overflow:clip!important; }
   body.ct-content-theme .ct-content-market :is(.calorieapp-xpmarket-xrp,.calorieapp-xpmarket-title small) { font-size:13px!important; }
   body.ct-content-theme .ct-content-market .calorieapp-xpmarket-cta { font-size:14px!important; }
+  /* Reuse the original, already faded CalorieToken paper on marked cards.
+     Multiply keeps notice/inset tints; no opacity, filter or overlay touches
+     the text and controls. Protected artwork and page backgrounds are intact. */
+  body.ct-content-theme :is(
+    .ct-content-card,.ct-content-inset,.ct-content-notice,
+    .ct-content-account,.ct-content-help-shell,.ct-content-help,
+    .ct-content-account .xl-card-header,
+    .ct-content-account .xl-card-body,
+    .ct-content-account .xl-card-footer,
+    .ct-content-account .calorieapp-site-session-actions,
+    .ct-content-account #ctstyle-account-app,
+    .ct-content-account .ct-calorieapp-session-indicator,
+    .ct-content-help .ctstyle-help-header,
+    .ct-content-help .ctstyle-help-reply,
+    .ctstyle-faq-hub.ct-content-card .ctstyle-help-reply,
+    .ct-content-market .calorieapp-xpmarket-stats>span
+  ) {
+    background-image:var(--ctstyle-paper-image,url('/wp-content/uploads/2021/12/Websiteachtergrond.png'))!important;
+    background-size:960px auto!important;
+    background-position:center top!important;
+    background-repeat:repeat!important;
+    background-blend-mode:multiply!important;
+  }
   @media(max-width:600px) {
     body.ct-content-theme .ct-content-card { padding:18px!important; border-radius:18px!important; margin-block:16px!important; }
     body.ct-content-theme .ct-content-lane { padding-inline:12px!important; margin-block:20px!important; }

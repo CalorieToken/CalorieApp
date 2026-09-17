@@ -441,8 +441,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.9/);
-  assert.match(php, /const VERSION = '1\.6\.9'/);
+  assert.match(php, /Version: 1\.6\.10/);
+  assert.match(php, /const VERSION = '1\.6\.10'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);

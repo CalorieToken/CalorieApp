@@ -16,6 +16,10 @@ OUT.mkdir(parents=True, exist_ok=True)
 SCRIPT = (ASSETS / 'content-style.js').read_text()
 CSS = (ASSETS / 'content-style.css').read_text()
 BASELINE = '\n'.join(p.read_text() for p in sorted(FIXTURES.glob('*.css'))) + '\n' + (ASSETS / 'app-focus.css').read_text()
+# Byte-identical to the original 2021 WordPress paper; reuse the repository
+# asset so the browser gate never needs a live image request.
+PAPER_URL = 'https://calorietoken.net/wp-content/uploads/2021/12/Websiteachtergrond.png'
+PAPER = ROOT / 'frontend/public/background.png'
 report = {'mode': 'Synthetic public-page fixtures with captured live CSS; no live mutations', 'checks': [], 'errors': []}
 
 def ok(name, condition=True):
@@ -193,7 +197,14 @@ def verify_title_banners(context):
 with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
     context = browser.new_context(viewport={'width':360,'height':900}, service_workers='block')
-    context.route('**/*', lambda route: route.fulfill(status=200,content_type='text/html',body=html()) if route.request.url=='https://calorietoken.net/style-fixture/' else route.abort())
+    def fixture_route(route):
+        if route.request.url=='https://calorietoken.net/style-fixture/':
+            route.fulfill(status=200,content_type='text/html',body=html())
+        elif route.request.url==PAPER_URL:
+            route.fulfill(status=200,content_type='image/png',body=PAPER.read_bytes())
+        else:
+            route.abort()
+    context.route('**/*',fixture_route)
     page = context.new_page()
     page.on('pageerror', lambda error: report['errors'].append(str(error)))
     try:
@@ -211,6 +222,8 @@ with sync_playwright() as pw:
         ok('Page background image and color are preserved',background==page.locator('body').evaluate('n=>[getComputedStyle(n).backgroundImage,getComputedStyle(n).backgroundColor]'))
         ok('App card overrides the installed serif typography', 'Segoe UI' in page.locator('#app-card p').first.evaluate('(n)=>getComputedStyle(n).fontFamily'))
         ok('App card is white with a thin border',page.locator('#app-card').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(255, 255, 255)' && getComputedStyle(n).borderLeftWidth==='1px'"))
+        ok('Original faded logo paper decodes for card backgrounds',page.evaluate('async url=>{const img=new Image();img.src=url;await img.decode();return img.naturalWidth===1902}',PAPER_URL))
+        ok('Card paper leaves foreground text and controls fully opaque and sharp',page.locator('#app-card,#app-card p,#app-card h2,#app-card a').evaluate_all("nodes=>nodes.every(n=>{const s=getComputedStyle(n);return s.opacity==='1'&&s.filter==='none'})"))
         ok('App heading uses native green sans-serif',page.locator('#app-card h2').evaluate("n=>getComputedStyle(n).color==='rgb(0, 141, 54)' && getComputedStyle(n).fontFamily.includes('Segoe UI')"))
         page.locator('#ordinary-button').click();page.locator('#slider-button').click();page.locator('#social-button').click()
         ok('Original content and carousel click handlers still fire',page.evaluate('window.fixtureClicks')=={'ordinary':1,'slider':1,'social':1})
