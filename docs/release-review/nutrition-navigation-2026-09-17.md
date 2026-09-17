@@ -80,9 +80,11 @@ Render deploy `dep-dam4b4fcgkoc7389rr90` became live at 19:56:16 UTC.
 `https://app.calorietoken.net/` exposes the matching build ID. No new
 application errors were returned by the post-deploy Render error-log check.
 
-WordPress still served Heading Repair 1.6.10 during verification. Installing
-the previously supplied 1.6.11 ZIP remains necessary for the upper summary
-and parent-page scroll change. Frontend publication does not install that ZIP.
+After the user confirmed installation, the live WordPress CalorieApp page
+served Heading Repair 1.6.11 for app-focus.css, app-focus.js and
+nutrition-summary.js. Both the frontend release and companion plugin are now
+live. The aggregate panel remained hidden in this signed-out browser session;
+private logged-week behaviour was verified in the isolated browser tests.
 
 - Pull request: https://github.com/CalorieToken/CalorieApp/pull/149
 - Food/browser CI: https://github.com/CalorieToken/CalorieApp/actions/runs/35267251414
