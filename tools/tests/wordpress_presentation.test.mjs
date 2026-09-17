@@ -119,3 +119,25 @@ test('contact card H5 titles receive level-two heading semantics without markup 
  const titles=[...h.document.querySelectorAll('h5')];h.run('presentation.js');assert.deepEqual([...h.document.querySelectorAll('h5')],titles);
  for(const title of titles){assert.equal(title.getAttribute('role'),'heading');assert.equal(title.getAttribute('aria-level'),'2');}
 });
+
+test('repair paints joined word initials without splitting text, formatting or acronyms',()=>{
+ const h=fixture('<div class="ctstyle-title"><h1 class="ctstyle-heading"><strong>C</strong><em>alorie</em><strong>A</strong><em>pp</em></h1></div><div class="ctstyle-title"><h2 class="ctstyle-heading">CalorieToken FAQ XRPL Merch&amp;NFTs E\u0301nergieApp</h2></div><h2 id="ordinary" class="ctstyle-section-heading">CalorieApp FAQ</h2><p>Ordinary CalorieApp text</p>',true);
+ h.window.CSS={highlights:new Map()};h.window.Highlight=Set;
+ h.document.createRange=()=>({setStart(node,offset){this.startContainer=node;this.startOffset=offset;},setEnd(node,offset){this.endContainer=node;this.endOffset=offset;}});
+ const nodes=[...h.document.querySelectorAll('h1 *')],markup=h.document.querySelector('h1').innerHTML;
+ h.run('presentation.js');
+ const letters=()=>[...h.window.CSS.highlights.get('ctstyle-initials')].map(r=>r.startContainer.data.slice(r.startOffset,r.endOffset));
+ for(let i=0;i<3;i++){
+  h.window.CalorieTokenPresentationUI.refresh('nl');
+  assert.deepEqual(letters(),['C','A','C','T','F','X','M','N','E\u0301','A']);
+  assert.equal(h.document.querySelector('h1').innerHTML,markup);
+  assert.deepEqual([...h.document.querySelectorAll('h1 *')],nodes);
+  assert.ok([...h.window.CSS.highlights.get('ctstyle-initials')].every(r=>r.startContainer.parentElement.closest('.ctstyle-title')));
+  assert.equal(h.document.getElementById('ordinary').classList.contains('ctstyle-initials-fallback'),false);
+ }
+ h.document.querySelector('h1').textContent='CalorieApp hulp';
+ h.window.CalorieTokenPresentationUI.refresh('nl');
+ assert.deepEqual(letters().slice(0,3),['C','A','h']);
+ assert.equal(h.document.querySelector('h1').textContent,'CalorieApp hulp');
+ assert.equal(h.document.querySelectorAll('.ctstyle-word-initial').length,0);
+});

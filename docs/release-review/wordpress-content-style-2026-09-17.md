@@ -92,3 +92,38 @@ Candidate 1.6.8 adds narrowly scoped visual markers for the original login card 
 The owner asked to use another browser or Tinyfish after the primary cloud browser returned 502. Tinyfish run `f4cdb6c5-0e21-4b8f-aac8-9ef08ccf407a` successfully inspected the live FAQ on desktop and reported working FAQ/CalorieHelp disclosures, app-style cards, historical title banner and blue footer. It returned no usable screenshot artifact, did not reach CalorieApp, and could not resize to mobile. This is a provider-reported FAQ check, not visual acceptance of all routes. Its initial strict/custom-step options were rejected before any run started; run listings confirmed zero matching jobs before the standard run was submitted.
 
 Local follow-up validation: 388 Node checks and five deterministic package checks pass; browser-test Python compiles. Current authenticated inventory remains 30 public pages plus 11 articles. Rendered widget/menu evidence and the per-route live audit will be recorded with their actual limits in PR 146.
+
+The owner further requested historical title-initial corrections and room for
+long titles. The owner clarified that coloured initials apply **only to the
+historical banner titles**, never ordinary content headings or sentences.
+Each banner word receives one purple-blue initial; joined names
+such as CalorieApp/CalorieToken additionally accent A/T. Abbreviations such as
+FAQ, XRPL and NFTs accent only their first letter. Native highlight ranges keep
+the original text nodes, cursive shaping and spacing. The historical banner
+can grow vertically and use its available width, with balanced wrapping and
+no maximum-height clipping. Font, artwork, corners and shadow remain owned by
+the existing style. Old browsers without Custom Highlight support keep the
+existing safe first-letter fallback; no DOM-splitting fallback is introduced.
+
+All 41 current public routes (30 pages plus 11 articles) now serve the installed
+1.6.7 content controller, including the three routes whose earlier full markup
+requests met a host challenge. This verifies asset delivery, not complete visual
+acceptance. Offline classification of the 38 usable earlier responses retains
+every original image, iframe and form, with no protected-region markers outside
+the expressly requested login/menu/help exceptions. Richlist markup is partial.
+
+Tinyfish run `8d0fd62d-9d97-4699-9425-9cd5b5d49d42` reached live CalorieApp,
+Home and `/index.php/delivery/` on desktop and reported the original artwork and
+backgrounds present, with no visible overlap. Its report did not establish the
+Home animation or a click through a usecase tile, contains inconsistent XPMarket
+observations, and supplied no usable screenshots or mobile verification. It is
+supporting evidence only, not a substitute for the deterministic browser checks.
+
+Final local follow-up validation: 389 Node regressions and five package checks
+pass. Browser CI adds actual Knewave font rendering, native highlight ranges,
+joined-word preservation and long/multiline/translated banners at 360/412/1440px.
+The login/menu-only candidate passed both CI workflows at
+`7e0ceaf94d06f4522e0b76521b01043bfb793f40`; final title-inclusive results are to
+be recorded in PR 146. Version 1.6.8 remains a prepared upload for the owner;
+the live site currently has 1.6.7. No installation, merge or Render deployment
+is performed by this follow-up.

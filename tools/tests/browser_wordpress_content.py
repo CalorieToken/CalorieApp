@@ -2,6 +2,7 @@
 
 No WordPress/account/payment/API requests. Remote Chromium CI only.
 """
+import base64
 import json
 import os
 from pathlib import Path
@@ -95,6 +96,49 @@ def protected_snapshot(page):
         return [id,{html:clone.outerHTML,style:unchanged.map(x=>{const s=getComputedStyle(x);return [s.fontFamily,s.fontSize,s.color,s.backgroundColor,s.backgroundImage,s.backgroundSize,s.borderRadius,s.borderWidth,s.padding,s.transform,s.animationName,s.display]})}]
     }))''', protected)
 
+def verify_title_banners(context):
+    """Actual title font and CSS; synthetic copy/artwork, no live requests."""
+    style_assets=ROOT/'wordpress-plugins/calorietoken-site-style/assets'
+    font=base64.b64encode((style_assets/'fonts/knewave-latin-400-normal.woff2').read_bytes()).decode()
+    markup='''<div class="ctstyle-title" id="joined-banner"><div class="ctstyle-title-inner"><h1 class="ctstyle-heading" id="joined-title">CalorieApp</h1></div></div>
+    <div class="ctstyle-title" id="long-banner"><div class="ctstyle-title-inner"><h1 class="ctstyle-heading" id="long-title">De mogelijkheden van CalorieToken en CalorieApp voor onze internationale community</h1></div></div>
+    <h1 id="standalone-banner" class="ctstyle-title ctstyle-heading">Legal &amp; Regulatory Notice — CalorieToken</h1>
+    <div id="showcase-banner" class="showcase-title-banner ctstyle-shared-banner"><h1 class="ctstyle-heading">Ontdek alle mogelijkheden van CalorieApp in onze Showcases</h1></div>
+    <h2 id="ordinary-title" class="ctstyle-section-heading">CalorieApp en FAQ buiten de banner</h2><p>Een gewone zin over CalorieToken.</p>'''
+    page=context.new_page()
+    page.on('pageerror',lambda error:report['errors'].append(str(error)))
+    page.goto('https://calorietoken.net/style-fixture/',wait_until='domcontentloaded')
+    page.set_content('<!doctype html><html lang="nl"><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+ (style_assets/'style.css').read_text() + '\n'+(FIXTURES/'live-presentation-1.4.46.css').read_text()+
+      f"\n@font-face{{font-family:CTKnewave;src:url(data:font/woff2;base64,{font}) format('woff2');font-weight:400}}"+
+      '''body{margin:0;padding:18px;--ctstyle-title-image:linear-gradient(120deg,#079447 0 5%,#d4d5e5 5% 10%,#8589bd 10% 13%,#d4d5e5 13% 87%,#8589bd 87% 90%,#d4d5e5 90% 95%,#079447 95%)}
+      .ctstyle-title{margin-bottom:24px}#long-banner,#standalone-banner,#showcase-banner{max-height:110px;}
+      </style><body class="ctstyle-enabled">'''+markup+'</body></html>')
+    page.evaluate('document.fonts.ready')
+    before=page.locator('#joined-title').evaluate('n=>({html:n.innerHTML,width:n.getBoundingClientRect().width,font:getComputedStyle(n).fontFamily})')
+    artwork=page.locator('#joined-banner').evaluate('n=>{let s=getComputedStyle(n);return [s.backgroundImage,s.borderRadius,s.boxShadow]}')
+    page.evaluate('window.CalorieTokenPresentation={copy:{en:{},nl:{}},links:[]}')
+    page.add_style_tag(content=(ASSETS/'heading-repair.css').read_text())
+    page.add_script_tag(content=(ASSETS/'presentation.js').read_text())
+    ok('Joined title accents C and A with native ranges',page.locator('#joined-title').evaluate("n=>[...CSS.highlights.get('ctstyle-initials')].filter(r=>n.contains(r.startContainer)).map(r=>r.toString()).join(',')==='C,A'"))
+    ok('Title text nodes, joined width and historical font are unchanged',before==page.locator('#joined-title').evaluate('n=>({html:n.innerHTML,width:n.getBoundingClientRect().width,font:getComputedStyle(n).fontFamily})'))
+    ok('Historical title artwork, corners and shadow are unchanged',artwork==page.locator('#joined-banner').evaluate('n=>{let s=getComputedStyle(n);return [s.backgroundImage,s.borderRadius,s.boxShadow]}'))
+    ok('Historical initial highlight uses purple-blue',page.locator('#joined-title').evaluate("n=>getComputedStyle(n,'::highlight(ctstyle-initials)').color==='rgb(80, 91, 169)'"))
+    ok('Coloured initials apply only to banner titles',page.evaluate("[...CSS.highlights.get('ctstyle-initials')].every(r=>r.startContainer.parentElement.closest('.ctstyle-title,.ctstyle-shared-banner')) && !document.querySelector('#ordinary-title').classList.contains('ctstyle-initials-fallback')"))
+    for width in [360,412,1440]:
+        page.set_viewport_size({'width':width,'height':1000})
+        ok(f'{width}px all long banner text fits without clipping',page.locator('.ctstyle-title,.ctstyle-shared-banner').evaluate_all('''nodes=>nodes.every(n=>{
+            const title=n.matches('h1')?n:n.querySelector('h1'),range=document.createRange();range.selectNodeContents(title);
+            const box=n.getBoundingClientRect();return n.scrollWidth<=n.clientWidth+1&&n.scrollHeight<=n.clientHeight+1&&[...range.getClientRects()].every(r=>r.left>=box.left-1&&r.right<=box.right+1&&r.top>=box.top-1&&r.bottom<=box.bottom+1)
+        })'''))
+        ok(f'{width}px joined CalorieApp remains on one line',page.locator('#joined-title').evaluate('n=>{const r=document.createRange();r.selectNodeContents(n);return r.getClientRects().length===1}'))
+        ok(f'{width}px long banner expands to its content',page.locator('#long-banner').bounding_box()['height']>page.locator('#joined-banner').bounding_box()['height'])
+        page.screenshot(path=str(OUT/f'title-banners-{width}.png'),full_page=True)
+    page.set_viewport_size({'width':360,'height':1000})
+    page.locator('#long-title').evaluate("n=>{n.dir='rtl';n.textContent='تعرّف على تطبيق CalorieApp ومجتمع CalorieToken وخيارات الطعام المتاحة'}")
+    page.wait_for_function("[...CSS.highlights.get('ctstyle-initials')].some(r=>r.toString()==='A')")
+    ok('Long translated RTL banner stays inside viewport',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+    page.close()
+
 with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
     context = browser.new_context(viewport={'width':360,'height':900}, service_workers='block')
@@ -185,6 +229,7 @@ with sync_playwright() as pw:
         page.evaluate("document.querySelector('#historic-header').append(document.querySelector('#late'))")
         page.wait_for_function("!document.querySelector('#late').classList.contains('ct-content-card')")
         ok('A node moved outside the content region loses its content markers')
+        verify_title_banners(context)
         ok('No runtime errors',not report['errors'])
         report['status']='passed'
     except Exception as error:

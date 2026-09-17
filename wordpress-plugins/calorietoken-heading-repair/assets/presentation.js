@@ -91,6 +91,11 @@
     if(!node.isConnected||!node.matches(headings)||node.closest(excluded)||node.querySelector(excluded)){forgetHeading(node);return;}
     var registry=highlightRegistry();forgetHeading(node);
     node.classList.add('ctstyle-word-heading');
+    // The owner reserves coloured initials for historical title banners.
+    // Ordinary content headings and sentences retain their normal app colour.
+    if(!node.matches('.ctstyle-heading')||!node.closest('.ctstyle-title,.ctstyle-shared-banner,.ctstyle-title-section,.showcase-title-banner,.showcase-hero')){
+      node.classList.remove('ctstyle-initials-fallback');return;
+    }
     node.classList.toggle('ctstyle-initials-fallback',!registry);
     // Older browsers retain readable text and a CSS first-letter accent. Never
     // fall back to DOM rewriting, which is the incompatible behavior repaired here.
@@ -106,9 +111,17 @@
     var segmenter=null;
     try{if(typeof Intl.Segmenter==='function')segmenter=new Intl.Segmenter(locale,{granularity:'grapheme'});}catch(_){/* use a Unicode code point */}
     if(richlistTitle)[text.indexOf('$'),text.lastIndexOf('$')].forEach(function(index){ranges.push({start:index,end:index+1});});
+    function initial(index,word){
+      var first=segmenter?segmenter.segment(word)[Symbol.iterator]().next().value.segment:Array.from(word)[0];
+      ranges.push({start:index,end:index+first.length});
+    }
     while(!richlistTitle&&(match=regex.exec(text))){
-      var first=segmenter?segmenter.segment(match[0])[Symbol.iterator]().next().value.segment:Array.from(match[0])[0];
-      ranges.push({start:match.index,end:match.index+first.length});
+      initial(match.index,match[0]);
+      // CalorieApp and CalorieToken contain joined words. Paint their capital
+      // initials in place: ranges preserve cursive shaping and original nodes.
+      // All-capital abbreviations (FAQ, XRPL, NFTs) remain a single word.
+      var capitals=/[\p{Ll}\p{N}]\p{M}*(?=[\p{Lu}\p{Lt}])/gu;
+      while(capitals.exec(match[0]))initial(match.index+capitals.lastIndex,match[0].slice(capitals.lastIndex));
     }
     var painted=[];
     ranges.forEach(function(part){

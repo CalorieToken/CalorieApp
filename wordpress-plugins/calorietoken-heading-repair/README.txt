@@ -4,7 +4,12 @@ Version 1.6.8 extends the requested CalorieApp appearance to the existing login
 widget and only the Brizy menu controls. The historical header, title banners,
 footer, page backgrounds and menu containers remain intact. Account data,
 nicknames, original avatar/QR art, language selection, login/logout handlers and
-menu opening/closing are preserved. The installed 1.6.7 ZIP is the rollback.
+menu opening/closing are preserved. Only historical banner titles receive
+purple-blue initials, one per word and the first letter of each abbreviation.
+Joined title words also accent their internal
+capitals too (CalorieApp: C and A), without changing any text nodes or spacing.
+Long title banners can grow and wrap at available space, retaining the original
+font, artwork, corners and shadow. The installed 1.6.7 ZIP is the rollback.
 
 Version 1.6.7 adds the CalorieApp content style to public pages and articles,
 including Home, usecase subpages, documents, shop views and dynamic cards.
