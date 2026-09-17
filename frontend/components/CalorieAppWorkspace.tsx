@@ -75,7 +75,7 @@ export function CalorieAppWorkspace() {
   function openJourney(step: "test" | "move") {
     setRequestedJourney(current => ({ step, serial: (current?.serial ?? 0) + 1 }));
     setReturnToJourney(true);
-    selectTab("journey", true);
+    selectTab("journey");
   }
 
   const navigateFromJourney = useCallback((destination: "account" | "packaged" | "diary") => {
@@ -99,10 +99,11 @@ export function CalorieAppWorkspace() {
       className="calorie-age-shell"
       data-age-band={ageBand ?? "unselected"}
     >
-      {ageResolved ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
+      {ageResolved && visibleTab !== "journey" ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
       {!ageResolved || !ageBand ? null : <>
       <div
         role="tablist"
+        hidden={visibleTab === "journey"}
         aria-label={`${experience.copy.navigation} CalorieApp`}
         className="calorie-workspace-tabs mb-5 grid min-w-0 grid-cols-2 gap-2 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 sm:flex"
       >
@@ -130,7 +131,7 @@ export function CalorieAppWorkspace() {
       </div>
 
       {allowPersonalFeatures && returnToJourney && visibleTab !== "journey" ? <div className="mb-4 rounded-xl border border-brand-secondary/20 bg-white p-3">
-        <button type="button" onClick={() => selectTab("journey", true)} className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{journey.returnGuide}</button>
+        <button type="button" onClick={() => selectTab("journey")} className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{journey.returnGuide}</button>
       </div> : null}
 
       {allowPersonalFeatures ? <section
@@ -156,6 +157,7 @@ export function CalorieAppWorkspace() {
         className="calorie-workspace-panel"
       >
         <TestnetEntry
+          active={visibleTab === "journey"}
           requestedJourney={requestedJourney}
           onNavigate={navigateFromJourney}
           onOpenAccountTools={openAccountTools}

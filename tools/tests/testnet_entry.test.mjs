@@ -9,6 +9,7 @@ const React = require('react');
 const {renderToStaticMarkup} = require('react-dom/server');
 const ts = require('typescript');
 const copy = JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json', import.meta.url)));
+const setup = JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json', import.meta.url)));
 const source = readFileSync(new URL('../../frontend/components/TestnetEntry.tsx', import.meta.url), 'utf8');
 
 function load(display = {enabled:true, locale:'en'}) {
@@ -19,6 +20,9 @@ function load(display = {enabled:true, locale:'en'}) {
     if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>display};
     if(name==='@/lib/locales')return {localeDirection:tag=>['ar','ur'].includes(tag)?'rtl':'ltr'};
     if(name==='@/config/testnet-entry-copy.json')return {default:copy};
+    if(name==='@/config/account-setup-copy.json')return {default:setup};
+    if(name==='@/lib/navigationBridge')return {postNavigationTarget:()=>false};
+    if(name==='@/lib/testnetAccount')return {};
     if(name==='@/lib/accountJourney')return {readAccountJourney:()=>null,saveAccountJourney:()=>{}};
     throw new Error(name);
   }});
@@ -43,31 +47,27 @@ test('all eleven account-journey translations have the same complete structure',
   assert.match(copy.nl.moveText,/nieuw Mainnet-account/i);
 });
 
-test('the rendered journey has four real tabs, local seed guidance and app destinations',()=>{
+test('native guide starts with two app routes and never hands off to WordPress',()=>{
   const display={enabled:true,locale:'en'},api=load(display);
+  assert.deepEqual(Object.keys(setup).sort(),Object.keys(copy).sort());
   for(const tag of Object.keys(copy)){
     display.locale=tag;
+    assert.deepEqual(Object.keys(setup[tag]).sort(),Object.keys(setup.en).sort());
+    for(const value of Object.values(setup[tag]))assert.ok(typeof value==='string'&&value.trim(),tag);
     const html=renderToStaticMarkup(React.createElement(api.TestnetEntry,{onNavigate(){},onOpenAccountTools(){}}));
     assert.ok(html.includes(`lang="${tag}"`),tag);
-    assert.equal((html.match(/role="tab"/g)||[]).length,4,tag);
-    assert.equal((html.match(/role="tabpanel"/g)||[]).length,4,tag);
-    assert.match(html,/href="https:\/\/calorietoken\.net\/index\.php\/calorieapp\/#ctstyle-testnet"/);
-    assert.ok(html.includes(copy[tag].moveLabels[0]),tag);
+    assert.equal((html.match(/data-account-guide-screen/g)||[]).length,1,tag);
+    assert.ok(html.includes(copy[tag].testRoute),tag);
+    assert.ok(html.includes(copy[tag].moveRoute),tag);
+    assert.doesNotMatch(html,/ctstyle-testnet|iframe|role="tab"/);
+    assert.match(html,new RegExp(`dir="${['ar','ur'].includes(tag)?'rtl':'ltr'}"`));
   }
 });
 
-test('guide bridge accepts only exact capability messages and never carries account material',()=>{
-  const {exactGuideMessage}=load();
-  assert.equal(exactGuideMessage({type:'calorieapp:testnet-guide:available',version:1},'available'),true);
-  for(const value of [
-    null,
-    {type:'calorieapp:testnet-guide:available',version:2},
-    {type:'calorieapp:testnet-guide:available',version:1,address:'rForged'},
-    {type:'calorieapp:testnet-guide:complete'},
-    ['calorieapp:testnet-guide:available',1],
-  ])assert.equal(exactGuideMessage(value,'available'),false);
-  assert.match(source,/event\.source !== window\.parent/);
-  assert.match(source,/origins\.includes\(event\.origin\)/);
-  assert.doesNotMatch(source,/postMessage\([^)]*(?:seed|secret|address|account)/i);
-  assert.doesNotMatch(source,/localStorage/);
+test('recovery controls have no secret input, URL or WordPress message handoff',()=>{
+  assert.doesNotMatch(source,/postMessage|localStorage|ctstyle-testnet|target="_top"/);
+  assert.doesNotMatch(source,/<input[^>]*type="(?:text|password|hidden)"/);
+  assert.match(source,/shown \? account.secret : ""/);
+  assert.match(source,/document.addEventListener\("visibilitychange", conceal\)/);
+  assert.match(source,/window.addEventListener\("pagehide", clear\)/);
 });

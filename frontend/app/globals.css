@@ -122,6 +122,19 @@ body {
   content: "";
 }
 
+.calorie-workspace-tabs[hidden],
+.calorie-journey-card [hidden] {
+  display: none !important;
+}
+
+.calorie-journey-card {
+  scroll-margin-top: 1rem;
+}
+
+.calorie-journey-card #account-journey-title {
+  scroll-margin-top: 1rem;
+}
+
 .calorie-journey-panel:focus-visible {
   outline: 3px solid var(--brand-accent);
   outline-offset: 3px;

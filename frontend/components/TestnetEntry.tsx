@@ -1,235 +1,279 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { localeDirection } from "@/lib/locales";
 import translations from "@/config/testnet-entry-copy.json";
+import setupTranslations from "@/config/account-setup-copy.json";
 import { readAccountJourney, saveAccountJourney } from "@/lib/accountJourney";
+import { postNavigationTarget } from "@/lib/navigationBridge";
+import { checkTestnetAccount, createTestnetAccount, testnetWait, TestnetRequestError, type TestnetAccount, type TestnetFailure } from "@/lib/testnetAccount";
 
-const origins = ["https://calorietoken.net", "https://www.calorietoken.net"];
-const prefix = "calorieapp:testnet-guide:";
-const steps = ["test", "practice", "move", "finish"] as const;
-
-type JourneyStep = typeof steps[number];
 export type AccountJourneyDestination = "account" | "packaged" | "diary";
-
+type Route = "test" | "move";
 type TestnetEntryProps = {
-  requestedJourney?: { step: "test" | "move"; serial: number };
+  active?: boolean;
+  requestedJourney?: { step: Route; serial: number };
   onNavigate: (destination: AccountJourneyDestination) => void;
   onOpenAccountTools: (destination?: "export" | "import" | "session") => void;
 };
+const primary = "min-h-11 rounded-xl bg-brand-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2";
+const secondary = "min-h-11 rounded-xl border border-brand-secondary/30 bg-white px-4 py-3 text-sm font-bold text-brand-secondary disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary";
 
-export function exactGuideMessage(value: unknown, type: string): boolean {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const data = value as Record<string, unknown>;
-  return Object.keys(data).length === 2 && data.type === prefix + type && data.version === 1;
+function Acknowledgement({ checked, disabled = false, onChange, children }: {
+  checked: boolean; disabled?: boolean; onChange: (value: boolean) => void; children: React.ReactNode;
+}) {
+  return <label className={`mt-4 flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border border-brand-secondary/20 bg-brand-bg p-3 text-sm font-semibold leading-relaxed text-brand-secondary ${disabled ? "opacity-50" : ""}`}>
+    <input type="checkbox" checked={checked} disabled={disabled} onChange={event => onChange(event.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-brand-primary" />
+    <span>{children}</span>
+  </label>;
 }
 
-export function TestnetEntry({ requestedJourney, onNavigate, onOpenAccountTools }: TestnetEntryProps) {
+export function TestnetEntry({ active = true, requestedJourney, onNavigate, onOpenAccountTools }: TestnetEntryProps) {
   const display = useDisplayLanguage();
-  const locale = display.enabled && display.locale in translations ? display.locale : "en";
-  const copy = translations[locale as keyof typeof translations];
-  const [host, setHost] = useState<string | null>(null);
-  const [step, setStep] = useState<JourneyStep>("test");
-  const [moveIndex, setMoveIndex] = useState(0);
+  const locale = display.enabled && display.locale in translations ? display.locale as keyof typeof translations : "en";
+  const copy = translations[locale], setup = setupTranslations[locale];
+  const [route, setRoute] = useState<Route | null>(null);
+  const [index, setIndex] = useState(0);
+  const positions = useRef({ test: 0, move: 0 });
   const [restored, setRestored] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
-  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const moveTitle = useRef<HTMLHeadingElement | null>(null);
-  const launchRef = useRef<HTMLAnchorElement | null>(null);
+  const [restartNotice, setRestartNotice] = useState(false);
+  const [account, setAccount] = useState<TestnetAccount | null>(null);
+  const accountRef = useRef<TestnetAccount | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [failure, setFailure] = useState<TestnetFailure | null>(null);
+  const [funding, setFunding] = useState<"created" | "checking" | "funded" | "pending">("created");
+  const [shown, setShown] = useState(false);
+  const [accessed, setAccessed] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const savedRef = useRef(false);
+  savedRef.current = saved;
+  const [imported, setImported] = useState(false);
+  const [mainSaved, setMainSaved] = useState(false);
+  const [copyNotice, setCopyNotice] = useState<"copiedSafe" | "manualCopy" | null>(null);
+  const [waits, setWaits] = useState({ create: 0, check: 0 });
+  const request = useRef<AbortController | null>(null);
+  const generation = useRef(0);
+  const viewGeneration = useRef(0);
+  const currentView = useRef({ route, index, active });
+  currentView.current = { route, index, active };
+  const heading = useRef<HTMLHeadingElement | null>(null);
   const importEnabled = process.env.NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED === "true";
-  const stepIndex = steps.indexOf(step);
+
+  function choose(next: Route) {
+    setRoute(next); setIndex(positions.current[next]);
+  }
+  function go(next: number) {
+    if (!route) return;
+    setShown(false); setCopyNotice(null); viewGeneration.current++;
+    positions.current[route] = next;
+    setIndex(next);
+    saveAccountJourney({ route, index: next });
+  }
 
   useEffect(() => {
-    const saved = readAccountJourney();
-    if (saved) { setStep(saved.step); setMoveIndex(saved.moveIndex); }
+    const previous = readAccountJourney();
+    if (previous) {
+      // Recovery data and acknowledgements are deliberately not restored.
+      // Revisiting migration after a login still requires the backup checkpoint.
+      const next = previous.route === "test" ? 0 : Math.min(previous.index, 3);
+      positions.current[previous.route] = next;
+      setRoute(previous.route); setIndex(next);
+      setRestartNotice(previous.route === "test" && previous.index > 0);
+    }
     setRestored(true);
   }, []);
+  useEffect(() => { if (requestedJourney) choose(requestedJourney.step); }, [requestedJourney]);
   useEffect(() => {
-    if (requestedJourney) { setStep(requestedJourney.step); setNotice(null); }
-  }, [requestedJourney]);
+    if (restored && route) saveAccountJourney({ route, index });
+  }, [route, index, restored]);
   useEffect(() => {
-    if (restored && (requestedJourney || readAccountJourney())) saveAccountJourney({ step, moveIndex });
-  }, [step, moveIndex, restored, requestedJourney]);
-
+    viewGeneration.current++; setShown(false); setCopyNotice(null);
+    if (!active) return;
+    const frame = window.requestAnimationFrame(() => {
+      heading.current?.focus({ preventScroll: true });
+      const screen = heading.current?.closest("[data-account-guide]") ?? null;
+      if (!postNavigationTarget("calorieapp-navigation", screen)) screen?.scrollIntoView?.({ block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [route, index, active]);
   useEffect(() => {
-    if (window.parent === window) return;
-    const receive = (event: MessageEvent) => {
-      if (event.source !== window.parent || !origins.includes(event.origin)) return;
-      if (exactGuideMessage(event.data, "available")) {
-        setHost(event.origin);
-        return;
-      }
-      if (exactGuideMessage(event.data, "complete")) {
-        setHost(event.origin);
-        setStep("practice");
-        setNotice(copy.completed);
-        onNavigate("account");
-        return;
-      }
-      if (exactGuideMessage(event.data, "closed")) {
-        setHost(event.origin);
-        setNotice(copy.closed);
-        window.requestAnimationFrame(() => launchRef.current?.focus());
-      }
+    const tick = () => setWaits({ create: testnetWait("create"), check: testnetWait("check") });
+    tick(); const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    const conceal = () => { viewGeneration.current++; setShown(false); setCopyNotice(null); };
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      if (accountRef.current && !savedRef.current) { event.preventDefault(); event.returnValue = ""; }
     };
-    window.addEventListener("message", receive);
-    origins.forEach(origin => window.parent.postMessage({ type: prefix + "ready", version: 1 }, origin));
-    return () => window.removeEventListener("message", receive);
-  }, [copy.closed, copy.completed, onNavigate]);
+    const clear = () => {
+      generation.current++; request.current?.abort(); request.current = null;
+      accountRef.current = null; setAccount(null); setCreating(false);
+      setAccessed(false); setSaved(false); setImported(false); conceal();
+      positions.current.test = 0;
+      if (currentView.current.route === "test") { setIndex(0); setRestartNotice(true); }
+    };
+    document.addEventListener("visibilitychange", conceal);
+    window.addEventListener("beforeunload", beforeUnload);
+    window.addEventListener("pagehide", clear);
+    return () => {
+      generation.current++; viewGeneration.current++;
+      request.current?.abort(); request.current = null; accountRef.current = null;
+      document.removeEventListener("visibilitychange", conceal);
+      window.removeEventListener("beforeunload", beforeUnload);
+      window.removeEventListener("pagehide", clear);
+    };
+  }, []);
 
-  function selectStep(next: JourneyStep, focus = false) {
-    setStep(next);
-    setNotice(null);
-    saveAccountJourney({ step: next, moveIndex });
-    if (focus) {
-      const index = steps.indexOf(next);
-      window.requestAnimationFrame(() => tabRefs.current[index]?.focus());
+  async function verify(value: TestnetAccount) {
+    if (request.current || testnetWait("check")) return;
+    const controller = new AbortController(), current = generation.current;
+    request.current = controller; setFunding("checking");
+    const funded = await checkTestnetAccount(value.address, controller.signal);
+    if (current === generation.current && !controller.signal.aborted) setFunding(funded ? "funded" : "pending");
+    if (request.current === controller) request.current = null;
+  }
+  async function create() {
+    if (request.current || accountRef.current || testnetWait("create")) return;
+    const controller = new AbortController(), current = generation.current;
+    request.current = controller; setCreating(true); setFailure(null);
+    try {
+      const value = await createTestnetAccount(controller.signal);
+      if (current !== generation.current || controller.signal.aborted) return;
+      accountRef.current = value; setAccount(value); setRestartNotice(false);
+      positions.current.test = 2;
+      if (currentView.current.route === "test") setIndex(2);
+    } catch (error) {
+      if (current === generation.current && !controller.signal.aborted) setFailure(error instanceof TestnetRequestError ? error.code : "connectionFailed");
+    } finally {
+      if (request.current === controller) request.current = null;
+      if (current === generation.current) setCreating(false);
+    }
+    if (current === generation.current && accountRef.current) await verify(accountRef.current);
+  }
+  async function copySecret() {
+    const value = accountRef.current, current = viewGeneration.current;
+    if (!value || !active) return;
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard-unavailable");
+      await navigator.clipboard.writeText(value.secret);
+      if (current !== viewGeneration.current || !currentView.current.active || accountRef.current !== value) return;
+      setAccessed(true); setCopyNotice("copiedSafe");
+    } catch {
+      if (current !== viewGeneration.current || !currentView.current.active || accountRef.current !== value) return;
+      setShown(true); setAccessed(true); setCopyNotice("manualCopy");
     }
   }
 
-  function handleStepKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    let next = index;
-    const forward = localeDirection(locale) === "rtl" ? "ArrowLeft" : "ArrowRight";
-    const backward = localeDirection(locale) === "rtl" ? "ArrowRight" : "ArrowLeft";
-    if (event.key === forward || event.key === "ArrowDown") next = (index + 1) % steps.length;
-    else if (event.key === backward || event.key === "ArrowUp") next = (index - 1 + steps.length) % steps.length;
-    else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = steps.length - 1;
-    else return;
-    event.preventDefault();
-    selectStep(steps[next], true);
-  }
+  const testTitles = [setup.beforeStart, setup.stepCreate, setup.saveTitle, setup.stepNetwork, setup.stepImport, setup.stepReturn];
+  const moveTitles = [copy.moveLabels[0], copy.moveLabels[1], copy.moveLabels[2], setup.mainBackupTitle, copy.moveLabels[3], copy.moveLabels[4], copy.continueApp];
+  const titles = route === "move" ? moveTitles : testTitles;
+  const canNext = route === "move" ? index !== 3 || mainSaved
+    : index === 1 ? !!account : index === 2 ? saved : index === 4 ? imported : true;
+  const secretControls = account && active ? <div className="mt-4 rounded-xl border border-brand-secondary/20 p-3">
+    <p className="text-xs font-bold text-brand-secondary">{setup.recovery}</p>
+    <div className="mt-2 flex flex-wrap gap-2">
+      <button type="button" className={secondary} aria-expanded={shown} aria-controls="account-guide-secret" onClick={() => { setShown(value => !value); setAccessed(true); }}>{setup.show}</button>
+      <button type="button" className={secondary} onClick={copySecret}>{setup.copySeed}</button>
+    </div>
+    <code id="account-guide-secret" dir="ltr" hidden={!shown} className="mt-3 block break-all rounded-lg bg-brand-bg p-3 text-sm text-brand-secondary">{shown ? account.secret : ""}</code>
+    {copyNotice ? <p role="status" className="mt-2 text-xs leading-relaxed text-brand-secondary">{setup[copyNotice]}</p> : null}
+  </div> : null;
+  const warning = (text: string) => <p role="note" className="mt-3 rounded-xl border-s-4 border-brand-accent bg-amber-50 p-3 text-sm leading-relaxed text-amber-950">{text}</p>;
+  const official = <a className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-secondary underline" href="https://xrpl.org/resources/dev-tools/xrp-faucets" target="_blank" rel="noopener noreferrer">{setup.official} ↗</a>;
 
-  function openGuide(event: React.MouseEvent<HTMLAnchorElement>) {
-    saveAccountJourney({ step, moveIndex });
-    if (!host || window.parent === window) return;
-    event.preventDefault();
-    setNotice(null);
-    window.parent.postMessage({ type: prefix + "open", version: 1 }, host);
-  }
-
-  function selectMove(next: number) {
-    setMoveIndex(next);
-    saveAccountJourney({ step: "move", moveIndex: next });
-    window.requestAnimationFrame(() => moveTitle.current?.focus());
-  }
-
-  const labels: Record<JourneyStep, string> = {
-    test: copy.testStep,
-    practice: copy.practiceStep,
-    move: copy.moveStep,
-    finish: copy.finishStep,
-  };
-
-  return (
-    <section className="calorie-journey-card rounded-2xl border border-brand-secondary/20 bg-white p-4 shadow-sm sm:p-6"
-      lang={locale} dir={localeDirection(locale)} aria-labelledby="account-journey-title">
-      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/70">{copy.journeyTab}</p>
-      <h2 id="account-journey-title" className="mt-1 text-xl font-bold text-brand-primary">{copy.journeyTitle}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.journeyIntro}</p>
-
-      <div role="tablist" aria-label={copy.journeyTitle}
-        className="calorie-journey-steps mt-5 grid grid-cols-2 gap-2 rounded-xl bg-brand-bg p-2 sm:grid-cols-4">
-        {steps.map((item, index) => (
-          <button key={item} ref={node => { tabRefs.current[index] = node; }} type="button"
-            id={`account-journey-tab-${item}`} role="tab" aria-selected={step === item}
-            aria-controls={`account-journey-panel-${item}`} tabIndex={step === item ? 0 : -1}
-            onClick={() => selectStep(item)} onKeyDown={event => handleStepKey(event, index)}
-            className={`min-h-12 rounded-lg px-2 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary ${step === item ? "bg-brand-primary text-white shadow-sm" : "bg-white text-brand-primary hover:bg-brand-secondary/10"}`}>
-            {labels[item]}
-          </button>
-        ))}
-      </div>
-
-      <div
-        className="mt-3 h-2 overflow-hidden rounded-full bg-brand-secondary/10"
-        role="progressbar"
-        aria-valuemin={1}
-        aria-valuemax={steps.length}
-        aria-valuenow={stepIndex + 1}
-        aria-label={copy.journeyTitle}
-      >
-        <span className="block h-full rounded-full bg-brand-primary transition-[width]"
-          style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }} />
-      </div>
-      <p className="mt-2 text-xs font-semibold text-brand-secondary" aria-live="polite">{stepIndex + 1} / {steps.length}</p>
-      {notice ? <p role="status" className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-900">{notice}</p> : null}
-
-      <div id="account-journey-panel-test" role="tabpanel" aria-labelledby="account-journey-tab-test"
-        hidden={step !== "test"} className="calorie-journey-panel mt-4">
-        <h3 className="text-base font-bold text-brand-primary">{copy.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.description}</p>
-        <div role="note" className="mt-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-3 text-sm leading-relaxed text-amber-950">
-          <strong className="block">{copy.seedTitle}</strong>
-          <span className="mt-1 block">{copy.seedWarning}</span>
+  return <section className="calorie-journey-card rounded-2xl border border-brand-secondary/20 bg-white shadow-sm"
+    lang={locale} dir={localeDirection(locale)} aria-labelledby="account-journey-title" data-account-guide={route ?? "choose"}>
+    <header className="border-b border-brand-secondary/10 px-4 pb-4 pt-3 sm:px-6">
+      <button type="button" onClick={() => { setShown(false); onNavigate("account"); }} className="-ms-2 mb-2 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-brand-secondary">
+        <span aria-hidden="true">{localeDirection(locale) === "rtl" ? "→" : "←"}</span>{setup.backToAccount}
+      </button>
+      <p className="text-xs font-bold text-brand-secondary">{route === "test" ? copy.testRoute : route === "move" ? copy.moveRoute : copy.journeyTab}</p>
+      {route ? <>
+        <p className="mt-2 text-xs text-brand-secondary" aria-live="polite">{copy.stepOf.replace("{current}", String(index + 1)).replace("{total}", String(titles.length))}</p>
+        <div role="progressbar" aria-label={route === "test" ? copy.testRoute : copy.moveRoute} aria-valuemin={1} aria-valuemax={titles.length} aria-valuenow={index + 1} className="mt-2 h-1.5 overflow-hidden rounded-full bg-brand-secondary/10">
+          <span className="block h-full bg-brand-primary" style={{ width: `${((index + 1) / titles.length) * 100}%` }} />
         </div>
-        <a ref={launchRef} href="https://calorietoken.net/index.php/calorieapp/#ctstyle-testnet" target="_top" onClick={openGuide}
-          className="mt-4 inline-flex min-h-12 items-center rounded-full bg-brand-primary px-5 py-3 text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
-          {copy.start}
-        </a>
-        <p className="mt-3 text-xs leading-relaxed text-brand-secondary">{copy.scope}</p>
-      </div>
-
-      <div id="account-journey-panel-practice" role="tabpanel" aria-labelledby="account-journey-tab-practice"
-        hidden={step !== "practice"} className="calorie-journey-panel mt-4">
-        <h3 className="text-base font-bold text-brand-primary">{copy.practiceStep}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.practiceText}</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" onClick={() => onNavigate("account")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openSignIn}</button>
-          <button type="button" onClick={() => onNavigate("packaged")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openSearch}</button>
-          <button type="button" onClick={() => onNavigate("diary")}
-            className="min-h-11 rounded-full border-2 border-brand-secondary bg-white px-5 py-2 text-sm font-bold text-brand-secondary">{copy.openDiary}</button>
+      </> : null}
+    </header>
+    <div key={`${route}-${index}`} data-account-guide-screen className="p-4 sm:p-6">
+      <h2 id="account-journey-title" ref={heading} tabIndex={-1} className="text-xl font-bold leading-snug text-brand-primary focus:outline-none">{route ? titles[index] : copy.journeyTitle}</h2>
+      {!route ? <>
+        <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{copy.journeyIntro}</p>
+        <div className="mt-5 grid gap-3">
+          <button type="button" className={primary} onClick={() => choose("test")}>{copy.testRoute}</button>
+          <button type="button" className={secondary} onClick={() => choose("move")}>{copy.moveRoute}</button>
         </div>
-      </div>
-
-      <div id="account-journey-panel-move" role="tabpanel" aria-labelledby="account-journey-tab-move"
-        hidden={step !== "move"} className="calorie-journey-panel mt-4">
-        <h3 className="text-base font-bold text-brand-primary">{copy.moveStep}</h3>
-        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-950">{copy.moveText}</p>
-        <nav className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label={copy.moveRoute}>
-          {copy.moveLabels.map((label, index) => <button key={label} type="button" onClick={() => selectMove(index)}
-            aria-current={moveIndex === index ? "step" : undefined}
-            className={`min-h-11 rounded-xl border px-3 py-2 text-xs font-bold ${moveIndex === index ? "border-brand-primary bg-brand-primary text-white" : "border-brand-secondary/20 bg-brand-bg text-brand-secondary"}`}>
-            {index + 1}. {label}
-          </button>)}
-        </nav>
-        <p className="mt-4 text-xs font-semibold text-brand-secondary" aria-live="polite">{copy.stepOf.replace("{current}", String(moveIndex + 1)).replace("{total}", "5")}</p>
-        <h4 ref={moveTitle} tabIndex={-1} className="mt-2 text-lg font-bold text-brand-primary">{copy.moveLabels[moveIndex]}</h4>
-        <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.moveSteps[moveIndex]}</p>
-        {moveIndex === 0 || moveIndex === 4 ? <p className="mt-4 rounded-lg bg-brand-bg px-3 py-2 text-sm leading-relaxed text-brand-secondary">
-          {importEnabled ? copy.importReady : copy.importPending}
-        </p> : null}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {moveIndex === 0 ? <button type="button" onClick={() => onOpenAccountTools("export")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openExportTools}</button> : null}
-          {moveIndex === 1 ? <button type="button" onClick={() => onOpenAccountTools("session")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openSignOut}</button> : null}
-          {moveIndex === 2 ? <a href="https://help.xaman.app/app/getting-started-with-xaman/your-first-xrp-ledger-account/how-to-create-an-xrpl-account" target="_blank" rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openXamanInstructions}</a> : null}
-          {moveIndex === 3 ? <button type="button" onClick={() => onNavigate("account")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openSignIn}</button> : null}
-          {moveIndex === 4 && importEnabled ? <button type="button" onClick={() => onOpenAccountTools("import")}
-            className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.openImportTools}</button> : null}
-        </div>
-      </div>
-
-      <div id="account-journey-panel-finish" role="tabpanel" aria-labelledby="account-journey-tab-finish"
-        hidden={step !== "finish"} className="calorie-journey-panel mt-4">
-        <h3 className="text-base font-bold text-brand-primary">{copy.finishStep}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.finishText}</p>
-        <button type="button" onClick={() => onNavigate("packaged")}
-          className="mt-4 min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-bold text-white">{copy.continueApp}</button>
-      </div>
-
-      <div className="mt-6 flex items-center justify-between gap-3 border-t border-brand-secondary/10 pt-4">
-        <button type="button" onClick={() => step === "move" && moveIndex > 0 ? selectMove(moveIndex - 1) : selectStep(steps[Math.max(0, stepIndex - 1)], true)} disabled={stepIndex === 0}
-          className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary disabled:opacity-40">{copy.previous}</button>
-        <button type="button" onClick={() => step === "move" && moveIndex < 4 ? selectMove(moveIndex + 1) : selectStep(steps[Math.min(steps.length - 1, stepIndex + 1)], true)} disabled={stepIndex === steps.length - 1}
-          className="min-h-11 rounded-full bg-brand-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-40">{copy.next}</button>
-      </div>
-    </section>
-  );
+      </> : route === "test" ? <>
+        {index === 0 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.ready}</p>
+          {warning(setup.testOnly)}
+          {restartNotice ? <p role="status" className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.restartNotice}</p> : null}
+        </> : null}
+        {index === 1 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.privacy}</p>
+          {account ? <p role="status" className="mt-4 text-sm font-bold text-brand-primary">{setup.created}</p> : <>
+            <button type="button" className={`${primary} mt-4 w-full`} disabled={creating || waits.create > 0} onClick={create}>{creating ? setup.creating : waits.create > 0 ? setup.waitCreate.replace("{seconds}", String(waits.create)) : setup.create}</button>
+            {failure ? <div role="alert" className="mt-3 text-sm leading-relaxed text-brand-secondary"><p>{setup[failure]}</p>{official}</div> : null}
+          </>}
+        </> : null}
+        {index === 2 ? <>
+          {warning(copy.seedWarning)}
+          <p className="mt-3 text-xs leading-relaxed text-brand-secondary">{setup.privacyNote}</p>
+          {secretControls}
+          <Acknowledgement checked={saved} disabled={!accessed} onChange={setSaved}>{setup.saveAck}</Acknowledgement>
+        </> : null}
+        {index === 3 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.import1}</p>
+          <a className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-brand-secondary underline" href="https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger" target="_blank" rel="noopener noreferrer">{setup.networkHelp} ↗</a>
+        </> : null}
+        {index === 4 ? <>
+          {secretControls}
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.import2}</p>
+          {account ? <p className="mt-3 text-xs text-brand-secondary">{setup.account}<code dir="ltr" className="mt-1 block break-all rounded-lg bg-brand-bg p-2">{account.address}</code></p> : null}
+          <Acknowledgement checked={imported} onChange={setImported}>{setup.testImported}</Acknowledgement>
+        </> : null}
+        {index === 5 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.import3}</p>
+          {account ? <code dir="ltr" className="mt-3 block break-all rounded-lg bg-brand-bg p-3 text-xs text-brand-secondary">{account.address}</code> : null}
+          <p role="status" className="mt-3 text-sm font-semibold text-brand-secondary">{setup[funding]}</p>
+          {account && funding !== "funded" ? <button type="button" className={`${secondary} mt-3`} disabled={funding === "checking" || waits.check > 0} onClick={() => verify(account)}>{waits.check > 0 ? setup.waitCheck.replace("{seconds}", String(waits.check)) : setup.check}</button> : null}
+        </> : null}
+      </> : <>
+        {index === 0 ? <>
+          {warning(copy.moveText)}
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{copy.moveSteps[0]}</p>
+          <p className="mt-3 rounded-xl bg-brand-bg p-3 text-sm leading-relaxed text-brand-secondary">{importEnabled ? copy.importReady : copy.importPending}</p>
+          <button type="button" className={`${secondary} mt-4`} onClick={() => onOpenAccountTools("export")}>{copy.openExportTools}</button>
+        </> : null}
+        {index === 1 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{copy.moveSteps[1]}</p>
+          <button type="button" className={`${secondary} mt-4`} onClick={() => onOpenAccountTools("session")}>{copy.openSignOut}</button>
+        </> : null}
+        {index === 2 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{copy.moveSteps[2]}</p>
+          <a href="https://help.xaman.app/" target="_blank" rel="noopener noreferrer" className={`${secondary} mt-4 inline-flex items-center`}>{copy.openXamanInstructions} ↗</a>
+        </> : null}
+        {index === 3 ? <>
+          {warning(setup.mainBackupText)}
+          <Acknowledgement checked={mainSaved} onChange={setMainSaved}>{setup.mainBackupAck}</Acknowledgement>
+        </> : null}
+        {index === 4 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{copy.moveSteps[3]}</p>
+          <button type="button" className={`${secondary} mt-4`} onClick={() => onNavigate("account")}>{copy.openSignIn}</button>
+        </> : null}
+        {index === 5 ? <>
+          <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{importEnabled ? copy.moveSteps[4] : copy.importPending}</p>
+          {importEnabled ? <button type="button" className={`${secondary} mt-4`} onClick={() => onOpenAccountTools("import")}>{copy.openImportTools}</button> : null}
+        </> : null}
+        {index === 6 ? <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{importEnabled ? copy.finishText : copy.importPending}</p> : null}
+      </>}
+    </div>
+    {route ? <footer className="flex items-center justify-between gap-3 border-t border-brand-secondary/10 bg-white px-4 py-3 sm:px-6">
+      <button type="button" className={secondary} disabled={creating} onClick={() => index > 0 ? go(index - 1) : setRoute(null)}>{copy.previous}</button>
+      {index < titles.length - 1 ? <button type="button" className={primary} disabled={!canNext || creating} onClick={() => go(index + 1)}>{copy.next}</button>
+        : <button type="button" className={primary} onClick={() => onNavigate(route === "test" ? "account" : "packaged")}>{route === "test" ? copy.openSignIn : copy.continueApp}</button>}
+    </footer> : null}
+  </section>;
 }

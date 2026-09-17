@@ -80,6 +80,7 @@ jobs:
           for i in $(seq 1 30); do curl --silent --fail http://127.0.0.1:3100/ > /dev/null && break; sleep 1; done
           curl --silent --fail http://127.0.0.1:3100/ > /dev/null
           python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log
+          python tools/tests/browser_account_guides.py 2>&1 | tee ux-check-evidence/account-guides-browser.log
           HEADING_NUTRITION_EVIDENCE_DIR=ux-check-evidence/heading-nutrition-browser \
             python tools/tests/browser_heading_nutrition.py \
             2>&1 | tee ux-check-evidence/heading-nutrition-browser.log
@@ -92,6 +93,9 @@ jobs:
           h=json.loads(Path('ux-check-evidence/heading-nutrition-browser/report.json').read_text())
           assert h['status']=='passed' and not h['errors'], h
           assert len(h['checks']) >= 57, h
+          a=json.loads(Path('ux-check-evidence/account-guides-browser/report.json').read_text())
+          assert a['status']=='passed' and not a['errors'] and not a['unexpected_requests'], a
+          assert len(a['checks']) >= 40 and a['faucet_requests']==1, a
           PY
       - name: Retain test evidence (no publication or deployment)
         if: always()
