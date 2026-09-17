@@ -7,7 +7,9 @@ on:
     branches: [herstel/vervolg-20260915]
     paths:
       - 'frontend/**'
-      - 'backend/app/food_log_view.py'
+      - 'backend/app/**'
+      - 'backend/tests/**'
+      - 'wordpress-plugins/calorieapp-account-profile/**'
       - 'backend/app/schemas.py'
       - 'backend/app/services/open_food_facts.py'
       - 'backend/tests/test_food_log_view.py'
@@ -58,12 +60,21 @@ jobs:
           set -euo pipefail
           node --test tools/tests/*.test.mjs 2>&1 | tee ux-check-evidence/regressions.log
           PYTHONPATH=backend python -m pytest -q \
+            backend/tests/test_account_profile.py \
+            backend/tests/test_account_data_export.py \
+            backend/tests/test_account_data_import.py \
+            backend/tests/test_account_erasure.py \
+            backend/tests/test_database.py \
+            backend/tests/test_identity_endpoints.py \
+            backend/tests/test_inactive_account_erasure_execution.py \
             backend/tests/test_food_log_view.py \
             backend/tests/test_open_food_facts_normalization.py \
             2>&1 | tee ux-check-evidence/backend-food-tests.log
           python -m unittest tools.tests.test_build_heading_repair_release 2>&1 | tee ux-check-evidence/heading-release-tests.log
           find wordpress-plugins/calorietoken-heading-repair -type f -name '*.php' -print0 \
             | xargs -0 -n1 php -l 2>&1 | tee ux-check-evidence/heading-php-lint.log
+          php -l wordpress-plugins/calorieapp-account-profile/calorieapp-account-profile.php
+          php wordpress-plugins/calorieapp-account-profile/tests/profile-test.php
           python tools/build_heading_repair_release.py \
             --output-dir ux-check-evidence/heading-release \
             2>&1 | tee ux-check-evidence/heading-release.log
@@ -80,6 +91,7 @@ jobs:
           for i in $(seq 1 30); do curl --silent --fail http://127.0.0.1:3100/ > /dev/null && break; sleep 1; done
           curl --silent --fail http://127.0.0.1:3100/ > /dev/null
           python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log
+          python tools/tests/browser_account_profile.py 2>&1 | tee ux-check-evidence/account-profile-browser.log
           python tools/tests/browser_account_guides.py 2>&1 | tee ux-check-evidence/account-guides-browser.log
           HEADING_NUTRITION_EVIDENCE_DIR=ux-check-evidence/heading-nutrition-browser \
             python tools/tests/browser_heading_nutrition.py \
@@ -87,6 +99,8 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+          profile=json.loads(Path('ux-check-evidence/account-profile-browser/report.json').read_text())
+          assert profile['status']=='passed' and not profile['errors'] and len(profile['checks'])>=40, profile
           r=json.loads(Path('ux-check-evidence/browser/report.json').read_text())
           assert r['status']=='passed' and not r['errors'], r
           assert len(r['checks']) >= 55 and len(r['writes']) == 1, r

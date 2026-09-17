@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -52,6 +53,9 @@ test("login surface fails closed until an embedded parent is trusted", async () 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -120,6 +124,9 @@ test("logout retries the cookie-clearing endpoint after an interrupted response"
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -225,6 +232,9 @@ test("login start retries transport errors and transient responses", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -334,6 +344,9 @@ test("embedded login wakes the backend before creating login state", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -427,6 +440,9 @@ test("embedded login does not report progress after cancellation", async () => {
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -562,6 +578,9 @@ test("login status polling slows down by age, failures, and Retry-After", async 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
@@ -741,6 +760,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
       if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {

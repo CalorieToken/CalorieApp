@@ -86,6 +86,9 @@ from .schemas import (
     AccountExportImportReceipt,
     AccountExportLoginHandoff,
     CurrentUserResponse,
+    NicknameUpdateRequest,
+    NicknameResponse,
+    WordpressProfileRequest,
     BridgeCodeRequest,
     BridgeCodeResponse,
     FoodLog,
@@ -1199,7 +1202,53 @@ def identity_me(
     return CurrentUserResponse(
         user_id=current_user.id,
         created_at=current_user.created_at,
+        nickname=current_user.nickname,
     )
+
+
+@app.post("/api/identity/profile", response_model=CurrentUserResponse)
+def identity_update_profile(
+    payload: NicknameUpdateRequest,
+    request: Request,
+    session: DbSession,
+    current_user: CurrentUser,
+) -> CurrentUserResponse:
+    # Require a non-simple request at both the public proxy and the backend.
+    if request.headers.get("x-calorieapp-request") != "account-profile":
+        raise HTTPException(status_code=403, detail="Profile request marker required")
+    origin = request.headers.get("origin")
+    if origin and origin not in _CORS_ORIGINS:
+        raise HTTPException(status_code=403, detail="Origin not allowed")
+    if payload.user_id != current_user.id:
+        raise HTTPException(status_code=409, detail="Account changed; reload your profile")
+    current_user.nickname = payload.nickname
+    current_user.updated_at = datetime.now(UTC).replace(tzinfo=None)
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return CurrentUserResponse(user_id=current_user.id, created_at=current_user.created_at, nickname=current_user.nickname)
+
+
+@app.post("/api/identity/profile/wordpress", response_model=NicknameResponse)
+def identity_wordpress_profile(
+    payload: WordpressProfileRequest,
+    request: Request,
+    session: DbSession,
+) -> NicknameResponse:
+    # Domain separation binds the signature to this read and this exact account.
+    authenticated, _ = _authenticate_bridge_request(
+        request=request, session=session, state="account-profile-v1:" + payload.external_subject,
+    )
+    if not authenticated:
+        raise HTTPException(status_code=403, detail="Profile authentication failed")
+    user = session.exec(
+        select(CalorieAppUserDB).join(ExternalIdentityDB).where(
+            ExternalIdentityDB.provider == _IDENTITY_PROVIDER,
+            ExternalIdentityDB.external_subject == payload.external_subject,
+            CalorieAppUserDB.status == "active",
+        )
+    ).first()
+    return NicknameResponse(nickname=user.nickname if user else None)
 
 
 @app.get("/api/identity/export", response_model=AccountDataExportResponse)
@@ -1274,6 +1323,7 @@ def identity_export(
         account=AccountExportAccount(
             user_id=current_user.id,
             status=current_user.status,
+            nickname=current_user.nickname,
             created_at=current_user.created_at,
             updated_at=current_user.updated_at,
             last_authenticated_activity_at=(

@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -15,6 +16,9 @@ test('Every agreed language renders the anonymous sign-in panel without a reques
   assert.ok(Object.values(copy).every(value=>typeof value==='string'&&value.trim()));
   const module={exports:{}};
   vm.runInNewContext(compiled,{module,exports:module.exports,process:{env:{}},URL,URLSearchParams,window:{location:{search:'?locale='+locale}},document:{documentElement:{lang:locale}},navigator:{language:locale},require(name){
+      if (name === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (name === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
    if(['react','react/jsx-runtime'].includes(name))return require(name);
    if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>({enabled:false,locale:'en'})};if(name==='@/lib/authUi')return authUi;
    if(name==='@/lib/locales')return {resolveLocale:value=>value||'en'};

@@ -14,3 +14,5 @@ export const authCopy=JSON.parse(readFileSync(new URL('../../../frontend/config/
 const registry=JSON.parse(readFileSync(new URL('../../../frontend/config/locales.json',import.meta.url),'utf8'));
 const locales=load('lib/locales.ts',{'@/config/locales.json':{default:registry}});
 export const authUi=load('lib/authUi.ts',{'@/config/auth-ui-copy.json':{default:authCopy},'@/lib/locales':locales});
+
+export const profileCopy=JSON.parse(readFileSync(new URL("../../../frontend/config/account-profile-copy.json",import.meta.url),"utf8"));

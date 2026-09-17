@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
@@ -23,12 +24,13 @@ function harness({importEnabled=false,stored=new Map()}={}){
   '@/components/AgeExperienceControl':{AgeExperienceControl:()=>null,useAgeExperience:()=>['adult',()=>{}]},
   '@/components/FoodSearchPlaceholder':{FoodSearchPlaceholder:({activeView})=>React.createElement('div',{hidden:!activeView},'Food fixture')},
   '@/components/NicknameProfile':{NicknameProfile:()=>null},
-  '@/components/XamanLoginPanel':{XamanLoginPanel:()=>React.createElement('p',null,'Account fixture: no login requests')},
+  '@/components/XamanLoginPanel':{XamanLoginPanel:({guides})=>React.createElement('div',null,'Account fixture: no login requests',guides)},
   '@/lib/authUi':{getAuthUi:()=>({copy:{accountTools:'Accountbeheer'}})},
   '@/lib/foodDiary':{diaryCopy:()=>({title:'Dagboek'})},
   '@/lib/foodExperience':{foodExperience:()=>({copy:{sourceTitle:'Basisvoeding',navigation:'Ga naar'}})},
   '@/lib/foodUi':{getFoodUi:()=>({copy:{searchTitle:'Zoeken'},locale:'nl',direction:'ltr'})},
-  '@/config/testnet-entry-copy.json':{default:copy},
+  '@/config/account-profile-copy.json': {default: profileCopy},
+    '@/config/testnet-entry-copy.json':{default:copy},
   '@/config/account-setup-copy.json':{default:setup},
   '@/lib/navigationBridge':{postNavigationTarget:()=>false},
   '@/lib/testnetAccount':{testnetWait:()=>0},

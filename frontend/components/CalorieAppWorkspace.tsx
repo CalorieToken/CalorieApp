@@ -4,10 +4,9 @@ import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { FoodSearchPlaceholder, type FoodWorkspaceView } from "@/components/FoodSearchPlaceholder";
 import { TestnetEntry } from "@/components/TestnetEntry";
-import { NicknameProfile } from "@/components/NicknameProfile";
-import { XamanLoginPanel } from "@/components/XamanLoginPanel";
+import profileTranslations from "@/config/account-profile-copy.json";
+import { XamanLoginPanel, type MeResponse } from "@/components/XamanLoginPanel";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { getAuthUi } from "@/lib/authUi";
 import { diaryCopy } from "@/lib/foodDiary";
 import { foodExperience } from "@/lib/foodExperience";
 import { getFoodUi } from "@/lib/foodUi";
@@ -23,17 +22,17 @@ export function CalorieAppWorkspace() {
   );
   const experience = foodExperience(locale);
   const diary = diaryCopy(locale);
-  const auth = getAuthUi(locale);
   const journey = journeyTranslations[locale as keyof typeof journeyTranslations] ?? journeyTranslations.en;
   const [ageBand, setAgeBand, ageResolved = true] = useAgeExperience();
   const allowPersonalFeatures = ageBand === "adult";
+  const [account, setAccount] = useState<MeResponse | null>(null);
+  const profileCopy = profileTranslations[locale as keyof typeof profileTranslations] ?? profileTranslations.en;
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("account");
   const [requestedJourney, setRequestedJourney] = useState<{ step: "test" | "move"; serial: number }>();
   const [returnToJourney, setReturnToJourney] = useState(false);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const tabs: Array<{ id: WorkspaceTab; label: string }> = [
-    ...(allowPersonalFeatures ? [{ id: "account" as const, label: auth.copy.accountTools }] : []),
-    ...(allowPersonalFeatures ? [{ id: "journey" as const, label: journey.journeyTab }] : []),
+    ...(allowPersonalFeatures ? [{ id: "account" as const, label: profileCopy.account }] : []),
     { id: "packaged", label: foodCopy.searchTitle },
     { id: "basic", label: experience.copy.sourceTitle },
     ...(allowPersonalFeatures ? [{ id: "diary" as const, label: diary.title }] : []),
@@ -43,10 +42,12 @@ export function CalorieAppWorkspace() {
 
   useEffect(() => {
     setReturnToJourney(readAccountJourney() !== null);
+    try { window.sessionStorage.removeItem("calorieapp.nickname.v1"); } catch { /* Discard the old, unbound tab-only nickname. */ }
   }, []);
 
   useEffect(() => {
     if (ageBand && !allowPersonalFeatures) {
+      setAccount(null);
       setActiveTab(current => current === "account" || current === "journey" || current === "diary" ? "packaged" : current);
     }
   }, [ageBand, allowPersonalFeatures]);
@@ -99,13 +100,16 @@ export function CalorieAppWorkspace() {
       className="calorie-age-shell"
       data-age-band={ageBand ?? "unselected"}
     >
-      {ageResolved && visibleTab !== "journey" ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
+      {ageResolved && !allowPersonalFeatures && visibleTab !== "journey" ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
       {!ageResolved || !ageBand ? null : <>
+      {allowPersonalFeatures && account && visibleTab !== "journey" ? <button type="button" onClick={() => selectTab("account", true)} className="mb-3 flex min-h-11 max-w-full items-center gap-2 rounded-full border border-brand-primary/20 bg-white px-4 py-2 text-sm font-bold text-brand-primary" data-account-identity>
+        <span aria-hidden="true">●</span><bdi className="min-w-0 break-words">{account.nickname ? profileCopy.hello.replace("{nickname}", account.nickname) : profileCopy.account}</bdi>
+      </button> : null}
       <div
         role="tablist"
         hidden={visibleTab === "journey"}
         aria-label={`${experience.copy.navigation} CalorieApp`}
-        className="calorie-workspace-tabs mb-5 grid min-w-0 grid-cols-2 gap-2 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 sm:flex"
+        className={`calorie-workspace-tabs mb-5 grid min-w-0 auto-rows-fr grid-cols-2 gap-2 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 ${allowPersonalFeatures ? "lg:grid-cols-4" : ""}`}
       >
         {tabs.map((tab, index) => (
           <button
@@ -119,7 +123,7 @@ export function CalorieAppWorkspace() {
             tabIndex={visibleTab === tab.id ? 0 : -1}
             onClick={() => selectTab(tab.id)}
             onKeyDown={(event) => handleTabKey(event, index)}
-            className={`min-h-11 min-w-0 flex-1 rounded-xl px-3 py-2 text-xs font-bold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 sm:text-sm ${
+            className={`min-h-12 min-w-0 rounded-xl px-3 py-3 text-xs font-bold leading-snug [overflow-wrap:anywhere] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 sm:text-sm ${
               visibleTab === tab.id
                 ? "bg-brand-primary text-white shadow-sm"
                 : "bg-white text-brand-primary hover:bg-brand-secondary/10"
@@ -141,18 +145,19 @@ export function CalorieAppWorkspace() {
         hidden={visibleTab !== "account"}
         className="calorie-workspace-panel"
       >
-        <div className="mb-4 grid gap-2 sm:grid-cols-2">
+        <XamanLoginPanel onAccountChange={setAccount}
+          settings={<AgeExperienceControl band={ageBand} onChange={setAgeBand} />}
+          guides={<div className="grid gap-2 sm:grid-cols-2">
           <button type="button" onClick={() => openJourney("test")} className="min-h-12 rounded-xl border border-brand-secondary/20 bg-white p-3 text-sm font-bold text-brand-primary">{journey.testRoute}</button>
           <button type="button" onClick={() => openJourney("move")} className="min-h-12 rounded-xl border border-brand-secondary/20 bg-white p-3 text-sm font-bold text-brand-primary">{journey.moveRoute}</button>
-        </div>
-        <XamanLoginPanel />
-        <NicknameProfile />
+          </div>}
+        />
       </section> : null}
 
       {allowPersonalFeatures ? <section
         id="calorie-panel-journey"
         role="tabpanel"
-        aria-labelledby="calorie-tab-journey"
+        aria-label={journey.journeyTab}
         hidden={visibleTab !== "journey"}
         className="calorie-workspace-panel"
       >

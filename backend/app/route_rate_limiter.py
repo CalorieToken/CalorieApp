@@ -61,6 +61,8 @@ ROUTE_RATE_POLICIES: dict[tuple[str, str], RouteRatePolicy] = {
         240,
     ),
     ("GET", "/api/identity/me"): RouteRatePolicy("identity_me", 240),
+    ("POST", "/api/identity/profile"): RouteRatePolicy("identity_profile", 60),
+    ("POST", "/api/identity/profile/wordpress"): RouteRatePolicy("identity_widget_profile", 240),
     ("GET", "/api/identity/export"): RouteRatePolicy("identity_export", 30),
     ("POST", "/api/identity/import"): RouteRatePolicy("identity_import", 5),
     ("DELETE", "/api/identity/account"): RouteRatePolicy("identity_account_delete", 10),

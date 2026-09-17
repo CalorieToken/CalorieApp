@@ -23,11 +23,12 @@ test('the task tabs have complete labels for exactly the eleven supported locale
   assert.match(read('frontend/components/FoodDiaryPeriod.tsx'), /\{copy\.scope\}/);
 });
 
-test('account, guided setup, packaged food, basic food and diary are real exclusive tab panels',()=>{
+test('account and food tabs retain exclusive panels, with nested account guidance',()=>{
   const combined=workspace+'\n'+component;
   for(const id of ['account','journey','packaged','basic','diary']){
     assert.equal(combined.split(`id="calorie-panel-${id}"`).length-1,1,id);
-    assert.ok(combined.includes(`aria-labelledby="calorie-tab-${id}"`),id);
+    if(id !== 'journey') assert.ok(combined.includes(`aria-labelledby="calorie-tab-${id}"`),id);
+    else assert.ok(workspace.includes('aria-label={journey.journeyTab}'));
   }
   assert.match(workspace,/aria-selected=\{visibleTab === tab\.id\}/);
   assert.match(workspace,/tabIndex=\{visibleTab === tab\.id \? 0 : -1\}/);

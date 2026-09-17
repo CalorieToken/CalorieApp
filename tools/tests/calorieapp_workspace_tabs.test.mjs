@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
@@ -33,12 +34,13 @@ function load(window, document) {
     '@/components/FoodSearchPlaceholder': {FoodSearchPlaceholder: MockFoodSearch},
     '@/components/TestnetEntry': {TestnetEntry: () => React.createElement('section', {id: 'mock-journey'}, 'Journey')},
     '@/components/NicknameProfile': {NicknameProfile: () => React.createElement('p', {id: 'mock-nickname'}, 'Nickname')},
-    '@/components/XamanLoginPanel': {XamanLoginPanel: () => React.createElement('p', null, 'Account panel')},
+    '@/components/XamanLoginPanel': {XamanLoginPanel: ({guides}) => React.createElement('div', null, 'Account panel', guides)},
     '@/components/DisplayLanguageProvider': {useDisplayLanguage: () => ({enabled: true, locale: 'nl'})},
     '@/lib/authUi': {getAuthUi: () => ({copy: {accountTools: 'Account'}, locale: 'nl', direction: 'ltr'})},
     '@/lib/foodDiary': {diaryCopy: () => ({title: 'Eetdagboek'})},
     '@/lib/foodExperience': {foodExperience: () => ({copy: {sourceTitle: 'Basisvoeding', navigation: 'Ga naar'}})},
     '@/lib/foodUi': {getFoodUi: () => ({copy: {searchTitle: 'Product zoeken'}, locale: 'nl', direction: 'ltr'})},
+    '@/config/account-profile-copy.json': {default: profileCopy},
     '@/config/testnet-entry-copy.json': {default: journeyCopy},
     '@/lib/accountJourney': {readAccountJourney: () => null},
   };
@@ -65,23 +67,23 @@ test('task tabs show one panel, support arrows and retain mounted form state', a
   try {
     await React.act(async () => root.render(React.createElement(Workspace)));
     const tabs = [...document.querySelectorAll('[role="tab"]')];
-    assert.equal(tabs.length, 5);
-    assert.deepEqual(tabs.map(tab => tab.id), ['calorie-tab-account','calorie-tab-journey','calorie-tab-packaged','calorie-tab-basic','calorie-tab-diary']);
+    assert.equal(tabs.length, 4);
+    assert.deepEqual(tabs.map(tab => tab.id), ['calorie-tab-account','calorie-tab-packaged','calorie-tab-basic','calorie-tab-diary']);
     assert.equal(tabs[0].getAttribute('aria-selected'), 'true');
     assert.deepEqual([...document.querySelectorAll('[role="tabpanel"]')].filter(node => !node.hidden).map(node => node.id), ['calorie-panel-account']);
 
-    await click(window, tabs[2]);
-    assert.equal(tabs[2].getAttribute('aria-selected'), 'true');
+    await click(window, tabs[1]);
+    assert.equal(tabs[1].getAttribute('aria-selected'), 'true');
     await click(window, document.getElementById('preserved-control'));
     assert.equal(document.getElementById('preserved-control').textContent, '1');
 
     const key = new window.Event('keydown', {bubbles: true});
     Object.defineProperty(key, 'key', {value: 'ArrowRight'});
-    await React.act(async () => tabs[2].dispatchEvent(key));
-    assert.equal(tabs[3].getAttribute('aria-selected'), 'true');
+    await React.act(async () => tabs[1].dispatchEvent(key));
+    assert.equal(tabs[2].getAttribute('aria-selected'), 'true');
     assert.deepEqual([...document.querySelectorAll('[role="tabpanel"]')].filter(node => !node.hidden).map(node => node.id), ['calorie-panel-basic']);
 
-    await click(window, tabs[2]);
+    await click(window, tabs[1]);
     assert.equal(document.getElementById('preserved-control').textContent, '1', 'hidden task state must stay mounted');
     await click(window, document.getElementById('open-account'));
     assert.equal(tabs[0].getAttribute('aria-selected'), 'true');

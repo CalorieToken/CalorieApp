@@ -32,6 +32,7 @@ const ROUTE_METHODS: Array<{ pattern: RegExp; methods: Set<string> }> = [
     methods: new Set(["POST"]),
   },
   { pattern: /^api\/identity\/(me|export)$/, methods: new Set(["GET"]) },
+  { pattern: /^api\/identity\/profile$/, methods: new Set(["POST"]) },
   { pattern: /^api\/identity\/import$/, methods: new Set(["POST"]) },
   { pattern: /^api\/identity\/account$/, methods: new Set(["DELETE"]) },
 ];
@@ -132,6 +133,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
   }
 
   if (
+    (path === "api/identity/profile" && (
+      request.headers.get("sec-fetch-site") !== "same-origin" ||
+      request.headers.get("x-calorieapp-request") !== "account-profile"
+    )) ||
     !isTrustedMutationRequest(request) ||
     !isTrustedAccountErasureRequest(path, request) ||
     !isTrustedAccountImportRequest(path, request) ||
@@ -161,6 +166,7 @@ async function proxyRequest(request: NextRequest, context: RouteContext) {
       headers.set(name, value);
     }
   }
+  if (path === "api/identity/profile") headers.set("x-calorieapp-request", "account-profile");
   if (path === ACCOUNT_IMPORT_PATH) {
     for (const name of [
       ACCOUNT_IMPORT_REQUEST_HEADER,
