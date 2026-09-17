@@ -87,6 +87,23 @@
           if (eligible(node) && (!guard || guard(node))) mark(node, name);
         });
       }
+      // Owner-requested exceptions: restyle the existing login card and only
+      // the Brizy menu controls. Do not mark header/menu wrappers or rewrite
+      // account values, links, handlers, disclosure state or visibility.
+      var uiExcluded = 'template,script,style,.brz-ed,#brz-ed-iframe,[contenteditable],[data-calorieapp-embed],.calorieapp-embed,[role="dialog"]';
+      document.querySelectorAll('.xl-card').forEach(function (card) {
+        if (!card.closest(uiExcluded)) mark(card, 'ct-content-account');
+      });
+      document.querySelectorAll('.brz-menu-simple,.ctstyle-menu-groups').forEach(function (menu) {
+        if (menu.closest(uiExcluded + ',' + footers)) return;
+        menu.querySelectorAll('a[href],button,summary,.brz-menu-simple__icon').forEach(function (control) {
+          if (control.querySelector('img') || control.closest(uiExcluded)) return;
+          mark(control, control.matches('.ctstyle-menu-toggle,.brz-menu-simple__icon') ? 'ct-content-menu-toggle' : 'ct-content-menu-action');
+        });
+      });
+      document.querySelectorAll('.ctstyle-mobile-nav>.ctstyle-menu-toggle,.showcase-mobile-menu>.ctstyle-menu-toggle').forEach(function (control) {
+        if (!control.closest(uiExcluded + ',' + footers)) mark(control, 'ct-content-menu-toggle');
+      });
       // Never restyle a container around a protected illustration/slider. Its
       // ordinary text siblings can still receive the app's typography.
       select(cards, 'ct-content-card', function (node) { return !node.querySelector(protectedSelector); });

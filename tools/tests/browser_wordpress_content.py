@@ -14,7 +14,7 @@ OUT = ROOT / 'ux-check-evidence/wordpress-content-browser'
 OUT.mkdir(parents=True, exist_ok=True)
 SCRIPT = (ASSETS / 'content-style.js').read_text()
 CSS = (ASSETS / 'content-style.css').read_text()
-BASELINE = '\n'.join(p.read_text() for p in sorted(FIXTURES.glob('*.css')))
+BASELINE = '\n'.join(p.read_text() for p in sorted(FIXTURES.glob('*.css'))) + '\n' + (ASSETS / 'app-focus.css').read_text()
 report = {'mode': 'Synthetic public-page fixtures with captured live CSS; no live mutations', 'checks': [], 'errors': []}
 
 def ok(name, condition=True):
@@ -22,7 +22,10 @@ def ok(name, condition=True):
     report['checks'].append(name)
 
 BODY = '''
-<header id="historic-header" class="ctstyle-site-header"><strong>CalorieToken</strong><p>Historical header</p><button>Account</button></header>
+<header id="historic-header" class="ctstyle-site-header"><strong>CalorieToken</strong><p>Historical header</p><button>Account</button><div id="header-widget-region" class="ctstyle-header">
+<nav id="brizy-menu" class="brz-menu-simple"><ul class="ctstyle-menu-groups"><li><a id="menu-home" href="#home" aria-current="page">Home</a></li><li><details id="menu-project" class="ctstyle-menu-category"><summary>Project</summary><ul><li><a href="#tokenomics">Tokenomics</a></li></ul></details></li></ul></nav>
+<section id="login-card" class="xl-card calorieapp-identity-card"><div class="xl-card-header"><div class="xl-card-wallet">rSYNTHETICaccountForLayoutOnly</div></div><div class="xl-card-body"><div class="xl-card-avatar"><a id="login-link" href="?xl-signin" aria-label="Aanmelden"><img alt="Original login artwork" width="44" height="44" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M8 8h10v10H8zM26 8h10v10H26zM8 26h10v10H8zM26 26h4v4h6v6H26z' fill='white'/%3E%3C/svg%3E"></a></div><div class="xl-card-nickname">Mijn vertrouwde nickname</div><div class="xl-card-balance"><strong>Saldo:</strong> 123 CAL</div><div class="xl-card-rank"><strong>Rang:</strong> 42</div><div class="xl-card-note">Aanmelden via CalorieApp</div></div><div id="ctstyle-account-app"><a class="ctstyle-discovery-action" href="#app">Open CalorieApp</a><label class="ctstyle-widget-language" for="ctstyle-account-language">Taal</label><select id="ctstyle-account-language"><option value="nl" selected>Nederlands</option><option value="en">English</option></select></div><div class="calorieapp-site-session-actions"><button id="logout-button" class="calorieapp-site-logout" type="button">Uitloggen</button></div></section>
+</div></header>
 <div id="historic-title" class="ctstyle-title"><h1>CalorieApp</h1></div>
 <main>
 <aside class="calorieapp-page-market"><div class="calorieapp-xpmarket-widget ctstyle-market-card" data-state="ready">
@@ -66,14 +69,16 @@ FAMILIES = {
 
 def html():
     return '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@layer calorietoken-content;</style><style>' + BASELINE + '''
-    body{margin:0;background:#f5f5f8}main{max-width:1040px;margin:24px auto;padding:0 14px}button{cursor:pointer}
+    body{margin:0;background:#f5f5f8 repeating-linear-gradient(45deg,transparent 0 20px,#505ba906 20px 22px)}main{max-width:1040px;margin:24px auto;padding:0 14px}button{cursor:pointer}
     #historic-header{padding:24px;background:#f9b233;font:20px Georgia}
     #historic-title{margin:28px auto;padding:24px;max-width:720px;background:#dfe0ed;border-radius:28px;font:24px Georgia;text-align:center}
-    #historic-title h1{margin:0}#historic-footer{padding:24px;background:#505ba9;color:white;font:18px Georgia}
+    #header-widget-region{max-width:400px;margin:auto}#historic-title h1{margin:0}#historic-footer{padding:24px;background:#505ba9;color:white;font:18px Georgia}
     #interaction-card,#family-fixture{max-width:800px;margin:24px auto}.protected-art,.brz-carousel,.brz-animated,.xl-card,[data-calorieapp-embed]{margin:20px auto;padding:18px;max-width:400px;font:18px Georgia;background:#e9e9f3}
     #ctstyle-app-launcher{margin:20px auto;max-width:380px;padding:8px;box-sizing:border-box}.ctstyle-app-launcher-panel{box-sizing:border-box;padding:16px}.ctstyle-help-form{display:grid;gap:10px}.ctstyle-help-form input{min-width:0;width:100%}
-    </style><body class="ctstyle-enabled page-id-1090">''' + BODY + '''<script>
-    window.fixtureClicks={ordinary:0,slider:0,social:0};
+    </style><body class="ctstyle-enabled ct-account-compact page-id-1090">''' + BODY + '''<script>
+    window.fixtureClicks={ordinary:0,slider:0,social:0};window.fixtureAccountClicks={login:0,logout:0};
+    document.getElementById('login-link').onclick=e=>{e.preventDefault();window.fixtureAccountClicks.login++};
+    document.getElementById('logout-button').onclick=()=>window.fixtureAccountClicks.logout++;
     document.getElementById('ordinary-button').onclick=()=>window.fixtureClicks.ordinary++;
     document.getElementById('slider-button').onclick=()=>window.fixtureClicks.slider++;
     document.getElementById('social-button').onclick=()=>window.fixtureClicks.social++;
@@ -83,7 +88,12 @@ def html():
 
 protected = ['historic-header','historic-title','historic-footer','historic-image','historic-slider','historic-animation','native-account','native-app','after-footer','help-mascot']
 def protected_snapshot(page):
-    return page.evaluate('''ids => Object.fromEntries(ids.map(id=>{const n=document.getElementById(id);return [id,{html:n.outerHTML,style:[n,...n.querySelectorAll('*')].map(x=>{const s=getComputedStyle(x);return [s.fontFamily,s.fontSize,s.color,s.backgroundColor,s.borderRadius,s.borderWidth,s.padding,s.transform,s.animationName,s.display]})}]}))''', protected)
+    return page.evaluate('''ids => Object.fromEntries(ids.map(id=>{
+        const n=document.getElementById(id),clone=n.cloneNode(true);
+        [clone,...clone.querySelectorAll('*')].forEach(x=>{if(x.hasAttribute('class'))x.setAttribute('class',x.className.split(/\\s+/).filter(c=>!c.startsWith('ct-content-')).join(' '))});
+        const unchanged=[n,...n.querySelectorAll('*')].filter(x=>!x.closest('.xl-card')&&!(x.closest('.brz-menu-simple')&&x.closest('a,button,summary,label')));
+        return [id,{html:clone.outerHTML,style:unchanged.map(x=>{const s=getComputedStyle(x);return [s.fontFamily,s.fontSize,s.color,s.backgroundColor,s.backgroundImage,s.backgroundSize,s.borderRadius,s.borderWidth,s.padding,s.transform,s.animationName,s.display]})}]
+    }))''', protected)
 
 with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=True)
@@ -94,11 +104,13 @@ with sync_playwright() as pw:
     try:
         page.goto('https://calorietoken.net/style-fixture/', wait_until='domcontentloaded')
         before=protected_snapshot(page)
+        background=page.locator('body').evaluate('n=>[getComputedStyle(n).backgroundImage,getComputedStyle(n).backgroundColor]')
         page.locator('main').screenshot(path=str(OUT/'before-content-360.png'))
         page.add_style_tag(content=CSS)
         page.add_script_tag(content=SCRIPT)
         page.wait_for_function("document.querySelector('#app-card').classList.contains('ct-content-card')")
-        ok('Header, title banner, footer, artwork, sliders, animation and account/app styling are identical',before==protected_snapshot(page))
+        ok('Historical header, title, footer, artwork, sliders, animation and native app are preserved',before==protected_snapshot(page))
+        ok('Page background image and color are preserved',background==page.locator('body').evaluate('n=>[getComputedStyle(n).backgroundImage,getComputedStyle(n).backgroundColor]'))
         ok('App card overrides the installed serif typography', 'Segoe UI' in page.locator('#app-card p').first.evaluate('(n)=>getComputedStyle(n).fontFamily'))
         ok('App card is white with a thin border',page.locator('#app-card').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(255, 255, 255)' && getComputedStyle(n).borderLeftWidth==='1px'"))
         ok('App heading uses native green sans-serif',page.locator('#app-card h2').evaluate("n=>getComputedStyle(n).color==='rgb(0, 141, 54)' && getComputedStyle(n).fontFamily.includes('Segoe UI')"))
@@ -115,6 +127,17 @@ with sync_playwright() as pw:
         page.locator('.ctstyle-app-launcher-panel').screenshot(path=str(OUT/'caloriehelp-360.png'))
         page.locator('#help-toggle').click()
         ok('CalorieHelp closes before reviewing the page content',not page.locator('.ctstyle-app-launcher-panel').is_visible())
+        ok('Login widget is white with a green upper edge',page.locator('#login-card').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(255, 255, 255)' && getComputedStyle(n).borderTopColor==='rgb(0, 141, 54)'"))
+        ok('Login nickname uses app typography',page.locator('.xl-card-nickname').evaluate("n=>getComputedStyle(n).fontFamily.includes('Segoe UI')"))
+        ok('Original wallet, nickname and language are retained',page.locator('.xl-card-wallet').inner_text()=='rSYNTHETICaccountForLayoutOnly' and page.locator('.xl-card-nickname').inner_text()=='Mijn vertrouwde nickname' and page.locator('#ctstyle-account-language').input_value()=='nl')
+        page.locator('#login-link').click();page.locator('#logout-button').click()
+        ok('Existing login/logout handlers remain attached',page.evaluate('window.fixtureAccountClicks')=={'login':1,'logout':1})
+        ok('Brizy menu keeps its current-page destination',page.locator('#menu-home').get_attribute('href')=='#home' and page.locator('#menu-home').get_attribute('aria-current')=='page')
+        ok('Brizy current-page button uses the app active color',page.locator('#menu-home').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(0, 141, 54)'"))
+        page.locator('#menu-project>summary').click()
+        ok('Original menu disclosure still opens',page.locator('#menu-project').evaluate('n=>n.open') and page.locator('#menu-project a').is_visible())
+        page.locator('#menu-project>summary').click()
+        ok('Original menu disclosure still closes',not page.locator('#menu-project a').is_visible())
         for width in [360,412,1440]:
             page.set_viewport_size({'width':width,'height':900})
             ok(f'{width}px content has no horizontal overflow',page.evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth'))
@@ -122,8 +145,17 @@ with sync_playwright() as pw:
             ok(f'{width}px XPMarket stats use readable rows/columns',rows[1]>rows[0] if width<601 else rows[1]==rows[0])
             ok(f'{width}px market labels fit',page.locator('.calorieapp-xpmarket-stats small').evaluate_all('(nodes)=>nodes.every(n=>n.scrollWidth<=n.clientWidth+1)'))
             ok(f'{width}px normal action has a touch-sized target',page.locator('#ordinary-button').bounding_box()['height']>=44)
+            ok(f'{width}px login widget has no horizontal clipping',page.locator('#login-card').evaluate('n=>n.scrollWidth<=n.clientWidth'))
+            ok(f'{width}px menu buttons stay inside the menu',page.locator('#brizy-menu').evaluate('n=>n.scrollWidth<=n.clientWidth'))
+            page.locator('#login-card').screenshot(path=str(OUT/f'login-widget-{width}.png'))
+            page.locator('#brizy-menu').screenshot(path=str(OUT/f'menu-buttons-{width}.png'))
             page.locator('.ctstyle-app-ending').screenshot(path=str(OUT/f'app-card-{width}.png'))
             page.locator('.calorieapp-page-market').screenshot(path=str(OUT/f'market-{width}.png'))
+        page.set_viewport_size({'width':360,'height':900})
+        page.locator('#login-card').evaluate("n=>{n.classList.add('xl-no-wallet');n.querySelector('#logout-button').hidden=true}")
+        ok('Existing guest visibility rules are preserved',not page.locator('#logout-button').is_visible() and not page.locator('#login-card .xl-card-header').is_visible() and not page.locator('#login-card .xl-card-balance').is_visible())
+        ok('Original login artwork remains visible on its purple surface',page.locator('#login-link img').is_visible() and page.locator('#login-link').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(80, 91, 169)'"))
+        page.locator('#login-card').screenshot(path=str(OUT/'login-widget-guest-360.png'))
         for family, markup in FAMILIES.items():
             page.locator('#family-fixture').evaluate('(n,markup)=>n.innerHTML=markup',markup)
             page.wait_for_function("document.querySelector('#family-fixture .ct-content-text,#family-fixture .ct-content-table')!==null")

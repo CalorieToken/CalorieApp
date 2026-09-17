@@ -1,4 +1,10 @@
-CalorieToken Heading and Language Repair 1.6.7
+CalorieToken Heading and Language Repair 1.6.8
+
+Version 1.6.8 extends the requested CalorieApp appearance to the existing login
+widget and only the Brizy menu controls. The historical header, title banners,
+footer, page backgrounds and menu containers remain intact. Account data,
+nicknames, original avatar/QR art, language selection, login/logout handlers and
+menu opening/closing are preserved. The installed 1.6.7 ZIP is the rollback.
 
 Version 1.6.7 adds the CalorieApp content style to public pages and articles,
 including Home, usecase subpages, documents, shop views and dynamic cards.

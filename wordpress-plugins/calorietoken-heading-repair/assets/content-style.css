@@ -2,6 +2,74 @@
    this first layer override the older important Brizy / Site Style cards.
    Only JS-marked content is eligible; no global font or background reset. */
 @layer calorietoken-content {
+  /* Explicit extensions requested after 1.6.7. Keep all surrounding artwork,
+     backgrounds, menu layout, account data and visibility rules unchanged. */
+  body.ct-content-theme .ct-content-account {
+    box-sizing:border-box!important; background:#fff!important; color:#4c5687!important;
+    border:1px solid #505ba92e!important; border-top:4px solid #008d36!important;
+    border-radius:18px!important; box-shadow:0 3px 12px #3034490c!important;
+    font:400 14px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account .xl-card-header {
+    background:#f7f8fc!important; color:#4c5687!important;
+    border-bottom:1px solid #505ba926!important; border-radius:14px 14px 0 0!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-body,.xl-card-footer,.calorieapp-site-session-actions,#ctstyle-account-app) {
+    background:#fff!important; color:#4c5687!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-body>div,.xl-card-footer,#ctstyle-account-app) {
+    font:400 14px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-balance,.xl-card-rank) strong { color:#008d36!important; }
+  body.ct-content-theme .ct-content-account a { color:#505ba9!important; text-underline-offset:.18em; }
+  body.ct-content-theme .ct-content-account div.xl-card-avatar>a {
+    background:#505ba9!important; border-radius:12px!important;
+  }
+  body.ct-content-theme .ct-content-account :is(button,.ctstyle-discovery-action) {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:10px 14px!important; border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important; box-shadow:none!important;
+    font:700 14px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    white-space:normal!important; overflow-wrap:break-word!important; text-decoration:none!important;
+  }
+  body.ct-content-theme .ct-content-account .calorieapp-site-logout {
+    background:#fff!important; color:#505ba9!important; border-color:#505ba94d!important;
+  }
+  body.ct-content-theme .ct-content-account :is(button,.ctstyle-discovery-action):hover {
+    background:#287547!important; border-color:#287547!important; color:#fff!important;
+  }
+  body.ct-content-theme .ct-content-account select {
+    background:#fff!important; color:#4c5687!important; border:1px solid #505ba94d!important;
+    border-radius:12px!important; font:400 16px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account .ct-calorieapp-session-indicator {
+    background:#f7f8fc!important; color:#4c5687!important; border:1px solid #505ba926!important; border-radius:12px!important;
+  }
+  body.ct-content-theme .ct-content-account :is(a,button,select):focus-visible,
+  body.ct-content-theme :is(.ct-content-menu-action,.ct-content-menu-toggle):focus-visible {
+    outline:3px solid #f9b233!important; outline-offset:3px!important;
+  }
+  body.ct-content-theme .ct-content-menu-action {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:10px 14px!important; border:1px solid #505ba92e!important; border-radius:12px!important;
+    background:#fff!important; color:#008d36!important; box-shadow:none!important;
+    font:700 15px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important; letter-spacing:normal!important;
+    white-space:normal!important; overflow-wrap:break-word!important; text-decoration:none!important;
+  }
+  body.ct-content-theme .ct-content-menu-action :is(span,strong) { font:inherit!important; color:inherit!important; }
+  body.ct-content-theme .ct-content-menu-action:hover { background:#f0f8f3!important; }
+  body.ct-content-theme .ct-content-menu-action[aria-current="page"],
+  body.ct-content-theme :is(.current-menu-item,.ctstyle-current-category,details[open])>.ct-content-menu-action {
+    background:#008d36!important; border-color:#008d36!important; color:#fff!important;
+  }
+  body.ct-content-theme .ct-content-menu-toggle {
+    border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important; box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-menu-toggle .brz-menu-simple__icon--bars { color:#fff!important; }
+  body.ct-content-theme .ct-content-menu-toggle:is(:hover,:focus-visible),
+  body.ct-content-theme details[open]>.ct-content-menu-toggle,
+  body.ct-content-theme input:checked+.ct-content-menu-toggle { background:#505ba9!important; border-color:#505ba9!important; }
   body.ct-content-theme .ct-content-card {
     box-sizing:border-box!important; min-width:0!important; max-width:100%!important;
     padding:clamp(18px,2.5vw,28px)!important; margin-block:20px!important;

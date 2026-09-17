@@ -61,12 +61,43 @@ test('late cards receive styles and nodes moved into a protected header lose the
   document.querySelector('header').append(card);refresh();
   assert.ok(!card.classList.contains('ct-content-card'));assert.ok(!card.querySelector('p').classList.contains('ct-content-text'));
 });
-test('account/consent/app surfaces and admin/editor views are outside the change',()=>{
+test('account contents, consent, embedded app and admin/editor views are not rewritten',()=>{
   const content='<div class="xl-card"><p id="account">Account</p><button>Log out</button></div><div data-calorieapp-embed><p id="app">Embedded app</p></div><div role="dialog"><p id="dialog">Consent</p></div>';
   const {document}=fixture(content);
+  assert.ok(document.querySelector('.xl-card').classList.contains('ct-content-account'));
   for(const id of ['account','app','dialog'])assert.equal(document.getElementById(id).className,'');
   const admin=fixture('<p id="admin">Admin</p>','ctstyle-enabled','/wp-admin/post.php');
   assert.ok(!admin.document.body.classList.contains('ct-content-theme'));
+});
+test('login styling preserves account nodes, data, hidden state and existing actions',()=>{
+  const {document,refresh}=fixture('');
+  const header=document.querySelector('header');
+  const widget=document.createElement('div');widget.className='xl-card';
+  widget.innerHTML='<div class="xl-card-wallet"><strong>rSYNTHETIC</strong></div><p class="xl-card-nickname">Synthetic nickname</p><a href="?xl-signin"><img src="/original-avatar.svg"></a><select><option value="nl" selected>nl</option><option value="en">en</option></select><button class="calorieapp-site-logout" hidden>Uitloggen</button>';
+  header.append(widget);
+  const image=widget.querySelector('img'),link=widget.querySelector('a'),logout=widget.querySelector('button');
+  const before=widget.innerHTML;let clicks=0;link.addEventListener('click',()=>clicks++);
+  refresh();link.click();
+  assert.equal(widget.innerHTML,before);assert.equal(widget.querySelector('img'),image);
+  assert.ok(widget.classList.contains('ct-content-account'));assert.equal(clicks,1);
+  assert.ok(logout.hasAttribute('hidden'));assert.equal(link.getAttribute('href'),'?xl-signin');
+  assert.equal(widget.querySelector('select').value,'nl');
+  assert.equal(document.querySelector('#header-copy').className,'');
+});
+test('only Brizy menu controls are styled while wrappers, URLs and disclosure handlers remain',()=>{
+  const {document,refresh}=fixture('');const header=document.querySelector('header');
+  const menu=document.createElement('nav');menu.className='brz-menu-simple';
+  menu.innerHTML='<label class="brz-menu-simple__icon"><span class="brz-menu-simple__icon--bars"></span></label><ul class="ctstyle-menu-groups"><li><a href="/" aria-current="page">Home</a></li><li><details class="ctstyle-menu-category"><summary>Project</summary><ul><li><a href="/tokenomics-update/">Tokenomics</a></li></ul></details></li></ul>';
+  header.append(menu);const list=menu.querySelector('ul'),details=menu.querySelector('details'),link=menu.querySelector('a');
+  const beforeChildren=Array.from(menu.querySelectorAll('*'));let clicks=0;link.addEventListener('click',()=>clicks++);
+  refresh();link.click();
+  assert.equal(menu.className,'brz-menu-simple');assert.equal(list.className,'ctstyle-menu-groups');
+  assert.ok(link.classList.contains('ct-content-menu-action'));assert.ok(menu.querySelector('label').classList.contains('ct-content-menu-toggle'));
+  assert.ok(menu.querySelector('summary').classList.contains('ct-content-menu-action'));
+  assert.deepEqual(Array.from(menu.querySelectorAll('*')),beforeChildren);assert.equal(link.getAttribute('href'),'/');
+  assert.equal(link.getAttribute('aria-current'),'page');assert.equal(clicks,1);assert.ok(!details.hasAttribute('open'));
+  document.querySelector('footer').append(menu);refresh();
+  assert.ok(!link.classList.contains('ct-content-menu-action'));assert.ok(!menu.querySelector('label').classList.contains('ct-content-menu-toggle'));
 });
 test('CalorieHelp interior follows the app style outside the footer while its mascot is retained',()=>{
   const {document,refresh}=fixture('');
