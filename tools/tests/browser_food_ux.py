@@ -147,7 +147,9 @@ with sync_playwright() as p:
         # existing restricted tab set, keyboard navigation and adult style.
         page.set_viewport_size({'width':360,'height':900})
         page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
-        styles=lambda:page.locator('#calorie-tab-packaged').evaluate('n=>{const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.fontFamily,s.padding]}')
+        # Read settled styles: Tailwind's existing colour transitions continue
+        # briefly after clicking a tab or changing the age band.
+        styles=lambda:page.locator('#calorie-tab-packaged').evaluate('async n=>{await Promise.all(n.getAnimations().map(a=>a.finished.catch(()=>{})));const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.fontFamily,s.padding]}')
         adult_style=styles();shapes=[]
         for band in ['child','teen','adult']:
             page.locator('.calorie-age-summary button').click()
@@ -156,7 +158,8 @@ with sync_playwright() as p:
             page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
             expect(page.locator('[id^="calorie-tab-"]')).to_have_count(5 if band=='adult' else 2)
             if band=='adult':
-                ok('Adult buttons restore their exact original appearance',styles()==adult_style)
+                restored_style=styles()
+                ok('Adult buttons restore their exact original appearance',restored_style==adult_style)
                 continue
             shapes.append(styles()[0])
             ok(band+': button shape and palette differ from adult',styles()[0]!=adult_style[0] and styles()[1]!=adult_style[1])
