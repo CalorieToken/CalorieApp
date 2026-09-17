@@ -18,12 +18,12 @@
   var sessionState='unavailable',sessionNode=null,sessionValue=null;
   var guidePrefix='calorieapp:testnet-guide:',guide={layer:null,root:null,frame:null,close:null,lastFocus:null,back:null};
   var guideLabels={
-    en:{close:'Close test-account guide',dialog:'Secure test-account guide'},nl:{close:'Testaccounthulp sluiten',dialog:'Veilige testaccounthulp'},
-    'zh-Hans':{close:'关闭测试账户指南',dialog:'安全测试账户指南'},hi:{close:'टेस्ट-खाता गाइड बंद करें',dialog:'सुरक्षित टेस्ट-खाता गाइड'},
-    es:{close:'Cerrar guía de cuenta de prueba',dialog:'Guía segura de cuenta de prueba'},ar:{close:'إغلاق دليل حساب الاختبار',dialog:'دليل حساب الاختبار الآمن'},
-    fr:{close:'Fermer le guide du compte test',dialog:'Guide sécurisé du compte test'},bn:{close:'টেস্ট-অ্যাকাউন্ট নির্দেশিকা বন্ধ করুন',dialog:'নিরাপদ টেস্ট-অ্যাকাউন্ট নির্দেশিকা'},
-    pt:{close:'Fechar guia da conta de teste',dialog:'Guia seguro da conta de teste'},id:{close:'Tutup panduan akun uji',dialog:'Panduan akun uji yang aman'},
-    ur:{close:'ٹیسٹ اکاؤنٹ رہنما بند کریں',dialog:'محفوظ ٹیسٹ اکاؤنٹ رہنما'}
+    en:{close:'Back to CalorieApp',dialog:'Secure test-account guide'},nl:{close:'Terug naar CalorieApp',dialog:'Veilige testaccounthulp'},
+    'zh-Hans':{close:'返回 CalorieApp',dialog:'安全测试账户指南'},hi:{close:'CalorieApp पर वापस जाएँ',dialog:'सुरक्षित टेस्ट-खाता गाइड'},
+    es:{close:'Volver a CalorieApp',dialog:'Guía segura de cuenta de prueba'},ar:{close:'العودة إلى CalorieApp',dialog:'دليل حساب الاختبار الآمن'},
+    fr:{close:'Revenir à CalorieApp',dialog:'Guide sécurisé du compte test'},bn:{close:'CalorieApp-এ ফিরুন',dialog:'নিরাপদ টেস্ট-অ্যাকাউন্ট নির্দেশিকা'},
+    pt:{close:'Voltar à CalorieApp',dialog:'Guia seguro da conta de teste'},id:{close:'Kembali ke CalorieApp',dialog:'Panduan akun uji yang aman'},
+    ur:{close:'CalorieApp پر واپس جائیں',dialog:'محفوظ ٹیسٹ اکاؤنٹ رہنما'}
   };
   function pagePath(){return window.location.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'')||'/';}
   function isCalorieAppPage(){return document.body.classList.contains('page-id-7880')||pagePath()==='/calorieapp';}
@@ -82,24 +82,29 @@
   }
   function closeGuide(completed,announce){
     if(!guide.layer||!document.body.classList.contains('ct-testnet-guide-open'))return;
-    document.body.classList.remove('ct-testnet-guide-open');guide.layer.setAttribute('aria-hidden','true');
+    document.body.classList.remove('ct-testnet-guide-open');guide.layer.setAttribute('aria-hidden','true');guide.layer.hidden=true;
+    if(window.CalorieTokenTestnet&&window.CalorieTokenTestnet.conceal)window.CalorieTokenTestnet.conceal();
     if(announce!==false&&guide.frame)postGuide(guide.frame,completed?'complete':'closed');
-    var target=guide.frame&&guide.frame.isConnected?guide.frame:guide.lastFocus;guide.lastFocus=null;if(target&&target.focus)target.focus({preventScroll:true});
+    var target=guide.frame&&guide.frame.isConnected?guide.frame:guide.lastFocus;guide.lastFocus=null;
+    if(target&&target.focus){target.focus({preventScroll:true});if(announce!==false&&target.scrollIntoView)target.scrollIntoView({block:'start',behavior:'auto'});}
   }
   function openGuide(frame){
     var age=window.CalorieTokenAgeExperience&&window.CalorieTokenAgeExperience.getBand&&window.CalorieTokenAgeExperience.getBand();
     if(age!=='adult'||!guide.layer||!guide.root)return;
     setFocus(false,false);guide.frame=frame||guide.frame;guide.lastFocus=document.activeElement;bindGuideCompletion();
-    guide.layer.setAttribute('aria-hidden','false');document.body.classList.add('ct-testnet-guide-open');
-    var heading=guide.root.querySelector('h2,h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}else if(guide.close)guide.close.focus({preventScroll:true});
+    guide.layer.setAttribute('aria-hidden','false');guide.layer.hidden=false;document.body.classList.add('ct-testnet-guide-open');
+    var disclosure=guide.root.querySelector('.ctstyle-testnet-disclosure');if(disclosure)disclosure.open=true;
+    if(guide.layer.scrollIntoView)guide.layer.scrollIntoView({block:'start',behavior:'auto'});
+    var heading=guide.root.querySelector('.ctstyle-testnet-step:not([hidden]) h3,.ctstyle-testnet-welcome:not([hidden]) h3')||guide.root.querySelector('h2,h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}else if(guide.close)guide.close.focus({preventScroll:true});
   }
   function installGuide(){
     if(!isCalorieAppPage())return true;if(guide.layer&&guide.layer.isConnected){bindGuideCompletion();return true;}
     var root=document.querySelector('#ctstyle-testnet[data-ctstyle-testnet="1"]'),frames=eligibleFrames();if(!root||frames.length!==1)return false;
     var layer=document.createElement('div'),panel=document.createElement('div'),close=document.createElement('button');
-    layer.id='ct-testnet-guide-layer';layer.className='ct-testnet-guide-layer';layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-hidden','true');
+    layer.id='ct-testnet-guide-layer';layer.className='ct-testnet-guide-layer';layer.setAttribute('role','region');layer.setAttribute('aria-hidden','true');layer.hidden=true;
     panel.className='ct-testnet-guide-panel';close.type='button';close.className='ct-testnet-guide-close';close.addEventListener('click',function(){closeGuide(false);});
-    panel.append(close,root);layer.append(panel);document.body.append(layer);guide={layer:layer,root:root,frame:frames[0],close:close,lastFocus:null,back:null};
+    var brand=document.createElement('p');brand.className='ct-testnet-guide-brand';brand.textContent='CalorieApp';
+    panel.append(brand,close,root);layer.append(panel);var embed=frames[0].closest('[data-calorieapp-embed]');embed.after(layer);guide={layer:layer,root:root,frame:frames[0],close:close,lastFocus:null,back:null};
     var observer=new MutationObserver(bindGuideCompletion);observer.observe(root,{childList:true,subtree:true});bindGuideCompletion();updateLabels();postGuide(frames[0],'available');
     if(window.location.hash==='#ctstyle-testnet')window.setTimeout(function(){openGuide(frames[0]);},0);return true;
   }
@@ -186,7 +191,6 @@
   },true);
   document.addEventListener('keydown',function(event){
     if(event.key==='Escape'&&document.body.classList.contains('ct-testnet-guide-open')){event.preventDefault();closeGuide(false);return;}
-    if(event.key==='Tab'&&document.body.classList.contains('ct-testnet-guide-open')&&guide.layer){var items=Array.from(guide.layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(function(node){return node.getClientRects().length;});if(items.length){var first=items[0],last=items[items.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}return;}
     if(event.key==='Escape'&&document.body.classList.contains('ct-calorieapp-focus'))setFocus(false,true);
   });
   window.addEventListener('resize',function(){if(document.body.classList.contains('ct-calorieapp-focus'))updateTop();});

@@ -19,6 +19,7 @@ function load(display = {enabled:true, locale:'en'}) {
     if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>display};
     if(name==='@/lib/locales')return {localeDirection:tag=>['ar','ur'].includes(tag)?'rtl':'ltr'};
     if(name==='@/config/testnet-entry-copy.json')return {default:copy};
+    if(name==='@/lib/accountJourney')return {readAccountJourney:()=>null,saveAccountJourney:()=>{}};
     throw new Error(name);
   }});
   return module.exports;
@@ -51,7 +52,7 @@ test('the rendered journey has four real tabs, local seed guidance and app desti
     assert.equal((html.match(/role="tab"/g)||[]).length,4,tag);
     assert.equal((html.match(/role="tabpanel"/g)||[]).length,4,tag);
     assert.match(html,/href="https:\/\/calorietoken\.net\/index\.php\/calorieapp\/#ctstyle-testnet"/);
-    assert.match(html,/href="https:\/\/xaman\.app\/"/);
+    assert.ok(html.includes(copy[tag].moveLabels[0]),tag);
   }
 });
 

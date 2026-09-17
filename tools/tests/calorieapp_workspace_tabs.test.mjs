@@ -40,6 +40,7 @@ function load(window, document) {
     '@/lib/foodExperience': {foodExperience: () => ({copy: {sourceTitle: 'Basisvoeding', navigation: 'Ga naar'}})},
     '@/lib/foodUi': {getFoodUi: () => ({copy: {searchTitle: 'Product zoeken'}, locale: 'nl', direction: 'ltr'})},
     '@/config/testnet-entry-copy.json': {default: journeyCopy},
+    '@/lib/accountJourney': {readAccountJourney: () => null},
   };
   vm.runInNewContext(code, {module, exports: module.exports, window, document, require(name) {
     if (name === 'react' || name === 'react/jsx-runtime') return require(name);

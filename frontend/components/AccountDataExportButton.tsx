@@ -156,6 +156,8 @@ export function AccountDataExportButton({
 
   return (
     <section
+      data-account-tool="export"
+      tabIndex={-1}
       aria-label={view.section_label}
       lang={displayed.locale}
       dir={displayed.direction}

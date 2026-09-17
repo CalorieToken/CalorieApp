@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { FoodSearchPlaceholder, type FoodWorkspaceView } from "@/components/FoodSearchPlaceholder";
 import { TestnetEntry } from "@/components/TestnetEntry";
@@ -12,6 +12,7 @@ import { diaryCopy } from "@/lib/foodDiary";
 import { foodExperience } from "@/lib/foodExperience";
 import { getFoodUi } from "@/lib/foodUi";
 import journeyTranslations from "@/config/testnet-entry-copy.json";
+import { readAccountJourney } from "@/lib/accountJourney";
 
 type WorkspaceTab = "account" | "journey" | FoodWorkspaceView;
 
@@ -27,6 +28,8 @@ export function CalorieAppWorkspace() {
   const [ageBand, setAgeBand, ageResolved = true] = useAgeExperience();
   const allowPersonalFeatures = ageBand === "adult";
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("account");
+  const [requestedJourney, setRequestedJourney] = useState<{ step: "test" | "move"; serial: number }>();
+  const [returnToJourney, setReturnToJourney] = useState(false);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const tabs: Array<{ id: WorkspaceTab; label: string }> = [
     ...(allowPersonalFeatures ? [{ id: "account" as const, label: auth.copy.accountTools }] : []),
@@ -37,6 +40,10 @@ export function CalorieAppWorkspace() {
   ];
   const visibleTab: WorkspaceTab = !allowPersonalFeatures && (activeTab === "account" || activeTab === "journey" || activeTab === "diary")
     ? "packaged" : activeTab;
+
+  useEffect(() => {
+    setReturnToJourney(readAccountJourney() !== null);
+  }, []);
 
   useEffect(() => {
     if (ageBand && !allowPersonalFeatures) {
@@ -65,10 +72,23 @@ export function CalorieAppWorkspace() {
     selectTab(tabs[next].id, true);
   }
 
-  function openAccountTools() {
+  function openJourney(step: "test" | "move") {
+    setRequestedJourney(current => ({ step, serial: (current?.serial ?? 0) + 1 }));
+    setReturnToJourney(true);
+    selectTab("journey", true);
+  }
+
+  const navigateFromJourney = useCallback((destination: "account" | "packaged" | "diary") => {
+    setReturnToJourney(true);
+    setActiveTab(destination);
+    window.requestAnimationFrame(() => document.getElementById(`calorie-tab-${destination}`)?.focus());
+  }, []);
+
+  function openAccountTools(destination?: "export" | "import" | "session") {
+    setReturnToJourney(true);
     selectTab("account", true);
     window.requestAnimationFrame(() => {
-      window.dispatchEvent(new CustomEvent("calorieapp:open-account-tools"));
+      if (destination !== "session") window.dispatchEvent(new CustomEvent("calorieapp:open-account-tools", { detail: { destination } }));
     });
   }
 
@@ -84,7 +104,7 @@ export function CalorieAppWorkspace() {
       <div
         role="tablist"
         aria-label={`${experience.copy.navigation} CalorieApp`}
-        className="calorie-workspace-tabs mb-5 flex min-w-0 snap-x gap-2 overflow-x-auto rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 [scrollbar-width:thin]"
+        className="calorie-workspace-tabs mb-5 grid min-w-0 grid-cols-2 gap-2 rounded-2xl border border-brand-secondary/20 bg-brand-bg p-2 sm:flex"
       >
         {tabs.map((tab, index) => (
           <button
@@ -98,7 +118,7 @@ export function CalorieAppWorkspace() {
             tabIndex={visibleTab === tab.id ? 0 : -1}
             onClick={() => selectTab(tab.id)}
             onKeyDown={(event) => handleTabKey(event, index)}
-            className={`min-h-11 min-w-[9.5rem] flex-1 snap-start rounded-xl px-3 py-2 text-xs font-bold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 sm:min-w-0 sm:text-sm ${
+            className={`min-h-11 min-w-0 flex-1 rounded-xl px-3 py-2 text-xs font-bold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 sm:text-sm ${
               visibleTab === tab.id
                 ? "bg-brand-primary text-white shadow-sm"
                 : "bg-white text-brand-primary hover:bg-brand-secondary/10"
@@ -109,6 +129,10 @@ export function CalorieAppWorkspace() {
         ))}
       </div>
 
+      {allowPersonalFeatures && returnToJourney && visibleTab !== "journey" ? <div className="mb-4 rounded-xl border border-brand-secondary/20 bg-white p-3">
+        <button type="button" onClick={() => selectTab("journey", true)} className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{journey.returnGuide}</button>
+      </div> : null}
+
       {allowPersonalFeatures ? <section
         id="calorie-panel-account"
         role="tabpanel"
@@ -116,6 +140,10 @@ export function CalorieAppWorkspace() {
         hidden={visibleTab !== "account"}
         className="calorie-workspace-panel"
       >
+        <div className="mb-4 grid gap-2 sm:grid-cols-2">
+          <button type="button" onClick={() => openJourney("test")} className="min-h-12 rounded-xl border border-brand-secondary/20 bg-white p-3 text-sm font-bold text-brand-primary">{journey.testRoute}</button>
+          <button type="button" onClick={() => openJourney("move")} className="min-h-12 rounded-xl border border-brand-secondary/20 bg-white p-3 text-sm font-bold text-brand-primary">{journey.moveRoute}</button>
+        </div>
         <XamanLoginPanel />
         <NicknameProfile />
       </section> : null}
@@ -128,7 +156,8 @@ export function CalorieAppWorkspace() {
         className="calorie-workspace-panel"
       >
         <TestnetEntry
-          onNavigate={destination => selectTab(destination, true)}
+          requestedJourney={requestedJourney}
+          onNavigate={navigateFromJourney}
           onOpenAccountTools={openAccountTools}
         />
       </section> : null}

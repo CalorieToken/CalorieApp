@@ -109,18 +109,26 @@
     ui.importAddress.textContent = account ? account.address : '';
     ui.copySeed.disabled = !account; ui.show.disabled = !account;
     ui.progress.textContent = (step + 1) + ' / 4';
-    ui.start.hidden = !!account;
+    ui.start.hidden = step !== 0;
+    ui.create.hidden = !!account || step !== 0;
+    ui.created.hidden = !account;
     ui.steps.forEach(function (node,index) { node.hidden = step !== index + 1; });
-    ui.previous.hidden = step <= 1;
-    ui.next.hidden = step < 1 || step >= 3;
+    ui.tabs.forEach(function (node,index) {
+      node.setAttribute('aria-selected',String(step === index));
+      node.tabIndex = step === index ? 0 : -1;
+      node.disabled = !account && index > 0;
+    });
+    ui.previous.hidden = false; ui.previous.disabled = step === 0;
+    ui.next.hidden = !account || step >= 3;
     requestControls();
   }
   function go(next) {
-    if (!allowed() || !account || next < 1 || next > 3) return;
+    if (!allowed() || !account || next < 0 || next > 3) return;
     step = next;
     // Hide recovery data whenever leaving its step; it remains only in memory.
     ui.secret.textContent = ''; ui.secret.hidden = true; ui.show.setAttribute('aria-expanded','false');
-    render(); ui.steps[step - 1].querySelector('h3').focus({preventScroll:true});
+    render(); var heading = (step === 0 ? ui.start : ui.steps[step - 1]).querySelector('h3');
+    heading.tabIndex = -1; heading.focus({preventScroll:false});
   }
   function verify(address) {
     return new Promise(function (resolve, reject) {
@@ -235,8 +243,28 @@
     if (roots.length !== 1 || roots[0].closest('form,[data-calorieapp-embed],[contenteditable],[hidden],[inert]')) return;
     var root = roots[0], help = root.querySelector('.ctstyle-test-steps'); if (!help) return;
     panel = el('div',null,'ctstyle-testnet-create'); panel.id = 'ctstyle-testnet-create';
+    var tabs = el('div',null,'ctstyle-testnet-tabs'); tabs.setAttribute('role','tablist');
+    tabs.setAttribute('aria-label',cfg.testCopy[locale].stepCreate);
+    fields.push({node:tabs,key:'stepCreate',attribute:'aria-label'});
+    ui.tabs = ['stepCreate','stepNetwork','stepImport','stepReturn'].map(function(key,index){
+      var tab = button(key); tab.id = 'ctstyle-testnet-tab-' + (index + 1);
+      tab.setAttribute('role','tab'); tab.setAttribute('aria-controls','ctstyle-testnet-step-' + (index + 1));
+      tab.addEventListener('click',function(){go(index);});
+      tab.addEventListener('keydown',function(event){
+        var rtl = locale === 'ar' || locale === 'ur', next = index;
+        if(event.key === (rtl ? 'ArrowLeft' : 'ArrowRight') || event.key === 'ArrowDown') next = (index + 1) % 4;
+        else if(event.key === (rtl ? 'ArrowRight' : 'ArrowLeft') || event.key === 'ArrowUp') next = (index + 3) % 4;
+        else if(event.key === 'Home') next = 0;
+        else if(event.key === 'End') next = 3;
+        else return;
+        event.preventDefault(); if(!ui.tabs[next].disabled){go(next);ui.tabs[next].focus();}
+      });
+      tabs.append(tab); return tab;
+    });
     ui.progress = el('p',null,'ctstyle-testnet-progress'); ui.progress.setAttribute('aria-live','polite');
     ui.start = el('div',null,'ctstyle-testnet-welcome'); ui.start.append(el('h3','stepCreate'),el('p','ready'));
+    ui.start.id = 'ctstyle-testnet-step-1'; ui.start.setAttribute('role','tabpanel');ui.start.setAttribute('aria-labelledby','ctstyle-testnet-tab-1');
+    ui.created = el('p','created','ctstyle-discovery-status');ui.start.append(ui.created);
     ui.start.append(el('p','keepPageOpen','ctstyle-discovery-small'));
     var preview = el('details',null,'ctstyle-testnet-help ctstyle-testnet-picture-preview');
     preview.append(el('summary','previewPictures'),el('h3','stepNetwork'),pictureGuide('network'),el('h3','stepImport'),pictureGuide('import'));
@@ -260,12 +288,14 @@
     ui.check = button('check'); ui.check.addEventListener('click',check);
     ui.steps = ['stepNetwork','stepImport','stepReturn'].map(function (key,index) {
       var part = el('div',null,'ctstyle-testnet-step'); part.id = 'ctstyle-testnet-step-' + (index + 2);
+      part.setAttribute('role','tabpanel');part.setAttribute('aria-labelledby','ctstyle-testnet-tab-' + (index + 2));
       var heading = el('h3',key); heading.tabIndex = -1; part.append(heading); return part;
     });
     var networkHelp = el('a','networkHelp','ctstyle-discovery-action');
     networkHelp.href = xamanNetworkHelp;
     networkHelp.target = '_blank'; networkHelp.rel = 'noopener noreferrer';
-    ui.steps[0].append(el('p','import1'),pictureGuide('network'),networkHelp);
+    var networkPictures = el('details',null,'ctstyle-testnet-help');networkPictures.append(el('summary','previewPictures'),pictureGuide('network'));
+    ui.steps[0].append(el('p','import1'),networkPictures,networkHelp);
     var importHelp = el('a','importHelp','ctstyle-discovery-action');
     importHelp.href = xamanImportHelp;
     importHelp.target = '_blank'; importHelp.rel = 'noopener noreferrer';
@@ -274,14 +304,15 @@
       if (app && typeof app.scrollIntoView === 'function') app.scrollIntoView({block:'start',behavior:'auto'});
       else window.scrollTo({top:0,behavior:'auto'});
     });
-    ui.steps[1].append(el('p','import2'),ui.copySeed,ui.show,ui.secret,ui.copyStatus,el('p','testOnly','ctstyle-discovery-small'),pictureGuide('import'),el('p','account'),ui.importAddress,el('p','finishImport'),importHelp);
+    var importPictures = el('details',null,'ctstyle-testnet-help');importPictures.append(el('summary','previewPictures'),pictureGuide('import'));
+    ui.steps[1].append(el('p','import2'),ui.copySeed,ui.show,ui.secret,ui.copyStatus,el('p','testOnly','ctstyle-discovery-small'),importPictures,el('p','account'),ui.importAddress,el('p','finishImport'),importHelp);
     ui.steps[2].append(el('p','import3'),el('p','account'),ui.address,copyAddress,back,el('p','pilotScope','ctstyle-discovery-small'));
     ui.previous = button('previous'); ui.previous.addEventListener('click',function () { go(step-1); });
     ui.next = button('next'); ui.next.addEventListener('click',function () { go(step+1); });
     var navigation = el('div',null,'ctstyle-testnet-navigation'); navigation.append(ui.previous,ui.next);
-    ui.result.append(ui.check); ui.steps.forEach(function (part) { ui.result.append(part); }); ui.result.append(navigation);
+    ui.result.append(ui.check); ui.steps.forEach(function (part) { ui.result.append(part); });
     var privacy = el('details',null,'ctstyle-testnet-help'); privacy.append(el('summary','aboutAccount'),el('p','privacy'));
-    panel.append(ui.progress,ui.start,ui.create,ui.status,ui.result,privacy);
+    panel.append(tabs,ui.progress,ui.start,ui.create,ui.status,ui.result,navigation,privacy);
     var official = el('a','official','ctstyle-discovery-action'); official.href = 'https://xrpl.org/resources/dev-tools/xrp-faucets';
     official.target = '_blank'; official.rel = 'noopener noreferrer'; panel.append(official);
     help.before(panel); render();
@@ -302,7 +333,7 @@
     account = null; busy = false; status = 'ready'; step = 0;
     if (panel) { ui.address.textContent = ''; ui.secret.textContent = ''; ui.secret.hidden = true; ui.show.setAttribute('aria-expanded','false'); ui.copyStatus.textContent = ''; render(); }
   }
-  window.CalorieTokenTestnet = {refresh:refresh};
+  window.CalorieTokenTestnet = {refresh:refresh,conceal:function(){if(ui.secret){ui.secret.textContent='';ui.secret.hidden=true;ui.show.setAttribute('aria-expanded','false');}}};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',function () { refresh(); },{once:true}); else refresh();
   window.addEventListener('load',function () { refresh(); },{once:true});
   window.addEventListener('pagehide',clear);

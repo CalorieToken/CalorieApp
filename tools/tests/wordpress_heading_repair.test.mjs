@@ -228,7 +228,7 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
   assert.equal(stage.getAttribute('aria-busy'),'false');
 });
 
-test('adult account journey opens the original guide as a strict, seed-free dialog bridge', () => {
+test('adult account journey opens the original guide inline with a strict, seed-free bridge', () => {
   const {document, window} = parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled page-id-7880">
     <section class="xl-card"><div id="ctstyle-account-app"><div class="ctstyle-account-app-brand">CalorieApp</div></div></section>
     <div data-calorieapp-embed><iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1"></iframe></div>
@@ -265,6 +265,10 @@ test('adult account journey opens the original guide as a strict, seed-free dial
   const layer = document.getElementById('ct-testnet-guide-layer');
   const guide = document.getElementById('ctstyle-testnet');
   assert.ok(layer);
+  assert.equal(layer.getAttribute('role'), 'region');
+  assert.equal(layer.getAttribute('aria-modal'), null);
+  assert.equal(layer.previousElementSibling.hasAttribute('data-calorieapp-embed'), true);
+  assert.equal(layer.hidden, true);
   assert.equal(guide.parentElement.classList.contains('ct-testnet-guide-panel'), true);
   assert.equal(layer.getAttribute('aria-hidden'), 'true');
   assert.deepEqual(JSON.parse(JSON.stringify(sent)), [{
@@ -291,6 +295,7 @@ test('adult account journey opens the original guide as a strict, seed-free dial
   }});
   assert.equal(document.body.classList.contains('ct-testnet-guide-open'), true);
   assert.equal(layer.getAttribute('aria-hidden'), 'false');
+  assert.equal(layer.hidden, false);
 
   document.getElementById('return-to-app').click();
   assert.equal(document.body.classList.contains('ct-testnet-guide-open'), false);
@@ -436,8 +441,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.5/);
-  assert.match(php, /const VERSION = '1\.6\.5'/);
+  assert.match(php, /Version: 1\.6\.6/);
+  assert.match(php, /const VERSION = '1\.6\.6'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
@@ -479,10 +484,10 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(appFocusSource, /exactGuideMessage\(event\.data,'open'\)/);
   assert.match(appFocusSource, /postMessage\(\{type:guidePrefix\+type,version:1\}/);
   assert.doesNotMatch(appFocusSource, /postMessage\([^)]*(?:seed|secret|address|account)/i);
-  assert.match(css, /\.ct-testnet-guide-layer\{display:none;position:fixed/);
-  assert.match(css, /body\.ct-testnet-guide-open \.ct-testnet-guide-layer\{display:grid\}/);
+  assert.match(css, /#ct-testnet-guide-layer\{display:none;position:relative/);
+  assert.match(css, /#ct-testnet-guide-layer:not\(\[hidden\]\)\{display:block\}/);
   assert.match(css, /body\.ct-calorieapp-page #ctstyle-testnet\[data-ctstyle-testnet="1"\]\{display:none!important\}/);
-  assert.match(css, /body\.ct-testnet-guide-open \.ct-testnet-guide-panel>#ctstyle-testnet\{display:block!important/);
+  assert.match(css, /#ct-testnet-guide-layer #ctstyle-testnet\{display:block!important/);
   assert.match(readme, /not an overall nutrition or health assessment/i);
   assert.match(readme, /Nothing is stored in\s+WordPress or browser storage/i);
   assert.match(php, /help-topic-additions\.json/);

@@ -1018,7 +1018,7 @@ export function XamanLoginPanel() {
   const beginLoginRef = useRef<() => void>(() => {});
 
   useEffect(() => {
-    function openAccountTools() {
+    function openAccountTools(event: Event) {
       if (!currentUser || !accountToolsRef.current) {
         setAccountToolsRequested(true);
         window.requestAnimationFrame(() => accountToolsNoticeRef.current?.focus({ preventScroll: false }));
@@ -1027,7 +1027,10 @@ export function XamanLoginPanel() {
       setAccountToolsRequested(false);
       accountToolsRef.current.open = true;
       const summary = accountToolsRef.current.querySelector<HTMLElement>("summary");
-      window.requestAnimationFrame(() => summary?.focus({ preventScroll: true }));
+      const destination = (event as CustomEvent<{ destination?: string }>).detail?.destination;
+      const tool = destination === "export" || destination === "import"
+        ? accountToolsRef.current.querySelector<HTMLElement>(`[data-account-tool="${destination}"]`) : null;
+      window.requestAnimationFrame(() => (tool ?? summary)?.focus({ preventScroll: false }));
     }
     window.addEventListener("calorieapp:open-account-tools", openAccountTools);
     return () => window.removeEventListener("calorieapp:open-account-tools", openAccountTools);

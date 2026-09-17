@@ -1,7 +1,17 @@
-CalorieToken Heading and Language Repair 1.6.5
+CalorieToken Heading and Language Repair 1.6.6
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
+
+Version 1.6.6 presents Testnet setup inline in the app area instead of a theme-
+styled overlay. It uses CalorieApp typography, green actions, purple outlines,
+four accessible step tabs, Previous/Next and a return to the existing app frame.
+Going back retains the one created test account; closing or leaving a step hides
+the recovery code. The code remains only in page memory, never in bridge messages.
+Screenshots are optional disclosures. The companion is paired with the app's
+two discoverable account-help entry points and five separate migration screens.
+Neither package enables import, performs a migration or changes login protocols.
+This release is prepared for review, not evidence of installation or live QA.
 
 Version 1.6.5 repairs the two mobile identity hand-offs reported after the
 1.6.4 acceptance. The site-wide Log out action now keeps its trusted

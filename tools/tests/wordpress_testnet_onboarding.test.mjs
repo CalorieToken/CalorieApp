@@ -22,7 +22,7 @@ const response = (data = accountReply(), {status = 200, type = 'application/json
 const deferred = () => {let resolve, reject; const promise = new Promise((yes, no) => {resolve = yes; reject = no;}); return {promise, resolve, reject};};
 const settle = async () => {await new Promise(setImmediate);};
 
-function fixture({fetch = async () => response(), locale = 'nl', url = 'https://calorietoken.net/index.php/calorieapp/', bodyClass = 'ctstyle-enabled page-id-7880', storage = new Map(), storageBlocked = false} = {}) {
+export function fixture({fetch = async () => response(), locale = 'nl', url = 'https://calorietoken.net/index.php/calorieapp/', bodyClass = 'ctstyle-enabled page-id-7880', storage = new Map(), storageBlocked = false, implementation = source} = {}) {
   const {document, window: dom} = parseHTML(`<html lang="${locale}"><head></head><body class="${bodyClass}"><section id="ctstyle-testnet" data-ctstyle-testnet="1" lang="${locale}"><div class="ctstyle-test-steps"></div></section></body></html>`);
   const requests = [], sockets = [], timers = new Map(), events = new Map(), clipboard = [];
   let sequence = 0;
@@ -51,7 +51,7 @@ function fixture({fetch = async () => response(), locale = 'nl', url = 'https://
     if (storageBlocked) throw new Error('Storage unavailable');
     return {getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key,value)};
   }}});
-  vm.runInNewContext(source, {window, document, URL, Date: Clock,
+  vm.runInNewContext(implementation, {window, document, URL, Date: Clock,
     console: {log: forbidden, error: forbidden, warn: forbidden, debug: forbidden},
     navigator: {clipboard: {writeText: async text => {clipboard.push(text);}}, sendBeacon: forbidden},
   });

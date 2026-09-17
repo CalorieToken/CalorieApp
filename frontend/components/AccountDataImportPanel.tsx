@@ -239,6 +239,8 @@ export function AccountDataImportPanel({
 
   return (
     <section
+      data-account-tool="import"
+      tabIndex={-1}
       aria-label={view.section_label}
       lang={displayed.locale}
       dir={displayed.direction}
