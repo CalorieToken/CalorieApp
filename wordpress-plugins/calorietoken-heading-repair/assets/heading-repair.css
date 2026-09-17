@@ -1,0 +1,12 @@
+/* Existing brand accent, with no text-node insertion or layout changes. */
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading::highlight(ctstyle-initials),
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-word-heading *::highlight(ctstyle-initials){color:#505ba9;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-initials-fallback::first-letter{color:#505ba9!important;}
+.ct-heading-repair-sr-only{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+/* Let historical banners grow with long/translated titles. Keep their artwork,
+   font, corners and shadows; never stretch or split the lettering itself. */
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) :is(.ctstyle-title,.ctstyle-shared-banner){box-sizing:border-box!important;width:100%!important;min-width:0!important;height:auto!important;max-height:none!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) :is(.ctstyle-title,.ctstyle-shared-banner) .ctstyle-title-inner{min-width:0!important;max-height:none!important;height:auto!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) :is(.ctstyle-title,.ctstyle-shared-banner) .ctstyle-heading,
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) .ctstyle-heading:is(.ctstyle-title,.ctstyle-shared-banner){min-width:0!important;max-width:100%!important;height:auto!important;max-height:none!important;white-space:normal!important;text-wrap:balance;word-break:normal!important;overflow-wrap:anywhere!important;hyphens:none!important;letter-spacing:0!important;}
+:is(body.ctstyle-enabled,body.ctstyle-footer-only,body.ctstyle-presentation-preview) :is(.ctstyle-title,.ctstyle-shared-banner) .ctstyle-heading *{white-space:inherit!important;word-break:inherit!important;overflow-wrap:inherit!important;letter-spacing:inherit!important;}

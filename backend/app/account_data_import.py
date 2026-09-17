@@ -346,9 +346,17 @@ def _validate_shape(parsed: dict[str, Any]) -> str:
         else _V2_TOP_LEVEL_FIELDS
     )
     _require_exact_fields(parsed, expected_top_level, field_name="payload")
+    # Optional v2 profile extension: older exports remain valid. The nickname
+    # is exported for access, but never copied to another account by food import.
+    account_fields = _ACCOUNT_FIELDS
+    if export_version != LEGACY_EXPORT_VERSION and isinstance(parsed["account"], dict) and "nickname" in parsed["account"]:
+        account_fields = _ACCOUNT_FIELDS | {"nickname"}
+        nickname = parsed["account"]["nickname"]
+        if nickname is not None and (not isinstance(nickname, str) or not 2 <= len(nickname) <= 32):
+            raise AccountDataImportSafetyError("account.nickname is invalid")
     account = _require_exact_fields(
         parsed["account"],
-        _ACCOUNT_FIELDS,
+        account_fields,
         field_name="account",
     )
     _require_explicit_timezone(parsed["exported_at"], field_name="exported_at")

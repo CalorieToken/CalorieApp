@@ -487,6 +487,7 @@ class CalorieAppUserDB(SQLModel, table=True):
         default_factory=utc_now,
         index=True,
     )
+    nickname: Optional[str] = Field(default=None, max_length=32)
 
 
 class InactiveAccountNoticeDB(SQLModel, table=True):

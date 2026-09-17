@@ -156,6 +156,8 @@ export function AccountDataExportButton({
 
   return (
     <section
+      data-account-tool="export"
+      tabIndex={-1}
       aria-label={view.section_label}
       lang={displayed.locale}
       dir={displayed.direction}
@@ -167,11 +169,14 @@ export function AccountDataExportButton({
       <p className="mt-1 text-xs leading-relaxed text-brand-secondary/90">
         {view.description}
       </p>
+      <code dir="ltr" className="mt-3 block break-all rounded-lg border border-brand-secondary/15 bg-brand-bg px-3 py-2 text-[11px] text-brand-secondary">
+        {ACCOUNT_EXPORT_FILENAME}
+      </code>
       <button
         type="button"
         onClick={handleDownload}
         disabled={isDownloading}
-        className="mt-3 inline-flex items-center justify-center rounded-md bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-brand-secondary px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isDownloading ? view.button_busy : view.button_idle}
       </button>

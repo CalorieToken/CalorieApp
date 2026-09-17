@@ -183,6 +183,16 @@ test("private import response validation is strict and bounded", async () => {
   assert.equal(isAccountDataImportResponse(null), false);
 });
 
+test("private import exposes a four-part readiness path without weakening confirmations", async () => {
+  const source = await readFile(COMPONENT_PATH, "utf8");
+  assert.match(source, /const readiness = \[fileReady, sourceReady, targetReady, acknowledged\]/);
+  assert.match(source, /role="progressbar"/);
+  assert.match(source, /selectedFile\.name/);
+  assert.match(source, /targetConfirmation === userId/);
+  assert.match(source, /isAccountDataImportConfirmationReady/);
+  assert.match(source, /min-h-11 w-full/);
+});
+
 test("private import proxy requires exact same-origin intent", async () => {
   const { isTrustedAccountImportRequest } = await loadRequestPolicyModule();
   const path = "api/identity/import";

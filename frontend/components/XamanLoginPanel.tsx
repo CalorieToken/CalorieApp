@@ -1,6 +1,6 @@
 "use client";
 
-import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { type ReactNode, type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AccountDataExportButton } from "@/components/AccountDataExportButton";
 import { AccountDataImportPanel } from "@/components/AccountDataImportPanel";
 import { AccountErasurePanel } from "@/components/AccountErasurePanel";
@@ -16,9 +16,13 @@ import { resolveLocale } from "@/lib/locales";
 import { getAuthUi, translateAuthMessage } from "@/lib/authUi";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 
-type MeResponse = {
+import { NicknameProfile } from "@/components/NicknameProfile";
+import profileTranslations from "@/config/account-profile-copy.json";
+
+export type MeResponse = {
   user_id: string;
   created_at: string;
+  nickname?: string | null;
 };
 
 type LoginStartResponse = {
@@ -158,6 +162,13 @@ type EmbeddedAuthorizationRefreshReason =
   | "rate-limited"
   | "callback-uncertain";
 
+export class EmbeddedBridgeUnavailableError extends Error {
+  constructor() {
+    super("The website signed you in, but its connection to CalorieApp is temporarily unavailable. Please try again later.");
+    this.name = "EmbeddedBridgeUnavailableError";
+  }
+}
+
 export class EmbeddedAuthorizationRefreshRequiredError extends Error {
   constructor(
     readonly retryAfterMs: number,
@@ -191,6 +202,11 @@ export function embeddedAuthorizationRefreshDelayMs(
 }
 
 type LoginSurfaceMode = "checking" | "embedded" | "standalone";
+type SessionBridgeState =
+  | "checking"
+  | "authenticated"
+  | "signed_out"
+  | "unavailable";
 
 function initialLocale(): string {
   if (typeof window === "undefined") {
@@ -722,6 +738,17 @@ export async function completeEmbeddedLogin(
 
   if (!response.ok) {
     const callbackStatus = response.status;
+    if (callbackStatus === 502) {
+      let failure: { detail?: { code?: unknown } } | null = null;
+      try {
+        failure = await response.json();
+      } catch {
+        // An unclassified gateway failure keeps the existing bounded recovery.
+      }
+      if (failure?.detail?.code === "wordpress_bridge_html_response") {
+        throw new EmbeddedBridgeUnavailableError();
+      }
+    }
     const isRateLimited = callbackStatus === 429;
     const isUncertain = [502, 503, 504].includes(callbackStatus);
     const retryDelayMs =
@@ -941,7 +968,12 @@ export async function requestCalorieAppLogout(): Promise<void> {
     : new Error("Unable to log out");
 }
 
-export function XamanLoginPanel() {
+export function XamanLoginPanel({ settings, guides, onAccountChange }: {
+  settings?: ReactNode;
+  guides?: ReactNode;
+  onAccountChange?: (user: MeResponse | null) => void;
+} = {}) {
+  const [accountView, setAccountView] = useState<"overview" | "profile" | "settings" | "privacy">("overview");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutNeedsRetry, setLogoutNeedsRetry] = useState(false);
@@ -953,23 +985,76 @@ export function XamanLoginPanel() {
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const [accountToolsRequested, setAccountToolsRequested] = useState(false);
   const [loginSurfaceMode, setLoginSurfaceMode] =
     useState<LoginSurfaceMode>("checking");
   const [displayLocale, setDisplayLocale] = useState(initialLocale);
+  const accountToolsRef = useRef<HTMLDetailsElement | null>(null);
+  const accountToolsNoticeRef = useRef<HTMLDivElement | null>(null);
+  const parentOrigin = useRef<string | null>(null);
+  const activeLocale = useRef(displayLocale);
+  const sessionBridgeState = useRef<SessionBridgeState>("checking");
   const display = useDisplayLanguage();
   // Presentation follows the shared selector. The established login locale,
   // callback checks, request keys and activeLocale remain unchanged.
   const { copy: authCopy, locale: authLocale, direction: authDirection } = getAuthUi(
     display.enabled ? display.locale : displayLocale
   );
+  const profileCopy = profileTranslations[authLocale as keyof typeof profileTranslations] ?? profileTranslations.en;
+  useEffect(() => { onAccountChange?.(currentUser); }, [currentUser, onAccountChange]);
+  useEffect(() => { setAccountView("overview"); }, [currentUser?.user_id]);
+  useEffect(() => {
+    if (accountView === "privacy" && accountToolsRef.current) accountToolsRef.current.open = true;
+  }, [accountView]);
+  const authCopyRef = useRef(authCopy);
+  authCopyRef.current = authCopy;
+  const publishSessionState = useCallback(
+    (status: SessionBridgeState, targetOrigin?: string) => {
+      sessionBridgeState.current = status;
+      const origin = targetOrigin || parentOrigin.current;
+      if (!origin) return;
+      window.parent.postMessage(
+        {
+          type: "calorieapp:session:state",
+          version: 1,
+          status,
+          locale: activeLocale.current,
+        },
+        origin
+      );
+    },
+    []
+  );
   const loginAbortController = useRef<AbortController | null>(null);
-  const parentOrigin = useRef<string | null>(null);
   const embeddedRequestId = useRef("");
   const embeddedLoginStart = useRef<LoginStartResponse | null>(null);
   const embeddedAuthorizationRefreshes = useRef(0);
   const embeddedAuthorizationInFlight = useRef(false);
   const beginLoginRef = useRef<() => void>(() => {});
-  const activeLocale = useRef(displayLocale);
+
+  useEffect(() => {
+    function openAccountTools(event: Event) {
+      setAccountView("privacy");
+      if (!currentUser || !accountToolsRef.current) {
+        setAccountToolsRequested(true);
+        window.requestAnimationFrame(() => accountToolsNoticeRef.current?.focus({ preventScroll: false }));
+        return;
+      }
+      setAccountToolsRequested(false);
+      accountToolsRef.current.open = true;
+      const summary = accountToolsRef.current.querySelector<HTMLElement>("summary");
+      const destination = (event as CustomEvent<{ destination?: string }>).detail?.destination;
+      const tool = destination === "export" || destination === "import"
+        ? accountToolsRef.current.querySelector<HTMLElement>(`[data-account-tool="${destination}"]`) : null;
+      window.requestAnimationFrame(() => (tool ?? summary)?.focus({ preventScroll: false }));
+    }
+    window.addEventListener("calorieapp:open-account-tools", openAccountTools);
+    return () => window.removeEventListener("calorieapp:open-account-tools", openAccountTools);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) setAccountToolsRequested(false);
+  }, [currentUser]);
 
   const refreshCurrentUser = useCallback(async (signal?: AbortSignal): Promise<MeResponse | null> => {
     const revision = authRevisionRef.current;
@@ -983,6 +1068,9 @@ export function XamanLoginPanel() {
         setCurrentUser(null);
         if (response.status === 401) {
           announceAuthState(false);
+          publishSessionState("signed_out");
+        } else {
+          publishSessionState("unavailable");
         }
         return null;
       }
@@ -991,15 +1079,17 @@ export function XamanLoginPanel() {
       logoutCompleteRef.current = false;
       setCurrentUser(data);
       announceAuthState(true);
+      publishSessionState("authenticated");
       return data;
     } catch {
       if (signal?.aborted || revision !== authRevisionRef.current) {
         return null;
       }
       setCurrentUser(null);
+      publishSessionState("unavailable");
       return null;
     }
-  }, []);
+  }, [publishSessionState]);
 
   const clearCalorieAppSession = useCallback(async () => {
     if (logoutRequestRef.current) return logoutRequestRef.current;
@@ -1013,17 +1103,25 @@ export function XamanLoginPanel() {
     try { clearPendingLogin(); } catch { /* Storage restrictions must not block logout. */ }
     setCurrentUser(null);
     announceAuthState(false);
+    publishSessionState("checking");
     setIsLoading(false);
     setLoginStatus(null);
-    setLogoutNeedsRetry(true);
+    setLogoutNeedsRetry(false);
     const pending = requestCalorieAppLogout().then(() => {
       logoutCompleteRef.current = true;
       setLogoutNeedsRetry(false);
     });
     logoutRequestRef.current = pending;
-    try { await pending; }
+    try {
+      await pending;
+      publishSessionState("signed_out");
+    } catch (error) {
+      setLogoutNeedsRetry(true);
+      publishSessionState("unavailable");
+      throw error;
+    }
     finally { if (logoutRequestRef.current === pending) logoutRequestRef.current = null; }
-  }, []);
+  }, [publishSessionState]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1074,6 +1172,7 @@ export function XamanLoginPanel() {
         }
         setCurrentUser(restoredUser);
         announceAuthState(true);
+        publishSessionState("authenticated");
         setSuccessNotice(
           "Sign-in completed. Your session was restored in this browser."
         );
@@ -1099,7 +1198,7 @@ export function XamanLoginPanel() {
       cancelled = true;
       controller.abort();
     };
-  }, [refreshCurrentUser]);
+  }, [publishSessionState, refreshCurrentUser]);
 
   useEffect(() => {
     const bridgeController = new AbortController();
@@ -1155,6 +1254,7 @@ export function XamanLoginPanel() {
           { type: "calorieapp:bridge:initialized", locale: nextLocale },
           event.origin
         );
+        publishSessionState(sessionBridgeState.current, event.origin);
         postHeight();
         if (consumeBackendWakeReturn(event.origin, nextLocale)) {
           beginLoginRef.current();
@@ -1265,6 +1365,7 @@ export function XamanLoginPanel() {
               logoutCompleteRef.current = false;
               setCurrentUser(restoredUser);
               announceAuthState(true);
+              publishSessionState("authenticated");
 
               embeddedLoginStart.current = null;
               clearPendingLogin();
@@ -1351,6 +1452,7 @@ export function XamanLoginPanel() {
         logoutCompleteRef.current = false;
         setCurrentUser(restoredUser);
         announceAuthState(true);
+        publishSessionState("authenticated");
         setError(null);
         setLoginStatus(null);
         setIsLoading(false);
@@ -1410,10 +1512,18 @@ export function XamanLoginPanel() {
           return;
         }
 
-        const message = backendUnavailableMessage(
-          requestError,
-          "WordPress is signed in, but CalorieApp could not finish. Please try again."
-        );
+        const bridgeUnavailable =
+          requestError instanceof EmbeddedBridgeUnavailableError;
+        if (bridgeUnavailable) {
+          embeddedLoginStart.current = null;
+          clearPendingLogin();
+        }
+        const message = bridgeUnavailable
+          ? requestError.message
+          : backendUnavailableMessage(
+              requestError,
+              "WordPress is signed in, but CalorieApp could not finish. Please try again."
+            );
         setError(message);
         setLoginStatus(null);
         setIsLoading(false);
@@ -1421,7 +1531,7 @@ export function XamanLoginPanel() {
           {
             type: "calorieapp:login:backend-error",
             requestId: embeddedRequestId.current,
-            message,
+            message: translateAuthMessage(message, authCopyRef.current),
             locale: pending.locale,
           },
           origin
@@ -1443,7 +1553,7 @@ export function XamanLoginPanel() {
       window.removeEventListener("resize", postHeight);
       window.removeEventListener("message", handleParentMessage);
     };
-  }, [clearCalorieAppSession, refreshCurrentUser]);
+  }, [clearCalorieAppSession, publishSessionState, refreshCurrentUser]);
 
   function handleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
     if (logoutRequestRef.current || logoutNeedsRetry || isLoggingOut) { event.preventDefault(); return; }
@@ -1472,6 +1582,7 @@ export function XamanLoginPanel() {
 
     if (parentOrigin.current) {
       const embeddedParentOrigin = parentOrigin.current;
+      publishSessionState("checking");
       const requestId = createBrowserRequestId();
       embeddedRequestId.current = requestId;
       embeddedLoginStart.current = null;
@@ -1601,7 +1712,7 @@ export function XamanLoginPanel() {
     <section
       lang={authLocale}
       dir={authDirection}
-      className={`rounded-3xl border p-4 shadow-sm sm:p-5 ${
+      className={`calorie-account-card rounded-3xl border p-4 shadow-sm sm:p-5 ${
         currentUser
           ? "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white"
           : "border-brand-secondary/20 bg-brand-primary/5"
@@ -1620,17 +1731,17 @@ export function XamanLoginPanel() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/70">
-            {currentUser ? authCopy.connectedAccount : authCopy.optionalAccount}
+          {currentUser ? authCopy.connectedAccount : isLoggingOut ? authCopy.loggingOut : authCopy.optionalAccount}
           </p>
-          <h2 className="mt-0.5 text-base font-bold text-brand-primary">
-            {currentUser ? authCopy.signedIn : authCopy.signIn}
+          <h2 className="mt-0.5 break-words text-base font-bold text-brand-primary [overflow-wrap:anywhere]">
+            {currentUser ? <bdi>{currentUser.nickname || authCopy.signedIn}</bdi> : isLoggingOut ? authCopy.loggingOut : authCopy.signIn}
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-brand-secondary/90">
             {currentUser
               ? loginSurfaceMode === "embedded"
                 ? authCopy.sessionsConnected
                 : authCopy.sessionActive
-              : authCopy.signInDescription}
+              : isLoggingOut ? authCopy.connectingView : authCopy.signInDescription}
           </p>
         </div>
         {currentUser ? (
@@ -1641,23 +1752,60 @@ export function XamanLoginPanel() {
         ) : null}
       </div>
 
-      {!currentUser ? (
+      {accountView !== "overview" ? <button type="button" onClick={() => setAccountView("overview")} className="mt-4 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{profileCopy.back}</button> : null}
+      <div hidden={accountView !== "overview"} className="mt-4 space-y-3" data-account-overview>
+        <nav aria-label={profileCopy.account} className="grid gap-2 sm:grid-cols-3">
+          {(["profile", "settings", "privacy"] as const).map(view => (
+            <button key={view} type="button" disabled={view !== "settings" && !currentUser}
+              onClick={() => setAccountView(view)}
+              className="min-h-12 min-w-0 rounded-xl border border-brand-secondary/20 bg-white px-3 py-3 text-sm font-bold text-brand-primary disabled:opacity-50">{profileCopy[view]}</button>
+          ))}
+        </nav>
+        {guides}
+      </div>
+      <div hidden={accountView !== "settings"} className="mt-4" data-account-settings>
+        <h3 className="mb-3 text-base font-bold text-brand-primary">{profileCopy.settings}</h3>
+        {settings}
+      </div>
+      {currentUser && accountView === "profile" ? <div className="mt-4">
+        <NicknameProfile key={currentUser.user_id} userId={currentUser.user_id} nickname={currentUser.nickname ?? null}
+          onSaved={(nickname, userId) => {
+            setCurrentUser(user => user?.user_id === userId ? { ...user, nickname } : user);
+            if (parentOrigin.current) window.parent.postMessage({ type: "calorieapp:profile:changed", version: 1 }, parentOrigin.current);
+          }}
+          onAuthenticationLost={() => { setCurrentUser(null); announceAuthState(false); publishSessionState("signed_out"); }} />
+      </div> : null}
+
+      {!currentUser && accountToolsRequested ? (
         <div
-          role="note"
-          className="mt-4 rounded-2xl border border-amber-300/80 bg-amber-50 px-3.5 py-3 text-xs leading-relaxed text-amber-950"
+          ref={accountToolsNoticeRef}
+          tabIndex={-1}
+          role="status"
+          className="mt-3 rounded-xl border-2 border-brand-accent bg-amber-50 px-3 py-3 text-sm leading-relaxed text-amber-950 outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary"
         >
-          <span className="font-semibold">{authCopy.onPhone}</span>{" "}
-          {loginSurfaceMode === "embedded"
-            ? authCopy.phoneInstructions
-            : loginSurfaceMode === "standalone"
-              ? authCopy.websiteInstructions
-              : authCopy.connectingView}
+          <strong className="block text-brand-primary">{authCopy.accountTools}</strong>
+          <span className="mt-1 block">{authCopy.signInForTools}</span>
         </div>
+      ) : null}
+
+      {!currentUser && !isLoggingOut && !logoutNeedsRetry ? (
+        <details className="group mt-3 rounded-xl border border-amber-300/80 bg-amber-50 text-xs text-amber-950">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 [&::-webkit-details-marker]:hidden">
+            <span>{authCopy.onPhone}</span><span aria-hidden="true" className="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p role="note" className="border-t border-amber-300/70 px-3 py-2 leading-relaxed">
+            {loginSurfaceMode === "embedded"
+              ? authCopy.phoneInstructions
+              : loginSurfaceMode === "standalone"
+                ? authCopy.websiteInstructions
+                : authCopy.connectingView}
+          </p>
+        </details>
       ) : null}
 
       {currentUser ? (
         <div className="mt-5 space-y-4">
-          <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200/80 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div hidden={accountView !== "overview"} className="flex flex-col gap-3 rounded-2xl border border-emerald-200/80 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-brand-primary">
                 {loginSurfaceMode === "embedded"
@@ -1680,8 +1828,8 @@ export function XamanLoginPanel() {
             </button>
           </div>
 
-          <details className="group border-t border-brand-secondary/10 pt-3">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30 [&::-webkit-details-marker]:hidden">
+          <details id="calorieapp-account-tools" ref={accountToolsRef} hidden={accountView !== "privacy"} className="group border-t border-brand-secondary/10 pt-3">
+            <summary id="calorieapp-account-tools-summary" className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-brand-secondary/60">
                   {authCopy.accountTools}
@@ -1703,6 +1851,7 @@ export function XamanLoginPanel() {
                 onAuthenticationLost={(message) => {
                   setCurrentUser(null);
                   announceAuthState(false);
+                  publishSessionState("signed_out");
                   setError(message);
                 }}
               />
@@ -1713,6 +1862,7 @@ export function XamanLoginPanel() {
                   onAuthenticationLost={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(message);
                   }}
                 />
@@ -1724,11 +1874,13 @@ export function XamanLoginPanel() {
                   onAuthenticationLost={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(message);
                   }}
                   onErased={(message) => {
                     setCurrentUser(null);
                     announceAuthState(false);
+                    publishSessionState("signed_out");
                     setError(null);
                     setSuccessNotice(message);
                   }}

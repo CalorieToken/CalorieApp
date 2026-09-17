@@ -1,0 +1,196 @@
+import json, os
+from pathlib import Path
+from urllib.parse import urlsplit
+from playwright.sync_api import sync_playwright, expect
+ROOT=Path(__file__).resolve().parents[2]; OUT=Path(os.environ.get('UX_EVIDENCE_DIR', str(ROOT/'ux-check-evidence/browser')))
+OUT.mkdir(parents=True,exist_ok=True)
+X=json.loads((ROOT/'frontend/config/food-experience-copy.json').read_text()); C=json.loads((ROOT/'frontend/config/food-ui-copy.json').read_text()); D=json.loads((ROOT/'frontend/config/food-discovery-copy.json').read_text()); S=json.loads((ROOT/'frontend/config/food-source-copy.json').read_text()); Y=json.loads((ROOT/'frontend/config/diary-copy.json').read_text()); A=json.loads((ROOT/'frontend/config/auth-ui-copy.json').read_text()); T=json.loads((ROOT/'frontend/config/testnet-entry-copy.json').read_text())
+PROFILE=json.loads((ROOT/'frontend/config/account-profile-copy.json').read_text())
+report={'mode':'Local Next.js production build; synthetic API and diary; no live writes','checks':[], 'writes':[], 'errors':[], 'blocked_external':[]}
+food={'id':1,'product_name':'Synthetic oats','calories':200,'protein':10,'fat':4,'carbohydrates':32,'nutri_score':'A','portion_percentage':100,'barcode':'0012345678905','brand':'Test fixture','serving_size':'100 g','image_url':'https://tracker.example/pixel.gif','created_at':'2026-09-15T12:00:00Z'}
+broken_food={**food,'id':2,'product_name':'Broken source photo','barcode':'0099999999999','image_url':'https://images.openfoodfacts.org/images/products/009/999/missing.jpg'}
+entries=[]; logged_in=False; save_status=201
+
+def ok(name,condition=True):
+    assert condition,name
+    report['checks'].append(name)
+
+def routing(route):
+    global entries
+    req=route.request; u=urlsplit(req.url); path=u.path
+    if u.hostname not in ['127.0.0.1','localhost']:
+        report['blocked_external'].append(req.url); route.abort(); return
+    if not path.startswith('/api/backend'):
+        route.continue_(); return
+    status=200; data={}
+    if path.endswith('/health'): data={'status':'ok'}
+    elif path.endswith('/api/identity/me'): status=401; data={'detail':'Isolated guest fixture'}
+    elif path.endswith('/logs/overview'):
+        if not logged_in: status=401; data={'detail':'Isolated guest fixture'}
+        else:
+            off=sum(bool(f.get('barcode')) for f in entries); usda=sum(not f.get('barcode') and str(f.get('brand','')).startswith('USDA FoodData Central · FDC ') for f in entries)
+            data={'entries':entries,'next_before':None,'count':len(entries),'grades':{g:sum(bool(f.get('barcode')) and f.get('nutri_score')==g for f in entries) for g in 'ABCDE'},'sources':{'open_food_facts':off,'usda':usda,'other':len(entries)-off-usda},**{k:sum(f[k] for f in entries) for k in ['calories','protein','fat','carbohydrates']}}
+    elif path.endswith('/search-food'): data={'results':[food,broken_food]}
+    elif path.endswith('/log-food'):
+        status=save_status; payload=req.post_data_json; report['writes'].append(payload)
+        if status==201:
+            saved={**payload,'id':len(entries)+10,'created_at':'2026-09-15T12:00:00Z'}; entries.append(saved); data=saved
+        else: data={'detail':'Synthetic expired session'}
+    else: status=404; data={'detail':'No fixture for this endpoint'}; report['errors'].append('Unexpected API: '+path)
+    route.fulfill(status=status,content_type='application/json',body=json.dumps(data))
+
+with sync_playwright() as p:
+    browser=p.chromium.launch(headless=True, **({'executable_path':os.environ['CALORIE_BROWSER_EXECUTABLE']} if os.environ.get('CALORIE_BROWSER_EXECUTABLE') else {}))
+    context=browser.new_context(viewport={'width':360,'height':900},locale='nl-NL',service_workers='block')
+    context.route('**/*',routing)
+    page=context.new_page(); page.on('pageerror',lambda e:report['errors'].append(str(e)))
+    try:
+        page.goto('http://127.0.0.1:3100/?ui_lang=nl',wait_until='networkidle'); page.locator('html[lang="nl"]').wait_for()
+        page.locator('button[data-age-option="adult"]').click()
+        ok('Adult selection explicitly opens the full account and diary environment')
+        expect(page.locator('[id^="calorie-tab-"]')).to_have_count(4)
+        ok('Adult workspace groups account tools into one of four task tabs')
+        page.locator('#calorie-tab-account').click()
+        page.get_by_role('button',name=T['nl']['moveRoute'],exact=True).click()
+        expect(page.locator('[data-account-guide-screen]')).to_have_count(1)
+        expect(page.get_by_text(T['nl']['importPending'],exact=True)).to_be_visible()
+        ok('Native guide shows one screen and the fail-closed real-account route')
+        page.locator('[data-account-guide] header button').click()
+        page.get_by_role('tab',name=C['nl']['searchTitle'],exact=True).click()
+        page.locator('#food-search').fill('oats'); page.get_by_role('button',name=C['nl']['search'],exact=True).click()
+        expect(page.locator('img[src$="/food-illustrations/grain.svg"]')).to_have_count(1)
+        expect(page.locator('img[src$="/food-illustrations/meal.svg"]')).to_have_count(1)
+        ok('Oats get a grain illustration; an unknown product gets the neutral meal illustration')
+        ok('Rejected image URLs are not requested',not any('tracker.example' in url for url in report['blocked_external']))
+        ok('A failed request to the trusted OFF image host falls back without breaking the product card',any('images.openfoodfacts.org' in url for url in report['blocked_external']))
+        page.get_by_role('button',name=C['nl']['logProduct'].replace('{product}',food['product_name']),exact=True).click()
+        expect(page.locator('#calorieapp-packaged-portion-editor')).to_be_visible()
+        expect(page.locator('#calorieapp-packaged-portion-editor')).to_have_count(1)
+        results_heading=page.get_by_role('heading',name=Y['nl']['resultsFor'].replace('{query}','oats'),exact=True)
+        result_list=results_heading.locator('xpath=following-sibling::div[1]/ul')
+        ok('Product results use an internal scroll region beside one nearby portion editor',result_list.count()==1 and result_list.evaluate("node => getComputedStyle(node).overflowY === 'auto'"))
+        page.locator('#calorieapp-packaged-portion-editor').get_by_role('button',name=C['nl']['cancel'],exact=True).click()
+        page.get_by_role('tab',name=X['nl']['sourceTitle'],exact=True).click()
+        usda=page.get_by_test_id('usda-food-search')
+        usda.locator('input[type="search"]').fill('168878'); usda.locator('form button[type="submit"]').click()
+        usda.get_by_role('button').filter(has_text='FDC 168878').click()
+        chosen=page.get_by_test_id('usda-selected-food'); chosen.locator('input[inputmode="decimal"]').fill('75')
+        expect(chosen.locator('img[src$="/food-illustrations/rice.svg"]')).to_be_visible()
+        ok('USDA rice without a source photo gets the original rice illustration')
+        ok('USDA details stay inside the selected result row',chosen.locator('xpath=parent::li').count()==1)
+        expect(chosen.get_by_test_id('usda-nutrition-preview')).to_contain_text('97,5')
+        ok('Exact FDC 168878 / 75 grams produces 97.5 kcal from the actual local USDA catalogue')
+        chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True).click()
+        confirm=chosen.locator('form'); expect(confirm).to_be_visible()
+        ok('One inline confirmation, no duplicate nutrient preview',chosen.get_by_test_id('usda-nutrition-preview').count()==0)
+        ok('No second USDA percentage controls',confirm.get_by_role('button',name=C['nl']['half'],exact=True).count()==0)
+        ok('Nothing saved merely by reviewing',len(report['writes'])==0)
+        language_select=page.locator('#calorieapp-language-select')
+        page.locator('details').filter(has=language_select).locator('summary').click()
+        expect(language_select).to_be_visible()
+        for locale in X:
+            language_select.select_option(locale)
+            expect(page.locator('html')).to_have_attribute('lang',locale)
+            expect(chosen.get_by_role('heading',name=X[locale]['confirmTitle'],exact=True)).to_be_visible()
+            expect(chosen.locator('input[inputmode="decimal"]')).to_have_value('75')
+            for width in [360,412,1440]:
+                page.set_viewport_size({'width':width,'height':1000})
+                overflow=page.evaluate('document.documentElement.scrollWidth > innerWidth')
+                ok(locale+' '+str(width)+'px: no horizontal page overflow',not overflow)
+            page.set_viewport_size({'width':360,'height':1100})
+            usda.screenshot(path=str(OUT/(locale+'-usda-360.png')))
+            ok(locale+': translated confirmation and unchanged grams')
+        language_select.select_option('nl')
+        page.set_viewport_size({'width':360,'height':900})
+        chosen.locator('input[inputmode="decimal"]').fill('0')
+        expect(chosen.locator('form')).to_have_count(0)
+        expect(chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True)).to_be_disabled()
+        ok('Editing invalidates the confirmation; zero grams cannot be logged')
+        chosen.locator('input[inputmode="decimal"]').fill('75')
+        chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True).click()
+        chosen.get_by_role('button',name=C['nl']['cancel'],exact=True).click()
+        ok('Cancel performs no write',len(report['writes'])==0)
+        logged_in=True; entries=[dict(food)]
+        page.evaluate("window.dispatchEvent(new CustomEvent('calorieapp:auth-state-changed',{detail:{authenticated:true}}))")
+        page.get_by_role('tab',name=Y['nl']['title'],exact=True).click()
+        expect(page.get_by_role('heading',name=S['nl']['gradeHeading'],exact=True)).to_be_visible()
+        page.get_by_role('tab',name=X['nl']['sourceTitle'],exact=True).click()
+        chosen.get_by_role('button',name=X['nl']['reviewAmount'],exact=True).click()
+        chosen.locator('form button[type="submit"]').dblclick()
+        expect(chosen.get_by_role('status')).to_contain_text('eetdagboek')
+        ok('Double click sends exactly one synthetic diary POST',len(report['writes'])==1)
+        payload=report['writes'][0]
+        ok('Saved grams are not double-scaled',payload['calories']==97.5 and payload['protein']==2.02 and payload['fat']==0.21 and payload['carbohydrates']==21.15 and payload['portion_percentage']==100)
+        ok('No invented Nutri-Score for USDA',payload['nutri_score'] is None)
+        page.get_by_role('tab',name=Y['nl']['title'],exact=True).click()
+        saved_food=page.get_by_role('button',name=C['nl']['viewDetails'].replace('{product}',payload['product_name']),exact=True)
+        expect(saved_food).to_contain_text('Gegeten portie: 75 g')
+        ok('The saved USDA diary card shows actual grams rather than an unexplained 100 percent')
+        saved_food.scroll_into_view_if_needed()
+        diary_position=page.evaluate('window.scrollY')
+        saved_food.click()
+        expect(saved_food).to_have_attribute('aria-expanded','true')
+        saved_row=saved_food.locator('xpath=ancestor::li[1]')
+        expect(saved_row.get_by_test_id('food-log-inline-details')).to_be_visible()
+        ok('Diary details open inside the clicked row without moving the page',abs(page.evaluate('window.scrollY')-diary_position)<2)
+        saved_row.get_by_role('button',name=C['nl']['backToList'],exact=True).click()
+        expect(saved_food).to_have_attribute('aria-expanded','false')
+        expect(page.get_by_test_id('food-log-inline-details')).to_have_count(0)
+        expect(saved_food).to_be_focused()
+        ok('Closing diary details returns keyboard focus to the same diary row')
+        coverage=page.get_by_role('heading',name=S['nl']['gradeHeading'],exact=True).locator('..')
+        expect(coverage).to_contain_text('1 van 1')
+        expect(coverage).to_contain_text('USDA FoodData Central')
+        ok('Diary separates one OFF grade from the USDA entry without treating USDA as an ungraded product')
+        coverage.screenshot(path=str(OUT/'nl-diary-360.png'))
+        page.screenshot(path=str(OUT/'nl-full-app-360.png'),full_page=True)
+        page.set_viewport_size({'width':1440,'height':1000}); page.screenshot(path=str(OUT/'nl-full-app-1440.png'),full_page=True)
+        # The actual age selector must switch the look while retaining the
+        # existing restricted tab set, keyboard navigation and adult style.
+        page.set_viewport_size({'width':360,'height':900})
+        page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
+        # Read settled styles: Tailwind's existing colour transitions continue
+        # briefly after clicking a tab or changing the age band.
+        styles=lambda:page.locator('#calorie-tab-packaged').evaluate('async n=>{await Promise.all(n.getAnimations().map(a=>a.finished.catch(()=>{})));const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.fontFamily,s.padding]}')
+        adult_style=styles();shapes=[]
+        for band in ['child','teen','adult']:
+            if page.locator('.calorie-age-shell').get_attribute('data-age-band')=='adult':
+                page.locator('#calorie-tab-account').click()
+                page.locator('[data-account-overview]').get_by_role('button',name=PROFILE['nl']['settings'],exact=True).click()
+                settings=page.locator('[data-account-settings]')
+                expect(settings).to_be_visible()
+                settings.locator('.calorie-age-summary button').click()
+                ok('Adults can change their age group through My account and Settings')
+            else:
+                page.locator('.calorie-age-summary button').click()
+            page.locator(f'button[data-age-option="{band}"]').click()
+            expect(page.locator('.calorie-age-shell')).to_have_attribute('data-age-band',band)
+            page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
+            expect(page.locator('[id^="calorie-tab-"]')).to_have_count(4 if band=='adult' else 2)
+            if band=='adult':
+                restored_style=styles()
+                ok('Adult buttons restore their exact original appearance',restored_style==adult_style)
+                continue
+            shapes.append(styles()[0])
+            ok(band+': button shape and palette differ from adult',styles()[0]!=adult_style[0] and styles()[1]!=adult_style[1])
+            page.locator('#calorie-tab-packaged').focus();page.keyboard.press('ArrowRight')
+            expect(page.locator('#calorie-tab-basic')).to_have_attribute('aria-selected','true')
+            ok(band+': keyboard tab navigation still works')
+            page.locator('#calorie-tab-packaged').click()
+            for width in [360,412,1440]:
+                page.set_viewport_size({'width':width,'height':1000})
+                ok(f'{band} {width}px: no horizontal overflow',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+            page.set_viewport_size({'width':360,'height':900})
+            page.locator('.calorie-age-shell').screenshot(path=str(OUT/f'age-{band}-app-360.png'))
+        ok('Child and teen have distinct button shapes',len(set(shapes))==2)
+        ok('No JavaScript runtime errors',not report['errors'])
+        report['status']='passed'
+    except Exception as e:
+        report['status']='failed'; report['failure']=str(e)
+        page.screenshot(path=str(OUT/'failure.png'),full_page=True)
+        (OUT/'failure-dom.txt').write_text(page.locator('body').inner_text())
+        raise
+    finally:
+        (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+        browser.close()
+print(json.dumps({'status':report['status'],'checks':len(report['checks']),'synthetic_writes':len(report['writes'])}))

@@ -21,6 +21,16 @@ Required headers for exchange:
 State-validation requests use client ID, timestamp, a fresh random nonce, and an
 HMAC-SHA256 signature. The backend rejects stale timestamps and replayed nonces.
 
+When the backend advertises `backend_v1`, code issuance uses a separate v2
+signature with purpose `issue_login_code_v1`. The signature binds client ID,
+timestamp, nonce, state, the authenticated user's WordPress subject, wallet and
+locale. The shared secret stays on the servers. HTTP redirects are disabled.
+The backend checks the configured WordPress issuer and the pending state's
+client, locale, expiry and status before issuing a random code. It creates no
+application session at this stage. The browser's existing callback consumes
+the code and pending state before issuing the session. Invalid or failed signed
+requests do not trigger a fallback to an unauthenticated path.
+
 ## Redirect Safety
 
 No arbitrary redirects are accepted.
@@ -55,10 +65,18 @@ WordPress cookie is set.
 
 - Random 32-byte code generated via random_bytes
 - URL-safe code string
-- Only HMAC-SHA256 hash stored
+- Only code hashes stored (HMAC-SHA256 on WordPress; SHA256 for the backend's random codes)
 - Single-use enforced with atomic used_at update
 - TTL enforced (default 60 seconds)
 - Expired/used records cleaned up automatically on bridge requests
+
+Backend-issued codes have a `cb1.` prefix, at most 60 seconds of validity, and
+expire no later than their pending login state. A state can receive at most
+three codes. Code and state hashes use the existing authorization-code table.
+New issuance removes at most 200 expired records from this transport whose
+pending state has also expired or disappeared, preserving legacy records and
+the allowance for every unexpired state. These codes are not redeemed by the
+WordPress `/exchange` endpoint.
 
 ## Minimal Claims Returned by Exchange
 

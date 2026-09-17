@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -15,6 +16,9 @@ test('Every agreed language renders the anonymous sign-in panel without a reques
   assert.ok(Object.values(copy).every(value=>typeof value==='string'&&value.trim()));
   const module={exports:{}};
   vm.runInNewContext(compiled,{module,exports:module.exports,process:{env:{}},URL,URLSearchParams,window:{location:{search:'?locale='+locale}},document:{documentElement:{lang:locale}},navigator:{language:locale},require(name){
+      if (name === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (name === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
    if(['react','react/jsx-runtime'].includes(name))return require(name);
    if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>({enabled:false,locale:'en'})};if(name==='@/lib/authUi')return authUi;
    if(name==='@/lib/locales')return {resolveLocale:value=>value||'en'};
@@ -38,7 +42,7 @@ test('Owned progress and errors translate; arbitrary server or product text rema
   for(const key of ['logout','signIn','continueXaman','connectedAccount','preparingXaman']){
    assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),authCopy.en[key],tag+'.'+key);
   }
-  for(const key of ['restoring','complete','restoreFailed','preparing','starting','retrying','busy','activating','reconnecting','signedBoth','languageMismatch','responseMismatch','finishFailed','prepareFailed','logoutFailed','serviceSlow']){
+  for(const key of ['restoring','complete','restoreFailed','preparing','starting','retrying','busy','activating','reconnecting','signedBoth','languageMismatch','responseMismatch','finishFailed','bridgeUnavailable','prepareFailed','logoutFailed','serviceSlow']){
    assert.equal(authUi.translateAuthMessage(authCopy.en[key],localized),localized[key],tag+'.'+key);
   }
  }

@@ -56,6 +56,32 @@ The current frontend bundles three dated reference-food records from USDA FoodDa
 
 The interface does not silently combine alternative energy methods, treat missing data as measured zero, or import these examples into a private diary. USDA reference provenance remains separate from Open Food Facts licensing and private user records. External names and marks retain their own rights.
 
+## USDA search catalogue — live since 15 September 2026
+
+The food-discovery continuation adds a separate, dated snapshot in
+`frontend/public/data/usda-search-foods.json`: 363 Foundation records from April
+2026 and 7,793 SR Legacy records from April 2018. It does not claim to cover all
+FoodData Central collections. The original three-food reference remains intact.
+
+The catalogue preserves FDC identifiers, English source descriptions, collection,
+edition, nutrient units and original numeric precision. Its source manifest records
+the original download URLs and archive SHA-256 values. The builder is
+`tools/build_usda_search_catalog.py`; the catalogue is kept separate from OFF data.
+FoodData Central's official [download page](https://fdc.nal.usda.gov/download-datasets/)
+and [documentation](https://fdc.nal.usda.gov/data-documentation/) describe these
+collections and reuse conditions.
+
+The browser requests one fixed first-party catalogue file only after a USDA
+search is submitted. Search matching then runs locally; no search phrase or
+account identifier is sent to USDA. Opening a source link visits USDA separately.
+Saving requires the existing explicit portion confirmation and authenticated
+backend route. The diary entry retains the USDA source, FDC identifier and chosen
+gram basis; it has no fabricated barcode or Nutri-Score.
+
+Name-based alternatives help visitors inspect other records. They are not
+personalised nutrition recommendations, allergen checks or claims of healthier
+equivalence. The visitor must check the actual label, preparation and portion.
+
 ## User and identity data
 
 Authentication identifiers and food logs are application data, not assets
