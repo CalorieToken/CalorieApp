@@ -80,7 +80,7 @@ with sync_playwright() as p:
         results_heading=page.get_by_role('heading',name=Y['nl']['resultsFor'].replace('{query}','oats'),exact=True)
         result_list=results_heading.locator('xpath=following-sibling::div[1]/ul')
         ok('Product results use an internal scroll region beside one nearby portion editor',result_list.count()==1 and result_list.evaluate("node => getComputedStyle(node).overflowY === 'auto'"))
-        page.get_by_role('button',name=C['nl']['cancel'],exact=True).click()
+        page.locator('#calorieapp-packaged-portion-editor').get_by_role('button',name=C['nl']['cancel'],exact=True).click()
         page.get_by_role('tab',name=X['nl']['sourceTitle'],exact=True).click()
         usda=page.get_by_test_id('usda-food-search')
         usda.locator('input[type="search"]').fill('168878'); usda.locator('form button[type="submit"]').click()
