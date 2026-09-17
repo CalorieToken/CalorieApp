@@ -22,6 +22,53 @@ def ok(name, condition=True):
     assert condition, name
     report['checks'].append(name)
 
+def contrast(colors):
+    def luminance(rgb):
+        import re
+        values=[int(n)/255 for n in re.findall(r'\d+',rgb)[:3]]
+        values=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in values]
+        return sum(v*w for v,w in zip(values,[.2126,.7152,.0722]))
+    low,high=sorted(luminance(c) for c in colors)
+    return (high+.05)/(low+.05)
+
+def verify_age_buttons(page):
+    page.set_viewport_size({'width':360,'height':900})
+    page.mouse.move(0,0)
+    controls='#ordinary-button,#disabled-button,#menu-home,#menu-project>summary,#help-topic'
+    snapshot=lambda:page.locator(controls).evaluate_all('(nodes)=>nodes.map(n=>{const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.borderColor,s.opacity,s.display]})')
+    adult=snapshot();historical=protected_snapshot(page)
+    shapes=[]
+    for band in ['child','teen','adult']:
+        page.locator('body').evaluate('(n,band)=>n.dataset.ctAgeBand=band',band)
+        page.mouse.move(0,0)
+        if band=='adult':
+            ok('Adult buttons restore the exact 1.6.8 appearance',snapshot()==adult)
+            continue
+        primary=page.locator('#ordinary-button')
+        shape=primary.evaluate('n=>getComputedStyle(n).borderRadius');shapes.append(shape)
+        ok(band+': button shape differs from adult',shape!=adult[0][0])
+        ok(band+': disabled buttons remain disabled',page.locator('#disabled-button').is_disabled())
+        ok(band+': historical regions retain their markup and appearance',protected_snapshot(page)==historical)
+        page.locator('#help-toggle').click()
+        for selector in ['#ordinary-button','#menu-home','#help-topic']:
+            node=page.locator(selector)
+            for hovered in [False,True]:
+                if hovered:node.hover()
+                else:page.mouse.move(0,0)
+                colors=node.evaluate('n=>[getComputedStyle(n).color,getComputedStyle(n).backgroundColor]')
+                ok(f'{band}: {selector} readable '+('hover' if hovered else 'normal'),contrast(colors)>=4.5)
+        page.locator('#help-toggle').click()
+        for width in [360,412,1440]:
+            page.set_viewport_size({'width':width,'height':900})
+            ok(f'{band} {width}px: controls fit the viewport',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+        page.set_viewport_size({'width':360,'height':900})
+        page.mouse.move(0,0)
+        page.locator('#interaction-card').screenshot(path=str(OUT/f'age-{band}-wp-controls-360.png'))
+        page.locator('#brizy-menu').screenshot(path=str(OUT/f'age-{band}-menu-360.png'))
+    ok('Child and teen button shapes are distinct',len(set(shapes))==2)
+    page.locator('body').evaluate('n=>delete n.dataset.ctAgeBand')
+    ok('Clearing age selection restores neutral buttons',snapshot()==adult)
+
 BODY = '''
 <header id="historic-header" class="ctstyle-site-header"><strong>CalorieToken</strong><p>Historical header</p><button>Account</button><div id="header-widget-region" class="ctstyle-header">
 <nav id="brizy-menu" class="brz-menu-simple"><ul class="ctstyle-menu-groups"><li><a id="menu-home" href="#home" aria-current="page">Home</a></li><li><details id="menu-project" class="ctstyle-menu-category"><summary>Project</summary><ul><li><a href="#tokenomics">Tokenomics</a></li></ul></details></li></ul></nav>
@@ -233,6 +280,7 @@ with sync_playwright() as pw:
         page.evaluate("document.querySelector('#historic-header').append(document.querySelector('#late'))")
         page.wait_for_function("!document.querySelector('#late').classList.contains('ct-content-card')")
         ok('A node moved outside the content region loses its content markers')
+        verify_age_buttons(page)
         verify_title_banners(context)
         ok('No runtime errors',not report['errors'])
         report['status']='passed'

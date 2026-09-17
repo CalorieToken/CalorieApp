@@ -1,4 +1,13 @@
-CalorieToken Heading and Language Repair 1.6.8
+CalorieToken Heading and Language Repair 1.6.9
+
+Version 1.6.9 adds button variants using the existing browser-tab age choice.
+Children get rounder buttons with light green and purple-blue fills and dark
+labels; teens get straighter corners and deeper brand shades. Adult and
+unselected buttons retain the 1.6.8 style. Menu, public-content, FAQ and help
+controls follow the same choice. Historical banners/artwork/backgrounds and
+the age permissions, login and storage behavior are unchanged. The paired
+frontend CSS uses the same palette; publishing the app is a separate release.
+All 1.6.8 corrections below are included. Retain 1.6.8 for rollback.
 
 Version 1.6.8 extends the requested CalorieApp appearance to the existing login
 widget and only the Brizy menu controls. The historical header, title banners,

@@ -143,6 +143,33 @@ with sync_playwright() as p:
         coverage.screenshot(path=str(OUT/'nl-diary-360.png'))
         page.screenshot(path=str(OUT/'nl-full-app-360.png'),full_page=True)
         page.set_viewport_size({'width':1440,'height':1000}); page.screenshot(path=str(OUT/'nl-full-app-1440.png'),full_page=True)
+        # The actual age selector must switch the look while retaining the
+        # existing restricted tab set, keyboard navigation and adult style.
+        page.set_viewport_size({'width':360,'height':900})
+        page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
+        styles=lambda:page.locator('#calorie-tab-packaged').evaluate('n=>{const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.fontFamily,s.padding]}')
+        adult_style=styles();shapes=[]
+        for band in ['child','teen','adult']:
+            page.locator('.calorie-age-summary button').click()
+            page.locator(f'button[data-age-option="{band}"]').click()
+            expect(page.locator('.calorie-age-shell')).to_have_attribute('data-age-band',band)
+            page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
+            expect(page.locator('[id^="calorie-tab-"]')).to_have_count(5 if band=='adult' else 2)
+            if band=='adult':
+                ok('Adult buttons restore their exact original appearance',styles()==adult_style)
+                continue
+            shapes.append(styles()[0])
+            ok(band+': button shape and palette differ from adult',styles()[0]!=adult_style[0] and styles()[1]!=adult_style[1])
+            page.locator('#calorie-tab-packaged').focus();page.keyboard.press('ArrowRight')
+            expect(page.locator('#calorie-tab-basic')).to_have_attribute('aria-selected','true')
+            ok(band+': keyboard tab navigation still works')
+            page.locator('#calorie-tab-packaged').click()
+            for width in [360,412,1440]:
+                page.set_viewport_size({'width':width,'height':1000})
+                ok(f'{band} {width}px: no horizontal overflow',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+            page.set_viewport_size({'width':360,'height':900})
+            page.locator('.calorie-age-shell').screenshot(path=str(OUT/f'age-{band}-app-360.png'))
+        ok('Child and teen have distinct button shapes',len(set(shapes))==2)
         ok('No JavaScript runtime errors',not report['errors'])
         report['status']='passed'
     except Exception as e:
