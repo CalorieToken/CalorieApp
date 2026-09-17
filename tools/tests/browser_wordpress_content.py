@@ -126,13 +126,17 @@ def verify_title_banners(context):
     ok('Coloured initials apply only to banner titles',page.evaluate("[...CSS.highlights.get('ctstyle-initials')].every(r=>r.startContainer.parentElement.closest('.ctstyle-title,.ctstyle-shared-banner')) && !document.querySelector('#ordinary-title').classList.contains('ctstyle-initials-fallback')"))
     for width in [360,412,1440]:
         page.set_viewport_size({'width':width,'height':1000})
+        page.screenshot(path=str(OUT/f'title-banners-{width}.png'),full_page=True)
+        # ::first-letter creates a separate rect on the same line. Count line
+        # positions, not fragments, to detect a real wrap of the joined name.
+        rects=page.locator('#joined-title').evaluate('n=>{const r=document.createRange();r.selectNodeContents(n);return [...r.getClientRects()].map(r=>({x:r.x,y:r.y,width:r.width,height:r.height}))}')
+        report.setdefault('joined_title_rects',{})[str(width)]=rects
         ok(f'{width}px all long banner text fits without clipping',page.locator('.ctstyle-title,.ctstyle-shared-banner').evaluate_all('''nodes=>nodes.every(n=>{
             const title=n.matches('h1')?n:n.querySelector('h1'),range=document.createRange();range.selectNodeContents(title);
             const box=n.getBoundingClientRect();return n.scrollWidth<=n.clientWidth+1&&n.scrollHeight<=n.clientHeight+1&&[...range.getClientRects()].every(r=>r.left>=box.left-1&&r.right<=box.right+1&&r.top>=box.top-1&&r.bottom<=box.bottom+1)
         })'''))
-        ok(f'{width}px joined CalorieApp remains on one line',page.locator('#joined-title').evaluate('n=>{const r=document.createRange();r.selectNodeContents(n);return r.getClientRects().length===1}'))
+        ok(f'{width}px joined CalorieApp remains on one line',bool(rects) and max(r['y'] for r in rects)-min(r['y'] for r in rects)<1)
         ok(f'{width}px long banner expands to its content',page.locator('#long-banner').bounding_box()['height']>page.locator('#joined-banner').bounding_box()['height'])
-        page.screenshot(path=str(OUT/f'title-banners-{width}.png'),full_page=True)
     page.set_viewport_size({'width':360,'height':1000})
     page.locator('#long-title').evaluate("n=>{n.dir='rtl';n.textContent='تعرّف على تطبيق CalorieApp ومجتمع CalorieToken وخيارات الطعام المتاحة'}")
     page.wait_for_function("[...CSS.highlights.get('ctstyle-initials')].some(r=>r.toString()==='A')")
