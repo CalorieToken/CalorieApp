@@ -128,7 +128,12 @@ with sync_playwright() as playwright:
 
         summary.locator('[data-ct-nutrition-period="month"]').click()
         page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').dataset.state === 'loading'")
-        app_frame.wait_for_function("window.lastNutritionPeriod && window.lastNutritionPeriod.period === 'month'")
+        # This fixture deliberately hides its iframe. Chromium can suspend
+        # animation frames there, so wait for the message on a timer instead.
+        app_frame.wait_for_function(
+            "window.lastNutritionPeriod && window.lastNutritionPeriod.period === 'month'",
+            polling=50,
+        )
         received = app_frame.evaluate("window.lastNutritionPeriod")
         ok("Period control sends only the fixed preset to the exact app frame", received == {
             "type": "calorieapp:nutrition-period", "version": 1, "period": "month",
