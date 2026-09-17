@@ -90,7 +90,7 @@ protected = ['historic-header','historic-title','historic-footer','historic-imag
 def protected_snapshot(page):
     return page.evaluate('''ids => Object.fromEntries(ids.map(id=>{
         const n=document.getElementById(id),clone=n.cloneNode(true);
-        [clone,...clone.querySelectorAll('*')].forEach(x=>{if(x.hasAttribute('class'))x.setAttribute('class',x.className.split(/\\s+/).filter(c=>!c.startsWith('ct-content-')).join(' '))});
+        [clone,...clone.querySelectorAll('*')].forEach(x=>{if(x.hasAttribute('class')){const names=x.className.split(/\\s+/).filter(c=>c&&!c.startsWith('ct-content-')).join(' ');if(names)x.setAttribute('class',names);else x.removeAttribute('class')}});
         const unchanged=[n,...n.querySelectorAll('*')].filter(x=>!x.closest('.xl-card')&&!(x.closest('.brz-menu-simple')&&x.closest('a,button,summary,label')));
         return [id,{html:clone.outerHTML,style:unchanged.map(x=>{const s=getComputedStyle(x);return [s.fontFamily,s.fontSize,s.color,s.backgroundColor,s.backgroundImage,s.backgroundSize,s.borderRadius,s.borderWidth,s.padding,s.transform,s.animationName,s.display]})}]
     }))''', protected)
@@ -109,7 +109,10 @@ with sync_playwright() as pw:
         page.add_style_tag(content=CSS)
         page.add_script_tag(content=SCRIPT)
         page.wait_for_function("document.querySelector('#app-card').classList.contains('ct-content-card')")
-        ok('Historical header, title, footer, artwork, sliders, animation and native app are preserved',before==protected_snapshot(page))
+        after=protected_snapshot(page)
+        if before!=after:
+            report['preservation_differences']={key:{'before':before[key],'after':after[key]} for key in before if before[key]!=after[key]}
+        ok('Historical header, title, footer, artwork, sliders, animation and native app are preserved',before==after)
         ok('Page background image and color are preserved',background==page.locator('body').evaluate('n=>[getComputedStyle(n).backgroundImage,getComputedStyle(n).backgroundColor]'))
         ok('App card overrides the installed serif typography', 'Segoe UI' in page.locator('#app-card p').first.evaluate('(n)=>getComputedStyle(n).fontFamily'))
         ok('App card is white with a thin border',page.locator('#app-card').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(255, 255, 255)' && getComputedStyle(n).borderLeftWidth==='1px'"))
