@@ -6,7 +6,6 @@ import { discoveryCopy, edibleGrams, searchUsda, similarFoodNames, usdaLogItem, 
 import type { UsdaCatalogue, UsdaFood } from "@/lib/foodDiscovery";
 import { foodExperience } from "@/lib/foodExperience";
 import { FoodImage } from "@/components/FoodImage";
-import { postNavigationTarget } from "@/lib/navigationBridge";
 
 /** The existing source, gram calculation and explicit-save callback are retained. */
 export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEditing, confirmation, feedback }: {
@@ -31,6 +30,11 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
   const [limit, setLimit] = useState(6);
   const request = useRef<AbortController | null>(null);
   const detail = useRef<HTMLDivElement>(null);
+  const resultsList = useRef<HTMLUListElement>(null);
+  const listPosition = useRef(0);
+  const restorePosition = useRef<number | null>(null);
+  const [anchorId, setAnchorId] = useState<number | null>(null);
+  const [history, setHistory] = useState<{ food: UsdaFood; amount: string; amountLocale: string; scrollTop: number }[]>([]);
   const queryInput = useRef<HTMLInputElement>(null);
   const grams = edibleGrams(amount, amountLocale);
   const values = selected ? usdaNutrition(selected, grams ?? NaN) : null;
@@ -46,17 +50,19 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
     active?.abort();
   }, []);
   useEffect(() => {
+    if (restorePosition.current !== null && resultsList.current) {
+      resultsList.current.scrollTop = restorePosition.current;
+      restorePosition.current = null;
+    }
     if (!selected) return;
     detail.current?.focus({ preventScroll: true });
-    detail.current?.scrollIntoView({ block: "start", behavior: "auto" });
-    postNavigationTarget("calorieapp-add", detail.current);
   }, [selected]);
 
   function editQuery(value: string) {
     if (disabled || state === "loading") return;
     onEditing();
     setQuery(value);
-    setSelected(null);
+    setSelected(null); setAnchorId(null); setHistory([]);
     setSubmitted(null);
     setState("idle");
   }
@@ -64,7 +70,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (disabled || state === "loading" || !query.trim()) return;
-    onEditing(); setSelected(null); setLimit(6); setSubmitted(query.trim());
+    onEditing(); setSelected(null); setAnchorId(null); setHistory([]); setLimit(6); setSubmitted(query.trim());
     if (catalogue) return;
     const controller = new AbortController(); request.current = controller;
     setState("loading");
@@ -85,44 +91,43 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
     }
   }
 
-  function choose(food: UsdaFood) {
+  function choose(food: UsdaFood, alternative = false) {
     if (disabled) return;
+    if (!selected || !alternative) {
+      setAnchorId(food.fdc_id);
+      listPosition.current = resultsList.current?.scrollTop ?? 0;
+      setHistory([]);
+    } else {
+      setHistory(previous => [...previous, { food: selected, amount, amountLocale, scrollTop: resultsList.current?.scrollTop ?? 0 }]);
+    }
     onEditing(); setSelected(food); setAmount("100"); setAmountLocale(locale);
   }
   function changeFood() {
     if (disabled) return;
-    onEditing(); setSelected(null);
-    queryInput.current?.focus();
+    const trigger = resultsList.current?.querySelector<HTMLButtonElement>(`button[data-fdc-id="${anchorId}"]`);
+    onEditing(); setSelected(null); setAnchorId(null); setHistory([]);
+    restorePosition.current = listPosition.current;
+    trigger?.focus({ preventScroll: true });
   }
 
-  return <section data-testid="usda-food-search" className="min-w-0 rounded-xl border border-brand-secondary/20 bg-white p-4 sm:p-5" lang={ui.locale} dir={ui.direction}>
-    <h2 className="text-lg font-bold text-brand-primary">{ui.copy.sourceTitle} <span className="text-sm font-normal">(USDA)</span></h2>
-    {!selected ? <>
-      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{ui.copy.sourceIntro}</p>
-      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{ui.copy.sourceOriginal}</p>
-    </> : null}
-    <form onSubmit={search} className="mt-4 flex flex-wrap items-end gap-3">
-      <label className="min-w-0 flex-1 basis-48 text-sm font-semibold text-brand-primary">{copy.query}
-        <input ref={queryInput} value={query} onChange={event => editQuery(event.target.value)} maxLength={160} required
-          disabled={disabled || state === "loading"} type="search" autoComplete="off"
-          className="mt-2 min-h-11 w-full min-w-0 rounded-lg border border-brand-secondary/40 px-3 text-base" />
-      </label>
-      <button type="submit" disabled={disabled || state === "loading" || !query.trim()}
-        className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{state === "loading" ? copy.loading : copy.search}</button>
-    </form>
-    <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
-    {!selected && matches.length ? <ul className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
-      <button type="button" disabled={disabled} onClick={() => choose(food)}
-        className="min-h-11 w-full rounded-lg border border-brand-secondary/20 p-3 text-start text-sm text-brand-primary hover:bg-brand-bg disabled:opacity-50">
-        <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
-        <bdi className="mt-1 block text-xs text-brand-secondary">FDC {food.fdc_id} &middot; {food.data_type} &middot; {food.edition}</bdi>
-      </button>
-    </li>)}</ul> : null}
-    {!selected && matches.length > limit ? <button type="button" disabled={disabled} onClick={() => setLimit(value => value + 6)} className="mt-3 min-h-11 rounded-full border border-brand-secondary px-4 py-2 text-sm text-brand-secondary">{copy.more}</button> : null}
-    {selected && values ? <div ref={detail} data-testid="usda-selected-food" tabIndex={-1} className="mt-5 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg p-4 focus-visible:ring-2 focus-visible:ring-brand-secondary">
+
+  function previousFood() {
+    const previous = history[history.length - 1];
+    if (!previous || disabled) return;
+    onEditing();
+    setHistory(current => current.slice(0, -1));
+    setSelected(previous.food); setAmount(previous.amount); setAmountLocale(previous.amountLocale);
+    restorePosition.current = previous.scrollTop;
+  }
+
+  const selectedCard = selected && values ? <div ref={detail} data-testid="usda-selected-food" tabIndex={-1} className="mt-5 min-w-0 rounded-xl border-2 border-brand-secondary/30 bg-brand-bg p-4 focus-visible:ring-2 focus-visible:ring-brand-secondary">
+      {history.length ? <button type="button" onClick={previousFood} disabled={disabled}
+        className="mb-3 min-h-11 w-full rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-start text-sm font-semibold text-brand-secondary disabled:opacity-50">
+        {copy.backToProduct.replace("{food}", history[history.length - 1].food.description)}
+      </button> : null}
       <button type="button" onClick={changeFood} disabled={disabled} className="mb-3 min-h-11 rounded-full border border-brand-secondary bg-white px-4 py-2 text-sm font-semibold text-brand-secondary disabled:opacity-50">{ui.copy.changeFood}</button>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-        <FoodImage item={{ product_name: selected.description, image_url: null, barcode: null,
+        <FoodImage item={{ product_name: selected.description, category: selected.category, image_url: null, barcode: null,
           brand: `USDA FoodData Central · FDC ${selected.fdc_id}` }} size={96}
           className="h-24 w-full shrink-0 sm:w-24" />
         <div className="min-w-0 flex-1">
@@ -148,10 +153,37 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
       <a href={`https://fdc.nal.usda.gov/food-details/${selected.fdc_id}/nutrients`} target="_blank" rel="noopener noreferrer"
         className="mt-2 block min-h-11 break-words py-2 text-sm font-semibold text-brand-secondary underline">{copy.source} &middot; <bdi>FDC {selected.fdc_id}</bdi></a>
       {alternatives.length ? <details className="mt-3 border-t border-brand-secondary/20 pt-2"><summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-brand-primary">{copy.alternatives}</summary>
-        <p className="text-sm text-brand-secondary">{copy.suggestionNote}</p><ul className="mt-2 space-y-2">{alternatives.map(food => <li key={food.fdc_id}><button type="button" disabled={disabled} onClick={() => choose(food)}
+        <p className="text-sm text-brand-secondary">{copy.suggestionNote}</p><ul className="mt-2 space-y-2">{alternatives.map(food => <li key={food.fdc_id}><button type="button" disabled={disabled} onClick={() => choose(food, true)}
           className="min-h-11 w-full rounded-lg border border-brand-secondary/30 bg-white p-3 text-start text-sm text-brand-secondary"><bdi lang="en">{food.description}</bdi></button></li>)}</ul>
       </details> : null}
-    </div> : feedback}
+    </div> : feedback;
+
+  return <section data-testid="usda-food-search" className="min-w-0 rounded-xl border border-brand-secondary/20 bg-white p-4 sm:p-5" lang={ui.locale} dir={ui.direction}>
+    <h2 className="text-lg font-bold text-brand-primary">{ui.copy.sourceTitle} <span className="text-sm font-normal">(USDA)</span></h2>
+    {<>
+      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{ui.copy.sourceIntro}</p>
+      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{ui.copy.sourceOriginal}</p>
+    </>}
+    <form onSubmit={search} className="mt-4 flex flex-wrap items-end gap-3">
+      <label className="min-w-0 flex-1 basis-48 text-sm font-semibold text-brand-primary">{copy.query}
+        <input ref={queryInput} value={query} onChange={event => editQuery(event.target.value)} maxLength={160} required
+          disabled={disabled || state === "loading"} type="search" autoComplete="off"
+          className="mt-2 min-h-11 w-full min-w-0 rounded-lg border border-brand-secondary/40 px-3 text-base" />
+      </label>
+      <button type="submit" disabled={disabled || state === "loading" || !query.trim()}
+        className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{state === "loading" ? copy.loading : copy.search}</button>
+    </form>
+    <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
+    {matches.length ? <ul ref={resultsList} style={{ overflowAnchor: "none" }} className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
+      <button type="button" disabled={disabled} data-fdc-id={food.fdc_id} aria-expanded={anchorId === food.fdc_id} onClick={() => choose(food)}
+        className="min-h-11 w-full rounded-lg border border-brand-secondary/20 p-3 text-start text-sm text-brand-primary hover:bg-brand-bg disabled:opacity-50">
+        <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
+        <bdi className="mt-1 block text-xs text-brand-secondary">FDC {food.fdc_id} &middot; {food.data_type} &middot; {food.edition}</bdi>
+      </button>
+      {anchorId === food.fdc_id ? selectedCard : null}
+    </li>)}</ul> : null}
+    {!selected && matches.length > limit ? <button type="button" disabled={disabled} onClick={() => setLimit(value => value + 6)} className="mt-3 min-h-11 rounded-full border border-brand-secondary px-4 py-2 text-sm text-brand-secondary">{copy.more}</button> : null}
+
     <details className="mt-4 border-t border-brand-secondary/20 pt-2">
       <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-brand-secondary">{ui.copy.sourceDetails}</summary>
       <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.usdaIntro}</p>

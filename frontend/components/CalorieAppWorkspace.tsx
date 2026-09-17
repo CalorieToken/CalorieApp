@@ -56,7 +56,7 @@ export function CalorieAppWorkspace() {
     setActiveTab(tab);
     if (focus) {
       const index = tabs.findIndex((item) => item.id === tab);
-      window.requestAnimationFrame(() => tabRefs.current[index]?.focus());
+      window.requestAnimationFrame(() => tabRefs.current[index]?.focus({ preventScroll: true }));
     }
   }
 
@@ -82,7 +82,7 @@ export function CalorieAppWorkspace() {
   const navigateFromJourney = useCallback((destination: "account" | "packaged" | "diary") => {
     setReturnToJourney(true);
     setActiveTab(destination);
-    window.requestAnimationFrame(() => document.getElementById(`calorie-tab-${destination}`)?.focus());
+    window.requestAnimationFrame(() => document.getElementById(`calorie-tab-${destination}`)?.focus({ preventScroll: true }));
   }, []);
 
   function openAccountTools(destination?: "export" | "import" | "session") {

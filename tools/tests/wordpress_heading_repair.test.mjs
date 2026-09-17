@@ -78,7 +78,7 @@ test('private aggregate payload is strictly validated in all eleven locales', ()
 
   for (const tag of ['en', 'nl', 'zh-Hans', 'hi', 'es', 'ar', 'fr', 'bn', 'pt', 'id', 'ur']) {
     const value = api.copy(tag);
-    for (const key of ['title', 'scope', 'periodTitle', 'day', 'week', 'month', 'all', 'loading', 'unavailable', 'details', 'coverage', 'empty', 'off', 'usda', 'other', 'note']) {
+    for (const key of ['title', 'scope', 'periodTitle', 'day', 'week', 'month', 'all', 'loading', 'unavailable', 'details', 'coverage', 'empty', 'off', 'usda', 'other', 'note', 'logged', 'loggedOne', 'noGrades', 'partial', 'gradeTitle', 'explanation']) {
       assert.ok(value[key]?.trim(), `${tag}.${key}`);
     }
   }
@@ -145,7 +145,7 @@ test('summary renders beside the app instead of enlarging Xaman and clears stale
   onMessage({ source: trustedFrameWindow, origin: 'https://app.calorietoken.net', data: ready });
   assert.equal(summary.hidden, false);
   assert.equal(summary.lang, 'nl');
-  assert.match(summary.querySelector('.ct-calorieapp-nutrition-coverage').textContent, /4 van 5/);
+  assert.match(summary.querySelector('.ct-calorieapp-nutrition-coverage').textContent, /4 van 7/);
   assert.equal(summary.querySelector('[data-ct-nutrition-source="usda"] dd').textContent, '1');
   assert.equal(summary.querySelector('[data-ct-nutrition-period="week"]').getAttribute('aria-pressed'), 'true');
   assert.equal(summary.querySelectorAll('.ct-calorieapp-nutrition-segment').length, 3);
@@ -171,6 +171,21 @@ test('summary renders beside the app instead of enlarging Xaman and clears stale
   });
   assert.equal(summary.lang, 'ar');
   assert.equal(summary.dir, 'rtl');
+
+  const unscored = {...ready, locale:'nl', total:3, known:0, missing:1,
+    counts:{A:0,B:0,C:0,D:0,E:0}, sources:{open_food_facts:1,usda:2,other:0}};
+  onMessage({source:trustedFrameWindow,origin:'https://app.calorietoken.net',data:unscored});
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-logged').textContent,'3 registraties gelogd');
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-coverage').textContent,'Wel gelogd, geen Nutri-Score beschikbaar.');
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-bar').hidden,true);
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-counts').hidden,true);
+  assert.match(summary.querySelector('.ct-calorieapp-nutrition-partial').textContent,/Zonder score: 3/);
+  onMessage({source:trustedFrameWindow,origin:'https://app.calorietoken.net',data:{...unscored,total:0,missing:0,sources:{open_food_facts:0,usda:0,other:0}}});
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-coverage').textContent,'Nog niets gelogd in deze periode.');
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-details').hidden,true);
+  onMessage({source:trustedFrameWindow,origin:'https://app.calorietoken.net',data:ready});
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-bar').hidden,false);
+  assert.equal(summary.querySelector('.ct-calorieapp-nutrition-details').hidden,false);
 
   onMessage({
     source: trustedFrameWindow,
@@ -441,8 +456,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.10/);
-  assert.match(php, /const VERSION = '1\.6\.10'/);
+  assert.match(php, /Version: 1\.6\.11/);
+  assert.match(php, /const VERSION = '1\.6\.11'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);

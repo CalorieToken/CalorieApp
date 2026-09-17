@@ -40,7 +40,7 @@ test('account and food tabs retain exclusive panels, with nested account guidanc
 
 test('tab keyboard behavior is complete and switching preserves mounted task state',()=>{
   for(const key of ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End']) assert.ok(workspace.includes(`"${key}"`),key);
-  assert.match(workspace,/requestAnimationFrame\(\(\) => tabRefs\.current\[index\]\?\.focus\(\)\)/);
+  assert.match(workspace,/requestAnimationFrame\(\(\) => tabRefs\.current\[index\]\?\.focus\(\{ preventScroll: true \}\)\)/);
   assert.match(workspace,/activeView=\{visibleTab === "account" \|\| visibleTab === "journey" \? null : visibleTab\}/);
   assert.match(component,/onOpenAccount/);
   assert.match(component,/type="button" onClick=\{onOpenAccount\}/);

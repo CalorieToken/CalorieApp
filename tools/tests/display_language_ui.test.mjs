@@ -172,6 +172,7 @@ test("actual food controls render the eleven languages and escape literal produc
     "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
+  imports["@/lib/foodIllustration"] = loadModule("../../frontend/lib/foodIllustration.ts", {});
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   const { SearchBar } = loadModule("../../frontend/components/SearchBar.tsx", imports);
@@ -194,7 +195,7 @@ test("actual food controls render the eleven languages and escape literal produc
     }));
     assert.ok(card.includes(renderedText(foodUi.formatFoodUi(copy[tag].logProduct, { product }))), tag);
     assert.ok(card.includes(renderedText(foodUi.formatFoodUi(sourceCopy[tag].fallbackAlt, { product }))), tag);
-    assert.ok(card.includes("food-placeholder-off.svg"), tag);
+    assert.ok(card.includes("food-illustrations/tea.svg"), tag);
     assert.ok(card.includes(renderedText(copy[tag].logFood)), tag);
     assert.ok(card.includes('<bdi dir="ltr">00123</bdi>'), tag);
     assert.doesNotMatch(card, /<b>Tea<\/b>/, tag);
@@ -218,6 +219,7 @@ test("the actual Nutri-Score control renders a recorded badge and an A–E indic
   const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
     "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
+  imports["@/lib/foodIllustration"] = loadModule("../../frontend/lib/foodIllustration.ts", {});
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;

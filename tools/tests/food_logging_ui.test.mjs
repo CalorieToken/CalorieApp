@@ -566,10 +566,10 @@ test("expanding a card reveals its portion region once and restores keyboard foc
   const props = { item: foods[0], isLogging: false, onLog() {}, formatNumber: String };
   h.render(props);
   h.render({ ...props, children: { type: "form", props: { children: "Portion controls" } } });
-  assert.deepEqual(h.focusEvents.map((event) => event.type), ["focus", "scroll"]);
+  assert.deepEqual(h.focusEvents.map((event) => event.type), ["focus"]);
   assert.equal(nodes(h.tree, (node) => node.props?.role === "region")[0].props["aria-label"], "Choose a portion for Banana");
   h.render({ ...props, children: { type: "form", props: { children: "Changed portion" } } });
-  assert.equal(h.focusEvents.length, 2, "Changing a portion must not scroll the page again");
+  assert.equal(h.focusEvents.length, 1, "Changing a portion must not scroll the page again");
   h.render(props);
   assert.equal(h.focusEvents.at(-1).element, "button");
   h.render({ ...props, children: { type: "form", props: {} } });
@@ -1168,7 +1168,7 @@ test('Similar choices preserve the normal portion flow and never save merely by 
   const compared=app.cards()[1].props.comparison;
   const selected=app.cards()[2].props.item;
   compared.props.onChoose(selected);app.render();
-  assert.equal(app.cards()[2].props.isSelected,true);
+  assert.equal(app.cards()[1].props.isSelected,true);
   assert.equal(app.controls().type,'form');
   assert.equal(app.requests.filter(r=>r.options?.method==='POST').length,0);
   const card=await harness('FoodCard');const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,comparison:{type:'details',props:{children:'Compare'}}});
@@ -1214,4 +1214,62 @@ test('Choosing a USDA portion requires explicit confirmation and uses the existi
   const payload=JSON.parse(writes[0].options.body);assert.equal(payload.brand,food.brand);assert.equal(payload.nutri_score,null);assert.equal(payload.barcode,null);assert.equal(payload.calories,Number(food.calories.toFixed(2)));
   nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.onChoose(food);app.render();nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.onEditing();app.render();
   assert.equal(nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.confirmation,null);
+});
+
+test('more alternatives can return to the original product and list without another request or forced scroll',async()=>{
+  const app=await harness(); await app.search('oats');
+  const original=app.cards()[1].props.item;
+  const list=nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0];
+  list.props.ref.current.scrollTop=147;
+  app.cards()[1].props.comparison.props.onSearch('oat');
+  app.render(); await app.flush();
+  const label=discoveryTranslations.en.backToProduct.replace('{food}',original.product_name);
+  const requests=app.requests.length;
+  button(app.tree,label).props.onClick(); app.render();
+  assert.equal(app.requests.length,requests,'Back must use the saved results');
+  assert.equal(nodes(app.tree,n=>n.type==='SearchBar')[0].props.query,'oats');
+  assert.equal(app.cards()[1].props.restoreDetails,true);
+  assert.equal(nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0].props.ref.current.scrollTop,147);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
+});
+
+test('restored product details exist on the first render before the list offset is restored',async()=>{
+  const card=await harness('FoodCard');
+  const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,restoreDetails:true});
+  const toggle=nodes(tree,n=>n.type==='button' && n.props?.['aria-expanded']===true)[0];
+  assert.ok(toggle);
+  assert.ok(nodes(tree,n=>n.props?.id===toggle.props['aria-controls']).length);
+});
+
+test('a logged product opens inside its selected row and toggles closed without a navigation jump',async()=>{
+  const app=await harness();await app.search();app.choose(0);app.submit();await app.flush();app.login();await app.flush();await app.period('all');
+  const getList=()=>nodes(app.tree,n=>n.type==='FoodLogList')[0];
+  const row=getList().props.logs[0];getList().props.onSelectLog(row);app.render();
+  assert.equal(getList().props.selectedLogId,row.id);
+  assert.match(text(getList().props.selectedDetails),/Banana/);
+  assert.equal(nodes(app.tree,n=>n.props?.['data-testid']==='food-log-inline-details').length,0,'No detached details above the list');
+  getList().props.onSelectLog(row);app.render();
+  assert.equal(getList().props.selectedLogId,null);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
+});
+
+test('USDA alternatives return to the exact previous food, grams and list position',async()=>{
+  const app=await harness('UsdaFoodSearch');
+  app.render({locale:'en',disabled:false,onChoose(){},onEditing(){}});
+  nodes(app.tree,n=>n.type==='input')[0].props.onChange({target:{value:'rice'}});app.render();
+  await nodes(app.tree,n=>n.type==='form')[0].props.onSubmit({preventDefault(){}});app.render();
+  const original=nodes(app.tree,n=>n.type==='button'&&n.props['data-fdc-id'])[0];
+  original.props.onClick();app.render();
+  const selected=()=>nodes(app.tree,n=>n.props?.['data-testid']==='usda-selected-food')[0];
+  const name=nodes(selected(),n=>n.type==='h3').map(text)[0];
+  nodes(selected(),n=>n.type==='input')[0].props.onChange({target:{value:'75'}});app.render();
+  const list=nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0];list.props.ref.current.scrollTop=181;
+  const alternative=nodes(selected(),n=>n.type==='details')[0];
+  nodes(alternative,n=>n.type==='button')[0].props.onClick();app.render();
+  button(app.tree,discoveryTranslations.en.backToProduct.replace('{food}',name)).props.onClick();app.render();
+  assert.equal(nodes(selected(),n=>n.type==='h3').map(text)[0],name);
+  assert.equal(nodes(selected(),n=>n.type==='input')[0].props.value,'75');
+  assert.equal(list.props.ref.current.scrollTop,181);
+  assert.equal(app.requests.length,1);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
 });

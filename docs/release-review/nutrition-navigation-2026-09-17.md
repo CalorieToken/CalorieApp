@@ -1,0 +1,65 @@
+# Nutrition summary, product illustrations and stable navigation
+
+This change follows the user's video of a logged week with an empty score bar,
+and their reports of jumps when opening diary entries and alternative products.
+It is based on the same source tree as live release
+`6ba4acc4f1866bd3155e17b0bf69d84a295c5b81` (PR #146).
+
+## Changes
+
+- Heading Repair 1.6.11 restores the missing A–E segment colours. The summary
+  shows the number of logged entries, how many have a supplied score, and why
+  a logged period can have no score distribution. Empty periods have their own
+  message. Unscored food still counts; no nutrition grade is invented.
+- The compact summary has larger text and 44px period controls, with copy in
+  all eleven supported display languages.
+- Missing, rejected and broken product photos use 38 original local food
+  illustrations. A fixed multilingual name matcher chooses the picture, with
+  a supplied USDA category as a fallback. Unrecognised foods use a neutral
+  meal illustration. Real allowed source photos remain preferred.
+- Diary details open inside the clicked row. Closing restores focus to that
+  row without scrolling the outer page.
+- Alternative searches retain a stack of the original results, query and list
+  position. A named back button restores the original product without another
+  request. USDA alternatives also restore the previous grams and locale.
+- Portion forms stay beside the originating product. Routine search, result,
+  detail and tab focus uses `preventScroll`; duplicate child/parent scroll
+  commands were removed. The WordPress bridge only moves an off-screen
+  destination into view, using one immediate adjustment.
+
+## Navigation audit
+
+Reviewed packaged search and retries, product detail/portion opening and
+cancellation, alternative selection/search/back, USDA results/grams/back,
+diary detail/filter/close, workspace tabs, account/guide returns and explicit
+guide navigation. Deliberate navigation to a separate guide section retains
+its destination request. Source/origin validation on the parent bridge is
+unchanged.
+
+## Verification
+
+- Full local JavaScript regression suite: 413 passed after the final edits,
+  including category safety and rendering restored details before resetting
+  the remembered list offset.
+- TypeScript `--noEmit` passed; the final Next.js production build passed.
+- Five Heading Repair packaging tests passed; the ZIP builder verified all
+  25 packaged files against the source tree.
+- Original SVG contact sheet rendered and visually inspected.
+- Existing isolated CI browser checks were updated to cover the coloured bar,
+  an ungraded logged week, product-specific fallbacks and inline diary details.
+  They have not run on this branch: automatic approval review blocked the
+  GitHub push pending explicit permission to publish the changed source.
+  No pull request or deployment was created.
+- The connected browser blocks the local preview. No claim of a completed
+  live mobile/browser acceptance is made from the unit tests or contact sheet.
+
+## Release and rollback
+
+The app changes require a frontend release; the upper WordPress summary and
+outer-page scroll adjustment require Heading Repair 1.6.11. The ZIP alone
+does not publish the frontend. No backend, database, authentication or account
+data changes are included. Keep Heading Repair 1.6.10 and frontend commit
+`6ba4acc4f1866bd3155e17b0bf69d84a295c5b81` available for rollback.
+
+Prepared ZIP SHA-256:
+`5949750c076f6694548d407cb8b87fdd9ce490b0dfdb05ca939180970403ad9c`.
