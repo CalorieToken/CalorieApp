@@ -45,13 +45,16 @@ unchanged.
 - Five Heading Repair packaging tests passed; the ZIP builder verified all
   25 packaged files against the source tree.
 - Original SVG contact sheet rendered and visually inspected.
-- Existing isolated CI browser checks were updated to cover the coloured bar,
-  an ungraded logged week, product-specific fallbacks and inline diary details.
-  They have not run on this branch: automatic approval review blocked the
-  GitHub push pending explicit permission to publish the changed source.
-  No pull request or deployment was created.
-- The connected browser blocks the local preview. No claim of a completed
-  live mobile/browser acceptance is made from the unit tests or contact sheet.
+- Food UX CI run 35267251414 passed: 413 JavaScript and 340 backend tests,
+  production build, packaging/PHP checks, and isolated browser checks for food,
+  account/profile, account guides and the WordPress score summary. Food browser:
+  80 checks; heading nutrition browser: 71 checks; guide browser: 47 checks.
+- WordPress content styling CI run 35267251484 passed.
+- Browser coverage includes all 11 display languages and 360/412/1440px widths.
+- Live verification confirmed the deployed build ID, a successfully loaded rice
+  illustration and details inside the selected row. Choosing a rice alternative
+  and returning restored the exact original record and its 75g amount. This
+  check used the public search flow and made no diary or account writes.
 
 ## Release and rollback
 
@@ -63,3 +66,24 @@ data changes are included. Keep Heading Repair 1.6.10 and frontend commit
 
 Prepared ZIP SHA-256:
 `5949750c076f6694548d407cb8b87fdd9ce490b0dfdb05ca939180970403ad9c`.
+
+## Live release — 17 September 2026
+
+The user approved GitHub publication and deployment after passing browser
+checks. PR #149 merged as `905cba09d389da9069015fba81d398937f74c33f`.
+The merged tree `a47eaef2bb66c38c0d052a6933c1940ee0117c19` exactly matches
+the tested source tree. The existing release branch was fast-forwarded.
+Only the existing frontend service was deployed; plans and backend deployment
+were unchanged.
+
+Render deploy `dep-dam4b4fcgkoc7389rr90` became live at 19:56:16 UTC.
+`https://app.calorietoken.net/` exposes the matching build ID. No new
+application errors were returned by the post-deploy Render error-log check.
+
+WordPress still served Heading Repair 1.6.10 during verification. Installing
+the previously supplied 1.6.11 ZIP remains necessary for the upper summary
+and parent-page scroll change. Frontend publication does not install that ZIP.
+
+- Pull request: https://github.com/CalorieToken/CalorieApp/pull/149
+- Food/browser CI: https://github.com/CalorieToken/CalorieApp/actions/runs/35267251414
+- WordPress CI: https://github.com/CalorieToken/CalorieApp/actions/runs/35267251484
