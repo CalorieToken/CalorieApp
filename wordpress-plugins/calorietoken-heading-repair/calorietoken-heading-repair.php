@@ -2,19 +2,32 @@
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.6.4
+ * Version: 1.6.5
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.6.4';
-function source_matches($name, $hashes) {
-    $path = WP_PLUGIN_DIR . '/calorietoken-site-style/' . $name;
+const VERSION = '1.6.5';
+function plugin_source_matches($plugin, $name, $hashes) {
+    $path = WP_PLUGIN_DIR . '/' . $plugin . '/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
     $actual = hash_file('sha256', $path);
     return is_string($actual) && in_array($actual, $hashes, true);
+}
+function source_matches($name, $hashes) {
+    return plugin_source_matches('calorietoken-site-style', $name, $hashes);
+}
+function bridge_session_matches() {
+    return defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
+        && CALORIEAPP_IDENTITY_BRIDGE_VERSION === '0.3.29'
+        && plugin_source_matches('calorieapp-identity-bridge', 'assets/calorieapp-site-session.js', array(
+            '9d1bfe78004f23c3ca825d81fe5dc8d0898b7a497f980692d322a5881acc63cf',
+            // Same reviewed JavaScript if the packaging layer removed only
+            // the final empty newline.
+            '4e476bed175cf066db377b3b7ff1489d7aad95f3c3abf3fa77ca4a65bc0cacf4'
+        ));
 }
 function compatibility() {
     $main = source_matches('calorietoken-site-style.php', array(
@@ -89,6 +102,16 @@ function enqueue() {
             $map[$entry['handle']] = array('source' => $entry['source'], 'replacement' => $entry['replacement']);
         }
     }
+    if (bridge_session_matches()) {
+        // Identity Bridge 0.3.29 queues this controller from wp_footer after
+        // wp_enqueue_scripts. Register the exact-handle URL substitution now;
+        // it is applied only if that known script is eventually printed.
+        $map['calorieapp-identity-bridge-site-session'] = array(
+            'plugin' => 'calorieapp-identity-bridge',
+            'source' => 'calorieapp-site-session.js',
+            'replacement' => 'site-session-repair.js'
+        );
+    }
     if (!$map) { return; }
     // Keep the original handle, dependencies, data, and inline scripts. Only the
     // URL of the exact known asset is substituted. The installed files are untouched.
@@ -97,7 +120,8 @@ function enqueue() {
         $source_host = strtolower((string) wp_parse_url($src, PHP_URL_HOST));
         if (!in_array($source_host, array('calorietoken.net', 'www.calorietoken.net'), true)) { return $src; }
         $path = (string) wp_parse_url($src, PHP_URL_PATH);
-        $ending = '/calorietoken-site-style/assets/' . $map[$handle]['source'];
+        $plugin = isset($map[$handle]['plugin']) ? $map[$handle]['plugin'] : 'calorietoken-site-style';
+        $ending = '/' . $plugin . '/assets/' . $map[$handle]['source'];
         if (substr($path, -strlen($ending)) !== $ending) { return $src; }
         return asset_url($map[$handle]['replacement']);
     }, 1000, 2);
@@ -105,9 +129,15 @@ function enqueue() {
 function admin_notice() {
     if (!current_user_can('activate_plugins')) { return; }
     $ok = compatibility();
-    if (!in_array(false, $ok, true)) { return; }
+    $bridge_expected = defined('CALORIEAPP_IDENTITY_BRIDGE_VERSION')
+        && CALORIEAPP_IDENTITY_BRIDGE_VERSION === '0.3.29';
+    $bridge_ok = !$bridge_expected || bridge_session_matches();
+    if (!in_array(false, $ok, true) && $bridge_ok) { return; }
     $message = 'CalorieToken repair: one or more installed sources differ from the saved, tested Site Style 1.4.46 files or Site Style is missing. ';
     $message .= 'Only exact matching assets were enabled; non-matching overrides stayed off. ';
+    if (!$bridge_ok) {
+        $message .= 'The Identity Bridge 0.3.29 session controller also differs, so the mobile login/logout repair stayed off. ';
+    }
     $message .= 'No installed files were overwritten. Reconcile the current source before changing the compatibility checks.';
     echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
 }

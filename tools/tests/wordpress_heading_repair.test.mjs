@@ -15,6 +15,7 @@ const readme = fs.readFileSync(new URL('README.txt', root), 'utf8');
 const helpBootstrap = fs.readFileSync(new URL('assets/help-label-bootstrap.js', root), 'utf8');
 const helpSource = fs.readFileSync(new URL('assets/help.js', root), 'utf8');
 const languageBootstrap = fs.readFileSync(new URL('assets/language-bootstrap.js', root), 'utf8');
+const siteSessionRepair = fs.readFileSync(new URL('assets/site-session-repair.js', root), 'utf8');
 const helpLabels = JSON.parse(fs.readFileSync(new URL('assets/help-link-labels.json', root), 'utf8'));
 const helpTopics = JSON.parse(fs.readFileSync(new URL('assets/help-topic-additions.json', root), 'utf8'));
 const mascot = fs.readFileSync(new URL('assets/caloriehelp-mascot-v2.png', root));
@@ -435,12 +436,16 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.4/);
-  assert.match(php, /const VERSION = '1\.6\.4'/);
+  assert.match(php, /Version: 1\.6\.5/);
+  assert.match(php, /const VERSION = '1\.6\.5'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
   assert.match(php, /calorietoken-nutrition-summary/);
+  assert.match(php, /CALORIEAPP_IDENTITY_BRIDGE_VERSION === '0\.3\.29'/);
+  assert.match(php, /9d1bfe78004f23c3ca825d81fe5dc8d0898b7a497f980692d322a5881acc63cf/);
+  assert.match(php, /calorieapp-identity-bridge-site-session/);
+  assert.match(php, /site-session-repair\.js/);
   assert.match(php, /array\('calorietoken-app-focus'\)/);
   assert.match(source, /event\.source!==frame\.contentWindow/);
   assert.match(source, /allowedOrigins\.includes\(event\.origin\)/);
@@ -463,6 +468,10 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(appFocusSource, /url\.pathname==='\/'/);
   assert.doesNotMatch(appFocusSource, /frame\.src\s*=/);
   assert.match(languageBootstrap, /function syncEmbeds\(\)/);
+  assert.match(siteSessionRepair, /var JOINT_LOGOUT_TIMEOUT = 100000/);
+  assert.match(siteSessionRepair, /normalizedPath\(window\.location\.pathname\) === normalizedPath\(appPage\.pathname\)/);
+  assert.match(siteSessionRepair, /logoutFrame\.className = "calorieapp-sitewide-logout-frame"/);
+  assert.doesNotMatch(siteSessionRepair, /logoutFrame\.hidden\s*=\s*true/);
   assert.match(languageBootstrap, /root\.dataset\.locale=locale/);
   assert.match(appFocusSource, /data-calorieapp-loading-reveal/);
   assert.match(appFocusSource, /event\.stopPropagation\(\)/);

@@ -1,7 +1,20 @@
-CalorieToken Heading and Language Repair 1.6.4
+CalorieToken Heading and Language Repair 1.6.5
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
+
+Version 1.6.5 repairs the two mobile identity hand-offs reported after the
+1.6.4 acceptance. The site-wide Log out action now keeps its trusted
+CalorieApp bridge alive for the app's full bounded logout window instead of
+removing it after 30 seconds, and uses an off-screen one-pixel frame rather
+than a display:none frame that privacy-focused mobile browsers may defer. The
+legacy QR login intent also treats /index.php/calorieapp/ and the canonical
+/calorieapp/ redirect as the same page, so the trusted CalorieApp frame starts
+the existing joint Xaman login automatically after the navigation. The repair
+replaces only the public URL of the exact reviewed Identity Bridge 0.3.29
+site-session controller; the installed Bridge file, authentication endpoints,
+proof checks, logout URL and CalorieApp code remain untouched. A different
+Bridge version or byte hash fails closed.
 
 Version 1.6.4 absorbs the live Additional CSS v4 regression repair into the
 versioned companion. It restores the original account/login controls, aligns the

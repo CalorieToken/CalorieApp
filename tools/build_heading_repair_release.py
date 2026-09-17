@@ -32,6 +32,7 @@ FILES = (
     "assets/site-discovery.js",
     "assets/site-menu-pages.js",
     "assets/site-ready-languages.js",
+    "assets/site-session-repair.js",
     "assets/site-testnet.js",
     "assets/site-tokenomics.js",
     "calorietoken-heading-repair.php",
