@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+import unicodedata
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -65,6 +66,7 @@ class FoodLogOverview(BaseModel):
     fat: float
     carbohydrates: float
     grades: dict[str, int]
+    sources: dict[str, int]
 
 
 class FoodSearchResult(BaseModel):
@@ -171,11 +173,28 @@ class IdentityStateValidationResponse(BaseModel):
     valid: bool
     expires_at: datetime
     locale: str
+    code_transport: Literal["backend_v1"] = "backend_v1"
 
     @field_validator("expires_at", mode="after")
     @classmethod
     def serialize_expires_at_as_utc(cls, value: datetime) -> datetime:
         return _ensure_utc(value)
+
+
+class BridgeCodeRequest(BaseModel):
+    """Identity asserted only by the authenticated WordPress server."""
+
+    state: str = Field(min_length=32, max_length=255, pattern=r"^[A-Za-z0-9._~-]+$")
+    external_subject: str = Field(min_length=1, max_length=120)
+    xrpl_address: str = Field(min_length=25, max_length=34, pattern=r"^r[1-9A-HJ-NP-Za-km-z]+$")
+    locale: str = Field(min_length=2, max_length=16)
+
+
+class BridgeCodeResponse(BaseModel):
+    code: str
+    expires_at: datetime
+    jti: str
+    locale: str
 
 
 class IdentityClaimsResponse(BaseModel):
@@ -193,11 +212,43 @@ class IdentityClaimsResponse(BaseModel):
         return _ensure_utc(value)
 
 
+class NicknameUpdateRequest(BaseModel):
+    """Only the authenticated account may set its private display nickname."""
+
+    model_config = ConfigDict(extra="forbid")
+    user_id: str = Field(min_length=1, max_length=255)
+    nickname: str | None
+
+    @field_validator("nickname", mode="after")
+    @classmethod
+    def valid_nickname(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = unicodedata.normalize("NFC", value).strip()
+        if not 2 <= len(normalized) <= 32 or any(
+            ord(char) < 32 or 127 <= ord(char) <= 159 or char in "<>"
+            or 0x202A <= ord(char) <= 0x202E or 0x2066 <= ord(char) <= 0x2069
+            for char in value
+        ):
+            raise ValueError("Nickname must contain 2–32 visible characters")
+        return normalized
+
+
+class WordpressProfileRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    external_subject: str = Field(min_length=1, max_length=255, pattern=r"^wp:[^\s:]+:[1-9][0-9]*$")
+
+
+class NicknameResponse(BaseModel):
+    nickname: str | None
+
+
 class CurrentUserResponse(BaseModel):
     """Current authenticated user information."""
 
     user_id: str
     created_at: datetime
+    nickname: str | None = None
 
     @field_validator("created_at", mode="after")
     @classmethod
@@ -210,6 +261,7 @@ class AccountExportAccount(BaseModel):
 
     user_id: str
     status: str
+    nickname: str | None = None
     created_at: datetime
     updated_at: datetime
     last_authenticated_activity_at: datetime

@@ -104,6 +104,7 @@ def test_current_public_route_budgets_are_explicit_and_reviewable() -> None:
             60,
         ),
         ("POST", "/api/identity/callback"): ("identity_callback", 30, 60),
+        ("POST", "/api/identity/bridge/code"): ("identity_bridge_code", 120, 60),
         ("POST", "/api/identity/login/status"): (
             "identity_login_status",
             240,

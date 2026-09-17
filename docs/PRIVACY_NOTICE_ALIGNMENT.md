@@ -115,3 +115,26 @@ Article 15's access right and Article 17's erasure right and exceptions:
 This record is an engineering control, not independent legal advice or
 certification. It publishes nothing, changes no feature flag, performs no
 migration or deployment and mutates no live personal data.
+
+## Prepared account nickname change — 17 September 2026
+
+The account-profile candidate replaces the former unbound, tab-only nickname.
+It adds one optional 2–32-character nickname to the private CalorieApp account.
+The authenticated account can save, edit and remove it. Signing out clears its
+visible client state; signing in to the same account retrieves it from the
+existing persistent account database. Account erasure includes the field.
+
+The private v2 account export adds an optional `account.nickname` field. The
+import validator accepts older v2 exports without it; v1 is unchanged. Food-data
+import never copies a nickname onto another account. No nickname is written to
+Xaman, XRPL, public IPFS, browser storage or WordPress user metadata. The optional
+WordPress widget reads the current signed-in user's nickname through an uncached,
+authenticated server-to-server bridge. Its browser refresh message contains no
+nickname or account identifier. No profile lookup is exposed through the public
+frontend proxy for another account.
+
+This is a prepared implementation, not a claim that the public notices or live
+services have already changed. The other WordPress workstream must coordinate
+its Help and privacy explanations with the rollout; old tab-only descriptions
+must not accompany the deployed profile feature. Existing retention and deletion
+policies and release flags are unchanged.

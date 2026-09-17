@@ -1655,6 +1655,41 @@ class TestIdentityCallbackFlow:
         assert replay.status_code == 400
         assert "already consumed" in replay.json()["detail"]
 
+    @pytest.mark.parametrize("content_type", ["text/html; charset=UTF-8", "Text/HTML"])
+    def test_html_hosting_check_has_safe_error_and_no_authenticated_session(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch, caplog, content_type: str
+    ):
+        monkeypatch.setattr(main_module, "_WORDPRESS_BRIDGE_SECRET", "synthetic-test-secret")
+        monkeypatch.setattr(main_module, "_SESSION_COOKIE_SECURE", False)
+        monkeypatch.setattr(
+            main_module.httpx, "post",
+            lambda *args, **kwargs: httpx.Response(
+                200, headers={"Content-Type": content_type},
+                text="<html><title>One moment, please...</title>PRIVATE-PAGE-DATA</html>",
+            ),
+        )
+        start = client.post("/api/identity/login/start").json()
+        callback_payload = {"code": "synthetic-code", "state": start["state"]}
+        failed = client.post("/api/identity/callback", json=callback_payload)
+        assert failed.status_code == 502
+        assert failed.json() == {"detail": {"code": "wordpress_bridge_html_response"}}
+        assert SESSION_COOKIE_NAME not in failed.cookies
+        assert client.get("/api/identity/me").status_code == 401
+        assert "WordPress bridge returned HTML" in caplog.text
+        assert "PRIVATE-PAGE-DATA" not in caplog.text + failed.text
+        assert "synthetic-test-secret" not in caplog.text + failed.text
+        pending = client.post("/api/identity/login/status", json={
+            "state": start["state"], "browser_handoff_token": start["browser_handoff_token"],
+        })
+        assert pending.json()["status"] == "pending"
+        # A repaired host can still complete the valid state; no authorization
+        # was fabricated from the HTML response or from the browser's status poll.
+        monkeypatch.setattr(main_module.httpx, "post", lambda *args, **kwargs:
+            httpx.Response(200, json=self._stub_claims().model_dump(mode="json")))
+        assert client.post("/api/identity/callback", json=callback_payload).status_code == 200
+        assert client.get("/api/identity/me").status_code == 200
+        assert client.post("/api/identity/callback", json=callback_payload).status_code == 400
+
     @pytest.mark.parametrize("upstream_status", [429, 502, 503, 504])
     def test_transient_wordpress_http_response_allows_same_login_to_finish(
         self,

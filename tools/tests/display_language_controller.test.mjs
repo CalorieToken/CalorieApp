@@ -26,19 +26,19 @@ function load(path, imports, globals = {}) {
 }
 const locales = load('lib/locales.ts',{'@/config/locales.json':{default:registry}});
 
-async function fixture({embedded = true, enabled = undefined, saved = null} = {}) {
+async function fixture({embedded = true, enabled = undefined, saved = null, url = 'https://app.calorietoken.net/', languages = ['en'], language = 'en'} = {}) {
   const {window,document} = parseHTML('<html lang="en"><body><div id="root"></div></body></html>');
   const previous = new Map(['window','document','IS_REACT_ACT_ENVIRONMENT'].map(key=>[key,Object.getOwnPropertyDescriptor(globalThis,key)]));
   globalThis.window=window;globalThis.document=document;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
   const sent=[];
   const parent={postMessage:(data,origin)=>sent.push({data,origin})};
-  window.location=new URL('https://app.calorietoken.net/');
+  window.location=new URL(url);
   window.parent=embedded?parent:window;
   window.localStorage={getItem:()=>saved,setItem(){},removeItem(){}};
   const module=load('components/DisplayLanguageProvider.tsx',{
     '@/lib/displayLanguageRuntime':runtime,'@/lib/locales':locales,
     '@/config/display-language-copy.json':{default:copy},
-  },{window,document,URLSearchParams,navigator:{language:'en'},process:{env:{NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE:enabled}}});
+  },{window,document,URLSearchParams,navigator:{languages,language},process:{env:{NEXT_PUBLIC_CALORIEAPP_DISPLAY_LANGUAGE:enabled}}});
   const root=createRoot(document.querySelector('#root'));
   await React.act(async()=>root.render(React.createElement(module.DisplayLanguageProvider,null,
     React.createElement(module.DisplayLanguagePicker),React.createElement('p',null,'Existing app'))));
@@ -83,6 +83,13 @@ test('The standalone picker keeps eleven choices and follows a saved language wi
     assert.equal(h.document.documentElement.lang,'nl');
     assert.equal(h.document.documentElement.dir,'ltr');
   }finally{await h.close();}
+});
+
+test('A valid URL language wins while an unsupported URL value cannot force the English fallback',async()=>{
+  const valid=await fixture({embedded:false,url:'https://app.calorietoken.net/?ui_lang=fr',saved:JSON.stringify({locale:'nl',savedAt:Date.now()}),languages:['ar-SA']});
+  try{assert.equal(valid.document.documentElement.lang,'fr');}finally{await valid.close();}
+  const invalid=await fixture({embedded:false,url:'https://app.calorietoken.net/?ui_lang=made-up',languages:['nl-NL']});
+  try{assert.equal(invalid.document.documentElement.lang,'nl');}finally{await invalid.close();}
 });
 
 test('Disabling display language preserves the document and does not open a host channel',async()=>{

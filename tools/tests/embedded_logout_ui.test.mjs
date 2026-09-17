@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -23,7 +24,10 @@ async function fixture({me,logout,referrer='https://calorietoken.net/calorieapp/
  const window={parent,location:{search:'?embedded=1'},sessionStorage:{getItem:()=>null,removeItem(){},setItem(){}},addEventListener:(name,fn)=>events.set(name,fn),removeEventListener:(name)=>events.delete(name)};
  const module={exports:{}};
  vm.runInNewContext(compiled,{module,exports:module.exports,window,document,ResizeObserver,navigator:{language:'en'},process:{env:{NODE_ENV:'production'}},AbortController,URL,URLSearchParams,Error,console,
- require(name){if(name==='react')return react;if(name==='react/jsx-runtime')return {jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})};if(name==='@/components/authEvents')return {announceAuthState:v=>announcements.push(v)};if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>selectedDisplay};if(name==='@/lib/authUi')return authUi;if(name==='@/lib/locales')return {resolveLocale:v=>v||'en'};if(name.startsWith('@/components/'))return {};
+ require(name){
+      if (name === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (name === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+if(name==='react')return react;if(name==='react/jsx-runtime')return {jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})};if(name==='@/components/authEvents')return {announceAuthState:v=>announcements.push(v)};if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>selectedDisplay};if(name==='@/lib/authUi')return authUi;if(name==='@/lib/locales')return {resolveLocale:v=>v||'en'};if(name.startsWith('@/components/'))return {};
  if(name==='@/lib/backendRequest')return {BACKEND_WAKE_BASE_URL:'/api/backend',backendUnavailableMessage:(_e,fallback)=>fallback,backendRequest:async(url,options)=>{requests.push({url,options});if(url.endsWith('/me'))return me?await me():{ok:true,json:async()=>({user_id:'synthetic-user'})};if(url.endsWith('/logout'))return logout?await logout():{ok:true,status:204};throw new Error('Unexpected request');}};
  throw new Error(name);}});
  const render=()=>{cursor=0;effects=[];tree=module.exports.XamanLoginPanel();effects.forEach(f=>f());return tree;};render();
@@ -91,6 +95,30 @@ test('height reporting waits for a trusted parent when the browser omits the ref
   assert.equal(heights().at(-1).data.height,900);
  }finally{h.close();}
 });
+test('the embedded app publishes its resolved session state to the trusted parent',async()=>{
+ const authenticated=await fixture();
+ try{
+  const states=authenticated.sent.filter(m=>m.data.type==='calorieapp:session:state');
+  assert.ok(states.some(m=>m.data.version===1&&m.data.status==='authenticated'&&m.data.locale==='en'&&m.origin==='https://calorietoken.net'));
+ }finally{authenticated.close();}
+
+ const signedOut=await fixture({me:async()=>({ok:false,status:401})});
+ try{
+  const states=signedOut.sent.filter(m=>m.data.type==='calorieapp:session:state');
+  assert.ok(states.some(m=>m.data.version===1&&m.data.status==='signed_out'&&m.origin==='https://calorietoken.net'));
+  assert.equal(signedOut.announcements.at(-1),false);
+ }finally{signedOut.close();}
+});
+test('a late trusted handshake receives the already resolved app session',async()=>{
+ const h=await fixture({referrer:'',initialize:false});
+ try{
+  assert.equal(h.sent.filter(m=>m.data.type==='calorieapp:session:state').length,0);
+  await h.message('calorieapp:bridge:init');
+  const state=h.sent.filter(m=>m.data.type==='calorieapp:session:state').at(-1);
+  assert.equal(state.data.status,'authenticated');
+  assert.equal(state.origin,'https://calorietoken.net');
+ }finally{h.close();}
+});
 test('simultaneous trusted logout commands share one request; untrusted sources cannot log out',async()=>{
  const request=deferred();const h=await fixture({logout:()=>request.promise});
  try{
@@ -135,5 +163,25 @@ test('display language changes translate account controls without restarting ide
    assert.equal(root.props.dir,locale==='ur'?'rtl':'ltr');
   }
   assert.equal(h.sent.find(m=>m.data.type==='calorieapp:bridge:initialized').data.locale,'en');
+ }finally{h.close();}
+});
+
+test('account navigation groups profile, settings and data behind a working back action',async()=>{
+ const h=await fixture();
+ try{
+  await h.button(profileCopy.en.profile).props.onClick();await h.flush();
+  const profile=nodes(h.tree,n=>typeof n.props?.onSaved==='function')[0];
+  assert.equal(profile.props.userId,'synthetic-user');
+  profile.props.onSaved('Piet','synthetic-user');await h.flush();
+  assert.ok(text(h.tree).includes('Piet'));
+  assert.ok(h.sent.some(m=>m.data.type==='calorieapp:profile:changed'&&m.origin==='https://calorietoken.net'&& !('nickname' in m.data)));
+  h.button(profileCopy.en.back).props.onClick();await h.flush();
+  h.button(profileCopy.en.settings).props.onClick();await h.flush();
+  const settings=nodes(h.tree,n=>Object.hasOwn(n.props??{},'data-account-settings'))[0];
+  assert.equal(settings.props.hidden,false);
+  h.button(profileCopy.en.back).props.onClick();await h.flush();
+  h.button(profileCopy.en.privacy).props.onClick();await h.flush();
+  assert.equal(nodes(h.tree,n=>n.props?.id==='calorieapp-account-tools')[0].props.hidden,false);
+  profile.props.onSaved('Wrong','other-user');await h.flush();assert.ok(!text(h.tree).includes('Wrong'));
  }finally{h.close();}
 });

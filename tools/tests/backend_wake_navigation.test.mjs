@@ -1,3 +1,4 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
 import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -25,6 +26,9 @@ function harness() {
     module, exports: module.exports, URL, Number, JSON, process: { env: {} },
     Date: { now: () => now }, window: { sessionStorage: storage },
     require(name) {
+      if (name === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (name === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (name === "@/components/DisplayLanguageProvider") return {useDisplayLanguage:()=>({enabled:false,locale:"en"})};
       if (name === "@/lib/authUi") return authUi;
       if (name === "@/lib/backendRequest") return { BACKEND_WAKE_BASE_URL: "/api/backend" };
@@ -131,6 +135,9 @@ test("the actual login control resumes once after return and only after a truste
       document: { referrer: `${origin}/index.php/calorieapp/`, querySelector: () => null, body: { scrollHeight: 100 }, documentElement: { scrollHeight: 100 } },
       process: { env: { NODE_ENV: "production" } },
       require(name) {
+      if (name === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (name === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
       if (name === "@/components/DisplayLanguageProvider") return {useDisplayLanguage:()=>({enabled:false,locale:"en"})};
       if (name === "@/lib/authUi") return authUi;
         if (name === "react") return react;

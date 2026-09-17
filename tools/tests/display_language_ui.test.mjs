@@ -15,7 +15,7 @@ function loadModule(path, imports, globals = {}) {
   }}).outputText;
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
-    ...globals, module, exports: module.exports,
+    URL, ...globals, module, exports: module.exports,
     require(specifier) {
       if (["react", "react/jsx-runtime", "next/image"].includes(specifier)) return require(specifier);
       if (Object.hasOwn(imports, specifier)) return imports[specifier];
@@ -26,6 +26,14 @@ function loadModule(path, imports, globals = {}) {
 }
 const locales = loadModule("../../frontend/lib/locales.ts", {
   "@/config/locales.json": { default: registry },
+});
+const experienceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-experience-copy.json", import.meta.url)));
+const experience = loadModule("../../frontend/lib/foodExperience.ts", {
+  "@/config/food-experience-copy.json": { default: experienceCopy }, "@/lib/locales": locales,
+});
+const sourceCopy = JSON.parse(readFileSync(new URL("../../frontend/config/food-source-copy.json", import.meta.url)));
+const foodSource = loadModule("../../frontend/lib/foodSource.ts", {
+  "@/config/food-source-copy.json": { default: sourceCopy }, "@/lib/locales": locales,
 });
 function load(enabled) {
   return loadModule("../../frontend/components/DisplayLanguageProvider.tsx", {
@@ -54,9 +62,11 @@ test("the default feature renders a labeled native selector with eleven choices 
 });
 
 const introductionCopy = JSON.parse(readFileSync(new URL("../../frontend/config/app-introduction-copy.json", import.meta.url)));
+let introductionAge = "adult";
 function introduction(display) {
   return loadModule("../../frontend/components/AppIntroduction.tsx", {
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
+    "@/components/AgeExperienceControl": { useAgeExperience: () => [introductionAge, () => {}, true] },
     "@/lib/locales": locales,
     "@/config/app-introduction-copy.json": { default: introductionCopy },
   });
@@ -82,6 +92,7 @@ test("all eleven introduction translations retain each source/licence token exac
 });
 
 test("the actual introduction/footer render every selected language with intact links and RTL metadata", () => {
+  introductionAge = "adult";
   const display = { enabled: true, locale: "en" };
   const { AppIntroduction, AppSourceFooter } = introduction(display);
   const expectedLinks = [
@@ -120,6 +131,7 @@ test("the actual introduction/footer render every selected language with intact 
 });
 
 test("disabled or unsupported display language preserves an English introduction and footer", () => {
+  introductionAge = "adult";
   const display = { enabled: false, locale: "en" };
   const { AppIntroduction, AppSourceFooter } = introduction(display);
   const render = () => renderToStaticMarkup(React.createElement(React.Fragment, null,
@@ -132,6 +144,23 @@ test("disabled or unsupported display language preserves an English introduction
   assert.equal(render(), english);
 });
 
+test("child and teen introductions stay public-only in every language", () => {
+  const display = { enabled: true, locale: "en" };
+  const { AppIntroduction, AppSourceFooter } = introduction(display);
+  for (const age of ["child", "teen"]) {
+    introductionAge = age;
+    for (const {tag} of registry.locales) {
+      display.locale = tag;
+      const html = renderToStaticMarkup(React.createElement(React.Fragment, null,
+        React.createElement(AppIntroduction), React.createElement(AppSourceFooter)));
+      assert.ok(html.includes(renderedText(introductionCopy[tag].publicIntro)), `${age} ${tag}`);
+      assert.ok(html.includes(renderedText(introductionCopy[tag].publicScope)), `${age} ${tag}`);
+      assert.ok(!html.includes(renderedText(introductionCopy[tag].intro)), `${age} ${tag}`);
+    }
+  }
+  introductionAge = "adult";
+});
+
 test("actual food controls render the eleven languages and escape literal product and query text", () => {
   const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
@@ -139,9 +168,11 @@ test("actual food controls render the eleven languages and escape literal produc
   });
   const display = { enabled: true, locale: "en" };
   const imports = {
-    "@/lib/foodUi": foodUi,
+    "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
+    "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
   };
+  imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   const { SearchBar } = loadModule("../../frontend/components/SearchBar.tsx", imports);
   const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);
@@ -162,7 +193,8 @@ test("actual food controls render the eleven languages and escape literal produc
       isLogging: false, onLog() {}, formatNumber: String,
     }));
     assert.ok(card.includes(renderedText(foodUi.formatFoodUi(copy[tag].logProduct, { product }))), tag);
-    assert.ok(card.includes(renderedText(copy[tag].noImage)), tag);
+    assert.ok(card.includes(renderedText(foodUi.formatFoodUi(sourceCopy[tag].fallbackAlt, { product }))), tag);
+    assert.ok(card.includes("food-placeholder-off.svg"), tag);
     assert.ok(card.includes(renderedText(copy[tag].logFood)), tag);
     assert.ok(card.includes('<bdi dir="ltr">00123</bdi>'), tag);
     assert.doesNotMatch(card, /<b>Tea<\/b>/, tag);
@@ -178,13 +210,15 @@ test("actual food controls render the eleven languages and escape literal produc
   assert.ok(renderToStaticMarkup(React.createElement(LoadingState, { variant: "search" })).includes(copy.en.loadingSearch));
 });
 
-test("the actual Nutri-Score bar renders five colors and a recorded grade regardless of login controls", () => {
+test("the actual Nutri-Score control renders a recorded badge and an A–E indicator regardless of login controls", () => {
   const copy = JSON.parse(readFileSync(new URL("../../frontend/config/food-ui-copy.json", import.meta.url)));
   const foodUi = loadModule("../../frontend/lib/foodUi.ts", {
     "@/config/food-ui-copy.json": { default: copy }, "@/lib/locales": locales,
   });
-  const imports = { "@/lib/foodUi": foodUi,
+  const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
+    "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
+  imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;
   const { FoodCard } = loadModule("../../frontend/components/FoodCard.tsx", imports);
@@ -194,11 +228,17 @@ test("the actual Nutri-Score bar renders five colors and a recorded grade regard
         item: { product_name: "Tea", calories: 20, protein: 1, fat: 0, carbohydrates: 4, nutri_score: grade },
         isLogging: false, isDisabled, onLog() {}, formatNumber: String,
       }));
-      assert.ok(html.includes(`aria-label="Nutri-Score: ${grade.trim().toUpperCase()}"`));
-      assert.equal((html.match(/background-color:/g) || []).length, 5);
+      assert.ok(html.includes(`data-product-grade="${grade.trim().toUpperCase()}"`));
+      assert.ok(html.includes(renderedText(experienceCopy.nl.productGrade.replace("{grade}",grade.trim().toUpperCase()))));
+      assert.equal((html.match(/background-color:/g) || []).length, 6);
+      assert.match(html, /role="img"/);
+      assert.equal((html.match(/<details/g) || []).length, 0, "Search cards keep source notes collapsed into the optional detail view.");
     }
   }
   for (const grade of [undefined, null, "", "unknown"]) {
-    assert.equal(renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade })), "");
+    const html=renderToStaticMarkup(React.createElement(score.NutriScoreBar, { grade }));
+    assert.ok(html.includes('data-product-grade="unavailable"'));
+    assert.ok(html.includes(renderedText(experienceCopy.nl.gradeUnavailable)));
+    assert.equal((html.match(/background-color:/g) || []).length, 5);
   }
 });

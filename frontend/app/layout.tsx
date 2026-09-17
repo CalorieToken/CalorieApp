@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-calorieapp-build-id={buildId}>
+    <html lang="en" data-calorieapp-build-id={buildId} data-calorieapp-language-pending="1">
       <body><DisplayLanguageProvider>{children}</DisplayLanguageProvider></body>
     </html>
   );

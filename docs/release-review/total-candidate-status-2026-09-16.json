@@ -1,0 +1,153 @@
+{
+  "schema": "calorietoken.total-candidate-status.v1",
+  "date": "2026-09-16",
+  "status": "steps_1_3_live_step_4_focused_complete_step_5_wordpress_published_scheduled_social_ready",
+  "decision_boundary": "publication_authorized_for_C1_C2_only_C3_C5_deferred",
+  "production_mutated": true,
+  "publication_authorized": true,
+  "scheduling_authorized": true,
+  "publication_scope": ["C1", "C2"],
+  "deferred_campaigns": ["C3", "C4", "C5"],
+  "canonical_pr": 146,
+  "candidate_base": {
+    "integrated_release_commit": "62001b6db401356cc5f5fda1faca4db1f0586230",
+    "integrated_release_tree": "0cedb984f4930057ecd24dfdfbc49ddbb9f83e70",
+    "frontend_session_status_commit": "176a4e6debfad3e033736e3cfe08dc106a1d8df0",
+    "frontend_session_status_tree": "b232ce6677753c19b0d09cd18b27c3dcf8c6b726",
+    "direct_backend_deploy_of_old_frontend_feature_branch_allowed": false
+  },
+  "steps": {
+    "1": "live_public_acceptance_passed_authenticated_human_check_pending",
+    "2": "live_signed_out_privacy_acceptance_passed_authenticated_summary_check_pending",
+    "3": "live_public_acceptance_passed_physical_mobile_check_pending",
+    "4": "focused_C1_C2_review_complete_other_campaigns_deferred",
+    "5": "focused_wordpress_publication_complete_social_queue_ready_manual_publishers_unavailable"
+  },
+  "deployments": {
+    "backend": {
+      "service_id": "srv-da34poht0dsc73cpc1kg",
+      "deploy_id": "dep-dal42jmk1f9s73dkmc50",
+      "commit": "62001b6db401356cc5f5fda1faca4db1f0586230",
+      "status": "live",
+      "schema": "20260902_0016",
+      "rollback_deploy_id": "dep-daj0i1m7bikc73aaop4g"
+    },
+    "frontend": {
+      "service_id": "srv-da356k0u01pc73ftva8g",
+      "deploy_id": "dep-dal4kogae00c73fi7obg",
+      "commit": "176a4e6debfad3e033736e3cfe08dc106a1d8df0",
+      "status": "live",
+      "public_url": "https://app.calorietoken.net",
+      "previous_live_deploy_id": "dep-dal43eijnfac73cdn0mg"
+    }
+  },
+  "wordpress": {
+    "site": "https://calorietoken.net",
+    "cache_purged": true,
+    "plugins": {
+      "calorieapp_identity_bridge": "0.3.29",
+      "calorietoken_login_repair": "1.0.0",
+      "calorietoken_site_style": "1.4.46",
+      "calorietoken_heading_repair": "1.3.0",
+      "wpvibe": "1.17.0"
+    },
+    "heading_repair_release": {
+      "files": 12,
+      "sha256": "5c7736741570bafd1247ef4a42d855d682e9bcbe352ef13d9d668c0ccbe6f5e5",
+      "replaces_existing_login_or_style_plugin": false,
+      "stores_private_summary": false
+    },
+    "session_indicator": "signed_out_not_stuck_checking",
+    "nutrition_summary": "present_hidden_while_signed_out_visible_only_for_valid_authenticated_aggregate",
+    "campaign_posts": [
+      {
+        "id": 8079,
+        "campaign": "C2",
+        "status": "publish",
+        "published_at_utc": "2026-09-16T09:01:35Z",
+        "url": "https://calorietoken.net/2026/09/16/five-years-of-calorietoken/"
+      },
+      {
+        "id": 8080,
+        "campaign": "C2",
+        "status": "future",
+        "scheduled_at_utc": "2026-09-17T17:00:00Z"
+      },
+      {
+        "id": 8084,
+        "campaign": "C1",
+        "status": "future",
+        "scheduled_at_utc": "2026-09-18T08:00:00Z"
+      },
+      {
+        "id": 8085,
+        "campaign": "C1",
+        "status": "future",
+        "scheduled_at_utc": "2026-09-21T08:00:00Z"
+      },
+      {
+        "id": 8086,
+        "campaign": "C1",
+        "status": "future",
+        "scheduled_at_utc": "2026-09-23T08:00:00Z"
+      }
+    ]
+  },
+  "tests": {
+    "node_after_session_status_fix": {"passed": 305, "failed": 0},
+    "eslint": {"warnings": 0, "errors": 0},
+    "typescript": "passed",
+    "next_production_build": "passed",
+    "github_workflow_runs": [
+      {"id": 35066924812, "commit": "62001b6db401356cc5f5fda1faca4db1f0586230", "conclusion": "success"},
+      {"id": 35070538678, "commit": "176a4e6debfad3e033736e3cfe08dc106a1d8df0", "conclusion": "success"}
+    ],
+    "backend_pytest": {"passed": 1069, "skipped": 24, "failed": 0},
+    "targeted_login_food_integration": {"passed": 224, "failed": 0},
+    "python_tool_tests": {"passed": 82, "failed": 0},
+    "release_builder": {"passed": 5, "failed": 0}
+  },
+  "live_acceptance": {
+    "wordpress_calorieapp_page": true,
+    "focus_toggle_round_trip": true,
+    "session_signed_out_resolved": true,
+    "summary_hidden_signed_out": true,
+    "open_food_facts_search": true,
+    "open_food_facts_fallback_image": true,
+    "usda_search_and_source_link": true,
+    "faq_interaction": true,
+    "showcases": true,
+    "eleven_languages": true,
+    "arabic_rtl": true,
+    "real_xaman_wallet_sign_return": false,
+    "authenticated_diary_and_wordpress_summary": false,
+    "physical_camera": false
+  },
+  "review": {
+    "proposals": 97,
+    "without_open_checks": 38,
+    "with_open_checks": 59,
+    "publication_authorized": 2,
+    "scheduled": 4,
+    "media_replaced": 0,
+    "referenced_media_and_subtitle_paths": 214,
+    "focused_campaigns": ["C1", "C2"],
+    "focused_wordpress_live": 1,
+    "focused_wordpress_future": 4,
+    "focused_social_items_ready_manual": 13,
+    "focused_social_items_scheduled_via_connector": 0
+  },
+  "external_changes": {
+    "github_uploaded": true,
+    "release_branch_changed": true,
+    "pull_request_changed": true,
+    "frontend_deployment_changed": true,
+    "backend_deployment_changed": true,
+    "wordpress_plugin_changed": true,
+    "public_content_changed": true,
+    "posts_published": true,
+    "posts_scheduled": true,
+    "external_social_posts_scheduled": false,
+    "external_social_reason": "No connected publisher for LinkedIn, YouTube, Instagram, Facebook or TikTok"
+  }
+}
