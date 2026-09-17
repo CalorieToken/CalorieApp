@@ -14,6 +14,7 @@ OUT = ROOT / 'ux-check-evidence' / 'account-guides-browser'
 OUT.mkdir(parents=True, exist_ok=True)
 T = json.loads((ROOT / 'frontend/config/testnet-entry-copy.json').read_text())
 S = json.loads((ROOT / 'frontend/config/account-setup-copy.json').read_text())
+PROFILE = json.loads((ROOT / 'frontend/config/account-profile-copy.json').read_text())
 PLUGIN = ROOT / 'wordpress-plugins/calorietoken-heading-repair/assets'
 # Format-shaped strings with no valid checksum: cannot be used as credentials.
 ADDRESS = 'r' + '1' * 25
@@ -132,6 +133,7 @@ with sync_playwright() as p:
         app.get_by_role('button', name=T['nl']['moveRoute'], exact=True).click()
         screen(T['nl']['moveLabels'][0]); expect(guide.get_by_text(T['nl']['importPending'], exact=True)).to_be_visible()
         guide.get_by_role('button', name=T['nl']['openExportTools'], exact=True).click()
+        expect(app.locator('[data-account-overview]')).to_be_hidden()
         app.get_by_role('button', name=T['nl']['returnGuide'], exact=True).click()
         screen(T['nl']['moveLabels'][0]); next_step(); screen(T['nl']['moveLabels'][1]); next_step(); screen(T['nl']['moveLabels'][2]); next_step()
         screen(S['nl']['mainBackupTitle'])
@@ -165,6 +167,9 @@ with sync_playwright() as p:
         clean_messages = page.evaluate('(seed)=>!JSON.stringify(window.guideMessages).includes(seed)', SEED)
         ok('Neither storage nor parent-window messages contain recovery material', clean_storage and clean_messages)
         app.get_by_role('button', name=S['nl']['backToAccount'], exact=True).click()
+        app.locator('#calorie-panel-account').get_by_role('button', name=PROFILE['nl']['back'], exact=True).click()
+        expect(app.locator('[data-account-overview]')).to_be_visible()
+        ok('Back from export tools restores the account overview and its guides')
         app.get_by_role('button', name=T['nl']['testRoute'], exact=True).click()
         # The same test-account route resumes at its final page.
         screen(S['nl']['stepReturn']); previous(); previous(); previous()

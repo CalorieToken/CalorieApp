@@ -90,12 +90,15 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do curl --silent --fail http://127.0.0.1:3100/ > /dev/null && break; sleep 1; done
           curl --silent --fail http://127.0.0.1:3100/ > /dev/null
-          python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log
-          python tools/tests/browser_account_profile.py 2>&1 | tee ux-check-evidence/account-profile-browser.log
-          python tools/tests/browser_account_guides.py 2>&1 | tee ux-check-evidence/account-guides-browser.log
+          # Collect every independent browser result even if one flow fails.
+          browser_failed=0
+          python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log || browser_failed=1
+          python tools/tests/browser_account_profile.py 2>&1 | tee ux-check-evidence/account-profile-browser.log || browser_failed=1
+          python tools/tests/browser_account_guides.py 2>&1 | tee ux-check-evidence/account-guides-browser.log || browser_failed=1
           HEADING_NUTRITION_EVIDENCE_DIR=ux-check-evidence/heading-nutrition-browser \
             python tools/tests/browser_heading_nutrition.py \
-            2>&1 | tee ux-check-evidence/heading-nutrition-browser.log
+            2>&1 | tee ux-check-evidence/heading-nutrition-browser.log || browser_failed=1
+          test "$browser_failed" -eq 0
           python - <<'PY'
           import json
           from pathlib import Path

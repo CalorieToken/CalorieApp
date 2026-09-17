@@ -5,6 +5,7 @@ from playwright.sync_api import sync_playwright, expect
 ROOT=Path(__file__).resolve().parents[2]; OUT=Path(os.environ.get('UX_EVIDENCE_DIR', str(ROOT/'ux-check-evidence/browser')))
 OUT.mkdir(parents=True,exist_ok=True)
 X=json.loads((ROOT/'frontend/config/food-experience-copy.json').read_text()); C=json.loads((ROOT/'frontend/config/food-ui-copy.json').read_text()); D=json.loads((ROOT/'frontend/config/food-discovery-copy.json').read_text()); S=json.loads((ROOT/'frontend/config/food-source-copy.json').read_text()); Y=json.loads((ROOT/'frontend/config/diary-copy.json').read_text()); A=json.loads((ROOT/'frontend/config/auth-ui-copy.json').read_text()); T=json.loads((ROOT/'frontend/config/testnet-entry-copy.json').read_text())
+PROFILE=json.loads((ROOT/'frontend/config/account-profile-copy.json').read_text())
 report={'mode':'Local Next.js production build; synthetic API and diary; no live writes','checks':[], 'writes':[], 'errors':[], 'blocked_external':[]}
 food={'id':1,'product_name':'Synthetic oats','calories':200,'protein':10,'fat':4,'carbohydrates':32,'nutri_score':'A','portion_percentage':100,'barcode':'0012345678905','brand':'Test fixture','serving_size':'100 g','image_url':'https://tracker.example/pixel.gif','created_at':'2026-09-15T12:00:00Z'}
 broken_food={**food,'id':2,'product_name':'Broken source photo','barcode':'0099999999999','image_url':'https://images.openfoodfacts.org/images/products/009/999/missing.jpg'}
@@ -139,11 +140,19 @@ with sync_playwright() as p:
         styles=lambda:page.locator('#calorie-tab-packaged').evaluate('async n=>{await Promise.all(n.getAnimations().map(a=>a.finished.catch(()=>{})));const s=getComputedStyle(n);return [s.borderRadius,s.backgroundColor,s.color,s.fontFamily,s.padding]}')
         adult_style=styles();shapes=[]
         for band in ['child','teen','adult']:
-            page.locator('.calorie-age-summary button').click()
+            if page.locator('.calorie-age-shell').get_attribute('data-age-band')=='adult':
+                page.locator('#calorie-tab-account').click()
+                page.locator('[data-account-overview]').get_by_role('button',name=PROFILE['nl']['settings'],exact=True).click()
+                settings=page.locator('[data-account-settings]')
+                expect(settings).to_be_visible()
+                settings.locator('.calorie-age-summary button').click()
+                ok('Adults can change their age group through My account and Settings')
+            else:
+                page.locator('.calorie-age-summary button').click()
             page.locator(f'button[data-age-option="{band}"]').click()
             expect(page.locator('.calorie-age-shell')).to_have_attribute('data-age-band',band)
             page.locator('#calorie-tab-packaged').click();page.mouse.move(0,0)
-            expect(page.locator('[id^="calorie-tab-"]')).to_have_count(5 if band=='adult' else 2)
+            expect(page.locator('[id^="calorie-tab-"]')).to_have_count(4 if band=='adult' else 2)
             if band=='adult':
                 restored_style=styles()
                 ok('Adult buttons restore their exact original appearance',restored_style==adult_style)
