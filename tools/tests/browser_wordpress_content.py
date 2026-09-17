@@ -46,7 +46,7 @@ BODY = '''
 <section id="family-fixture"></section>
 </main><footer id="historic-footer" class="ctstyle-footer"><p>Calorie aims to be the world's food token</p><button id="social-button">Next social</button></footer>
 <aside id="after-footer"><p>Outside the content region</p></aside>
-<aside id="ctstyle-app-launcher"><div id="help-mascot" class="ctstyle-help-mascot">Mascot</div><div class="ctstyle-app-launcher-panel"><section class="ctstyle-help-widget"><header class="ctstyle-help-header"><h2>CalorieHelp</h2></header><p>Waar kan ik je mee helpen?</p><form class="ctstyle-help-form"><label for="help-question">Je vraag</label><input id="help-question" value=""><button type="button" id="help-ask">Vraag stellen</button></form><div class="ctstyle-help-reply" hidden><h3>Account instellen</h3><p>Open Accountbeheer in CalorieApp om je stappenplan te volgen.</p></div><h3>Onderwerpen</h3><div class="ctstyle-help-topics"><button type="button" id="help-topic" aria-pressed="false">Testaccount</button><button type="button">Voeding zoeken</button></div></section></div></aside>
+<aside id="ctstyle-app-launcher" class="ctstyle-app-launcher"><details id="help-disclosure"><summary id="help-toggle" aria-label="CalorieHelp openen of sluiten"><span id="help-mascot" class="ctstyle-help-mascot">Mascot</span></summary><div class="ctstyle-app-launcher-panel"><section class="ctstyle-help-widget"><header class="ctstyle-help-header"><h2>CalorieHelp</h2></header><p>Waar kan ik je mee helpen?</p><form class="ctstyle-help-form"><label for="help-question">Je vraag</label><input id="help-question" value=""><button type="button" id="help-ask">Vraag stellen</button></form><div class="ctstyle-help-reply" hidden><h3>Account instellen</h3><p>Open Accountbeheer in CalorieApp om je stappenplan te volgen.</p></div><h3>Onderwerpen</h3><div class="ctstyle-help-topics"><button type="button" id="help-topic" aria-pressed="false">Testaccount</button><button type="button">Voeding zoeken</button></div></section></div></details></aside>
 '''
 FAMILIES = {
  'legal-and-whitepaper': '<article class="ctstyle-document-copy ctstyle-shared-panel"><h2>Privacy Policy</h2><p>Document text with <a href="/terms-conditions/">terms</a>.</p></article>',
@@ -107,10 +107,14 @@ with sync_playwright() as pw:
         page.locator('#faq summary').click();ok('FAQ disclosure still opens',page.locator('#faq').evaluate('n=>n.open'))
         ok('Disabled action and input value survive styling',page.locator('#disabled-button').is_disabled() and page.locator('#synthetic-form input').input_value()=='synthetic@example.test')
         ok('CalorieHelp adopts the same typography outside the main page flow',page.locator('.ctstyle-help-widget h2').evaluate("n=>getComputedStyle(n).fontFamily.includes('Segoe UI') && getComputedStyle(n).color==='rgb(0, 141, 54)'"))
+        page.locator('#help-toggle').click()
+        ok('CalorieHelp opens through its original disclosure',page.locator('.ctstyle-app-launcher-panel').is_visible())
         page.locator('#help-topic').click()
         ok('Help topics still reveal their answer',page.locator('.ctstyle-help-reply').is_visible())
         ok('Selected help topic stays visually distinct',page.locator('#help-topic').evaluate("n=>getComputedStyle(n).backgroundColor==='rgb(80, 91, 169)'"))
         page.locator('.ctstyle-app-launcher-panel').screenshot(path=str(OUT/'caloriehelp-360.png'))
+        page.locator('#help-toggle').click()
+        ok('CalorieHelp closes before reviewing the page content',not page.locator('.ctstyle-app-launcher-panel').is_visible())
         for width in [360,412,1440]:
             page.set_viewport_size({'width':width,'height':900})
             ok(f'{width}px content has no horizontal overflow',page.evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth'))
