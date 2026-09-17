@@ -19,6 +19,8 @@ FILES = (
     "assets/app-focus.css",
     "assets/app-focus.js",
     "assets/caloriehelp-mascot-v2.png",
+    "assets/content-style.css",
+    "assets/content-style.js",
     "assets/heading-repair.css",
     "assets/help-label-bootstrap.js",
     "assets/help-link-labels.json",

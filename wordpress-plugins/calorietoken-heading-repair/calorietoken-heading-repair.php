@@ -2,14 +2,14 @@
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.6.6
+ * Version: 1.6.7
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.6.6';
+const VERSION = '1.6.7';
 function plugin_source_matches($plugin, $name, $hashes) {
     $path = WP_PLUGIN_DIR . '/' . $plugin . '/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
@@ -87,6 +87,10 @@ function enqueue() {
         wp_enqueue_script('calorietoken-age-experience', asset_url('age-experience.js'), array(), VERSION, true);
         wp_enqueue_script('calorietoken-app-focus', asset_url('app-focus.js'), array('calorietoken-age-experience'), VERSION, true);
         wp_enqueue_script('calorietoken-nutrition-summary', asset_url('nutrition-summary.js'), array('calorietoken-app-focus'), VERSION, true);
+        // Content-only presentation after the compatible site's own controllers.
+        // Historical artwork, header/title/footer and embedded apps stay native.
+        wp_enqueue_style('calorietoken-content-style', asset_url('content-style.css'), array('calorietoken-presentation'), VERSION);
+        wp_enqueue_script('calorietoken-content-style', asset_url('content-style.js'), array('calorietoken-presentation'), VERSION, true);
     }
     $site_overrides = array(
         'app-integration' => array('handle' => 'calorietoken-app-integration', 'source' => 'app-integration.js', 'replacement' => 'site-app-integration.js'),
@@ -141,5 +145,14 @@ function admin_notice() {
     $message .= 'No installed files were overwritten. Reconcile the current source before changing the compatibility checks.';
     echo '<div class="notice notice-warning"><p>' . esc_html($message) . '</p></div>';
 }
+function content_layer_order() {
+    // wp_enqueue_scripts has completed; declare only our layer before WP prints
+    // the legacy styles. Important layer precedence otherwise reverses source
+    // order, allowing the existing serif/oversized card rules to win again.
+    if (wp_style_is('calorietoken-content-style', 'enqueued')) {
+        echo '<style id="calorietoken-content-layer">@layer calorietoken-content;</style>';
+    }
+}
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue', 1000);
+add_action('wp_head', __NAMESPACE__ . '\\content_layer_order', 2);
 add_action('admin_notices', __NAMESPACE__ . '\\admin_notice');

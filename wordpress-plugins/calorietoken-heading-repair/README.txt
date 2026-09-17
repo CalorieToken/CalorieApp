@@ -1,4 +1,16 @@
-CalorieToken Heading and Language Repair 1.6.6
+CalorieToken Heading and Language Repair 1.6.7
+
+Version 1.6.7 adds the CalorieApp content style to public pages and articles,
+including Home, usecase subpages, documents, shop views and dynamic cards.
+White cards, sans-serif body text, green headings, compact buttons and aligned
+spacing apply only after the page title and before the footer. XPMarket stats
+use readable rows on narrow screens. CalorieHelp and the FAQ page share the
+same typography, answer cards and controls; mascot and conversation logic stay
+intact. Header, title artwork, blue footer,
+historical illustrations, image galleries, moving text, sliders, embedded apps
+and account widgets are excluded. Existing nodes, links, data and handlers are
+retained. No page-builder content or other installed plugin is overwritten.
+The previous 1.6.6 ZIP is the rollback. No database migration is involved.
 
 Install as a separate companion plugin. Keep the existing CalorieToken Site Style
 and Identity Bridge plugins enabled. The original installed files are never edited.
