@@ -6,7 +6,6 @@ import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
 import { FoodImage } from "@/components/FoodImage";
-import { postNavigationTarget } from "@/lib/navigationBridge";
 
 type FoodCardProps = {
   item: FoodSearchItem;
@@ -20,9 +19,11 @@ type FoodCardProps = {
   children?: ReactNode;
   comparison?: ReactNode;
   feedback?: { message: string; isError: boolean } | null;
+  restoreDetails?: boolean;
+  selectedProductName?: string;
 };
 
-export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback }: FoodCardProps) {
+export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const portionId = useId();
@@ -30,14 +31,14 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
   const portionRef = useRef<HTMLDivElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
   const wasExpandedRef = useRef(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  // Restored details must exist before the parent restores the list offset.
+  const [detailsOpen, setDetailsOpen] = useState(restoreDetails);
   const isExpanded = canLog && (isSelected || Boolean(children));
+  useEffect(() => { if (restoreDetails) setDetailsOpen(true); }, [restoreDetails]);
 
   useEffect(() => {
     if (children && isExpanded && !wasExpandedRef.current) {
       portionRef.current?.focus({ preventScroll: true });
-      portionRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
-      postNavigationTarget("calorieapp-add", portionRef.current);
     } else if (!isExpanded && wasExpandedRef.current) {
       if (isDisabled || isLogging) return;
       // Restore keyboard focus after the portion controls are removed, while
@@ -103,7 +104,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
           ref={portionRef}
           tabIndex={-1}
           role="region"
-          aria-label={formatFoodUi(copy.choosePortionFor, { product: item.product_name })}
+          aria-label={formatFoodUi(copy.choosePortionFor, { product: selectedProductName || item.product_name })}
           className="scroll-mt-3 outline-none"
         >
           {children}

@@ -1,4 +1,17 @@
-CalorieToken Heading and Language Repair 1.6.10
+CalorieToken Heading and Language Repair 1.6.11
+
+Version 1.6.11 restores the missing colours in the product-score bar and shows
+the total number of logged entries before score coverage. Empty periods and
+logged food without supplied scores have separate plain-language messages in
+all eleven languages. Unscored food remains counted in the diary; no score is
+inferred. Empty bars and five misleading zero counters are hidden when there
+are no grades. Larger type and 44px period controls improve mobile readability.
+App navigation only moves the outer page when its destination is off-screen,
+using one immediate adjustment instead of competing smooth scroll animations.
+All 1.6.10 card backgrounds and existing account/login behaviour are retained.
+No database or frontend deployment is required for this WordPress-only change.
+Keep 1.6.10 for rollback. Food illustrations and inline diary details are a
+separate CalorieApp frontend change.
 
 Version 1.6.10 gives public-content cards, nested panels, notices, FAQ answers,
 CalorieHelp and login card surfaces the original faded CalorieToken logo paper.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { FoodSearchItem } from "@/components/foodTypes";
 import { filterLoggedFoods, getFoodLogFilterCopy } from "@/lib/foodLogFilter";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
@@ -16,6 +17,8 @@ type FoodLogListProps = {
   onLoadMore?: () => void;
   onRefresh: () => void;
   onSelectLog: (log: FoodSearchItem) => void;
+  selectedLogId?: number | null;
+  selectedDetails?: ReactNode;
   onDeleteLog: (logId: number) => void;
   onDeleteAllLogs: () => void;
   deletingLogId: number | null;
@@ -29,6 +32,8 @@ export function FoodLogList({
   periodFiltered = false, total = logs.length, hasMore = false, onLoadMore,
   onRefresh,
   onSelectLog,
+  selectedLogId = null,
+  selectedDetails,
   onDeleteLog,
   onDeleteAllLogs,
   deletingLogId,
@@ -58,7 +63,7 @@ export function FoodLogList({
 
   function clearFilter() {
     setFilter("");
-    filterInput.current?.focus();
+    filterInput.current?.focus({ preventScroll: true });
   }
 
   return (
@@ -133,10 +138,11 @@ export function FoodLogList({
         ) : null}
       </div>
 
-      <ul className="mt-4 max-h-[60dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">
+      <ul className="mt-4 max-h-[60dvh] space-y-2 overflow-y-auto overscroll-contain pe-1" style={{ overflowAnchor: "none" }}>
         {visibleLogs.map((item, index) => (
           <li
             key={item.id ?? `${item.product_name}-log-${index}`}
+            data-food-log-id={item.id}
             className="rounded-lg border border-brand-secondary/10 bg-brand-bg p-4 hover:bg-brand-secondary/5 transition duration-200"
           >
             <div className="flex items-start justify-between gap-3">
@@ -145,6 +151,8 @@ export function FoodLogList({
                 className="min-w-0 flex-1 text-start"
                 onClick={() => onSelectLog(item)}
                 aria-label={formatFoodUi(ui.copy.viewDetails, { product: item.product_name })}
+                aria-expanded={item.id != null && selectedLogId === item.id}
+                aria-controls={item.id != null && selectedLogId === item.id ? `${filterId}-detail-${item.id}` : undefined}
               >
                 <p className="text-sm font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>
                 {item.created_at && Number.isFinite(Date.parse(item.created_at)) ? <p className="mt-1 text-xs text-brand-secondary/80"><time dateTime={item.created_at}><bdi>{new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(item.created_at))}</bdi></time></p> : null}
@@ -184,6 +192,11 @@ export function FoodLogList({
                 {deletingLogId === item.id ? ui.copy.deleting : ui.copy.delete}
               </button>
             </div>
+            {item.id != null && selectedLogId === item.id && selectedDetails ? (
+              <div id={`${filterId}-detail-${item.id}`} className="mt-4 border-t border-brand-secondary/20 pt-4">
+                {selectedDetails}
+              </div>
+            ) : null}
           </li>
         ))}
       </ul>

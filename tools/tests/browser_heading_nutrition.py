@@ -123,8 +123,22 @@ with sync_playwright() as playwright:
         source_values = page.locator("[data-ct-nutrition-source] dd").all_text_contents()
         ok("The Xaman card shows the exact OFF, USDA and other source counts", source_values == ["5", "1", "1"])
         ok("The exact A-E counts also render as one proportional indicator bar", summary.locator(".ct-calorieapp-nutrition-bar .ct-calorieapp-nutrition-segment").count() == 3)
-        ok("USDA is excluded from OFF Nutri-Score coverage", "5" in summary.locator(".ct-calorieapp-nutrition-coverage").inner_text())
+        ok("Score coverage is explicit against all seven logged entries", "4 van 7" in summary.locator(".ct-calorieapp-nutrition-coverage").inner_text())
+        colours = summary.locator(".ct-calorieapp-nutrition-segment").evaluate_all("nodes => nodes.map(node => getComputedStyle(node).backgroundColor)")
+        ok("The proportional bar renders three different, non-transparent grade colours", len(set(colours)) == 3 and "rgba(0, 0, 0, 0)" not in colours)
         ok("Source details start collapsed", not summary.locator(".ct-calorieapp-nutrition-details").evaluate("node => node.open"))
+
+        ungraded = {**ready, "total": 3, "known": 0, "missing": 1,
+                    "counts": {grade: 0 for grade in "ABCDE"},
+                    "sources": {"open_food_facts": 1, "usda": 2, "other": 0}}
+        app_frame.evaluate("message => window.sendNutrition(message)", ungraded)
+        page.wait_for_function("document.querySelector('.ct-calorieapp-nutrition-bar').hidden")
+        ok("Three ungraded logs remain visibly counted", "3" in summary.locator(".ct-calorieapp-nutrition-logged").inner_text())
+        ok("The ungraded week hides its empty bar and zero counters", summary.locator(".ct-calorieapp-nutrition-bar").is_hidden() and summary.locator(".ct-calorieapp-nutrition-counts").is_hidden())
+        page.locator("body").screenshot(path=str(OUT / "nl-week-without-grades-360.png"))
+        app_frame.evaluate("message => window.sendNutrition(message)", ready)
+        page.wait_for_function("!document.querySelector('.ct-calorieapp-nutrition-bar').hidden")
+        ok("Changing to a graded period restores the coloured bar")
 
         summary.locator('[data-ct-nutrition-period="month"]').click()
         page.wait_for_function("document.querySelector('#ct-calorieapp-nutrition-summary').dataset.state === 'loading'")

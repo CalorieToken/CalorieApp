@@ -181,8 +181,13 @@
       var targets=['calorieapp-navigation','calorieapp-account','calorieapp-add','calorieapp-diary'];
       var offset=event.data.offset,frameHeight=Math.max(frame.getBoundingClientRect().height,frame.offsetHeight||0);
       if(targets.includes(event.data.target)&&typeof offset==='number'&&Number.isFinite(offset)&&offset>=0&&offset<=frameHeight+512){
-        var top=(window.scrollY||0)+frame.getBoundingClientRect().top+offset-16;
-        window.scrollTo({top:Math.max(0,top),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+        var visibleTop=frame.getBoundingClientRect().top+offset;
+        // Keep an already visible destination still. One immediate alignment
+        // avoids competing smooth animations while the embedded page resizes.
+        if(visibleTop<16||visibleTop>window.innerHeight-80){
+          var top=(window.scrollY||0)+visibleTop-16;
+          window.scrollTo({top:Math.max(0,top),behavior:'auto'});
+        }
       }
     }
   });

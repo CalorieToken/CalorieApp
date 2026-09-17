@@ -16,6 +16,7 @@ import { FoodLogList } from "@/components/FoodLogList";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
 import { RecordedGradeSummary } from "@/components/RecordedGradeSummary";
 import { foodExperience, displayUsdaGramAmount } from "@/lib/foodExperience";
+import { discoveryCopy } from "@/lib/foodDiscovery";
 import { LoadingState } from "@/components/LoadingState";
 import { SearchBar } from "@/components/SearchBar";
 import { FoodSearchItem, FoodSearchResponse } from "@/components/foodTypes";
@@ -33,7 +34,6 @@ import {
   nutritionSummaryMessage,
   postNutritionSummaryToParent,
 } from "@/lib/nutritionSummaryBridge";
-import { postNavigationTarget } from "@/lib/navigationBridge";
 import { validFoodSourceCounts } from "@/lib/foodSource";
 import {
   BACKEND_WAKE_BASE_URL,
@@ -45,6 +45,11 @@ import {
 
 const BACKEND_BASE_URL = "/api/backend";
 type PortionOption = "whole" | "half" | "quarter" | "custom";
+type AlternativeSearch = {
+  query: string; resultsQuery: string; results: FoodSearchItem[];
+  barcode: boolean; product: string; productKey: string; scrollTop: number;
+};
+const foodKey = (item: FoodSearchItem) => item.barcode || `${item.product_name}|${item.brand || ""}`;
 const SIGN_IN_REQUIRED_LOG_MESSAGE =
   "Your session has expired or you are not signed in. Please sign in again to manage food logs.";
 
@@ -187,7 +192,10 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
   const experience = foodExperience(locale);
   const portionFormRef = useRef<HTMLFormElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
-  const selectedLogRef = useRef<HTMLDivElement>(null);
+  const resultsListRef = useRef<HTMLUListElement>(null);
+  const restoreResultsPosition = useRef<number | null>(null);
+  const [alternativeHistory, setAlternativeHistory] = useState<AlternativeSearch[]>([]);
+  const [restoredProductKey, setRestoredProductKey] = useState<string | null>(null);
   const numbers = useMemo(() => ({
     decimal: new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: false }),
     integer: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
@@ -340,18 +348,12 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
   }, [logs, selectedLogId]);
 
   useEffect(() => {
-    if (!selectedLog) return;
-    selectedLogRef.current?.focus({ preventScroll: true });
-    selectedLogRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
-    postNavigationTarget("calorieapp-diary", selectedLogRef.current);
-  }, [selectedLog]);
-
-  useEffect(() => {
-    if (activeView !== "packaged" || !hasResults) return;
-    resultsHeadingRef.current?.focus({ preventScroll: true });
-    resultsHeadingRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
-    postNavigationTarget("calorieapp-add", resultsHeadingRef.current);
-  }, [activeView, hasResults, resultsQuery]);
+    if (restoreResultsPosition.current !== null && resultsListRef.current) {
+      resultsListRef.current.scrollTop = restoreResultsPosition.current;
+      restoreResultsPosition.current = null;
+      // The restored card is already at the remembered list position.
+    }
+  }, [results]);
 
   const fetchLogs = useCallback(async (before?: number) => {
     if (!allowPersonalLog) {
@@ -477,10 +479,12 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
     await runSearch(query);
   }
 
-  async function runSearch(searchQuery: string, barcode = validFoodBarcode(searchQuery) !== null) {
+  async function runSearch(searchQuery: string, barcode = validFoodBarcode(searchQuery) !== null, preserveHistory = false) {
     // Pasted codes and resubmitted scanner results use the same exact lookup.
     // Enter-key submissions and rapid clicks must not cancel/restart a cold start.
     if (logMutationInFlightRef.current || searchInFlightRef.current || Date.now() < searchRetryAtRef.current) return;
+    if (!preserveHistory) setAlternativeHistory([]);
+    setRestoredProductKey(null);
     cancelPortionLogging();
     setLogFeedback(null);
 
@@ -584,6 +588,33 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
     setDidSearch(false);
     // Cancellation does not authorize a burst of replacement provider requests.
     pauseSearch(foodSearchRetryAt(503, null));
+  }
+
+  function searchAlternatives(item: FoodSearchItem, nextQuery: string) {
+    if (logMutationInFlightRef.current || searchInFlightRef.current || Date.now() < searchRetryAtRef.current) return;
+    setAlternativeHistory(previous => [...previous, {
+      query, resultsQuery, results, barcode: barcodeSearch,
+      product: item.product_name, productKey: foodKey(item),
+      scrollTop: resultsListRef.current?.scrollTop ?? 0,
+    }]);
+    setQuery(nextQuery);
+    void runSearch(nextQuery, false, true);
+  }
+
+  function returnToProduct() {
+    const previous = alternativeHistory[alternativeHistory.length - 1];
+    if (!previous || logMutationInFlightRef.current) return;
+    searchAbortControllerRef.current?.abort();
+    searchRequestIdRef.current += 1;
+    searchInFlightRef.current = false;
+    cancelPortionLogging();
+    setAlternativeHistory(history => history.slice(0, -1));
+    setQuery(previous.query); setResultsQuery(previous.resultsQuery);
+    setResults(previous.results); setBarcodeSearch(previous.barcode); setDidSearch(true);
+    setLastSearch({ query: previous.resultsQuery, barcode: previous.barcode });
+    setError(null); setSearchFailure(null); setSearchStatus(null); setIsLoading(false); setLogFeedback(null);
+    setRestoredProductKey(previous.productKey);
+    restoreResultsPosition.current = previous.scrollTop;
   }
 
   function onLogFood(item: FoodSearchItem, index: number) {
@@ -769,8 +800,6 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
   useEffect(() => {
     if (!pendingLogItem || pendingLogIndex !== -1) return;
     portionFormRef.current?.focus({ preventScroll: true });
-    portionFormRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
-    postNavigationTarget("calorieapp-add", portionFormRef.current);
   }, [pendingLogItem, pendingLogIndex]);
 
   const portionControls = pendingLogItem ? (
@@ -936,7 +965,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           onLookup={code => { void runSearch(code, true); }} />
 
         {error ? <div className="mt-4 space-y-3"><ErrorBanner message={searchFailure ? diaryUi[searchFailure] : translateFoodStatus(error, copy)} />
-          {lastSearch ? <button type="button" onClick={() => void runSearch(lastSearch.query, lastSearch.barcode)}
+          {lastSearch ? <button type="button" onClick={() => void runSearch(lastSearch.query, lastSearch.barcode, true)}
             disabled={isLoading || searchWaitSeconds > 0 || isLogging !== null}
             className="min-h-11 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-sm font-semibold text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-50">
             {searchWaitSeconds > 0 ? formatFoodUi(diaryUi.waiting, {seconds: displayInteger(searchWaitSeconds)}) : diaryUi.retry}
@@ -977,17 +1006,23 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           </div>
         ) : null}
 
+        {alternativeHistory.length ? <button type="button" onClick={returnToProduct} disabled={isLogging !== null}
+          className="mt-4 min-h-11 w-full rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-start text-sm font-semibold text-brand-secondary disabled:opacity-50">
+          {discoveryCopy(locale).backToProduct.replace("{food}", alternativeHistory[alternativeHistory.length - 1].product)}
+        </button> : null}
         {hasResults ? <h3 ref={resultsHeadingRef} tabIndex={-1}
           className="scroll-mt-24 mt-4 rounded-lg bg-brand-primary/5 px-3 py-2 text-sm font-semibold text-brand-primary outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">
           {formatFoodUi(diaryUi.resultsFor, {query: resultsQuery})}
         </h3> : null}
         {hasResults ? (
           <div className="mt-4 min-w-0">
-          <ul className="max-h-[60dvh] space-y-3 overflow-y-auto overscroll-contain pe-1">
+          <ul ref={resultsListRef} style={{ overflowAnchor: "none" }} className="max-h-[60dvh] space-y-3 overflow-y-auto overscroll-contain pe-1">
             {results.map((item, index) => (
               <FoodCard
-                key={`${item.product_name}-${index}`}
+                key={`${resultsQuery}-${foodKey(item)}-${index}`}
                 item={item}
+                restoreDetails={restoredProductKey === foodKey(item)}
+                selectedProductName={pendingLogIndex === index ? pendingLogItem?.product_name : undefined}
                 isLogging={isLogging === index}
                 isDisabled={isLogging !== null || isLoading}
                 canLog={allowPersonalLog}
@@ -1004,8 +1039,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
                 comparison={<SimilarFoods item={item} foods={results} locale={locale}
                   disabled={isLogging !== null || isLoading || searchWaitSeconds > 0}
                   canChoose={allowPersonalLog}
-                  onChoose={food => { const selectedIndex = results.indexOf(food); if (selectedIndex >= 0) onLogFood(food, selectedIndex); }}
-                  onSearch={food => { setQuery(food); void runSearch(food, false); }} />}>
+                  onChoose={food => { if (results.includes(food)) onLogFood(food, index); }}
+                  onSearch={food => searchAlternatives(item, food)} />}>
                 {pendingLogIndex === index ? portionControls : null}
               </FoodCard>
             ))}
@@ -1101,15 +1136,38 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
         </div>
       ) : null}
 
-      {selectedLog ? (
-        <div ref={selectedLogRef} tabIndex={-1}
-          className="scroll-mt-3 rounded-2xl border border-brand-secondary/20 bg-white p-5 outline-none shadow-md focus-visible:ring-2 focus-visible:ring-brand-secondary sm:p-6">
+
+
+      {!logError && !isLogsLoading && !hasLogs ? (
+        <EmptyState
+          title={copy.emptyLogsTitle}
+          description={diaryUi.empty}
+        />
+      ) : null}
+
+      {hasLogs && !logError ? (
+        <FoodLogList
+          logs={logs}
+          onRefresh={() => void fetchLogs()}
+          periodFiltered={diaryPeriod !== "all"}
+          total={diaryOverview.count}
+          hasMore={diaryOverview.next_before !== null}
+          onLoadMore={() => { if (diaryOverview.next_before) void fetchLogs(diaryOverview.next_before); }}
+          onSelectLog={(log) => setSelectedLogId(current => current === log.id ? null : log.id ?? null)}
+          selectedLogId={selectedLogId}
+          selectedDetails={selectedLog ? (
+        <div data-testid="food-log-inline-details"
+          className="rounded-xl bg-white p-3 sm:p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-lg font-bold text-brand-primary">{copy.detailsTitle}</h3>
             <button
               type="button"
               className="rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
-              onClick={() => setSelectedLogId(null)}
+              onClick={(event) => {
+                const trigger = event.currentTarget.closest("li")?.querySelector<HTMLButtonElement>("button[aria-expanded]");
+                setSelectedLogId(null);
+                trigger?.focus({ preventScroll: true });
+              }}
             >
               {copy.backToList}
             </button>
@@ -1164,23 +1222,6 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           </div>
         </div>
       ) : null}
-
-      {!logError && !isLogsLoading && !hasLogs ? (
-        <EmptyState
-          title={copy.emptyLogsTitle}
-          description={diaryUi.empty}
-        />
-      ) : null}
-
-      {hasLogs && !logError ? (
-        <FoodLogList
-          logs={logs}
-          onRefresh={() => void fetchLogs()}
-          periodFiltered={diaryPeriod !== "all"}
-          total={diaryOverview.count}
-          hasMore={diaryOverview.next_before !== null}
-          onLoadMore={() => { if (diaryOverview.next_before) void fetchLogs(diaryOverview.next_before); }}
-          onSelectLog={(log) => setSelectedLogId(log.id ?? null)}
           onDeleteLog={onDeleteLog}
           onDeleteAllLogs={onDeleteAllLogs}
           deletingLogId={deletingLogId}
