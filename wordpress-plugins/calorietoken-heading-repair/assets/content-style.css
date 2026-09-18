@@ -81,6 +81,12 @@
     /* Do not add a positioned overlay over links, controls or illustrations. */
     pointer-events:none;
   }
+  body.ct-content-theme .ctstyle-contact-social-card>.ct-content-card,
+  body.ct-content-theme .cal-buy-pair-grid>.ct-content-card,
+  body.ct-content-theme .ctstyle-hub-sections>.ct-content-card {
+    /* These grids already own the space between their cards. */
+    margin-block:0!important;
+  }
   body.ct-content-theme .ct-content-prose {
     min-width:0!important; max-width:100%!important; text-align:start!important;
   }
@@ -183,6 +189,24 @@
   body.ct-content-theme details.ct-content-card { padding:0!important; }
   body.ct-content-theme details.ct-content-card>summary { padding:16px 20px!important; cursor:pointer; }
   body.ct-content-theme details.ct-content-card> :not(summary) { margin-inline:20px!important; }
+  /* One consistent card for each trustline alternative, including its native
+     disclosure control. Keep logos, destination links and copy controls intact. */
+  body.ct-content-theme .ctstyle-manual-trustline.ct-content-card>summary {
+    font:700 16px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    color:#008d36!important; min-height:52px!important; padding:16px 18px!important;
+    overflow-wrap:break-word!important;
+  }
+  body.ct-content-theme .ctstyle-manual-trustline.ct-content-card>.ctstyle-trustline-option {
+    margin:0!important; padding:0 18px 18px!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body.ct-content-card {
+    height:auto!important; min-height:0!important; padding:0!important; margin:0!important;
+    border:0!important; border-radius:0!important; background:transparent!important;
+    box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body .calorieapp-copy-value {
+    overflow-wrap:anywhere!important; word-break:normal!important;
+  }
   /* XPMarket keeps its live data and destination. Stack the stats at narrow
      sizes so a translated label is not split into several tiny columns. */
   body.ct-content-theme .ct-content-market {
@@ -224,6 +248,9 @@
     background-position:center top!important;
     background-repeat:repeat!important;
     background-blend-mode:multiply!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body.ct-content-card {
+    background-image:none!important; background-color:transparent!important;
   }
   @media(max-width:600px) {
     body.ct-content-theme .ct-content-card { padding:18px!important; border-radius:18px!important; margin-block:16px!important; }

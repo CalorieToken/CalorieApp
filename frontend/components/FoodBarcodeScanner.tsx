@@ -6,9 +6,14 @@ import { BarcodeCameraControls, cameraBlockedByPolicy, readFoodBarcodePhoto, sta
 
 type Status = "opening" | "scanning" | "denied" | "policyBlocked" | "unavailable" | "invalid" | "found" | "paused" | "cameraError" | "photoReading" | "photoNotFound" | "photoError";
 
-export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
+export function FoodBarcodeScanner({ locale, disabled, onLookup, openRequest }: {
   locale: string; disabled: boolean; onLookup: (code: string) => void;
+  openRequest?: number;
 }) {
+  const disclosure = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (openRequest !== undefined && disclosure.current) disclosure.current.open = true;
+  }, [openRequest]);
   const copy = translations[locale as keyof typeof translations] ?? translations.en;
   const [barcode, setBarcode] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
@@ -126,9 +131,9 @@ export function FoodBarcodeScanner({ locale, disabled, onLookup }: {
   const readingPhoto = status === "photoReading";
 
   return (
-    <details className="mt-4 min-w-0 rounded-xl border border-brand-secondary/20 bg-brand-bg"
+    <details ref={disclosure} className="mt-4 min-w-0 rounded-xl border border-brand-secondary/20 bg-brand-bg"
       onToggle={event => { if (!event.currentTarget.open && (camera.current || photo.current)) stop(); }}>
-      <summary className="min-h-11 cursor-pointer px-4 py-3 text-sm font-semibold text-brand-secondary focus-visible:ring-2 focus-visible:ring-brand-primary">{copy.title}</summary>
+      <summary id="food-scan-summary" className="min-h-11 cursor-pointer px-4 py-3 text-sm font-semibold text-brand-secondary focus-visible:ring-2 focus-visible:ring-brand-primary">{copy.title}</summary>
       <div className="space-y-3 px-4 pb-4 text-sm text-brand-secondary">
         <p>{copy.intro}</p>
         <button type="button" onClick={active ? () => stop() : scan} disabled={disabled && !active}

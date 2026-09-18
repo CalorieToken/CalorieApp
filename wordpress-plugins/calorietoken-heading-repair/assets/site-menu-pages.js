@@ -138,7 +138,7 @@
     var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
       && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
     setHidden(blogView.load, ready || permitted || !consentAvailable);
-    setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
+    setHidden(blogView.retry, !permitted || panel.classList.contains('ctstyle-x-loading')); // Frame dimensions do not prove X returned posts.
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -738,6 +738,38 @@
   function appInformation() {
     if (window.CalorieTokenAppInfo) window.CalorieTokenAppInfo.refresh();
   }
+  var usecaseBackLabels = {
+    en: 'Back', nl: 'Terug', 'zh-Hans': '返回', hi: 'वापस', es: 'Volver',
+    ar: 'رجوع', fr: 'Retour', bn: 'ফিরে যান', pt: 'Voltar', id: 'Kembali', ur: 'واپس'
+  };
+  function localizeUsecaseBack(root, preferred) {
+    var picker = document.querySelector('#ctstyle-account-language,#ctstyle-language-select');
+    var requested = preferred || (picker && picker.value) || document.documentElement.lang || selectedLocale();
+    var tag = /^zh(?:-|$)/i.test(requested) ? 'zh-Hans' : requested.split('-')[0].toLowerCase();
+    var label = usecaseBackLabels[tag] || usecaseBackLabels.en;
+    root.querySelectorAll('a[href]').forEach(function (link) {
+      // Only the existing text-only Back link in a configured usecase copy.
+      // Preserve its exact destination, attributes, focus and click handlers.
+      if (link.closest('.calorieapp-context-note') || link.querySelector('img,svg,button')) return;
+      if (!link.hasAttribute('data-ctstyle-usecase-back') && plain(link.textContent) !== 'Back') return;
+      var leaves = Array.from(link.querySelectorAll('strong,span,b'));
+      var leaf = leaves.reverse().find(function (node) { return !node.children.length && plain(node.textContent) === plain(link.textContent); }) || link;
+      if (leaf === link && link.children.length) return;
+      link.setAttribute('data-ctstyle-usecase-back', '');
+      link.classList.add('ctstyle-usecase-back');
+      link.lang = usecaseBackLabels[tag] ? tag : 'en';
+      link.dir = tag === 'ar' || tag === 'ur' ? 'rtl' : 'ltr';
+      if (leaf.textContent !== label) leaf.textContent = label;
+    });
+  }
+  function refreshUsecaseBack(preferred) {
+    if (!allowed()) return;
+    document.querySelectorAll('.ctstyle-usecase-content').forEach(function (root) { localizeUsecaseBack(root, preferred); });
+  }
+  document.addEventListener('change', function (event) {
+    if (event.target && event.target.matches('#ctstyle-account-language,#ctstyle-language-select')) refreshUsecaseBack(event.target.value);
+  });
+  new MutationObserver(function () { refreshUsecaseBack(); }).observe(document.documentElement, {attributes:true, attributeFilter:['lang']});
   function refineMobileSections(id) {
     var protectedLayout = 'form,input,select,textarea,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],iframe,video,audio,canvas,.cmplz-blocked-content-container';
     function markRow(row, kind) {
@@ -755,6 +787,9 @@
       var root = unique('[data-brz-custom-id="' + note.element + '"]');
       if (root && !root.closest(protectedLayout) && !root.querySelector(protectedLayout)) {
         root.classList.add('ctstyle-usecase-content');
+        var container = root.closest('.brz-container');
+        if (container && !container.querySelector(protectedLayout)) container.classList.add('ctstyle-usecase-container');
+        localizeUsecaseBack(root);
         if (root.matches('.brz-row')) markRow(root, 'usecase');
         root.querySelectorAll('.brz-row').forEach(function (row) { markRow(row, 'usecase'); });
       }

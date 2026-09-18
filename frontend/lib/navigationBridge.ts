@@ -6,7 +6,7 @@ export type CalorieAppNavigationTarget =
   | "calorieapp-add"
   | "calorieapp-diary";
 
-function trustedWordPressParentOrigin(): string | null {
+export function trustedWordPressParentOrigin(): string | null {
   if (typeof window === "undefined" || typeof document === "undefined" ||
       window.parent === window || !document.referrer) return null;
   try {

@@ -1,3 +1,15 @@
+CalorieToken Heading and Language Repair 1.6.16
+
+Direct helpbot links open food search, the scan panel, comparison guidance,
+basic foods, food diary and existing account screens inside CalorieApp.
+The test-account link opens the native six-step guide. The retired WordPress
+onboarding markup is no longer generated. Eleven languages are supported.
+No camera, account creation, login, logout or export starts automatically.
+Requires the matching CalorieApp entry bridge. Existing 1.6.15 card, contact
+and showcase fixes are retained. Only this plugin needs updating.
+
+Earlier component documentation:
+
 CalorieToken Heading and Language Repair 1.6.11
 
 Version 1.6.11 restores the missing colours in the product-score bar and shows

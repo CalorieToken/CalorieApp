@@ -6,7 +6,6 @@
   if (!cfg || !runtime || Number(cfg.page) !== 7880 || window.CalorieTokenAppIntegration) return;
   var appOrigins = ['https://app.calorietoken.net', 'https://calorieapp-frontend.onrender.com'];
   var active = true, started = false;
-  var prefix = 'calorieapp:testnet-guide:';
   function allowed() {
     return active && document.body && document.body.matches('.ctstyle-enabled.page-id-7880') &&
       !document.querySelector('.brz-ed,#brz-ed-iframe,[contenteditable="true"]') &&
@@ -34,22 +33,6 @@
       }
     });
   }
-  function trusted(event) {
-    return frames().some(function (frame) { return frame.window === event.source && frame.origin === event.origin; });
-  }
-  function announce() {
-    if (!document.querySelector('#ctstyle-testnet[data-ctstyle-testnet="1"]')) return;
-    frames().forEach(function (frame) { frame.window.postMessage({type:prefix+'available',version:1},frame.origin); });
-  }
-  function openGuide() {
-    var guide = document.querySelector('#ctstyle-testnet[data-ctstyle-testnet="1"]');
-    if (!guide) return;
-    var disclosure = guide.querySelector('.ctstyle-testnet-disclosure');
-    if (disclosure) disclosure.open = true;
-    if (typeof guide.scrollIntoView === 'function') guide.scrollIntoView({block:'start',behavior:'auto'});
-    var heading = guide.querySelector('h2');
-    if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
-  }
   function init() {
     if (!allowed()) return;
     cameraPermission();
@@ -73,18 +56,11 @@
       });
       runtime.connectHost({window:window,frames:frames,epoch:window.crypto.randomUUID(),store:store});
     }
-    window.addEventListener('message',function (event) {
-      var data = event.data;
-      if (!trusted(event) || !data || typeof data !== 'object' || Array.isArray(data) ||
-          Object.keys(data).length !== 2 || data.version !== 1) return;
-      if (data.type === prefix+'ready') announce();
-      else if (data.type === prefix+'open') openGuide();
-    });
-    announce();
+
   }
   window.CalorieTokenAppIntegration = {refresh:init};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
-  window.addEventListener('load',function () { init(); announce(); });
+  window.addEventListener('load',function () { init(); });
   window.addEventListener('pagehide',function () { active = false; });
-  window.addEventListener('pageshow',function () { active = true; init(); announce(); });
+  window.addEventListener('pageshow',function () { active = true; init(); });
 })();

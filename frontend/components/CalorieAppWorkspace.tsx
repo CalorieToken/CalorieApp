@@ -12,6 +12,8 @@ import { foodExperience } from "@/lib/foodExperience";
 import { getFoodUi } from "@/lib/foodUi";
 import journeyTranslations from "@/config/testnet-entry-copy.json";
 import { readAccountJourney } from "@/lib/accountJourney";
+import { connectAppEntry, type AppEntryTarget } from "@/lib/appEntryBridge";
+import { postNavigationTarget } from "@/lib/navigationBridge";
 
 type WorkspaceTab = "account" | "journey" | FoodWorkspaceView;
 
@@ -30,6 +32,8 @@ export function CalorieAppWorkspace() {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("account");
   const [requestedJourney, setRequestedJourney] = useState<{ step: "test" | "move"; serial: number }>();
   const [returnToJourney, setReturnToJourney] = useState(false);
+  const [pendingEntry, setPendingEntry] = useState<AppEntryTarget | null>(null);
+  const [requestedFoodEntry, setRequestedFoodEntry] = useState<{ target: AppEntryTarget; serial: number }>();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const tabs: Array<{ id: WorkspaceTab; label: string }> = [
     ...(allowPersonalFeatures ? [{ id: "account" as const, label: profileCopy.account }] : []),
@@ -44,6 +48,35 @@ export function CalorieAppWorkspace() {
     setReturnToJourney(readAccountJourney() !== null);
     try { window.sessionStorage.removeItem("calorieapp.nickname.v1"); } catch { /* Discard the old, unbound tab-only nickname. */ }
   }, []);
+
+  useEffect(() => connectAppEntry(setPendingEntry), []);
+
+  useEffect(() => {
+    if (!pendingEntry || !ageResolved || !ageBand) return;
+    const personal = ["test-account", "move-account", "account", "account-export", "food-diary"].includes(pendingEntry);
+    if (personal && !allowPersonalFeatures) return;
+    if (pendingEntry === "test-account" || pendingEntry === "move-account") {
+      const step = pendingEntry === "test-account" ? "test" : "move";
+      setRequestedJourney(current => ({ step, serial: (current?.serial ?? 0) + 1 }));
+      setReturnToJourney(true);
+      setActiveTab("journey");
+    } else {
+      const tab: WorkspaceTab = pendingEntry === "account" || pendingEntry === "account-export" ? "account"
+        : pendingEntry === "food-diary" ? "diary" : pendingEntry === "basic-foods" ? "basic" : "packaged";
+      setActiveTab(tab);
+      setRequestedFoodEntry(current => ({ target: pendingEntry, serial: (current?.serial ?? 0) + 1 }));
+      window.requestAnimationFrame(() => {
+        const element = document.getElementById(`calorie-panel-${tab}`);
+        if (element) postNavigationTarget("calorieapp-navigation", element);
+        if (pendingEntry === "account-export") {
+          window.dispatchEvent(new CustomEvent("calorieapp:open-account-tools", { detail: { destination: "export" } }));
+        } else if (tab !== "packaged") {
+          document.getElementById(`calorie-tab-${tab}`)?.focus({ preventScroll: true });
+        }
+      });
+    }
+    setPendingEntry(null);
+  }, [pendingEntry, ageResolved, ageBand, allowPersonalFeatures]);
 
   useEffect(() => {
     if (ageBand && !allowPersonalFeatures) {
@@ -171,6 +204,7 @@ export function CalorieAppWorkspace() {
 
       <FoodSearchPlaceholder
         activeView={visibleTab === "account" || visibleTab === "journey" ? null : visibleTab}
+        requestedEntry={requestedFoodEntry}
         onOpenAccount={() => selectTab("account", true)}
         allowPersonalLog={allowPersonalFeatures}
       />

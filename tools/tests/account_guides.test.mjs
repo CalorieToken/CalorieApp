@@ -9,9 +9,10 @@ const React=require('react'),{createRoot}=require('react-dom/client'),{parseHTML
 const setup=JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json',import.meta.url)));
 const copy=JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json',import.meta.url)));
 
-function harness({importEnabled=false,stored=new Map()}={}){
+function harness({importEnabled=false,stored=new Map(),hash='',age='adult'}={}){
  const {window,document}=parseHTML('<html><body><div id="root"></div></body></html>');
  window.parent=window;
+ Object.defineProperty(window,'location',{configurable:true,value:new URL('https://app.calorietoken.net/'+hash)});
  window.cancelAnimationFrame=()=>{};
  window.requestAnimationFrame=fn=>{fn();return 1;};
  Object.defineProperty(window,'sessionStorage',{configurable:true,value:{getItem:key=>stored.get(key)??null,setItem:(key,value)=>stored.set(key,value)}});
@@ -21,7 +22,7 @@ function harness({importEnabled=false,stored=new Map()}={}){
   'react':React,'react/jsx-runtime':require('react/jsx-runtime'),
   '@/components/DisplayLanguageProvider':{useDisplayLanguage:()=>({enabled:true,locale:'nl'})},
   '@/lib/locales':{localeDirection:()=> 'ltr'},
-  '@/components/AgeExperienceControl':{AgeExperienceControl:()=>null,useAgeExperience:()=>['adult',()=>{}]},
+  '@/components/AgeExperienceControl':{AgeExperienceControl:()=>null,useAgeExperience:()=>[age,()=>{},true]},
   '@/components/FoodSearchPlaceholder':{FoodSearchPlaceholder:({activeView})=>React.createElement('div',{hidden:!activeView},'Food fixture')},
   '@/components/NicknameProfile':{NicknameProfile:()=>null},
   '@/components/XamanLoginPanel':{XamanLoginPanel:({guides})=>React.createElement('div',null,'Account fixture: no login requests',guides)},
@@ -32,12 +33,12 @@ function harness({importEnabled=false,stored=new Map()}={}){
   '@/config/account-profile-copy.json': {default: profileCopy},
     '@/config/testnet-entry-copy.json':{default:copy},
   '@/config/account-setup-copy.json':{default:setup},
-  '@/lib/navigationBridge':{postNavigationTarget:()=>false},
+  '@/lib/navigationBridge':{postNavigationTarget:()=>false,trustedWordPressParentOrigin:()=>null},
   '@/lib/testnetAccount':{testnetWait:()=>0},
  };
  function load(name){
   if(name in imports)return imports[name];
-  const path=name.replace('@/','../../frontend/')+(name.endsWith('accountJourney')?'.ts':'.tsx');
+  const path=name.replace('@/','../../frontend/')+(name.startsWith('@/lib/')?'.ts':'.tsx');
   const source=readFileSync(new URL(path,import.meta.url),'utf8');
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
   const module={exports:{}};
@@ -48,6 +49,7 @@ function harness({importEnabled=false,stored=new Map()}={}){
  const visible=node=>!node.closest('[hidden]');
  const button=text=>[...document.querySelectorAll('button')].find(node=>node.textContent.replace(/^[←→]/,'')===text&&visible(node));
  return {window,document,stored,load,button,
+  setAge(value){age=value;},
   async render(){await React.act(async()=>root.render(React.createElement(load('@/components/CalorieAppWorkspace').CalorieAppWorkspace)));},
   async click(text){const node=button(text);assert.ok(node,`visible button: ${text}`);assert.equal(node.disabled,false);await React.act(async()=>node.dispatchEvent(new window.Event('click',{bubbles:true})));},
   async close(){await React.act(async()=>root.unmount());for(const[key,value]of old){if(value)Object.defineProperty(globalThis,key,value);else delete globalThis[key];}}
@@ -106,4 +108,29 @@ test('corrupt, extra-field and out-of-range saved navigation is ignored',async()
    stored.set(key,value);assert.equal(api.readAccountJourney(),null);
   }
  }finally{await h.close();}
+});
+
+
+test('helpbot test entry starts the six-step guide after age resolution without creating an account',async()=>{
+ const h=harness({hash:'#ctstyle-testnet',age:null});
+ try{
+  await h.render();assert.equal(h.document.querySelector('#calorie-panel-journey'),null);
+  h.setAge('teen');await h.render();assert.equal(h.document.querySelector('#calorie-panel-journey'),null);
+  h.setAge('adult');await h.render();
+  assert.equal(h.document.querySelector('#calorie-panel-journey').hidden,false);
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.beforeStart);
+  assert.ok(h.document.querySelector('[data-account-guide="test"]'));
+  await h.click(copy.nl.next);
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.stepCreate);
+  await h.click(setup.nl.backToAccount);
+  assert.equal(h.document.querySelector('#calorie-panel-account').hidden,false);
+ }finally{await h.close();}
+});
+
+test('public and account links select the relevant tab while a normal app visit keeps the account overview',async()=>{
+ for(const [hash,tab] of [['','account'],['#food-search','packaged'],['#food-scan','packaged'],['#food-compare','packaged'],['#basic-foods','basic'],['#food-diary','diary'],['#account','account']]){
+  const h=harness({hash});
+  try{await h.render();assert.equal(h.document.querySelector('#calorie-tab-'+tab).getAttribute('aria-selected'),'true',hash);}
+  finally{await h.close();}
+ }
 });

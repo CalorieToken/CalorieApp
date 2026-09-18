@@ -5,8 +5,8 @@
   var cfg = window.CalorieTokenHelp;
   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
   var views = [], locale = 'en';
-  var visibleTopics = ['app','usda','compare','test','history','exchange','trustline','donations','docs','troubleshoot','legal'];
-  var adultOnlyTopics = ['test','exchange','trustline','donations'];
+  var visibleTopics = ['app','search','scan','compare','usda','diary','account','test','move','export','history','exchange','trustline','donations','docs','troubleshoot','legal'];
+  var adultOnlyTopics = ['test','move','export','account','diary','exchange','trustline','donations'];
   var primaryTopics = {
     child:['app','usda','docs','legal'],
     teen:['app','usda','docs','legal'],
@@ -14,6 +14,9 @@
   };
   var protectedArea = 'form,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed],[hidden],[inert]';
   var routes = {
+    foodSearch:['Search foods','/calorieapp/#food-search'],foodScan:['Scan food','/calorieapp/#food-scan'],foodCompare:['Compare foods','/calorieapp/#food-compare'],
+    foodBasic:['Basic foods','/calorieapp/#basic-foods'],foodDiary:['Food diary','/calorieapp/#food-diary'],
+    account:['My account','/calorieapp/#account'],accountExport:['Export tools','/calorieapp/#account-export'],accountMove:['Move to a real account','/calorieapp/#move-account'],testAccount:['Set up a test account','/calorieapp/#test-account'],
     app:['CalorieApp','/index.php/calorieapp/'], test:['XRPL Testnet','/index.php/calorieapp/#ctstyle-testnet'],
     faq:['FAQ','/index.php/faq/'], trustline:['CAL Trustline','/index.php/trustline/'],
     exchange:['CAL & Crypto','/index.php/how-to-buy-calorie/'], privacy:['Privacy Policy','/index.php/privacy-policy/'],
@@ -31,10 +34,16 @@
     xaman:['Xaman · Testnet','https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger']
   };
   var keywords = {
+    search:['zoeken','zoek','voedsel zoeken','search','find food','rechercher','chercher','buscar','pesquisar','cari','搜索','खोज','بحث','খুঁজ','تلاش'],
+    scan:['scan','scannen','barcode','barcodes','scanner','code-barres','条码','बारकोड','باركود','বারকোড','código de barras','kode batang','بارکوڈ'],
+    account:['account','accountbeheer','accountfuncties','profiel','profile','nickname','bijnaam','login','logout','aanmelden','inloggen','uitloggen','compte','cuenta','conta','akun','账户','खाता','حساب','অ্যাকাউন্ট','اکاؤنٹ'],
+    export:['export','exporteren','exporter','exportar','ekspor','导出','निर्यात','تصدير','রপ্তানি','برآمد'],
+    move:['overstappen','overzetten','echt account','real account','mainnet','compte réel','cuenta real','conta real','akun nyata','真实账户','वास्तविक खाता','حساب حقيقي','বাস্তব অ্যাকাউন্ট','حقیقی اکاؤنٹ'],
+    diary:['dagboek','eetdagboek','diary','food log','journal alimentaire','diario','diário','catatan makanan','饮食记录','भोजन डायरी','يوميات الطعام','খাদ্য ডায়েরি','غذائی ڈائری'],
     usda:['usda','fdc','foundation','sr legacy','nutri-score','nutri score','nutriscore','ingredient','ingredients','ingrediënt','ingrediënten','basisvoeding','食材','सामग्री','مكون','مكوّن','উপকরণ','ingrediente','ingrédient','bahan','اجزا'],
     compare:['compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
     donations:['donation','donations','donate','donatie','donaties','doneren','donation balance','donatiesaldo','consolidation','consolidatie','捐赠','दान','تبرع','অনুদান','donación','donaciones','dons','donativos','donasi','عطیات'],
-    test:['test','testnet','faucet','proberen','oefenen','testaccount','nickname','bijnaam','export','import','overzetten','echt account','real account','mainnet','recovery seed','herstelcode','private key','测试','昵称','导出','导入','परीक्ष','उपनाम','निर्यात','आयात','اختبار','اسم مستعار','تصدير','استيراد','পরীক্ষা','ডাকনাম','রপ্তানি','আমদানি','apodo','exportar','importar','surnom','exporter','importer','alcunha','ekspor','impor','آزمائش','نک نیم'],
+    test:['test','testnet','faucet','proberen','oefenen','testaccount','recovery seed','herstelcode','private key','测试','昵称','导出','导入','परीक्ष','उपनाम','निर्यात','आयात','اختبار','اسم مستعار','تصدير','استيراد','পরীক্ষা','ডাকনাম','রপ্তানি','আমদানি','apodo','exportar','importar','surnom','exporter','importer','alcunha','ekspor','impor','آزمائش','نک نیم'],
     trustline:['trustline','trust set','issuer','uitgever','hex','信任','ट्रस्ट','ثقة','ট্রাস্ট','ٹرسٹ'],
     exchange:['exchange','swft','dex','kopen','verkopen','wisselen','buy','sell','swap','bitcoin','btc','eth','兑换','खरीद','شراء','বিনিময়','trocar','tukar','خرید'],
     legal:['privacy','licence','license','licentie','legal','juridisch','mica','cookie','terms','voorwaarden','copyright','disclosure','garantie','profit','rendement','隐私','गोपनीय','خصوص','গোপনীয়','privacidade','lisensi','شرائط'],
@@ -94,7 +103,13 @@
     if (candidates.includes('legal') && !candidates.includes('troubleshoot')) selected='legal';
     else if (candidates.includes('compare')) selected='compare';
     else if (candidates.includes('usda')) selected='usda';
+    else if (candidates.includes('move')) selected='move';
+    else if (candidates.includes('export')) selected='export';
     else if (candidates.includes('test')) selected='test';
+    else if (candidates.includes('scan')) selected='scan';
+    else if (candidates.includes('search')) selected='search';
+    else if (candidates.includes('diary')) selected='diary';
+    else if (candidates.includes('account')) selected='account';
     else if(candidates.length===1)selected=candidates[0];
     var age=getAgeBand();
     return age!=='adult'&&adultOnlyTopics.includes(selected)?'ageSafety':selected;
@@ -115,6 +130,9 @@
       var steps=el('ol',null,'ctstyle-help-steps');
       data.steps.forEach(function(text){steps.append(el('li',text));}); container.append(steps);
     }
+    var actions=el('div',null,'ctstyle-help-links ctstyle-help-actions');
+    (data.actions||[]).forEach(function(id){if(routes[id]){var a=link(id);a.classList.add('ctstyle-discovery-action');actions.append(a);}});
+    if(actions.childNodes.length)container.append(actions);
     var sources=el('div',null,'ctstyle-help-links');
     (data.links || []).forEach(function(id){if(routes[id])sources.append(link(id));});
     if(sources.childNodes.length) container.append(el('p',copy.sourcesLabel||copy.docsTitle||'','ctstyle-help-source-label'),sources);
@@ -125,9 +143,11 @@
     if(key==='ageSafety')return ageCopy?{title:ageCopy.helpTitle,text:ageCopy.helpText,links:[]}:{title:'Age-appropriate help',text:'Wallet and transaction instructions are not shown in this age setting.',links:[]};
     if(key==='app'&&age!=='adult'&&ageCopy){
       var note=ageCopy[(age==='teen'?'teen':'child')+'Note'];
-      return {title:data.title,text:[note,ageCopy.helpText].filter(Boolean).join(' '),links:['app','faq']};
+      return {title:data.title,text:[note,ageCopy.helpText].filter(Boolean).join(' '),links:['app','faq'],actions:['foodSearch','foodScan']};
     }
-    return data;
+    if(!data)return data;
+    var actions={app:['foodSearch','foodScan','foodDiary'],search:['foodSearch'],scan:['foodScan'],compare:['foodCompare'],usda:['foodBasic'],diary:['foodDiary'],account:['account','testAccount','accountMove','accountExport'],test:['testAccount','account'],move:['accountMove'],export:['accountExport']};
+    return Object.assign({},data,{actions:actions[key]||[]});
   }
   function answer(view,key,focusReply) {
     view.selected=key; var copy=cfg.copy[locale],data=topicData(key);

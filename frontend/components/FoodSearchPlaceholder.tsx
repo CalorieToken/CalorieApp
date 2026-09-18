@@ -1,6 +1,9 @@
 "use client";
 
 import { FoodBarcodeScanner } from "@/components/FoodBarcodeScanner";
+import entryTranslations from "@/config/app-entry-copy.json";
+import type { AppEntryTarget } from "@/lib/appEntryBridge";
+import { postNavigationTarget } from "@/lib/navigationBridge";
 import barcodeTranslations from "@/config/barcode-copy.json";
 import { validFoodBarcode } from "@/lib/foodBarcode";
 import { createFoodSearchReadiness } from "@/lib/foodSearchReadiness";
@@ -182,14 +185,27 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
 
 export type FoodWorkspaceView = "packaged" | "basic" | "diary";
 
-export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonalLog = true }: {
+export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonalLog = true, requestedEntry }: {
   activeView: FoodWorkspaceView | null;
   onOpenAccount: () => void;
   allowPersonalLog?: boolean;
+  requestedEntry?: { target: AppEntryTarget; serial: number };
 }) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const experience = foodExperience(locale);
+  const entryCopy = entryTranslations[locale as keyof typeof entryTranslations] ?? entryTranslations.en;
+  useEffect(() => {
+    if (activeView !== "packaged" || !requestedEntry) return;
+    const id = requestedEntry.target === "food-scan" ? "food-scan-summary"
+      : requestedEntry.target === "food-compare" ? "food-compare-entry" : "food-search";
+    const timer = window.requestAnimationFrame(() => {
+      const target = document.getElementById(id);
+      target?.focus({ preventScroll: true });
+      if (target) postNavigationTarget("calorieapp-navigation", target);
+    });
+    return () => window.cancelAnimationFrame(timer);
+  }, [requestedEntry, activeView]);
   const portionFormRef = useRef<HTMLFormElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const resultsListRef = useRef<HTMLUListElement>(null);
@@ -953,6 +969,10 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           {copy.completeOnly}
         </p>
 
+        {requestedEntry?.target === "food-compare" ? <p id="food-compare-entry" tabIndex={-1}
+          className="mt-4 rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4 text-sm text-brand-secondary">
+          {entryCopy.compareStart}
+        </p> : null}
         <SearchBar
           query={query}
           isLoading={isLoading}
@@ -962,6 +982,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
         />
 
         <FoodBarcodeScanner locale={locale} disabled={isLoading || searchWaitSeconds > 0 || isLogging !== null}
+          openRequest={requestedEntry?.target === "food-scan" ? requestedEntry.serial : undefined}
           onLookup={code => { void runSearch(code, true); }} />
 
         {error ? <div className="mt-4 space-y-3"><ErrorBanner message={searchFailure ? diaryUi[searchFailure] : translateFoodStatus(error, copy)} />

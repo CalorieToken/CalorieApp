@@ -243,82 +243,41 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
   assert.equal(stage.getAttribute('aria-busy'),'false');
 });
 
-test('adult account journey opens the original guide inline with a strict, seed-free bridge', () => {
-  const {document, window} = parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled page-id-7880">
-    <section class="xl-card"><div id="ctstyle-account-app"><div class="ctstyle-account-app-brand">CalorieApp</div></div></section>
-    <div data-calorieapp-embed><iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1"></iframe></div>
-    <section id="ctstyle-testnet" data-ctstyle-testnet="1"><h2>Veilige testaccountgids</h2>
-      <div id="ctstyle-testnet-step-4"><button id="copy-address">Kopieer adres</button><button id="return-to-app">Terug naar app</button></div>
-    </section>
-  </body></html>`);
-  Object.defineProperty(window, 'location', {value: new URL('https://calorietoken.net/calorieapp/'), configurable: true});
-  Object.defineProperty(document, 'readyState', {value: 'complete', configurable: true});
-  const frame = document.querySelector('iframe');
-  const sent = [];
-  const trustedFrameWindow = {postMessage(message, origin) { sent.push({message, origin}); }};
-  Object.defineProperty(frame, 'contentWindow', {value: trustedFrameWindow});
-  const listeners = new Map();
-  const nativeAddEventListener = window.addEventListener.bind(window);
-  window.addEventListener = (type, listener, options) => {
-    listeners.set(type, listener);
-    nativeAddEventListener(type, listener, options);
-  };
-  let ageBand = 'teen';
-  window.CalorieTokenAgeExperience = {getBand: () => ageBand};
-  window.setTimeout = callback => { callback(); return 1; };
-  window.clearTimeout = () => {};
-  window.requestAnimationFrame = callback => { callback(0); return 1; };
-  window.scrollTo = () => {};
-  window.matchMedia = () => ({matches: false});
-
-  vm.runInContext(appFocusSource, vm.createContext({
-    window, document, URL, MutationObserver: window.MutationObserver,
-    getComputedStyle: () => ({display: 'block'}),
-    setTimeout: window.setTimeout, clearTimeout: window.clearTimeout,
-  }), {filename: 'app-focus.js'});
-
-  const layer = document.getElementById('ct-testnet-guide-layer');
-  const guide = document.getElementById('ctstyle-testnet');
-  assert.ok(layer);
-  assert.equal(layer.getAttribute('role'), 'region');
-  assert.equal(layer.getAttribute('aria-modal'), null);
-  assert.equal(layer.previousElementSibling.hasAttribute('data-calorieapp-embed'), true);
-  assert.equal(layer.hidden, true);
-  assert.equal(guide.parentElement.classList.contains('ct-testnet-guide-panel'), true);
-  assert.equal(layer.getAttribute('aria-hidden'), 'true');
-  assert.deepEqual(JSON.parse(JSON.stringify(sent)), [{
-    message: {type: 'calorieapp:testnet-guide:available', version: 1},
-    origin: 'https://app.calorietoken.net',
-  }]);
-
-  const onMessage = listeners.get('message');
-  onMessage({source: trustedFrameWindow, origin: 'https://app.calorietoken.net', data: {
-    type: 'calorieapp:testnet-guide:open', version: 1, seed: 'forged',
-  }});
-  assert.equal(document.body.classList.contains('ct-testnet-guide-open'), false);
-  onMessage({source: {}, origin: 'https://app.calorietoken.net', data: {
-    type: 'calorieapp:testnet-guide:open', version: 1,
-  }});
-  assert.equal(document.body.classList.contains('ct-testnet-guide-open'), false);
-  onMessage({source: trustedFrameWindow, origin: 'https://app.calorietoken.net', data: {
-    type: 'calorieapp:testnet-guide:open', version: 1,
-  }});
-  assert.equal(document.body.classList.contains('ct-testnet-guide-open'), false);
-  ageBand = 'adult';
-  onMessage({source: trustedFrameWindow, origin: 'https://app.calorietoken.net', data: {
-    type: 'calorieapp:testnet-guide:open', version: 1,
-  }});
-  assert.equal(document.body.classList.contains('ct-testnet-guide-open'), true);
-  assert.equal(layer.getAttribute('aria-hidden'), 'false');
-  assert.equal(layer.hidden, false);
-
-  document.getElementById('return-to-app').click();
-  assert.equal(document.body.classList.contains('ct-testnet-guide-open'), false);
-  assert.deepEqual(JSON.parse(JSON.stringify(sent.at(-1))), {
-    message: {type: 'calorieapp:testnet-guide:complete', version: 1},
-    origin: 'https://app.calorietoken.net',
-  });
-  assert.deepEqual(Object.keys(sent.at(-1).message).sort(), ['type', 'version']);
+test('help links hand off fixed destinations to the native app and never rebuild the old guide', () => {
+  const {document,window}=parseHTML('<html><body class="ctstyle-enabled page-id-7880"><div id="ctstyle-account-app"></div><div data-calorieapp-embed><iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1"></iframe></div><section id="ctstyle-testnet"></section></body></html>');
+  Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/calorieapp/#ctstyle-testnet'),configurable:true});
+  Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
+  const sent=[],listeners=new Map(),frame=document.querySelector('iframe');
+  const trusted={postMessage(message,origin){sent.push({message,origin});}};
+  Object.defineProperty(frame,'contentWindow',{value:trusted});
+  const nativeAdd=window.addEventListener.bind(window);
+  window.addEventListener=(type,callback)=>{listeners.set(type,callback);nativeAdd(type,callback);};
+  window.setTimeout=()=>0;window.clearTimeout=()=>{};window.scrollTo=()=>{};window.matchMedia=()=>({matches:false});
+  vm.runInNewContext(appFocusSource,{window,document,URL,MutationObserver:window.MutationObserver,getComputedStyle:()=>({display:'block'}),setTimeout:window.setTimeout});
+  assert.equal(document.getElementById('ctstyle-testnet'),null);
+  assert.equal(document.getElementById('ct-testnet-guide-layer'),null);
+  assert.equal(sent[0].message.target,'test-account');
+  assert.equal(document.body.classList.contains('ct-testnet-guide-open'),false);
+  const ready={type:'calorieapp:entry:ready',version:1};
+  const message=listeners.get('message'),before=sent.length;
+  for(const event of [
+    {source:{},origin:'https://app.calorietoken.net',data:ready},
+    {source:trusted,origin:'https://evil.example',data:ready},
+    {source:trusted,origin:'https://app.calorietoken.net',data:{...ready,extra:'rejected'}}
+  ])message(event);
+  assert.equal(sent.length,before);
+  message({source:trusted,origin:'https://app.calorietoken.net',data:ready});
+  assert.equal(sent.at(-1).message.requestId,sent[0].message.requestId,'readiness retries keep the same request ID');
+  for(const target of ['food-search','food-scan','food-compare','basic-foods','food-diary','account','account-export','move-account']){
+    window.location.hash='#'+target;listeners.get('hashchange')();
+    const value=sent.at(-1);
+    assert.equal(value.message.target,target);
+    assert.equal(value.origin,'https://app.calorietoken.net');
+    assert.deepEqual(Object.keys(value.message).sort(),['requestId','target','type','version']);
+  }
+  window.location.hash='';listeners.get('hashchange')();const count=sent.length;
+  message({source:trusted,origin:'https://app.calorietoken.net',data:ready});
+  assert.equal(sent.length,count,'normal app opening does not start a task');
 });
 
 test('CalorieHelp additions cover all locales and append without replacing existing answers', () => {
@@ -440,7 +399,7 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
   assert.equal(document.querySelector('.ctstyle-help-icon').classList.contains('ctstyle-help-mascot'),true);
   assert.match(widget.querySelector('input').placeholder,/Nutri-Score/);
   const visibleChild=Array.from(widget.querySelectorAll('button[data-topic]')).filter(button=>!button.hidden).map(button=>button.dataset.topic);
-  assert.deepEqual(visibleChild,['app','usda','docs','legal']);
+  assert.deepEqual(visibleChild,['app','usda','docs','legal','search','scan','compare']);
   widget.querySelector('button[data-topic="app"]').click();
   assert.match(widget.querySelector('.ctstyle-help-reply').textContent,/Openbaar eten zoeken/);
   assert.doesNotMatch(widget.querySelector('.ctstyle-help-reply').textContent,/eetdagboek/i);
@@ -453,11 +412,16 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
   assert.equal(widget.querySelector('.ctstyle-help-more').hidden,false);
   widget.querySelector('button[data-topic="app"]').click();
   assert.match(widget.querySelector('.ctstyle-help-reply').textContent,/eetdagboek/i);
+  for(const [question,hash] of [['voedsel zoeken','#food-search'],['voedsel scannen','#food-scan'],['voedsel vergelijken','#food-compare'],['mijn account','#account'],['testaccount aanmaken','#test-account'],['gegevens exporteren','#account-export'],['overstappen naar echt account','#move-account']]){
+    input.value=question;widget.querySelector('form').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
+    assert.ok([...widget.querySelectorAll('.ctstyle-help-reply .ctstyle-help-actions a')].some(link=>link.href.endsWith(hash)),question);
+  }
+
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.11/);
-  assert.match(php, /const VERSION = '1\.6\.11'/);
+  assert.match(php, /Version: 1\.6\.16/);
+  assert.match(php, /const VERSION = '1\.6\.16'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);
@@ -483,7 +447,7 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(css, /@media \(max-width:1050px\)/);
   assert.match(css, /data-calorieapp-scroll="top"/);
   assert.match(css, /data-calorieapp-scroll="bottom"/);
-  assert.match(appFocusSource, /calorieapp:testnet-guide:/);
+  assert.match(appFocusSource, /calorieapp:entry:/);
   assert.match(appFocusSource, /\[data-calorieapp-embed\] iframe\[title="CalorieApp"\]/);
   assert.match(appFocusSource, /url\.pathname==='\/'/);
   assert.doesNotMatch(appFocusSource, /frame\.src\s*=/);
@@ -495,9 +459,8 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(languageBootstrap, /root\.dataset\.locale=locale/);
   assert.match(appFocusSource, /data-calorieapp-loading-reveal/);
   assert.match(appFocusSource, /event\.stopPropagation\(\)/);
-  assert.match(appFocusSource, /if\(age!=='adult'/);
-  assert.match(appFocusSource, /exactGuideMessage\(event\.data,'open'\)/);
-  assert.match(appFocusSource, /postMessage\(\{type:guidePrefix\+type,version:1\}/);
+  assert.match(appFocusSource, /calorieapp:entry:ready/);
+  assert.match(appFocusSource, /Object\.keys\(event\.data\)\.length===2/);
   assert.doesNotMatch(appFocusSource, /postMessage\([^)]*(?:seed|secret|address|account)/i);
   assert.match(css, /#ct-testnet-guide-layer\{display:none;position:relative/);
   assert.match(css, /#ct-testnet-guide-layer:not\(\[hidden\]\)\{display:block\}/);

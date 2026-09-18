@@ -13,7 +13,7 @@
         document.body.matches('.home,.brz-ed') || document.querySelector('.brz-ed,#brz-ed-iframe')) return false;
     var url = new URL(window.location.href);
     return ['https://calorietoken.net', 'https://www.calorietoken.net'].includes(url.origin) &&
-      ['/index.php/blog/', '/blog/'].includes(url.pathname) &&
+      /^\/(?:index\.php\/)?blog(?:\/bpage\/\d+)?\/?$/.test(url.pathname) &&
       Array.from(url.searchParams.keys()).every(safeQueryKey);
   }
   function consent() {
@@ -130,7 +130,12 @@
         !matches[0].querySelector('form,input,textarea,select,[contenteditable],.xl-card,[data-calorieapp-account],[data-calorieapp-embed]') ? matches[0] : null;
     usePanel(next);
     if (!panel) return;
-    if (frames().length && !managed) {panel.classList.add('ctstyle-x-timeline');watch();status();return;}
+    if (frames().length && !managed) {
+      // Adopt this profile's existing CMS output so consent revocation also
+      // removes frames created before our controller initialised.
+      managed=true; collectFrames(); panel.classList.add('ctstyle-x-timeline');watch();
+      if(!consent()) revoke(); status();return;
+    }
     var anchors = Array.from(panel.querySelectorAll('a.twitter-timeline,a[data-ctstyle-x-anchor]'));
     if (anchors.length !== 1 || !profile(anchors[0])) return;
     anchor = anchors[0];
@@ -160,11 +165,26 @@
   }
   function retry() {
     if(!allowed()||!consent()||!panel||!panel.isConnected||Date.now()<retryAt)return;
-    retryAt=Date.now()+15000;
-    // Only an explicit user retry; no timer or observer retries a provider call.
-    // A pre-existing CMS frame remains owned by the CMS/CMP.
-    if(frames().some(function(frame){return originalFrames.has(frame);}))return;
-    revoke();attempted=false;
+    retryAt=Date.now()+1500;
+    // Explicit retry resets only this known profile embed. A CMS-created
+    // hidden/error iframe must not permanently short-circuit refresh().
+    generation++; stopWatching();
+    frames().forEach(function(frame) {
+      var wrapper=frame.parentElement;
+      frame.remove();
+      if(wrapper && wrapper!==panel && wrapper.matches('.twitter-timeline-rendered') && !wrapper.children.length) wrapper.remove();
+    });
+    ownedFrames.clear(); originalFrames.clear();
+    // The SDK marks an extracted anchor as processed. Create a fresh anchor
+    // rather than reusing that marker, otherwise widgets.load skips the retry.
+    Array.from(panel.querySelectorAll('a.twitter-timeline,a[data-ctstyle-x-anchor]')).filter(profile).forEach(function(link){link.remove();});
+    anchor=document.createElement('a'); anchor.href='https://twitter.com/CalorieToken';
+    anchor.textContent='Posts by CalorieToken'; anchor.className='twitter-timeline';
+    anchor.setAttribute('data-ctstyle-x-anchor','');
+    anchor.setAttribute('data-service','twitter'); anchor.setAttribute('data-category','marketing');
+    panel.insertBefore(anchor,panel.firstChild);
+    panel.classList.remove('ctstyle-x-ready');
+    attempted=false; managed=false;
     var failed=document.querySelector('script[data-ctstyle-x-script][data-ctstyle-x-failed]');
     if(failed){failed.remove();scriptRequested=false;}
     refresh();

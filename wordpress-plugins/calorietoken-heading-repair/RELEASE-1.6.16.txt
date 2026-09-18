@@ -1,0 +1,11 @@
+CalorieToken Heading and Language Repair 1.6.16
+
+Directe CalorieHelp-koppelingen voor voedsel zoeken, scannen, vergelijken,
+basisvoeding, eetdagboek en accountbeheer. Testaccount instellen opent de
+nieuwe zes stappen binnen CalorieApp. De oude WordPress-stappen worden niet
+meer aangemaakt. Overstappen en exportbeheer openen hun bestaande schermen.
+
+Bevat de reeds live geïnstalleerde contact/showcase- en kaartreparaties uit
+1.6.15. Vereist de bijbehorende CalorieApp entry-bridge update op Render.
+Geen automatische accountaanmaak, cameratoegang, login, logout of export.
+Alle elf talen; leeftijds- en inlogcontroles blijven gehandhaafd.

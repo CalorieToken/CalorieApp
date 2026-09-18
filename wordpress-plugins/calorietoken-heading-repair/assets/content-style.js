@@ -16,6 +16,19 @@
     '#cmplz-cookiebanner-container,#cmplz-manage-consent,.cmplz-cookiebanner',
     '[role="dialog"],[contenteditable],.brz-ed,#brz-ed-iframe,.screen-reader-text'
   ].join(',');
+  // A passive logo/image protects the artwork itself, not the card around it.
+  // Keep embedded apps, galleries, animation hosts and structural regions out
+  // of card styling. Never change or replace their descendant nodes.
+  var cardBlockers = [headers, titles, footers,
+    'template,.brz-carousel,.brz-slider,.brz-marquee,.brz-animated-headline,marquee',
+    '.page-id-1090 .brz-animated',
+    '.metaslider,.ml-slider,.n2-section-smartslider,.nivoSlider,.swiper,.slick-slider',
+    '[data-calorieapp-social-carousel],.calorieapp-art-gallery,.calorieapp-usecase-image',
+    '.xl-card,[data-calorieapp-account],[data-calorieapp-embed],.calorieapp-embed',
+    '.calorieapp-page-tools,#ctstyle-app-launcher,.ctstyle-help-widget',
+    '#cmplz-cookiebanner-container,#cmplz-manage-consent,.cmplz-cookiebanner',
+    '[role="dialog"],[contenteditable],.brz-ed,#brz-ed-iframe,iframe,video,audio,canvas'
+  ].join(',');
   var cards = [
     '.ctstyle-shared-panel,.ctstyle-discovery-card,.ctstyle-document-copy',
     '.cal-road-intro,.calorieapp-tokenomics-note,.calorie-legacy-page section',
@@ -26,7 +39,9 @@
     '.cal-buy-risk,.cal-buy-markets,.cal-buy-steps>li,.ctstyle-donation-balance',
     '.cart-collaterals .cart_totals,.woocommerce-cart-form,.woocommerce-checkout',
     '.ctstyle-roadmap-timeline>.brz-timeline__tab,.brz-accordion__item',
-    '.calorieapp-contact-card,.ctstyle-trustline-option>.brz-row>.brz-columns>.brz-column__items',
+    '.calorieapp-contact-card,.ctstyle-contact-social-card>.brz-column__items',
+    '.ctstyle-hub-section,.cal-buy-pair-grid>article',
+    '.ctstyle-trustline-option>.brz-row>.brz-columns>.brz-column__items',
     '.calorieapp-xpmarket-widget'
   ].join(',');
   var prose = '.brz-rich-text,.calorieapp-reading-copy,.ctstyle-document-copy,.calorieapp-article-copy,.entry-content,.calorie-legacy-page,.woocommerce,.fluentform';
@@ -104,26 +119,30 @@
       document.querySelectorAll('.ctstyle-mobile-nav>.ctstyle-menu-toggle,.showcase-mobile-menu>.ctstyle-menu-toggle').forEach(function (control) {
         if (!control.closest(uiExcluded + ',' + footers)) mark(control, 'ct-content-menu-toggle');
       });
-      // Never restyle a container around a protected illustration/slider. Its
-      // ordinary text siblings can still receive the app's typography.
-      select(cards, 'ct-content-card', function (node) { return !node.querySelector(protectedSelector); });
+      // Recognized content cards can contain passive artwork. A picture or SVG
+      // used for a logo must not leave the entire card in the previous style.
+      select(cards, 'ct-content-card', function (node) { return !node.querySelector(cardBlockers); });
+      // Trustline alternatives already have one disclosure card. Flatten only
+      // their old inner Brizy frame instead of drawing a second card inside it.
+      select('.ctstyle-manual-trustline .ctstyle-trustline-option>.brz-row>.brz-columns>.brz-column__items',
+        'ct-content-trustline-body', function (node) { return !node.querySelector(cardBlockers); });
       select(prose, 'ct-content-prose', function (node) { return !node.querySelector(protectedSelector); });
       select(lanes, 'ct-content-lane', function (node) { return !node.querySelector(protectedSelector); });
       select(text, 'ct-content-text', function (node) { return !node.querySelector(protectedSelector + ',img,iframe,video,canvas'); });
-      select('h2,h3,h4,h5,h6,.ctstyle-section-heading,[role="heading"]', 'ct-content-heading', function (node) { return !node.querySelector(protectedSelector); });
-      select(actions, 'ct-content-action', function (node) { return !node.querySelector('img,iframe') && !node.closest('.calorieapp-xpmarket-widget'); });
+      select('h2,h3,h4,h5,h6,.ctstyle-section-heading,[role="heading"],.calorieapp-context-note>strong', 'ct-content-heading', function (node) { return !node.querySelector(protectedSelector); });
+      select(actions + ',.calorieapp-context-note>a,.ctstyle-usecase-back', 'ct-content-action', function (node) { return !node.querySelector('img,iframe') && !node.closest('.calorieapp-xpmarket-widget'); });
       select('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]),textarea,select', 'ct-content-field');
       select('.calorieapp-xpmarket-widget', 'ct-content-market');
       select('.ctstyle-help-widget', 'ct-content-help');
       select('.ctstyle-app-launcher-panel', 'ct-content-help-shell');
-      select('.ctstyle-faq-item>summary,.brz-accordion__nav', 'ct-content-summary');
+      select('.ctstyle-faq-item>summary,.ctstyle-manual-trustline>summary,.ctstyle-hub-section>summary,.ctstyle-shared-disclosure>summary,.brz-accordion__nav', 'ct-content-summary');
       select('table', 'ct-content-table', function (node) { return !node.querySelector(protectedSelector); });
       select('.calorieapp-xpmarket-widget span,.calorieapp-xpmarket-widget strong,.calorieapp-xpmarket-widget small,.calorieapp-xpmarket-link', 'ct-content-inline');
-      select('.brz-rich-text span,.brz-rich-text strong,.brz-rich-text b,.brz-rich-text em,.ctstyle-word-heading span', 'ct-content-inline', function (node) { return !node.closest('[aria-hidden="true"]') && !node.querySelector(protectedSelector); });
+      select('.brz-rich-text span,.brz-rich-text strong,.brz-rich-text b,.brz-rich-text em,.ctstyle-word-heading span', 'ct-content-inline', function (node) { return !node.matches('.calorieapp-context-note>strong') && !node.closest('[aria-hidden="true"]') && !node.querySelector(protectedSelector); });
       select('a[href]', 'ct-content-link', function (node) { return !node.querySelector('img,svg') && !node.closest('.calorieapp-xpmarket-widget'); });
       // Only known content wrappers: no section reordering, no slider sizes,
       // no iframe, token image, form, or table replacement.
-      select('.ctstyle-shared-panel-nested', 'ct-content-inset');
+      select('.ctstyle-shared-panel-nested', 'ct-content-inset', function (node) { return !node.querySelector(cardBlockers); });
       select('.ctstyle-discovery-status,.calorieapp-context-note,.cal-buy-risk', 'ct-content-notice');
     }
     owned.forEach(function (names, node) {

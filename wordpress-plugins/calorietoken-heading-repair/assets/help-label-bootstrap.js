@@ -9,6 +9,8 @@
     var copy=cfg.copy[tag];if(!copy||typeof copy!=='object')return;
     if(!copy.linkLabels||typeof copy.linkLabels!=='object')copy.linkLabels={};
     Object.keys(labels[tag]).forEach(function(key){if(!Object.prototype.hasOwnProperty.call(copy.linkLabels,key))copy.linkLabels[key]=labels[tag][key];});
+    var directTopics={search:['foodSearch','foodSearchHelp'],compare:['foodCompare','foodCompareHelp'],scan:['foodScan','foodScanHelp'],account:['account','accountHelp'],export:['accountExport','accountExportHelp'],move:['accountMove','accountMoveHelp'],diary:['foodDiary','foodDiaryHelp']};
+    if(copy.topics)Object.keys(directTopics).forEach(function(key){var fields=directTopics[key];copy.topics[key]={title:labels[tag][fields[0]],text:labels[tag][fields[1]],links:[]};});
     var additions=topics&&topics[tag];
     if(!additions||!copy.topics||typeof copy.topics!=='object')return;
     Object.keys(additions).forEach(function(key){

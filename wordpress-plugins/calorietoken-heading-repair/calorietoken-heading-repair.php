@@ -2,14 +2,14 @@
 /**
  * Plugin Name: CalorieToken Heading and Language Repair
  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
- * Version: 1.6.11
+ * Version: 1.6.16
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  */
 namespace CalorieToken\HeadingRepair;
 if (!defined('ABSPATH')) { exit; }
-const VERSION = '1.6.11';
+const VERSION = '1.6.16';
 function plugin_source_matches($plugin, $name, $hashes) {
     $path = WP_PLUGIN_DIR . '/' . $plugin . '/' . $name;
     if (!is_readable($path) || !is_file($path)) { return false; }
@@ -90,7 +90,14 @@ function enqueue() {
         // Content-only presentation after the compatible site's own controllers.
         // Historical artwork, header/title/footer and embedded apps stay native.
         wp_enqueue_style('calorietoken-content-style', asset_url('content-style.css'), array('calorietoken-presentation'), VERSION);
+        wp_enqueue_style('calorietoken-responsive-repair', asset_url('responsive-repair.css'), array('calorietoken-content-style'), VERSION);
         wp_enqueue_script('calorietoken-content-style', asset_url('content-style.js'), array('calorietoken-presentation'), VERSION, true);
+        if (is_page(array(1213, 7945))) {
+            wp_enqueue_style('calorietoken-contact-showcase', asset_url('contact-showcase.css'), array('calorietoken-responsive-repair'), VERSION);
+        }
+        if (is_page(7945)) {
+            wp_enqueue_script('calorietoken-showcase-controls', asset_url('showcase-controls.js'), array('calorietoken-presentation'), VERSION, true);
+        }
     }
     $site_overrides = array(
         'app-integration' => array('handle' => 'calorietoken-app-integration', 'source' => 'app-integration.js', 'replacement' => 'site-app-integration.js'),

@@ -231,33 +231,15 @@
     }
   }
   function appPage() {
-    if (Number(cfg.page) !== 7880 || test || document.getElementById('ctstyle-testnet')) return;
+    if (Number(cfg.page) !== 7880) return;
+    // Account setup now belongs to the native app. Keep the existing market card.
     var reference = unique('[data-ctstyle-app-info]') || unique('.calorieapp-app-info[data-calorieapp-app-info]');
     if (!safe(reference)) return;
-    test = section('ctstyle-testnet','testTitle');
-    test.setAttribute('data-ctstyle-testnet','1');
-    var disclosure = element('details','ctstyle-testnet-disclosure');
-    var toggle = element('summary'); toggle.append(test.firstElementChild);
-    disclosure.append(toggle,label('p','testIntro'),label('p','testLimit','ctstyle-discovery-status'));
-    var details = element('details','ctstyle-test-steps'), summary = label('summary','testOpen'); details.append(summary);
-    var list = element('ol');
-    ['testNetwork','testReturn'].forEach(function (key) { list.append(label('li',key)); });
-    details.append(list,link('officialHelp',helpURL,true),link('installXaman','https://xaman.app/',true));
-    disclosure.append(details); test.append(disclosure); reference.before(test);
-    // Keep the installed live market widget and its listeners; only change its
-    // position within the same shared ending on the CalorieApp page.
-    var ending = test.closest('.calorieapp-shared-page-ending');
+    var ending = reference.closest('.calorieapp-shared-page-ending');
     var markets = ending && ending.querySelectorAll('.calorieapp-page-market');
     if (markets && markets.length === 1 && markets[0].parentElement === ending &&
         markets[0].querySelector('[data-calorieapp-xpmarket-widget="1"]') &&
-        !markets[0].querySelector('form,iframe,[contenteditable],[data-calorieapp-embed]')) test.after(markets[0]);
-    function revealLinkedGuide() {
-      if (!allowed() || window.location.hash !== '#ctstyle-testnet') return;
-      disclosure.open = true;
-      if (typeof test.scrollIntoView === 'function') test.scrollIntoView({block:'start'});
-    }
-    revealLinkedGuide();
-    window.addEventListener('hashchange',revealLinkedGuide);
+        !markets[0].querySelector('form,iframe,[contenteditable],[data-calorieapp-embed]')) reference.before(markets[0]);
   }
   function cookieVisible() {
     function visible(node) {
