@@ -1,0 +1,371 @@
+{
+  "pages": [
+    {
+      "slug": "delivery",
+      "page": "page-id-1119",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "cafes",
+      "page": "page-id-1121",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "takeaway",
+      "page": "page-id-1123",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "groceries",
+      "page": "page-id-1127",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "wholesalers",
+      "page": "page-id-1129",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "showcases",
+      "page": "page-id-7945",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "community-voting-hub-info",
+      "page": "page-id-8020",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "cookie-policy-eu",
+      "page": "page-id-7876",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "legal-regulatory-notice",
+      "page": "page-id-7860",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "merchnfts",
+      "page": "page-id-7224",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "cart",
+      "page": "page-id-6926",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "donate",
+      "page": "page-id-6897",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "faq",
+      "page": "page-id-6855",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "roadmap",
+      "page": "page-id-5580",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "integrated-exchange",
+      "page": "page-id-4606",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "richlist",
+      "page": "page-id-3243",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "how-to-buy-cex",
+      "page": "page-id-2566",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "contact",
+      "page": "page-id-1213",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "how-to-buy-dex",
+      "page": "page-id-1211",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "tokenomics-update",
+      "page": "page-id-1209",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "blog",
+      "page": "page-id-1207",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "trustline",
+      "page": "page-id-1205",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "whitepaper",
+      "page": "page-id-1202",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "calorieapp",
+      "page": "page-id-7880",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "home",
+      "page": "page-id-1090",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "terms-conditions",
+      "page": "page-id-586",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "privacy-policy",
+      "page": "page-id-531",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "checkout",
+      "page": "page-id-6937",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "how-to-buy-calorie",
+      "page": "page-id-4205",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": true,
+      "menuDirection": "rtl",
+      "widgetDirection": "rtl",
+      "overlap": false,
+      "overflow": false
+    },
+    {
+      "slug": "restaurants",
+      "page": "page-id-1125",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "sloganAlign": "center",
+      "widget": false,
+      "menuDirection": "rtl",
+      "widgetDirection": null,
+      "overlap": false,
+      "overflow": false
+    }
+  ],
+  "languages": [
+    {
+      "lang": "nl",
+      "slogan": "\"Calorie streeft ernaar de foodtoken van de wereld te worden\"",
+      "menu": "ltr",
+      "widget": "ltr",
+      "overlap": false
+    },
+    {
+      "lang": "fr",
+      "slogan": "\"Calorie ambitionne de devenir le jeton alimentaire mondial\"",
+      "menu": "ltr",
+      "widget": "ltr",
+      "overlap": false
+    },
+    {
+      "lang": "ar",
+      "slogan": "\"يطمح Calorie إلى أن يكون رمز الغذاء العالمي\"",
+      "menu": "rtl",
+      "widget": "rtl",
+      "overlap": false
+    },
+    {
+      "lang": "ur",
+      "slogan": "\"Calorie کا مقصد دنیا کا فوڈ ٹوکن بننا ہے\"",
+      "menu": "rtl",
+      "widget": "rtl",
+      "overlap": false
+    },
+    {
+      "lang": "nl",
+      "slogan": "\"Calorie streeft ernaar de foodtoken van de wereld te worden\"",
+      "menu": "ltr",
+      "widget": "ltr",
+      "overlap": false
+    }
+  ]
+}
