@@ -1,0 +1,11 @@
+/* BEGIN CalorieToken dropdown stacking repair 2026-09-18 */
+@layer calorietoken-content {
+  /* Raise the header context, not only the dropdown trapped inside it. */
+  body.ct-content-theme .ctstyle-site-header:has(.ctstyle-menu-category[open]) {
+    position:relative!important; z-index:100!important;
+  }
+  body.ct-content-theme .ctstyle-site-header .ctstyle-menu-column:has(.ctstyle-menu-category[open]) {
+    z-index:2!important;
+  }
+}
+/* END CalorieToken dropdown stacking repair 2026-09-18 */
