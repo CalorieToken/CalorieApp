@@ -8,6 +8,16 @@ export function entryFromHash(hash: string): AppEntryTarget | null {
   return APP_ENTRY_TARGETS.includes(value as AppEntryTarget) ? value as AppEntryTarget : null;
 }
 
+/** A cancelled guide must not be opened again by its consumed launch URL. */
+export function clearAccountGuideEntry(): void {
+  const target = entryFromHash(window.location.hash);
+  if (target === "test-account" || target === "move-account") {
+    window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+  }
+  const origin = trustedWordPressParentOrigin();
+  if (origin) window.parent.postMessage({ type: PREFIX + "cancel", version: 1 }, origin);
+}
+
 /** Navigation only: the native guide retains its age and account-creation gates. */
 export function connectAppEntry(open: (target: AppEntryTarget) => void): () => void {
   const origin = trustedWordPressParentOrigin();

@@ -43,7 +43,9 @@
     "mainBackupText": "Follow Xaman’s backup instructions. Anyone with your secret can control your real account and its funds. If you lose it, CalorieApp cannot restore access. Keep it private, separate from your Testnet backup. Never enter it in CalorieApp, WordPress or chat.",
     "mainBackupAck": "I have created a separate Mainnet account and stored its recovery information safely.",
     "restartNotice": "Your previous test-account details are no longer in this tab. If you saved your secret, use it in Xaman; create another test account only if needed.",
-    "funded": "Test-XRP confirmed."
+    "funded": "Test-XRP confirmed.",
+    "cancelGuide": "Cancel setup",
+    "cancelUnsaved": "You have not confirmed that your recovery code is saved safely. Cancelling removes the code from this app. Cancel anyway?"
   },
   "nl": {
     "create": "Maak mijn gratis testaccount",
@@ -89,7 +91,9 @@
     "mainBackupText": "Volg de back-upinstructies van Xaman. Iedereen met je secret kan je echte account en tegoed beheren. Bij verlies kan CalorieApp je toegang niet herstellen. Bewaar hem privé, apart van je Testnet-back-up. Vul hem nooit in bij CalorieApp, WordPress of chat.",
     "mainBackupAck": "Ik heb een apart Mainnet-account gemaakt en de herstelgegevens veilig bewaard.",
     "restartNotice": "Je vorige testaccountgegevens staan niet meer in dit tabblad. Heb je de secret bewaard? Gebruik die dan in Xaman; maak alleen een nieuw testaccount als dat nodig is.",
-    "funded": "Test-XRP bevestigd."
+    "funded": "Test-XRP bevestigd.",
+    "cancelGuide": "Stappenplan annuleren",
+    "cancelUnsaved": "Je hebt nog niet bevestigd dat je de herstelcode veilig hebt bewaard. Bij annuleren verdwijnt de code uit deze app. Toch annuleren?"
   },
   "zh-Hans": {
     "create": "创建免费测试账户",
@@ -135,7 +139,9 @@
     "mainBackupText": "请按照 Xaman 的备份说明操作。任何持有密钥的人都能控制你的真实账户和资金。丢失后，CalorieApp 无法恢复访问权限。请私下保存，并与 Testnet 备份分开。切勿在 CalorieApp、WordPress 或聊天中输入它。",
     "mainBackupAck": "我已创建独立的 Mainnet 账户，并安全保存了恢复信息。",
     "restartNotice": "之前的测试账户信息已不在此标签页中。如果保存了密钥，请在 Xaman 中使用；仅在需要时创建另一个测试账户。",
-    "funded": "测试 XRP 已确认。"
+    "funded": "测试 XRP 已确认。",
+    "cancelGuide": "取消设置",
+    "cancelUnsaved": "你尚未确认已安全保存恢复密钥。取消后，密钥将从此应用中清除。仍要取消吗？"
   },
   "hi": {
     "create": "मेरा मुफ्त टेस्ट खाता बनाएँ",
@@ -181,7 +187,9 @@
     "mainBackupText": "Xaman के बैकअप निर्देशों का पालन करें। आपके सीक्रेट वाला कोई भी व्यक्ति आपके वास्तविक खाते और धन को नियंत्रित कर सकता है। खो जाने पर CalorieApp पहुँच बहाल नहीं कर सकता। इसे निजी रखें और Testnet बैकअप से अलग रखें। इसे CalorieApp, WordPress या चैट में कभी न डालें।",
     "mainBackupAck": "मैंने अलग Mainnet खाता बना लिया है और उसकी रिकवरी जानकारी सुरक्षित रख ली है।",
     "restartNotice": "पिछले टेस्ट खाते की जानकारी अब इस टैब में नहीं है। सीक्रेट सुरक्षित रखा है तो Xaman में उसका उपयोग करें; नया टेस्ट खाता केवल ज़रूरत होने पर बनाएँ।",
-    "funded": "टेस्ट XRP की पुष्टि हो गई।"
+    "funded": "टेस्ट XRP की पुष्टि हो गई।",
+    "cancelGuide": "सेटअप रद्द करें",
+    "cancelUnsaved": "आपने अभी तक पुष्टि नहीं की है कि रिकवरी कोड सुरक्षित रखा है। रद्द करने पर कोड इस ऐप से हट जाएगा। फिर भी रद्द करें?"
   },
   "es": {
     "create": "Crear mi cuenta de prueba gratis",
@@ -227,7 +235,9 @@
     "mainBackupText": "Sigue las instrucciones de copia de seguridad de Xaman. Quien tenga tu clave puede controlar tu cuenta real y sus fondos. Si la pierdes, CalorieApp no puede restaurar el acceso. Guárdala en privado, separada de la copia de Testnet. Nunca la introduzcas en CalorieApp, WordPress ni en un chat.",
     "mainBackupAck": "He creado una cuenta Mainnet independiente y guardado su información de recuperación de forma segura.",
     "restartNotice": "Los datos anteriores de tu cuenta de prueba ya no están en esta pestaña. Si guardaste la clave, úsala en Xaman; crea otra cuenta de prueba solo si es necesario.",
-    "funded": "XRP de prueba confirmado."
+    "funded": "XRP de prueba confirmado.",
+    "cancelGuide": "Cancelar configuración",
+    "cancelUnsaved": "Aún no has confirmado que guardaste el código de recuperación de forma segura. Al cancelar, el código se elimina de esta aplicación. ¿Cancelar de todos modos?"
   },
   "ar": {
     "create": "إنشاء حساب الاختبار المجاني",
@@ -273,7 +283,9 @@
     "mainBackupText": "اتبع تعليمات النسخ الاحتياطي في Xaman. يستطيع أي شخص يملك مفتاحك التحكم بحسابك الحقيقي وأمواله. إذا فقدته فلن يتمكن CalorieApp من استعادة الوصول. احفظه بشكل خاص ومنفصل عن نسخة Testnet. لا تدخله أبداً في CalorieApp أو WordPress أو الدردشة.",
     "mainBackupAck": "أنشأت حساب Mainnet منفصلاً وحفظت معلومات استرداده بأمان.",
     "restartNotice": "لم تعد بيانات حساب الاختبار السابق موجودة في علامة التبويب هذه. إذا حفظت المفتاح فاستخدمه في Xaman؛ أنشئ حساب اختبار آخر عند الحاجة فقط.",
-    "funded": "تم تأكيد XRP التجريبي."
+    "funded": "تم تأكيد XRP التجريبي.",
+    "cancelGuide": "إلغاء الإعداد",
+    "cancelUnsaved": "لم تؤكد بعد حفظ رمز الاسترداد بأمان. سيؤدي الإلغاء إلى إزالة الرمز من هذا التطبيق. هل تريد الإلغاء على أي حال؟"
   },
   "fr": {
     "create": "Créer mon compte de test gratuit",
@@ -319,7 +331,9 @@
     "mainBackupText": "Suivez les instructions de sauvegarde de Xaman. Toute personne disposant de votre clé peut contrôler votre compte réel et ses fonds. En cas de perte, CalorieApp ne peut pas rétablir l’accès. Conservez-la en privé, séparée de la sauvegarde Testnet. Ne la saisissez jamais dans CalorieApp, WordPress ou une discussion.",
     "mainBackupAck": "J’ai créé un compte Mainnet distinct et conservé ses informations de récupération en sécurité.",
     "restartNotice": "Les données du précédent compte test ne sont plus dans cet onglet. Si vous avez conservé la clé, utilisez-la dans Xaman ; ne créez un autre compte test que si nécessaire.",
-    "funded": "XRP de test confirmé."
+    "funded": "XRP de test confirmé.",
+    "cancelGuide": "Annuler le parcours",
+    "cancelUnsaved": "Vous n’avez pas encore confirmé avoir conservé votre code de récupération en sécurité. L’annulation supprime le code de cette application. Annuler quand même ?"
   },
   "bn": {
     "create": "আমার বিনামূল্যের টেস্ট অ্যাকাউন্ট তৈরি করুন",
@@ -365,7 +379,9 @@
     "mainBackupText": "Xaman-এর ব্যাকআপ নির্দেশনা অনুসরণ করুন। আপনার গোপন কোড যার কাছে থাকবে, সে আপনার আসল অ্যাকাউন্ট ও অর্থ নিয়ন্ত্রণ করতে পারবে। হারালে CalorieApp প্রবেশাধিকার ফিরিয়ে দিতে পারবে না। এটি গোপনে এবং Testnet ব্যাকআপ থেকে আলাদা রাখুন। CalorieApp, WordPress বা চ্যাটে কখনো লিখবেন না।",
     "mainBackupAck": "আমি আলাদা Mainnet অ্যাকাউন্ট তৈরি করেছি এবং রিকভারি তথ্য নিরাপদে রেখেছি।",
     "restartNotice": "আগের টেস্ট অ্যাকাউন্টের তথ্য এই ট্যাবে আর নেই। কোড সংরক্ষণ করে থাকলে Xaman-এ সেটি ব্যবহার করুন; প্রয়োজন হলেই শুধু আরেকটি টেস্ট অ্যাকাউন্ট তৈরি করুন।",
-    "funded": "টেস্ট XRP নিশ্চিত হয়েছে।"
+    "funded": "টেস্ট XRP নিশ্চিত হয়েছে।",
+    "cancelGuide": "সেটআপ বাতিল করুন",
+    "cancelUnsaved": "রিকভারি কোডটি নিরাপদে রেখেছেন বলে এখনও নিশ্চিত করেননি। বাতিল করলে এই অ্যাপ থেকে কোডটি মুছে যাবে। তবুও বাতিল করবেন?"
   },
   "pt": {
     "create": "Criar minha conta de teste grátis",
@@ -411,7 +427,9 @@
     "mainBackupText": "Siga as instruções de cópia de segurança da Xaman. Quem tiver a sua chave pode controlar a sua conta real e os fundos. Se a perder, a CalorieApp não pode restaurar o acesso. Guarde-a em privado, separada da cópia Testnet. Nunca a introduza na CalorieApp, no WordPress ou num chat.",
     "mainBackupAck": "Criei uma conta Mainnet separada e guardei as informações de recuperação em segurança.",
     "restartNotice": "Os dados da conta de teste anterior já não estão neste separador. Se guardou a chave, use-a na Xaman; crie outra conta de teste apenas se necessário.",
-    "funded": "XRP de teste confirmado."
+    "funded": "XRP de teste confirmado.",
+    "cancelGuide": "Cancelar configuração",
+    "cancelUnsaved": "Ainda não confirmou que guardou o código de recuperação em segurança. Ao cancelar, o código será removido desta aplicação. Cancelar mesmo assim?"
   },
   "id": {
     "create": "Buat akun uji gratis saya",
@@ -457,7 +475,9 @@
     "mainBackupText": "Ikuti petunjuk pencadangan Xaman. Siapa pun yang memiliki kunci rahasia Anda dapat mengendalikan akun nyata dan dananya. Jika hilang, CalorieApp tidak dapat memulihkan akses. Simpan secara pribadi, terpisah dari cadangan Testnet. Jangan pernah memasukkannya ke CalorieApp, WordPress, atau obrolan.",
     "mainBackupAck": "Saya sudah membuat akun Mainnet terpisah dan menyimpan informasi pemulihannya dengan aman.",
     "restartNotice": "Data akun uji sebelumnya tidak lagi ada di tab ini. Jika Anda menyimpan kuncinya, gunakan di Xaman; buat akun uji lain hanya jika diperlukan.",
-    "funded": "XRP uji telah dikonfirmasi."
+    "funded": "XRP uji telah dikonfirmasi.",
+    "cancelGuide": "Batalkan penyiapan",
+    "cancelUnsaved": "Anda belum mengonfirmasi bahwa kode pemulihan sudah disimpan dengan aman. Membatalkan akan menghapus kode dari aplikasi ini. Tetap batalkan?"
   },
   "ur": {
     "create": "میرا مفت ٹیسٹ اکاؤنٹ بنائیں",
@@ -503,6 +523,8 @@
     "mainBackupText": "Xaman کی بیک اپ ہدایات پر عمل کریں۔ آپ کی خفیہ کلید رکھنے والا شخص آپ کے حقیقی اکاؤنٹ اور رقم کو کنٹرول کر سکتا ہے۔ کلید کھو جانے پر CalorieApp رسائی بحال نہیں کر سکتا۔ اسے نجی طور پر اور Testnet بیک اپ سے الگ رکھیں۔ اسے CalorieApp، WordPress یا چیٹ میں کبھی درج نہ کریں۔",
     "mainBackupAck": "میں نے الگ Mainnet اکاؤنٹ بنا لیا ہے اور اس کی بحالی معلومات محفوظ کر لی ہیں۔",
     "restartNotice": "پچھلے ٹیسٹ اکاؤنٹ کی معلومات اب اس ٹیب میں نہیں ہیں۔ کلید محفوظ کی تھی تو اسے Xaman میں استعمال کریں؛ دوسرا ٹیسٹ اکاؤنٹ صرف ضرورت پڑنے پر بنائیں۔",
-    "funded": "ٹیسٹ XRP کی تصدیق ہو گئی۔"
+    "funded": "ٹیسٹ XRP کی تصدیق ہو گئی۔",
+    "cancelGuide": "سیٹ اپ منسوخ کریں",
+    "cancelUnsaved": "آپ نے ابھی تصدیق نہیں کی کہ بحالی کوڈ محفوظ جگہ پر رکھا ہے۔ منسوخ کرنے سے کوڈ اس ایپ سے ہٹ جائے گا۔ پھر بھی منسوخ کریں؟"
   }
 }

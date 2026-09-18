@@ -1,4 +1,8 @@
-CalorieToken Heading and Language Repair 1.6.16
+CalorieToken Heading and Language Repair 1.6.17
+
+Cancelling the native account guide clears its launch fragment so a refresh
+does not reopen a cancelled guide. Only trusted embedded app messages can
+clear that destination. Existing direct links remain available.
 
 Direct helpbot links open food search, the scan panel, comparison guidance,
 basic foods, food diary and existing account screens inside CalorieApp.

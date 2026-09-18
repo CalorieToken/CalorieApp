@@ -10,7 +10,8 @@ const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.Comm
 function harness({origin='https://calorietoken.net',hash='',embedded=true}={}){
  const listeners=new Map(),sent=[],opened=[];
  const parent={postMessage:(message,origin)=>sent.push({message,origin})};
- const window={parent,location:{hash},addEventListener:(type,fn)=>listeners.set(type,fn),removeEventListener:type=>listeners.delete(type)};
+ const window={parent,location:new URL('https://app.calorietoken.net/?ui_lang=nl'+hash),addEventListener:(type,fn)=>listeners.set(type,fn),removeEventListener:type=>listeners.delete(type)};
+ window.history={state:{preserved:true},replaceState(_state,_title,url){window.location=new URL(url,window.location);}};
  if(!embedded)window.parent=window;
  const module={exports:{}};
  vm.runInNewContext(code,{module,exports:module.exports,window,require:()=>({trustedWordPressParentOrigin:()=>embedded?origin:null})});
@@ -29,6 +30,20 @@ test('trusted host navigation accepts only fixed targets and rejects forged or e
  assert.deepEqual(Object.keys(h.sent[0].message).sort(),['type','version']);
  assert.equal(h.sent[0].origin,'https://calorietoken.net');
  h.disconnect();assert.equal(h.listeners.size,0);
+});
+
+test('cancelling consumes only guide launch fragments and notifies only the trusted parent',()=>{
+ for(const hash of ['#test-account','#ctstyle-testnet','#move-account']){
+  const h=harness({hash,embedded:false});h.api.clearAccountGuideEntry();
+  assert.equal(h.window.location.href,'https://app.calorietoken.net/?ui_lang=nl');
+  assert.equal(h.window.history.state.preserved,true);assert.equal(h.sent.length,0);
+ }
+ const h=harness({hash:'#food-search'});h.api.clearAccountGuideEntry();
+ assert.equal(h.window.location.hash,'#food-search');
+ assert.equal(h.sent.at(-1).message.type,'calorieapp:entry:cancel');
+ assert.deepEqual(Object.keys(h.sent.at(-1).message).sort(),['type','version']);
+ assert.equal(h.sent.at(-1).origin,'https://calorietoken.net');
+ const untrusted=harness({origin:null});untrusted.api.clearAccountGuideEntry();assert.equal(untrusted.sent.length,0);
 });
 test('standalone URLs resolve the legacy test link and public tasks without inventing unknown routes',()=>{
  for(const [hash,want] of [['#ctstyle-testnet','test-account'],['#food-scan','food-scan'],['#account-export','account-export'],['',null],['#sign-out',null]]){

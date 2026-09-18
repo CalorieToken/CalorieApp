@@ -155,6 +155,12 @@
     var frames=eligibleFrames(),frame=frames.length===1?frames[0]:null;
     if(!frame||event.source!==frame.contentWindow||!allowedOrigins.includes(event.origin)||!event.data||typeof event.data.type!=='string')return;
     if(event.data.type==='calorieapp:entry:ready'&&event.data.version===1&&!Array.isArray(event.data)&&Object.keys(event.data).length===2){sendGuideRequest(frame);return;}
+    if(event.data.type==='calorieapp:entry:cancel'&&event.data.version===1&&!Array.isArray(event.data)&&Object.keys(event.data).length===2){
+      var target=entryTarget(window.location.hash);
+      if(target==='test-account'||target==='move-account')window.history.replaceState(window.history.state,'',window.location.pathname+window.location.search);
+      if(guideRequest&&(guideRequest.target==='test-account'||guideRequest.target==='move-account'))guideRequest=null;
+      return;
+    }
     if(event.data.type==='calorieapp:bridge:initialized')setSession('checking');
     if(event.data.type==='calorieapp:login:complete')setSession('authenticated');
     if(event.data.type==='calorieapp:logout:complete')setSession('signed_out');

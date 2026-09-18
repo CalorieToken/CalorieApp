@@ -9,13 +9,15 @@ const React=require('react'),{createRoot}=require('react-dom/client'),{parseHTML
 const setup=JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json',import.meta.url)));
 const copy=JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json',import.meta.url)));
 
-function harness({importEnabled=false,stored=new Map(),hash='',age='adult'}={}){
+function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testnet={},confirm=()=>true}={}){
  const {window,document}=parseHTML('<html><body><div id="root"></div></body></html>');
  window.parent=window;
  Object.defineProperty(window,'location',{configurable:true,value:new URL('https://app.calorietoken.net/'+hash)});
  window.cancelAnimationFrame=()=>{};
  window.requestAnimationFrame=fn=>{fn();return 1;};
- Object.defineProperty(window,'sessionStorage',{configurable:true,value:{getItem:key=>stored.get(key)??null,setItem:(key,value)=>stored.set(key,value)}});
+ Object.defineProperty(window,'sessionStorage',{configurable:true,value:{getItem:key=>stored.get(key)??null,setItem:(key,value)=>stored.set(key,value),removeItem:key=>stored.delete(key)}});
+ window.history={state:null,replaceState(_state,_title,url){window.location.href=new URL(url,window.location).href;}};
+ window.confirm=confirm;
  const old=new Map(['window','document','IS_REACT_ACT_ENVIRONMENT'].map(key=>[key,Object.getOwnPropertyDescriptor(globalThis,key)]));
  globalThis.window=window;globalThis.document=document;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
  const imports={
@@ -34,7 +36,7 @@ function harness({importEnabled=false,stored=new Map(),hash='',age='adult'}={}){
     '@/config/testnet-entry-copy.json':{default:copy},
   '@/config/account-setup-copy.json':{default:setup},
   '@/lib/navigationBridge':{postNavigationTarget:()=>false,trustedWordPressParentOrigin:()=>null},
-  '@/lib/testnetAccount':{testnetWait:()=>0},
+  '@/lib/testnetAccount':{testnetWait:()=>0,...testnet},
  };
  function load(name){
   if(name in imports)return imports[name];
@@ -42,7 +44,7 @@ function harness({importEnabled=false,stored=new Map(),hash='',age='adult'}={}){
   const source=readFileSync(new URL(path,import.meta.url),'utf8');
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
   const module={exports:{}};
-  vm.runInNewContext(code,{module,exports:module.exports,require:load,window,document,CustomEvent:window.CustomEvent,process:{env:{NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED:String(importEnabled)}}});
+  vm.runInNewContext(code,{module,exports:module.exports,require:load,window,document,AbortController,CustomEvent:window.CustomEvent,process:{env:{NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED:String(importEnabled)}}});
   imports[name]=module.exports;return module.exports;
  }
  const root=createRoot(document.getElementById('root'));
@@ -78,12 +80,13 @@ test('native migration shows seven pages, a mandatory recovery checkpoint and a 
   await h.click(copy.nl.previous);assert.equal(title(),copy.nl.moveLabels[2]);
   await h.click(copy.nl.next);assert.equal(h.button(copy.nl.next).disabled,true);
   assert.ok(h.document.querySelector('[data-account-guide-screen]').textContent.includes(setup.nl.mainBackupText));
-  await h.click(setup.nl.backToAccount);assert.ok(h.button(copy.nl.returnGuide));
-  await h.click(copy.nl.returnGuide);assert.equal(title(),setup.nl.mainBackupTitle);
   const saved=h.load('@/lib/accountJourney').readAccountJourney();
   assert.equal(saved.route,'move');assert.equal(saved.index,3);
   assert.deepEqual(Object.keys(saved).sort(),['index','route']);
   assert.equal(h.button(copy.nl.openImportTools),undefined);
+  await h.click(setup.nl.cancelGuide);
+  assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney(),null);
  }finally{await h.close();}
 });
 
@@ -122,8 +125,70 @@ test('helpbot test entry starts the six-step guide after age resolution without 
   assert.ok(h.document.querySelector('[data-account-guide="test"]'));
   await h.click(copy.nl.next);
   assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.stepCreate);
-  await h.click(setup.nl.backToAccount);
+  await h.click(setup.nl.cancelGuide);
   assert.equal(h.document.querySelector('#calorie-panel-account').hidden,false);
+  assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.window.location.hash,'');
+ }finally{await h.close();}
+});
+
+test('cancelling clears saved progress, survives remount, and a later setup starts at step one',async()=>{
+ const stored=new Map();let h=harness({stored,hash:'#test-account'});
+ try{
+  await h.render();await h.click(copy.nl.next);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney().index,1);
+  await h.click(setup.nl.cancelGuide);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney(),null);
+  assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.window.location.hash,'');
+  await h.click(copy.nl.testRoute);
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.beforeStart);
+  await h.click(setup.nl.cancelGuide);
+ }finally{await h.close();}
+ h=harness({stored});
+ try{await h.render();assert.equal(h.button(copy.nl.returnGuide),undefined);assert.equal(h.document.querySelector('#calorie-panel-account').hidden,false);}
+ finally{await h.close();}
+});
+
+test('a paused guide can be cancelled from the account overview',async()=>{
+ const stored=new Map(),h=harness({stored});
+ try{
+  h.load('@/lib/accountJourney').saveAccountJourney({route:'test',index:1});
+  await h.render();assert.ok(h.button(copy.nl.returnGuide));
+  await h.click(setup.nl.cancelGuide);
+  assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney(),null);
+ }finally{await h.close();}
+});
+
+test('cancellation aborts a pending creation and ignores its late response',async()=>{
+ let resolveCreate,signal;
+ const h=harness({testnet:{createTestnetAccount:value=>{signal=value;return new Promise(resolve=>{resolveCreate=resolve;});}}});
+ try{
+  await h.render();await h.click(copy.nl.testRoute);await h.click(copy.nl.next);await h.click(setup.nl.create);
+  await h.click(setup.nl.cancelGuide);assert.equal(signal.aborted,true);
+  await React.act(async()=>resolveCreate({address:'fixture-address',secret:'fixture-secret'}));
+  assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney(),null);
+  assert.equal(h.document.body.textContent.includes('fixture-secret'),false);
+  await h.click(copy.nl.testRoute);
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.beforeStart);
+ }finally{await h.close();}
+});
+
+test('an unsaved recovery code is kept when cancellation is declined and discarded only after confirmation',async()=>{
+ let accept=false,confirmations=0;
+ const h=harness({confirm:message=>{assert.equal(message,setup.nl.cancelUnsaved);confirmations++;return accept;},testnet:{createTestnetAccount:async()=>({address:'fixture-address',secret:'fixture-secret'}),checkTestnetAccount:async()=>true}});
+ try{
+  await h.render();await h.click(copy.nl.testRoute);await h.click(copy.nl.next);await h.click(setup.nl.create);
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.saveTitle);
+  await h.click(setup.nl.cancelGuide);
+  assert.equal(confirmations,1);assert.equal(h.document.querySelector('#calorie-panel-journey').hidden,false);
+  await h.click(setup.nl.show);assert.equal(h.document.querySelector('#account-guide-secret').textContent,'fixture-secret');
+  accept=true;await h.click(setup.nl.cancelGuide);
+  assert.equal(confirmations,2);assert.equal(h.button(copy.nl.returnGuide),undefined);
+  assert.equal(h.document.body.textContent.includes('fixture-secret'),false);
+  assert.equal(h.load('@/lib/accountJourney').readAccountJourney(),null);
  }finally{await h.close();}
 });
 

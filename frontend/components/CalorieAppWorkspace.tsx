@@ -11,8 +11,9 @@ import { diaryCopy } from "@/lib/foodDiary";
 import { foodExperience } from "@/lib/foodExperience";
 import { getFoodUi } from "@/lib/foodUi";
 import journeyTranslations from "@/config/testnet-entry-copy.json";
-import { readAccountJourney } from "@/lib/accountJourney";
-import { connectAppEntry, type AppEntryTarget } from "@/lib/appEntryBridge";
+import setupTranslations from "@/config/account-setup-copy.json";
+import { clearAccountJourney, readAccountJourney } from "@/lib/accountJourney";
+import { clearAccountGuideEntry, connectAppEntry, type AppEntryTarget } from "@/lib/appEntryBridge";
 import { postNavigationTarget } from "@/lib/navigationBridge";
 
 type WorkspaceTab = "account" | "journey" | FoodWorkspaceView;
@@ -25,6 +26,7 @@ export function CalorieAppWorkspace() {
   const experience = foodExperience(locale);
   const diary = diaryCopy(locale);
   const journey = journeyTranslations[locale as keyof typeof journeyTranslations] ?? journeyTranslations.en;
+  const setup = setupTranslations[locale as keyof typeof setupTranslations] ?? setupTranslations.en;
   const [ageBand, setAgeBand, ageResolved = true] = useAgeExperience();
   const allowPersonalFeatures = ageBand === "adult";
   const [account, setAccount] = useState<MeResponse | null>(null);
@@ -32,6 +34,8 @@ export function CalorieAppWorkspace() {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("account");
   const [requestedJourney, setRequestedJourney] = useState<{ step: "test" | "move"; serial: number }>();
   const [returnToJourney, setReturnToJourney] = useState(false);
+  const [journeyInstance, setJourneyInstance] = useState(0);
+  const [cancelJourneyRequest, setCancelJourneyRequest] = useState(0);
   const [pendingEntry, setPendingEntry] = useState<AppEntryTarget | null>(null);
   const [requestedFoodEntry, setRequestedFoodEntry] = useState<{ target: AppEntryTarget; serial: number }>();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -118,6 +122,19 @@ export function CalorieAppWorkspace() {
     window.requestAnimationFrame(() => document.getElementById(`calorie-tab-${destination}`)?.focus({ preventScroll: true }));
   }, []);
 
+  const cancelJourney = useCallback(() => {
+    clearAccountJourney();
+    clearAccountGuideEntry();
+    setPendingEntry(null);
+    setRequestedJourney(undefined);
+    setReturnToJourney(false);
+    setCancelJourneyRequest(0);
+    // Remounting disposes of private recovery data and aborts pending requests.
+    setJourneyInstance(current => current + 1);
+    setActiveTab("account");
+    window.requestAnimationFrame(() => document.getElementById("calorie-tab-account")?.focus({ preventScroll: true }));
+  }, []);
+
   function openAccountTools(destination?: "export" | "import" | "session") {
     setReturnToJourney(true);
     selectTab("account", true);
@@ -167,8 +184,9 @@ export function CalorieAppWorkspace() {
         ))}
       </div>
 
-      {allowPersonalFeatures && returnToJourney && visibleTab !== "journey" ? <div className="mb-4 rounded-xl border border-brand-secondary/20 bg-white p-3">
+      {allowPersonalFeatures && returnToJourney && visibleTab !== "journey" ? <div className="mb-4 flex flex-wrap gap-2 rounded-xl border border-brand-secondary/20 bg-white p-3">
         <button type="button" onClick={() => selectTab("journey")} className="min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{journey.returnGuide}</button>
+        <button type="button" onClick={() => setCancelJourneyRequest(current => current + 1)} className="min-h-11 rounded-full px-4 py-2 text-sm font-semibold text-brand-secondary underline">{setup.cancelGuide}</button>
       </div> : null}
 
       {allowPersonalFeatures ? <section
@@ -195,8 +213,11 @@ export function CalorieAppWorkspace() {
         className="calorie-workspace-panel"
       >
         <TestnetEntry
+          key={journeyInstance}
           active={visibleTab === "journey"}
           requestedJourney={requestedJourney}
+          cancelRequest={cancelJourneyRequest}
+          onCancel={cancelJourney}
           onNavigate={navigateFromJourney}
           onOpenAccountTools={openAccountTools}
         />

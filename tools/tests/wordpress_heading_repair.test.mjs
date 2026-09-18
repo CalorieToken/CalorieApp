@@ -246,6 +246,7 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
 test('help links hand off fixed destinations to the native app and never rebuild the old guide', () => {
   const {document,window}=parseHTML('<html><body class="ctstyle-enabled page-id-7880"><div id="ctstyle-account-app"></div><div data-calorieapp-embed><iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1"></iframe></div><section id="ctstyle-testnet"></section></body></html>');
   Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/calorieapp/#ctstyle-testnet'),configurable:true});
+  window.history={state:{preserved:true},replaceState(_state,_title,url){window.location.href=new URL(url,window.location).href;}};
   Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
   const sent=[],listeners=new Map(),frame=document.querySelector('iframe');
   const trusted={postMessage(message,origin){sent.push({message,origin});}};
@@ -268,6 +269,18 @@ test('help links hand off fixed destinations to the native app and never rebuild
   assert.equal(sent.length,before);
   message({source:trusted,origin:'https://app.calorietoken.net',data:ready});
   assert.equal(sent.at(-1).message.requestId,sent[0].message.requestId,'readiness retries keep the same request ID');
+  const cancel={type:'calorieapp:entry:cancel',version:1};
+  for(const event of [
+    {source:{},origin:'https://app.calorietoken.net',data:cancel},
+    {source:trusted,origin:'https://evil.example',data:cancel},
+    {source:trusted,origin:'https://app.calorietoken.net',data:{...cancel,extra:'rejected'}}
+  ])message(event);
+  assert.equal(window.location.hash,'#ctstyle-testnet');
+  message({source:trusted,origin:'https://app.calorietoken.net',data:cancel});
+  assert.equal(window.location.hash,'');assert.equal(window.history.state.preserved,true);
+  const cancelledCount=sent.length;
+  message({source:trusted,origin:'https://app.calorietoken.net',data:ready});
+  assert.equal(sent.length,cancelledCount,'a cancelled guide is not resent on iframe reload');
   for(const target of ['food-search','food-scan','food-compare','basic-foods','food-diary','account','account-export','move-account']){
     window.location.hash='#'+target;listeners.get('hashchange')();
     const value=sent.at(-1);
@@ -275,6 +288,9 @@ test('help links hand off fixed destinations to the native app and never rebuild
     assert.equal(value.origin,'https://app.calorietoken.net');
     assert.deepEqual(Object.keys(value.message).sort(),['requestId','target','type','version']);
   }
+  window.location.hash='#food-search';listeners.get('hashchange')();
+  message({source:trusted,origin:'https://app.calorietoken.net',data:cancel});
+  assert.equal(window.location.hash,'#food-search','cancelling a guide preserves unrelated destinations');
   window.location.hash='';listeners.get('hashchange')();const count=sent.length;
   message({source:trusted,origin:'https://app.calorietoken.net',data:ready});
   assert.equal(sent.length,count,'normal app opening does not start a task');
@@ -420,8 +436,8 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
 });
 
 test('release stays hash-gated, non-persistent and compact', () => {
-  assert.match(php, /Version: 1\.6\.16/);
-  assert.match(php, /const VERSION = '1\.6\.16'/);
+  assert.match(php, /Version: 1\.6\.17/);
+  assert.match(php, /const VERSION = '1\.6\.17'/);
   assert.match(php, /calorietoken-language-bootstrap/);
   assert.match(php, /asset_url\('language-bootstrap\.js'\), array\(\), VERSION, false/);
   assert.match(php, /calorietoken-age-experience/);

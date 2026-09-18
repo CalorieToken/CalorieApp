@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { localeDirection } from "@/lib/locales";
 import translations from "@/config/testnet-entry-copy.json";
@@ -14,6 +14,8 @@ type Route = "test" | "move";
 type TestnetEntryProps = {
   active?: boolean;
   requestedJourney?: { step: Route; serial: number };
+  cancelRequest?: number;
+  onCancel: () => void;
   onNavigate: (destination: AccountJourneyDestination) => void;
   onOpenAccountTools: (destination?: "export" | "import" | "session") => void;
 };
@@ -29,7 +31,7 @@ function Acknowledgement({ checked, disabled = false, onChange, children }: {
   </label>;
 }
 
-export function TestnetEntry({ active = true, requestedJourney, onNavigate, onOpenAccountTools }: TestnetEntryProps) {
+export function TestnetEntry({ active = true, requestedJourney, cancelRequest = 0, onCancel, onNavigate, onOpenAccountTools }: TestnetEntryProps) {
   const display = useDisplayLanguage();
   const locale = display.enabled && display.locale in translations ? display.locale as keyof typeof translations : "en";
   const copy = translations[locale], setup = setupTranslations[locale];
@@ -59,6 +61,18 @@ export function TestnetEntry({ active = true, requestedJourney, onNavigate, onOp
   currentView.current = { route, index, active };
   const heading = useRef<HTMLHeadingElement | null>(null);
   const importEnabled = process.env.NEXT_PUBLIC_ACCOUNT_DATA_IMPORT_UI_ENABLED === "true";
+  const lastCancelRequest = useRef(0);
+  const cancel = useCallback(() => {
+    if (accountRef.current && !savedRef.current && !window.confirm(setup.cancelUnsaved)) return;
+    onCancel();
+  }, [onCancel, setup.cancelUnsaved]);
+
+  useEffect(() => {
+    if (cancelRequest && cancelRequest !== lastCancelRequest.current) {
+      lastCancelRequest.current = cancelRequest;
+      cancel();
+    }
+  }, [cancelRequest, cancel]);
 
   function choose(next: Route) {
     setRoute(next); setIndex(positions.current[next]);
@@ -186,8 +200,8 @@ export function TestnetEntry({ active = true, requestedJourney, onNavigate, onOp
   return <section className="calorie-journey-card rounded-2xl border border-brand-secondary/20 bg-white shadow-sm"
     lang={locale} dir={localeDirection(locale)} aria-labelledby="account-journey-title" data-account-guide={route ?? "choose"}>
     <header className="border-b border-brand-secondary/10 px-4 pb-4 pt-3 sm:px-6">
-      <button type="button" onClick={() => { setShown(false); onNavigate("account"); }} className="-ms-2 mb-2 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-brand-secondary">
-        <span aria-hidden="true">{localeDirection(locale) === "rtl" ? "→" : "←"}</span>{setup.backToAccount}
+      <button type="button" onClick={cancel} className="-ms-2 mb-2 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-brand-secondary">
+        <span aria-hidden="true">{localeDirection(locale) === "rtl" ? "→" : "←"}</span>{setup.cancelGuide}
       </button>
       <p className="text-xs font-bold text-brand-secondary">{route === "test" ? copy.testRoute : route === "move" ? copy.moveRoute : copy.journeyTab}</p>
       {route ? <>

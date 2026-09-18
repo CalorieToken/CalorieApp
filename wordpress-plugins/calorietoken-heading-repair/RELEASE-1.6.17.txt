@@ -1,0 +1,9 @@
+CalorieToken Heading and Language Repair 1.6.17
+
+Account guide cancellation
+- Accept the fixed cancellation message only from the trusted CalorieApp frame.
+- Clear a consumed test-account or migration fragment and its pending request.
+- Refreshing WordPress no longer reopens a cancelled guide.
+- Preserve all other task links and the existing layout and language repairs.
+
+Requires the matching CalorieApp cancellation update. No backend changes.

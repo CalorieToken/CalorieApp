@@ -15,3 +15,8 @@ export function saveAccountJourney(value: AccountJourneyProgress): void {
   try { window.sessionStorage.setItem(key, JSON.stringify({ route: value.route, index: value.index })); }
   catch { /* The mounted guide also works when tab storage is unavailable. */ }
 }
+
+export function clearAccountJourney(): void {
+  try { window.sessionStorage.removeItem(key); }
+  catch { /* The mounted workspace still clears its own guide state. */ }
+}
