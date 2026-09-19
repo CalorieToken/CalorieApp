@@ -56,6 +56,8 @@ def main() -> None:
         "THIRD_PARTY_NOTICES.md",
         "ASSET_PROVENANCE.md",
         "IP_CLEARANCE.md",
+        "docs/ECOSYSTEM_OPEN_STEWARDSHIP_AND_FUNDING.md",
+        "contracts/ecosystem/v2/open-stewardship-and-funding.json",
         "contracts/identity-bridge/v1/code-provenance.json",
         "contracts/identity-bridge/v1/evidence/xummlogin-public-1.3.0-similarity.json",
         "contracts/identity-bridge/v1/evidence/xummlogin-live-1.3.1-similarity.json",
@@ -77,6 +79,26 @@ def main() -> None:
     require_text("DATA_LICENSING.md", ("Open Database License", "share-alike"))
     require_text("THIRD_PARTY_NOTICES.md", ("software bill of materials", "GPL-2.0-or-later"))
     require_text("IP_CLEARANCE.md", ("general ideas such as calorie tracking", "freedom-to-operate"))
+    require_text(
+        "docs/ECOSYSTEM_OPEN_STEWARDSHIP_AND_FUNDING.md",
+        ("existing repository is not automatically relicensed", "Founder/developer recovery", "No fixed percentages are declared yet"),
+    )
+    stewardship = require_json_object(
+        json.loads(
+            (ROOT / "contracts" / "ecosystem" / "v2" / "open-stewardship-and-funding.json").read_text(encoding="utf-8")
+        ),
+        "Open stewardship and funding contract",
+    )
+    open_building = require_json_object(stewardship.get("open_building"), "open stewardship open_building")
+    if open_building.get("existing_repository_automatically_relicensed") is not False:
+        raise SystemExit("Open ecosystem policy must not silently relicense the existing repository")
+    commercial = require_json_object(stewardship.get("commercial_sustainability"), "open stewardship commercial_sustainability")
+    if commercial.get("founder_cost_recovery_recognised") is not True:
+        raise SystemExit("Sustainability model must retain founder cost recovery")
+    if commercial.get("ecosystem_treasury_long_term_funding_goal") is not True:
+        raise SystemExit("Sustainability model must retain long-term ecosystem funding")
+    if commercial.get("fixed_revenue_percentages_set") is not False:
+        raise SystemExit("Revenue percentages require separate explicit approval")
     require_text(
         "wordpress-plugins/calorieapp-identity-bridge/calorieapp-identity-bridge.php",
         ("License: GPL-2.0-or-later",),
