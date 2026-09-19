@@ -1,7 +1,7 @@
 # Open ecosystem stewardship, IP and sustainable funding
 
 Status: design and legal-readiness baseline  
-Scope: Calorie Ecosystem, CalorieApp, CalorieVerse, Creator Gallery and future ecosystem extensions
+Scope: Calorie Ecosystem, CalorieApp, CalorieVerse, CalorieStudio and future ecosystem extensions
 
 This document records the intended operating model. It is not a licence grant,
 trade-mark filing, tax ruling, regulatory approval, or substitute for Dutch/EU
@@ -28,7 +28,7 @@ The current product family is:
   boundaries and the long-term ecosystem layer;
 - **CalorieApp** — the official food/nutrition application;
 - **CalorieVerse** — the persistent live metaverse/open world;
-- **Creator Gallery** — a creator surface inside CalorieVerse and directly in
+- **CalorieStudio** — a creator surface inside CalorieVerse and directly in
   the ecosystem.
 
 Independent projects may build compatible experiences under their own
@@ -85,7 +85,7 @@ A neutral trade-mark policy should eventually distinguish:
 
 ## Creator copyright and user-generated content
 
-Creator ownership should be the default for original Creator Gallery works.
+Creator ownership should be the default for original CalorieStudio works.
 The platform should obtain only the rights it needs through clear terms, for
 example a non-exclusive licence to host, cache, transform for technical display,
 moderate, and show the work in CalorieVerse. Any commercial sublicensing,
@@ -110,7 +110,7 @@ The ecosystem can remain open while official services are commercial.
 
 Candidate revenue streams include:
 
-- optional premium CalorieApp or Creator Gallery features;
+- optional premium CalorieApp or CalorieStudio features;
 - optional premium creator tools, storage, rendering and collaboration;
 - managed hosting, API/data services and enterprise support;
 - managed node/compute/storage services where lawful;
@@ -120,7 +120,7 @@ Candidate revenue streams include:
 - sponsorships, partnerships, grants and paid implementation/support work.
 
 Core Gameverse/CalorieVerse entry, ordinary ecosystem exploration and ordinary
-Creator Gallery browsing should not require a wallet, token purchase or node
+CalorieStudio browsing should not require a wallet, token purchase or node
 participation. Premium features must remain additive rather than degrading the
 free core.
 
@@ -203,7 +203,7 @@ boundary already recorded in the repository.
 
 ## Evidence and launch checklist
 
-Before the public commercial launch of CalorieVerse/Creator Gallery:
+Before the public commercial launch of CalorieVerse/CalorieStudio:
 
 1. perform an exact EUIPO/TMview/BOIP clearance search for the final public
    names and relevant goods/services;
