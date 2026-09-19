@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { type KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { CalorieStudio } from "@/components/CalorieStudio";
@@ -10,6 +10,7 @@ import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 import { CalorieVerseInteractionCard } from "@/components/CalorieVerseInteractionCard";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
+import { moveWorld, nearestWorldRegion, safeWorldPosition, worldKeyDirection, type WorldDirection, type WorldPosition } from "@/lib/calorieVerseMovement";
 import {
   CALORIEVERSE_INTERACTION_KEY,
   completeInteraction,
@@ -41,6 +42,7 @@ type SavedProgress = {
   current_region_id: string;
   visited_region_ids: string[];
   maze_complete?: boolean;
+  position?: WorldPosition;
 };
 
 function ageLabel(ageBand: "child" | "teen" | "adult", copy: ReturnType<typeof gameverseCopy>["copy"]) {
@@ -106,6 +108,7 @@ export function GameverseWorld() {
   const [starterId, setStarterId] = useState(starterIdentity().starter_character_id);
   const [currentRegionId, setCurrentRegionId] = useState(gameverseWorld.start.region_id);
   const [selectedRegionId, setSelectedRegionId] = useState(gameverseWorld.start.region_id);
+  const [playerPosition, setPlayerPosition] = useState<WorldPosition>({x: gameverseWorld.start.x, y: gameverseWorld.start.y});
   const [visited, setVisited] = useState<string[]>([gameverseWorld.start.region_id]);
   const [localGalleryDrafts, setLocalGalleryDrafts] = useState<LocalGalleryDraft[]>([]);
   const [mazeCompleteState, setMazeCompleteState] = useState(false);
@@ -133,9 +136,16 @@ export function GameverseWorld() {
       if (stored?.version === 1 && typeof stored.current_region_id === "string" && Array.isArray(stored.visited_region_ids)) {
         const safeVisited = uniqueVisited(stored.visited_region_ids);
         const currentExists = gameverseRegions.some(region => region.id === stored.current_region_id);
+        const restoredRegion = currentExists
+          ? gameverseRegions.find(region => region.id === stored.current_region_id)
+          : gameverseRegions.find(region => region.id === gameverseWorld.start.region_id);
+        const fallbackPosition = restoredRegion
+          ? {x: restoredRegion.x, y: restoredRegion.y}
+          : {x: gameverseWorld.start.x, y: gameverseWorld.start.y};
         setVisited(safeVisited.length ? safeVisited : [gameverseWorld.start.region_id]);
         setCurrentRegionId(currentExists ? stored.current_region_id : gameverseWorld.start.region_id);
         setSelectedRegionId(currentExists ? stored.current_region_id : gameverseWorld.start.region_id);
+        setPlayerPosition(safeWorldPosition(stored.position, fallbackPosition));
         setMazeCompleteState(stored.maze_complete === true);
       }
     } catch {
@@ -154,12 +164,13 @@ export function GameverseWorld() {
         current_region_id: currentRegionId,
         visited_region_ids: uniqueVisited(visited),
         maze_complete: mazeCompleteState,
+        position: playerPosition,
       };
       window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
     } catch {
       // Playing without persistent browser storage remains supported.
     }
-  }, [loaded, starterId, currentRegionId, visited, mazeCompleteState]);
+  }, [loaded, starterId, currentRegionId, visited, mazeCompleteState, playerPosition]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -180,7 +191,7 @@ export function GameverseWorld() {
     [ageBand, mazeCompleteState]
   );
   const selected = regions.find(region => region.id === selectedRegionId) ?? regions[0];
-  const current = gameverseRegions.find(region => region.id === currentRegionId) ?? gameverseRegions[0];
+  const nearbyRegion = nearestWorldRegion(playerPosition, regions);
   const mazeReady = mazeUnlocked(visited);
   const coreProgress = coreRouteProgress(visited);
   const coreRouteIds = new Set(gameverseWorld.progression.maze_required_regions as string[]);
@@ -189,9 +200,27 @@ export function GameverseWorld() {
   function walkTo(region: GameverseRegion) {
     if (!ageBand || !regionIsInteractive(region, ageBand)) return;
     if (region.kind === "maze" && !mazeReady) return;
+    setPlayerPosition({x: region.x, y: region.y});
     setCurrentRegionId(region.id);
     setSelectedRegionId(region.id);
     setVisited(previous => uniqueVisited([...previous, region.id]));
+  }
+
+  function movePlayer(direction: WorldDirection) {
+    const next = moveWorld(playerPosition, direction, mazeCompleteState);
+    setPlayerPosition(next);
+    const discovered = nearestWorldRegion(next, regions);
+    if (!discovered) return;
+    setCurrentRegionId(discovered.id);
+    setSelectedRegionId(discovered.id);
+    setVisited(previous => uniqueVisited([...previous, discovered.id]));
+  }
+
+  function handleWorldKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const direction = worldKeyDirection(event.key);
+    if (!direction) return;
+    event.preventDefault();
+    movePlayer(direction);
   }
 
   function finishInteraction(interactionId: string) {
@@ -242,7 +271,8 @@ export function GameverseWorld() {
                   worldEffects.routeWhisper ? "has-route-whisper" : "",
                 ].filter(Boolean).join(" ")}
                 tabIndex={0}
-                aria-label={copy.world}
+                onKeyDown={handleWorldKeyDown}
+                aria-label={copy.world + " · " + copy.freeRoam}
               >
                 <div className="gameverse-sky" aria-hidden="true" />
                 <div className="gameverse-sun" aria-hidden="true" />
@@ -294,7 +324,7 @@ export function GameverseWorld() {
                       key={region.id}
                       region={region}
                       selected={selectedRegionId === region.id}
-                      current={currentRegionId === region.id}
+                      current={nearbyRegion?.id === region.id}
                       visited={visited.includes(region.id)}
                       locked={region.kind === "maze" && !mazeReady}
                       coreRoute={coreRouteIds.has(region.id) && !visited.includes(region.id)}
@@ -304,9 +334,18 @@ export function GameverseWorld() {
                   );
                 })}
 
+                <div className="gameverse-free-roam-controls" aria-label={copy.freeRoam}>
+                  <button type="button" onClick={() => movePlayer("up")} aria-label={copy.moveUp}>↑</button>
+                  <div>
+                    <button type="button" onClick={() => movePlayer("left")} aria-label={copy.moveLeft}>←</button>
+                    <button type="button" onClick={() => movePlayer("down")} aria-label={copy.moveDown}>↓</button>
+                    <button type="button" onClick={() => movePlayer("right")} aria-label={copy.moveRight}>→</button>
+                  </div>
+                </div>
+
                 <div
                   className="gameverse-player"
-                  style={{ left: current.x + "%", top: current.y + "%" }}
+                  style={{ left: playerPosition.x + "%", top: playerPosition.y + "%" }}
                   aria-label={copy.identity}
                   title={starterId}
                 >
@@ -347,9 +386,9 @@ export function GameverseWorld() {
                       <button
                         type="button"
                         onClick={() => walkTo(selected)}
-                        disabled={!interactive || mazeLocked || selected.id === currentRegionId}
+                        disabled={!interactive || mazeLocked || nearbyRegion?.id === selected.id}
                       >
-                        {selected.id === currentRegionId ? "● " + copy.visited : copy.walk}
+                        {nearbyRegion?.id === selected.id ? "● " + copy.visited : copy.walk}
                       </button>
                       {selected.destination && interactive && !mazeLocked ? (
                         <Link href={selected.destination}>{copy.open}</Link>
@@ -393,6 +432,7 @@ export function GameverseWorld() {
                     const ridge = gameverseRegions.find(region => region.id === "misty-ridge");
                     if (!ridge) return;
                     setMazeCompleteState(true);
+                    setPlayerPosition({x: ridge.x, y: ridge.y});
                     setCurrentRegionId(ridge.id);
                     setSelectedRegionId(ridge.id);
                     setVisited(previous => uniqueVisited([...previous, ridge.id]));
