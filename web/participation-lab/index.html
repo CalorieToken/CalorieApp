@@ -62,6 +62,15 @@
         <button type="button" id="storageResumeBtn">Resume</button>
         <button type="button" id="storageStopBtn">Stop</button>
       </div>
+      <div class="release-choice">
+        <label for="storageReleaseMode">When storage stops</label>
+        <select id="storageReleaseMode" aria-describedby="storageReleaseHelp">
+          <option value="keep-local">Keep existing local copies</option>
+          <option value="handoff-then-delete">Safe handoff, then delete local copies</option>
+          <option value="delete-now">Delete my local copies now</option>
+        </select>
+        <small id="storageReleaseHelp">Your choice affects only voluntary node data. It does not remove CalorieApp or Gameverse access.</small>
+      </div>
       <div class="mini" id="storageHint"><span>Pause or Stop means no new storage work. Existing assigned data is not silently deleted; safe release is a separate step.</span></div>
     </article>
 
