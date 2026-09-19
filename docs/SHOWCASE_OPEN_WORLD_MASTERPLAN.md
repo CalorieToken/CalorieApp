@@ -35,6 +35,23 @@ production quality as features are added:
 The local participation simulator has no end-user visual interface. Its technical
 output does not establish the style of the future game or participation controls.
 
+## Product family and public names
+
+The shared umbrella is the **Calorie Ecosystem**.
+
+- **CalorieApp** is the food/nutrition application running on that ecosystem.
+- **CalorieVerse** is the public name of the persistent live metaverse/open world.
+- **Creator Gallery** is a creator surface inside CalorieVerse and can also be
+  opened directly, but it is not a separate competing ecosystem.
+
+The existing internal term `Gameverse`, route `/gameverse`, file names and
+stable IDs may remain where changing them would add migration risk. Public-facing
+copy should use **CalorieVerse**.
+
+This gives one clear hierarchy:
+
+`Calorie Ecosystem -> CalorieApp + CalorieVerse -> Creator Gallery and other ecosystem surfaces`.
+
 ## One continuously evolving live Gameverse
 
 The Gameverse is designed as **one persistent live world**, not as a franchise
