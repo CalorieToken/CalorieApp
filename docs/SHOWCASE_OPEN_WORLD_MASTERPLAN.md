@@ -294,6 +294,35 @@ Age treatment:
 
 This mechanic should make the launch feel like **notice -> earn -> choose -> share -> improve the world**, not like attention harvesting or speculative farming.
 
+
+### Fair-share CALT catch mechanic
+
+The staged CALT welcome airdrop should feel active and playful rather than passive, while preventing hoarding.
+
+Principles:
+- every eligible adult Testnet player receives a fair base opportunity during the launch period;
+- paying more, camping one scene, reloading, changing language or running repetitive low-skill loops must not create a dominant advantage;
+- paying attention, exploring carefully, completing useful challenges and making good choices may earn a **small bounded extra** on top of the fair base;
+- the effort bonus must be capped and secondary to the equal base distribution;
+- missed drops should not create an unrecoverable permanent disadvantage; later catch-up opportunities can restore most of the base allocation;
+- the mechanic must reward focus/participation, not compulsive grinding or all-day screen time;
+- scene/culture choice never changes the underlying maximum entitlement.
+
+Sharing/generosity:
+- eligible players may voluntarily share Testnet CALT or eligible game assets with friends/family through explicit wallet-authorized transfers;
+- generosity toward community causes or players who voluntarily opt into an assistance/community-pool mechanic can be recognized;
+- the game must not infer that a real person is poor, vulnerable or in need from location, culture, wallet balance, identity or behaviour;
+- appreciation for sharing should mainly use reputation, badges, titles, cosmetics, community progress and story unlocks rather than an unlimited CALT rebate that could be farmed;
+- any CALT-based generosity bonus, if later enabled, must be small, capped, non-circular and abuse-resistant;
+- gifts never create a claim on the recipient and should not pressure children/teens into token activity.
+
+Anti-hoarding:
+- no advantage for simply retaining the largest CALT balance;
+- leaderboard design must not rank people by wallet wealth;
+- quests should reward useful activity, cooperation, creativity, learning, nature/animal care and F&B contribution rather than accumulation;
+- marketplace/game progression must avoid pay-to-win and wealth-gated access to the core world;
+- anti-sybil and duplicate-entitlement checks must protect the fair launch distribution without requiring invasive tracking.
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
