@@ -14,15 +14,33 @@
     "marketplace"
   ],
   "properties": {
-    "contract_id": { "const": "calorietoken.showcase-economy" },
-    "version": { "type": "string" },
-    "environment": { "const": "xrpl-testnet" },
-    "ticker": { "const": "CALT" },
-    "display_name": { "type": "string" },
-    "real_world_value": { "const": false },
-    "redeemable": { "const": false },
-    "mainnet_enabled": { "const": false },
-    "mainnet_cal_conversion_defined": { "const": false },
+    "contract_id": {
+      "const": "calorietoken.showcase-economy"
+    },
+    "version": {
+      "type": "string"
+    },
+    "environment": {
+      "const": "xrpl-testnet"
+    },
+    "ticker": {
+      "const": "CALT"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "real_world_value": {
+      "const": false
+    },
+    "redeemable": {
+      "const": false
+    },
+    "mainnet_enabled": {
+      "const": false
+    },
+    "mainnet_cal_conversion_defined": {
+      "const": false
+    },
     "welcome_airdrop": {
       "type": "object",
       "required": [
@@ -32,50 +50,204 @@
         "identity_scope",
         "scene_scope",
         "culture_policy",
-        "age_modes"
+        "age_modes",
+        "discovery_capture",
+        "generosity"
       ],
       "properties": {
-        "enabled": { "type": "boolean" },
-        "feature_flag": { "type": "string" },
-        "distribution_model": { "const": "staged-global-welcome-period" },
-        "claim_start": { "type": ["string", "null"] },
-        "claim_end": { "type": ["string", "null"] },
-        "cadence": { "type": ["string", "null"] },
-        "amount_policy": { "type": ["string", "null"] },
-        "xrpl_issuer": { "type": ["string", "null"] },
-        "xrpl_currency_code": { "type": ["string", "null"] },
-        "identity_scope": { "type": "string" },
-        "scene_scope": { "const": "all-world-scenes" },
-        "culture_policy": { "type": "string" },
+        "enabled": {
+          "type": "boolean"
+        },
+        "feature_flag": {
+          "type": "string"
+        },
+        "distribution_model": {
+          "const": "staged-global-welcome-period"
+        },
+        "claim_start": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "claim_end": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cadence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "amount_policy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "xrpl_issuer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "xrpl_currency_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identity_scope": {
+          "type": "string"
+        },
+        "scene_scope": {
+          "const": "all-world-scenes"
+        },
+        "culture_policy": {
+          "type": "string"
+        },
         "duplicate_claim_prevention": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "age_modes": {
           "type": "object",
-          "required": ["child", "teen", "adult"],
+          "required": [
+            "child",
+            "teen",
+            "adult"
+          ],
           "properties": {
-            "child": { "const": "non-financial-welcome-collectible-only" },
-            "teen": { "const": "non-value-learning-simulation" },
-            "adult": { "const": "optional-xrpl-testnet-calt-claim" }
+            "child": {
+              "const": "non-financial-welcome-collectible-only"
+            },
+            "teen": {
+              "const": "non-value-learning-simulation"
+            },
+            "adult": {
+              "const": "optional-xrpl-testnet-calt-claim"
+            }
           },
           "additionalProperties": false
         },
-        "requires_explicit_wallet_authorization": { "const": true },
-        "requires_validated_ledger_result": { "const": true },
-        "jurisdiction_gate_required": { "const": true }
+        "requires_explicit_wallet_authorization": {
+          "const": true
+        },
+        "requires_validated_ledger_result": {
+          "const": true
+        },
+        "jurisdiction_gate_required": {
+          "const": true
+        },
+        "discovery_capture": {
+          "type": "object",
+          "required": [
+            "reward_basis",
+            "raw_screen_time_rewarded",
+            "idle_rewarded",
+            "refresh_farming_rewarded",
+            "equivalent_accessibility_routes_required",
+            "per_identity_limits_required",
+            "anti_automation_required"
+          ],
+          "properties": {
+            "reward_basis": {
+              "const": "active-observation-exploration-and-meaningful-actions"
+            },
+            "raw_screen_time_rewarded": {
+              "const": false
+            },
+            "idle_rewarded": {
+              "const": false
+            },
+            "refresh_farming_rewarded": {
+              "const": false
+            },
+            "equivalent_accessibility_routes_required": {
+              "const": true
+            },
+            "per_identity_limits_required": {
+              "const": true
+            },
+            "anti_automation_required": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "generosity": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "adult_testnet_only",
+            "allowed_targets",
+            "appreciation_rewards",
+            "calt_from_gifting_itself",
+            "circular_transfer_farming_blocked",
+            "self_transfer_credit_blocked",
+            "socioeconomic_inference_forbidden"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "adult_testnet_only": {
+              "const": true
+            },
+            "allowed_targets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "appreciation_rewards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "calt_from_gifting_itself": {
+              "const": false
+            },
+            "circular_transfer_farming_blocked": {
+              "const": true
+            },
+            "self_transfer_credit_blocked": {
+              "const": true
+            },
+            "socioeconomic_inference_forbidden": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": false
     },
     "marketplace": {
       "type": "object",
-      "required": ["enabled", "testnet_only", "supported_asset_families"],
+      "required": [
+        "enabled",
+        "testnet_only",
+        "supported_asset_families"
+      ],
       "properties": {
-        "enabled": { "type": "boolean" },
-        "testnet_only": { "const": true },
+        "enabled": {
+          "type": "boolean"
+        },
+        "testnet_only": {
+          "const": true
+        },
         "supported_asset_families": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false
