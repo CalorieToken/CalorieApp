@@ -48,8 +48,11 @@ export type LocalGalleryDraft = {
   id: string;
   title: string;
   type: GalleryAssetType;
+  age_band: AgeBand;
   created_at: string;
 };
+
+export const GALLERY_DRAFTS_KEY = "calorie.gallery.local-drafts.v1";
 
 const assetTypes = new Set<string>(galleryConfig.asset_types);
 
@@ -109,6 +112,7 @@ export function isGalleryAssetType(value: unknown): value is GalleryAssetType {
 export function createLocalGalleryDraft(input: {
   title: string;
   type: unknown;
+  ageBand: AgeBand;
   now?: Date;
   id?: string;
 }): LocalGalleryDraft {
@@ -120,6 +124,7 @@ export function createLocalGalleryDraft(input: {
     id: input.id ?? `draft-${now.getTime()}`,
     title,
     type: input.type,
+    age_band: input.ageBand,
     created_at: now.toISOString(),
   };
 }
@@ -136,13 +141,15 @@ export function parseLocalGalleryDrafts(value: string | null): LocalGalleryDraft
         typeof draft.id !== "string" ||
         typeof draft.title !== "string" ||
         typeof draft.created_at !== "string" ||
-        !isGalleryAssetType(draft.type)
+        !isGalleryAssetType(draft.type) ||
+        (draft.age_band !== "child" && draft.age_band !== "teen" && draft.age_band !== "adult")
       ) return [];
       try {
         return [createLocalGalleryDraft({
           id: draft.id,
           title: draft.title,
           type: draft.type,
+          ageBand: draft.age_band,
           now: new Date(draft.created_at),
         })];
       } catch {
