@@ -13,6 +13,13 @@ export function createParticipationState(overrides = {}) {
     rewards: false,
     storageLimitMb: 250,
     computeLimitPercent: 25,
+    monthlyBandwidthLimitMb: 500,
+    wifiOnly: true,
+    allowBattery: false,
+    idleComputeOnly: true,
+    autoStart: false,
+    allowStorageTasks: true,
+    allowComputeTasks: true,
     storageReleaseMode: "keep-local",
     storageState: "off",
     processState: "off",
@@ -36,6 +43,21 @@ export function validateParticipationState(state) {
   }
   if (state.computeLimitPercent < 5 || state.computeLimitPercent > 75) {
     throw new Error("compute-limit-out-of-range");
+  }
+  if (!Number.isInteger(state.monthlyBandwidthLimitMb)
+      || state.monthlyBandwidthLimitMb < 100
+      || state.monthlyBandwidthLimitMb > 10000) {
+    throw new Error("bandwidth-limit-out-of-range");
+  }
+  for (const [key, value] of Object.entries({
+    wifiOnly: state.wifiOnly,
+    allowBattery: state.allowBattery,
+    idleComputeOnly: state.idleComputeOnly,
+    autoStart: state.autoStart,
+    allowStorageTasks: state.allowStorageTasks,
+    allowComputeTasks: state.allowComputeTasks,
+  })) {
+    if (typeof value !== "boolean") throw new Error("invalid-" + key);
   }
   if ((state.storageState === "running" || state.storageState === "paused") && !state.storage) {
     throw new Error("storage-must-be-enabled-before-process");
@@ -71,10 +93,25 @@ export function transition(state, action) {
       return createParticipationState({ ...current, storageLimitMb: Number(action.value) });
     case "SET_COMPUTE_LIMIT":
       return createParticipationState({ ...current, computeLimitPercent: Number(action.value) });
+    case "SET_BANDWIDTH_LIMIT":
+      return createParticipationState({ ...current, monthlyBandwidthLimitMb: Number(action.value) });
+    case "SET_WIFI_ONLY":
+      return createParticipationState({ ...current, wifiOnly: Boolean(action.value) });
+    case "SET_ALLOW_BATTERY":
+      return createParticipationState({ ...current, allowBattery: Boolean(action.value) });
+    case "SET_IDLE_COMPUTE_ONLY":
+      return createParticipationState({ ...current, idleComputeOnly: Boolean(action.value) });
+    case "SET_AUTO_START":
+      return createParticipationState({ ...current, autoStart: Boolean(action.value) });
+    case "SET_STORAGE_TASK_CLASS":
+      return createParticipationState({ ...current, allowStorageTasks: Boolean(action.value) });
+    case "SET_COMPUTE_TASK_CLASS":
+      return createParticipationState({ ...current, allowComputeTasks: Boolean(action.value) });
     case "SET_STORAGE_RELEASE_MODE":
       return createParticipationState({ ...current, storageReleaseMode: String(action.value) });
     case "START_STORAGE":
       if (!current.storage) throw new Error("storage-not-enabled");
+      if (!current.allowStorageTasks) throw new Error("storage-task-class-disabled");
       if (current.storageState !== "off") throw new Error("storage-not-off");
       return createParticipationState({ ...current, storageState: "running" });
     case "PAUSE_STORAGE":
@@ -88,6 +125,7 @@ export function transition(state, action) {
       return createParticipationState({ ...current, storageState: "off" });
     case "START":
       if (!current.compute) throw new Error("compute-not-enabled");
+      if (!current.allowComputeTasks) throw new Error("compute-task-class-disabled");
       if (current.processState !== "off") throw new Error("process-not-off");
       return createParticipationState({ ...current, processState: "running" });
     case "PAUSE":
