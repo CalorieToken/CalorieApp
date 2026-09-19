@@ -43,6 +43,7 @@ function render() {
   $("computeToggle").checked = state.compute;
   $("rewardToggle").checked = state.rewards;
   $("storageLimit").value = state.storageLimitMb;
+  $("storageReleaseMode").value = state.storageReleaseMode;
   $("computeLimit").value = state.computeLimitPercent;
   $("bandwidthLimit").value = state.monthlyBandwidthLimitMb;
   $("wifiOnly").checked = state.wifiOnly;
