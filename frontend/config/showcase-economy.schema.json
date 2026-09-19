@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CalorieToken Showcase Economy Config",
+  "type": "object",
+  "required": [
+    "contract_id",
+    "version",
+    "environment",
+    "ticker",
+    "real_world_value",
+    "redeemable",
+    "mainnet_enabled",
+    "welcome_airdrop",
+    "marketplace"
+  ],
+  "properties": {
+    "contract_id": { "const": "calorietoken.showcase-economy" },
+    "version": { "type": "string" },
+    "environment": { "const": "xrpl-testnet" },
+    "ticker": { "const": "CALT" },
+    "display_name": { "type": "string" },
+    "real_world_value": { "const": false },
+    "redeemable": { "const": false },
+    "mainnet_enabled": { "const": false },
+    "mainnet_cal_conversion_defined": { "const": false },
+    "welcome_airdrop": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "feature_flag",
+        "distribution_model",
+        "identity_scope",
+        "scene_scope",
+        "culture_policy",
+        "age_modes"
+      ],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "feature_flag": { "type": "string" },
+        "distribution_model": { "const": "staged-global-welcome-period" },
+        "claim_start": { "type": ["string", "null"] },
+        "claim_end": { "type": ["string", "null"] },
+        "cadence": { "type": ["string", "null"] },
+        "amount_policy": { "type": ["string", "null"] },
+        "xrpl_issuer": { "type": ["string", "null"] },
+        "xrpl_currency_code": { "type": ["string", "null"] },
+        "identity_scope": { "type": "string" },
+        "scene_scope": { "const": "all-world-scenes" },
+        "culture_policy": { "type": "string" },
+        "duplicate_claim_prevention": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "age_modes": {
+          "type": "object",
+          "required": ["child", "teen", "adult"],
+          "properties": {
+            "child": { "const": "non-financial-welcome-collectible-only" },
+            "teen": { "const": "non-value-learning-simulation" },
+            "adult": { "const": "optional-xrpl-testnet-calt-claim" }
+          },
+          "additionalProperties": false
+        },
+        "requires_explicit_wallet_authorization": { "const": true },
+        "requires_validated_ledger_result": { "const": true },
+        "jurisdiction_gate_required": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "marketplace": {
+      "type": "object",
+      "required": ["enabled", "testnet_only", "supported_asset_families"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "testnet_only": { "const": true },
+        "supported_asset_families": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
