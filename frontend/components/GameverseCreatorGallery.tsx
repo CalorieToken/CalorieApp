@@ -5,6 +5,7 @@ import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import type { AgeBand } from "@/lib/ageExperience";
 import {
   createLocalGalleryDraft,
+  GALLERY_GALLERY_DRAFTS_KEY,
   galleryAssetsForAge,
   galleryAssetTypes,
   galleryCopy,
@@ -13,8 +14,6 @@ import {
   type GalleryAssetType,
   type LocalGalleryDraft,
 } from "@/lib/galleryEcosystem";
-
-const DRAFTS_KEY = "calorie.gallery.local-drafts.v1";
 
 function assetTypeLabel(value: string) {
   return value.replaceAll("-", " ").replace(/\b\w/g, letter => letter.toUpperCase());
@@ -39,7 +38,7 @@ export function GameverseCreatorGallery({
 
   useEffect(() => {
     try {
-      setDrafts(parseLocalGalleryDrafts(window.localStorage.getItem(DRAFTS_KEY)));
+      setDrafts(parseLocalGalleryDrafts(window.localStorage.getItem(GALLERY_DRAFTS_KEY)));
     } catch {
       setDrafts([]);
     }
@@ -49,17 +48,21 @@ export function GameverseCreatorGallery({
     () => galleryAssetsForAge(ageBand, type),
     [ageBand, type]
   );
+  const visibleDrafts = useMemo(
+    () => drafts.filter(draft => draft.age_band === ageBand),
+    [drafts, ageBand]
+  );
 
   function saveDraft(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      const draft = createLocalGalleryDraft({ title: draftTitle, type: draftType });
+      const draft = createLocalGalleryDraft({ title: draftTitle, type: draftType, ageBand });
       const next = [draft, ...drafts].slice(0, 50);
       setDrafts(next);
       setDraftTitle("");
       setMessage(copy.saved);
       try {
-        window.localStorage.setItem(DRAFTS_KEY, JSON.stringify(next));
+        window.localStorage.setItem(GALLERY_DRAFTS_KEY, JSON.stringify(next));
       } catch {
         // The workshop stays usable in-memory when browser storage is unavailable.
       }
@@ -141,12 +144,12 @@ export function GameverseCreatorGallery({
         ))}
       </div>
 
-      {compact && drafts.length > 0 ? (
+      {compact && visibleDrafts.length > 0 ? (
         <div className="gallery-world-drafts">
           <small>{copy.localDraft}</small>
-          <strong>{drafts.length} {copy.drafts.toLowerCase()}</strong>
+          <strong>{visibleDrafts.length} {copy.drafts.toLowerCase()}</strong>
           <div>
-            {drafts.slice(0, 3).map(draft => (
+            {visibleDrafts.slice(0, 3).map(draft => (
               <span key={draft.id}>{draft.title}</span>
             ))}
           </div>
@@ -191,11 +194,11 @@ export function GameverseCreatorGallery({
 
           <div className="gallery-local-drafts">
             <small>{copy.drafts}</small>
-            {drafts.length === 0 ? (
+            {visibleDrafts.length === 0 ? (
               <p>{copy.localDraftNote}</p>
             ) : (
               <ul>
-                {drafts.slice(0, 8).map(draft => (
+                {visibleDrafts.slice(0, 8).map(draft => (
                   <li key={draft.id}>
                     <strong>{draft.title}</strong>
                     <span>{assetTypeLabel(draft.type)}</span>
