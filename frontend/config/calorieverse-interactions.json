@@ -1,0 +1,93 @@
+{
+  "version": "0.1.0",
+  "status": "optional-local-first-world-interactions",
+  "principles": {
+    "optional": true,
+    "no_wallet_required": true,
+    "no_participation_required": true,
+    "no_pay_to_win": true,
+    "no_core_route_gate": true,
+    "local_progress_only": true,
+    "systems_overlap": true
+  },
+  "interactions": [
+    {
+      "id": "food-data-inspection",
+      "region_id": "food-data-grove",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "effect": "food-data-understood",
+      "supports": [
+        "farm-market-link",
+        "helpbot-context"
+      ]
+    },
+    {
+      "id": "farm-water-balance",
+      "region_id": "community-farm",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "effect": "farm-water-balanced",
+      "supports": [
+        "farm-market-link",
+        "nature-state"
+      ]
+    },
+    {
+      "id": "gallery-world-display",
+      "region_id": "creator-gallery",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "effect": "gallery-world-display-ready",
+      "supports": [
+        "creator-presence"
+      ]
+    },
+    {
+      "id": "helpbot-local-hint",
+      "region_id": "helpbot-garden",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "effect": "helpbot-context-learned",
+      "supports": [
+        "route-awareness"
+      ]
+    }
+  ],
+  "derived_effects": [
+    {
+      "id": "farm-market-link",
+      "requires": [
+        "food-data-inspection",
+        "farm-water-balance"
+      ],
+      "description": "A small produce stand appears between food data and the community farm."
+    },
+    {
+      "id": "creator-beacon",
+      "requires": [
+        "gallery-world-display"
+      ],
+      "description": "A creator beacon appears near the Gallery district."
+    },
+    {
+      "id": "route-whisper",
+      "requires": [
+        "helpbot-local-hint"
+      ],
+      "description": "Subtle route guidance becomes available without forcing a quest order."
+    }
+  ]
+}
