@@ -44,16 +44,33 @@ function render() {
   $("rewardToggle").checked = state.rewards;
   $("storageLimit").value = state.storageLimitMb;
   $("computeLimit").value = state.computeLimitPercent;
+  $("bandwidthLimit").value = state.monthlyBandwidthLimitMb;
+  $("wifiOnly").checked = state.wifiOnly;
+  $("allowBattery").checked = state.allowBattery;
+  $("idleComputeOnly").checked = state.idleComputeOnly;
+  $("autoStart").checked = state.autoStart;
+  $("allowStorageTasks").checked = state.allowStorageTasks;
+  $("allowComputeTasks").checked = state.allowComputeTasks;
   $("storageValue").textContent =
     state.storageLimitMb >= 1000 ? (state.storageLimitMb / 1000).toFixed(1) + " GB" : state.storageLimitMb + " MB";
   $("computeValue").textContent = state.computeLimitPercent + "%";
+  $("bandwidthValue").textContent =
+    state.monthlyBandwidthLimitMb >= 1000
+      ? (state.monthlyBandwidthLimitMb / 1000).toFixed(1) + " GB"
+      : state.monthlyBandwidthLimitMb + " MB";
+  $("advancedModeSummary").textContent = [
+    state.autoStart ? "Auto-start allowed" : "Manual start",
+    state.wifiOnly ? "Wi-Fi only" : "Any network",
+    state.allowBattery ? "Battery allowed" : "Plugged-in preferred",
+    state.idleComputeOnly ? "Idle compute" : "Compute when active",
+  ].join(" · ");
 
-  $("storageStartBtn").disabled = !state.storage || state.storageState !== "off";
+  $("storageStartBtn").disabled = !state.storage || !state.allowStorageTasks || state.storageState !== "off";
   $("storagePauseBtn").disabled = state.storageState !== "running";
   $("storageResumeBtn").disabled = state.storageState !== "paused";
   $("storageStopBtn").disabled = !storageActive;
 
-  $("startBtn").disabled = !state.compute || state.processState !== "off";
+  $("startBtn").disabled = !state.compute || !state.allowComputeTasks || state.processState !== "off";
   $("pauseBtn").disabled = state.processState !== "running";
   $("resumeBtn").disabled = state.processState !== "paused";
   $("stopBtn").disabled = !computeActive;
@@ -99,6 +116,10 @@ function act(action, successMessage, shouldRecord = true) {
       message("Turn on compute contribution first — it never starts automatically.");
     } else if (error.message === "storage-not-enabled") {
       message("Turn on storage contribution first — it never starts automatically.");
+    } else if (error.message === "storage-task-class-disabled") {
+      message("Enable the storage task class in Advanced limits before starting storage.");
+    } else if (error.message === "compute-task-class-disabled") {
+      message("Enable the compute task class in Advanced limits before starting compute.");
     } else {
       message("That action is not available in the current state.");
     }
@@ -144,6 +165,36 @@ $("storageReleaseMode").onchange = e => {
 };
 $("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value }, null, false);
 $("computeLimit").onchange = e => record("Compute limit changed to " + e.target.value + "%.");
+
+$("bandwidthLimit").oninput = e => act({ type: "SET_BANDWIDTH_LIMIT", value: e.target.value }, null, false);
+$("bandwidthLimit").onchange = e => record("Monthly transfer cap changed to " + e.target.value + " MB.");
+
+$("wifiOnly").onchange = e => act(
+  { type: "SET_WIFI_ONLY", value: e.target.checked },
+  e.target.checked ? "Participation limited to Wi-Fi." : "Wi-Fi-only limit disabled."
+);
+$("allowBattery").onchange = e => act(
+  { type: "SET_ALLOW_BATTERY", value: e.target.checked },
+  e.target.checked ? "Battery-powered participation allowed." : "Battery-powered participation disabled."
+);
+$("idleComputeOnly").onchange = e => act(
+  { type: "SET_IDLE_COMPUTE_ONLY", value: e.target.checked },
+  e.target.checked ? "Compute limited to idle-device periods." : "Idle-only compute limit disabled."
+);
+$("autoStart").onchange = e => act(
+  { type: "SET_AUTO_START", value: e.target.checked },
+  e.target.checked
+    ? "Auto-start preference enabled for a future node runtime; this prototype still starts nothing in the background."
+    : "Manual start remains required."
+);
+$("allowStorageTasks").onchange = e => act(
+  { type: "SET_STORAGE_TASK_CLASS", value: e.target.checked },
+  e.target.checked ? "Storage task class allowed." : "Storage task class blocked."
+);
+$("allowComputeTasks").onchange = e => act(
+  { type: "SET_COMPUTE_TASK_CLASS", value: e.target.checked },
+  e.target.checked ? "Compute task class allowed." : "Compute task class blocked."
+);
 
 $("storageStartBtn").onclick = () => act({ type: "START_STORAGE" }, "Storage participation started within your selected limit.");
 $("storagePauseBtn").onclick = () => act({ type: "PAUSE_STORAGE" }, "Storage paused. Compute keeps its own separate setting.");
