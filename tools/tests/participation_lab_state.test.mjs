@@ -148,3 +148,21 @@ test("community capacity preview is always labelled synthetic and preserves host
   assert.equal(strong.level, "Strong community");
   assert.equal(strong.hostedCoreActive, true);
 });
+
+test("storage stop data handling is explicit and defaults to keeping local copies", () => {
+  let state = createParticipationState({ storage: true });
+  assert.equal(state.storageReleaseMode, "keep-local");
+  state = transition(state, { type: "SET_STORAGE_RELEASE_MODE", value: "handoff-then-delete" });
+  assert.equal(state.storageReleaseMode, "handoff-then-delete");
+  state = transition(state, { type: "START_STORAGE" });
+  state = transition(state, { type: "STOP_STORAGE" });
+  assert.equal(state.storageState, "off");
+  assert.equal(state.storageReleaseMode, "handoff-then-delete");
+});
+
+test("invalid storage release modes fail closed", () => {
+  assert.throws(
+    () => transition(createParticipationState(), { type: "SET_STORAGE_RELEASE_MODE", value: "silent-delete" }),
+    /invalid-storage-release-mode/
+  );
+});
