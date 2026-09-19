@@ -230,6 +230,25 @@ decentralized coordination where justified`.
 This keeps the first deliverable achievable within a short timeframe while
 preserving a path to a substantially larger community-powered Calorie ecosystem.
 
+## Storage stop and data release choices
+
+Stopping storage participation means **no new storage work**. It does not silently
+delete already assigned local public/synthetic shards. The participant chooses
+what happens next:
+
+- **Keep existing local copies** — stop receiving new work but retain current
+  assigned copies locally.
+- **Safe handoff, then delete** — request release, verify that enough other copies
+  or the hosted fallback exist, then remove the participant's local copies.
+- **Delete my local copies now** — the participant may always remove their own
+  volunteer-node copies immediately. In the early architecture the hosted core
+  absorbs the availability loss when possible; the user is never forced to keep
+  data for network availability.
+
+These controls apply only to volunteer-node eligible data. They do not delete
+private CalorieApp logs, identity state, Gameverse progress or ordinary product
+data. Private/user data remains outside this volunteer storage plane.
+
 ## Participation principles for the UI and Gameverse
 
 Participation is never a prerequisite for using CalorieApp or the Gameverse.
