@@ -39,7 +39,11 @@
       "participation-lodge": "See voluntary storage and compute participation. Adult contribution controls stay opt-in.",
       "maze-gate": "A real route toward the still-hidden mountain area; no teleport shortcut is announced.",
       "misty-ridge": "A quiet approach above the maze. The mountains are closer, but their Calorie colours are still concealed by natural rock, cloud and mist."
-    }
+    },
+    "route": "Ecosystem route",
+    "routeProgress": "landmarks found",
+    "routeHint": "Choose your own order. Four ecosystem landmarks open the maze route.",
+    "routeReady": "Core landmarks found. The maze route is open."
   },
   "nl": {
     "title": "Calorie Gameverse",
@@ -81,7 +85,11 @@
       "participation-lodge": "Bekijk vrijwillige opslag- en compute-deelname. Volwassenen houden volledige opt-in controle.",
       "maze-gate": "Een echte route naar het nog verborgen berggebied; geen aangekondigde teleport-shortcut.",
       "misty-ridge": "Een rustige route boven het doolhof. De bergen zijn dichterbij, maar hun Calorie-kleuren blijven nog verborgen door natuurlijke rotsen, wolken en mist."
-    }
+    },
+    "route": "Ecosysteemroute",
+    "routeProgress": "herkenningspunten gevonden",
+    "routeHint": "Kies je eigen volgorde. Vier ecosysteemplekken openen de doolhofroute.",
+    "routeReady": "De kernplekken zijn gevonden. De doolhofroute is open."
   },
   "zh-Hans": {
     "title": "Calorie Gameverse",
@@ -113,7 +121,11 @@
       "maze-gate": "迷宫入口",
       "misty-ridge": "雾岭"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "生态路线",
+    "routeProgress": "已找到地标",
+    "routeHint": "按自己的顺序探索。四个生态地标会开启迷宫路线。",
+    "routeReady": "核心地标已找到。迷宫路线已开放。"
   },
   "hi": {
     "title": "Calorie Gameverse",
@@ -145,7 +157,11 @@
       "maze-gate": "भूलभुलैया द्वार",
       "misty-ridge": "धुंधली रिज"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "इकोसिस्टम मार्ग",
+    "routeProgress": "स्थलचिह्न मिले",
+    "routeHint": "अपना क्रम चुनें। चार इकोसिस्टम स्थलचिह्न भूलभुलैया मार्ग खोलते हैं।",
+    "routeReady": "मुख्य स्थलचिह्न मिल गए। भूलभुलैया मार्ग खुला है।"
   },
   "es": {
     "title": "Calorie Gameverse",
@@ -177,7 +193,11 @@
       "maze-gate": "Puerta del laberinto",
       "misty-ridge": "Cresta brumosa"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "Ruta del ecosistema",
+    "routeProgress": "lugares encontrados",
+    "routeHint": "Elige tu propio orden. Cuatro lugares del ecosistema abren la ruta del laberinto.",
+    "routeReady": "Se encontraron los lugares principales. La ruta del laberinto está abierta."
   },
   "ar": {
     "title": "Calorie Gameverse",
@@ -209,7 +229,11 @@
       "maze-gate": "بوابة المتاهة",
       "misty-ridge": "الحافة الضبابية"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "مسار المنظومة",
+    "routeProgress": "معالم تم العثور عليها",
+    "routeHint": "اختر ترتيبك بنفسك. أربعة معالم من المنظومة تفتح مسار المتاهة.",
+    "routeReady": "تم العثور على المعالم الأساسية. مسار المتاهة مفتوح."
   },
   "fr": {
     "title": "Calorie Gameverse",
@@ -241,7 +265,11 @@
       "maze-gate": "Porte du labyrinthe",
       "misty-ridge": "Crête brumeuse"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "Route de l’écosystème",
+    "routeProgress": "repères trouvés",
+    "routeHint": "Choisissez votre ordre. Quatre repères de l’écosystème ouvrent la route du labyrinthe.",
+    "routeReady": "Les repères principaux sont trouvés. La route du labyrinthe est ouverte."
   },
   "bn": {
     "title": "Calorie Gameverse",
@@ -273,7 +301,11 @@
       "maze-gate": "গোলকধাঁধা দ্বার",
       "misty-ridge": "কুয়াশাচ্ছন্ন রিজ"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "ইকোসিস্টেম পথ",
+    "routeProgress": "ল্যান্ডমার্ক পাওয়া গেছে",
+    "routeHint": "নিজের ক্রম বেছে নিন। চারটি ইকোসিস্টেম ল্যান্ডমার্ক গোলকধাঁধার পথ খুলবে।",
+    "routeReady": "মূল ল্যান্ডমার্ক পাওয়া গেছে। গোলকধাঁধার পথ খুলেছে।"
   },
   "pt": {
     "title": "Calorie Gameverse",
@@ -305,7 +337,11 @@
       "maze-gate": "Portão do labirinto",
       "misty-ridge": "Crista enevoada"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "Rota do ecossistema",
+    "routeProgress": "pontos encontrados",
+    "routeHint": "Escolha a sua ordem. Quatro pontos do ecossistema abrem a rota do labirinto.",
+    "routeReady": "Os pontos principais foram encontrados. A rota do labirinto está aberta."
   },
   "id": {
     "title": "Calorie Gameverse",
@@ -337,7 +373,11 @@
       "maze-gate": "Gerbang labirin",
       "misty-ridge": "Punggung bukit berkabut"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "Rute ekosistem",
+    "routeProgress": "landmark ditemukan",
+    "routeHint": "Pilih urutanmu sendiri. Empat landmark ekosistem membuka rute labirin.",
+    "routeReady": "Landmark utama ditemukan. Rute labirin terbuka."
   },
   "ur": {
     "title": "Calorie Gameverse",
@@ -369,6 +409,10 @@
       "maze-gate": "بھول بھلیاں دروازہ",
       "misty-ridge": "دھندلا پہاڑی کنارہ"
     },
-    "descriptions": {}
+    "descriptions": {},
+    "route": "ایکوسسٹم راستہ",
+    "routeProgress": "نشانات ملے",
+    "routeHint": "اپنی ترتیب خود چنیں۔ چار ایکوسسٹم مقامات بھول بھلیاں کا راستہ کھولتے ہیں۔",
+    "routeReady": "بنیادی نشانات مل گئے۔ بھول بھلیاں کا راستہ کھل گیا ہے۔"
   }
 }
