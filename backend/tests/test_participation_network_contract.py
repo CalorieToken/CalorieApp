@@ -11,9 +11,10 @@ def _contract() -> dict:
 
 def test_participation_network_is_disabled_and_provider_neutral() -> None:
     contract = _contract()
-    assert contract["status"] == "local-synthetic-simulator-disabled-by-default"
+    assert contract["status"] == "local-synthetic-storage-and-compute-simulators-disabled-by-default"
     assert contract["bigchaindb"]["selected"] is False
     assert contract["bigchaindb"]["protocol_provider_neutral"] is True
+    assert "not-a-secure-general-purpose-sandbox" in contract["trust"]["synthetic_compute_current_boundary"]
 
 
 def test_private_user_data_remains_in_protected_store() -> None:
