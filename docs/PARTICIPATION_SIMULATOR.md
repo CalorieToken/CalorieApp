@@ -183,6 +183,31 @@ Continue in small, verified steps, preserving the architecture decisions in
 `DECENTRALIZED_PARTICIPATION_ARCHITECTURE.md` and the campaign visual continuity
 requirements in `SHOWCASE_OPEN_WORLD_MASTERPLAN.md`.
 
+## Participation principles for the UI and Gameverse
+
+Participation is never a prerequisite for using CalorieApp or the Gameverse.
+A user may use the product with **zero contributed storage and zero contributed
+compute** and must not be blocked, degraded, or penalized for that choice.
+
+Storage and compute are independent opt-in choices:
+
+- **Storage contribution** is separately configurable and may be left enabled even
+  while compute is paused or stopped. It can also be reduced, paused, stopped, or
+  fully opted out at any time, subject to the simulator's safe handling rules.
+- **Compute/process contribution** has its own explicit lifecycle: Start, Pause,
+  Resume, Stop, and Exit participation. No process starts automatically merely
+  because the user opened CalorieApp or entered the Gameverse.
+- **Exit participation** means leaving the voluntary node program entirely without
+  losing normal access to CalorieApp or the Gameverse.
+- Reward opt-in is separate from both storage and compute. A participant can
+  contribute without rewards where policy allows, or use the app/game without
+  contributing anything.
+- Resource limits remain user-controlled and may be changed independently for
+  storage and compute.
+
+The UI should present these as optional contribution controls rather than as an
+onboarding requirement.
+
 The deterministic **synthetic** public-data compute task is now the second bounded
 implementation slice. The next step is a small participation-control UI prototype
 for storage, compute, reward opt-in, resource limits and an explicit lifecycle:
