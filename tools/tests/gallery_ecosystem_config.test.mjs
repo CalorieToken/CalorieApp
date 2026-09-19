@@ -5,10 +5,12 @@ import test from "node:test";
 const catalogUrl = new URL("../../frontend/config/gallery-assets.json", import.meta.url);
 const copyUrl = new URL("../../frontend/config/gallery-copy.json", import.meta.url);
 const worldUrl = new URL("../../frontend/config/gameverse-world.json", import.meta.url);
-const componentUrl = new URL("../../frontend/components/GameverseCreatorGallery.tsx", import.meta.url);
+const componentUrl = new URL("../../frontend/components/CalorieStudio.tsx", import.meta.url);
+const legacyComponentUrl = new URL("../../frontend/components/GameverseCreatorGallery.tsx", import.meta.url);
 const helperUrl = new URL("../../frontend/lib/galleryEcosystem.ts", import.meta.url);
 const gameverseUrl = new URL("../../frontend/components/GameverseWorld.tsx", import.meta.url);
-const routeUrl = new URL("../../frontend/app/gallery/page.tsx", import.meta.url);
+const routeUrl = new URL("../../frontend/app/studio/page.tsx", import.meta.url);
+const legacyRouteUrl = new URL("../../frontend/app/gallery/page.tsx", import.meta.url);
 
 async function json(url) {
   return JSON.parse(await readFile(url, "utf8"));
@@ -29,7 +31,8 @@ test("CalorieStudio is world-connected and non-pay-to-win", async () => {
 
   const galleryRegion = world.regions.find(region => region.id === "creator-gallery");
   assert.ok(galleryRegion);
-  assert.equal(galleryRegion.destination, "/gallery");
+  assert.equal(galleryRegion.destination, "/studio");
+  assert.equal(galleryRegion.legacy_destination, "/gallery");
 });
 
 test("CalorieStudio catalog covers planned modular creator families without real settlement", async () => {
@@ -83,13 +86,16 @@ test("CalorieStudio keeps creation local and explicitly avoids upload mint sale 
   assert.doesNotMatch(source, /mintNFT|submitOffer|walletSign|uploadToProvider/);
 });
 
-test("CalorieVerse embeds CalorieStudio and its compatibility route returns to the world", async () => {
-  const [worldSource, routeSource] = await Promise.all([
+test("CalorieVerse embeds CalorieStudio and legacy Gallery names remain compatibility-only", async () => {
+  const [worldSource, routeSource, legacyRoute, legacyComponent] = await Promise.all([
     readFile(gameverseUrl, "utf8"),
     readFile(routeUrl, "utf8"),
+    readFile(legacyRouteUrl, "utf8"),
+    readFile(legacyComponentUrl, "utf8"),
   ]);
-  assert.match(worldSource, /GameverseCreatorGallery/);
+  assert.match(worldSource, /CalorieStudio/);
   assert.match(worldSource, /selected\?\.kind === "gallery"/);
-  assert.match(routeSource, /GameverseCreatorGallery/);
-  assert.match(routeSource, /href="\/gameverse"/);
+  assert.match(routeSource, /CalorieStudioPage/);
+  assert.match(legacyRoute, /CalorieStudioPage/);
+  assert.match(legacyComponent, /CalorieStudio as GameverseCreatorGallery/);
 });
