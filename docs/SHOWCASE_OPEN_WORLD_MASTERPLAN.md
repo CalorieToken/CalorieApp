@@ -220,6 +220,26 @@ Cost architecture:
 
 The multiplayer goal is a shared-world feeling, not a massive MMO on day one. A player should be able to see that other real people are exploring, cooperate on selected tasks, meet others through safe preset interactions and contribute to common world goals while the infrastructure remains comfortably inside the project's cost ceiling.
 
+
+## Creator economy / NFT Testnet sandbox
+
+The open world should support an extendable creator economy in which eligible players can create, earn, buy, sell, trade or licence Calorie-related digital game assets such as recipes, menu concepts, photos, GIFs, Blender/3D characters, avatar items, food art, F&B objects and digital farm/livestock characters.
+
+The first blockchain-enabled game economy is Testnet-only. Its test currency ticker is **CALT**. Treat CALT as a clearly marked XRPL Testnet currency with no real-world, redeemable or guaranteed future value. Do not use CALT as shorthand for Mainnet CAL and do not imply a conversion rate between them.
+
+A digital asset such as an NFT cow may be transferred between eligible F&B roles (for example farmer to another farmer or an adult processor/butcher simulation), but it is a digital/simulated object by default, not legal ownership of a real animal, meat, revenue or future cashflow.
+
+Age boundary:
+- child: game-native non-transferable collectibles/creator items only; no NFT trading or CALT;
+- teen: creator tools, galleries and simulated economy concepts; no investment framing;
+- adult: optional XRPL Testnet NFT/CALT sandbox behind explicit Testnet flags.
+
+All creator/marketplace functionality must respect cultural and dietary differences. Animal-related branches are optional and non-graphic; plant-based, vegetarian, vegan and other F&B routes receive equally complete gameplay. The system must not infer culture, religion or diet from identity.
+
+Creation must be modular: recipes, menus, photographs, GIFs, 3D/Blender assets, characters, farm objects, restaurant objects, educational media, provenance/story media and future Calorie-related formats all use one versioned asset/marketplace model.
+
+Historical CalorieApp Testnet NFT/token code is reference material only; do not revive the old hardcoded CalorieTest screen. The new game economy should use adapters so CALT Testnet payments/offers, Testnet NFTs and a local/off-chain simulation can be swapped without rewriting game logic.
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
