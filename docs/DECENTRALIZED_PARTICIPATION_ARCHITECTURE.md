@@ -39,6 +39,40 @@ The best early candidates are public, content-addressable or reproducible data:
 
 The network distributes copies/evidence, not authority over private users.
 
+## One link, zero-install participation
+
+The same Gameverse link is the primary entry for everyone: people who only want
+to play/use the ecosystem, people who later opt into a browser node, and people
+who opt into a verification/validator role. There is no separate mandatory node
+download, desktop daemon, browser extension or native client.
+
+Opening the link always starts in **non-participant mode**. A browser session only
+becomes a participant after explicit consent inside the product.
+
+When a participant opts in, storage and compute permissions stay separate:
+
+- **Storage** can be session-temporary or, where the browser supports it,
+  requested as persistent browser-managed site storage until the participant
+  revokes it. Persistent storage is still subject to browser/OS quota and eviction
+  rules; it is not arbitrary filesystem access.
+- **Compute** can be allowed for the current session or the preference can be
+  remembered until revoked. The browser executes bounded Web Worker/WASM tasks
+  only while the browser/OS permits execution. This is not raw operating-system
+  CPU access and it does not imply guaranteed background execution after the tab
+  or browser is suspended.
+- **Validator/verification** is an explicit browser role using the same zero-install
+  runtime and the same resource controls. It is an alias of the bounded
+  verification-helper role, not a privileged trusted node.
+
+Because normal browsers may suspend background tabs or reclaim storage, the
+network treats browser nodes and validators as opportunistic capacity. The
+hosted core remains healthy at zero participants and absorbs work when volunteer
+browser capacity disappears.
+
+A PWA install may exist later as an optional convenience only. It must never be
+required to enter the Gameverse, use CalorieApp, become a browser participant, or
+act as a browser validator.
+
 ## Voluntary participant node
 
 A participant can opt into one or more bounded roles:
@@ -193,7 +227,7 @@ No automatic paid infrastructure upgrade or phase promotion.
 
 `calorietoken.net` remains the official CalorieToken product/brand portal and may act as:
 - bootstrap directory for public participation contracts;
-- node/download onboarding;
+- the single Gameverse launch entry plus in-world optional participation/validator controls;
 - network health/status UI;
 - documentation and governance notices;
 - official game/CalorieApp launch surface;
