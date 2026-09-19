@@ -21,7 +21,14 @@
   },
   "progression": {
     "maze_unlock_after_unique_regions": 4,
-    "mountain_reveal_after_maze": false
+    "mountain_reveal_after_maze": false,
+    "maze_required_regions": [
+      "calorieapp-harbor",
+      "food-data-grove",
+      "community-farm",
+      "creator-gallery"
+    ],
+    "design_mode": "free-order-core-landmarks"
   },
   "regions": [
     {
