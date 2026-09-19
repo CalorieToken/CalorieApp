@@ -9,6 +9,36 @@ Create a highly replayable, modular CalorieToken Showcase open world that combin
 
 The experience must feel like a real game world rather than a static showcase page, but remain lightweight enough that most movement, scenery, animation and exploration happen client-side. Render/Postgres should primarily handle identity, progress, quests, unlocks, data-backed events and future monetization entitlements.
 
+
+## Eleven-language launch requirement
+
+The first playable release must support the same fixed eleven display languages already used by CalorieApp and the WordPress display-language protocol. Do not create a separate game language system.
+
+Launch locales:
+- English (`en`)
+- Mandarin Chinese, Simplified (`zh-Hans`)
+- Hindi (`hi`)
+- Spanish (`es`)
+- Modern Standard Arabic (`ar`, RTL)
+- French (`fr`)
+- Bengali (`bn`)
+- Portuguese (`pt`)
+- Indonesian (`id`)
+- Urdu (`ur`, RTL)
+- Dutch (`nl`)
+
+Rules:
+- Reuse `frontend/config/locales.json` as the canonical locale registry.
+- Reuse the existing `DisplayLanguageProvider` / display-language protocol instead of introducing a second selector or preference store.
+- When the game is embedded on calorietoken.net, WordPress is the display-language host and the game must follow the same selected language as the site and CalorieApp.
+- When the game is opened directly, the existing CalorieApp language picker and preference logic apply.
+- A language change must update game UI, quests, Helpbot copy, world labels, onboarding, age-mode copy, F&B role text, navigation and accessibility text without resetting progress or reloading identity state.
+- Arabic and Urdu must support RTL layout and bidi-safe rendering of identifiers and brand/source names.
+- User-entered text, product names, brands, barcodes, wallet/account identifiers and external source values are not automatically translated.
+- Translation state must not alter authentication locale, consent, payment, account identity or stored food-log values.
+- Game content packs must require complete eleven-locale copy coverage or explicitly fall back to English with a visible fallback state.
+- The WordPress site, CalorieApp and Showcase game should therefore feel like one multilingual ecosystem rather than three separate products.
+
 ## Non-negotiable world structure
 
 1. The player starts in a large open world with many explorable places, moving characters, nature, water, villages, markets, farms, cities, F&B businesses, CalorieApp activity, Helpbot guidance and global cultural variety.
