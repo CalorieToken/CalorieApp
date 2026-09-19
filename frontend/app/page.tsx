@@ -1,6 +1,6 @@
 import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
 import { AppIntroduction, AppSourceFooter } from "@/components/AppIntroduction";
-import { CalorieAppWorkspace } from "@/components/CalorieAppWorkspace";
+import { CalorieAppWorkspace } from "@/components/CalorieAppWorkspace";\nimport { GameversePortalLink } from "@/components/GameversePortalLink";
 
 export default function Home() {
   return (
