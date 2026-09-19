@@ -26,7 +26,8 @@
       "community-farm": "Community Farm",
       "creator-gallery": "Creator Gallery",
       "participation-lodge": "Participation Lodge",
-      "maze-gate": "Maze Gate"
+      "maze-gate": "Maze Gate",
+      "misty-ridge": "Misty Ridge"
     },
     "descriptions": {
       "welcome-meadow": "Your original starting place: food, nature and community before technology.",
@@ -36,7 +37,8 @@
       "community-farm": "Real food, farms, water, biodiversity and community projects stay central.",
       "creator-gallery": "Recipes, art, food media, 3D objects and future creator work live here without pay-to-win.",
       "participation-lodge": "See voluntary storage and compute participation. Adult contribution controls stay opt-in.",
-      "maze-gate": "A real route toward the still-hidden mountain area; no teleport shortcut is announced."
+      "maze-gate": "A real route toward the still-hidden mountain area; no teleport shortcut is announced.",
+      "misty-ridge": "A quiet approach above the maze. The mountains are closer, but their Calorie colours are still concealed by natural rock, cloud and mist."
     }
   },
   "nl": {
@@ -66,7 +68,8 @@
       "community-farm": "Community-boerderij",
       "creator-gallery": "Creator Gallery",
       "participation-lodge": "Participatiehuis",
-      "maze-gate": "Doolhofpoort"
+      "maze-gate": "Doolhofpoort",
+      "misty-ridge": "Mistige kam"
     },
     "descriptions": {
       "welcome-meadow": "Je oorspronkelijke startplek: eten, natuur en gemeenschap vóór technologie.",
@@ -76,7 +79,8 @@
       "community-farm": "Echt eten, boerderijen, water, biodiversiteit en communityprojecten blijven centraal.",
       "creator-gallery": "Recepten, kunst, foodmedia, 3D-objecten en toekomstig creatorwerk zonder pay-to-win.",
       "participation-lodge": "Bekijk vrijwillige opslag- en compute-deelname. Volwassenen houden volledige opt-in controle.",
-      "maze-gate": "Een echte route naar het nog verborgen berggebied; geen aangekondigde teleport-shortcut."
+      "maze-gate": "Een echte route naar het nog verborgen berggebied; geen aangekondigde teleport-shortcut.",
+      "misty-ridge": "Een rustige route boven het doolhof. De bergen zijn dichterbij, maar hun Calorie-kleuren blijven nog verborgen door natuurlijke rotsen, wolken en mist."
     }
   },
   "zh-Hans": {
@@ -106,7 +110,8 @@
       "community-farm": "社区农场",
       "creator-gallery": "创作者画廊",
       "participation-lodge": "参与小屋",
-      "maze-gate": "迷宫入口"
+      "maze-gate": "迷宫入口",
+      "misty-ridge": "雾岭"
     },
     "descriptions": {}
   },
@@ -137,7 +142,8 @@
       "community-farm": "कम्युनिटी फार्म",
       "creator-gallery": "क्रिएटर गैलरी",
       "participation-lodge": "पार्टिसिपेशन लॉज",
-      "maze-gate": "भूलभुलैया द्वार"
+      "maze-gate": "भूलभुलैया द्वार",
+      "misty-ridge": "धुंधली रिज"
     },
     "descriptions": {}
   },
@@ -168,7 +174,8 @@
       "community-farm": "Granja comunitaria",
       "creator-gallery": "Galería de creadores",
       "participation-lodge": "Refugio de participación",
-      "maze-gate": "Puerta del laberinto"
+      "maze-gate": "Puerta del laberinto",
+      "misty-ridge": "Cresta brumosa"
     },
     "descriptions": {}
   },
@@ -199,7 +206,8 @@
       "community-farm": "مزرعة المجتمع",
       "creator-gallery": "معرض المبدعين",
       "participation-lodge": "نُزل المشاركة",
-      "maze-gate": "بوابة المتاهة"
+      "maze-gate": "بوابة المتاهة",
+      "misty-ridge": "الحافة الضبابية"
     },
     "descriptions": {}
   },
@@ -230,7 +238,8 @@
       "community-farm": "Ferme communautaire",
       "creator-gallery": "Galerie des créateurs",
       "participation-lodge": "Pavillon de participation",
-      "maze-gate": "Porte du labyrinthe"
+      "maze-gate": "Porte du labyrinthe",
+      "misty-ridge": "Crête brumeuse"
     },
     "descriptions": {}
   },
@@ -261,7 +270,8 @@
       "community-farm": "কমিউনিটি ফার্ম",
       "creator-gallery": "ক্রিয়েটর গ্যালারি",
       "participation-lodge": "পার্টিসিপেশন লজ",
-      "maze-gate": "গোলকধাঁধা দ্বার"
+      "maze-gate": "গোলকধাঁধা দ্বার",
+      "misty-ridge": "কুয়াশাচ্ছন্ন রিজ"
     },
     "descriptions": {}
   },
@@ -292,7 +302,8 @@
       "community-farm": "Fazenda comunitária",
       "creator-gallery": "Galeria de criadores",
       "participation-lodge": "Pavilhão de participação",
-      "maze-gate": "Portão do labirinto"
+      "maze-gate": "Portão do labirinto",
+      "misty-ridge": "Crista enevoada"
     },
     "descriptions": {}
   },
@@ -323,7 +334,8 @@
       "community-farm": "Ladang komunitas",
       "creator-gallery": "Galeri kreator",
       "participation-lodge": "Pondok partisipasi",
-      "maze-gate": "Gerbang labirin"
+      "maze-gate": "Gerbang labirin",
+      "misty-ridge": "Punggung bukit berkabut"
     },
     "descriptions": {}
   },
@@ -354,7 +366,8 @@
       "community-farm": "کمیونٹی فارم",
       "creator-gallery": "کریئیٹر گیلری",
       "participation-lodge": "پارٹیسپیشن لاج",
-      "maze-gate": "بھول بھلیاں دروازہ"
+      "maze-gate": "بھول بھلیاں دروازہ",
+      "misty-ridge": "دھندلا پہاڑی کنارہ"
     },
     "descriptions": {}
   }
