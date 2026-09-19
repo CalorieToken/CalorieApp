@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
+import { CalorieStudio } from "@/components/CalorieStudio";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 import { CalorieVerseInteractionCard } from "@/components/CalorieVerseInteractionCard";
@@ -377,7 +377,7 @@ export function GameverseWorld() {
               ) : null}
 
               {selected?.kind === "gallery" ? (
-                <GameverseCreatorGallery ageBand={ageBand} compact />
+                <CalorieStudio ageBand={ageBand} compact />
               ) : null}
 
               {selected?.kind === "participation" && ageBand === "adult" ? (
