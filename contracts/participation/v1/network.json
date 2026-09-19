@@ -1,0 +1,115 @@
+{
+  "contract_id": "calorietoken.participation-network",
+  "contract_version": "0.1.0",
+  "status": "architecture-only-disabled-by-default",
+  "official_product_boundary": {
+    "wordpress_official_portal": true,
+    "calorieapp_official_client": true,
+    "protocol_requires_wordpress_online": false,
+    "third_party_compatible_clients_allowed": true,
+    "official_brand_control_remains_with_calorietoken": true
+  },
+  "primary_storage": {
+    "private_user_data": "postgresql",
+    "public_catalog_initial": "postgresql",
+    "forced_private_data_decentralization": false
+  },
+  "decentralizable_data_classes": [
+    "licensed-public-food-source-records",
+    "reviewed-public-food-attribute-assertions",
+    "public-provenance-events",
+    "public-nft-and-game-cids",
+    "open-contracts-and-schemas",
+    "public-content-and-translation-packs",
+    "deterministic-public-indexes"
+  ],
+  "forbidden_participant_inputs": [
+    "session-secrets",
+    "private-keys",
+    "oauth-tokens",
+    "api-keys",
+    "raw-private-food-history",
+    "private-identity-records",
+    "unpublished-private-creator-files"
+  ],
+  "participant_roles": [
+    "storage-helper",
+    "verification-helper",
+    "compute-helper",
+    "mirror-index-helper"
+  ],
+  "consent": {
+    "opt_in_required": true,
+    "reversible": true,
+    "one_click_pause_required": true,
+    "user_selected_storage_limit": true,
+    "user_selected_bandwidth_limit": true,
+    "user_selected_cpu_limit": true,
+    "wifi_only_option_required": true,
+    "automatic_silent_participation_forbidden": true
+  },
+  "trust": {
+    "participant_nodes_untrusted_by_default": true,
+    "content_addressed_inputs_preferred": true,
+    "bounded_sandbox_required_for_compute": true,
+    "secrets_sent_to_nodes": false,
+    "deterministic_verification_required": true,
+    "redundant_result_verification_supported": true
+  },
+  "rewards": {
+    "asset": "CALT",
+    "network": "xrpl-testnet",
+    "adult_testnet_only": true,
+    "enabled": false,
+    "offchain_simulation_first": true,
+    "capped": true,
+    "raw_uptime_reward_forbidden": true,
+    "private_data_volume_reward_forbidden": true,
+    "verified_useful_work_required": true
+  },
+  "rollout": [
+    {
+      "phase": 0,
+      "name": "postgresql-primary",
+      "public_source_of_record": "postgresql"
+    },
+    {
+      "phase": 1,
+      "name": "participant-public-replicas",
+      "public_source_of_record": "postgresql"
+    },
+    {
+      "phase": 2,
+      "name": "participant-verification-compute",
+      "public_source_of_record": "postgresql"
+    },
+    {
+      "phase": 3,
+      "name": "federated-public-mirrors",
+      "public_source_of_record": "postgresql-plus-signed-mirrors"
+    },
+    {
+      "phase": 4,
+      "name": "distributed-public-source-of-record",
+      "public_source_of_record": "signed-content-protocol"
+    },
+    {
+      "phase": 5,
+      "name": "mature-participation-network",
+      "public_source_of_record": "distributed-protocol"
+    }
+  ],
+  "promotion": {
+    "automatic": false,
+    "independent_operator_count_required": true,
+    "replica_diversity_required": true,
+    "reconstruction_drill_required": true,
+    "abuse_sybil_review_required": true,
+    "private_rights_must_remain_exportable_correctable_erasable": true
+  },
+  "bigchaindb": {
+    "selected": false,
+    "may_be_reassessed_later": true,
+    "protocol_provider_neutral": true
+  }
+}
