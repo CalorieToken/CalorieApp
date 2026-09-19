@@ -1,0 +1,61 @@
+{
+  "$schema": "./showcase-economy.schema.json",
+  "contract_id": "calorietoken.showcase-economy",
+  "version": "0.1.0",
+  "environment": "xrpl-testnet",
+  "ticker": "CALT",
+  "display_name": "Calorie Test",
+  "real_world_value": false,
+  "redeemable": false,
+  "mainnet_enabled": false,
+  "mainnet_cal_conversion_defined": false,
+  "welcome_airdrop": {
+    "enabled": false,
+    "feature_flag": "showcase_calt_airdrop",
+    "distribution_model": "staged-global-welcome-period",
+    "claim_start": null,
+    "claim_end": null,
+    "cadence": null,
+    "amount_policy": null,
+    "xrpl_issuer": null,
+    "xrpl_currency_code": null,
+    "identity_scope": "one-canonical-entitlement-per-game-identity",
+    "scene_scope": "all-world-scenes",
+    "culture_policy": "same-underlying-eligibility-and-value-across-cultures-and-regions",
+    "duplicate_claim_prevention": [
+      "scene-change",
+      "language-change",
+      "reload",
+      "world-teleport",
+      "repeat-onboarding"
+    ],
+    "age_modes": {
+      "child": "non-financial-welcome-collectible-only",
+      "teen": "non-value-learning-simulation",
+      "adult": "optional-xrpl-testnet-calt-claim"
+    },
+    "requires_explicit_wallet_authorization": true,
+    "requires_validated_ledger_result": true,
+    "jurisdiction_gate_required": true
+  },
+  "marketplace": {
+    "enabled": false,
+    "testnet_only": true,
+    "supported_asset_families": [
+      "recipe",
+      "menu",
+      "food-photo",
+      "gif",
+      "3d-model",
+      "blender-character",
+      "avatar-item",
+      "farm-object",
+      "digital-livestock-character",
+      "restaurant-object",
+      "educational-media",
+      "provenance-story-media",
+      "community-art",
+      "future-calorie-related-asset"
+    ]
+  }
+}
