@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { GameverseWorld } from "@/components/GameverseWorld";
 
 export const metadata: Metadata = {
-  title: "Calorie Gameverse",
-  description: "A first playable Calorie ecosystem world.",
+  title: "CalorieVerse",
+  description: "The living metaverse of the Calorie ecosystem.",
 };
 
 export default function GameversePage() {
