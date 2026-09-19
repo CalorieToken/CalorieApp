@@ -44,9 +44,9 @@ The shared umbrella is the **Calorie Ecosystem**.
 - **CalorieStudio** is a creator surface inside CalorieVerse and can also be
   opened directly, but it is not a separate competing ecosystem.
 
-The existing internal terms `Gameverse` and `Creator Gallery`, routes `/gameverse`
-and `/gallery`, file names and stable IDs may remain where changing them would
-add migration risk. Public-facing copy should use **CalorieVerse** and
+The existing internal terms `Gameverse` and `Creator Gallery`, routes `/gameverse` and legacy `/gallery`, file names and stable IDs may remain
+where changing them would add migration risk. The canonical direct creator route
+is `/studio`. Public-facing copy should use **CalorieVerse** and
 **CalorieStudio**.
 
 This gives one clear hierarchy:
