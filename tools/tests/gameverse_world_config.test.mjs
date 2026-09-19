@@ -55,7 +55,8 @@ test("public product family is Calorie Ecosystem with CalorieApp and CalorieVers
   assert.equal(world.product_family.app, "CalorieApp");
   assert.equal(world.product_family.metaverse, "CalorieVerse");
   assert.equal(world.product_family.creator_surface, "CalorieStudio");
-  assert.equal(world.product_family.creator_surface_route, "/gallery");
+  assert.equal(world.product_family.creator_surface_route, "/studio");
+  assert.equal(world.product_family.creator_surface_legacy_route, "/gallery");
   assert.equal(world.product_family.creator_surface_internal_legacy_term, "Creator Gallery");
   assert.equal(world.principles.metaverse_and_app_share_same_ecosystem, true);
   assert.equal(world.principles.creator_gallery_is_native_ecosystem_surface, true);
