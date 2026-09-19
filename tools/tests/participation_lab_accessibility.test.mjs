@@ -12,7 +12,7 @@ test("participation prototype keeps essential controls keyboard and screen-reade
     assert.match(html, new RegExp(`id="${id}"[^>]*aria-label="[^"]+"`));
   }
   assert.match(html, /<label for="storageLimit">/);
-  assert.match(html, /<label for="computeLimit">/);
+  assert.match(html, /<label for="computeLimit">/);\n  assert.match(html, /<label for="storageReleaseMode">/);
   assert.match(html, /id="message"[^>]*role="status"[^>]*aria-live="polite"/);
   assert.match(html, /id="activityList"[^>]*aria-live="polite"/);
   assert.match(html, /id="growthMeter"[^>]*role="progressbar"/);
