@@ -47,6 +47,17 @@ function render() {
   const community = communityCapacityPreview(syntheticCommunityNodes);
   $("communityLevel").textContent = community.level;
   $("communityDescription").textContent = community.description;
+  const stage =
+    syntheticCommunityNodes >= 1000 ? "strong" :
+    syntheticCommunityNodes >= 100 ? "growing" :
+    syntheticCommunityNodes >= 1 ? "early" : "hosted";
+  const stageWidth = { hosted: 0, early: 22, growing: 62, strong: 100 }[stage];
+  $("growthFill").style.width = stageWidth + "%";
+  document.querySelectorAll("#growthSteps span[data-stage]").forEach(item => {
+    const order = { hosted: 0, early: 1, growing: 2, strong: 3 };
+    item.classList.toggle("active", item.dataset.stage === stage);
+    item.classList.toggle("past", order[item.dataset.stage] < order[stage]);
+  });
 
   const summary = contributionSummary(state);
   $("storageSummary").textContent = summary.storageLabel;
