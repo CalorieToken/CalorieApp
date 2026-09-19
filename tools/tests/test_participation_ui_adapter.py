@@ -5,6 +5,7 @@ from tools.participation_ui_adapter import (
     ParticipationSelection,
     ParticipationSession,
     demo_matrix,
+    full_lifecycle_demo,
 )
 from tools.participation_simulator import SimulationError
 
@@ -323,6 +324,39 @@ class ParticipationUiAdapterTests(unittest.TestCase):
         ):
             with self.assertRaises(SimulationError):
                 self.session.apply(selection)
+
+    def test_full_lifecycle_keeps_control_and_product_access(self):
+        result = full_lifecycle_demo()
+        self.assertFalse(result["real_network_enabled"])
+        self.assertFalse(result["real_token_settlement"])
+
+        by_step = {item["step"]: item for item in result["events"]}
+        zero = by_step["zero-participation"]["snapshot"]
+        self.assertTrue(zero["hosted_core_active"])
+        self.assertTrue(zero["normal_app_access"])
+        self.assertTrue(zero["normal_gameverse_access"])
+
+        opted = by_step["opt-in-no-auto-start"]["snapshot"]["selection"]
+        self.assertTrue(opted["storage"])
+        self.assertTrue(opted["compute"])
+        self.assertEqual(opted["storage_state"], "off")
+        self.assertEqual(opted["process_state"], "off")
+
+        paused = by_step["compute-paused-storage-continues"]
+        self.assertTrue(paused["storage_probe"]["verified"])
+        self.assertEqual(paused["compute_probe"]["status"], "compute-paused")
+
+        stopped = by_step["storage-stopped-safe-handoff"]
+        release = stopped["snapshot"]["storage_release_results"][0]
+        self.assertTrue(release["safe_handoff_verified"])
+        self.assertFalse(release["local_copy_after"])
+        self.assertTrue(stopped["compute_probe"]["verified"])
+
+        exited = by_step["exit"]["snapshot"]
+        self.assertFalse(exited["selection"]["storage"])
+        self.assertFalse(exited["selection"]["compute"])
+        self.assertTrue(exited["normal_app_access"])
+        self.assertTrue(exited["normal_gameverse_access"])
 
     def test_demo_matrix_covers_expected_paths(self):
         results = demo_matrix()
