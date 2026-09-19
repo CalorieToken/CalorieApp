@@ -11,14 +11,16 @@ const localeRegistry = JSON.parse(await readFile(new URL("../../frontend/config/
 const usdaReference = JSON.parse(await readFile(new URL("../../frontend/data/usda-reference-foods.json", import.meta.url), "utf8"));
 const usdaCopy = JSON.parse(await readFile(new URL("../../frontend/config/usda-reference-copy.json", import.meta.url), "utf8"));
 const foodUiCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-ui-copy.json", import.meta.url), "utf8"));
-async function loadLibrary(name, imports) {
+const foodSourceCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-source-copy.json", import.meta.url), "utf8"));
+const appEntryCopy = JSON.parse(await readFile(new URL("../../frontend/config/app-entry-copy.json", import.meta.url), "utf8"));
+async function loadLibrary(name, imports, globals = {}) {
   const source = await readFile(new URL(`../../frontend/lib/${name}.ts`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
   }).outputText;
   const module = { exports: {} };
   vm.runInNewContext(compiled, {
-    module, exports: module.exports,
+    module, exports: module.exports, ...globals,
     require(specifier) {
       if (Object.hasOwn(imports, specifier)) return imports[specifier];
       throw new Error(`Unexpected filter import: ${specifier}`);
@@ -27,6 +29,14 @@ async function loadLibrary(name, imports) {
   return module.exports;
 }
 const locales = await loadLibrary("locales", { "@/config/locales.json": { default: localeRegistry } });
+const foodSource = await loadLibrary("foodSource", {
+  "@/config/food-source-copy.json": { default: foodSourceCopy }, "@/lib/locales": locales,
+}, {URL});
+const discoveryTranslations = JSON.parse(await readFile(new URL("../../frontend/config/food-discovery-copy.json", import.meta.url), "utf8"));
+const discoveryCatalogue = JSON.parse(await readFile(new URL("../../frontend/public/data/usda-search-foods.json", import.meta.url), "utf8"));
+const discovery = await loadLibrary("foodDiscovery", {
+  "@/config/food-discovery-copy.json": { default: discoveryTranslations }, "@/lib/locales": locales,
+});
 const foodLogFilter = await loadLibrary("foodLogFilter", {
   "@/config/food-log-filter-copy.json": { default: filterCopy },
   "@/lib/locales": locales,
@@ -35,7 +45,25 @@ const foodUi = await loadLibrary("foodUi", {
   "@/config/food-ui-copy.json": { default: foodUiCopy },
   "@/lib/locales": locales,
 });
+const experienceCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-experience-copy.json", import.meta.url), "utf8"));
+const experience = await loadLibrary("foodExperience", {
+  "@/config/food-experience-copy.json": { default: experienceCopy }, "@/lib/locales": locales,
+});
+const usdaMath = await loadLibrary("usdaReference", {});
+const barcode = await loadLibrary("foodBarcode", {});
+const barcodeCopy = JSON.parse(await readFile(new URL("../../frontend/config/barcode-copy.json", import.meta.url), "utf8"));
 const searchAvailability = await loadLibrary("foodSearchAvailability", {});
+const diary = await loadLibrary("foodDiary", {
+  "@/config/diary-copy.json": {default: JSON.parse(await readFile(new URL("../../frontend/config/diary-copy.json", import.meta.url), "utf8"))},
+}, {URLSearchParams});
+function overview(entries) {
+  const usda = entries.filter(item => !item.barcode && /^USDA FoodData Central · FDC \d+$/.test(item.brand ?? "")).length;
+  const openFoodFacts = entries.filter(item => typeof item.barcode === "string" && item.barcode.trim()).length;
+  return {entries, next_before: null, count: entries.length,
+    ...Object.fromEntries(["calories","protein","fat","carbohydrates"].map(key => [key, entries.reduce((sum, item) => sum + item[key], 0)])),
+    grades: Object.fromEntries(["A","B","C","D","E"].map(grade => [grade, entries.filter(item => item.barcode && item.nutri_score?.trim().toUpperCase() === grade).length])),
+    sources: {open_food_facts: openFoodFacts, usda, other: entries.length - openFoodFacts - usda}};
+}
 const AUTH_EVENT = "test-auth-state-changed";
 const foods = Array.from({ length: 30 }, (_, index) => ({
   product_name: index === 0 ? "Banana" : `Oats ${index}`,
@@ -62,7 +90,7 @@ function button(tree, label) {
   return result[0];
 }
 
-async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse) {
+async function harness(componentName = "FoodSearchPlaceholder", postResponse, logsResponse, searchResponse, warmupResponse, deleteResponse, catalogueResponse) {
   const source = await readFile(new URL(`../../frontend/components/${componentName}.tsx`, import.meta.url), "utf8");
   const compiled = typescript.transpileModule(source, {
     compilerOptions: { jsx: typescript.JsxEmit.ReactJSX, module: typescript.ModuleKind.CommonJS, target: typescript.ScriptTarget.ES2022 },
@@ -72,6 +100,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   let now = Date.parse("2026-09-10T12:00:00Z"), timerId = 0, warmups = 0;
   const timers = new Map();
   class ClockDate extends Date { static now() { return now; } }
+  const readiness = await loadLibrary("foodSearchReadiness", {
+    "@/lib/backendRequest": {
+      BACKEND_WAKE_BASE_URL: "https://backend.example",
+      waitForBackendReady: async () => { warmups++; if (warmupResponse) await warmupResponse(); },
+    },
+  }, { AbortController, Date: ClockDate });
   let confirmAnswer = false;
   const document = { body: {}, activeElement: null, documentElement: { lang: "en" } };
   document.activeElement = document.body;
@@ -110,6 +144,12 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
   vm.runInNewContext(compiled, {
     module, exports: module.exports, AbortController, console, URL, URLSearchParams, document,
     Date: ClockDate,
+    setTimeout, clearTimeout,
+    async fetch(url, options) {
+      requests.push({url, options});
+      assert.equal(url, "/data/usda-search-foods.json");
+      return catalogueResponse ? await catalogueResponse() : {ok:true, json:async()=>discoveryCatalogue};
+    },
     setInterval(callback) { timers.set(++timerId, callback); return timerId; },
     clearInterval(id) { timers.delete(id); },
     navigator: { language: "en", languages: ["en"] },
@@ -128,7 +168,20 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "next/image") return { __esModule: true, default: "Image" };
       if (specifier === "@/components/authEvents") return { AUTH_STATE_CHANGED_EVENT: AUTH_EVENT };
       if (specifier === "@/lib/foodLogFilter") return foodLogFilter;
+      if (specifier === "@/lib/foodDiary") return diary;
       if (specifier === "@/lib/foodUi") return foodUi;
+      if (specifier === "@/lib/foodExperience") return experience;
+      if (specifier === "@/lib/foodSource") return foodSource;
+      if (specifier === "@/lib/nutritionSummaryBridge") return {
+        nutritionSummaryMessage: (input) => input,
+        postNutritionSummaryToParent: () => false,
+      };
+      if (specifier === "@/lib/navigationBridge") return { postNavigationTarget: () => false };
+      if (specifier === "@/lib/usdaReference") return usdaMath;
+      if (specifier === "@/lib/foodBarcode") return barcode;
+      if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };
+      if (specifier === "@/config/app-entry-copy.json") return { default: appEntryCopy };
+      if (specifier === "@/lib/foodSearchReadiness") return readiness;
       if (specifier === "@/lib/foodSearchAvailability") return {
         foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
       };
@@ -136,6 +189,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
         useDisplayLanguage: () => displayLanguage,
       };
       if (specifier === "@/lib/locales") return locales;
+      if (specifier === "@/lib/foodDiscovery") return discovery;
       if (specifier === "@/data/usda-reference-foods.json") return { default: usdaReference };
       if (specifier === "@/config/usda-reference-copy.json") return { default: usdaCopy };
       if (specifier.startsWith("@/components/")) {
@@ -155,13 +209,14 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
             if (response.ok) saved.push({ ...JSON.parse(options.body), id: saved.length + 1 });
             return response;
           }
-          if (url.endsWith("/logs")) {
-            if (options?.method === "DELETE") {
-              saved = [];
-              return { ok: true, status: 204 };
-            }
+          if (options?.method === "DELETE" && /\/logs(?:\/\d+)?$/.test(url)) {
+            const response = deleteResponse ? await deleteResponse() : { ok: true, status: 204 };
+            if (response.ok) saved = url.endsWith('/logs') ? [] : saved.filter(item => item.id !== Number(url.split('/').at(-1)));
+            return response;
+          }
+          if (url.includes("/logs/overview?")) {
             const response = logsResponse ? await logsResponse() : null;
-            return response ?? { ok: true, json: async () => saved };
+            return response ? {...response, json: async () => { const value = await response.json(); return Array.isArray(value) ? overview(value) : value; }} : { ok: true, json: async () => overview(saved) };
           }
           throw new Error(`Unexpected request: ${url}`);
         },
@@ -199,7 +254,10 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
     setDisplayLanguage(locale) { displayLanguage = { enabled: true, locale }; return render(); },
     get tree() { return tree; },
     cards() { return nodes(tree, (node) => node.type === "FoodCard"); },
-    controls() { return this.cards().find((card) => card.props.children)?.props.children ?? null; },
+    controls() {
+      return nodes(tree, (node) => node.type === "form" &&
+        ["calorieapp-packaged-portion-editor", "calorieapp-basic-portion-editor"].includes(node.props?.id))[0] ?? null;
+    },
     async flush() { await new Promise(setImmediate); return render(); },
     async search(query = "oats") {
       nodes(tree, (node) => node.type === "SearchBar")[0].props.onQueryChange(query);
@@ -209,6 +267,10 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
     },
     choose(index) { this.cards()[index].props.onLog(); render(); },
     submit() { this.controls().props.onSubmit({ preventDefault() {} }); render(); },
+    async period(value, date = diary.localDiaryDate()) {
+      nodes(tree, node => node.type === "FoodDiaryPeriod")[0].props.onChange(value, date);
+      render(); await this.flush();
+    },
     login() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: true } }); render(); },
     logout() { listeners.get(AUTH_EVENT)?.({ detail: { authenticated: false } }); render(); },
   };
@@ -268,7 +330,7 @@ test("USDA reference displays source values without combining energy methods or 
   assert.ok(text(tree).includes(usdaCopy.en.method));
   assert.equal(nodes(tree, (node) => node.type === "time")[0].props.dateTime, usdaReference.retrieved_on);
   assert.ok(nodes(tree, (node) => node.type === "a").some((node) => node.props.href === usdaReference.licence_url));
-  assert.equal(nodes(tree, (node) => ["button", "form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
+  assert.equal(nodes(tree, (node) => ["form", "iframe", "img", "script", "FoodCard"].includes(node.type)).length, 0);
   await app.flush();
   app.login();
   app.logout();
@@ -316,18 +378,23 @@ test("USDA reference preserves all eleven locales, RTL and the supplied English 
   }
 });
 
-test("a portion opens inside the chosen result, with its product identity beside confirmation", async () => {
+test("one nearby portion editor follows the chosen result and keeps its product identity", async () => {
   const h = await harness();
   await h.search();
   h.choose(0);
   assert.equal(h.cards().length, 30);
-  assert.equal(h.cards()[0].props.children.type, "form");
-  assert.equal(h.cards().filter((card) => card.props.children).length, 1);
+  assert.equal(h.controls().type, "form");
+  assert.equal(h.cards()[0].props.isSelected, true);
+  assert.equal(h.cards().filter((card) => card.props.isSelected).length, 1);
+  assert.equal(h.cards()[0].props.children, h.controls(), "The portion editor must stay inside the chosen product card.");
+  assert.equal(h.cards().slice(1).every((card) => !card.props.children), true);
   assert.match(text(h.controls()), /Banana/);
   assert.match(text(h.controls()), /Brand 0/);
   assert.equal(button(h.controls(), "Add to food log").props.disabled, false);
   h.choose(15);
-  assert.equal(h.cards()[0].props.children, null);
+  assert.equal(h.cards()[0].props.isSelected, false);
+  assert.equal(h.cards()[15].props.isSelected, true);
+  assert.equal(h.cards()[15].props.children, h.controls());
   assert.match(text(h.controls()), /Oats 15/);
   button(h.controls(), "Cancel").props.onClick();
   h.render();
@@ -436,7 +503,7 @@ test("saving preserves the sign-in prompt or log-loading error until the log sta
       : { signIn: false, loadErrors: ["Unable to load logged foods right now."] });
     h.submit();
     assert.deepEqual(visibleLogState(), before, "Saving must preserve the unrelated log section's message.");
-    assert.doesNotMatch(text(h.tree), /Recent Log Summary/, "Do not briefly show an empty summary during the save.");
+    assert.doesNotMatch(text(h.tree), /Period overview/, "Do not briefly show an empty summary during the save.");
     assert.equal(h.requests.filter((request) => request.url.endsWith("/log-food")).length, 1);
     finish(status === 401 ? { ok: false, status: 401 } : { ok: true, status: 201 });
     await h.flush();
@@ -445,7 +512,7 @@ test("saving preserves the sign-in prompt or log-loading error until the log sta
       assert.match(h.cards()[1].props.feedback.message, /Sign in with Xaman/);
     } else {
       assert.deepEqual(visibleLogState(), { signIn: false, loadErrors: [] });
-      assert.match(text(h.tree), /Recent Log Summary/);
+      assert.match(text(h.tree), /Period overview/);
       assert.match(h.cards()[1].props.feedback.message, /Added Oats 1/);
     }
   }
@@ -462,7 +529,38 @@ test("a response arriving after logout cannot restore the former selection or su
   await h.flush();
   assert.equal(h.controls(), null);
   assert.ok(h.cards().every((card) => !card.props.feedback));
-  assert.equal(h.requests.filter((request) => request.url.endsWith("/logs")).length, 0);
+  assert.equal(h.requests.filter((request) => request.url.includes("/logs/overview?")).length, 0);
+});
+
+test('Late single/bulk delete replies and failures cannot replace the logged-out state or issue another private read', async () => {
+  for (const bulk of [false, true]) for (const outcome of [204, 401, 500, 'network']) {
+    let finish, reject;
+    const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+      () => new Promise((resolve, fail) => { finish = resolve; reject = fail; }));
+    await h.search(); h.choose(0); h.submit(); await h.flush(); h.login(); await h.flush(); await h.period("all"); h.answerConfirmation(true);
+    const list = nodes(h.tree, node => node.type === 'FoodLogList')[0];
+    const pending = bulk ? list.props.onDeleteAllLogs() : list.props.onDeleteLog(1);
+    h.logout(); const count = h.requests.length;
+    if (outcome === 'network') reject(new Error('Offline')); else finish({ok: outcome === 204, status: outcome});
+    await pending; await h.flush();
+    assert.equal(h.requests.length, count, 'A reply from the signed-out session must not fetch private logs again');
+    assert.ok(text(h.tree).includes(foodUiCopy.en.signInTitle));
+    assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 0);
+    assert.equal(nodes(h.tree, node => node.type === 'ErrorBanner').length, 0);
+  }
+});
+
+test('An old delete authorization failure does not clear a newly signed-in diary', async () => {
+  let finish;
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, undefined, undefined,
+    () => new Promise(resolve => { finish = resolve; }));
+  await h.search(); h.choose(0); h.submit(); await h.flush();
+  const pending = nodes(h.tree, node => node.type === 'FoodLogList')[0].props.onDeleteLog(1);
+  h.logout(); h.login(); await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  finish({ok: false, status: 401}); await pending; await h.flush();
+  assert.equal(nodes(h.tree, node => node.type === 'FoodLogList').length, 1);
+  assert.ok(!text(h.tree).includes(foodUiCopy.en.signInTitle));
 });
 
 test("expanding a card reveals its portion region once and restores keyboard focus on cancel", async () => {
@@ -470,10 +568,10 @@ test("expanding a card reveals its portion region once and restores keyboard foc
   const props = { item: foods[0], isLogging: false, onLog() {}, formatNumber: String };
   h.render(props);
   h.render({ ...props, children: { type: "form", props: { children: "Portion controls" } } });
-  assert.deepEqual(h.focusEvents.map((event) => event.type), ["focus", "scroll"]);
+  assert.deepEqual(h.focusEvents.map((event) => event.type), ["focus"]);
   assert.equal(nodes(h.tree, (node) => node.props?.role === "region")[0].props["aria-label"], "Choose a portion for Banana");
   h.render({ ...props, children: { type: "form", props: { children: "Changed portion" } } });
-  assert.equal(h.focusEvents.length, 2, "Changing a portion must not scroll the page again");
+  assert.equal(h.focusEvents.length, 1, "Changing a portion must not scroll the page again");
   h.render(props);
   assert.equal(h.focusEvents.at(-1).element, "button");
   h.render({ ...props, children: { type: "form", props: {} } });
@@ -527,9 +625,9 @@ test("filtering changes only the visible list and prevents ambiguous bulk deleti
   setDiaryFilter(h, "harvest");
   assert.equal(nodes(h.tree, (node) => node.type === "li").length, 1);
   assert.match(text(h.tree), /1 of 2 loaded entries/);
-  assert.match(text(h.tree), /overview uses all loaded entries/);
+  assert.ok(text(h.tree).includes(diary.diaryCopy("en").listScope));
   assert.equal(button(h.tree, "Delete All").props.disabled, true);
-  assert.match(text(h.tree), /Clear the filter before deleting all/);
+  assert.ok(text(h.tree).includes(diary.diaryCopy("en").deleteHint));
   assert.deepEqual(calls, []);
   assert.deepEqual(h.requests, []);
   nodes(h.tree, (node) => node.props?.["aria-label"] === "View details for Oats")[0].props.onClick();
@@ -542,6 +640,24 @@ test("filtering changes only the visible list and prevents ambiguous bulk deleti
   assert.equal(nodes(h.tree, (node) => node.type === "li").length, 2);
   assert.equal(button(h.tree, "Delete All").props.disabled, false);
   assert.equal(h.document.activeElement, filterInput(h).props.ref.current);
+});
+
+test("diary rows reveal recorded portions in every language without inventing a portion for old entries", async () => {
+  const h = await harness("FoodLogList");
+  const entries = [25, 50, 55.5, 100, undefined, NaN, Infinity, -1, 101].map((portion_percentage, i) =>
+    ({...foods[0], id: i + 1, portion_percentage}));
+  h.render(diaryProps({logs: entries}));
+  for (const {tag} of localeRegistry.locales) {
+    h.setDisplayLanguage(tag);
+    const rows = nodes(h.tree, node => node.type === "li");
+    entries.forEach((item, i) => {
+      const portion = nodes(rows[i], node => node.type === "p" && text(node).includes(foodUiCopy[tag].portionEaten));
+      assert.equal(portion.length, i < 4 ? 1 : 0);
+      if (i < 4) assert.ok(text(portion[0]).includes(new Intl.NumberFormat(tag, {style: "percent", maximumFractionDigits: 2}).format(item.portion_percentage / 100)));
+    });
+  }
+  assert.deepEqual(h.requests, []);
+  assert.equal(entries[2].portion_percentage, 55.5);
 });
 
 test("an empty filtered result remains clearable by keyboard and reacts to refreshed logs", async () => {
@@ -747,7 +863,7 @@ test("search button shows a translated countdown without reporting a request as 
   for (const { tag } of localeRegistry.locales) {
     h.setDisplayLanguage(tag);
     const tree = h.render({ query: "oats", isLoading: false, retrySeconds: 60, onQueryChange() {}, onSubmit() {} });
-    const search = nodes(tree, n => n.type === "button")[0];
+    const search = nodes(tree, n => n.type === "button" && n.props.type === "submit")[0];
     assert.equal(search.props.disabled, true);
     assert.equal(search.props["aria-busy"], false);
     assert.equal(text(search), foodUi.formatFoodUi(foodUiCopy[tag].searchWait, { seconds: new Intl.NumberFormat(tag).format(60) }));
@@ -829,6 +945,7 @@ test("existing save errors change display language without retrying or losing th
 test("bulk deletion keeps its explicit confirmation and uses the current display language", async () => {
   const h = await harness();
   await h.search(); h.choose(0); h.submit(); await h.flush();
+  h.login(); await h.flush(); await h.period("all");
   h.setDisplayLanguage("nl");
   const list = () => nodes(h.tree, node => node.type === "FoodLogList")[0];
   await list().props.onDeleteAllLogs();
@@ -848,30 +965,313 @@ test("bulk deletion keeps its explicit confirmation and uses the current display
   assert.ok(nodes(h.tree, node => node.type === "EmptyState").some(node => node.props.title === foodUiCopy.ar.emptyLogsTitle));
 });
 
-test("recorded product grades count entries and missing values without deriving an average or changing records", async () => {
+test("period coverage preserves all recorded counts and never supplies an averaged health marker", async () => {
   const entries = ["A", "a", "B", "E", null, "", "unknown"].map((grade, index) =>
     Object.freeze({ ...foods[index], id: index + 1, nutri_score: grade, portion_percentage: index + 1 }));
   Object.freeze(entries);
   const before = JSON.stringify(entries);
-  const result = JSON.parse(JSON.stringify(foodUi.countRecordedGrades(entries)));
-  assert.deepEqual(result, {
-    grades: [{ grade: "A", count: 2 }, { grade: "B", count: 1 }, { grade: "C", count: 0 }, { grade: "D", count: 0 }, { grade: "E", count: 1 }],
-    known: 4, total: 7, missing: 3,
-  });
-  const h = await harness("FoodSearchPlaceholder", undefined, () => ({ ok: true, json: async () => entries }));
+  const expected = { grades: [{grade:"A",count:2},{grade:"B",count:1},{grade:"C",count:0},{grade:"D",count:0},{grade:"E",count:1}], known:4,total:7,missing:3 };
+  const h = await harness("FoodSearchPlaceholder", undefined, () => ({ ok:true,json:async()=>entries }));
   h.login(); await h.flush();
-  for (const { tag } of localeRegistry.locales) {
+  for (const {tag} of localeRegistry.locales) {
     h.setDisplayLanguage(tag);
-    const distribution = nodes(h.tree, node => node.type === "dl" && node.props["aria-label"] === foodUiCopy[tag].scoreTitle)[0];
-    assert.ok(distribution, tag);
-    assert.deepEqual(nodes(distribution, node => node.type === "dt").map(node => text(node)), ["A", "B", "C", "D", "E"]);
-    assert.deepEqual(nodes(distribution, node => node.type === "dd").map(node => text(node)),
-      [2, 1, 0, 0, 1].map(count => new Intl.NumberFormat(tag).format(count)));
-    assert.ok(text(h.tree).includes(foodUiCopy[tag].scoreDescription));
-    assert.equal(h.requests.length, 1);
+    const summary=nodes(h.tree,n=>n.type==="RecordedGradeSummary");
+    assert.equal(summary.length,1,tag);
+    assert.equal(summary[0].props.locale,tag);
+    assert.deepEqual(JSON.parse(JSON.stringify(summary[0].props.summary)),expected);
+    assert.equal(nodes(h.tree,n=>n.props["data-grade-pointer"]==="true").length,0);
+    assert.equal(h.requests.length,1,"Changing language does not refetch the diary");
   }
-  assert.equal(JSON.stringify(entries), before);
-  assert.deepEqual(JSON.parse(JSON.stringify(foodUi.countRecordedGrades([]))), {
-    grades: ["A", "B", "C", "D", "E"].map(grade => ({ grade, count: 0 })), known: 0, total: 0, missing: 0,
+  assert.equal(JSON.stringify(entries),before,"Source records remain immutable");
+});
+
+
+test("Nutri-Score colors accept recorded A–E grades and never invent missing scores", () => {
+  const colors = ["A", "B", "C", "D", "E"].map(grade => foodUi.recordedGradeStyle(grade).backgroundColor);
+  assert.equal(new Set(colors).size, 5);
+  assert.equal(foodUi.recordedGradeStyle(" a "), foodUi.recordedGradeStyle("A"));
+  for (const grade of [undefined, null, "", "unknown", "F", "A/B"]) {
+    assert.equal(foodUi.recordedGradeStyle(grade), undefined);
+  }
+});
+
+test('USDA grams scale original precision, accept decimal comma and never change provider records', async () => {
+  const before = JSON.stringify(usdaReference), h = await harness('UsdaReferenceFoods');
+  let tree = h.render();
+  const weight = () => nodes(tree, n => n.type === 'input' && n.props.id === 'usda-reference-weight')[0];
+  weight().props.onChange({ target: { value: '12,5' } }); tree = h.render();
+  assert.ok(text(tree).includes('12.5 g'));
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[0]).replace(/\s+/g, ' ').trim(), '6 kcal');
+  weight().props.onChange({ target: { value: '0.1' } }); tree = h.render();
+  assert.equal(text(nodes(tree, n => n.type === 'dd')[2]).replace(/\s+/g, ' ').trim(), '<0.01 g');
+  weight().props.onChange({ target: { value: '' } }); tree = h.render();
+  assert.equal(weight().props['aria-invalid'], true);
+  assert.ok(nodes(tree, n => n.type === 'dd').every(n => text(n) === usdaCopy.en.unavailable));
+  button(tree, usdaCopy.en.resetWeight).props.onClick(); tree = h.render();
+  assert.equal(weight().props.value, '100'); assert.equal(JSON.stringify(usdaReference), before);
+  assert.deepEqual(h.requests, []);
+});
+
+test('USDA weight validation rejects coercions, invalid ranges and unknown nutrition', () => {
+  for (const input of ['', 'NaN', 'Infinity', '1e3', '-1', '0', '0.01', '5001', '100g', '1,000.5']) assert.equal(usdaMath.parseReferenceGrams(input), null, input);
+  assert.equal(usdaMath.parseReferenceGrams('5000'), 5000);
+  assert.equal(usdaMath.parseReferenceGrams('0,1'), .1);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: null }, 'g', 250), 0);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 0, unit: 'g', loq: .2 }, 'g', 250), null);
+  assert.equal(usdaMath.referenceNutrientAmount({ amount: 10, unit: 'kJ', loq: null }, 'kcal', 250), null);
+});
+
+test('Barcode lookup uses the existing search guard and shows only the matching product, without logging', async () => {
+  const item = { ...foods[0], barcode: '0034000470693' };
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [item, { ...foods[1], barcode: '3017620422003' }] }) }));
+  const scanner = () => nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0];
+  scanner().props.onLookup('034000470693'); scanner().props.onLookup('034000470693');
+  await h.flush();
+  assert.equal(h.requests.filter(r => r.url.includes('search-food')).length, 1);
+  assert.ok(h.requests.some(r => r.url.endsWith('q=034000470693&mode=barcode')));
+  assert.equal(h.cards().length, 1); assert.equal(h.cards()[0].props.item.barcode, '0034000470693');
+  assert.equal(nodes(h.tree, n => n.type === 'a' && n.props.href === 'https://world.openfoodfacts.org/contribute').length, 0);
+  assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('The upper search button repeats a scanned barcode using the exact same lookup route', async () => {
+  const item = { ...foods[0], barcode: '0034000470693' };
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [item, { ...foods[1], barcode: '3017620422003' }] }) }));
+  nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693');
+  await h.flush();
+  const upper = nodes(h.tree, n => n.type === 'SearchBar')[0];
+  assert.equal(upper.props.query, '034000470693');
+  await upper.props.onSubmit({ preventDefault() {} });
+  h.render();
+  const requests = h.requests.filter(r => r.url.includes('/search-food?'));
+  assert.equal(requests.length, 2);
+  assert.equal(requests[1].url, requests[0].url);
+  assert.equal(h.cards().length, 1);
+  assert.equal(h.cards()[0].props.item.barcode, item.barcode);
+  assert.equal(h.requests.some(r => r.url.endsWith('/log-food')), false);
+});
+
+test('Pasted GTINs retain their zeros while product names and mixed numeric names use text search', async () => {
+  const h = await harness('FoodSearchPlaceholder');
+  for (const [input, mode] of [[' 0034000470693 ', 'barcode'], ['8711200428953', 'barcode'], ['7UP 330 ml', null], ['oats', null], ['0034000470694', null]]) {
+    await h.search(input);
+    const url = new URL(h.requests.at(-1).url, 'https://app.example');
+    assert.equal(url.searchParams.get('q'), input.trim());
+    assert.equal(url.searchParams.get('mode'), mode);
+  }
+});
+
+test('Barcode absence has useful translated fallback text and name search restores ordinary empty state', async () => {
+  const h = await harness('FoodSearchPlaceholder', undefined, undefined, async () => ({ ok: true, json: async () => ({ results: [] }) }));
+  const links = () => nodes(h.tree, n => n.type === 'a' && n.props.href === 'https://world.openfoodfacts.org/contribute');
+  assert.equal(links().length, 0);
+  nodes(h.tree, n => n.type === 'FoodBarcodeScanner')[0].props.onLookup('034000470693'); await h.flush();
+  for (const locale of Object.keys(barcodeCopy)) {
+    h.setDisplayLanguage(locale);
+    assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === barcodeCopy[locale].notFound));
+    assert.equal(links().length, 1); assert.equal(text(links()[0]), barcodeCopy[locale].contributeLink);
+    assert.equal(links()[0].props.target, '_blank'); assert.equal(links()[0].props.rel, 'noopener noreferrer');
+    assert.ok(text(h.tree).includes(barcodeCopy[locale].contributeHint));
+  }
+  h.setDisplayLanguage('ar');
+  await h.search('oats');
+  assert.ok(nodes(h.tree, n => n.type === 'EmptyState').some(n => n.props.description === foodUiCopy.ar.noResultsDescription));
+  assert.equal(links().length, 1);
+});
+
+
+test("period coverage includes unscored records without fabricating a grade", async () => {
+  const h=await harness("FoodSearchPlaceholder",undefined,()=>({ok:true,json:async()=>[{...foods[0],id:1,nutri_score:null}]}));
+  h.login(); await h.flush();
+  const summary=nodes(h.tree,n=>n.type==="RecordedGradeSummary")[0].props.summary;
+  assert.equal(summary.known,0); assert.equal(summary.total,1); assert.equal(summary.missing,1);
+  assert.equal(summary.grades.every(entry=>entry.count===0),true);
+  assert.equal(nodes(h.tree,n=>n.props["data-grade-pointer"]==="true").length,0);
+  assert.equal(h.requests.length,1);
+});
+
+test('diary totals cover the whole period, navigation clears the old period, and bulk delete is blocked in a date view', async () => {
+  let finish;
+  let calls = 0;
+  const h = await harness('FoodSearchPlaceholder', undefined, async () => {
+    calls++;
+    if(calls === 2) return new Promise(resolve => { finish = resolve; });
+    return {ok: true, json: async () => ({...overview([foods[0]]), count: 105, calories: 1050, next_before: 1})};
   });
+  h.login(); await h.flush();
+  assert.ok(text(h.tree).includes('1,050'));
+  let list = nodes(h.tree, n => n.type === 'FoodLogList')[0];
+  assert.equal(list.props.total,105); assert.equal(list.props.hasMore,true); assert.equal(list.props.periodFiltered,true);
+  h.answerConfirmation(true); await list.props.onDeleteAllLogs();
+  assert.equal(h.confirmations.length,0); assert.equal(h.requests.filter(r=>r.options?.method==='DELETE').length,0);
+  await h.period('month','2026-09-11');
+  assert.equal(nodes(h.tree,n=>n.type==='FoodLogList').length,0,'Old day rows disappear immediately');
+  assert.ok(h.requests[1].url.includes('start='));
+  h.logout(); finish({ok:true,json:async()=>overview(foods)}); await h.flush();
+  assert.equal(nodes(h.tree,n=>n.type==='FoodLogList').length,0,'Late monthly response cannot restore private rows');
+  assert.equal(nodes(h.tree,n=>n.type==='FoodDiaryPeriod').length,0);
+});
+
+test('failed barcode lookup preserves earlier results and retries the exact barcode once after the countdown', async () => {
+  let calls=0;
+  const h=await harness('FoodSearchPlaceholder',undefined,undefined,async()=> ++calls === 2
+    ? {ok:false,status:504,headers:new Headers()} : {ok:true,json:async()=>({results:foods})});
+  await h.search('oats');
+  nodes(h.tree,n=>n.type==='FoodBarcodeScanner')[0].props.onLookup('8711000031544');
+  await h.flush();
+  assert.equal(calls,2); assert.equal(h.cards().length,foods.length);
+  assert.ok(text(h.tree).includes('Results for “oats”'));
+  assert.equal(nodes(h.tree,n=>n.type==='ErrorBanner')[0].props.message,diary.diaryCopy('en').slow);
+  h.advance(30000);
+  await button(h.tree,diary.diaryCopy('en').retry).props.onClick(); await h.flush();
+  const retried=new URL(h.requests.at(-1).url,'https://app.example');
+  assert.equal(retried.searchParams.get('mode'),'barcode'); assert.equal(retried.searchParams.get('q'),'8711000031544');
+  assert.equal(calls,3);
+});
+
+
+test('the source reference label translates in every locale without translating packaging text',()=>{
+ for(const {tag} of localeRegistry.locales){
+  const copy=foodUiCopy[tag];
+  assert.ok(copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('100 g / 100 ml (source reference)',copy),copy.sourceReference);
+  assert.equal(foodUi.displayServingSize('1 bar (28 g)',copy),'1 bar (28 g)');
+  assert.equal(foodUi.displayServingSize('Private {product} $CAL',copy),'Private {product} $CAL');
+ }
+});
+
+test('Food discovery keeps all eleven locales, exact identifiers, word boundaries and unknown nutrition', () => {
+  assert.deepEqual(Object.keys(discoveryTranslations).sort(), localeRegistry.locales.map(l=>l.tag).sort());
+  for (const l of localeRegistry.locales) {
+    const c=discovery.discoveryCopy(l.tag);
+    assert.deepEqual(Object.keys(c).sort(),Object.keys(discoveryTranslations.en).sort());
+    for(const [key,value] of Object.entries(c)) {
+      assert.ok(value.trim());
+      assert.deepEqual(value.match(/\{\w+\}/g),discoveryTranslations.en[key].match(/\{\w+\}/g));
+    }
+  }
+  const foods=[{fdc_id:123,description:'Rice, white, cooked',data_type:'Foundation'}, {fdc_id:1234,description:'Licorice candy',data_type:'SR Legacy'}];
+  for (const query of ['rice','rijst','চাল','米饭','चावल','arroz','أرز','riz','beras','چاول','fdc 123','۱۲۳']) assert.deepEqual(Array.from(discovery.searchUsda(foods,query),f=>f.fdc_id),[123]);
+  assert.equal(discovery.searchUsda(foods,'fdc 12').length,0);
+  for (const v of ['0.1','١٠٠','۱۰۰','১০০','१००','100,5']) assert.notEqual(discovery.edibleGrams(v),null);
+  for (const v of ['0','5001','1e2','-1','100 ml','']) assert.equal(discovery.edibleGrams(v),null);
+  assert.equal(discovery.edibleGrams('1,000','en'),1000);
+  assert.equal(discovery.edibleGrams('1.000','nl'),1000);
+  assert.equal(discovery.edibleGrams('1,000','nl'),1);
+  assert.equal(discovery.edibleGrams('١٬٠٠٠','ar'),1000);
+  const complete={fdc_id:1,description:'Oats',edition:'2026-04-30',nutrients:[{id:2047,unit:'kcal',amount:200},{id:1003,unit:'g',amount:10},{id:1004,unit:'g',amount:0},{id:1005,unit:'g',amount:30}]};
+  const selected=discovery.usdaLogItem(complete,75);
+  assert.equal(selected.calories,150);assert.equal(selected.protein,7.5);assert.equal(selected.fat,0);assert.equal(selected.nutri_score,null);assert.equal(selected.barcode,null);assert.equal(selected.portion_percentage,100);
+  for(const nutrient of [{id:1004,unit:'g',amount:null},{id:1004,unit:'g',amount:0,loq:0.01},{id:1004,unit:'mg',amount:100}]) assert.equal(discovery.usdaLogItem({...complete,nutrients:[...complete.nutrients.filter(n=>n.id!==1004),nutrient]},75),null);
+});
+
+test('Similar choices preserve the normal portion flow and never save merely by opening comparison', async()=>{
+  const app=await harness();await app.search();
+  const compared=app.cards()[1].props.comparison;
+  const selected=app.cards()[2].props.item;
+  compared.props.onChoose(selected);app.render();
+  assert.equal(app.cards()[1].props.isSelected,true);
+  assert.equal(app.controls().type,'form');
+  assert.equal(app.requests.filter(r=>r.options?.method==='POST').length,0);
+  const card=await harness('FoodCard');const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,comparison:{type:'details',props:{children:'Compare'}}});
+  assert.equal(nodes(tree,n=>n.type==='button')[0].props['aria-expanded'],false);
+  assert.equal(nodes(tree,n=>n.type==='div'&&n.props?.role==='region').length,0);
+  const current={name:'Plain oat cereal',id:'1'};
+  const options=[current,{name:'Whole oat cereal',id:'2'},{name:'Infant oat formula',id:'3'},{name:'Milk with oats',id:'4'},{name:'Whole oat cereal',id:'2'}];
+  assert.deepEqual(Array.from(discovery.similarFoodNames(current,options,f=>f.name,f=>f.id),f=>f.id),['2']);
+});
+
+test('USDA catalogue loads only on search, retains source values across languages and invalidates a stale portion', async()=>{
+  const app=await harness('UsdaFoodSearch');const choices=[];let editing=0;
+  let props={locale:'en',disabled:false,onChoose:f=>choices.push(f),onEditing:()=>editing++};
+  let tree=app.render(props);assert.equal(app.requests.length,0);
+  nodes(tree,n=>n.type==='input')[0].props.onChange({target:{value:'rice'}});tree=app.render();
+  await nodes(tree,n=>n.type==='form')[0].props.onSubmit({preventDefault(){}});tree=app.render();
+  assert.equal(app.requests.length,1);assert.equal(app.requests[0].options.credentials,'omit');
+  const record=nodes(tree,n=>n.type==='button'&&text(n).includes('FDC '))[0];record.props.onClick();tree=app.render();
+  const amount=nodes(tree,n=>n.type==='input'&&n.props.inputMode==='decimal')[0];amount.props.onChange({target:{value:'75'}});tree=app.render();
+  const nutrientText=nodes(tree,n=>n.type==='dd').map(text);
+  for(const locale of ['nl','zh-Hans','ar','bn']) {props={...props,locale};tree=app.render(props);assert.equal(nodes(tree,n=>n.type==='input'&&n.props.inputMode==='decimal')[0].props.value,'75');assert.equal(app.requests.length,1);}
+  props={...props,locale:'en'};tree=app.render(props);assert.deepEqual(nodes(tree,n=>n.type==='dd').map(text),nutrientText);
+  button(tree,experienceCopy.en.reviewAmount).props.onClick();assert.equal(choices.length,1);assert.match(choices[0].serving_size,/^75 g/);assert.equal(choices[0].nutri_score,null);
+  nodes(tree,n=>n.type==='input'&&n.props.inputMode==='decimal')[0].props.onChange({target:{value:'1,000'}});tree=app.render();
+  props={...props,locale:'nl'};tree=app.render(props);
+  button(tree,experienceCopy.nl.reviewAmount).props.onClick();assert.match(choices[1].serving_size,/^1000 g/);
+  nodes(tree,n=>n.type==='input'&&n.props.inputMode==='decimal')[0].props.onChange({target:{value:'1.000'}});tree=app.render();
+  props={...props,locale:'en'};tree=app.render(props);
+  button(tree,experienceCopy.en.reviewAmount).props.onClick();assert.match(choices[2].serving_size,/^1000 g/);
+  const previous=editing;nodes(tree,n=>n.type==='input'&&n.props.inputMode==='decimal')[0].props.onChange({target:{value:'0'}});tree=app.render();
+  assert.ok(editing>previous);assert.equal(button(tree,experienceCopy.en.reviewAmount).props.disabled,true);assert.ok(text(tree).includes(discoveryTranslations.en.invalidGrams));
+});
+
+test('Choosing a USDA portion requires explicit confirmation and uses the existing session and duplicate-submit guards', async()=>{
+  const app=await harness();await app.flush();
+  const food=discovery.usdaLogItem(discoveryCatalogue.foods[0],75);
+  nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.onChoose(food);app.render();
+  assert.equal(app.requests.filter(r=>r.options?.method==='POST').length,0);
+  let form=nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.confirmation;assert.ok(text(form).includes(food.product_name));
+  assert.ok(!text(form).includes(foodUiCopy.en.half), 'USDA grams are not scaled by a second percentage selector');
+  form.props.onSubmit({preventDefault(){}});form.props.onSubmit({preventDefault(){}});await app.flush();
+  const writes=app.requests.filter(r=>r.options?.method==='POST');assert.equal(writes.length,1);
+  const payload=JSON.parse(writes[0].options.body);assert.equal(payload.brand,food.brand);assert.equal(payload.nutri_score,null);assert.equal(payload.barcode,null);assert.equal(payload.calories,Number(food.calories.toFixed(2)));
+  nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.onChoose(food);app.render();nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.onEditing();app.render();
+  assert.equal(nodes(app.tree,n=>n.type==='UsdaFoodSearch')[0].props.confirmation,null);
+});
+
+test('more alternatives can return to the original product and list without another request or forced scroll',async()=>{
+  const app=await harness(); await app.search('oats');
+  const original=app.cards()[1].props.item;
+  const list=nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0];
+  list.props.ref.current.scrollTop=147;
+  app.cards()[1].props.comparison.props.onSearch('oat');
+  app.render(); await app.flush();
+  const label=discoveryTranslations.en.backToProduct.replace('{food}',original.product_name);
+  const requests=app.requests.length;
+  button(app.tree,label).props.onClick(); app.render();
+  assert.equal(app.requests.length,requests,'Back must use the saved results');
+  assert.equal(nodes(app.tree,n=>n.type==='SearchBar')[0].props.query,'oats');
+  assert.equal(app.cards()[1].props.restoreDetails,true);
+  assert.equal(nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0].props.ref.current.scrollTop,147);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
+});
+
+test('restored product details exist on the first render before the list offset is restored',async()=>{
+  const card=await harness('FoodCard');
+  const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,restoreDetails:true});
+  const toggle=nodes(tree,n=>n.type==='button' && n.props?.['aria-expanded']===true)[0];
+  assert.ok(toggle);
+  assert.ok(nodes(tree,n=>n.props?.id===toggle.props['aria-controls']).length);
+});
+
+test('a logged product opens inside its selected row and toggles closed without a navigation jump',async()=>{
+  const app=await harness();await app.search();app.choose(0);app.submit();await app.flush();app.login();await app.flush();await app.period('all');
+  const getList=()=>nodes(app.tree,n=>n.type==='FoodLogList')[0];
+  const row=getList().props.logs[0];getList().props.onSelectLog(row);app.render();
+  assert.equal(getList().props.selectedLogId,row.id);
+  assert.match(text(getList().props.selectedDetails),/Banana/);
+  assert.equal(nodes(app.tree,n=>n.props?.['data-testid']==='food-log-inline-details').length,0,'No detached details above the list');
+  getList().props.onSelectLog(row);app.render();
+  assert.equal(getList().props.selectedLogId,null);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
+});
+
+test('USDA alternatives return to the exact previous food, grams and list position',async()=>{
+  const app=await harness('UsdaFoodSearch');
+  app.render({locale:'en',disabled:false,onChoose(){},onEditing(){}});
+  nodes(app.tree,n=>n.type==='input')[0].props.onChange({target:{value:'rice'}});app.render();
+  await nodes(app.tree,n=>n.type==='form')[0].props.onSubmit({preventDefault(){}});app.render();
+  const original=nodes(app.tree,n=>n.type==='button'&&n.props['data-fdc-id'])[0];
+  original.props.onClick();app.render();
+  const selected=()=>nodes(app.tree,n=>n.props?.['data-testid']==='usda-selected-food')[0];
+  const name=nodes(selected(),n=>n.type==='h3').map(text)[0];
+  nodes(selected(),n=>n.type==='input')[0].props.onChange({target:{value:'75'}});app.render();
+  const list=nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0];list.props.ref.current.scrollTop=181;
+  const alternative=nodes(selected(),n=>n.type==='details')[0];
+  nodes(alternative,n=>n.type==='button')[0].props.onClick();app.render();
+  button(app.tree,discoveryTranslations.en.backToProduct.replace('{food}',name)).props.onClick();app.render();
+  assert.equal(nodes(selected(),n=>n.type==='h3').map(text)[0],name);
+  assert.equal(nodes(selected(),n=>n.type==='input')[0].props.value,'75');
+  assert.equal(list.props.ref.current.scrollTop,181);
+  assert.equal(app.requests.length,1);
+  assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
 });

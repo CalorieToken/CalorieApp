@@ -1,0 +1,249 @@
+{
+  "$schema": "./showcase-economy.schema.json",
+  "contract_id": "calorietoken.showcase-economy",
+  "version": "0.5.0",
+  "environment": "xrpl-testnet",
+  "ticker": "CALT",
+  "display_name": "Calorie Test",
+  "real_world_value": false,
+  "redeemable": false,
+  "mainnet_enabled": false,
+  "mainnet_cal_conversion_defined": false,
+  "welcome_airdrop": {
+    "enabled": false,
+    "feature_flag": "showcase_calt_airdrop",
+    "distribution_model": "rolling-newcomer-welcome-with-launch-wave",
+    "claim_start": null,
+    "claim_end": null,
+    "cadence": null,
+    "amount_policy": null,
+    "xrpl_issuer": null,
+    "xrpl_currency_code": null,
+    "identity_scope": "one-canonical-entitlement-per-game-identity",
+    "scene_scope": "all-world-scenes",
+    "culture_policy": "same-underlying-eligibility-and-value-across-cultures-and-regions",
+    "duplicate_claim_prevention": [
+      "scene-change",
+      "language-change",
+      "reload",
+      "world-teleport",
+      "repeat-onboarding"
+    ],
+    "age_modes": {
+      "child": "non-financial-welcome-collectible-only",
+      "teen": "non-value-learning-simulation",
+      "adult": "optional-xrpl-testnet-calt-claim"
+    },
+    "requires_explicit_wallet_authorization": true,
+    "requires_validated_ledger_result": true,
+    "jurisdiction_gate_required": true,
+    "discovery_capture": {
+      "reward_basis": "active-observation-exploration-and-meaningful-actions",
+      "raw_screen_time_rewarded": false,
+      "idle_rewarded": false,
+      "refresh_farming_rewarded": false,
+      "equivalent_accessibility_routes_required": true,
+      "per_identity_limits_required": true,
+      "anti_automation_required": true
+    },
+    "generosity": {
+      "enabled": false,
+      "adult_testnet_only": true,
+      "allowed_targets": [
+        "friends",
+        "family",
+        "opt-in-community-support-pools"
+      ],
+      "appreciation_rewards": [
+        "non-financial-reputation",
+        "generosity-badges",
+        "community-progress",
+        "world-improvements",
+        "cooperative-quest-unlocks"
+      ],
+      "calt_from_gifting_itself": false,
+      "circular_transfer_farming_blocked": true,
+      "self_transfer_credit_blocked": true,
+      "socioeconomic_inference_forbidden": true
+    },
+    "distribution_principles": {
+      "fair_base_opportunity": true,
+      "effort_bonus": "small-bounded-extra",
+      "effort_bonus_cap": null,
+      "no_balance_wealth_leaderboard": true,
+      "no_hoarding_advantage": true,
+      "no_pay_to_win": true,
+      "catch_up_base_opportunities": true,
+      "no_scene_or_culture_value_difference": true,
+      "generosity_recognition": [
+        "reputation",
+        "badges",
+        "titles",
+        "cosmetics",
+        "community-progress",
+        "story-unlocks"
+      ],
+      "calt_generosity_bonus_enabled": false,
+      "calt_generosity_bonus_policy": "if-enabled-later-small-capped-non-circular-abuse-resistant",
+      "assistance_targeting": "voluntary-opt-in-or-community-pool-never-inferred-poverty",
+      "grind_policy": "reward-focus-and-useful-action-not-screen-time-or-repetition"
+    },
+    "newcomer_policy": {
+      "globally_available_for_future_newcomers": true,
+      "one_base_entitlement_per_canonical_game_identity": true,
+      "personal_window_starts_on_first_eligible_game_start": true,
+      "personal_window_duration": null,
+      "returning_player_does_not_reset_newcomer_status": true,
+      "seasonal_relaunch_does_not_duplicate_base_entitlement": true,
+      "backend_canonical_start_required_when_enabled": true
+    }
+  },
+  "marketplace": {
+    "enabled": false,
+    "testnet_only": false,
+    "supported_asset_families": [
+      "recipe",
+      "menu",
+      "food-photo",
+      "gif",
+      "3d-model",
+      "blender-character",
+      "avatar-item",
+      "farm-object",
+      "digital-livestock-character",
+      "restaurant-object",
+      "educational-media",
+      "provenance-story-media",
+      "community-art",
+      "future-calorie-related-asset"
+    ],
+    "mode": "testnet-first-mainnet-ready",
+    "settlement": {
+      "seller_selects_accepted_rails": true,
+      "buyer_selects_from_listing_rails": true,
+      "automatic_cross_currency_conversion": false,
+      "non_custodial": true,
+      "explicit_wallet_signature_required": true,
+      "validated_ledger_result_required": true,
+      "rails": {
+        "CALT": {
+          "network": "xrpl-testnet",
+          "enabled": false,
+          "real_value": false,
+          "redeemable": false,
+          "feature_flag": "showcase_nft_settlement_calt"
+        },
+        "CAL": {
+          "network": "xrpl-mainnet",
+          "enabled": false,
+          "real_value": true,
+          "issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY",
+          "currency_code": "43616C6F72696500000000000000000000000000",
+          "feature_flag": "showcase_nft_settlement_cal_mainnet",
+          "adult_only": true,
+          "independent_release_approval_required": true,
+          "jurisdiction_gate_required": true,
+          "legal_tax_consumer_review_required": true
+        },
+        "XRP": {
+          "network": "xrpl-mainnet",
+          "enabled": false,
+          "real_value": true,
+          "native_asset": true,
+          "feature_flag": "showcase_nft_settlement_xrp_mainnet",
+          "adult_only": true,
+          "independent_release_approval_required": true,
+          "jurisdiction_gate_required": true,
+          "legal_tax_consumer_review_required": true
+        }
+      }
+    },
+    "creator_storage": {
+      "model": "bring-your-own-storage",
+      "platform_shared_storage_credentials": false,
+      "creator_owns_provider_account": true,
+      "per_user_connection_scope": true,
+      "provider_account_linking_preferred": true,
+      "oauth_pkce_when_supported": true,
+      "provider_managed_social_login_only": true,
+      "google_password_never_collected": true,
+      "github_password_never_collected": true,
+      "raw_provider_password_never_collected": true,
+      "api_key_fallback": {
+        "allowed": true,
+        "frontend_storage_forbidden": true,
+        "public_metadata_storage_forbidden": true,
+        "backend_encryption_required": true
+      },
+      "stored_application_fields": [
+        "provider_id",
+        "connection_id_non_secret",
+        "cid",
+        "ipfs_uri",
+        "content_digest",
+        "verification_timestamp",
+        "preservation_status"
+      ],
+      "providers": {
+        "nft_storage_classic": {
+          "mode": "legacy-import-only",
+          "new_uploads": false,
+          "accepted_inputs": [
+            "existing-cid",
+            "existing-ipfs-uri"
+          ],
+          "documented_login_methods": [
+            "email",
+            "github"
+          ],
+          "google_login_assumed": false
+        },
+        "hot_ipfs_provider": {
+          "mode": "creator-selected-current-provider",
+          "provider_examples": [
+            "Pinata",
+            "Lighthouse"
+          ],
+          "account_owned_by_creator": true,
+          "oauth_or_api_key_depends_on_provider": true
+        },
+        "nft_storage_preservation": {
+          "mode": "optional-long-term-preservation",
+          "account_owned_by_creator": true,
+          "requires_existing_ipfs_content": true,
+          "adapter_status": "planned-current-api-verification-required"
+        }
+      },
+      "pre_mint_requirements": {
+        "media_cid_retrievable": true,
+        "metadata_cid_retrievable": true,
+        "immutable_uri_preferred": true,
+        "content_digest_recorded": true
+      },
+      "post_mint_mutation_policy": "new-content-means-new-cid-no-silent-replacement"
+    }
+  },
+  "reference_peg": {
+    "enabled": true,
+    "mode": "simulated-1-calt-equals-1-cal-market-reference",
+    "source": "XPMarket-via-WordPress-proxy",
+    "source_route": "/wp-json/calorieapp/v1/xpmarket-widget",
+    "source_asset": "CAL",
+    "source_issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY",
+    "refresh_seconds": 300,
+    "valuation_only": true,
+    "affects_calt_quantity_or_airdrop_amount": false,
+    "redeemable_for_cal": false,
+    "convertible_to_cal_by_calorietoken": false,
+    "reserve_backed": false,
+    "guaranteed_peg": false,
+    "arbitrage_promised": false,
+    "snapshot_marketplace_valuations": true,
+    "require_source_timestamp": true,
+    "stale_policy": {
+      "max_last_known_seconds": 1800,
+      "after_expiry": "hide-reference-valuation"
+    },
+    "display_label": "Simulated CAL reference"
+  }
+}

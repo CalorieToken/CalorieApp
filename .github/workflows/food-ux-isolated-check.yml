@@ -1,0 +1,124 @@
+name: Food UX isolated check
+
+on:
+  push:
+    branches: [repair/food-ux-integration-20260915]
+  pull_request:
+    branches: [herstel/vervolg-20260915]
+    paths:
+      - 'frontend/**'
+      - 'backend/app/**'
+      - 'backend/tests/**'
+      - 'wordpress-plugins/calorieapp-account-profile/**'
+      - 'backend/app/schemas.py'
+      - 'backend/app/services/open_food_facts.py'
+      - 'backend/tests/test_food_log_view.py'
+      - 'backend/tests/test_open_food_facts_normalization.py'
+      - 'tools/tests/**'
+      - 'tools/build_heading_repair_release.py'
+      - 'wordpress-plugins/calorietoken-heading-repair/**'
+      - '.github/workflows/food-ux-isolated-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: food-ux-isolated-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record the source under test
+        run: |
+          mkdir -p ux-check-evidence
+          git rev-parse HEAD > ux-check-evidence/verified-commit.txt
+          git rev-parse 'HEAD^{tree}' > ux-check-evidence/verified-tree.txt
+          git archive --format=tar.gz -o ux-check-evidence/verified-source.tar.gz HEAD
+      - name: Install locked dependencies and test tools
+        run: |
+          npm ci --prefix frontend --no-audit --no-fund
+          python -m pip install -r backend/requirements.txt 'playwright==1.57.0'
+          python -m playwright install --with-deps chromium
+      - name: Full regression suite and production build
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tools/tests/*.test.mjs 2>&1 | tee ux-check-evidence/regressions.log
+          PYTHONPATH=backend python -m pytest -q \
+            backend/tests/test_account_profile.py \
+            backend/tests/test_account_data_export.py \
+            backend/tests/test_account_data_import.py \
+            backend/tests/test_account_erasure.py \
+            backend/tests/test_database.py \
+            backend/tests/test_identity_endpoints.py \
+            backend/tests/test_inactive_account_erasure_execution.py \
+            backend/tests/test_food_log_view.py \
+            backend/tests/test_open_food_facts_normalization.py \
+            2>&1 | tee ux-check-evidence/backend-food-tests.log
+          python -m unittest tools.tests.test_build_heading_repair_release 2>&1 | tee ux-check-evidence/heading-release-tests.log
+          find wordpress-plugins/calorietoken-heading-repair -type f -name '*.php' -print0 \
+            | xargs -0 -n1 php -l 2>&1 | tee ux-check-evidence/heading-php-lint.log
+          php -l wordpress-plugins/calorieapp-account-profile/calorieapp-account-profile.php
+          php wordpress-plugins/calorieapp-account-profile/tests/profile-test.php
+          python tools/build_heading_repair_release.py \
+            --output-dir ux-check-evidence/heading-release \
+            2>&1 | tee ux-check-evidence/heading-release.log
+          cd frontend
+          ./node_modules/.bin/tsc --noEmit 2>&1 | tee ../ux-check-evidence/typecheck.log
+          npm run build 2>&1 | tee ../ux-check-evidence/build.log
+      - name: Production-browser check with synthetic backend only
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run start --prefix frontend -- --hostname 127.0.0.1 --port 3100 > ux-check-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --silent --fail http://127.0.0.1:3100/ > /dev/null && break; sleep 1; done
+          curl --silent --fail http://127.0.0.1:3100/ > /dev/null
+          # Collect every independent browser result even if one flow fails.
+          browser_failed=0
+          python tools/tests/browser_food_ux.py 2>&1 | tee ux-check-evidence/browser.log || browser_failed=1
+          python tools/tests/browser_account_profile.py 2>&1 | tee ux-check-evidence/account-profile-browser.log || browser_failed=1
+          python tools/tests/browser_account_guides.py 2>&1 | tee ux-check-evidence/account-guides-browser.log || browser_failed=1
+          HEADING_NUTRITION_EVIDENCE_DIR=ux-check-evidence/heading-nutrition-browser \
+            python tools/tests/browser_heading_nutrition.py \
+            2>&1 | tee ux-check-evidence/heading-nutrition-browser.log || browser_failed=1
+          test "$browser_failed" -eq 0
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          profile=json.loads(Path('ux-check-evidence/account-profile-browser/report.json').read_text())
+          assert profile['status']=='passed' and not profile['errors'] and len(profile['checks'])>=40, profile
+          r=json.loads(Path('ux-check-evidence/browser/report.json').read_text())
+          assert r['status']=='passed' and not r['errors'], r
+          assert len(r['checks']) >= 55 and len(r['writes']) == 1, r
+          h=json.loads(Path('ux-check-evidence/heading-nutrition-browser/report.json').read_text())
+          assert h['status']=='passed' and not h['errors'], h
+          assert len(h['checks']) >= 57, h
+          a=json.loads(Path('ux-check-evidence/account-guides-browser/report.json').read_text())
+          assert a['status']=='passed' and not a['errors'] and not a['unexpected_requests'], a
+          assert len(a['checks']) >= 40 and a['faucet_requests']==1, a
+          PY
+      - name: Retain test evidence (no publication or deployment)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: food-ux-browser-evidence
+          path: ux-check-evidence/
+          retention-days: 3
+          if-no-files-found: error

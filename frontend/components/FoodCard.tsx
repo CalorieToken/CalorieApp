@@ -1,36 +1,44 @@
 "use client";
 
 import { FoodSearchItem } from "@/components/foodTypes";
-import Image from "next/image";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
-import { formatFoodUi, getFoodUi } from "@/lib/foodUi";
+import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
+import { NutriScoreBar } from "@/components/NutriScoreBar";
+import { FoodImage } from "@/components/FoodImage";
 
 type FoodCardProps = {
   item: FoodSearchItem;
   isLogging: boolean;
   isDisabled?: boolean;
+  canLog?: boolean;
+  isSelected?: boolean;
+  controlsId?: string;
   onLog: () => void;
   formatNumber: (value: number) => string;
   children?: ReactNode;
+  comparison?: ReactNode;
   feedback?: { message: string; isError: boolean } | null;
+  restoreDetails?: boolean;
+  selectedProductName?: string;
 };
 
-export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNumber, children, feedback }: FoodCardProps) {
+export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
-  const [imageFailed, setImageFailed] = useState(false);
   const portionId = useId();
+  const detailsId = useId();
   const portionRef = useRef<HTMLDivElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
   const wasExpandedRef = useRef(false);
-  const isExpanded = Boolean(children);
-  const showImage = Boolean(item.image_url) && !imageFailed;
+  // Restored details must exist before the parent restores the list offset.
+  const [detailsOpen, setDetailsOpen] = useState(restoreDetails);
+  const isExpanded = canLog && (isSelected || Boolean(children));
+  useEffect(() => { if (restoreDetails) setDetailsOpen(true); }, [restoreDetails]);
 
   useEffect(() => {
-    if (isExpanded && !wasExpandedRef.current) {
+    if (children && isExpanded && !wasExpandedRef.current) {
       portionRef.current?.focus({ preventScroll: true });
-      portionRef.current?.scrollIntoView({ block: "nearest", behavior: "auto" });
     } else if (!isExpanded && wasExpandedRef.current) {
       if (isDisabled || isLogging) return;
       // Restore keyboard focus after the portion controls are removed, while
@@ -40,32 +48,15 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
       }
     }
     wasExpandedRef.current = isExpanded;
-  }, [isExpanded, isDisabled, isLogging]);
+  }, [children, isExpanded, isDisabled, isLogging]);
 
   return (
-    <li lang={locale} dir={direction} className={`rounded-xl border bg-white p-4 sm:p-5 shadow-sm transition duration-200 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="h-24 w-full shrink-0 overflow-hidden rounded-lg border border-brand-secondary/15 bg-brand-bg sm:h-24 sm:w-24">
-          {showImage ? (
-            <Image
-              src={item.image_url ?? ""}
-              alt={formatFoodUi(copy.productImage, { product: item.product_name })}
-              className="h-full w-full object-contain"
-              width={96}
-              height={96}
-              sizes="96px"
-              unoptimized
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs font-medium text-brand-secondary/60">
-              {copy.noImage}
-            </div>
-          )}
-        </div>
+    <li lang={locale} dir={direction} className={`scroll-mt-3 rounded-xl border bg-white p-3 shadow-sm transition duration-200 sm:p-4 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
+      <div className="flex min-w-0 items-start gap-3">
+        <FoodImage item={item} size={96} className="h-20 w-20 shrink-0" />
 
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-brand-primary"><bdi>{item.product_name}</bdi></p>
+          <p className="break-words text-sm font-bold leading-snug text-brand-primary sm:text-base"><bdi>{item.product_name}</bdi></p>
           {item.brand ? (
             <p className="mt-1 truncate text-xs text-brand-secondary/80" title={item.brand}>
               <bdi>{item.brand}</bdi>
@@ -76,14 +67,60 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
               {copy.barcode}: <bdi dir="ltr">{item.barcode}</bdi>
             </p>
           ) : null}
-          {(item.serving_size || item.nutri_score) ? (
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-secondary/75">
-              {item.serving_size ? <p>{copy.serving}: <bdi>{item.serving_size}</bdi></p> : null}
-              {item.nutri_score ? <p><bdi dir="ltr">Nutri-Score: {item.nutri_score}</bdi></p> : null}
-            </div>
-          ) : null}
+          <p className="mt-2 text-xs text-brand-secondary/75">
+            {item.serving_size ? <>{copy.serving}: <bdi>{displayServingSize(item.serving_size, copy)}</bdi></> : copy.sourceReference}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
+        </div>
+      </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+      <NutriScoreBar grade={item.nutri_score} compact />
+
+      <div className="mt-3 flex flex-wrap items-stretch gap-2">
+        {canLog ? <button
+          ref={logButtonRef}
+          type="button"
+          className="min-h-11 flex-1 rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          onClick={onLog}
+          disabled={isLogging || isDisabled || isExpanded}
+          aria-busy={isLogging}
+          aria-expanded={isExpanded}
+          aria-controls={isExpanded ? controlsId || portionId : undefined}
+          aria-label={formatFoodUi(copy.logProduct, { product: item.product_name })}
+        >
+          {isLogging ? copy.logging : isExpanded ? copy.chooseBelow : copy.logFood}
+        </button> : null}
+        <button type="button" onClick={() => setDetailsOpen(value => !value)}
+          className="min-h-11 flex-1 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          aria-expanded={detailsOpen} aria-controls={detailsId}
+          aria-label={formatFoodUi(copy.viewDetails, { product: item.product_name })}>
+          {detailsOpen ? copy.backToList : formatFoodUi(copy.viewDetails, { product: item.product_name })}
+        </button>
+      </div>
+
+      {isExpanded ? (
+        <div
+          id={portionId}
+          ref={portionRef}
+          tabIndex={-1}
+          role="region"
+          aria-label={formatFoodUi(copy.choosePortionFor, { product: selectedProductName || item.product_name })}
+          className="scroll-mt-3 outline-none"
+        >
+          {children}
+        </div>
+      ) : null}
+      {canLog && feedback ? (
+        <p
+          role={feedback.isError ? "alert" : "status"}
+          className={`mt-3 text-sm font-semibold ${feedback.isError ? "text-red-600" : "text-brand-primary"}`}
+        >
+          {feedback.message}
+        </p>
+      ) : null}
+
+      {detailsOpen ? <div id={detailsId} className="mt-3 border-t border-brand-secondary/15 pt-3">
+          <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
               <span className="text-brand-secondary/70">{copy.calories}</span>
               <p className="font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
@@ -101,41 +138,8 @@ export function FoodCard({ item, isLogging, isDisabled = false, onLog, formatNum
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.carbohydrates)}g</bdi></p>
             </div>
           </div>
-        </div>
-      </div>
-      <button
-        ref={logButtonRef}
-        type="button"
-        className="mt-4 min-h-11 rounded-full bg-brand-primary px-6 py-2 text-xs font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-        onClick={onLog}
-        disabled={isLogging || isDisabled || isExpanded}
-        aria-busy={isLogging}
-        aria-expanded={isExpanded}
-        aria-controls={isExpanded ? portionId : undefined}
-        aria-label={formatFoodUi(copy.logProduct, { product: item.product_name })}
-      >
-        {isLogging ? copy.logging : isExpanded ? copy.chooseBelow : copy.logFood}
-      </button>
-      {isExpanded ? (
-        <div
-          id={portionId}
-          ref={portionRef}
-          tabIndex={-1}
-          role="region"
-          aria-label={formatFoodUi(copy.choosePortionFor, { product: item.product_name })}
-          className="scroll-mt-4 outline-none"
-        >
-          {children}
-        </div>
-      ) : null}
-      {feedback ? (
-        <p
-          role={feedback.isError ? "alert" : "status"}
-          className={`mt-3 text-sm font-semibold ${feedback.isError ? "text-red-600" : "text-brand-primary"}`}
-        >
-          {feedback.message}
-        </p>
-      ) : null}
+          {comparison}
+        </div> : null}
     </li>
   );
 }

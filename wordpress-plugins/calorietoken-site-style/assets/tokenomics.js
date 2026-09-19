@@ -17,7 +17,7 @@
   if (config?.publicPage !== true) return;
   var wallet = "rEfiRssDCQd466z2bi63vi64u2rYiMrnhL";
   var locale = new URL(window.location.href).searchParams.get("ui_lang") || document.documentElement.lang || "en", view = null;
-  var keys = ["statusTitle", "status", "giveaways", "walletTitle", "description", "liquidity", "action"];
+  var keys = ["statusTitle", "status", "giveaways", "walletTitle", "description", "liquidity", "action", "detailsLabel"];
   var protectedNodes = "form,input,select,textarea,[contenteditable],.xl-card,[data-calorieapp-embed],[data-calorieapp-account]";
   function unique(scope, selector) {
     var nodes = scope.querySelectorAll(selector);
@@ -69,7 +69,7 @@
       var panel = node("section", undefined, { id: "calorieapp-consolidation-wallet", class: "calorieapp-tokenomics-note", "aria-labelledby": "calorieapp-consolidation-wallet-title" });
       var fields = {};
       keys.forEach(function (key) {
-        fields[key] = node(key === "action" ? "a" : /Title$/.test(key) ? "h2" : "p", "");
+        fields[key] = node(key === "action" ? "a" : key === "detailsLabel" ? "summary" : /Title$/.test(key) ? "h2" : "p", "");
       });
       fields.statusTitle.setAttribute("id", "calorieapp-tokenomics-status-title");
       fields.walletTitle.setAttribute("id", "calorieapp-consolidation-wallet-title");
@@ -78,9 +78,11 @@
       fields.action.setAttribute("rel", "noopener noreferrer");
       fields.action.setAttribute("class", "calorieapp-tokenomics-explorer");
       status.appendChild(fields.statusTitle); status.appendChild(fields.status); status.appendChild(fields.giveaways);
-      panel.appendChild(fields.walletTitle); panel.appendChild(fields.description);
-      panel.appendChild(node("code", wallet, { dir: "ltr", class: "calorieapp-tokenomics-address" }));
-      panel.appendChild(fields.liquidity); panel.appendChild(fields.action);
+      var details = node("details", undefined, { class: "ctstyle-wallet-details" });
+      details.appendChild(fields.detailsLabel); details.appendChild(fields.description);
+      details.appendChild(node("code", wallet, { dir: "ltr", class: "calorieapp-tokenomics-address" }));
+      details.appendChild(fields.liquidity);
+      panel.appendChild(fields.walletTitle); panel.appendChild(fields.action); panel.appendChild(details);
       target.chart.after(status); target.row.after(panel);
       view = { chart: target.chart, row: target.row, statusPanel: status, walletPanel: panel, fields: fields };
     }

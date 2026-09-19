@@ -104,12 +104,15 @@ def test_current_public_route_budgets_are_explicit_and_reviewable() -> None:
             60,
         ),
         ("POST", "/api/identity/callback"): ("identity_callback", 30, 60),
+        ("POST", "/api/identity/bridge/code"): ("identity_bridge_code", 120, 60),
         ("POST", "/api/identity/login/status"): (
             "identity_login_status",
             240,
             60,
         ),
         ("GET", "/api/identity/me"): ("identity_me", 240, 60),
+        ("POST", "/api/identity/profile"): ("identity_profile", 60, 60),
+        ("POST", "/api/identity/profile/wordpress"): ("identity_widget_profile", 240, 60),
         ("GET", "/api/identity/export"): ("identity_export", 30, 60),
         ("POST", "/api/identity/import"): ("identity_import", 5, 60),
         ("DELETE", "/api/identity/account"): (
@@ -120,6 +123,7 @@ def test_current_public_route_budgets_are_explicit_and_reviewable() -> None:
         ("POST", "/api/identity/logout"): ("identity_logout", 120, 60),
         ("POST", "/log-food"): ("food_log_create", 120, 60),
         ("GET", "/logs"): ("food_log_list", 240, 60),
+        ("GET", "/logs/overview"): ("food_log_list", 240, 60),
         ("DELETE", "/logs"): ("food_log_delete_all", 30, 60),
         ("GET", "/search-food"): ("food_search", 60, 60),
     }

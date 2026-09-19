@@ -1,0 +1,181 @@
+/* BEGIN CalorieToken menu, guide, slogan and RTL refinements 2026-09-18 v1 */
+@layer calorietoken-content {
+  /* Leave closed/age-restricted navigation hidden. Space only open lists. */
+  body.ct-content-theme .ctstyle-menu-groups {
+    position:relative!important; gap:10px 12px!important;
+  }
+  body.ct-content-theme .ctstyle-menu-category[open] > ul {
+    display:grid!important; grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important; padding:12px!important; margin-block-start:10px!important;
+    border:1px solid #505ba94d!important; border-radius:16px!important;
+  }
+  body.ct-content-theme .ctstyle-menu-category[open] > ul > li {
+    min-width:0!important; margin:0!important; padding:0!important;
+  }
+  body.ct-content-theme .ctstyle-menu-category[open] > ul .ct-content-menu-action {
+    width:100%!important; min-width:0!important; height:auto!important;
+    margin:0!important; text-align:start!important;
+  }
+  @media(min-width:1051px) {
+    /* A dropdown starts below both rows when the main menu wraps. */
+    body.ct-content-theme .ctstyle-menu-groups > li,
+    body.ct-content-theme .ctstyle-menu-groups > li > .ctstyle-menu-category {
+      position:static!important;
+    }
+    body.ct-content-theme .ctstyle-menu-category[open] > ul {
+      top:100%!important; inset-inline-start:auto!important;
+    }
+  }
+  @media(max-width:1050px) {
+    body.ct-content-theme .ctstyle-menu-groups {
+      display:grid!important; grid-template-columns:minmax(0,1fr)!important;
+      gap:8px!important; align-items:stretch!important;
+    }
+    body.ct-content-theme .ctstyle-menu-groups > li {margin:0!important; min-width:0!important;}
+    body.ct-content-theme .ctstyle-menu-category[open] > ul {
+      position:static!important; inset:auto!important;
+      width:100%!important; min-width:0!important; max-width:100%!important;
+      margin:8px 0 0!important; box-shadow:none!important;
+    }
+  }
+
+  /* The guide is a layout wrapper; its individual cards own their borders. */
+  body.ct-content-theme.page-id-4205 .ctstyle-exchange-layout .cal-buy-guide {
+    box-sizing:border-box!important; width:100%!important; max-width:none!important;
+    margin:20px 0!important; padding:0!important; border:0!important;
+    border-radius:0!important; background:transparent!important; box-shadow:none!important;
+    font:400 16px/1.6 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-guide .cal-buy-steps {
+    gap:20px!important; margin:20px 0!important; padding:0!important; align-items:start!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-guide .cal-buy-steps > li.ct-content-card {
+    margin:0!important; grid-template-columns:40px minmax(0,1fr)!important;
+    gap:14px!important; align-items:start!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-steps > li > span {
+    width:40px!important; height:40px!important;
+    font:700 17px/1 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-steps > li > div {min-width:0!important;}
+  body.ct-content-theme.page-id-4205 .cal-buy-guide a[data-cal-buy-copy]:not([hidden]):not([data-ct-age-hidden]) {
+    box-sizing:border-box!important; display:inline-flex!important;
+    align-items:center!important; justify-content:center!important;
+    min-height:44px!important; max-width:100%!important;
+    margin:4px 4px 10px 0!important; padding:11px 18px!important;
+    border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important; box-shadow:none!important;
+    font:700 15px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    white-space:normal!important; overflow-wrap:break-word!important;
+    text-align:center!important; text-decoration:none!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-guide a[data-cal-buy-copy]:hover {
+    background:#287547!important; border-color:#287547!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-guide a[data-cal-buy-copy]:focus-visible {
+    outline:3px solid #f9b233!important; outline-offset:3px!important;
+  }
+  body.ct-content-theme.page-id-4205 .cal-buy-guide .cal-buy-identity code {
+    font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+    white-space:normal!important; overflow-wrap:anywhere!important;
+  }
+  @media(max-width:767px) {
+    body.ct-content-theme.page-id-4205 .cal-buy-guide .cal-buy-steps {grid-template-columns:minmax(0,1fr)!important;}
+    body.ct-content-theme.page-id-4205 .cal-buy-guide .cal-buy-steps > li.ct-content-card {
+      grid-template-columns:32px minmax(0,1fr)!important; gap:12px!important;
+    }
+    body.ct-content-theme.page-id-4205 .cal-buy-steps > li > span {width:32px!important;height:32px!important;}
+  }
+
+  /* Pages without a market card still have the same translated ending. */
+  body:is(.ctstyle-enabled,.ctstyle-footer-only):not(:has(.calorieapp-xpmarket-widget)) .ctstyle-app-ending:not([hidden]):not([data-ct-age-hidden])::before {
+    content:var(--ct-market-slogan,"Aiming to be the world's food token")!important;
+    display:block!important; box-sizing:border-box!important;
+    width:100%!important; max-width:760px!important; min-width:0!important;
+    margin:0 auto 20px!important; padding:0 8px!important;
+    color:#4c5687!important; background:transparent!important;
+    font:400 20px/1.6 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    text-align:center!important; white-space:normal!important;
+    overflow-wrap:break-word!important; word-break:normal!important;
+    direction:var(--ct-interface-direction,ltr)!important; unicode-bidi:plaintext;
+  }
+  @media(max-width:600px) {
+    body:is(.ctstyle-enabled,.ctstyle-footer-only):not(:has(.calorieapp-xpmarket-widget)) .ctstyle-app-ending::before {
+      font-size:18px!important; margin-bottom:16px!important;
+    }
+  }
+
+  /* The active picker controls layout as well as copy, including Help changes. */
+  :root {--ct-interface-direction:ltr;}
+  :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked),
+  :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) {
+    --ct-interface-direction:rtl;
+  }
+  body.ct-content-theme :is(.ctstyle-menu-groups,.calorieapp-xpmarket-widget,.calorieapp-app-info,.ct-content-account) {
+    direction:var(--ct-interface-direction,ltr)!important;
+  }
+  body.ct-content-theme .ctstyle-menu-groups .ct-content-menu-action,
+  body.ct-content-theme :is(.calorieapp-xpmarket-widget,.calorieapp-app-info,.ct-content-account) :is(p,small,strong,.calorieapp-xpmarket-cta) {
+    text-align:start!important;
+  }
+  body.ct-content-theme .calorieapp-xpmarket-widget :is(.calorieapp-xpmarket-price,.calorieapp-xpmarket-xrp,.calorieapp-xpmarket-market-cap,.calorieapp-xpmarket-rank,.calorieapp-xpmarket-holders),
+  body.ct-content-theme .ct-content-account .xl-card-wallet {
+    direction:ltr!important; unicode-bidi:isolate!important;
+  }
+  body.ct-content-theme .calorieapp-xpmarket-widget:dir(rtl) .calorieapp-xpmarket-cta > span[aria-hidden="true"] {transform:scaleX(-1);}
+  :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) .calorieapp-xpmarket-cta > span[aria-hidden="true"] {transform:scaleX(-1);}
+
+  /* Mirror floating controls together, always keeping Help on the other side. */
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) #ctstyle-app-launcher {
+    inset-inline:auto!important; left:max(12px,env(safe-area-inset-left))!important; right:auto!important;
+  }
+  body:is(.ctstyle-enabled,.ctstyle-footer-only) #ctstyle-app-launcher .ctstyle-app-launcher-panel {
+    inset-inline:auto!important; left:0!important; right:auto!important;
+  }
+  @media(max-width:767px) {
+    body:is(.ctstyle-enabled,.ctstyle-footer-only) #ctstyle-app-launcher {
+      left:max(8px,env(safe-area-inset-left))!important;
+    }
+  }
+  :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher,
+  :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher {
+    left:auto!important; right:max(12px,env(safe-area-inset-right))!important;
+  }
+  :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher .ctstyle-app-launcher-panel,
+  :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher .ctstyle-app-launcher-panel {
+    left:auto!important; right:0!important;
+  }
+  :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) body .calorieapp-page-tools,
+  :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) body .calorieapp-page-tools {
+    direction:rtl!important; left:max(16px,env(safe-area-inset-left))!important; right:auto!important;
+  }
+  @media(max-width:767px) {
+    :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher,
+    :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) body #ctstyle-app-launcher {
+      right:max(8px,env(safe-area-inset-right))!important;
+    }
+    :root:has(#ctstyle-language-select option:is([value="ar"],[value="ur"]):checked) body .calorieapp-page-tools,
+    :root:not(:has(#ctstyle-language-select)):has(#ctstyle-account-language option:is([value="ar"],[value="ur"]):checked) body .calorieapp-page-tools {
+      left:max(8px,env(safe-area-inset-left))!important;
+    }
+  }
+  @media(max-width:360px) {
+    body.ct-content-theme .calorieapp-page-tools {gap:4px!important;}
+  }
+}
+@layer calorietoken-content {
+  @media(max-width:767px) {
+    body.ct-content-theme.page-id-4205 .ctstyle-exchange-layout .ctstyle-crypto-guide-route {
+      box-sizing:border-box!important; width:100%!important; min-width:0!important;
+      padding:0!important; border:0!important; border-radius:0!important;
+      background:transparent!important; box-shadow:none!important;
+    }
+    body.ct-content-theme.page-id-4205 .ctstyle-crypto-guide-route > .ctstyle-crypto-panel-body {
+      margin:0!important; padding:0!important; border:0!important;
+    }
+    body.ct-content-theme.page-id-4205 .ctstyle-crypto-guide-route > .ctstyle-crypto-route-toggle {
+      width:100%!important; margin:0!important;
+    }
+  }
+}
+/* END CalorieToken menu, guide, slogan and RTL refinements 2026-09-18 v1 */

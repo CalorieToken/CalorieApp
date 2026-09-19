@@ -1,0 +1,42 @@
+{
+  "schema_version": "calorie.gameverse.starter-character.v1",
+  "status": "design-contract",
+  "purpose": "Preserve the player's original Gameverse starter-character identity while visuals, content, infrastructure and participation capacity evolve.",
+  "identity": {
+    "stable_key": "starter_character_id",
+    "stable_across": [
+      "render_model_versions",
+      "content_pack_versions",
+      "world_expansions",
+      "participation_network_phases",
+      "hosted_to_distributed_infrastructure_changes"
+    ],
+    "separate_from_render_asset": true,
+    "silent_replacement_forbidden": true,
+    "explicit_user_switch_allowed": true
+  },
+  "rendering": {
+    "render_asset_key_is_versioned": true,
+    "compatibility_aliases_allowed": true,
+    "legacy_identity_must_remain_addressable": true,
+    "higher_fidelity_asset_may_replace_rendering_without_replacing_identity": true
+  },
+  "migration": {
+    "preserve_fields": [
+      "starter_character_id",
+      "nickname_ref",
+      "progress_ref",
+      "unlocked_routes_ref"
+    ],
+    "network_phase_must_not_change_identity": true,
+    "content_update_must_not_reset_progress": true,
+    "asset_retirement_requires_documented_compatibility_migration": true,
+    "forced_character_switch_for_scaling_only": false
+  },
+  "product_invariants": {
+    "zero_participation_path_remains_available": true,
+    "ordinary_gameverse_access_does_not_require_node_participation": true,
+    "starter_identity_is_not_owned_by_node_provider": true,
+    "starter_identity_is_not_owned_by_network_phase": true
+  }
+}

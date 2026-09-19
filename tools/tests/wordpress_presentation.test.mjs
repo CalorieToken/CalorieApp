@@ -1,0 +1,143 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import vm from 'node:vm';
+const require=createRequire(new URL('../../frontend/package.json',import.meta.url));
+const {parseHTML}=require('linkedom');
+const base=new URL('../../wordpress-plugins/calorietoken-site-style/assets/',import.meta.url);
+const repairBase=new URL('../../wordpress-plugins/calorietoken-heading-repair/assets/',import.meta.url);
+const source=(name,repair=false)=>readFileSync(new URL(name,repair&&name==='presentation.js'?repairBase:base),'utf8');
+const copy=JSON.parse(source('presentation-data.json'));
+const paths=['','calorieapp','showcases','community-voting-hub-info','whitepaper','how-to-buy-calorie','trustline','tokenomics-update','roadmap','richlist','blog','contact','faq','donate','merchnfts'];
+function fixture(html,repair=false){
+ const {document}=parseHTML('<html><body class="ctstyle-enabled">'+html+'</body></html>');
+ const window={location:new URL('https://calorietoken.net/showcases/'),CalorieTokenPresentation:{copy,links:paths.map(path=>({title:path||'Home',url:'https://calorietoken.net/'+path+(path?'/':'')}))},addEventListener(){}};
+ const context=vm.createContext({window,document,URL,Intl,console});
+ const run=name=>vm.runInContext(source(name,repair),context);
+ return {document,window,run};
+}
+test('native, fallback and Showcases headers receive the same groups without replacing authentication controls',()=>{
+ const h=fixture('<section><div class="brz-menu-simple"><div><input id="mobile" type="checkbox"><label class="brz-menu-simple__icon" for="mobile"></label><div class="menu-hoofdmenu3-container"><ul><li>old</li></ul></div></div></div><div class="xl-card"><button>Existing auth control</button></div></section><header class="ctstyle-header-fallback"><nav class="ctstyle-desktop-nav"></nav><details class="ctstyle-mobile-nav"><summary>Menu</summary><nav></nav></details></header><header class="showcase-page-header"><nav class="showcase-header-menu"></nav><details class="showcase-mobile-menu"><summary>Menu</summary><nav></nav></details></header>');
+ const widget=h.document.querySelector('.xl-card'),input=h.document.querySelector('#mobile');
+ h.run('presentation.js');
+ const menus=h.document.querySelectorAll('.ctstyle-menu-groups');assert.equal(menus.length,5);
+ for(const menu of menus){assert.equal(menu.querySelectorAll('a').length,15);assert.equal(menu.querySelectorAll('details').length,4);assert.equal(menu.children.length,6);assert.deepEqual([...menu.querySelectorAll('a')].map(a=>a.href).sort(),paths.map(p=>'https://calorietoken.net/'+p+(p?'/':'')).sort());}
+ assert.equal(h.document.querySelector('.xl-card'),widget);assert.equal(h.document.querySelector('#mobile'),input);
+ for(const locale of Object.keys(copy)){h.window.CalorieTokenPresentationUI.refresh(locale);assert.equal(h.document.querySelector('[data-ctstyle-menu-group="help"]').textContent,copy[locale].help);}
+ assert.equal(h.document.querySelectorAll('.ctstyle-menu-groups').length,5);assert.equal(h.document.querySelectorAll('input').length,1);
+});
+test('title initials survive translated text and English restoration without duplicate wrappers',()=>{
+ const h=fixture('<div class="brz-rich-text"><h1 class="ctstyle-heading">Free Test Account</h1></div><header class="ctstyle-crypto-intro"><h2>CAL &amp; Crypto</h2></header>');
+ h.window.CalorieTokenContentLanguage={locales:['en','nl'],entries:[{source:'Free Test Account',translations:{nl:'Gratis Testaccount'}}]};
+ h.run('content-language.js');h.run('presentation.js');
+ assert.deepEqual([...h.document.querySelectorAll('.ctstyle-crypto-intro .ctstyle-word-initial')].map(n=>n.textContent),['C','C']);
+ for(let i=0;i<3;i++)for(const [locale,text,letters] of [['nl','Gratis Testaccount',['G','T']],['en','Free Test Account',['F','T','A']]]){
+  h.window.CalorieTokenContentLanguageUI.refresh(locale);h.window.CalorieTokenPresentationUI.refresh(locale);
+  const heading=h.document.querySelector('h1');assert.equal(heading.textContent,text);assert.deepEqual([...heading.querySelectorAll('.ctstyle-word-initial')].map(n=>n.textContent),letters);
+ }
+});
+test('a presentation-only draft preview styles headings without creating login, camera or faucet elements',()=>{
+ const h=fixture('<main><h1 class="entry-title">Draft Showcase</h1></main>');h.document.body.className='ctstyle-presentation-preview';
+ h.run('presentation.js');assert.equal(h.document.querySelectorAll('.ctstyle-word-initial').length,2);
+ assert.equal(h.document.querySelectorAll('iframe,form,button,.xl-card').length,0);
+});
+test('fragmented Brizy words have one initial, preserve markup, and treat line breaks as word boundaries',()=>{
+ const h=fixture('<h1 class="ctstyle-heading"><strong>C</strong><strong>alorie</strong><strong>A</strong><strong>pp</strong></h1><h2 class="ctstyle-heading"><span>S</span><em>howcases</em><br><strong>Voting</strong> <span>Hub</span></h2><h3 class="ctstyle-heading"><b>E</b><i>\u0301nergie</i></h3>');
+ const strongs=[...h.document.querySelectorAll('strong')],em=h.document.querySelector('em');
+ h.run('presentation.js');
+ for(let i=0;i<3;i++)h.window.CalorieTokenPresentationUI.refresh();
+ assert.equal(h.document.querySelector('h1').textContent,'CalorieApp');
+ assert.deepEqual([...h.document.querySelectorAll('h1 .ctstyle-word-initial')].map(n=>n.textContent),['C']);
+ assert.deepEqual([...h.document.querySelectorAll('h2 .ctstyle-word-initial')].map(n=>n.textContent),['S','V','H']);
+ assert.equal([...h.document.querySelectorAll('h3 .ctstyle-word-initial')].map(n=>n.textContent).join(''),'E\u0301');
+ assert.deepEqual([...h.document.querySelectorAll('strong')],strongs);assert.equal(h.document.querySelector('em'),em);
+ assert.equal(h.document.querySelectorAll('br').length,1);
+});
+test('fragmented title markup returns intact after translation and English restoration',()=>{
+ const h=fixture('<div class="brz-rich-text"><h1 class="ctstyle-heading"><strong>S</strong><span>howcases</span></h1></div>');
+ h.window.CalorieTokenContentLanguage={locales:['en','nl'],entries:[{source:'Showcases',translations:{nl:'Voorbeelden'}}]};
+ h.run('content-language.js');h.run('presentation.js');
+ for(let i=0;i<3;i++)for(const [locale,text,letter] of [['nl','Voorbeelden','V'],['en','Showcases','S']]){
+  h.window.CalorieTokenContentLanguageUI.refresh(locale);h.window.CalorieTokenPresentationUI.refresh(locale);
+  const heading=h.document.querySelector('h1');assert.equal(heading.textContent,text);
+  assert.deepEqual([...heading.querySelectorAll('.ctstyle-word-initial')].map(n=>n.textContent),[letter]);
+ }
+ assert.equal(h.document.querySelector('h1 strong').textContent,'S');
+});
+test('content panels share framing while Brizy structure, forms, disclosures, and account controls survive',()=>{
+ const h=fixture('<header class="ctstyle-header"><div class="brz-columns"><div class="brz-column__items"><div class="brz-rich-text"><h2>Header</h2><p>Brand</p></div></div></div></header><div class="brz-columns"><div id="content" class="brz-column__items"><div class="brz-rich-text"><h2><strong>Public</strong> guide</h2><p>Existing content</p></div><button id="action">Continue</button></div></div><section class="ctstyle-discovery-card"><h2>Test account</h2><form><label>Input <input value="keep"></label></form></section><details class="ctstyle-manual-trustline"><summary>Manual setup</summary><p>Existing guide</p></details><ol class="cal-buy-steps"><li><span>1</span><div><h3>Set up wallet</h3><p>Guide text</p></div></li></ol><div class="brz-columns"><div id="protected" class="brz-column__items"><h2>Account</h2><div class="xl-card"><button>Login</button></div></div></div><article class="showcase-card"><h2>Find a product</h2></article>');
+ const input=h.document.querySelector('input'),button=h.document.querySelector('#action'),details=h.document.querySelector('details');let clicks=0;
+ button.addEventListener('click',()=>clicks++);
+ h.run('presentation.js');h.window.CalorieTokenPresentationUI.refresh();button.click();
+ assert.equal(clicks,1);assert.equal(h.document.querySelector('input'),input);assert.equal(input.value,'keep');assert.equal(h.document.querySelector('details'),details);assert.equal(details.hasAttribute('open'),false);
+ assert.ok(h.document.querySelector('#content.ctstyle-shared-panel'));
+ assert.ok(h.document.querySelector('.showcase-card.ctstyle-shared-panel'));
+ assert.ok(h.document.querySelector('.cal-buy-steps>li.ctstyle-shared-panel'));
+ assert.ok(h.document.querySelector('.ctstyle-manual-trustline.ctstyle-shared-disclosure'));
+ assert.equal(h.document.querySelectorAll('.ctstyle-header .ctstyle-shared-panel,#protected.ctstyle-shared-panel').length,0);
+ assert.deepEqual([...h.document.querySelectorAll('#content .ctstyle-word-initial')].map(n=>n.textContent),['P','g']);
+});
+
+test('Richlist banner accents only both dollar signs, including fragmented and translated titles',()=>{
+ const h=fixture('<div class="ctstyle-title"><h1 class="ctstyle-heading"><strong>$</strong><span>Richlist</span><strong>$</strong></h1></div><h2 class="ctstyle-section-heading">Other Heading</h2>');
+ h.document.body.classList.add('page-id-3243');
+ h.run('presentation.js');
+ const heading=h.document.querySelector('h1');
+ for(const title of ['$Richlist$','$Houderslijst$','$持有者排名$','$Richlist$']){
+  if(heading.textContent!==title)heading.textContent=title;
+  h.window.CalorieTokenPresentationUI.refresh();
+  assert.equal(heading.textContent,title);
+  assert.deepEqual([...heading.querySelectorAll('.ctstyle-word-initial')].map(n=>n.textContent),['$','$']);
+ }
+ assert.deepEqual([...h.document.querySelectorAll('h2 .ctstyle-word-initial')].map(n=>n.textContent),['O','H']);
+});
+
+test('page semantics remove duplicate H1s, mark English legal copy and supply the missing home H1',()=>{
+ const legal=fixture('<main><h1>Legal &amp; Regulatory Notice</h1><article class="ctstyle-document-copy"><h1>Legal &amp; Regulatory Notice</h1><p>English legal copy</p></article></main>',true);
+ legal.document.body.classList.add('page-id-7860');legal.window.location=new URL('https://calorietoken.net/legal-regulatory-notice/');legal.run('presentation.js');
+ const headings=legal.document.querySelectorAll('h1');assert.equal(headings.length,2);assert.equal(headings[0].hidden,false);assert.equal(headings[1].hidden,true);
+ assert.equal(legal.document.querySelector('.ctstyle-document-copy').lang,'en');assert.equal(legal.document.querySelector('.ctstyle-document-copy').dir,'ltr');
+
+ const home=fixture('<main><section><h2>Welcome</h2></section></main>',true);home.document.body.classList.add('page-id-1090');home.window.location=new URL('https://calorietoken.net/');home.run('presentation.js');
+ const generated=home.document.querySelector('[data-ct-home-h1="1"]');assert.ok(generated);assert.equal(generated.textContent,'CalorieToken');assert.ok(generated.classList.contains('ct-heading-repair-sr-only'));
+
+ const headerless=fixture('<section><h2>Welcome</h2></section>',true);headerless.document.body.classList.add('page-id-1090');headerless.window.location=new URL('https://calorietoken.net/');headerless.run('presentation.js');
+ const guard=headerless.document.querySelector('.site-branding.ct-heading-repair-theme-guard');assert.ok(guard);assert.equal(guard.hidden,true);assert.equal(guard.getAttribute('aria-hidden'),'true');
+ const fallback=headerless.document.querySelector('[data-ct-home-h1="1"]');assert.ok(fallback);assert.equal(fallback.parentElement,headerless.document.body);
+});
+
+test('legacy finance notice stays outside shared adult-route presentation panels',()=>{
+ const h=fixture('<main><div class="calorie-legacy-page"><section id="ct-age-finance-notice"><h1>Public notice</h1><p>Public information</p></section><section id="adult-route"><h1>Buy CAL</h1></section></div></main>',true);
+ h.window.location=new URL('https://calorietoken.net/how-to-buy-dex/');h.run('presentation.js');
+ assert.equal(h.document.getElementById('ct-age-finance-notice').classList.contains('ctstyle-shared-panel'),false);
+ assert.equal(h.document.getElementById('adult-route').classList.contains('ctstyle-shared-panel'),true);
+});
+
+test('contact card H5 titles receive level-two heading semantics without markup replacement',()=>{
+ const h=fixture('<main><h1>Contact</h1><article><h5>Telegram</h5><h5>Project team</h5></article></main>',true);h.document.body.classList.add('page-id-1213');h.window.location=new URL('https://calorietoken.net/contact/');
+ const titles=[...h.document.querySelectorAll('h5')];h.run('presentation.js');assert.deepEqual([...h.document.querySelectorAll('h5')],titles);
+ for(const title of titles){assert.equal(title.getAttribute('role'),'heading');assert.equal(title.getAttribute('aria-level'),'2');}
+});
+
+test('repair paints joined word initials without splitting text, formatting or acronyms',()=>{
+ const h=fixture('<div class="ctstyle-title"><h1 class="ctstyle-heading"><strong>C</strong><em>alorie</em><strong>A</strong><em>pp</em></h1></div><div class="ctstyle-title"><h2 class="ctstyle-heading">CalorieToken FAQ XRPL Merch&amp;NFTs E\u0301nergieApp</h2></div><h2 id="ordinary" class="ctstyle-section-heading">CalorieApp FAQ</h2><p>Ordinary CalorieApp text</p>',true);
+ h.window.CSS={highlights:new Map()};h.window.Highlight=Set;
+ h.document.createRange=()=>({setStart(node,offset){this.startContainer=node;this.startOffset=offset;},setEnd(node,offset){this.endContainer=node;this.endOffset=offset;}});
+ const nodes=[...h.document.querySelectorAll('h1 *')],markup=h.document.querySelector('h1').innerHTML;
+ h.run('presentation.js');
+ const letters=()=>[...h.window.CSS.highlights.get('ctstyle-initials')].map(r=>r.startContainer.data.slice(r.startOffset,r.endOffset));
+ for(let i=0;i<3;i++){
+  h.window.CalorieTokenPresentationUI.refresh('nl');
+  assert.deepEqual(letters(),['C','A','C','T','F','X','M','N','E\u0301','A']);
+  assert.equal(h.document.querySelector('h1').innerHTML,markup);
+  assert.deepEqual([...h.document.querySelectorAll('h1 *')],nodes);
+  assert.ok([...h.window.CSS.highlights.get('ctstyle-initials')].every(r=>r.startContainer.parentElement.closest('.ctstyle-title')));
+  assert.equal(h.document.getElementById('ordinary').classList.contains('ctstyle-initials-fallback'),false);
+ }
+ h.document.querySelector('h1').textContent='CalorieApp hulp';
+ h.window.CalorieTokenPresentationUI.refresh('nl');
+ assert.deepEqual(letters().slice(0,3),['C','A','h']);
+ assert.equal(h.document.querySelector('h1').textContent,'CalorieApp hulp');
+ assert.equal(h.document.querySelectorAll('.ctstyle-word-initial').length,0);
+});

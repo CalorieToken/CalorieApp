@@ -29,7 +29,9 @@
     "official_service_credentials_required": false,
     "must_use_own_namespace_and_non_official_branding": true,
     "official_rejection_may_delete_or_technically_block_independent_work": false,
-    "applicable_licences_privacy_law_and_third_party_rights_still_apply": true
+    "applicable_licences_privacy_law_and_third_party_rights_still_apply": true,
+    "open_ecosystem_protocol_goal": true,
+    "official_product_commercial_services_may_coexist": true
   },
   "official_state_boundary": {
     "official_namespace": "calorieapp-official",
@@ -89,7 +91,10 @@
     "wealth_weighted_governance_required": false,
     "governance_may_override_privacy_consent_or_data_rights": false,
     "future_shared_governance_requires_separate_versioned_design": true,
-    "operator_continuity_and_succession_controls_still_required": true
+    "operator_continuity_and_succession_controls_still_required": true,
+    "long_term_ecosystem_treasury_funding_goal": true,
+    "founder_cost_recovery_and_compensation_may_precede_broader_treasury_allocation": true,
+    "revenue_percentage_changes_require_recorded_approval": true
   },
   "future_dao_candidate": {
     "status": "v2-limited-tool-preparation-v3-full-dao-only",
@@ -251,5 +256,6 @@
     "official_system_may_refuse_unsafe_or_incompatible_federation": true,
     "refusal_to_federate_may_rewrite_or_destroy_remote_state": false,
     "goal": "Allow broad experimentation while keeping official trust, personal data and canonical provenance deliberately protected."
-  }
+  },
+  "open_stewardship_and_funding_contract": "contracts/ecosystem/v2/open-stewardship-and-funding.json"
 }

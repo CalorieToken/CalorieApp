@@ -1,0 +1,307 @@
+{
+  "contract_id": "calorieverse.idea-ledger",
+  "contract_version": "1.0.0",
+  "status": "locked-continuity-register",
+  "purpose": "Prevent earlier Showcase, open-world, metaverse, ecosystem, creator, reward, participation, legal and commercial ideas from being lost as CalorieVerse evolves.",
+  "origin_arc": [
+    "community-facing Showcase narrative",
+    "interactive Showcase page",
+    "playable open-world Showcase",
+    "persistent CalorieVerse metaverse",
+    "open and progressively decentralized Calorie ecosystem"
+  ],
+  "public_names": {
+    "ecosystem": "Calorie Ecosystem",
+    "app": "CalorieApp",
+    "metaverse": "CalorieVerse",
+    "creator_surface": "CalorieStudio"
+  },
+  "invariants": [
+    "one-persistent-live-world-no-sequel-replacement",
+    "preserve-starter-character-identity-and-original-starting-world",
+    "one-link-zero-install-entry",
+    "ordinary-use-and-play-with-zero-participation",
+    "voluntary-reversible-storage-compute-validator-participation",
+    "free-core-and-no-pay-to-win",
+    "multiple-valid-playstyles-and-routes",
+    "age-specific-child-teen-adult-experiences",
+    "eleven-display-languages",
+    "open-compatible-building-with-own-namespace-and-non-misleading-branding",
+    "private-user-data-never-forced-into-public-decentralized-layer",
+    "creator-ownership-and-portable-content-identities",
+    "legal-trademark-copyright-and-regulatory-boundaries-remain-explicit",
+    "founder-cost-recovery-and-reasonable-compensation-compatible-with-long-term-ecosystem-funding",
+    "browser-first-cost-disciplined-client-heavy-rendering"
+  ],
+  "narrative": {
+    "original_showcase_story": [
+      "food",
+      "people",
+      "data",
+      "value",
+      "ecosystem"
+    ],
+    "roles": {
+      "CalorieToken": "value and XRPL ecosystem layer",
+      "CalorieApp": "food/nutrition user experience",
+      "CalorieDB": "food-data intelligence and provenance layer"
+    }
+  },
+  "world": {
+    "start": "large explorable natural world with villages, markets, farms, cities, F&B businesses, CalorieApp activity, Helpbot guidance and global cultural variety",
+    "mountains": {
+      "initially_natural_misty_hidden": true,
+      "maze_is_physical_route": true,
+      "reveal_only_at_destination": true,
+      "sequence": [
+        "green-left/front",
+        "#505BA9-blue-purple-center/deeper",
+        "yellow-right/deeper"
+      ],
+      "exact_colors": [
+        "#008D36",
+        "#505BA9",
+        "#F9B233"
+      ],
+      "labels_on_or_beside_mountains": false,
+      "teleport_surprise_not_announced": true,
+      "later_warp_to_additional_realms": true
+    },
+    "systems": [
+      "free-roam-movement",
+      "avatar-customization",
+      "dynamic-npcs",
+      "helpbot-context",
+      "maze-and-hidden-routes",
+      "quizzes-and-puzzles",
+      "object-discovery",
+      "route-choices",
+      "environmental-events",
+      "food-product-interactions",
+      "mini-games",
+      "badges-and-knowledge-progress",
+      "daily-weekly-quests",
+      "temporary-seasonal-events",
+      "hidden-collectibles",
+      "story-arcs-and-evolving-npcs",
+      "unlockable-areas",
+      "maps-and-navigation",
+      "multiple-realms"
+    ]
+  },
+  "real_life_and_culture": {
+    "themes": [
+      "real-food-and-drink",
+      "cooking-and-eating-together",
+      "ingredients-and-provenance",
+      "farms-soil-water-biodiversity-seasons",
+      "movement-outdoor-life-and-real-communities",
+      "animal-welfare-and-ecosystem-role",
+      "waste-reduction",
+      "meaningful-human-work-alongside-automation",
+      "care-craft-judgement-creativity-hospitality-science-repair-logistics-education-stewardship"
+    ],
+    "global_inclusion": true,
+    "avoid_stereotypes": true,
+    "conflict_contexts": "neutral-human-dignity-safety-food-access-rebuilding-dialogue-logistics-shared-resources-civilian-animal-nature-protection"
+  },
+  "calorieapp_and_helpbot": {
+    "missions": [
+      "food-search",
+      "barcode-scan",
+      "nutrition-understanding",
+      "alternative-comparison",
+      "OFF-vs-USDA-source-understanding",
+      "personal-food-log-understanding",
+      "age-appropriate-food-data-contribution",
+      "provenance-source-to-product"
+    ],
+    "nickname_follows_user": true,
+    "wallet_address_public_by_default": false,
+    "helpbot_is_persistent_in_world_guide": true
+  },
+  "fnb_chain": {
+    "modular": true,
+    "entry_from_any_role": true,
+    "roles": [
+      "consumer",
+      "grocery-retail",
+      "restaurant",
+      "cafe",
+      "takeaway",
+      "delivery",
+      "wholesaler-distributor",
+      "warehouse-cold-chain",
+      "transport-logistics",
+      "processor-manufacturer",
+      "baker-kitchen-production-craft",
+      "farmer-grower-fisher-primary-producer",
+      "food-data-contributor-reviewer"
+    ],
+    "branches": [
+      "fruit-vegetables",
+      "grain-bakery",
+      "dairy",
+      "drinks",
+      "hospitality",
+      "retail-delivery",
+      "future-branches"
+    ],
+    "cross_role_consequences": [
+      "harvest-quality-affects-processing-and-retail",
+      "cold-chain-affects-waste-and-freshness",
+      "product-data-affects-consumer-decisions",
+      "transport-affects-timing-freshness-and-emissions",
+      "menu-and-ingredient-choices-affect-nutrition-and-sourcing"
+    ]
+  },
+  "social_metaverse": {
+    "first_release_lightweight": true,
+    "selected_shared_hubs_and_paths": true,
+    "nickname_presence_no_public_wallet": true,
+    "preset_emotes_and_reactions": true,
+    "cooperative_quests": true,
+    "community_nature_fnb_events": true,
+    "small_group_exploration_and_maze": true,
+    "asynchronous_collaboration": true,
+    "unrestricted_public_voice": false,
+    "unrestricted_direct_messages": false,
+    "child_adult_private_channel": false,
+    "real_world_precise_location_sharing": false
+  },
+  "caloriestudio": {
+    "creator_owned_original_work": true,
+    "supported_families": [
+      "recipe",
+      "menu",
+      "food-photo",
+      "gif",
+      "3d-model",
+      "blender-character",
+      "avatar-item",
+      "farm-object",
+      "digital-livestock-character",
+      "restaurant-object",
+      "educational-media",
+      "provenance-story-media",
+      "community-art",
+      "future-calorie-related-asset"
+    ],
+    "world_assets_should_be_visible_or_usable_in_calorieverse": true,
+    "bring_your_own_storage": true,
+    "provider_account_owned_by_creator": true,
+    "no_provider_password_collection": true,
+    "new_content_means_new_cid": true,
+    "marketplace_enabled_initially": false
+  },
+  "economy": {
+    "test_currency": "CALT",
+    "network": "XRPL Testnet",
+    "real_world_value": false,
+    "redeemable": false,
+    "simulated_cal_reference_only": true,
+    "global_rolling_newcomer_welcome_airdrop": true,
+    "same_underlying_rules_across_cultures_and_regions": true,
+    "focus_discovery_bonus": "small-bounded-extra-on-top-of-fair-base",
+    "raw_screen_time_rewarded": false,
+    "idle_rewarded": false,
+    "anti_hoarding": true,
+    "wealth_leaderboard": false,
+    "generosity": {
+      "friends_family_and_opt_in_community_pools": true,
+      "circular_reward_farming": false,
+      "socioeconomic_inference": false,
+      "recognition": [
+        "reputation",
+        "badges",
+        "titles",
+        "cosmetics",
+        "community-progress",
+        "story-unlocks"
+      ]
+    },
+    "child": "non-financial collectibles and sharing",
+    "teen": "simulated non-value economy",
+    "adult": "optional Testnet CALT/NFT sandbox when separately enabled"
+  },
+  "participation_and_decentralization": {
+    "zero_nodes_healthy": true,
+    "hosted_core_fallback": true,
+    "storage_compute_validator_independent_and_opt_in": true,
+    "no_install_required": true,
+    "browser_runtime_bounded": true,
+    "public_data_progressive_decentralization": [
+      "postgresql-primary",
+      "public-participant-replicas",
+      "verified-participant-compute-storage",
+      "federated-public-read-mirrors",
+      "selected-signed-content-source-of-record",
+      "mature-distributed-public-data-compute"
+    ],
+    "private_identity_sessions_food_logs_consent_remain_protected": true,
+    "provider_neutral": true,
+    "bigchaindb_not_selected": true
+  },
+  "funding_and_stewardship": {
+    "independent_builders_allowed": true,
+    "existing_official_repository_not_automatically_relicensed": true,
+    "premium_services_allowed_if_additive": true,
+    "founder_cost_recovery_recognised": true,
+    "founder_developer_compensation_recognised": true,
+    "long_term_ecosystem_treasury_goal": true,
+    "permanent_unilateral_founder_control_required": false,
+    "future_independent_stewardship_possible": true,
+    "fixed_revenue_percentages_set": false
+  },
+  "return_loop": "explore -> learn -> choose -> challenge -> consequence -> unlock -> revisit -> discover change",
+  "return_systems": [
+    "rotating-daily-weekly-quests",
+    "changing-maze-routes",
+    "seasonal-nature-events",
+    "new-fnb-branches",
+    "community-challenges",
+    "hidden-world-changes",
+    "collection-sets",
+    "avatar-cosmetics",
+    "evolving-npc-stories",
+    "non-punitive-knowledge-streaks",
+    "choice-dependent-routes",
+    "age-specific-strategy"
+  ],
+  "architecture": {
+    "modular_concepts": [
+      "world-modules",
+      "quest-modules",
+      "interaction-modules",
+      "age-rules",
+      "feature-flags",
+      "content-packs",
+      "events",
+      "economy-entitlement-hooks",
+      "versioned-progress",
+      "future-admin-editor"
+    ],
+    "generic_engine_entities": [
+      "location",
+      "trigger",
+      "challenge",
+      "outcome",
+      "unlock"
+    ],
+    "render_client_side_first": true,
+    "durable_state_compact": true,
+    "cost_ceiling_usd_month": 99
+  },
+  "accessibility": [
+    "audio-opt-in",
+    "captions-and-text-equivalents",
+    "reduced-motion",
+    "keyboard-touch-navigation",
+    "clear-map-and-return-controls",
+    "no-hidden-financial-pressure",
+    "logic-enforced-age-gates",
+    "real-dom-text-where-possible",
+    "no-cultural-stereotypes",
+    "protect-private-food-and-identity-data"
+  ]
+}

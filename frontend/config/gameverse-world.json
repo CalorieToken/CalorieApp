@@ -1,0 +1,224 @@
+{
+  "version": "0.1.0",
+  "world_id": "calorie-gameverse-starter-world",
+  "status": "first-playable-ecosystem-slice",
+  "starter_character": {
+    "starter_character_id": "starter-original",
+    "render_asset_key": "starter-original-v1",
+    "silent_replacement_forbidden": true
+  },
+  "principles": {
+    "zero_participation_path": true,
+    "crypto_required": false,
+    "wallet_required": false,
+    "preserve_starting_world": true,
+    "mountains_hidden_until_reveal": true,
+    "one_persistent_live_world": true,
+    "sequel_replacement_model": false,
+    "internal_versions_are_migrations_not_new_games": true,
+    "preserve_player_world_continuity": true,
+    "zero_install_entry": true,
+    "browser_link_is_primary_entry": true,
+    "native_install_required": false,
+    "participation_runtime_must_be_browser_accessible": true,
+    "single_link_for_everyone": true,
+    "participant_and_nonparticipant_share_same_world_entry": true,
+    "node_or_validator_install_required": false,
+    "freedom_first_world": true,
+    "multiple_valid_playstyles": true,
+    "mandatory_faction": false,
+    "mandatory_social_participation": false,
+    "mandatory_creator_role": false,
+    "voluntary_economy_only": true,
+    "pay_to_win": false,
+    "reversible_optional_roles": true,
+    "player_expression_with_safety_boundaries": true,
+    "privacy_and_permission_control": true,
+    "minimum_necessary_restrictions": true,
+    "metaverse_and_app_share_same_ecosystem": true,
+    "creator_gallery_is_native_ecosystem_surface": true,
+    "caloriestudio_is_native_ecosystem_surface": true
+  },
+  "start": {
+    "x": 11,
+    "y": 70,
+    "region_id": "welcome-meadow"
+  },
+  "progression": {
+    "maze_unlock_after_unique_regions": 4,
+    "mountain_reveal_after_maze": false,
+    "maze_required_regions": [
+      "calorieapp-harbor",
+      "food-data-grove",
+      "community-farm",
+      "creator-gallery"
+    ],
+    "design_mode": "free-order-core-landmarks"
+  },
+  "regions": [
+    {
+      "id": "welcome-meadow",
+      "kind": "start",
+      "x": 11,
+      "y": 70,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "calorieapp-harbor",
+      "kind": "calorieapp",
+      "x": 24,
+      "y": 58,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "/"
+    },
+    {
+      "id": "helpbot-garden",
+      "kind": "helpbot",
+      "x": 35,
+      "y": 34,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/caloriehelpbot/"
+    },
+    {
+      "id": "food-data-grove",
+      "kind": "caloriedb",
+      "x": 48,
+      "y": 57,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/community/"
+    },
+    {
+      "id": "community-farm",
+      "kind": "community",
+      "x": 60,
+      "y": 31,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/calorieecosystem/"
+    },
+    {
+      "id": "creator-gallery",
+      "kind": "gallery",
+      "x": 69,
+      "y": 62,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "/studio",
+      "legacy_destination": "/gallery"
+    },
+    {
+      "id": "participation-lodge",
+      "kind": "participation",
+      "x": 79,
+      "y": 38,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "maze-gate",
+      "kind": "maze",
+      "x": 89,
+      "y": 57,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "misty-ridge",
+      "kind": "ridge",
+      "x": 93,
+      "y": 25,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null,
+      "hidden_until": "maze-complete"
+    }
+  ],
+  "public_name": "CalorieVerse",
+  "ecosystem_id": "calorie-ecosystem",
+  "product_family": {
+    "ecosystem": "Calorie Ecosystem",
+    "app": "CalorieApp",
+    "metaverse": "CalorieVerse",
+    "creator_surface": "CalorieStudio",
+    "creator_surface_route": "/studio",
+    "creator_surface_internal_legacy_term": "Creator Gallery",
+    "creator_surface_legacy_route": "/gallery"
+  }
+}

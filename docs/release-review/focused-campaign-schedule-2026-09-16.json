@@ -1,0 +1,87 @@
+{
+  "schema": "calorietoken.focused-campaign-schedule.v1",
+  "created_at": "2026-09-16",
+  "editorial_timezone": "Europe/Amsterdam",
+  "wordpress_timezone": "UTC",
+  "authorization": {
+    "publication": true,
+    "scheduling": true,
+    "scope": ["C1", "C2"],
+    "received_from_user": true
+  },
+  "scope": {
+    "active": {
+      "C1": "CalorieApp / Calorie ecosystem / CalorieToken WordPress",
+      "C2": "Five-year anniversary"
+    },
+    "deferred_until_next_week": ["C3", "C4", "C5"]
+  },
+  "wordpress": [
+    {
+      "campaign": "C2",
+      "id": 8079,
+      "status": "publish",
+      "published_at_utc": "2026-09-16T09:01:35Z",
+      "url": "https://calorietoken.net/2026/09/16/five-years-of-calorietoken/"
+    },
+    {
+      "campaign": "C2",
+      "id": 8080,
+      "status": "future",
+      "scheduled_at_utc": "2026-09-17T17:00:00Z",
+      "scheduled_at_editorial": "2026-09-17T19:00:00+02:00"
+    },
+    {
+      "campaign": "C1",
+      "id": 8084,
+      "status": "future",
+      "scheduled_at_utc": "2026-09-18T08:00:00Z",
+      "scheduled_at_editorial": "2026-09-18T10:00:00+02:00"
+    },
+    {
+      "campaign": "C1",
+      "id": 8085,
+      "status": "future",
+      "scheduled_at_utc": "2026-09-21T08:00:00Z",
+      "scheduled_at_editorial": "2026-09-21T10:00:00+02:00"
+    },
+    {
+      "campaign": "C1",
+      "id": 8086,
+      "status": "future",
+      "scheduled_at_utc": "2026-09-23T08:00:00Z",
+      "scheduled_at_editorial": "2026-09-23T10:00:00+02:00"
+    }
+  ],
+  "social": {
+    "execution_status": "ready_for_manual_platform_scheduling",
+    "reason_not_executed": "No connected publisher for LinkedIn, YouTube, Instagram, Facebook or TikTok",
+    "items": [
+      {"id": "S53", "campaign": "C2", "at": "2026-09-16T12:00:00+02:00", "channel": "YouTube Shorts"},
+      {"id": "B-J01", "campaign": "C2", "at": "2026-09-16T19:00:00+02:00", "channel": "LinkedIn"},
+      {"id": "V05", "campaign": "C2", "at": "2026-09-16T20:30:00+02:00", "channel": "YouTube"},
+      {"id": "S54", "campaign": "C2", "at": "2026-09-17T12:00:00+02:00", "channel": "Instagram Reels / TikTok"},
+      {"id": "B-J02", "campaign": "C2", "at": "2026-09-17T19:00:00+02:00", "channel": "LinkedIn"},
+      {"id": "S55", "campaign": "C2", "at": "2026-09-17T20:30:00+02:00", "channel": "Facebook / Instagram Reels"},
+      {"id": "B-P01", "campaign": "C1", "at": "2026-09-18T12:00:00+02:00", "channel": "Instagram / Facebook"},
+      {"id": "S01", "campaign": "C1", "at": "2026-09-19T14:00:00+02:00", "channel": "YouTube Shorts / Instagram Reels / TikTok"},
+      {"id": "C1-T01", "campaign": "C1", "at": "2026-09-20T11:00:00+02:00", "channel": "Facebook"},
+      {"id": "C1-T02", "campaign": "C1", "at": "2026-09-21T18:30:00+02:00", "channel": "LinkedIn"},
+      {"id": "C1-T03", "campaign": "C1", "at": "2026-09-22T12:00:00+02:00", "channel": "Instagram / Facebook"},
+      {"id": "C1-T04", "campaign": "C1", "at": "2026-09-23T18:30:00+02:00", "channel": "LinkedIn"},
+      {"id": "C1-T05", "campaign": "C1", "at": "2026-09-24T12:00:00+02:00", "channel": "Facebook / Instagram"}
+    ]
+  },
+  "quality_gates": {
+    "current_historical_future_separated": true,
+    "off_usda_sources_separated": true,
+    "off_only_nutriscore_wording": true,
+    "medical_or_personal_health_score_claims": false,
+    "token_price_or_investment_claims": false,
+    "authenticated_wallet_flow_claimed_as_tested": false,
+    "physical_camera_claimed_as_tested": false,
+    "selected_video_subtitles_present": true,
+    "outdated_four_language_media_excluded": true,
+    "x_overlap_excluded": true
+  }
+}

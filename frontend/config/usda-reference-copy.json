@@ -10,7 +10,12 @@
     "source": "Find at USDA",
     "snapshot": "Data retrieved:",
     "method": "Energy uses Atwater general factors. Carbohydrates are calculated by difference and include fibre. Values vary between foods and are not medical advice.",
-    "unavailable": "Not supplied"
+    "unavailable": "Not supplied",
+    "weight": "Reference weight (g)",
+    "calculated": "Calculated for {grams} g of edible food",
+    "invalidWeight": "Enter a weight from 0.1 to 5,000 g.",
+    "resetWeight": "Reset to 100 g",
+    "calculationNote": "Calculated from the dated USDA values per 100 g. This reference does not add food to your diary."
   },
   "zh-Hans": {
     "title": "基础食物参考",
@@ -23,7 +28,12 @@
     "source": "在 USDA 中查找",
     "snapshot": "数据获取日期：",
     "method": "能量采用 Atwater 通用系数。碳水化合物采用差减法计算，包含膳食纤维。不同食物的数值会有差异，这些信息不构成医疗建议。",
-    "unavailable": "未提供"
+    "unavailable": "未提供",
+    "weight": "参考重量（克）",
+    "calculated": "按 {grams} 克可食用部分计算",
+    "invalidWeight": "请输入 0.1 至 5,000 克的重量。",
+    "resetWeight": "重置为 100 克",
+    "calculationNote": "根据有日期记录的 USDA 每 100 克数据计算。此参考不会向日记添加食物。"
   },
   "hi": {
     "title": "सामान्य खाद्य संदर्भ",
@@ -36,7 +46,12 @@
     "source": "USDA पर खोजें",
     "snapshot": "डेटा प्राप्त करने की तारीख:",
     "method": "ऊर्जा के लिए Atwater के सामान्य गुणक उपयोग किए जाते हैं। कार्बोहाइड्रेट की गणना अंतर विधि से होती है और इसमें फ़ाइबर शामिल है। मान खाद्य पदार्थों के बीच बदलते हैं और यह चिकित्सा सलाह नहीं है।",
-    "unavailable": "उपलब्ध नहीं"
+    "unavailable": "उपलब्ध नहीं",
+    "weight": "संदर्भ वजन (ग्राम)",
+    "calculated": "खाने योग्य भोजन के {grams} ग्राम के लिए गणना",
+    "invalidWeight": "0.1 से 5,000 ग्राम के बीच वजन दर्ज करें।",
+    "resetWeight": "100 ग्राम पर रीसेट करें",
+    "calculationNote": "दिनांकित USDA प्रति 100 ग्राम मूल्यों से गणना। यह संदर्भ आपकी डायरी में भोजन नहीं जोड़ता।"
   },
   "es": {
     "title": "Referencia de alimentos básicos",
@@ -49,7 +64,12 @@
     "source": "Buscar en USDA",
     "snapshot": "Datos consultados:",
     "method": "La energía utiliza los factores generales de Atwater. Los carbohidratos se calculan por diferencia e incluyen fibra. Los valores varían entre alimentos y no constituyen consejo médico.",
-    "unavailable": "No disponible"
+    "unavailable": "No disponible",
+    "weight": "Peso de referencia (g)",
+    "calculated": "Calculado para {grams} g de parte comestible",
+    "invalidWeight": "Introduce un peso entre 0,1 y 5.000 g.",
+    "resetWeight": "Restablecer a 100 g",
+    "calculationNote": "Calculado a partir de los valores USDA por 100 g de la fecha indicada. Esta referencia no añade alimentos a tu diario."
   },
   "ar": {
     "title": "مرجع الأغذية الأساسية",
@@ -62,7 +82,12 @@
     "source": "البحث لدى USDA",
     "snapshot": "تاريخ جلب البيانات:",
     "method": "تستخدم الطاقة عوامل أتواتر العامة. تُحسب الكربوهيدرات بطريقة الفرق وتشمل الألياف. تختلف القيم بين الأغذية ولا تُعد نصيحة طبية.",
-    "unavailable": "غير متوفر"
+    "unavailable": "غير متوفر",
+    "weight": "الوزن المرجعي (غ)",
+    "calculated": "محسوب لـ {grams} غ من الجزء الصالح للأكل",
+    "invalidWeight": "أدخل وزنًا من 0.1 إلى 5,000 غ.",
+    "resetWeight": "إعادة الضبط إلى 100 غ",
+    "calculationNote": "محسوب من قيم USDA المؤرخة لكل 100 غ. لا يضيف هذا المرجع طعامًا إلى يومياتك."
   },
   "fr": {
     "title": "Référence d’aliments de base",
@@ -75,7 +100,12 @@
     "source": "Rechercher sur USDA",
     "snapshot": "Données consultées le :",
     "method": "L’énergie utilise les facteurs généraux d’Atwater. Les glucides sont calculés par différence et comprennent les fibres. Les valeurs varient selon les aliments et ne constituent pas un conseil médical.",
-    "unavailable": "Non fourni"
+    "unavailable": "Non fourni",
+    "weight": "Poids de référence (g)",
+    "calculated": "Calculé pour {grams} g de partie comestible",
+    "invalidWeight": "Saisissez un poids entre 0,1 et 5 000 g.",
+    "resetWeight": "Revenir à 100 g",
+    "calculationNote": "Calculé à partir des valeurs USDA datées pour 100 g. Cette référence n’ajoute pas d’aliment à votre journal."
   },
   "bn": {
     "title": "সাধারণ খাবারের তথ্য",
@@ -88,7 +118,12 @@
     "source": "USDA-তে খুঁজুন",
     "snapshot": "তথ্য সংগ্রহের তারিখ:",
     "method": "শক্তির জন্য Atwater-এর সাধারণ গুণক ব্যবহার করা হয়। শর্করা বিয়োগ পদ্ধতিতে গণনা করা হয় এবং এতে আঁশ অন্তর্ভুক্ত থাকে। খাবারভেদে মান আলাদা হয় এবং এটি চিকিৎসা পরামর্শ নয়।",
-    "unavailable": "দেওয়া হয়নি"
+    "unavailable": "দেওয়া হয়নি",
+    "weight": "রেফারেন্স ওজন (গ্রাম)",
+    "calculated": "খাওয়ার উপযোগী অংশের {grams} গ্রামের হিসাব",
+    "invalidWeight": "০.১ থেকে ৫,০০০ গ্রামের মধ্যে ওজন লিখুন।",
+    "resetWeight": "১০০ গ্রামে ফিরুন",
+    "calculationNote": "তারিখযুক্ত USDA প্রতি ১০০ গ্রামের মান থেকে হিসাব করা হয়েছে। এই রেফারেন্স ডায়েরিতে খাবার যোগ করে না।"
   },
   "pt": {
     "title": "Referência de alimentos básicos",
@@ -101,7 +136,12 @@
     "source": "Pesquisar no USDA",
     "snapshot": "Dados consultados em:",
     "method": "A energia utiliza os fatores gerais de Atwater. Os carboidratos são calculados por diferença e incluem fibras. Os valores variam entre alimentos e não constituem aconselhamento médico.",
-    "unavailable": "Não fornecido"
+    "unavailable": "Não fornecido",
+    "weight": "Peso de referência (g)",
+    "calculated": "Calculado para {grams} g de parte comestível",
+    "invalidWeight": "Introduza um peso entre 0,1 e 5.000 g.",
+    "resetWeight": "Repor 100 g",
+    "calculationNote": "Calculado a partir dos valores USDA datados por 100 g. Esta referência não adiciona alimentos ao diário."
   },
   "id": {
     "title": "Referensi bahan pangan dasar",
@@ -114,7 +154,12 @@
     "source": "Cari di USDA",
     "snapshot": "Data diambil:",
     "method": "Energi menggunakan faktor umum Atwater. Karbohidrat dihitung dengan metode selisih dan mencakup serat. Nilai bervariasi antar makanan dan bukan nasihat medis.",
-    "unavailable": "Tidak tersedia"
+    "unavailable": "Tidak tersedia",
+    "weight": "Berat acuan (g)",
+    "calculated": "Dihitung untuk {grams} g bagian yang dapat dimakan",
+    "invalidWeight": "Masukkan berat dari 0,1 hingga 5.000 g.",
+    "resetWeight": "Kembali ke 100 g",
+    "calculationNote": "Dihitung dari nilai USDA bertanggal per 100 g. Acuan ini tidak menambahkan makanan ke jurnal Anda."
   },
   "ur": {
     "title": "عام غذاؤں کا حوالہ",
@@ -127,7 +172,12 @@
     "source": "USDA پر تلاش کریں",
     "snapshot": "ڈیٹا حاصل کرنے کی تاریخ:",
     "method": "توانائی کے لیے Atwater کے عمومی عوامل استعمال ہوتے ہیں۔ کاربوہائیڈریٹس کا حساب فرق کے طریقے سے لگایا جاتا ہے اور اس میں فائبر شامل ہے۔ غذاؤں کے درمیان قدریں مختلف ہوتی ہیں اور یہ طبی مشورہ نہیں ہے۔",
-    "unavailable": "فراہم نہیں کیا گیا"
+    "unavailable": "فراہم نہیں کیا گیا",
+    "weight": "حوالہ وزن (گرام)",
+    "calculated": "کھانے کے قابل حصے کے {grams} گرام کے لیے حساب",
+    "invalidWeight": "0.1 سے 5,000 گرام تک وزن درج کریں۔",
+    "resetWeight": "100 گرام پر واپس جائیں",
+    "calculationNote": "تاریخ شدہ USDA فی 100 گرام اقدار سے حساب کیا گیا ہے۔ یہ حوالہ آپ کی ڈائری میں کھانا شامل نہیں کرتا۔"
   },
   "nl": {
     "title": "Basisvoeding als naslag",
@@ -140,6 +190,11 @@
     "source": "Opzoeken bij USDA",
     "snapshot": "Gegevens opgehaald:",
     "method": "Energie gebruikt de algemene Atwater-factoren. Koolhydraten zijn berekend volgens de verschilmethode en bevatten vezels. Waarden verschillen per voedingsmiddel en zijn geen medisch advies.",
-    "unavailable": "Niet opgegeven"
+    "unavailable": "Niet opgegeven",
+    "weight": "Referentiegewicht (g)",
+    "calculated": "Berekend voor {grams} g eetbaar voedsel",
+    "invalidWeight": "Vul een gewicht van 0,1 tot 5.000 g in.",
+    "resetWeight": "Terug naar 100 g",
+    "calculationNote": "Berekend uit de gedateerde USDA-waarden per 100 g. Deze referentie voegt geen voedsel toe aan je logboek."
   }
 }

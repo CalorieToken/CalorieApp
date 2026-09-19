@@ -6,9 +6,10 @@ import test from 'node:test';
 const source = readFileSync(new URL('../../wordpress-plugins/calorietoken-site-style/assets/app-integration.js', import.meta.url), 'utf8');
 const origins = ['https://app.calorietoken.net', 'https://calorieapp-frontend.onrender.com'];
 
-function adapter(src, count = 1) {
+function adapter(src, count = 1, initialPermission = "") {
   const events = new Map(), sent = [], frameWindow = {};
-  const frame = { src, contentWindow: frameWindow, closest: () => null };
+  const attributes = new Map(initialPermission ? [["allow", initialPermission]] : []);
+  const frame = { src, contentWindow: frameWindow, closest: () => null, getAttribute: key => attributes.get(key) ?? null, setAttribute: (key, value) => attributes.set(key, value) };
   frameWindow.postMessage = (data, origin) => sent.push({ data, origin });
   let host, scrolls = 0;
   const guide = { scrollIntoView: () => scrolls++, querySelector: () => null };
@@ -84,4 +85,19 @@ test('A known origin still needs the actual current iframe window and exact guid
   h.frame.contentWindow = {};
   h.message(origins[0]);
   assert.equal(h.scrolls(), 0, 'retired iframe window is rejected');
+});
+
+for (const origin of origins) test(`Camera delegation is limited to ${origin}`, () => {
+  const h = adapter(origin + '/?embedded=1');
+  assert.equal(h.frame.getAttribute('allow'), 'camera ' + origin);
+  const restricted = adapter(origin + '/', 1, "camera 'none'; fullscreen 'self'");
+  assert.equal(restricted.frame.getAttribute('allow'), "camera 'none'; fullscreen 'self'");
+  const other = adapter(origin + '/', 1, "fullscreen 'self'");
+  assert.equal(other.frame.getAttribute('allow'), "fullscreen 'self'; camera " + origin);
+});
+
+test('An unrelated or duplicate iframe never receives camera permission', () => {
+  for (const h of [adapter('https://evil.example/'), adapter(origins[0] + '/', 2)]) {
+    assert.equal(h.frame.getAttribute('allow'), null);
+  }
 });

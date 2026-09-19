@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   if (window.CalorieTokenRefinements || !window.CalorieTokenDiscovery) return;
-  var cfg=window.CalorieTokenDiscovery, locale='en', labels=[], observer=null, pending=false;
+  var cfg=window.CalorieTokenDiscovery, locale='en', labels=[], observer=null, pending=false, menuBindings=new WeakSet();
   var blocked='form,[contenteditable],.xl-card,[data-calorieapp-embed],.ctstyle-title,.ctstyle-header,header,footer,template';
   var dex='https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP';
   var swap='https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market';
@@ -13,7 +13,10 @@
   function make(tag,cls,copy){var n=document.createElement(tag);if(cls)n.className=cls;if(copy)n.textContent=copy;return n;}
   function label(tag,key,cls){var n=make(tag,cls,cfg.copy.en[key]);labels.push({node:n,key:key});return n;}
   function routes(){
-    document.querySelectorAll('.xl-card a[href]').forEach(function(a){if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';});
+    document.querySelectorAll('.xl-card a[href]').forEach(function(a){
+      if(a.getAttribute('href')===oldDex)a.href=window.location.origin+'/index.php/how-to-buy-calorie/';
+      if(a.getAttribute('href')===window.location.origin+'/index.php/how-to-buy-calorie/' && a.getAttribute('title')==='Trade on the XUMM DEX xApp!')a.removeAttribute('title');
+    });
     if(Number(cfg.page)!==4205)return;
     var guide=one('.cal-buy-guide[data-calorieapp-buy-guide="1"]');if(!guide||guide.closest(blocked))return;
     var trade=guide.querySelector('a[data-cal-buy-copy="tradeAction"]');
@@ -51,27 +54,45 @@
       var host=make('div','ctstyle-trustline-methods');host.id='ctstyle-trustline-methods';
       options.before(host);host.append(native,options);
       native.prepend(label('p','directRoute','ctstyle-route-label'));
-      var external=one('[data-brz-custom-id="inpxenkjojstawbfbmiwkgigeabgzzcmectb"]');
-      if(external){var labelNode=label('h2','externalRoute','ctstyle-route-label');external.prepend(labelNode);}
       var toolkit=one('[data-brz-custom-id="tudwxqvkogbjptwlykgwzlzdixbhxidyqhku"]');
       if(toolkit&&options.contains(toolkit)){
         var details=make('details','ctstyle-manual-trustline');details.id='ctstyle-manual-trustline';
         toolkit.before(details);details.append(label('summary','manualRoute'),toolkit);
       }
     }
+    var external=one('[data-brz-custom-id="inpxenkjojstawbfbmiwkgigeabgzzcmectb"]');
+    if(options&&external&&options.contains(external)&&!external.closest('.ctstyle-external-trustline')){
+      var alternate=make('details','ctstyle-manual-trustline ctstyle-external-trustline');
+      var priorLabel=external.querySelector(':scope > .ctstyle-route-label');if(priorLabel)priorLabel.remove();
+      external.before(alternate);alternate.append(label('summary','externalRoute'),external);
+    }
     var root=one('[data-brz-custom-id="nrsbytvlhdquaddotxqmaeiihmzfbcufpmhr"]');
     if(root&&root.querySelectorAll('[data-calorieapp-trustline-ui] .calorieapp-copy-button[aria-describedby]').length===2 && root.querySelectorAll('.calorieapp-copy-button:not([aria-describedby])').length===2)root.classList.add('ctstyle-copy-dedup');
   }
   function roadmap(){
     if(!/\/(?:index.php\/)?roadmap\/$/.test(window.location.pathname))return;
+    var explained=one('[data-brz-custom-id="kdpxkiwkssgeeayvskldlkfcrdkkjbksikao"]');
+    var destination='https://github.com/CalorieToken/Publications/blob/main/roadmap/README.md';
+    if(explained&&!explained.closest(blocked)){
+      var button=explained.querySelector('a[href="'+destination+'"]');
+      if(button&&button.querySelector('img[title="roadmapexplainedknop2"]')&&!button.classList.contains('ctstyle-roadmap-link')){
+        explained.classList.add('ctstyle-roadmap-link-host');
+        var wrap=explained.closest('.brz-wrapper');if(wrap)wrap.classList.add('ctstyle-roadmap-link-wrap');
+        button.classList.add('ctstyle-roadmap-link');
+        button.append(label('span','roadmapRead'));
+        button.removeAttribute('aria-label');
+      }
+    }
+    var timeline=one('[data-brz-custom-id="fywltezyscgeklkmjuvcoesosmptkgaloptn"].brz-timeline__tabs');
+    if(timeline)timeline.classList.add('ctstyle-roadmap-timeline');
     var video=one('[data-brz-custom-id="nuyzubccqediuokhizydlyfagzwueddoqrnd"]');
     if(!video||video.closest(blocked)||!video.querySelector('[data-src*="youtube.com/embed/a5mwDKsWrA8"]'))return;
     if(document.getElementById('ctstyle-roadmap-preview'))return;
     var card=make('section','ctstyle-roadmap-preview');card.id='ctstyle-roadmap-preview';
     var logo=make('img');logo.src=cfg.appLogo;logo.alt='';logo.width=48;logo.height=48;
-    card.append(logo,make('h3',null,'Discover CalorieApp'),make('p',null,'Search food, explore nutrition and keep your own food diary. Try the current webapp.'));
-    var app=make('a','ctstyle-discovery-action','Open CalorieApp');app.href=cfg.appURL;
-    var history=make('a','ctstyle-video-history','Historical video · watch on YouTube');history.href='https://www.youtube.com/watch?v=a5mwDKsWrA8';history.target='_blank';history.rel='noopener noreferrer';
+    card.append(logo,make('h3',null,'CalorieApp'),label('p','appPitch'));
+    var app=label('a','openApp','ctstyle-discovery-action');app.href=cfg.appURL;
+    var history=label('a','historicalVideo','ctstyle-video-history');history.href='https://www.youtube.com/watch?v=a5mwDKsWrA8';history.target='_blank';history.rel='noopener noreferrer';
     card.append(app,history);video.replaceWith(card);
   }
   function faq(){
@@ -97,17 +118,59 @@
     var team=one('.ctstyle-contact-team');if(!team)return;
     team.classList.add('ctstyle-team-flow');
     var market=one('[data-brz-custom-id="qnfxijkgbfdhagolgnoklsbijcstdnpoowkg"]');
-    if(market&&market.querySelector('.ctstyle-market-card')&&market.parentElement===team.parentElement){
-      market.classList.add('ctstyle-after-team');team.parentElement.classList.add('ctstyle-team-container');
+    if(market&&market.querySelector('.ctstyle-market-card')&&!team.contains(market)){
+      market.classList.add('ctstyle-after-team');
+      if(market.parentElement===team.parentElement)team.parentElement.classList.add('ctstyle-team-container');
     }
   }
+  function homeMenu(){
+    if(!document.body.matches('.home.ctstyle-footer-only,.page-id-1090.ctstyle-footer-only'))return;
+    ['vzcdxvzyscymovatjslzsgqaarqlecarnfro','tirkcgzevvwvvoohirqhwhjxmgrflwjgoyrc'].forEach(function(id){
+      var n=one('[data-brz-custom-id="'+id+'"]');
+      if(n&&n.matches('.brz-columns')&&!n.querySelector('.xl-card'))n.classList.add('ctstyle-home-panel');
+    });
+    var menu=one('.brz-menu-simple'),header=menu&&menu.closest('.brz-section');
+    if(header)header.classList.add('ctstyle-native-header');
+  }
   function sharedLayout(){
-    // The accepted Home header stays untouched. Only recognised native columns
-    // on other pages adopt the compact usecase proportions, without moving them.
-    if(document.body.classList.contains('ctstyle-enabled')){
-      var header=one('.ctstyle-header');
+    // Style the existing columns without replacing menus or account nodes.
+    if(document.body.matches('.ctstyle-enabled,.ctstyle-footer-only')){
+      var header=one('.ctstyle-header,.ctstyle-native-header');
       if(header){
         var menu=header.querySelector('.brz-menu-simple'),logo=header.querySelector('img[src*="C-Logotranspa"]');
+        var toggle=menu&&menu.querySelector('.brz-menu-simple__toggle>.brz-input[type="checkbox"]');
+        if(toggle){
+          toggle.setAttribute('aria-label',cfg.copy[locale].menuLabel);
+          var nativeLabel=toggle.nextElementSibling;
+          if(nativeLabel&&nativeLabel.matches('.brz-menu-simple__icon')&&nativeLabel.getAttribute('for')===toggle.id){
+            toggle.setAttribute('aria-expanded',String(toggle.checked));
+            if(!menuBindings.has(toggle)){
+              menuBindings.add(toggle);
+              toggle.addEventListener('change',function(){toggle.setAttribute('aria-expanded',String(toggle.checked));});
+              menu.addEventListener('keydown',function(event){
+                if(event.key!=='Escape'||!toggle.checked)return;
+                event.preventDefault();toggle.checked=false;
+                toggle.dispatchEvent(new window.Event('change',{bubbles:true}));toggle.focus();
+              });
+            }
+          }
+        }
+        // Mark only known same-site navigation links; never touch account actions.
+        header.querySelectorAll('.brz-menu-simple a,.ctstyle-header-nav a').forEach(function(a){
+          try {var target=new URL(a.href,window.location.href);
+            if(target.origin===window.location.origin&&target.pathname===window.location.pathname&&!target.hash&&!target.search)a.setAttribute('aria-current','page');
+          } catch(_) { /* Keep an unrecognized native link. */ }
+        });
+        var fallbackMenu=header.querySelector('details.ctstyle-mobile-nav');
+        if(fallbackMenu){var fallbackSummary=fallbackMenu.querySelector('summary');if(fallbackSummary)fallbackSummary.setAttribute('aria-label',cfg.copy[locale].menuLabel);}
+        if(fallbackMenu&&!menuBindings.has(fallbackMenu)){
+          menuBindings.add(fallbackMenu);
+          fallbackMenu.addEventListener('keydown',function(event){
+            if(event.key!=='Escape'||!fallbackMenu.open)return;
+            event.preventDefault();fallbackMenu.open=false;
+            var summary=fallbackMenu.querySelector('summary');if(summary)summary.focus();
+          });
+        }
         var menuCol=menu&&menu.closest('.brz-columns'),logoCol=logo&&logo.closest('.brz-columns');
         if(menuCol&&logoCol&&menuCol!==logoCol&&menuCol.parentElement===logoCol.parentElement){
           var row=menuCol.parentElement,cards=Array.from(row.children).filter(function(n){return n.querySelector('.xl-card');});
@@ -120,12 +183,19 @@
       }
     }
     var footer=one('.ctstyle-footer');
-    if(footer&&[1119,1121,1123,1125,1127,1129].includes(Number(cfg.page))){
+    if(footer){
+      if(!footer.querySelector('.ctstyle-footer-cookies')){
+        var links=footer.querySelector('.ctstyle-legal-links');
+        if(links){var cookies=label('button','cookies','ctstyle-footer-cookies cmplz-manage-consent');cookies.type='button';links.append(cookies);}
+      }
+      if(!document.querySelector('.ctstyle-footer-tail')){
+        var tail=make('div','ctstyle-footer-tail');tail.setAttribute('aria-hidden','true');footer.after(tail);
+      }
       var siblings=Array.from(footer.parentElement.children),after=siblings.slice(siblings.indexOf(footer)+1);
       after.forEach(function(section){
         if(!section.matches('.brz-section')||section.querySelector('img,a,button,form,iframe,video')||text(section.textContent))return;
         section.querySelectorAll('.brz-bg-image').forEach(function(n){
-          if(/\/Caloriefoto2(?:-\d+x\d+)?\.jpg(?:["')?]|$)/i.test(window.getComputedStyle(n).backgroundImage||''))n.classList.add('ctstyle-tail-background');
+          if(/\/(?:Caloriefoto2(?:-\d+x\d+)?\.jpg|achtergrondbannersitea1\.png)(?:["')?]|$)/i.test(window.getComputedStyle(n).backgroundImage||''))section.classList.add('ctstyle-replaced-empty-tail');
         });
       });
     }
@@ -133,7 +203,7 @@
   function refresh(tag){
     if(!allowed())return;if(observer)observer.disconnect();
     locale=cfg.copy[tag]?tag:(window.CalorieTokenDiscoveryUI?window.CalorieTokenDiscoveryUI.getLocale():'en');
-    routes();paper();trustline();roadmap();faq();contact();sharedLayout();
+    routes();paper();trustline();roadmap();faq();contact();homeMenu();sharedLayout();
     labels.forEach(function(x){var value=cfg.copy[locale][x.key];if(x.node.textContent!==value)x.node.textContent=value;x.node.lang=locale;x.node.dir=['ar','ur'].includes(locale)?'rtl':'ltr';});
     if(observer)observer.observe(document.body,{childList:true,subtree:true});
   }

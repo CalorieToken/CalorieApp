@@ -4,6 +4,7 @@ import Image from "next/image";
 import translations from "@/config/app-introduction-copy.json";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { localeDirection, resolveLocale } from "@/lib/locales";
+import { useAgeExperience } from "@/components/AgeExperienceControl";
 
 function useIntroductionCopy() {
   const display = useDisplayLanguage();
@@ -38,6 +39,8 @@ function SourceAttribution({ text }: { text: string }) {
 
 export function AppIntroduction() {
   const { locale, direction, copy } = useIntroductionCopy();
+  const [ageBand] = useAgeExperience();
+  const intro = ageBand === "adult" ? copy.intro : copy.publicIntro;
   return (
     <div className="mb-7 flex min-w-0 items-center gap-4" lang={locale} dir={direction}>
       <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-brand-secondary/10 bg-white shadow-sm sm:h-16 sm:w-16">
@@ -51,7 +54,7 @@ export function AppIntroduction() {
         <h1 className="mt-1 text-2xl font-bold text-brand-primary sm:text-3xl">
           <bdi dir="ltr">CalorieApp</bdi>
         </h1>
-        <p className="mt-1 text-sm font-medium text-brand-secondary">{copy.intro}</p>
+        <p className="mt-1 text-sm font-medium text-brand-secondary">{intro}</p>
       </div>
     </div>
   );
@@ -59,11 +62,13 @@ export function AppIntroduction() {
 
 export function AppSourceFooter() {
   const { locale, direction, copy } = useIntroductionCopy();
+  const [ageBand] = useAgeExperience();
+  const scope = ageBand === "adult" ? copy.scope : copy.publicScope;
   return (
     <footer lang={locale} dir={direction} aria-label={copy.footerLabel}
       className="mx-auto mt-5 flex w-full max-w-3xl flex-col gap-2 rounded-2xl border border-brand-secondary/15 bg-white/95 px-5 py-4 text-xs leading-relaxed text-brand-secondary/80 shadow-sm">
       <p className="font-semibold text-brand-primary">
-        <bdi dir="ltr">CalorieApp</bdi>{" · "}{copy.scope}
+        <bdi dir="ltr">CalorieApp</bdi>{" · "}{scope}
       </p>
       <p><SourceAttribution text={copy.offAttribution} /></p>
       <p><SourceAttribution text={copy.usdaAttribution} /></p>

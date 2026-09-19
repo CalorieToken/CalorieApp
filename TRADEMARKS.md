@@ -32,3 +32,40 @@ Registration of a figurative mark does not by itself establish copyright
 authorship or assignment. The copyright chain for the finished CalorieToken
 logo artwork remains subject to separate provenance and assignment
 verification. Trade-mark rights and copyright in artwork are distinct rights.
+
+
+## CalorieVerse and future ecosystem marks
+
+`CalorieVerse` is the current proposed public name for the project's live
+metaverse/open-world product. This repository does **not** claim that
+CalorieVerse is a registered trade mark. The name requires an exact clearance
+search for the intended goods/services before any registration or registered
+symbol is claimed. A general web search is not a freedom-to-operate opinion.
+
+Open ecosystem compatibility does not itself grant a right to use official
+branding in a misleading way. Independent implementations may need a future
+trade-mark policy for truthful compatibility references, community naming and
+conformance badges.
+
+Long-term decentralisation does not require the current proprietor to abandon
+marks. A future stewardship entity may receive ownership of, or a documented
+licence to administer, marks only through an explicit legal instrument and any
+required registry recordal. No transfer occurs automatically through code
+governance, token ownership, community participation or publication of an open
+protocol.
+
+Until a separate decision and legal instrument exist, the current ownership
+records control.
+
+
+### CalorieStudio
+
+`CalorieStudio` is the current proposed public name for the creator/workshop
+surface within CalorieVerse. The internal route `/gallery` and legacy
+"Creator Gallery" identifiers may remain for compatibility.
+
+This repository does **not** claim that CalorieStudio is a registered trade
+mark or that the name has received a formal freedom-to-operate clearance.
+Before a commercial brand filing or registered-symbol claim, perform an exact
+EUIPO/TMview/BOIP clearance search for the intended goods and services and
+retain the evidence.

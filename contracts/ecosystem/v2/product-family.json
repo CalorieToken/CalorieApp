@@ -1,0 +1,42 @@
+{
+  "contract_id": "calorie.ecosystem.product-family",
+  "contract_version": "1.0.2",
+  "status": "product-naming-and-relationship-contract",
+  "umbrella": {
+    "id": "calorie-ecosystem",
+    "public_name": "Calorie Ecosystem",
+    "role": "shared ecosystem layer for products, identity-compatible services, creator surfaces and future voluntary network participation"
+  },
+  "products": {
+    "calorie_app": {
+      "public_name": "CalorieApp",
+      "role": "food, nutrition and ecosystem application",
+      "runs_on_ecosystem": "calorie-ecosystem"
+    },
+    "calorie_verse": {
+      "public_name": "CalorieVerse",
+      "internal_legacy_term": "Gameverse",
+      "role": "persistent live metaverse and open-world experience",
+      "runs_on_ecosystem": "calorie-ecosystem",
+      "route_compatibility": "/gameverse"
+    },
+    "creator_gallery": {
+      "public_name": "CalorieStudio",
+      "role": "native creator, workshop and asset surface inside CalorieVerse and directly reachable in the Calorie Ecosystem",
+      "runs_on_ecosystem": "calorie-ecosystem",
+      "separate_ecosystem": false,
+      "internal_legacy_term": "Creator Gallery",
+      "route_compatibility": "/gallery",
+      "canonical_route": "/studio"
+    }
+  },
+  "invariants": {
+    "one_shared_ecosystem": true,
+    "app_and_metaverse_are_sibling_surfaces": true,
+    "gallery_is_not_a_competing_ecosystem": true,
+    "metaverse_name_is_stable": "CalorieVerse",
+    "internal_routes_and_ids_may_keep_gameverse_for_backward_compatibility": true,
+    "creator_surface_name_is_stable": "CalorieStudio",
+    "internal_gallery_ids_and_route_may_remain_for_backward_compatibility": true
+  }
+}

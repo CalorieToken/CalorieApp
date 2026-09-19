@@ -1,0 +1,365 @@
+{
+  "en": {
+    "title": "World interaction",
+    "optional": "Optional world activity · never required for the main route",
+    "completed": "Completed",
+    "progress": "world interactions",
+    "reset": "Replay locally",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Inspect a public food record",
+        "body": "Compare the kind of information a food record can carry and connect it to the world around you.",
+        "action": "Inspect record",
+        "done": "A food-data clue now links into the farm and market systems."
+      },
+      "farm-water-balance": {
+        "title": "Balance water for the fields",
+        "body": "Adjust a small water route so crops and nature can share the same local resource.",
+        "action": "Balance water",
+        "done": "The farm water route is balanced and the landscape responds."
+      },
+      "gallery-world-display": {
+        "title": "Curate a CalorieStudio display",
+        "body": "Choose to place a simple creator marker in the world. It stays local in this first slice.",
+        "action": "Place display",
+        "done": "A creator beacon now appears in the CalorieStudio district."
+      },
+      "helpbot-local-hint": {
+        "title": "Ask for a local hint",
+        "body": "Ask Helpbot for one contextual clue about nearby places without turning the world into a guided tour.",
+        "action": "Ask Helpbot",
+        "done": "A subtle route whisper is now available; your route remains your choice."
+      }
+    }
+  },
+  "nl": {
+    "title": "Wereldinteractie",
+    "optional": "Optionele wereldactiviteit · nooit verplicht voor de hoofdroute",
+    "completed": "Voltooid",
+    "progress": "wereldinteracties",
+    "reset": "Lokaal opnieuw spelen",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Bekijk een openbaar voedingsrecord",
+        "body": "Bekijk welke informatie een voedingsrecord kan bevatten en verbind die met de wereld om je heen.",
+        "action": "Record bekijken",
+        "done": "Een food-data-aanwijzing koppelt nu aan de boerderij- en marktsystemen."
+      },
+      "farm-water-balance": {
+        "title": "Breng het water voor de velden in balans",
+        "body": "Pas een kleine waterroute aan zodat gewassen en natuur dezelfde lokale bron kunnen delen.",
+        "action": "Water balanceren",
+        "done": "De waterroute van de boerderij is in balans en het landschap reageert."
+      },
+      "gallery-world-display": {
+        "title": "Stel een CalorieStudio-display samen",
+        "body": "Plaats vrijwillig een eenvoudige creator-marker in de wereld. In deze eerste versie blijft die lokaal.",
+        "action": "Display plaatsen",
+        "done": "Er verschijnt nu een creator-beacon bij het CalorieStudio-district."
+      },
+      "helpbot-local-hint": {
+        "title": "Vraag om een lokale hint",
+        "body": "Vraag Helpbot om één contextuele aanwijzing over plekken in de buurt zonder de wereld in een rondleiding te veranderen.",
+        "action": "Vraag Helpbot",
+        "done": "Er is nu een subtiele routehint beschikbaar; de route blijft jouw keuze."
+      }
+    }
+  },
+  "zh-Hans": {
+    "title": "世界互动",
+    "optional": "可选世界活动 · 主路线从不强制",
+    "completed": "已完成",
+    "progress": "世界互动",
+    "reset": "本地重玩",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "查看公共食品记录",
+        "body": "了解食品记录能包含哪些信息，并把它与周围世界联系起来。",
+        "action": "查看记录",
+        "done": "食品数据线索现在与农场和市场系统相连。"
+      },
+      "farm-water-balance": {
+        "title": "平衡田地用水",
+        "body": "调整一条小型水路，让作物和自然共享本地资源。",
+        "action": "平衡用水",
+        "done": "农场水路已平衡，景观也会响应。"
+      },
+      "gallery-world-display": {
+        "title": "策划 CalorieStudio 展示",
+        "body": "选择在世界中放置一个简单的创作者标记。此版本仅保存在本地。",
+        "action": "放置展示",
+        "done": "CalorieStudio 区域现在出现创作者信标。"
+      },
+      "helpbot-local-hint": {
+        "title": "询问本地提示",
+        "body": "向 Helpbot 获取附近地点的一条情境提示，而不是把世界变成导览。",
+        "action": "询问 Helpbot",
+        "done": "现在有一条细微路线提示；路线仍由你选择。"
+      }
+    }
+  },
+  "hi": {
+    "title": "वर्ल्ड इंटरैक्शन",
+    "optional": "वैकल्पिक गतिविधि · मुख्य मार्ग के लिए कभी जरूरी नहीं",
+    "completed": "पूरा",
+    "progress": "वर्ल्ड इंटरैक्शन",
+    "reset": "लोकली फिर खेलें",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "पब्लिक फूड रिकॉर्ड देखें",
+        "body": "देखें कि फूड रिकॉर्ड किस तरह की जानकारी रख सकता है और उसे आसपास की दुनिया से जोड़ें।",
+        "action": "रिकॉर्ड देखें",
+        "done": "फूड-डेटा संकेत अब फार्म और मार्केट सिस्टम से जुड़ता है।"
+      },
+      "farm-water-balance": {
+        "title": "खेतों के पानी को संतुलित करें",
+        "body": "छोटे जल मार्ग को समायोजित करें ताकि फसल और प्रकृति स्थानीय संसाधन साझा कर सकें।",
+        "action": "पानी संतुलित करें",
+        "done": "फार्म का जल मार्ग संतुलित है और परिदृश्य प्रतिक्रिया देता है।"
+      },
+      "gallery-world-display": {
+        "title": "CalorieStudio डिस्प्ले तैयार करें",
+        "body": "दुनिया में एक सरल creator marker रखने का विकल्प चुनें। इस चरण में यह लोकल रहता है।",
+        "action": "डिस्प्ले रखें",
+        "done": "CalorieStudio क्षेत्र में creator beacon दिखाई देता है।"
+      },
+      "helpbot-local-hint": {
+        "title": "लोकल संकेत पूछें",
+        "body": "Helpbot से पास की जगहों के बारे में एक संकेत लें, बिना दुनिया को guided tour बनाए।",
+        "action": "Helpbot से पूछें",
+        "done": "हल्का route hint उपलब्ध है; रास्ता आपका चुनाव है।"
+      }
+    }
+  },
+  "es": {
+    "title": "Interacción del mundo",
+    "optional": "Actividad opcional · nunca obligatoria para la ruta principal",
+    "completed": "Completada",
+    "progress": "interacciones del mundo",
+    "reset": "Repetir localmente",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Inspecciona un registro público de alimentos",
+        "body": "Compara la información que puede contener un registro y conéctala con el mundo.",
+        "action": "Inspeccionar registro",
+        "done": "Una pista de datos conecta ahora con la granja y el mercado."
+      },
+      "farm-water-balance": {
+        "title": "Equilibra el agua de los campos",
+        "body": "Ajusta una pequeña ruta de agua para que cultivos y naturaleza compartan el recurso.",
+        "action": "Equilibrar agua",
+        "done": "La ruta de agua queda equilibrada y el paisaje responde."
+      },
+      "gallery-world-display": {
+        "title": "Crea una muestra de CalorieStudio",
+        "body": "Coloca voluntariamente un marcador de creador. En esta primera versión permanece local.",
+        "action": "Colocar muestra",
+        "done": "Aparece una baliza de creador en el distrito CalorieStudio."
+      },
+      "helpbot-local-hint": {
+        "title": "Pide una pista local",
+        "body": "Pide a Helpbot una pista contextual sin convertir el mundo en una visita guiada.",
+        "action": "Preguntar a Helpbot",
+        "done": "Hay una pista de ruta sutil; el camino sigue siendo tu elección."
+      }
+    }
+  },
+  "ar": {
+    "title": "تفاعل العالم",
+    "optional": "نشاط اختياري · غير مطلوب للمسار الرئيسي",
+    "completed": "مكتمل",
+    "progress": "تفاعلات العالم",
+    "reset": "إعادة اللعب محليًا",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "افحص سجل طعام عامًا",
+        "body": "تعرّف على المعلومات التي يمكن أن يحملها سجل الطعام واربطها بالعالم.",
+        "action": "فحص السجل",
+        "done": "أصبحت إشارة بيانات الطعام مرتبطة بالمزرعة والسوق."
+      },
+      "farm-water-balance": {
+        "title": "وازن مياه الحقول",
+        "body": "عدّل مسارًا مائيًا صغيرًا لتشارك المحاصيل والطبيعة المورد المحلي.",
+        "action": "موازنة المياه",
+        "done": "تمت موازنة مسار مياه المزرعة واستجابت البيئة."
+      },
+      "gallery-world-display": {
+        "title": "نسّق عرض CalorieStudio",
+        "body": "اختر وضع علامة بسيطة للمبدع في العالم. تبقى محلية في هذه المرحلة.",
+        "action": "وضع العرض",
+        "done": "تظهر الآن منارة للمبدعين قرب منطقة CalorieStudio."
+      },
+      "helpbot-local-hint": {
+        "title": "اطلب تلميحًا محليًا",
+        "body": "اطلب من Helpbot تلميحًا سياقيًا واحدًا دون تحويل العالم إلى جولة موجهة.",
+        "action": "اسأل Helpbot",
+        "done": "أصبح تلميح مسار خفيف متاحًا؛ الطريق يبقى اختيارك."
+      }
+    }
+  },
+  "fr": {
+    "title": "Interaction du monde",
+    "optional": "Activité facultative · jamais requise pour la route principale",
+    "completed": "Terminée",
+    "progress": "interactions du monde",
+    "reset": "Rejouer localement",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Inspecter une fiche alimentaire publique",
+        "body": "Découvrez les informations d’une fiche alimentaire et reliez-les au monde environnant.",
+        "action": "Inspecter",
+        "done": "Un indice de données relie maintenant ferme et marché."
+      },
+      "farm-water-balance": {
+        "title": "Équilibrer l’eau des champs",
+        "body": "Ajustez un petit trajet d’eau afin que cultures et nature partagent la ressource.",
+        "action": "Équilibrer l’eau",
+        "done": "Le trajet d’eau est équilibré et le paysage réagit."
+      },
+      "gallery-world-display": {
+        "title": "Composer une présentation CalorieStudio",
+        "body": "Placez volontairement un repère créateur simple. Il reste local dans cette première version.",
+        "action": "Placer la présentation",
+        "done": "Une balise créateur apparaît près du quartier CalorieStudio."
+      },
+      "helpbot-local-hint": {
+        "title": "Demander un indice local",
+        "body": "Demandez à Helpbot un indice contextuel sans transformer le monde en visite guidée.",
+        "action": "Demander à Helpbot",
+        "done": "Un indice discret est disponible ; votre route reste votre choix."
+      }
+    }
+  },
+  "bn": {
+    "title": "ওয়ার্ল্ড ইন্টারঅ্যাকশন",
+    "optional": "ঐচ্ছিক কার্যক্রম · মূল রুটের জন্য কখনো বাধ্যতামূলক নয়",
+    "completed": "সম্পন্ন",
+    "progress": "ওয়ার্ল্ড ইন্টারঅ্যাকশন",
+    "reset": "লোকালি আবার খেলুন",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "পাবলিক ফুড রেকর্ড দেখুন",
+        "body": "ফুড রেকর্ডে কী তথ্য থাকতে পারে দেখুন এবং সেটিকে চারপাশের বিশ্বের সাথে যুক্ত করুন।",
+        "action": "রেকর্ড দেখুন",
+        "done": "ফুড-ডেটা ইঙ্গিত এখন ফার্ম ও মার্কেট সিস্টেমের সাথে যুক্ত।"
+      },
+      "farm-water-balance": {
+        "title": "ক্ষেতের পানি ভারসাম্য করুন",
+        "body": "ছোট পানির পথ সামঞ্জস্য করুন যাতে ফসল ও প্রকৃতি একই স্থানীয় সম্পদ ভাগ করতে পারে।",
+        "action": "পানি ভারসাম্য করুন",
+        "done": "ফার্মের পানির পথ ভারসাম্যপূর্ণ এবং দৃশ্যপট সাড়া দেয়।"
+      },
+      "gallery-world-display": {
+        "title": "CalorieStudio ডিসপ্লে সাজান",
+        "body": "বিশ্বে একটি সহজ creator marker রাখুন। প্রথম সংস্করণে এটি লোকাল থাকে।",
+        "action": "ডিসপ্লে রাখুন",
+        "done": "CalorieStudio এলাকায় creator beacon দেখা যায়।"
+      },
+      "helpbot-local-hint": {
+        "title": "লোকাল হিন্ট নিন",
+        "body": "বিশ্বকে guided tour না বানিয়ে Helpbot থেকে কাছের জায়গা সম্পর্কে একটি হিন্ট নিন।",
+        "action": "Helpbot-কে জিজ্ঞেস করুন",
+        "done": "হালকা route hint পাওয়া যায়; রুট আপনার পছন্দ।"
+      }
+    }
+  },
+  "pt": {
+    "title": "Interação do mundo",
+    "optional": "Atividade opcional · nunca obrigatória para a rota principal",
+    "completed": "Concluída",
+    "progress": "interações do mundo",
+    "reset": "Repetir localmente",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Inspecione um registo público de alimentos",
+        "body": "Veja que informação um registo pode conter e ligue-a ao mundo.",
+        "action": "Inspecionar",
+        "done": "Uma pista de dados liga agora a quinta e o mercado."
+      },
+      "farm-water-balance": {
+        "title": "Equilibre a água dos campos",
+        "body": "Ajuste uma pequena rota de água para culturas e natureza partilharem o recurso.",
+        "action": "Equilibrar água",
+        "done": "A rota de água está equilibrada e a paisagem responde."
+      },
+      "gallery-world-display": {
+        "title": "Organize uma mostra CalorieStudio",
+        "body": "Coloque voluntariamente um marcador simples de criador. Nesta versão fica local.",
+        "action": "Colocar mostra",
+        "done": "Uma baliza de criador aparece no distrito CalorieStudio."
+      },
+      "helpbot-local-hint": {
+        "title": "Peça uma dica local",
+        "body": "Peça ao Helpbot uma dica contextual sem transformar o mundo numa visita guiada.",
+        "action": "Perguntar ao Helpbot",
+        "done": "Uma dica subtil está disponível; o percurso continua a ser sua escolha."
+      }
+    }
+  },
+  "id": {
+    "title": "Interaksi dunia",
+    "optional": "Aktivitas opsional · tidak pernah wajib untuk rute utama",
+    "completed": "Selesai",
+    "progress": "interaksi dunia",
+    "reset": "Main ulang lokal",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "Periksa catatan makanan publik",
+        "body": "Lihat informasi yang dapat dibawa catatan makanan dan hubungkan dengan dunia.",
+        "action": "Periksa catatan",
+        "done": "Petunjuk data makanan kini terhubung ke sistem farm dan market."
+      },
+      "farm-water-balance": {
+        "title": "Seimbangkan air untuk ladang",
+        "body": "Atur jalur air kecil agar tanaman dan alam berbagi sumber daya lokal.",
+        "action": "Seimbangkan air",
+        "done": "Jalur air farm seimbang dan lanskap merespons."
+      },
+      "gallery-world-display": {
+        "title": "Kurasi tampilan CalorieStudio",
+        "body": "Pilih menempatkan marker kreator sederhana. Pada tahap ini tetap lokal.",
+        "action": "Tempatkan tampilan",
+        "done": "Beacon kreator muncul di distrik CalorieStudio."
+      },
+      "helpbot-local-hint": {
+        "title": "Minta petunjuk lokal",
+        "body": "Minta satu petunjuk kontekstual dari Helpbot tanpa mengubah dunia menjadi tur terpandu.",
+        "action": "Tanya Helpbot",
+        "done": "Petunjuk rute halus tersedia; rute tetap pilihanmu."
+      }
+    }
+  },
+  "ur": {
+    "title": "دنیا کی تعامل",
+    "optional": "اختیاری سرگرمی · مرکزی راستے کے لیے کبھی لازمی نہیں",
+    "completed": "مکمل",
+    "progress": "ورلڈ انٹرایکشنز",
+    "reset": "لوکل دوبارہ کھیلیں",
+    "interactions": {
+      "food-data-inspection": {
+        "title": "پبلک فوڈ ریکارڈ دیکھیں",
+        "body": "دیکھیں فوڈ ریکارڈ میں کیا معلومات ہو سکتی ہیں اور انہیں دنیا سے جوڑیں۔",
+        "action": "ریکارڈ دیکھیں",
+        "done": "فوڈ ڈیٹا اشارہ اب فارم اور مارکیٹ سسٹم سے جڑتا ہے۔"
+      },
+      "farm-water-balance": {
+        "title": "کھیتوں کے پانی کو متوازن کریں",
+        "body": "چھوٹا آبی راستہ ایڈجسٹ کریں تاکہ فصل اور فطرت مقامی وسیلہ بانٹ سکیں۔",
+        "action": "پانی متوازن کریں",
+        "done": "فارم کا پانی متوازن ہے اور منظر ردعمل دیتا ہے۔"
+      },
+      "gallery-world-display": {
+        "title": "CalorieStudio ڈسپلے ترتیب دیں",
+        "body": "دنیا میں ایک سادہ creator marker رکھنے کا انتخاب کریں۔ یہ فی الحال لوکل رہتا ہے۔",
+        "action": "ڈسپلے رکھیں",
+        "done": "CalorieStudio ضلع میں creator beacon ظاہر ہوتا ہے۔"
+      },
+      "helpbot-local-hint": {
+        "title": "لوکل ہنٹ پوچھیں",
+        "body": "دنیا کو guided tour بنائے بغیر Helpbot سے ایک سیاقی ہنٹ لیں۔",
+        "action": "Helpbot سے پوچھیں",
+        "done": "ہلکا route hint دستیاب ہے؛ راستہ آپ کی پسند رہتا ہے۔"
+      }
+    }
+  }
+}

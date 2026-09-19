@@ -1,0 +1,493 @@
+{
+  "version": "0.1.0",
+  "status": "first-modular-fnb-role-chain-slice",
+  "principles": {
+    "modular": true,
+    "start_from_any_role": true,
+    "no_wallet_required": true,
+    "no_participation_required": true,
+    "no_pay_to_win": true,
+    "age_adaptive": true,
+    "cross_role_consequences": true,
+    "animal_routes_optional_and_non_graphic": true,
+    "dietary_or_cultural_identity_never_inferred": true
+  },
+  "branches": [
+    {
+      "id": "fruit-vegetables",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ]
+    },
+    {
+      "id": "grain-bakery",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ]
+    },
+    {
+      "id": "dairy",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "optional_animal_route": true
+    },
+    {
+      "id": "drinks",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ]
+    },
+    {
+      "id": "hospitality",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ]
+    },
+    {
+      "id": "retail-delivery",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "id": "primary-producer",
+      "stage": "source",
+      "aliases": [
+        "farmer",
+        "grower",
+        "fisher"
+      ],
+      "upstream": [],
+      "downstream": [
+        "processor-manufacturer",
+        "baker-kitchen-craft",
+        "wholesaler-distributor"
+      ],
+      "consequence_ids": [
+        "harvest-quality"
+      ]
+    },
+    {
+      "id": "processor-manufacturer",
+      "stage": "transform",
+      "aliases": [
+        "processor",
+        "manufacturer"
+      ],
+      "upstream": [
+        "primary-producer"
+      ],
+      "downstream": [
+        "wholesaler-distributor",
+        "warehouse-cold-chain",
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway"
+      ],
+      "consequence_ids": [
+        "processing-quality"
+      ]
+    },
+    {
+      "id": "baker-kitchen-craft",
+      "stage": "transform",
+      "aliases": [
+        "baker",
+        "kitchen",
+        "production-craft"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer"
+      ],
+      "downstream": [
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway"
+      ],
+      "consequence_ids": [
+        "craft-and-ingredient-choice"
+      ]
+    },
+    {
+      "id": "wholesaler-distributor",
+      "stage": "distribution",
+      "aliases": [
+        "wholesaler",
+        "distributor"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer"
+      ],
+      "downstream": [
+        "warehouse-cold-chain",
+        "transport-logistics",
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway"
+      ],
+      "consequence_ids": [
+        "allocation-and-timing"
+      ]
+    },
+    {
+      "id": "warehouse-cold-chain",
+      "stage": "distribution",
+      "aliases": [
+        "warehouse",
+        "cold-chain"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer",
+        "wholesaler-distributor"
+      ],
+      "downstream": [
+        "transport-logistics",
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway"
+      ],
+      "consequence_ids": [
+        "cold-chain"
+      ]
+    },
+    {
+      "id": "transport-logistics",
+      "stage": "distribution",
+      "aliases": [
+        "transport",
+        "logistics"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer",
+        "wholesaler-distributor",
+        "warehouse-cold-chain"
+      ],
+      "downstream": [
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway",
+        "delivery"
+      ],
+      "consequence_ids": [
+        "transport-route"
+      ]
+    },
+    {
+      "id": "grocery-retail",
+      "stage": "retail",
+      "aliases": [
+        "supermarket",
+        "grocery-retail"
+      ],
+      "upstream": [
+        "wholesaler-distributor",
+        "warehouse-cold-chain",
+        "transport-logistics",
+        "processor-manufacturer",
+        "primary-producer"
+      ],
+      "downstream": [
+        "consumer",
+        "delivery"
+      ],
+      "consequence_ids": [
+        "product-data-and-shelf-life"
+      ]
+    },
+    {
+      "id": "restaurant",
+      "stage": "hospitality",
+      "aliases": [
+        "restaurant"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer",
+        "baker-kitchen-craft",
+        "wholesaler-distributor",
+        "warehouse-cold-chain",
+        "transport-logistics"
+      ],
+      "downstream": [
+        "consumer",
+        "delivery"
+      ],
+      "consequence_ids": [
+        "menu-and-ingredient-choice"
+      ]
+    },
+    {
+      "id": "cafe",
+      "stage": "hospitality",
+      "aliases": [
+        "cafe"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer",
+        "baker-kitchen-craft",
+        "wholesaler-distributor",
+        "transport-logistics"
+      ],
+      "downstream": [
+        "consumer",
+        "delivery"
+      ],
+      "consequence_ids": [
+        "menu-and-ingredient-choice"
+      ]
+    },
+    {
+      "id": "takeaway",
+      "stage": "hospitality",
+      "aliases": [
+        "takeaway"
+      ],
+      "upstream": [
+        "processor-manufacturer",
+        "baker-kitchen-craft",
+        "wholesaler-distributor",
+        "transport-logistics"
+      ],
+      "downstream": [
+        "consumer",
+        "delivery"
+      ],
+      "consequence_ids": [
+        "menu-and-ingredient-choice"
+      ]
+    },
+    {
+      "id": "delivery",
+      "stage": "last-mile",
+      "aliases": [
+        "delivery"
+      ],
+      "upstream": [
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway",
+        "transport-logistics"
+      ],
+      "downstream": [
+        "consumer"
+      ],
+      "consequence_ids": [
+        "last-mile-timing"
+      ]
+    },
+    {
+      "id": "consumer",
+      "stage": "use",
+      "aliases": [
+        "consumer"
+      ],
+      "upstream": [
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway",
+        "delivery"
+      ],
+      "downstream": [
+        "food-data-reviewer"
+      ],
+      "consequence_ids": [
+        "consumer-choice"
+      ]
+    },
+    {
+      "id": "food-data-reviewer",
+      "stage": "data",
+      "aliases": [
+        "food-data-contributor",
+        "food-data-reviewer"
+      ],
+      "upstream": [
+        "primary-producer",
+        "processor-manufacturer",
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway",
+        "consumer"
+      ],
+      "downstream": [
+        "consumer",
+        "grocery-retail",
+        "restaurant",
+        "cafe",
+        "takeaway"
+      ],
+      "consequence_ids": [
+        "public-product-data"
+      ]
+    }
+  ],
+  "consequences": [
+    {
+      "id": "harvest-quality",
+      "affects": [
+        "processing-quality",
+        "product-data-and-shelf-life",
+        "consumer-choice"
+      ],
+      "themes": [
+        "quality",
+        "waste",
+        "seasonality"
+      ]
+    },
+    {
+      "id": "processing-quality",
+      "affects": [
+        "product-data-and-shelf-life",
+        "menu-and-ingredient-choice",
+        "consumer-choice"
+      ],
+      "themes": [
+        "quality",
+        "ingredients",
+        "yield"
+      ]
+    },
+    {
+      "id": "craft-and-ingredient-choice",
+      "affects": [
+        "menu-and-ingredient-choice",
+        "consumer-choice",
+        "public-product-data"
+      ],
+      "themes": [
+        "craft",
+        "ingredients",
+        "nutrition",
+        "sourcing"
+      ]
+    },
+    {
+      "id": "allocation-and-timing",
+      "affects": [
+        "cold-chain",
+        "transport-route",
+        "product-data-and-shelf-life"
+      ],
+      "themes": [
+        "availability",
+        "timing",
+        "waste"
+      ]
+    },
+    {
+      "id": "cold-chain",
+      "affects": [
+        "transport-route",
+        "product-data-and-shelf-life",
+        "consumer-choice"
+      ],
+      "themes": [
+        "freshness",
+        "waste",
+        "safety"
+      ]
+    },
+    {
+      "id": "transport-route",
+      "affects": [
+        "last-mile-timing",
+        "product-data-and-shelf-life",
+        "consumer-choice"
+      ],
+      "themes": [
+        "timing",
+        "freshness",
+        "emissions"
+      ]
+    },
+    {
+      "id": "product-data-and-shelf-life",
+      "affects": [
+        "consumer-choice",
+        "public-product-data"
+      ],
+      "themes": [
+        "freshness",
+        "label-data",
+        "alternatives"
+      ]
+    },
+    {
+      "id": "menu-and-ingredient-choice",
+      "affects": [
+        "consumer-choice",
+        "public-product-data"
+      ],
+      "themes": [
+        "nutrition",
+        "sourcing",
+        "dietary-choice"
+      ]
+    },
+    {
+      "id": "last-mile-timing",
+      "affects": [
+        "consumer-choice"
+      ],
+      "themes": [
+        "timing",
+        "freshness",
+        "waste"
+      ]
+    },
+    {
+      "id": "consumer-choice",
+      "affects": [
+        "public-product-data"
+      ],
+      "themes": [
+        "nutrition",
+        "alternatives",
+        "demand"
+      ]
+    },
+    {
+      "id": "public-product-data",
+      "affects": [
+        "consumer-choice",
+        "product-data-and-shelf-life",
+        "menu-and-ingredient-choice"
+      ],
+      "themes": [
+        "provenance",
+        "OFF",
+        "USDA",
+        "community-review"
+      ]
+    }
+  ]
+}

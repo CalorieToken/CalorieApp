@@ -9,7 +9,7 @@
   var helpURL = 'https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger';
   var nodes = [], hub = null, launcher = null, test = null, trust = null, frame = null, controls = null, requestedLocale = null, revoked = false, picker = null, preferenceRead = false;
   var preferenceKey = 'calorieapp.display-language.v1';
-  var pickers = [], accountApp = null, accountWatcher = null;
+  var pickers = [], accountApp = null, accountWatcher = null, cookieWatcher = null, cookieAttributeWatcher = null;
   var menuLabels = new WeakMap();
   function allowed() {
     return document.body && document.body.matches('.ctstyle-enabled,.ctstyle-footer-only') &&
@@ -116,10 +116,22 @@
     if (!safe(guide) || document.getElementById('ctstyle-cal-crypto')) return;
     // Keep the existing translated guide and every original provider destination in place.
     hub = element('div','ctstyle-discovery'); hub.id = 'ctstyle-cal-crypto';
-    hub.append(label('p','intro','ctstyle-discovery-intro'));
+    var intro=element('header','ctstyle-crypto-intro');
+    intro.append(element('p','ctstyle-crypto-kicker','CalorieToken · XRP Ledger'),label('h2','exchangeLabel'),label('p','intro','ctstyle-discovery-intro'));
+    var actions=element('div','ctstyle-discovery-actions');
+    actions.append(link('exploreApp',window.location.origin+'/index.php/calorieapp/',false),link('readWhitepaper',window.location.origin+'/index.php/whitepaper/',false));
+    intro.append(label('p','appPitch','ctstyle-crypto-app-pitch'),actions,label('p','appWithoutCAL','ctstyle-discovery-small'));
+    var journey=element('ol','ctstyle-crypto-journey');
+    ['Wallet','Route','Review'].forEach(function(key){var step=element('li');step.append(label('h3','journey'+key),label('p','journey'+key+'Text'));journey.append(step);});
+    intro.append(journey);hub.append(intro);
     var nav = element('nav','ctstyle-discovery-tabs'); nav.setAttribute('aria-label','CAL & Crypto');
     if (!guide.id) guide.id = 'ctstyle-cal-options';
-    nav.append(link('dexTitle','#ctstyle-own-dex'),link('guideTitle','#'+guide.id),link('bridgeTitle','#ctstyle-external-exchange'));
+    [['routeTrade','#ctstyle-own-dex'],['routeLearn','#'+guide.id],['routeOther','#ctstyle-external-exchange']].forEach(function (route) {
+      var action=element('a','ctstyle-discovery-action'); action.href=route[1];
+      var copy=element('span','ctstyle-crypto-route-copy');
+      copy.append(label('strong',route[0]),label('span',route[0]+'Text','ctstyle-crypto-route-description'));
+      action.append(copy); nav.append(action);
+    });
     hub.append(nav);
     var dex = section('ctstyle-own-dex','dexTitle');
     dex.append(label('p','dexStatus','ctstyle-discovery-badge'),label('p','dexText'),link('openDex',dexURL,true),link('openSwap','https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market',true),trustlineCard('ctstyle-buy-trustline'));
@@ -174,11 +186,45 @@
     }
   }
   function cookieVisible() {
-    return Array.from(document.querySelectorAll('.cmplz-cookiebanner')).some(function (node) {
-      if (node.classList.contains('cmplz-dismissed') || node.hidden) return false;
+    function visible(node) {
+      if (node.hidden || node.classList.contains('cmplz-dismissed')) return false;
       var style = window.getComputedStyle(node);
-      return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+      return style.display !== 'none' && style.visibility !== 'hidden' && Number.parseFloat(style.opacity) !== 0;
+    }
+    return Array.from(document.querySelectorAll('.cmplz-cookiebanner')).some(function (node) {
+      var container = node.closest('#cmplz-cookiebanner-container');
+      return visible(node) && (!container || visible(container));
     });
+  }
+  function syncCookieVisibility() {
+    if (!allowed()) return;
+    var visible = cookieVisible();
+    if (document.body.classList.contains('ctstyle-cookie-banner-open') !== visible) {
+      document.body.classList.toggle('ctstyle-cookie-banner-open', visible);
+    }
+    if (launcher && launcher.hidden !== visible) launcher.hidden = visible;
+  }
+  function watchCookieBanner() {
+    if (cookieWatcher || typeof MutationObserver !== 'function') return;
+    var selector = '#cmplz-cookiebanner-container,.cmplz-cookiebanner';
+    cookieAttributeWatcher = new MutationObserver(syncCookieVisibility);
+    function trackBanners() {
+      cookieAttributeWatcher.disconnect();
+      document.querySelectorAll(selector).forEach(function (node) {
+        cookieAttributeWatcher.observe(node,{attributes:true,attributeFilter:['class','style','hidden']});
+      });
+      syncCookieVisibility();
+    }
+    cookieWatcher = new MutationObserver(function (records) {
+      if (records.some(function (record) {
+        return Array.from(record.addedNodes).concat(Array.from(record.removedNodes)).some(function (node) {
+          return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
+        });
+      })) trackBanners();
+    });
+    // Observe only structure here; Brizy class/style changes are unrelated.
+    cookieWatcher.observe(document.body,{childList:true,subtree:true});
+    trackBanners();
   }
   function websiteLanguage(tag, remember) {
     if (!allowed() || !cfg.copy[tag]) return;
@@ -242,10 +288,17 @@
   function watchAccount() {
     if (accountWatcher || typeof MutationObserver !== 'function') return;
     accountWatcher = new MutationObserver(function (records) {
-      if (records.some(function (record) {return Array.from(record.addedNodes).some(function (node) {
-        return node.nodeType===1 && !node.closest('#ctstyle-account-app') &&
-          (node.matches('.xl-card,.ctstyle-header') || node.querySelector('.xl-card'));
-      });})) {accountWidget();}
+      if (records.some(function (record) {
+        // Native login widgets can replace just their footer/contents. Reattach
+        // our existing controls when removed, without rebuilding the login card.
+        if (accountApp && !accountApp.isConnected && Array.from(record.removedNodes).some(function (node) {
+          return node===accountApp || node.nodeType===1 && node.contains(accountApp);
+        })) return true;
+        return Array.from(record.addedNodes).some(function (node) {
+          return node.nodeType===1 && !node.closest('#ctstyle-account-app') &&
+            (node.matches('.xl-card,.ctstyle-header') || node.querySelector('.xl-card'));
+        });
+      })) {accountWidget();}
     });
     accountWatcher.observe(document.body,{childList:true,subtree:true});
   }
@@ -253,22 +306,16 @@
     if (launcher || document.getElementById('ctstyle-app-launcher') || document.querySelector('[contenteditable="true"],.brz-ed')) return;
     if (new URL(cfg.appURL).origin !== window.location.origin) return;
     launcher = element('aside','ctstyle-app-launcher'); launcher.id = 'ctstyle-app-launcher';
-    var details = element('details'), summary = element('summary'), logo = element('img');
-    logo.src = cfg.appLogo; logo.alt = ''; logo.width = 32; logo.height = 32;
-    summary.append(logo,element('span','','CalorieApp')); details.append(summary);
+    var details = element('details'), summary = element('summary'), icon = element('span','ctstyle-help-icon','?');
+    icon.setAttribute('aria-hidden','true');
+    summary.append(icon,element('span','ctstyle-help-caption','CalorieHelp')); details.append(summary);
     var panel = element('div','ctstyle-app-launcher-panel');
     panel.append(label('p','appPitch'));
     if (Number(cfg.page) !== 7880) panel.append(link('openApp',cfg.appURL),link('testTitle',cfg.appURL+'#ctstyle-testnet'));
     picker = languagePicker('ctstyle-language-select',panel);
     details.append(panel); launcher.append(details); document.body.append(launcher);
-    launcher.hidden = cookieVisible();
+    syncCookieVisibility();
     details.addEventListener('keydown',function (event) { if (event.key === 'Escape' && details.open) { details.open = false; summary.focus(); } });
-    if (typeof MutationObserver === 'function') {
-      var banners = document.querySelectorAll('#cmplz-cookiebanner-container,.cmplz-cookiebanner');
-      var observer = new MutationObserver(function () { launcher.hidden = cookieVisible(); });
-      banners.forEach(function (node) { observer.observe(node,{attributes:true,childList:true,subtree:true,attributeFilter:['class','style','hidden']}); });
-      window.addEventListener('pagehide',function () { observer.disconnect(); },{once:true});
-    }
   }
   function navigation() {
     // Change only the known label at the existing destination. No menu, URL or metadata rewrite.
@@ -286,7 +333,7 @@
   function sharedLanguage(tag) {
     var all=window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.sharedLabels;
     if (!all || !all[tag]) return;
-    document.querySelectorAll('.brz-menu-simple a[href],.ctstyle-header-nav a[href],.ctstyle-footer .ctstyle-legal-links a[href]').forEach(function (a) {
+    document.querySelectorAll('.brz-menu-simple a[href],.ctstyle-header-nav a[href],.showcase-header-menu a[href],.showcase-mobile-menu a[href],.ctstyle-footer .ctstyle-legal-links a[href]').forEach(function (a) {
       if (a.closest('form,[contenteditable],.xl-card,[hidden],[inert]')) return;
       var url;try {url=new URL(a.getAttribute('href'),window.location.href);} catch (_) {return;}
       var route=url.pathname.replace(/^\/index\.php(?=\/|$)/,'').replace(/\/+$/,'') || '/';
@@ -318,6 +365,7 @@
     }
     if (locale) requestedLocale = locale;
     buyingPage(); trustPage(); appPage(); widget(); accountWidget(); watchAccount(); navigation();
+    syncCookieVisibility(); watchCookieBanner();
     var tag = lang();
     sharedLanguage(tag);
     nodes.forEach(function (entry) {
@@ -332,14 +380,19 @@
   }
   window.CalorieTokenDiscoveryUI = {refresh:refresh,getLocale:lang,setLocale:websiteLanguage};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',function () { refresh(); },{once:true}); else refresh();
-  window.addEventListener('load',function () { websiteLanguage(lang(),false); syncConsent(); },{once:true});
+  window.addEventListener('load',function () { websiteLanguage(lang(),false); syncConsent(); syncCookieVisibility(); },{once:true});
   window.addEventListener('pagehide',unload);
   window.addEventListener('pagehide',function () {if (accountWatcher) {accountWatcher.disconnect();accountWatcher=null;}});
-  window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();}});
+  window.addEventListener('pagehide',function () {
+    if (cookieWatcher) {cookieWatcher.disconnect();cookieWatcher=null;}
+    if (cookieAttributeWatcher) {cookieAttributeWatcher.disconnect();cookieAttributeWatcher=null;}
+  });
+  window.addEventListener('pageshow',function () {if (allowed()) {accountWidget();watchAccount();syncCookieVisibility();watchCookieBanner();}});
+  document.addEventListener('cmplz_cookie_warning_loaded',syncCookieVisibility);
   ['cmplz_status_change','cmplz_service_status_change','cmplz_revoke','cmplz_enable_category','cmplz_enable_service'].forEach(function (name) {
     document.addEventListener(name,function () {
       revoked = name === 'cmplz_revoke';
-      syncConsent(); if (launcher) launcher.hidden = cookieVisible();
+      syncConsent(); syncCookieVisibility();
     });
   });
   document.addEventListener('change',function (event) {

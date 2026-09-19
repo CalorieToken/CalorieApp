@@ -1,3 +1,5 @@
+import {profileCopy} from "./helpers/auth_ui.mjs";
+import { authUi } from "./helpers/auth_ui.mjs";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
@@ -27,6 +29,14 @@ async function compiledLoginModule() {
   };
 }
 
+test("guided account tools request gives signed-out users a focused explanation", async () => {
+  const { source } = await compiledLoginModule();
+  assert.match(source, /setAccountToolsRequested\(true\)/);
+  assert.match(source, /accountToolsNoticeRef\.current\?\.focus/);
+  assert.match(source, /authCopy\.signInForTools/);
+  assert.match(source, /role="status"/);
+});
+
 test("login surface fails closed until an embedded parent is trusted", async () => {
   const { compiled, source } = await compiledLoginModule();
   const module = { exports: {} };
@@ -43,6 +53,11 @@ test("login surface fails closed until an embedded parent is trusted", async () 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -87,7 +102,8 @@ test("login surface fails closed until an embedded parent is trusted", async () 
   assert.match(source, /type:\s*"calorieapp:bridge:initialized"/);
   assert.match(source, /event\.data\?\.type === "calorieapp:logout"/);
   assert.match(source, /type:\s*"calorieapp:logout:request"/);
-  assert.match(source, /Log out of CalorieToken\.net and CalorieApp on this device\./);
+  assert.match(source, /authCopy\.logoutBoth/);
+  assert.match(authUi.getAuthUi("en").copy.logoutBoth, /Log out of CalorieToken\.net and CalorieApp on this device\./);
   assert.match(source, /requestCalorieAppLogout\(\)/);
 });
 
@@ -108,6 +124,11 @@ test("logout retries the cookie-clearing endpoint after an interrupted response"
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -211,6 +232,11 @@ test("login start retries transport errors and transient responses", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -318,6 +344,11 @@ test("embedded login wakes the backend before creating login state", async () =>
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -409,6 +440,11 @@ test("embedded login does not report progress after cancellation", async () => {
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -542,6 +578,11 @@ test("login status polling slows down by age, failures, and Retry-After", async 
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -632,6 +673,9 @@ test("embedded completion recovers safely without replaying one-time codes", asy
   const backendRequest = async (url, options = {}) => {
     requests.push({ url, method: options.method || "GET" });
     if (url.endsWith("/api/identity/callback")) {
+      if (scenario === "hosting-html") {
+        return response(502, { detail: { code: "wordpress_bridge_html_response" } });
+      }
       if (scenario === "rate-limited") {
         return response(429, null, "30");
       }
@@ -716,6 +760,11 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     exports: module.exports,
     process: { env: {} },
     require(specifier) {
+      if (specifier === "@/config/account-profile-copy.json") return {default: profileCopy};
+      if (specifier === "@/components/NicknameProfile") return {NicknameProfile: () => null};
+
+      if (specifier === "@/components/DisplayLanguageProvider") return { useDisplayLanguage: () => ({ enabled: false, locale: "en" }) };
+      if (specifier === "@/lib/authUi") return authUi;
       if (specifier === "react") {
         return {};
       }
@@ -796,6 +845,23 @@ test("embedded completion recovers safely without replaying one-time codes", asy
     locale: "en",
   };
   const signal = () => new AbortController().signal;
+
+  scenario = "hosting-html";
+  await assert.rejects(module.exports.completeEmbeddedLogin(
+    pending, "authorization-code", pending.state, signal(), 120_000
+  ), (error) => {
+    assert.ok(error instanceof module.exports.EmbeddedBridgeUnavailableError);
+    assert.equal(module.exports.embeddedAuthorizationRefreshDelayMs(
+      error, 0, pending.expires_at, now
+    ), null);
+    return true;
+  });
+  assert.deepEqual(requests, [
+    { url: "/api/backend/api/identity/callback", method: "POST" },
+  ]);
+  assert.deepEqual(scheduledDelays, []);
+  requests.length = 0;
+  scenario = "callback-cookie";
 
   const directUser = await module.exports.completeEmbeddedLogin(
     pending,

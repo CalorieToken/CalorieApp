@@ -1,0 +1,768 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CalorieToken Showcase Economy Config",
+  "type": "object",
+  "required": [
+    "contract_id",
+    "version",
+    "environment",
+    "ticker",
+    "real_world_value",
+    "redeemable",
+    "mainnet_enabled",
+    "welcome_airdrop",
+    "marketplace",
+    "reference_peg"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "calorietoken.showcase-economy"
+    },
+    "version": {
+      "type": "string"
+    },
+    "environment": {
+      "const": "xrpl-testnet"
+    },
+    "ticker": {
+      "const": "CALT"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "real_world_value": {
+      "const": false
+    },
+    "redeemable": {
+      "const": false
+    },
+    "mainnet_enabled": {
+      "const": false
+    },
+    "mainnet_cal_conversion_defined": {
+      "const": false
+    },
+    "welcome_airdrop": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "feature_flag",
+        "distribution_model",
+        "identity_scope",
+        "scene_scope",
+        "culture_policy",
+        "age_modes",
+        "discovery_capture",
+        "generosity",
+        "newcomer_policy"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "feature_flag": {
+          "type": "string"
+        },
+        "distribution_model": {
+          "const": "rolling-newcomer-welcome-with-launch-wave"
+        },
+        "claim_start": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "claim_end": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cadence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "amount_policy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "xrpl_issuer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "xrpl_currency_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identity_scope": {
+          "type": "string"
+        },
+        "scene_scope": {
+          "const": "all-world-scenes"
+        },
+        "culture_policy": {
+          "type": "string"
+        },
+        "duplicate_claim_prevention": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "age_modes": {
+          "type": "object",
+          "required": [
+            "child",
+            "teen",
+            "adult"
+          ],
+          "properties": {
+            "child": {
+              "const": "non-financial-welcome-collectible-only"
+            },
+            "teen": {
+              "const": "non-value-learning-simulation"
+            },
+            "adult": {
+              "const": "optional-xrpl-testnet-calt-claim"
+            }
+          },
+          "additionalProperties": false
+        },
+        "requires_explicit_wallet_authorization": {
+          "const": true
+        },
+        "requires_validated_ledger_result": {
+          "const": true
+        },
+        "jurisdiction_gate_required": {
+          "const": true
+        },
+        "discovery_capture": {
+          "type": "object",
+          "required": [
+            "reward_basis",
+            "raw_screen_time_rewarded",
+            "idle_rewarded",
+            "refresh_farming_rewarded",
+            "equivalent_accessibility_routes_required",
+            "per_identity_limits_required",
+            "anti_automation_required"
+          ],
+          "properties": {
+            "reward_basis": {
+              "const": "active-observation-exploration-and-meaningful-actions"
+            },
+            "raw_screen_time_rewarded": {
+              "const": false
+            },
+            "idle_rewarded": {
+              "const": false
+            },
+            "refresh_farming_rewarded": {
+              "const": false
+            },
+            "equivalent_accessibility_routes_required": {
+              "const": true
+            },
+            "per_identity_limits_required": {
+              "const": true
+            },
+            "anti_automation_required": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "generosity": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "adult_testnet_only",
+            "allowed_targets",
+            "appreciation_rewards",
+            "calt_from_gifting_itself",
+            "circular_transfer_farming_blocked",
+            "self_transfer_credit_blocked",
+            "socioeconomic_inference_forbidden"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "adult_testnet_only": {
+              "const": true
+            },
+            "allowed_targets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "appreciation_rewards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "calt_from_gifting_itself": {
+              "const": false
+            },
+            "circular_transfer_farming_blocked": {
+              "const": true
+            },
+            "self_transfer_credit_blocked": {
+              "const": true
+            },
+            "socioeconomic_inference_forbidden": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "newcomer_policy": {
+          "type": "object",
+          "required": [
+            "globally_available_for_future_newcomers",
+            "one_base_entitlement_per_canonical_game_identity",
+            "personal_window_starts_on_first_eligible_game_start",
+            "personal_window_duration",
+            "returning_player_does_not_reset_newcomer_status",
+            "seasonal_relaunch_does_not_duplicate_base_entitlement",
+            "backend_canonical_start_required_when_enabled"
+          ],
+          "properties": {
+            "globally_available_for_future_newcomers": {
+              "const": true
+            },
+            "one_base_entitlement_per_canonical_game_identity": {
+              "const": true
+            },
+            "personal_window_starts_on_first_eligible_game_start": {
+              "const": true
+            },
+            "personal_window_duration": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "returning_player_does_not_reset_newcomer_status": {
+              "const": true
+            },
+            "seasonal_relaunch_does_not_duplicate_base_entitlement": {
+              "const": true
+            },
+            "backend_canonical_start_required_when_enabled": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "marketplace": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "testnet_only",
+        "supported_asset_families",
+        "mode",
+        "settlement",
+        "creator_storage"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "testnet_only": {
+          "type": "boolean"
+        },
+        "supported_asset_families": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mode": {
+          "const": "testnet-first-mainnet-ready"
+        },
+        "settlement": {
+          "type": "object",
+          "required": [
+            "seller_selects_accepted_rails",
+            "buyer_selects_from_listing_rails",
+            "automatic_cross_currency_conversion",
+            "non_custodial",
+            "explicit_wallet_signature_required",
+            "validated_ledger_result_required",
+            "rails"
+          ],
+          "properties": {
+            "seller_selects_accepted_rails": {
+              "const": true
+            },
+            "buyer_selects_from_listing_rails": {
+              "const": true
+            },
+            "automatic_cross_currency_conversion": {
+              "const": false
+            },
+            "non_custodial": {
+              "const": true
+            },
+            "explicit_wallet_signature_required": {
+              "const": true
+            },
+            "validated_ledger_result_required": {
+              "const": true
+            },
+            "rails": {
+              "type": "object",
+              "required": [
+                "CALT",
+                "CAL",
+                "XRP"
+              ],
+              "properties": {
+                "CALT": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "redeemable",
+                    "feature_flag"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-testnet"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "real_value": {
+                      "const": false
+                    },
+                    "redeemable": {
+                      "const": false
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_calt"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "CAL": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "issuer",
+                    "currency_code",
+                    "feature_flag",
+                    "adult_only",
+                    "independent_release_approval_required",
+                    "jurisdiction_gate_required",
+                    "legal_tax_consumer_review_required"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-mainnet"
+                    },
+                    "enabled": {
+                      "const": false
+                    },
+                    "real_value": {
+                      "const": true
+                    },
+                    "issuer": {
+                      "const": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"
+                    },
+                    "currency_code": {
+                      "const": "43616C6F72696500000000000000000000000000"
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_cal_mainnet"
+                    },
+                    "adult_only": {
+                      "const": true
+                    },
+                    "independent_release_approval_required": {
+                      "const": true
+                    },
+                    "jurisdiction_gate_required": {
+                      "const": true
+                    },
+                    "legal_tax_consumer_review_required": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "XRP": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "native_asset",
+                    "feature_flag",
+                    "adult_only",
+                    "independent_release_approval_required",
+                    "jurisdiction_gate_required",
+                    "legal_tax_consumer_review_required"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-mainnet"
+                    },
+                    "enabled": {
+                      "const": false
+                    },
+                    "real_value": {
+                      "const": true
+                    },
+                    "native_asset": {
+                      "const": true
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_xrp_mainnet"
+                    },
+                    "adult_only": {
+                      "const": true
+                    },
+                    "independent_release_approval_required": {
+                      "const": true
+                    },
+                    "jurisdiction_gate_required": {
+                      "const": true
+                    },
+                    "legal_tax_consumer_review_required": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "creator_storage": {
+          "type": "object",
+          "required": [
+            "model",
+            "platform_shared_storage_credentials",
+            "creator_owns_provider_account",
+            "per_user_connection_scope",
+            "provider_account_linking_preferred",
+            "oauth_pkce_when_supported",
+            "provider_managed_social_login_only",
+            "google_password_never_collected",
+            "github_password_never_collected",
+            "raw_provider_password_never_collected",
+            "api_key_fallback",
+            "stored_application_fields",
+            "providers",
+            "pre_mint_requirements",
+            "post_mint_mutation_policy"
+          ],
+          "properties": {
+            "model": {
+              "const": "bring-your-own-storage"
+            },
+            "platform_shared_storage_credentials": {
+              "const": false
+            },
+            "creator_owns_provider_account": {
+              "const": true
+            },
+            "per_user_connection_scope": {
+              "const": true
+            },
+            "provider_account_linking_preferred": {
+              "const": true
+            },
+            "oauth_pkce_when_supported": {
+              "const": true
+            },
+            "provider_managed_social_login_only": {
+              "const": true
+            },
+            "google_password_never_collected": {
+              "const": true
+            },
+            "github_password_never_collected": {
+              "const": true
+            },
+            "raw_provider_password_never_collected": {
+              "const": true
+            },
+            "api_key_fallback": {
+              "type": "object",
+              "required": [
+                "allowed",
+                "frontend_storage_forbidden",
+                "public_metadata_storage_forbidden",
+                "backend_encryption_required"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": true
+                },
+                "frontend_storage_forbidden": {
+                  "const": true
+                },
+                "public_metadata_storage_forbidden": {
+                  "const": true
+                },
+                "backend_encryption_required": {
+                  "const": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "stored_application_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "providers": {
+              "type": "object",
+              "required": [
+                "nft_storage_classic",
+                "hot_ipfs_provider",
+                "nft_storage_preservation"
+              ],
+              "properties": {
+                "nft_storage_classic": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "new_uploads",
+                    "accepted_inputs",
+                    "documented_login_methods",
+                    "google_login_assumed"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "legacy-import-only"
+                    },
+                    "new_uploads": {
+                      "const": false
+                    },
+                    "accepted_inputs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "documented_login_methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "google_login_assumed": {
+                      "const": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "hot_ipfs_provider": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "provider_examples",
+                    "account_owned_by_creator",
+                    "oauth_or_api_key_depends_on_provider"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "creator-selected-current-provider"
+                    },
+                    "provider_examples": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "account_owned_by_creator": {
+                      "const": true
+                    },
+                    "oauth_or_api_key_depends_on_provider": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "nft_storage_preservation": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "account_owned_by_creator",
+                    "requires_existing_ipfs_content",
+                    "adapter_status"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "optional-long-term-preservation"
+                    },
+                    "account_owned_by_creator": {
+                      "const": true
+                    },
+                    "requires_existing_ipfs_content": {
+                      "const": true
+                    },
+                    "adapter_status": {
+                      "const": "planned-current-api-verification-required"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "pre_mint_requirements": {
+              "type": "object",
+              "required": [
+                "media_cid_retrievable",
+                "metadata_cid_retrievable",
+                "immutable_uri_preferred",
+                "content_digest_recorded"
+              ],
+              "properties": {
+                "media_cid_retrievable": {
+                  "const": true
+                },
+                "metadata_cid_retrievable": {
+                  "const": true
+                },
+                "immutable_uri_preferred": {
+                  "const": true
+                },
+                "content_digest_recorded": {
+                  "const": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "post_mint_mutation_policy": {
+              "const": "new-content-means-new-cid-no-silent-replacement"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "reference_peg": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "mode",
+        "source",
+        "source_route",
+        "source_asset",
+        "source_issuer",
+        "refresh_seconds",
+        "valuation_only",
+        "affects_calt_quantity_or_airdrop_amount",
+        "redeemable_for_cal",
+        "convertible_to_cal_by_calorietoken",
+        "reserve_backed",
+        "guaranteed_peg",
+        "arbitrage_promised",
+        "snapshot_marketplace_valuations",
+        "require_source_timestamp",
+        "stale_policy",
+        "display_label"
+      ],
+      "properties": {
+        "enabled": {
+          "const": true
+        },
+        "mode": {
+          "const": "simulated-1-calt-equals-1-cal-market-reference"
+        },
+        "source": {
+          "const": "XPMarket-via-WordPress-proxy"
+        },
+        "source_route": {
+          "const": "/wp-json/calorieapp/v1/xpmarket-widget"
+        },
+        "source_asset": {
+          "const": "CAL"
+        },
+        "source_issuer": {
+          "const": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"
+        },
+        "refresh_seconds": {
+          "const": 300
+        },
+        "valuation_only": {
+          "const": true
+        },
+        "affects_calt_quantity_or_airdrop_amount": {
+          "const": false
+        },
+        "redeemable_for_cal": {
+          "const": false
+        },
+        "convertible_to_cal_by_calorietoken": {
+          "const": false
+        },
+        "reserve_backed": {
+          "const": false
+        },
+        "guaranteed_peg": {
+          "const": false
+        },
+        "arbitrage_promised": {
+          "const": false
+        },
+        "snapshot_marketplace_valuations": {
+          "const": true
+        },
+        "require_source_timestamp": {
+          "const": true
+        },
+        "stale_policy": {
+          "type": "object",
+          "required": [
+            "max_last_known_seconds",
+            "after_expiry"
+          ],
+          "properties": {
+            "max_last_known_seconds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "after_expiry": {
+              "const": "hide-reference-valuation"
+            }
+          },
+          "additionalProperties": false
+        },
+        "display_label": {
+          "const": "Simulated CAL reference"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

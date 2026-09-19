@@ -86,3 +86,22 @@ No push, merge, installation or public launch is included in this preparation.
 The existing release and source-clearance limits remain in effect. Rollback is
 removal of this standalone component, page/attribution additions and bundled
 data; no database rollback or Identity Bridge change is needed.
+
+## 10 September follow-up: adjustable reference weight
+
+Site Style 1.4.8's associated app revision adds one shared reference-weight input
+(default 100 g) and a reset control. It accepts 0.1–5,000 g, including decimal
+comma, and computes each displayed nutrient from the original unrounded amount
+multiplied by weight / 100. The display clearly labels the selected edible
+weight; rounding is presentation-only. Invalid input yields no calculated
+values. Measured zero remains distinct from missing, invalid-unit or LOQ-censored
+zero. The original records, publication/retrieval dates and source hashes are
+unchanged. No grams-to-millilitres conversion or invented serving/grade is used.
+
+This follows the portion formula in the [USDA Foundation Foods documentation](https://fdc.nal.usda.gov/Foundation_Foods_Documentation/).
+All 11 locales include the controls and explanation. This remains a local,
+three-food reference independent of private logs and OFF search; it does not
+claim full USDA search/import or automatic updates. The earlier “no button”
+test now permits the explicitly requested reset button while still rejecting
+logging controls, forms, media, source mutation and requests. App deployment
+and a real mobile acceptance pass remain required.

@@ -1,11 +1,34 @@
 # September 2026 website and CalorieApp update
 
-Updated 10 September 2026. This is a source and release-scope record, not proof of the latest live installation or a production-readiness certificate.
+Updated 15 September 2026. The live continuation below supersedes the older
+10 September food-source and deployment statements. The remaining sections
+retain the earlier release scope and its acceptance limits.
+
+## Live continuation on 15 September
+
+- The food app update at `40ed5f4fe6d7326158787d7c71004f02cd889979` is live on
+  the existing frontend. USDA ingredient/FDC search now covers 8,156 dated
+  Foundation and SR Legacy records. Comparable-food choices and edible-gram
+  calculation are available; saving still requires explicit confirmation.
+- All eleven interface languages were checked live while retaining the same
+  record and amount. The 69 focused tests and production build passed. New
+  physical-camera and authenticated live-save acceptance remain open.
+- CalorieHelp is live in Site Style 1.4.46, with the two new food guides,
+  eleven language sets, its existing avatar and clearer XRPL/CAL history.
+  Four targeted files were updated from the real live 1.4.43 baseline.
+- Full mobile acceptance across all WordPress pages, complete legal-copy
+  alignment and updated campaign recordings remain open. Source snapshots
+  of four changed plugin files are not a complete installable WordPress ZIP.
+
+See [food discovery](food-discovery-2026-09.md) and
+[CalorieHelp](caloriehelp-2026-09.md) for the current behavior and evidence.
+
+## Earlier scope, recorded 10 September
 
 | Area | Implemented or prepared | Remaining acceptance |
 | --- | --- | --- |
 | Food search | Pending-search guard, bounded startup feedback and provider-aware retry pause; query survives language changes | Actual host availability and the owner's current device journey |
-| Food sources | Open Food Facts search; three attributed, dated USDA FoodData Central reference foods | Broader USDA search is not implemented |
+| Food sources | Earlier scope: Open Food Facts and three USDA examples | Superseded by the live 15 September catalogue search described above |
 | Language | Eleven-language UI and synchronized website/app preference; known public-copy catalogue | Complete historical CMS/blog/legal copy is not available in all eleven languages |
 | Website | Shared chrome, donation/Trustline/Contact/FAQ corrections and continuous paper background | New ZIP installation and mobile/desktop visual acceptance |
 | CAL & Crypto | Verified external XPMarket CAL/XRP routes, buying guide, then SWFT interface | External provider availability; no own order-execution engine |
@@ -15,6 +38,8 @@ Updated 10 September 2026. This is a source and release-scope record, not proof 
 The WordPress package preserves the accepted Home title banner and native identity controls. The six usecase headers use the Home widget colours, while the compact usecase navigation supplies the desktop proportions. Known Privacy/Terms source text is updated once, only when it matches the expected older version, after an exact local WordPress backup. Different operator copy is preserved and reported. The public information hub is a new page; the original Brizy voting draft and its voting shortcodes are not published.
 
 The website and food application remain distinct. The external CAL/XRP routes do not give the food app custody or order-execution powers. CAL is temporarily unavailable in the SWFT integration according to the operator. Other supported routes may be available; check the actual provider interface. A wallet signature is not a blanket MiCA exemption. See [ESMA Q&A 2671](https://www.esma.europa.eu/print/pdf/node/222469) and the applicable project regulatory boundary.
+
+See the [Steps 1–3 audit and showcase readiness](step123-review-2026-09-10.md) for the consolidated Site Style 1.4.7 release process and the distinction between source changes, live installation and accepted showcases.
 
 ## Verification and boundaries
 

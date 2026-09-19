@@ -31,14 +31,26 @@ Current application stack:
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: FastAPI + SQLModel
 - Data: SQLite for local development and tests; PostgreSQL is required for live user data
-- External food data: Open Food Facts search adapter; a separate three-food USDA reference selection
+- External food data: Open Food Facts search adapter; a dated USDA search catalogue and separate reference selection
 - Identity/authentication: server-side identity flow with session cookies
+
+### Live food-discovery update — 15 September 2026
+
+The live continuation adds a separate search of 8,156 dated USDA Foundation
+and SR Legacy records, an edible-gram preview, and optional similar-name food
+choices. Interface text covers the existing eleven display languages. Selecting
+a food opens the existing portion confirmation; it does not save automatically.
+The existing barcode flow is preserved. App commit `40ed5f4` was deployed and
+the new flow was checked live in all eleven interface languages. CalorieHelp
+now explains these steps on the website. See the
+[feature and validation record](docs/public/food-discovery-2026-09.md) and
+[CalorieHelp update](docs/public/caloriehelp-2026-09.md).
 
 ## Current Status
 
 ### Implemented in the repository (V2 completion in progress)
 
-The latest website package and app journey still need live owner acceptance. Current source additions include eleven-language UI synchronization, startup/rate-limit feedback, diary filtering, attributed USDA reference foods and a Testnet-guide link. Historical page translations are only partly complete; see the [dated scope and verification record](docs/public/website-update-2026-09.md).
+The food-discovery update and targeted CalorieHelp update are live. Complete mobile website acceptance and updated campaign material remain open. Existing capabilities include eleven-language UI synchronization, startup/rate-limit feedback, diary filtering, dated USDA search and reference foods, comparable-food choices and a Testnet-guide link. Historical page translations are only partly complete; see the [dated scope and verification record](docs/public/website-update-2026-09.md).
 
 - Food search via backend integration with Open Food Facts
 - Nutrition result display in the web UI

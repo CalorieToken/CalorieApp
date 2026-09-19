@@ -1,0 +1,318 @@
+/* Declared before legacy layers by content_layer_order(). Important rules in
+   this first layer override the older important Brizy / Site Style cards.
+   Only JS-marked content is eligible; no global font or background reset. */
+@layer calorietoken-content {
+  /* Explicit extensions requested after 1.6.7. Keep all surrounding artwork,
+     backgrounds, menu layout, account data and visibility rules unchanged. */
+  body.ct-content-theme .ct-content-account {
+    box-sizing:border-box!important; background:#fff!important; color:#4c5687!important;
+    border:1px solid #505ba92e!important; border-top:4px solid #008d36!important;
+    border-radius:18px!important; box-shadow:0 3px 12px #3034490c!important;
+    font:400 14px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account .xl-card-header {
+    background:#f7f8fc!important; color:#4c5687!important;
+    border-bottom:1px solid #505ba926!important; border-radius:14px 14px 0 0!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-body,.xl-card-footer,.calorieapp-site-session-actions,#ctstyle-account-app) {
+    background:#fff!important; color:#4c5687!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-body>div,.xl-card-footer,#ctstyle-account-app) {
+    font:400 14px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account :is(.xl-card-balance,.xl-card-rank) strong { color:#008d36!important; }
+  body.ct-content-theme .ct-content-account a { color:#505ba9!important; text-underline-offset:.18em; }
+  body.ct-content-theme .ct-content-account div.xl-card-avatar>a {
+    background:#505ba9!important; border-radius:12px!important;
+  }
+  body.ct-content-theme .ct-content-account :is(button,.ctstyle-discovery-action) {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:10px 14px!important; border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important; box-shadow:none!important;
+    font:700 14px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    white-space:normal!important; overflow-wrap:break-word!important; text-decoration:none!important;
+  }
+  body.ct-content-theme .ct-content-account .calorieapp-site-logout {
+    background:#fff!important; color:#505ba9!important; border-color:#505ba94d!important;
+  }
+  body.ct-content-theme .ct-content-account :is(button,.ctstyle-discovery-action):hover {
+    background:#287547!important; border-color:#287547!important; color:#fff!important;
+  }
+  body.ct-content-theme .ct-content-account select {
+    background:#fff!important; color:#4c5687!important; border:1px solid #505ba94d!important;
+    border-radius:12px!important; font:400 16px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-account .ct-calorieapp-session-indicator {
+    background:#f7f8fc!important; color:#4c5687!important; border:1px solid #505ba926!important; border-radius:12px!important;
+  }
+  body.ct-content-theme .ct-content-account :is(a,button,select):focus-visible,
+  body.ct-content-theme :is(.ct-content-menu-action,.ct-content-menu-toggle):focus-visible {
+    outline:3px solid #f9b233!important; outline-offset:3px!important;
+  }
+  body.ct-content-theme .ct-content-menu-action {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:10px 14px!important; border:1px solid #505ba92e!important; border-radius:12px!important;
+    background:#fff!important; color:#008d36!important; box-shadow:none!important;
+    font:700 15px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important; letter-spacing:normal!important;
+    white-space:normal!important; overflow-wrap:break-word!important; text-decoration:none!important;
+  }
+  body.ct-content-theme .ct-content-menu-action :is(span,strong) { font:inherit!important; color:inherit!important; }
+  body.ct-content-theme .ct-content-menu-action:hover { background:#f0f8f3!important; }
+  body.ct-content-theme .ct-content-menu-action[aria-current="page"],
+  body.ct-content-theme :is(.current-menu-item,.ctstyle-current-category,details[open])>.ct-content-menu-action {
+    background:#008d36!important; border-color:#008d36!important; color:#fff!important;
+  }
+  body.ct-content-theme .ct-content-menu-toggle {
+    border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important; box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-menu-toggle .brz-menu-simple__icon--bars { color:#fff!important; }
+  body.ct-content-theme .ct-content-menu-toggle:is(:hover,:focus-visible),
+  body.ct-content-theme details[open]>.ct-content-menu-toggle,
+  body.ct-content-theme input:checked+.ct-content-menu-toggle { background:#505ba9!important; border-color:#505ba9!important; }
+  body.ct-content-theme .ct-content-card {
+    box-sizing:border-box!important; min-width:0!important; max-width:100%!important;
+    padding:clamp(18px,2.5vw,28px)!important; margin-block:20px!important;
+    border:1px solid #505ba92e!important; border-top:4px solid #008d36!important;
+    border-radius:22px!important; background:#fff!important;
+    box-shadow:0 3px 12px #3034490c!important;
+  }
+  body.ct-content-theme .ct-content-card::before {
+    /* Do not add a positioned overlay over links, controls or illustrations. */
+    pointer-events:none;
+  }
+  body.ct-content-theme .ctstyle-contact-social-card>.ct-content-card,
+  body.ct-content-theme .cal-buy-pair-grid>.ct-content-card,
+  body.ct-content-theme .ctstyle-hub-sections>.ct-content-card {
+    /* These grids already own the space between their cards. */
+    margin-block:0!important;
+  }
+  body.ct-content-theme .ct-content-prose {
+    min-width:0!important; max-width:100%!important; text-align:start!important;
+  }
+  body.ct-content-theme .ct-content-prose:not(.ct-content-card) {
+    background:transparent!important; box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-text {
+    font-family:'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    font-size:16px!important; line-height:1.6!important; letter-spacing:normal!important;
+    color:#4c5687!important; overflow-wrap:break-word!important; word-break:normal!important;
+    text-align:start!important;
+  }
+  body.ct-content-theme :is(p,blockquote).ct-content-text { margin-block:0 14px!important; }
+  body.ct-content-theme li.ct-content-text { margin-block:6px!important; }
+  body.ct-content-theme .ct-content-inline { font-family:inherit!important; font-size:inherit!important; line-height:inherit!important; letter-spacing:normal!important; }
+  body.ct-content-theme .ct-content-heading {
+    font:700 clamp(20px,2vw,26px)/1.3 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    color:#008d36!important; letter-spacing:normal!important; text-align:start!important;
+    margin-block:0 14px!important; overflow-wrap:break-word!important;
+  }
+  body.ct-content-theme .ct-content-heading::before { display:none!important; }
+  body.ct-content-theme .ct-content-heading::first-letter { color:inherit!important; }
+  body.ct-content-theme .ct-content-heading::highlight(ctstyle-initials),
+  body.ct-content-theme .ct-content-heading *::highlight(ctstyle-initials) { color:#008d36; }
+  body.ct-content-theme .ct-content-heading .ct-content-inline { color:inherit!important; }
+  body.ct-content-theme .ct-content-link:not(.ct-content-action) { color:#505ba9!important; text-underline-offset:.18em; }
+  body.ct-content-theme .ct-content-action {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:11px 18px!important; border:1px solid #008d36!important; border-radius:12px!important;
+    background:#008d36!important; color:#fff!important;
+    font:700 15px/1.4 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    white-space:normal!important; overflow-wrap:break-word!important; text-align:center!important;
+    text-decoration:none!important; box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-action :is(span,strong) { font:inherit!important; color:inherit!important; }
+  body.ct-content-theme .ct-content-action:is(.showcase-secondary,[aria-selected="false"]) { background:#fff!important; color:#505ba9!important; border-color:#505ba94d!important; }
+  body.ct-content-theme .ct-content-action:disabled { opacity:.5!important; cursor:not-allowed!important; }
+  body.ct-content-theme .ct-content-action:enabled:hover,
+  body.ct-content-theme a.ct-content-action:hover { background:#287547!important; color:#fff!important; }
+  body.ct-content-theme :is(.ct-content-action,.ct-content-field,.ct-content-link):focus-visible { outline:3px solid #f9b233!important; outline-offset:3px!important; }
+  body.ct-content-theme .ct-content-field {
+    box-sizing:border-box!important; min-height:44px!important; max-width:100%!important;
+    padding:10px 12px!important; border:1px solid #505ba94d!important; border-radius:12px!important;
+    background:#fff!important; color:#303449!important; font:400 16px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-table :is(th,td) {
+    font:400 14px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    padding:12px!important; border-color:#505ba926!important; color:#4c5687!important;
+  }
+  body.ct-content-theme .ct-content-table th { font-weight:700!important; color:#008d36!important; }
+  body.ct-content-theme .ct-content-inset {
+    padding:16px!important; border:1px solid #505ba926!important; border-radius:14px!important;
+    background:#f7f8fc!important; box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-notice {
+    border-inline-start:4px solid #f9b233!important; background:#fffbef!important;
+  }
+  body.ct-content-theme .ct-content-lane {
+    box-sizing:border-box!important; width:100%!important; max-width:1120px!important;
+    margin:24px auto!important; padding-inline:16px!important; min-width:0!important;
+  }
+  body.ct-content-theme .ct-content-lane .ct-content-lane { padding-inline:0!important; }
+  /* CalorieHelp is an explicit extension outside the main content boundary.
+     Keep launcher art, fixed positioning, scrolling and open/closed state. */
+  body.ct-content-theme .ct-content-help-shell {
+    background:#fff!important; color:#4c5687!important;
+    border:1px solid #505ba92e!important; border-top:4px solid #008d36!important; border-radius:20px!important;
+    box-shadow:0 8px 28px #30344926!important;
+  }
+  body.ct-content-theme .ct-content-help {
+    background:#fff!important; color:#4c5687!important;
+    border:0!important; box-shadow:none!important;
+    font:400 15px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+  }
+  body.ct-content-theme .ct-content-help .ctstyle-help-header {
+    background:#fff!important; border-bottom:1px solid #505ba926!important;
+    color:#008d36!important;
+  }
+  body.ct-content-theme :is(.ct-content-help,.ctstyle-faq-hub.ct-content-card) .ctstyle-help-reply {
+    padding:16px!important; background:#f7f8fc!important;
+    border:1px solid #505ba926!important; border-radius:14px!important;
+  }
+  body.ct-content-theme .ct-content-help .ct-content-heading { font-size:20px!important; }
+  body.ct-content-theme .ct-content-help .ct-content-text { font-size:15px!important; }
+  body.ct-content-theme .ct-content-help .ctstyle-help-topics {
+    gap:8px!important;
+  }
+  body.ct-content-theme .ct-content-help .ctstyle-help-topics .ct-content-action {
+    background:#f7f8fc!important; border-color:#505ba92e!important;
+    color:#505ba9!important; text-align:start!important;
+  }
+  body.ct-content-theme :is(.ct-content-help,.ctstyle-faq-hub) .ctstyle-help-topics .ct-content-action[aria-pressed="true"] {
+    background:#505ba9!important; border-color:#505ba9!important; color:#fff!important;
+  }
+  body.ct-content-theme .ct-content-summary {
+    min-height:44px!important; padding:16px!important;
+    font:700 16px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    color:#008d36!important;
+  }
+  body.ct-content-theme details.ct-content-card { padding:0!important; }
+  body.ct-content-theme details.ct-content-card>summary { padding:16px 20px!important; cursor:pointer; }
+  body.ct-content-theme details.ct-content-card> :not(summary) { margin-inline:20px!important; }
+  /* One consistent card for each trustline alternative, including its native
+     disclosure control. Keep logos, destination links and copy controls intact. */
+  body.ct-content-theme .ctstyle-manual-trustline.ct-content-card>summary {
+    font:700 16px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    color:#008d36!important; min-height:52px!important; padding:16px 18px!important;
+    overflow-wrap:break-word!important;
+  }
+  body.ct-content-theme .ctstyle-manual-trustline.ct-content-card>.ctstyle-trustline-option {
+    margin:0!important; padding:0 18px 18px!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body.ct-content-card {
+    height:auto!important; min-height:0!important; padding:0!important; margin:0!important;
+    border:0!important; border-radius:0!important; background:transparent!important;
+    box-shadow:none!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body .calorieapp-copy-value {
+    overflow-wrap:anywhere!important; word-break:normal!important;
+  }
+  /* XPMarket keeps its live data and destination. Stack the stats at narrow
+     sizes so a translated label is not split into several tiny columns. */
+  body.ct-content-theme .ct-content-market {
+    width:100%!important; max-width:720px!important; margin:20px auto!important; padding:0!important;
+    color:#303449!important; font:400 16px/1.5 'Segoe UI',Trebuchet MS,Arial,sans-serif!important;
+    text-align:start!important;
+  }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-link { padding:20px!important; gap:16px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-heading { grid-template-columns:48px minmax(0,1fr)!important; gap:12px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-heading strong { font-size:20px!important; line-height:1.3!important; color:#008d36!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-state { grid-column:1/-1!important; justify-self:start!important; white-space:normal!important; font-size:12px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-prices { flex-wrap:wrap!important; gap:6px 14px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-price { font-size:clamp(22px,5vw,30px)!important; overflow-wrap:anywhere!important; line-height:1.25!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats { grid-template-columns:repeat(3,minmax(0,1fr))!important; gap:10px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats>span { padding:12px!important; border-radius:12px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats small { font-size:13px!important; line-height:1.4!important; overflow-wrap:normal!important; word-break:normal!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats strong { font-size:18px!important; white-space:normal!important; overflow:visible!important; text-overflow:clip!important; }
+  body.ct-content-theme .ct-content-market :is(.calorieapp-xpmarket-xrp,.calorieapp-xpmarket-title small) { font-size:13px!important; }
+  body.ct-content-theme .ct-content-market .calorieapp-xpmarket-cta { font-size:14px!important; }
+  /* Reuse the original, already faded CalorieToken paper on marked cards.
+     Multiply keeps notice/inset tints; no opacity, filter or overlay touches
+     the text and controls. Protected artwork and page backgrounds are intact. */
+  body.ct-content-theme :is(
+    .ct-content-card,.ct-content-inset,.ct-content-notice,
+    .ct-content-account,.ct-content-help-shell,.ct-content-help,
+    .ct-content-account .xl-card-header,
+    .ct-content-account .xl-card-body,
+    .ct-content-account .xl-card-footer,
+    .ct-content-account .calorieapp-site-session-actions,
+    .ct-content-account #ctstyle-account-app,
+    .ct-content-account .ct-calorieapp-session-indicator,
+    .ct-content-help .ctstyle-help-header,
+    .ct-content-help .ctstyle-help-reply,
+    .ctstyle-faq-hub.ct-content-card .ctstyle-help-reply,
+    .ct-content-market .calorieapp-xpmarket-stats>span
+  ) {
+    background-image:var(--ctstyle-paper-image,url('/wp-content/uploads/2021/12/Websiteachtergrond.png'))!important;
+    background-size:960px auto!important;
+    background-position:center top!important;
+    background-repeat:repeat!important;
+    background-blend-mode:multiply!important;
+  }
+  body.ct-content-theme .ct-content-trustline-body.ct-content-card {
+    background-image:none!important; background-color:transparent!important;
+  }
+  @media(max-width:600px) {
+    body.ct-content-theme .ct-content-card { padding:18px!important; border-radius:18px!important; margin-block:16px!important; }
+    body.ct-content-theme .ct-content-lane { padding-inline:12px!important; margin-block:20px!important; }
+    body.ct-content-theme .ct-content-market { padding:0!important; }
+    body.ct-content-theme .ct-content-market .calorieapp-xpmarket-link { padding:16px!important; }
+    body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats { grid-template-columns:minmax(0,1fr)!important; gap:8px!important; }
+    body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats>span { flex-direction:row!important; align-items:baseline!important; justify-content:space-between!important; gap:12px!important; }
+    body.ct-content-theme .ct-content-market .calorieapp-xpmarket-stats strong { flex-shrink:0; }
+  }
+
+  /* The existing session age choice drives buttons only. Adult/unselected
+     styles above, historical banners, backgrounds and artwork stay intact. */
+  body.ct-content-theme[data-ct-age-band="child"] {
+    --age-button-radius:22px; --age-button-primary:#b8efc9; --age-button-on-primary:#155c32;
+    --age-button-primary-ink:#155c32; --age-button-primary-hover:#9ee6b7;
+    --age-button-secondary:#ccd4fb; --age-button-on-secondary:#303b7b; --age-button-secondary-ink:#454e91;
+    --age-button-surface:#f1fcf5; --age-button-hover-surface:#e0f6e9; --age-button-outline:#007f36;
+    --age-button-focus:#a96a00; --age-button-icon-primary:#007f36; --age-button-icon-secondary:#515fa9;
+  }
+  body.ct-content-theme[data-ct-age-band="teen"] {
+    --age-button-radius:8px; --age-button-primary:#006e33; --age-button-on-primary:#fff;
+    --age-button-primary-ink:#005b2b; --age-button-primary-hover:#005325;
+    --age-button-secondary:#424c92; --age-button-on-secondary:#fff; --age-button-secondary-ink:#354079;
+    --age-button-surface:#f2f3fa; --age-button-hover-surface:#e4e8f2; --age-button-outline:#006e33;
+    --age-button-focus:#96660a; --age-button-icon-primary:#006e33; --age-button-icon-secondary:#424c92;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action,.ct-content-menu-action,.ct-content-menu-toggle,.ct-content-account button,.ct-content-account .ctstyle-discovery-action,.ct-content-summary,.ct-age-change,.ct-calorieapp-focus-toggle) {
+    border-radius:var(--age-button-radius)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action,.ct-content-account button,.ct-content-account .ctstyle-discovery-action) {
+    background:var(--age-button-primary)!important; color:var(--age-button-on-primary)!important; border-color:var(--age-button-outline)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action,.ct-content-account button,.ct-content-account .ctstyle-discovery-action):not(:disabled):hover {
+    background:var(--age-button-primary-hover)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-menu-action,.ct-content-summary) {
+    background:var(--age-button-surface)!important; color:var(--age-button-primary-ink)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action.showcase-secondary,.ct-content-action[aria-selected="false"],.ct-content-account .calorieapp-site-logout,.ct-content-help .ctstyle-help-topics .ct-content-action,.ct-age-change) {
+    background:var(--age-button-surface)!important; color:var(--age-button-secondary-ink)!important; border-color:var(--age-button-secondary-ink)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) .ct-content-menu-action:hover,
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action.showcase-secondary,.ct-content-action[aria-selected="false"],.ct-content-account .calorieapp-site-logout,.ct-content-help .ctstyle-help-topics .ct-content-action,.ct-age-change):not(:disabled):hover {
+    background:var(--age-button-hover-surface)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-menu-action[aria-current="page"],.current-menu-item>.ct-content-menu-action,.ctstyle-current-category>.ct-content-menu-action,details[open]>.ct-content-menu-action) {
+    background:var(--age-button-primary)!important; color:var(--age-button-on-primary)!important; border-color:var(--age-button-outline)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-help,.ctstyle-faq-hub) .ctstyle-help-topics .ct-content-action[aria-pressed="true"],
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-help,.ctstyle-faq-hub) .ctstyle-help-topics .ct-content-action[aria-pressed="true"]:hover,
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) .ct-calorieapp-focus-toggle {
+    background:var(--age-button-secondary)!important; color:var(--age-button-on-secondary)!important; border-color:var(--age-button-secondary-ink)!important;
+  }
+  /* Keep the original white hamburger artwork legible on a solid brand hue. */
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) .ct-content-menu-toggle {
+    background:var(--age-button-icon-primary)!important; border-color:var(--age-button-icon-primary)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(details[open]>.ct-content-menu-toggle,input:checked+.ct-content-menu-toggle) {
+    background:var(--age-button-icon-secondary)!important; border-color:var(--age-button-icon-secondary)!important;
+  }
+  body.ct-content-theme:is([data-ct-age-band="child"],[data-ct-age-band="teen"]) :is(.ct-content-action,.ct-content-menu-action,.ct-content-menu-toggle,.ct-content-account button,.ct-content-account .ctstyle-discovery-action,.ct-content-summary,.ct-age-change,.ct-calorieapp-focus-toggle):focus-visible {
+    outline:3px solid var(--age-button-focus)!important; outline-offset:3px!important;
+  }
+}

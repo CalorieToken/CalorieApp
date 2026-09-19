@@ -27,3 +27,16 @@ source-clearance work are recorded in
 `DATA_LICENSING.md`.
 
 The standalone WordPress Site Style component in `wordpress-plugins/calorietoken-site-style/` also declares GPL-2.0-or-later. Its packaged licence applies to its code. Historical site images/fonts remain references to the existing site and retain their original rights; they are not granted a new licence here. The display-language runtime is shared with CalorieApp.
+
+The optional-on-use food barcode decoder bundles `@zxing/browser` 0.1.5 (MIT),
+`@zxing/library` 0.21.3 (Apache-2.0, with its included additional notices), and
+`ts-custom-error` as resolved in the lockfile (MIT). Complete upstream texts
+are retained at `frontend/public/barcode-licenses.txt`, served with the app.
+The libraries decode locally; no CDN service or external image processing is
+used. This does not relicense the surrounding CalorieApp or brand.
+
+The ZXing library's npm metadata says MIT, while its shipped LICENSE retains
+Apache-2.0 and additional upstream notices. This release preserves that full
+file and does not treat the metadata as a blanket relicense. The optional
+`@zxing/text-encoding` 0.9.0 dependency's complete LICENSE.md is retained too;
+it identifies its public-domain/Apache-2.0 terms and Encoding Standard material.

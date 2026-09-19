@@ -1,0 +1,112 @@
+{
+  "en": {
+    "title": "Maze route",
+    "intro": "Find the route through the landscape. The mountain colours remain hidden.",
+    "controls": "Use the arrow buttons or arrow/WASD keys.",
+    "reset": "Reset route",
+    "start": "Start",
+    "exit": "Ridge exit",
+    "done": "You found the route to the misty ridge.",
+    "continue": "Continue toward the ridge"
+  },
+  "nl": {
+    "title": "Doolhofroute",
+    "intro": "Vind de route door het landschap. De bergkleuren blijven verborgen.",
+    "controls": "Gebruik de pijlknoppen of pijl-/WASD-toetsen.",
+    "reset": "Route opnieuw",
+    "start": "Start",
+    "exit": "Uitgang naar de kam",
+    "done": "Je hebt de route naar de mistige kam gevonden.",
+    "continue": "Ga verder naar de kam"
+  },
+  "zh-Hans": {
+    "title": "迷宫路线",
+    "intro": "在景观中找到路线。山峰颜色仍保持隐藏。",
+    "controls": "使用方向按钮或方向键/WASD。",
+    "reset": "重置路线",
+    "start": "起点",
+    "exit": "山脊出口",
+    "done": "你找到了通往雾岭的路线。",
+    "continue": "继续前往山脊"
+  },
+  "hi": {
+    "title": "भूलभुलैया मार्ग",
+    "intro": "परिदृश्य में रास्ता खोजें। पहाड़ों के रंग अभी छिपे रहते हैं।",
+    "controls": "तीर बटन या तीर/WASD कुंजियाँ इस्तेमाल करें।",
+    "reset": "मार्ग रीसेट करें",
+    "start": "शुरुआत",
+    "exit": "रिज निकास",
+    "done": "आपने धुंधली रिज तक का रास्ता खोज लिया।",
+    "continue": "रिज की ओर बढ़ें"
+  },
+  "es": {
+    "title": "Ruta del laberinto",
+    "intro": "Encuentra el camino por el paisaje. Los colores de las montañas siguen ocultos.",
+    "controls": "Usa los botones de flecha o las teclas de flecha/WASD.",
+    "reset": "Reiniciar ruta",
+    "start": "Inicio",
+    "exit": "Salida a la cresta",
+    "done": "Has encontrado la ruta hacia la cresta brumosa.",
+    "continue": "Continuar hacia la cresta"
+  },
+  "ar": {
+    "title": "مسار المتاهة",
+    "intro": "اعثر على الطريق عبر المنظر الطبيعي. تبقى ألوان الجبال مخفية.",
+    "controls": "استخدم أزرار الأسهم أو مفاتيح الأسهم/WASD.",
+    "reset": "إعادة المسار",
+    "start": "البداية",
+    "exit": "مخرج الحافة",
+    "done": "وجدت الطريق إلى الحافة الضبابية.",
+    "continue": "تابع نحو الحافة"
+  },
+  "fr": {
+    "title": "Route du labyrinthe",
+    "intro": "Trouvez le passage dans le paysage. Les couleurs des montagnes restent cachées.",
+    "controls": "Utilisez les boutons fléchés ou les touches fléchées/WASD.",
+    "reset": "Réinitialiser",
+    "start": "Départ",
+    "exit": "Sortie vers la crête",
+    "done": "Vous avez trouvé la route vers la crête brumeuse.",
+    "continue": "Continuer vers la crête"
+  },
+  "bn": {
+    "title": "গোলকধাঁধার পথ",
+    "intro": "ভূদৃশ্যের মধ্য দিয়ে পথ খুঁজুন। পাহাড়ের রং এখনো গোপন থাকে।",
+    "controls": "তীর বোতাম বা তীর/WASD কী ব্যবহার করুন।",
+    "reset": "পথ রিসেট করুন",
+    "start": "শুরু",
+    "exit": "রিজের বেরোনোর পথ",
+    "done": "আপনি কুয়াশাচ্ছন্ন রিজের পথ খুঁজে পেয়েছেন।",
+    "continue": "রিজের দিকে এগিয়ে যান"
+  },
+  "pt": {
+    "title": "Rota do labirinto",
+    "intro": "Encontre o caminho pela paisagem. As cores das montanhas continuam ocultas.",
+    "controls": "Use os botões de seta ou as teclas de seta/WASD.",
+    "reset": "Reiniciar rota",
+    "start": "Início",
+    "exit": "Saída para a crista",
+    "done": "Encontrou a rota para a crista enevoada.",
+    "continue": "Continuar para a crista"
+  },
+  "id": {
+    "title": "Rute labirin",
+    "intro": "Temukan jalur melalui lanskap. Warna pegunungan tetap tersembunyi.",
+    "controls": "Gunakan tombol panah atau tombol panah/WASD.",
+    "reset": "Atur ulang rute",
+    "start": "Mulai",
+    "exit": "Jalan keluar ke punggung bukit",
+    "done": "Kamu menemukan rute ke punggung bukit berkabut.",
+    "continue": "Lanjut ke punggung bukit"
+  },
+  "ur": {
+    "title": "بھول بھلیاں کا راستہ",
+    "intro": "منظرنامے میں راستہ تلاش کریں۔ پہاڑوں کے رنگ ابھی پوشیدہ رہتے ہیں۔",
+    "controls": "تیر والے بٹن یا تیر/WASD کلیدیں استعمال کریں۔",
+    "reset": "راستہ ری سیٹ کریں",
+    "start": "آغاز",
+    "exit": "پہاڑی کنارے کا راستہ",
+    "done": "آپ نے دھندلے پہاڑی کنارے تک راستہ تلاش کر لیا۔",
+    "continue": "پہاڑی کنارے کی طرف بڑھیں"
+  }
+}

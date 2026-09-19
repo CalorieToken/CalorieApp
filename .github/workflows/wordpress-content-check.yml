@@ -1,0 +1,52 @@
+name: WordPress content styling check
+on:
+  push:
+    branches: [repair/food-ux-integration-20260915]
+    paths:
+      - 'wordpress-plugins/calorietoken-heading-repair/**'
+      - 'tools/tests/browser_wordpress_content.py'
+      - 'tools/tests/fixtures/wordpress-content/**'
+      - '.github/workflows/wordpress-content-check.yml'
+  pull_request:
+    branches: [herstel/vervolg-20260915]
+    paths:
+      - 'wordpress-plugins/calorietoken-heading-repair/**'
+      - 'tools/tests/browser_wordpress_content.py'
+      - 'tools/tests/fixtures/wordpress-content/**'
+      - '.github/workflows/wordpress-content-check.yml'
+permissions:
+  contents: read
+concurrency:
+  group: wordpress-content-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated browser tools
+        run: |
+          python -m pip install 'playwright==1.57.0'
+          python -m playwright install --with-deps chromium
+      - name: Verify package and render public-content fixtures
+        run: |
+          mkdir -p ux-check-evidence
+          git rev-parse HEAD > ux-check-evidence/verified-commit.txt
+          git rev-parse 'HEAD^{tree}' > ux-check-evidence/verified-tree.txt
+          php -l wordpress-plugins/calorietoken-heading-repair/calorietoken-heading-repair.php
+          python -m unittest tools.tests.test_build_heading_repair_release
+          python tools/build_heading_repair_release.py --output-dir ux-check-evidence/heading-release
+          python tools/tests/browser_wordpress_content.py
+      - name: Retain preview and verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordpress-content-style-evidence
+          path: ux-check-evidence/
+          retention-days: 5
