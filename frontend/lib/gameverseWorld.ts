@@ -13,7 +13,28 @@ export type GameverseRegion = {
   destination: string | null;
 };
 
-export type GameverseCopy = (typeof copyConfig)["en"];
+export type GameverseCopy = {
+  title: string;
+  subtitle: string;
+  world: string;
+  identity: string;
+  identityNote: string;
+  explore: string;
+  walk: string;
+  open: string;
+  visited: string;
+  locked: string;
+  mazeReady: string;
+  mountains: string;
+  mountainHint: string;
+  ecosystem: string;
+  optional: string;
+  ageChild: string;
+  ageTeen: string;
+  ageAdult: string;
+  locations: Record<string, string>;
+  descriptions: Record<string, string>;
+};
 
 export const gameverseWorld = worldConfig;
 export const gameverseRegions = worldConfig.regions as GameverseRegion[];
@@ -23,7 +44,7 @@ export function gameverseCopy(locale?: string | null): {
   copy: GameverseCopy;
 } {
   const resolved = resolveLocale(locale);
-  const source = copyConfig as Record<string, GameverseCopy>;
+  const source = copyConfig as unknown as Record<string, GameverseCopy>;
   return { locale: source[resolved] ? resolved : "en", copy: source[resolved] ?? source.en };
 }
 
