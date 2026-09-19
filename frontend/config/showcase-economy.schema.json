@@ -277,7 +277,8 @@
         "testnet_only",
         "supported_asset_families",
         "mode",
-        "settlement"
+        "settlement",
+        "creator_storage"
       ],
       "properties": {
         "enabled": {
@@ -455,6 +456,212 @@
                 }
               },
               "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "creator_storage": {
+          "type": "object",
+          "required": [
+            "model",
+            "platform_shared_storage_credentials",
+            "creator_owns_provider_account",
+            "per_user_connection_scope",
+            "provider_account_linking_preferred",
+            "oauth_pkce_when_supported",
+            "provider_managed_social_login_only",
+            "google_password_never_collected",
+            "github_password_never_collected",
+            "raw_provider_password_never_collected",
+            "api_key_fallback",
+            "stored_application_fields",
+            "providers",
+            "pre_mint_requirements",
+            "post_mint_mutation_policy"
+          ],
+          "properties": {
+            "model": {
+              "const": "bring-your-own-storage"
+            },
+            "platform_shared_storage_credentials": {
+              "const": false
+            },
+            "creator_owns_provider_account": {
+              "const": true
+            },
+            "per_user_connection_scope": {
+              "const": true
+            },
+            "provider_account_linking_preferred": {
+              "const": true
+            },
+            "oauth_pkce_when_supported": {
+              "const": true
+            },
+            "provider_managed_social_login_only": {
+              "const": true
+            },
+            "google_password_never_collected": {
+              "const": true
+            },
+            "github_password_never_collected": {
+              "const": true
+            },
+            "raw_provider_password_never_collected": {
+              "const": true
+            },
+            "api_key_fallback": {
+              "type": "object",
+              "required": [
+                "allowed",
+                "frontend_storage_forbidden",
+                "public_metadata_storage_forbidden",
+                "backend_encryption_required"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": true
+                },
+                "frontend_storage_forbidden": {
+                  "const": true
+                },
+                "public_metadata_storage_forbidden": {
+                  "const": true
+                },
+                "backend_encryption_required": {
+                  "const": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "stored_application_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "providers": {
+              "type": "object",
+              "required": [
+                "nft_storage_classic",
+                "hot_ipfs_provider",
+                "nft_storage_preservation"
+              ],
+              "properties": {
+                "nft_storage_classic": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "new_uploads",
+                    "accepted_inputs",
+                    "documented_login_methods",
+                    "google_login_assumed"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "legacy-import-only"
+                    },
+                    "new_uploads": {
+                      "const": false
+                    },
+                    "accepted_inputs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "documented_login_methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "google_login_assumed": {
+                      "const": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "hot_ipfs_provider": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "provider_examples",
+                    "account_owned_by_creator",
+                    "oauth_or_api_key_depends_on_provider"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "creator-selected-current-provider"
+                    },
+                    "provider_examples": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "account_owned_by_creator": {
+                      "const": true
+                    },
+                    "oauth_or_api_key_depends_on_provider": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "nft_storage_preservation": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "account_owned_by_creator",
+                    "requires_existing_ipfs_content",
+                    "adapter_status"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "optional-long-term-preservation"
+                    },
+                    "account_owned_by_creator": {
+                      "const": true
+                    },
+                    "requires_existing_ipfs_content": {
+                      "const": true
+                    },
+                    "adapter_status": {
+                      "const": "planned-current-api-verification-required"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "pre_mint_requirements": {
+              "type": "object",
+              "required": [
+                "media_cid_retrievable",
+                "metadata_cid_retrievable",
+                "immutable_uri_preferred",
+                "content_digest_recorded"
+              ],
+              "properties": {
+                "media_cid_retrievable": {
+                  "const": true
+                },
+                "metadata_cid_retrievable": {
+                  "const": true
+                },
+                "immutable_uri_preferred": {
+                  "const": true
+                },
+                "content_digest_recorded": {
+                  "const": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "post_mint_mutation_policy": {
+              "const": "new-content-means-new-cid-no-silent-replacement"
             }
           },
           "additionalProperties": false
