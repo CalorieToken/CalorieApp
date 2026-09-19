@@ -41,16 +41,17 @@ The shared umbrella is the **Calorie Ecosystem**.
 
 - **CalorieApp** is the food/nutrition application running on that ecosystem.
 - **CalorieVerse** is the public name of the persistent live metaverse/open world.
-- **Creator Gallery** is a creator surface inside CalorieVerse and can also be
+- **CalorieStudio** is a creator surface inside CalorieVerse and can also be
   opened directly, but it is not a separate competing ecosystem.
 
-The existing internal term `Gameverse`, route `/gameverse`, file names and
-stable IDs may remain where changing them would add migration risk. Public-facing
-copy should use **CalorieVerse**.
+The existing internal terms `Gameverse` and `Creator Gallery`, routes `/gameverse`
+and `/gallery`, file names and stable IDs may remain where changing them would
+add migration risk. Public-facing copy should use **CalorieVerse** and
+**CalorieStudio**.
 
 This gives one clear hierarchy:
 
-`Calorie Ecosystem -> CalorieApp + CalorieVerse -> Creator Gallery and other ecosystem surfaces`.
+`Calorie Ecosystem -> CalorieApp + CalorieVerse -> CalorieStudio and other ecosystem surfaces`.
 
 ## One continuously evolving live Gameverse
 
@@ -201,15 +202,15 @@ authorization or implementation of on-chain issuance.
 
 ## Open ecosystem with sustainable founder and treasury funding
 
-CalorieVerse and Creator Gallery are intended to remain open to independent
+CalorieVerse and CalorieStudio are intended to remain open to independent
 builders and voluntary participants while the official products retain a
 sustainable commercial model.
 
 The commercial principle is **free core, optional paid services**:
 
 - entering and exploring CalorieVerse remains free;
-- ordinary Creator Gallery browsing and core creator participation stay free;
-- optional premium CalorieApp/Creator Gallery tooling may be sold;
+- ordinary CalorieStudio browsing and core creator participation stay free;
+- optional premium CalorieApp/CalorieStudio tooling may be sold;
 - official managed hosting, rendering, API/data and support may be sold;
 - cosmetic/world content may be sold only where it does not create pay-to-win;
 - marketplace/service fees remain a later separately reviewed capability.
@@ -367,7 +368,7 @@ The initial four-system slice is:
 
 - **Food Data Grove** — inspect a public food-data record and create a world clue;
 - **Community Farm** — balance a small water route between crops and nature;
-- **Creator Gallery** — curate a local-first creator display that becomes visible
+- **CalorieStudio** — curate a local-first creator display that becomes visible
   in the world;
 - **Helpbot Garden** — request one contextual hint without switching the world
   into a guided-tour mode.
