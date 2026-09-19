@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";\nimport { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import {
@@ -152,7 +152,7 @@ export function GameverseWorld() {
       <div className="gameverse-shell" lang={locale}>
         <div className="gameverse-topbar">
           <a href="/" className="gameverse-brand" aria-label="CalorieApp">
-            <img src="/logo.svg" alt="" />
+            <Image src="/logo.svg" alt="" width={34} height={34} priority />
             <span>{copy.ecosystem}</span>
           </a>
           <DisplayLanguagePicker />
