@@ -308,3 +308,23 @@ those interfaces are built; this CLI step has no visual styling claim.
 CALT remains the only proposed token reward. Supply and issuer choices are still
 under discussion in `CALT_TESTNET_SUPPLY_DISCUSSION.md`; simulator accounting does
 not mint tokens or choose the eventual airdrop amounts.
+
+
+## Complete voluntary lifecycle
+
+The synthetic adapter now exercises the whole user-controlled path as one
+recoverable flow:
+
+`zero participation -> explicit opt-in -> manual storage start -> manual compute
+start -> independent pause/resume -> storage stop -> chosen data handoff/release
+-> full exit`.
+
+The important invariant is that every transition is reversible and initiated by
+the participant. Merely enabling a capability does not start work. Pausing
+compute does not pause storage, stopping storage does not stop compute, and a
+full exit revokes new volunteer work before cleanup/release handling.
+
+At every stage, including zero participation and after exit, the hosted core,
+ordinary CalorieApp access and ordinary Gameverse access remain available. This
+demo is still local and synthetic: it starts no real community node, performs no
+real remote work and settles no token.
