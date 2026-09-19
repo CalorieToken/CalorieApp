@@ -1,7 +1,7 @@
 {
   "en": {
-    "title": "Creator Gallery",
-    "intro": "A world-connected gallery for recipes, food media, 3D objects, avatar items and future Calorie creator work.",
+    "title": "CalorieStudio",
+    "intro": "A world-connected studio for recipes, food media, 3D objects, avatar items and future Calorie creator work.",
     "browse": "Browse world assets",
     "workshop": "Creator workshop",
     "localDraft": "Local draft",
@@ -26,8 +26,8 @@
     "drafts": "Local drafts"
   },
   "nl": {
-    "title": "Creator Gallery",
-    "intro": "Een met de wereld verbonden gallery voor recepten, foodmedia, 3D-objecten, avatar-items en toekomstig Calorie-creatorwerk.",
+    "title": "CalorieStudio",
+    "intro": "Een met de wereld verbonden studio voor recepten, foodmedia, 3D-objecten, avatar-items en toekomstig Calorie-creatorwerk.",
     "browse": "Bekijk wereldassets",
     "workshop": "Creator-workshop",
     "localDraft": "Lokaal concept",
@@ -52,7 +52,7 @@
     "drafts": "Lokale concepten"
   },
   "zh-Hans": {
-    "title": "创作者画廊",
+    "title": "CalorieStudio",
     "intro": "与世界相连的画廊，用于食谱、食品媒体、3D 对象、头像物品和未来的 Calorie 创作。",
     "browse": "浏览世界资产",
     "workshop": "创作者工作室",
@@ -78,7 +78,7 @@
     "drafts": "本地草稿"
   },
   "hi": {
-    "title": "क्रिएटर गैलरी",
+    "title": "CalorieStudio",
     "intro": "रेसिपी, फूड मीडिया, 3D ऑब्जेक्ट, अवतार आइटम और भविष्य के Calorie क्रिएटर काम के लिए दुनिया से जुड़ी गैलरी।",
     "browse": "वर्ल्ड एसेट देखें",
     "workshop": "क्रिएटर वर्कशॉप",
@@ -104,7 +104,7 @@
     "drafts": "लोकल ड्राफ्ट"
   },
   "es": {
-    "title": "Galería de creadores",
+    "title": "CalorieStudio",
     "intro": "Una galería conectada al mundo para recetas, medios de comida, objetos 3D, artículos de avatar y futuras creaciones de Calorie.",
     "browse": "Explorar activos del mundo",
     "workshop": "Taller de creadores",
@@ -130,7 +130,7 @@
     "drafts": "Borradores locales"
   },
   "ar": {
-    "title": "معرض المبدعين",
+    "title": "CalorieStudio",
     "intro": "معرض متصل بالعالم للوصفات ووسائط الطعام والعناصر ثلاثية الأبعاد وعناصر الصورة الرمزية وأعمال Calorie الإبداعية المستقبلية.",
     "browse": "تصفح أصول العالم",
     "workshop": "ورشة المبدعين",
@@ -156,7 +156,7 @@
     "drafts": "مسودات محلية"
   },
   "fr": {
-    "title": "Galerie des créateurs",
+    "title": "CalorieStudio",
     "intro": "Une galerie reliée au monde pour recettes, médias culinaires, objets 3D, éléments d’avatar et futures créations Calorie.",
     "browse": "Parcourir les créations du monde",
     "workshop": "Atelier créateur",
@@ -182,7 +182,7 @@
     "drafts": "Brouillons locaux"
   },
   "bn": {
-    "title": "ক্রিয়েটর গ্যালারি",
+    "title": "CalorieStudio",
     "intro": "রেসিপি, ফুড মিডিয়া, 3D অবজেক্ট, অ্যাভাটার আইটেম ও ভবিষ্যৎ Calorie সৃষ্টির জন্য বিশ্ব-সংযুক্ত গ্যালারি।",
     "browse": "ওয়ার্ল্ড অ্যাসেট দেখুন",
     "workshop": "ক্রিয়েটর ওয়ার্কশপ",
@@ -208,7 +208,7 @@
     "drafts": "লোকাল ড্রাফট"
   },
   "pt": {
-    "title": "Galeria de criadores",
+    "title": "CalorieStudio",
     "intro": "Uma galeria ligada ao mundo para receitas, mídia de comida, objetos 3D, itens de avatar e futuras criações Calorie.",
     "browse": "Explorar ativos do mundo",
     "workshop": "Oficina de criadores",
@@ -234,7 +234,7 @@
     "drafts": "Rascunhos locais"
   },
   "id": {
-    "title": "Galeri Kreator",
+    "title": "CalorieStudio",
     "intro": "Galeri yang terhubung ke dunia untuk resep, media makanan, objek 3D, item avatar, dan karya kreator Calorie di masa depan.",
     "browse": "Jelajahi aset dunia",
     "workshop": "Lokakarya kreator",
@@ -260,7 +260,7 @@
     "drafts": "Draf lokal"
   },
   "ur": {
-    "title": "کریئیٹر گیلری",
+    "title": "CalorieStudio",
     "intro": "ریسپی، فوڈ میڈیا، 3D آبجیکٹس، اوتار آئٹمز اور مستقبل کے Calorie تخلیقی کام کے لیے دنیا سے جڑی گیلری۔",
     "browse": "ورلڈ اثاثے دیکھیں",
     "workshop": "کریئیٹر ورکشاپ",
