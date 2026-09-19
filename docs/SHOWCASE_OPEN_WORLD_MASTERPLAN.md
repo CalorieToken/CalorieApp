@@ -240,6 +240,34 @@ Creation must be modular: recipes, menus, photographs, GIFs, 3D/Blender assets, 
 
 Historical CalorieApp Testnet NFT/token code is reference material only; do not revive the old hardcoded CalorieTest screen. The new game economy should use adapters so CALT Testnet payments/offers, Testnet NFTs and a local/off-chain simulation can be swapped without rewriting game logic.
 
+
+### Global CALT welcome airdrop
+
+The CALT Testnet economy starts with a staged **welcome airdrop period** for the game launch.
+
+World presentation:
+- the airdrop is a global in-world event, visible across the complete open world rather than one Western/default hub;
+- every major scene type may show its own culturally respectful version of the same event: city, village, farm, market, harbour, restaurant/cafe, delivery/logistics area, nature reserve, coastal area, mountain route, CalorieApp City, F&B branches and future worlds;
+- no culture, nationality, cuisine, religion or region receives a more valuable allocation merely because of its identity or theme;
+- art, celebrations, food, clothing, architecture and local environment can differ by scene, but the underlying eligibility/rules remain the same;
+- regions/cultures in conflict remain included without partisan symbols or political preference.
+
+Distribution model:
+- CALT remains XRPL Testnet-only and explicitly non-redeemable;
+- the launch airdrop is distributed over a defined period rather than presented as an instant speculative giveaway;
+- exact amount, cadence, Testnet issuer, currency code and claim window remain configuration values and must not be guessed in code;
+- one game identity must not be able to multiply the welcome allocation through scene changes, language changes or repeated reloads;
+- persistent claim/progress state belongs in the backend once the Testnet adapter is enabled;
+- blockchain submission always requires the user's explicit Testnet wallet authorization and validated-ledger verification;
+- no conversion, exchange rate or future-value promise between CALT and Mainnet CAL.
+
+Age experience:
+- child scenes participate in the same global launch story through non-financial welcome collectibles/badges, never CALT;
+- teen scenes use a non-value learning/simulation version unless a later reviewed policy explicitly changes that boundary;
+- adult 18+ users may opt into the real XRPL Testnet CALT welcome distribution when the feature flag and jurisdiction gate are open.
+
+The airdrop should be discoverable naturally while exploring. It may arrive through different in-world storytelling (market welcome desk, farm co-op crate, harbour terminal, CalorieApp mission, community event, etc.), but all variants resolve to the same canonical entitlement state so moving between cultures/scenes can never create duplicate claims.
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
