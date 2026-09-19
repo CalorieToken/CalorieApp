@@ -1,6 +1,6 @@
 {
   "contract_id": "calorietoken.participation-network",
-  "contract_version": "0.1.3",
+  "contract_version": "0.1.4",
   "status": "local-synthetic-storage-and-compute-simulators-disabled-by-default",
   "simulator_contract": "contracts/participation/v1/simulator.json",
   "official_product_boundary": {
@@ -10,7 +10,9 @@
     "third_party_compatible_clients_allowed": true,
     "official_brand_control_remains_with_calorietoken": true,
     "zero_install_browser_entry_required": true,
-    "native_node_install_required": false
+    "native_node_install_required": false,
+    "single_shared_gameverse_entry_for_all_users": true,
+    "separate_node_download_flow_required": false
   },
   "primary_storage": {
     "private_user_data": "postgresql",
@@ -57,7 +59,9 @@
     "timed_resume_only_when_selected": true,
     "full_stop_revokes_resource_permissions": true,
     "stop_preserves_earned_progress": true,
-    "browser_session_never_auto_enrolled": true
+    "browser_session_never_auto_enrolled": true,
+    "participation_role_must_be_chosen_inside_product": true,
+    "no_install_required_for_node_or_validator": true
   },
   "trust": {
     "participant_nodes_untrusted_by_default": true,
@@ -127,5 +131,8 @@
     "may_be_reassessed_later": true,
     "protocol_provider_neutral": true
   },
-  "browser_runtime_contract": "contracts/participation/v1/browser-runtime.json"
+  "browser_runtime_contract": "contracts/participation/v1/browser-runtime.json",
+  "role_aliases": {
+    "validator": "verification-helper"
+  }
 }
