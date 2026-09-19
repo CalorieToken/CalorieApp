@@ -324,6 +324,36 @@ This benchmark set is a design reference, not a feature checklist. Features are
 only adopted when they strengthen the Calorie world's food, nature, community,
 creator and ecosystem identity.
 
+## First interconnected world-systems slice
+
+The first live CalorieVerse interactions are deliberately small, handcrafted and
+optional. They prove that the world can respond to what a player does without
+turning every activity into a mandatory quest.
+
+The initial four-system slice is:
+
+- **Food Data Grove** — inspect a public food-data record and create a world clue;
+- **Community Farm** — balance a small water route between crops and nature;
+- **Creator Gallery** — curate a local-first creator display that becomes visible
+  in the world;
+- **Helpbot Garden** — request one contextual hint without switching the world
+  into a guided-tour mode.
+
+These interactions do **not** gate the core route, wallet access, participation,
+the maze or ordinary exploration. They can be ignored, replayed and completed in
+different orders.
+
+World systems may overlap. For example, completing both the food-data and farm
+interactions can create a small visual link between farm and market activity,
+while Gallery and Helpbot interactions add creator and route-awareness cues.
+This is the seed of the larger systemic-world model: future events should reuse
+shared food, water, creator, nature, community and data state instead of becoming
+isolated minigames.
+
+The first implementation stores this interaction progress locally only. Server
+sync or multiplayer world-state adoption requires a later versioned design and
+must preserve offline/zero-login play.
+
 ## Non-negotiable world structure
 
 1. The player starts in a large open world with many explorable places, moving characters, nature, water, villages, markets, farms, cities, F&B businesses, CalorieApp activity, Helpbot guidance and global cultural variety.
