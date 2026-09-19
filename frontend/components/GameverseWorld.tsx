@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
+import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import {
   gameverseCopy,
@@ -27,6 +28,7 @@ type SavedProgress = {
   starter_character_id: string;
   current_region_id: string;
   visited_region_ids: string[];
+  maze_complete?: boolean;
 };
 
 function ageLabel(ageBand: "child" | "teen" | "adult", copy: ReturnType<typeof gameverseCopy>["copy"]) {
@@ -73,7 +75,8 @@ function RegionMarker({
          region.kind === "community" ? "☘" :
          region.kind === "gallery" ? "◇" :
          region.kind === "participation" ? "◌" :
-         region.kind === "maze" ? "⌗" : "•"}
+         region.kind === "maze" ? "⌗" :
+         region.kind === "ridge" ? "△" : "•"}
       </span>
       <span>{label}</span>
     </button>
@@ -90,6 +93,7 @@ export function GameverseWorld() {
   const [selectedRegionId, setSelectedRegionId] = useState(gameverseWorld.start.region_id);
   const [visited, setVisited] = useState<string[]>([gameverseWorld.start.region_id]);
   const [localGalleryDrafts, setLocalGalleryDrafts] = useState<LocalGalleryDraft[]>([]);
+  const [mazeCompleteState, setMazeCompleteState] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -115,6 +119,7 @@ export function GameverseWorld() {
         setVisited(safeVisited.length ? safeVisited : [gameverseWorld.start.region_id]);
         setCurrentRegionId(currentExists ? stored.current_region_id : gameverseWorld.start.region_id);
         setSelectedRegionId(currentExists ? stored.current_region_id : gameverseWorld.start.region_id);
+        setMazeCompleteState(stored.maze_complete === true);
       }
     } catch {
       // Local progress failure must never block the starting world.
@@ -131,14 +136,20 @@ export function GameverseWorld() {
         starter_character_id: starterId,
         current_region_id: currentRegionId,
         visited_region_ids: uniqueVisited(visited),
+        maze_complete: mazeCompleteState,
       };
       window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
     } catch {
       // Playing without persistent browser storage remains supported.
     }
-  }, [loaded, starterId, currentRegionId, visited]);
+  }, [loaded, starterId, currentRegionId, visited, mazeCompleteState]);
 
-  const regions = useMemo(() => ageBand ? regionsForAge(ageBand) : [], [ageBand]);
+  const regions = useMemo(
+    () => ageBand
+      ? regionsForAge(ageBand).filter(region => region.id !== "misty-ridge" || mazeCompleteState)
+      : [],
+    [ageBand, mazeCompleteState]
+  );
   const selected = regions.find(region => region.id === selectedRegionId) ?? regions[0];
   const current = gameverseRegions.find(region => region.id === currentRegionId) ?? gameverseRegions[0];
   const mazeReady = mazeUnlocked(visited);
@@ -290,6 +301,22 @@ export function GameverseWorld() {
 
               {selected?.kind === "gallery" ? (
                 <GameverseCreatorGallery ageBand={ageBand} compact />
+              ) : null}
+
+              {selected?.kind === "maze" && mazeReady ? (
+                <GameverseMazeRoute
+                  locale={locale}
+                  completed={mazeCompleteState}
+                  onComplete={() => setMazeCompleteState(true)}
+                  onContinue={() => {
+                    const ridge = gameverseRegions.find(region => region.id === "misty-ridge");
+                    if (!ridge) return;
+                    setMazeCompleteState(true);
+                    setCurrentRegionId(ridge.id);
+                    setSelectedRegionId(ridge.id);
+                    setVisited(previous => uniqueVisited([...previous, ridge.id]));
+                  }}
+                />
               ) : null}
 
               <section className="gameverse-progress-card">
