@@ -75,13 +75,13 @@ def main() -> None:
         ("NO GENERAL LICENCE GRANTED", "GPL-2.0-or-later", "no permission is granted", "PATENTS AND PUBLIC DISCLOSURE"),
     )
     require_text("COPYRIGHT.md", ("ICTHendrikse", "technical provenance", "GPL-2.0-or-later"))
-    require_text("TRADEMARKS.md", ("Pieter Hendrikse", "019137415", "019125433", "No repository licence grants"))
+    require_text("TRADEMARKS.md", ("Pieter Hendrikse", "019137415", "019125433", "No repository licence grants", "CalorieStudio"))
     require_text("DATA_LICENSING.md", ("Open Database License", "share-alike"))
     require_text("THIRD_PARTY_NOTICES.md", ("software bill of materials", "GPL-2.0-or-later"))
     require_text("IP_CLEARANCE.md", ("general ideas such as calorie tracking", "freedom-to-operate"))
     require_text(
         "docs/ECOSYSTEM_OPEN_STEWARDSHIP_AND_FUNDING.md",
-        ("existing repository is not automatically relicensed", "Founder/developer recovery", "No fixed percentages are declared yet"),
+        ("existing repository is not automatically relicensed", "Founder/developer recovery", "No fixed percentages are declared yet", "CalorieStudio"),
     )
     stewardship = require_json_object(
         json.loads(
