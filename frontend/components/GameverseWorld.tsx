@@ -9,6 +9,7 @@ import { CalorieStudio } from "@/components/CalorieStudio";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 import { CalorieVerseInteractionCard } from "@/components/CalorieVerseInteractionCard";
+import { CalorieVerseFnbChain } from "@/components/CalorieVerseFnbChain";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import { moveWorld, nearestWorldRegion, safeWorldPosition, worldKeyDirection, type WorldDirection, type WorldPosition } from "@/lib/calorieVerseMovement";
 import {
@@ -417,6 +418,10 @@ export function GameverseWorld() {
 
               {selected?.kind === "gallery" ? (
                 <CalorieStudio ageBand={ageBand} compact />
+              ) : null}
+
+              {selected && (selected.kind === "community" || selected.kind === "caloriedb") ? (
+                <CalorieVerseFnbChain ageBand={ageBand} compact={selected.kind === "caloriedb"} />
               ) : null}
 
               {selected?.kind === "participation" && ageBand === "adult" ? (
