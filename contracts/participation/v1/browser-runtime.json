@@ -1,6 +1,6 @@
 {
   "contract_id": "calorietoken.browser-participation-runtime",
-  "contract_version": "0.1.0",
+  "contract_version": "0.1.1",
   "status": "design-contract-browser-first-zero-install",
   "entry": {
     "install_required": false,
@@ -9,7 +9,11 @@
     "browser_extension_required": false,
     "pwa_install_optional_only": true,
     "launch_surface": "https-link",
-    "ordinary_gameverse_entry_never_starts_participation": true
+    "ordinary_gameverse_entry_never_starts_participation": true,
+    "shared_entry_for_participants_and_nonparticipants": true,
+    "separate_node_or_validator_url_required": false,
+    "participation_selected_inside_same_gameverse_experience": true,
+    "default_mode": "non-participant"
   },
   "runtime": {
     "preferred_execution": [
@@ -23,7 +27,9 @@
     "local_private_data_allowed": false,
     "service_worker_role": "cache-and-coordination-only-not-guaranteed-continuous-compute",
     "arbitrary_code_execution": false,
-    "bounded_versioned_tasks_only": true
+    "bounded_versioned_tasks_only": true,
+    "processor_access_semantics": "bounded Web Worker/WASM execution inside browser-selected resource limits; no raw OS-level CPU permission",
+    "storage_access_semantics": "browser-managed site storage only; no arbitrary filesystem access"
   },
   "lifecycle": {
     "explicit_opt_in_required": true,
@@ -32,7 +38,9 @@
     "compute_may_run_only_while_browser_allows_execution": true,
     "browser_close_or_suspend_may_stop_work": true,
     "hosted_core_fallback_required": true,
-    "no_penalty_for_browser_suspend_or_close": true
+    "no_penalty_for_browser_suspend_or_close": true,
+    "same_link_can_switch_between_nonparticipant_node_and_validator_modes": true,
+    "validator_is_explicit_opt_in_role": true
   },
   "browser_limits": {
     "continuous_background_execution_guaranteed": false,
@@ -46,6 +54,23 @@
     "zero_nodes_healthy": true,
     "many_small_nodes_supported": true,
     "protocol_must_not_require_native_client": true,
-    "third_party_native_client_may_exist_later_but_never_required_for_gameverse_access": true
+    "third_party_native_client_may_exist_later_but_never_required_for_gameverse_access": true,
+    "opportunistic_browser_validators_supported": true
+  },
+  "consent_scopes": {
+    "storage_access": [
+      "session-temporary",
+      "persistent-until-revoked"
+    ],
+    "compute_access": [
+      "session-only",
+      "remember-preference-until-revoked"
+    ],
+    "storage_default": "session-temporary",
+    "compute_default": "session-only",
+    "storage_and_compute_independent": true,
+    "revocation_required": true,
+    "persistent_storage_note": "request browser-managed persistent site storage when supported; browser may deny or later reclaim storage",
+    "persistent_compute_note": "remembering consent does not guarantee background execution; compute runs only while the browser/OS permits"
   }
 }
