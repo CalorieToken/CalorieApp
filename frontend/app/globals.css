@@ -1778,3 +1778,12 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.gameverse-starter-id {
+  display: block;
+  margin-top: .15rem;
+  color: #7c8992;
+  font-size: .62rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
