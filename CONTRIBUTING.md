@@ -5,6 +5,22 @@ Do not submit code, documentation, designs, data, or other material unless you
 have the right to do so and the project owner has agreed in writing to review
 the contribution.
 
+## Independent ecosystem projects
+
+Building an independent compatible project is different from contributing code
+to the official repository.
+
+An independent project does not need prior operator approval merely to create
+its own lawful implementation against public ecosystem interfaces, provided it
+uses its own namespace/branding, respects applicable licences and third-party
+rights, and does not claim official status or access private production state.
+
+The official repository still has its own inbound contribution requirements
+below. Open compatibility does not silently relicense official source code.
+
+See `docs/ECOSYSTEM_OPEN_STEWARDSHIP_AND_FUNDING.md` and
+`contracts/ecosystem/v2/open-stewardship-and-funding.json`.
+
 ## No implied acceptance or transfer
 
 - Opening an issue or pull request does not mean a contribution is accepted.
