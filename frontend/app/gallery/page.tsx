@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
@@ -14,7 +16,7 @@ export default function GalleryPage() {
     <main data-calorieapp-content className="gallery-page">
       <div className="gallery-page-shell">
         <header className="gallery-page-topbar">
-          <a href="/gameverse" className="gallery-back">← Gameverse</a>
+          <Link href="/gameverse" className="gallery-back">← Gameverse</Link>
           <DisplayLanguagePicker />
         </header>
         {!ageBand ? (
