@@ -16,7 +16,11 @@
     "one_persistent_live_world": true,
     "sequel_replacement_model": false,
     "internal_versions_are_migrations_not_new_games": true,
-    "preserve_player_world_continuity": true
+    "preserve_player_world_continuity": true,
+    "zero_install_entry": true,
+    "browser_link_is_primary_entry": true,
+    "native_install_required": false,
+    "participation_runtime_must_be_browser_accessible": true
   },
   "start": {
     "x": 11,
