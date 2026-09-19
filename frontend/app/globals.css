@@ -1057,3 +1057,125 @@ body {
   border-radius: .55rem;
   background: linear-gradient(145deg,#8b68aa,#6f96c5);
 }
+
+
+/* Playable maze: route readability and contextual onboarding, not a detached minigame. */
+.gameverse-maze-card {
+  border: 1px solid rgba(139,112,71,.2);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 85% 8%, rgba(255,255,255,.65), transparent 22%),
+    linear-gradient(145deg,#f8f5ec,#eef1e8);
+  padding: 1rem;
+  box-shadow: 0 14px 34px rgba(68,61,46,.08);
+}
+.gameverse-maze-copy h3 {
+  margin: .2rem 0 .35rem;
+  color: var(--brand-secondary);
+  font-size: 1.25rem;
+}
+.gameverse-maze-copy > p:not(.gameverse-kicker) {
+  margin: 0;
+  color: #6e786f;
+  font-size: .78rem;
+  line-height: 1.45;
+}
+.gameverse-maze-copy small {
+  display: block;
+  margin-top: .4rem;
+  color: #7f755f;
+  font-size: .68rem;
+}
+.gameverse-maze-grid {
+  display: grid;
+  aspect-ratio: 1;
+  gap: 2px;
+  width: min(100%, 19rem);
+  margin: .9rem auto;
+  border: 4px solid #665f4d;
+  border-radius: 1rem;
+  background: #665f4d;
+  padding: 3px;
+  outline: none;
+}
+.gameverse-maze-grid:focus-visible {
+  box-shadow: 0 0 0 4px rgba(249,178,51,.55);
+}
+.gameverse-maze-cell {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  border-radius: 2px;
+  font-size: .7rem;
+  font-weight: 900;
+}
+.gameverse-maze-cell.is-wall {
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.12),transparent 35%),
+    #66705f;
+}
+.gameverse-maze-cell.is-path {
+  background: #e5dec8;
+}
+.gameverse-maze-cell.is-start {
+  background: #dbe8d4;
+}
+.gameverse-maze-cell.is-exit {
+  background: #dde0e8;
+  color: var(--brand-secondary);
+}
+.gameverse-maze-cell.has-player {
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: inset 0 0 0 2px white, 0 2px 8px rgba(0,0,0,.16);
+}
+.gameverse-maze-controls {
+  display: grid;
+  justify-items: center;
+  gap: .35rem;
+}
+.gameverse-maze-controls > div {
+  display: flex;
+  gap: .35rem;
+}
+.gameverse-maze-controls button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid rgba(80,91,169,.24);
+  border-radius: .75rem;
+  background: white;
+  color: var(--brand-secondary);
+  font-weight: 900;
+}
+.gameverse-maze-controls button.secondary {
+  margin-top: .2rem;
+  padding-inline: .8rem;
+  color: #756846;
+}
+.gameverse-maze-complete {
+  display: grid;
+  gap: .55rem;
+  margin-top: .85rem;
+  border-radius: 1rem;
+  background: #eef7f1;
+  padding: .75rem;
+  color: #23673d;
+  font-size: .78rem;
+}
+.gameverse-maze-complete button {
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: .8rem;
+  background: var(--brand-primary);
+  color: white;
+  font-weight: 850;
+}
+.gameverse-region[data-region-kind="ridge"] .gameverse-region-icon {
+  background: #6f7a73;
+}
+@media (max-width: 640px) {
+  .gameverse-maze-card { padding: .8rem; }
+  .gameverse-maze-grid { width: min(100%, 17rem); }
+}
