@@ -268,6 +268,32 @@ Age experience:
 
 The airdrop should be discoverable naturally while exploring. It may arrive through different in-world storytelling (market welcome desk, farm co-op crate, harbour terminal, CalorieApp mission, community event, etc.), but all variants resolve to the same canonical entitlement state so moving between cultures/scenes can never create duplicate claims.
 
+
+### Focus, discovery and generosity loop
+
+The staged CALT launch should reward **active observation and good play**, not raw screen time.
+
+Core idea:
+- during the launch period, CALT opportunities can appear naturally throughout world scenes;
+- players who pay attention, explore carefully, notice clues, complete meaningful tasks and make good decisions can discover/catch more eligible CALT opportunities within the configured limits;
+- standing idle, endlessly refreshing, keeping the game open for hours or repeating trivial actions must not increase rewards;
+- accessibility alternatives must exist so reduced-motion, keyboard-only and other players can earn equivalent opportunities without needing fast reflexes.
+
+Generosity is also part of progression:
+- eligible adult Testnet players may voluntarily gift part of their CALT to friends, family or community-support pools;
+- sharing should be acknowledged through non-financial reputation, generosity badges, community progress, world improvements, story reactions or access to cooperative quests;
+- do not create an infinite reward loop in which sending CALT back and forth produces more CALT;
+- repeated transfers between the same linked identities, self-controlled identities or obvious circular patterns must not multiply generosity credit;
+- the system must never infer that a real person is poor from wallet data, location, culture, nationality or food choices;
+- support for people with fewer resources should use opt-in recipients, community funds/quests or clearly defined in-game need states rather than hidden socioeconomic profiling.
+
+Age treatment:
+- children experience the same value through sharing food baskets, help, collectibles and community actions, never CALT;
+- teens use simulated/non-value generosity mechanics;
+- adults may use the CALT Testnet gifting path when enabled.
+
+This mechanic should make the launch feel like **notice -> earn -> choose -> share -> improve the world**, not like attention harvesting or speculative farming.
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
