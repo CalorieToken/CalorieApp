@@ -20,7 +20,10 @@
     "zero_install_entry": true,
     "browser_link_is_primary_entry": true,
     "native_install_required": false,
-    "participation_runtime_must_be_browser_accessible": true
+    "participation_runtime_must_be_browser_accessible": true,
+    "single_link_for_everyone": true,
+    "participant_and_nonparticipant_share_same_world_entry": true,
+    "node_or_validator_install_required": false
   },
   "start": {
     "x": 11,
