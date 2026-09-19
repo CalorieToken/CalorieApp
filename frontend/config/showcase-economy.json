@@ -65,6 +65,28 @@
       "circular_transfer_farming_blocked": true,
       "self_transfer_credit_blocked": true,
       "socioeconomic_inference_forbidden": true
+    },
+    "distribution_principles": {
+      "fair_base_opportunity": true,
+      "effort_bonus": "small-bounded-extra",
+      "effort_bonus_cap": null,
+      "no_balance_wealth_leaderboard": true,
+      "no_hoarding_advantage": true,
+      "no_pay_to_win": true,
+      "catch_up_base_opportunities": true,
+      "no_scene_or_culture_value_difference": true,
+      "generosity_recognition": [
+        "reputation",
+        "badges",
+        "titles",
+        "cosmetics",
+        "community-progress",
+        "story-unlocks"
+      ],
+      "calt_generosity_bonus_enabled": false,
+      "calt_generosity_bonus_policy": "if-enabled-later-small-capped-non-circular-abuse-resistant",
+      "assistance_targeting": "voluntary-opt-in-or-community-pool-never-inferred-poverty",
+      "grind_policy": "reward-focus-and-useful-action-not-screen-time-or-repetition"
     }
   },
   "marketplace": {
