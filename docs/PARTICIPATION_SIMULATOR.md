@@ -183,6 +183,53 @@ Continue in small, verified steps, preserving the architecture decisions in
 `DECENTRALIZED_PARTICIPATION_ARCHITECTURE.md` and the campaign visual continuity
 requirements in `SHOWCASE_OPEN_WORLD_MASTERPLAN.md`.
 
+## Grow-from-small architecture
+
+The first usable release should deliberately be small: one local participation
+service, a limited set of synthetic/public-data jobs, conservative resource
+limits, simple verification, and no dependency on having a large volunteer
+network on day one.
+
+The architecture should nevertheless be designed so that participation can
+increase capacity rather than force a redesign later:
+
+- **Useful at zero participation:** CalorieApp and the Gameverse remain functional
+  even if nobody contributes storage or compute.
+- **Graceful growth:** each additional opted-in participant can add bounded storage
+  capacity, bounded compute capacity, or both.
+- **No minimum network assumption:** core product features must not require a
+  threshold number of volunteer nodes before they work.
+- **Provider-neutral task model:** storage shards and deterministic compute jobs
+  use versioned contracts so that future desktop, browser, mobile, hosted, or
+  community node implementations can participate without changing the logical
+  task format.
+- **Horizontal scaling first:** prefer many small independent contributions over
+  assuming a few powerful nodes.
+- **Replication scales with supply:** redundancy targets may increase gradually as
+  the number and reliability of volunteer nodes grows. Early stages can keep a
+  central/hosted fallback while the volunteer layer proves itself.
+- **Capability discovery:** future nodes should advertise only coarse, privacy-safe
+  capabilities and user-selected limits; the coordinator assigns work within
+  those limits.
+- **Backpressure and quotas:** when volunteer capacity is scarce, work remains
+  queued, reduced, or handled by the fallback service rather than pressuring
+  participants to contribute more.
+- **Progressive decentralization:** central coordination, verification, and
+  persistence can be replaced or complemented in bounded steps after each layer
+  has enough participation, observability, and reliability.
+- **Reward economics follow proven capacity:** simulated rewards come first;
+  Testnet/mainnet or DAO-linked economics must not be required for the initial
+  useful product and should only follow measured, abuse-resistant participation.
+
+A practical growth path is therefore:
+
+`small hosted core -> optional volunteer storage -> optional deterministic compute
+-> increasing replication/coverage -> community-operated services -> later
+decentralized coordination where justified`.
+
+This keeps the first deliverable achievable within a short timeframe while
+preserving a path to a substantially larger community-powered Calorie ecosystem.
+
 ## Participation principles for the UI and Gameverse
 
 Participation is never a prerequisite for using CalorieApp or the Gameverse.
