@@ -1,4 +1,5 @@
 export const PROCESS_STATES = Object.freeze(["off", "running", "paused"]);
+export const STORAGE_STATES = PROCESS_STATES;
 
 export function createParticipationState(overrides = {}) {
   const state = {
@@ -7,6 +8,7 @@ export function createParticipationState(overrides = {}) {
     rewards: false,
     storageLimitMb: 250,
     computeLimitPercent: 25,
+    storageState: "off",
     processState: "off",
     ...overrides,
   };
@@ -14,14 +16,16 @@ export function createParticipationState(overrides = {}) {
 }
 
 export function validateParticipationState(state) {
-  if (!PROCESS_STATES.includes(state.processState)) {
-    throw new Error("invalid-process-state");
-  }
+  if (!STORAGE_STATES.includes(state.storageState)) throw new Error("invalid-storage-state");
+  if (!PROCESS_STATES.includes(state.processState)) throw new Error("invalid-process-state");
   if (state.storageLimitMb < 50 || state.storageLimitMb > 2000) {
     throw new Error("storage-limit-out-of-range");
   }
   if (state.computeLimitPercent < 5 || state.computeLimitPercent > 75) {
     throw new Error("compute-limit-out-of-range");
+  }
+  if ((state.storageState === "running" || state.storageState === "paused") && !state.storage) {
+    throw new Error("storage-must-be-enabled-before-process");
   }
   if ((state.processState === "running" || state.processState === "paused") && !state.compute) {
     throw new Error("compute-must-be-enabled-before-process");
@@ -32,8 +36,14 @@ export function validateParticipationState(state) {
 export function transition(state, action) {
   const current = createParticipationState(state);
   switch (action.type) {
-    case "SET_STORAGE":
-      return createParticipationState({ ...current, storage: Boolean(action.value) });
+    case "SET_STORAGE": {
+      const enabled = Boolean(action.value);
+      return createParticipationState({
+        ...current,
+        storage: enabled,
+        storageState: enabled ? current.storageState : "off",
+      });
+    }
     case "SET_COMPUTE": {
       const enabled = Boolean(action.value);
       return createParticipationState({
@@ -48,6 +58,19 @@ export function transition(state, action) {
       return createParticipationState({ ...current, storageLimitMb: Number(action.value) });
     case "SET_COMPUTE_LIMIT":
       return createParticipationState({ ...current, computeLimitPercent: Number(action.value) });
+    case "START_STORAGE":
+      if (!current.storage) throw new Error("storage-not-enabled");
+      if (current.storageState !== "off") throw new Error("storage-not-off");
+      return createParticipationState({ ...current, storageState: "running" });
+    case "PAUSE_STORAGE":
+      if (current.storageState !== "running") throw new Error("storage-not-running");
+      return createParticipationState({ ...current, storageState: "paused" });
+    case "RESUME_STORAGE":
+      if (current.storageState !== "paused") throw new Error("storage-not-paused");
+      return createParticipationState({ ...current, storageState: "running" });
+    case "STOP_STORAGE":
+      if (current.storageState === "off") throw new Error("storage-already-off");
+      return createParticipationState({ ...current, storageState: "off" });
     case "START":
       if (!current.compute) throw new Error("compute-not-enabled");
       if (current.processState !== "off") throw new Error("process-not-off");
@@ -76,17 +99,26 @@ export function hostedFallbackSnapshot(state, volunteerNodes = 0) {
     appAvailable: true,
     gameverseAvailable: true,
     contributionActive:
-      current.storage || current.processState === "running",
+      current.storageState === "running" || current.processState === "running",
   });
 }
 
 export function contributionSummary(state) {
   const current = createParticipationState(state);
+  const storageSize =
+    current.storageLimitMb >= 1000
+      ? (current.storageLimitMb / 1000).toFixed(1) + " GB"
+      : current.storageLimitMb + " MB";
   return Object.freeze({
-    storageLabel: current.storage ? "ON" : "OFF",
-    storageDetail: current.storage
-      ? `Up to ${current.storageLimitMb >= 1000 ? (current.storageLimitMb / 1000).toFixed(1) + " GB" : current.storageLimitMb + " MB"}`
-      : "No storage shared",
+    storageLabel:
+      current.storageState === "running" ? "RUNNING" :
+      current.storageState === "paused" ? "PAUSED" : "OFF",
+    storageDetail:
+      current.storage
+        ? current.storageState === "off"
+          ? `Enabled · waiting for Start · max ${storageSize}`
+          : `Up to ${storageSize}`
+        : "No storage shared",
     computeLabel:
       current.processState === "running" ? "RUNNING" :
       current.processState === "paused" ? "PAUSED" : "OFF",
@@ -101,7 +133,7 @@ export function contributionSummary(state) {
       ? "Simulated calT accounting only"
       : "No reward participation",
     contributingNow:
-      current.storage || current.processState === "running",
+      current.storageState === "running" || current.processState === "running",
   });
 }
 
