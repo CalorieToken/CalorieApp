@@ -1,8 +1,8 @@
 """Local synthetic participation UI state adapter.
 
-Bridges the static Participation Lab prototype to the existing synthetic
-storage/compute simulators without enabling remote nodes, networking, token
-settlement or arbitrary jobs.
+Bridges the Participation Lab prototype to separate synthetic storage/compute
+simulators without enabling remote nodes, networking, token settlement or
+arbitrary jobs.
 """
 from __future__ import annotations
 
@@ -16,6 +16,9 @@ from tools.participation_compute_simulator import ComputeCoordinator, ComputeNod
 from tools.participation_simulator import Consent, Coordinator, LocalNode, SimulationError
 
 
+LIFECYCLE_STATES = {"off", "running", "paused"}
+
+
 @dataclass(frozen=True)
 class ParticipationSelection:
     storage: bool = False
@@ -23,11 +26,12 @@ class ParticipationSelection:
     rewards: bool = False
     storage_limit_mb: int = 250
     compute_limit_percent: int = 25
-    process_state: str = "off"  # off|running|paused
+    storage_state: str = "off"
+    process_state: str = "off"
 
 
 class ParticipationSession:
-    """Synthetic-only session with independent storage/compute controls."""
+    """Synthetic-only session with independent storage/compute lifecycles."""
 
     def __init__(self, *, enabled: bool = False, age_band: str = "adult",
                  clock=time.time) -> None:
@@ -44,12 +48,24 @@ class ParticipationSession:
         self.storage_coord.register(self.participant_id, age_band=age_band)
         self.compute_coord.register(self.participant_id, age_band=age_band)
 
-    def _consent(self) -> Consent:
+    def _storage_consent(self) -> Consent:
+        selected = self.selection.storage
+        state = self.selection.storage_state
         return Consent(
-            storage=self.selection.storage,
-            compute=self.selection.compute and self.selection.process_state == "running",
+            storage=selected and state in {"running", "paused"},
+            compute=False,
             rewards=self.selection.rewards,
-            paused=self.selection.process_state == "paused",
+            paused=selected and state == "paused",
+        )
+
+    def _compute_consent(self) -> Consent:
+        selected = self.selection.compute
+        state = self.selection.process_state
+        return Consent(
+            storage=False,
+            compute=selected and state in {"running", "paused"},
+            rewards=self.selection.rewards,
+            paused=selected and state == "paused",
         )
 
     def apply(self, selection: ParticipationSelection) -> dict:
@@ -57,14 +73,18 @@ class ParticipationSession:
             raise SimulationError("storage-limit-out-of-range")
         if selection.compute_limit_percent < 5 or selection.compute_limit_percent > 75:
             raise SimulationError("compute-limit-out-of-range")
-        if selection.process_state not in {"off", "running", "paused"}:
+        if selection.storage_state not in LIFECYCLE_STATES:
+            raise SimulationError("invalid-storage-state")
+        if selection.process_state not in LIFECYCLE_STATES:
             raise SimulationError("invalid-process-state")
+        if selection.storage_state in {"running", "paused"} and not selection.storage:
+            raise SimulationError("storage-must-be-enabled-before-process")
         if selection.process_state in {"running", "paused"} and not selection.compute:
             raise SimulationError("compute-must-be-enabled-before-process")
+
         self.selection = selection
-        consent = self._consent()
-        self.storage_coord.set_consent(self.participant_id, consent)
-        self.compute_coord.set_consent(self.participant_id, consent)
+        self.storage_coord.set_consent(self.participant_id, self._storage_consent())
+        self.compute_coord.set_consent(self.participant_id, self._compute_consent())
         return self.snapshot()
 
     def snapshot(self) -> dict:
@@ -75,7 +95,8 @@ class ParticipationSession:
             "normal_app_access": True,
             "normal_gameverse_access": True,
             "selection": asdict(self.selection),
-            "effective_consent": asdict(self._consent()),
+            "effective_storage_consent": asdict(self._storage_consent()),
+            "effective_compute_consent": asdict(self._compute_consent()),
             "real_network_enabled": False,
             "real_token_settlement": False,
         }
@@ -83,7 +104,17 @@ class ParticipationSession:
     def run_storage_probe(self) -> dict:
         if not self.selection.storage:
             return {"status": "storage-off"}
-        node = LocalNode(enabled=True, consent=self._consent(), capacity_bytes=self.selection.storage_limit_mb * 1024 * 1024)
+        if self.selection.storage_state == "paused":
+            return {"status": "storage-paused"}
+        if self.selection.storage_state != "running":
+            return {"status": "storage-stopped"}
+
+        consent = self._storage_consent()
+        node = LocalNode(
+            enabled=True,
+            consent=consent,
+            capacity_bytes=self.selection.storage_limit_mb * 1024 * 1024,
+        )
         challenge = self.storage_coord.issue(self.participant_id, "apple")
         proof = node.accept_and_prove(challenge, now=int(self.clock()))
         receipt = self.storage_coord.verify(self.participant_id, proof)
@@ -96,7 +127,9 @@ class ParticipationSession:
             return {"status": "compute-paused"}
         if self.selection.process_state != "running":
             return {"status": "compute-stopped"}
-        node = ComputeNode(enabled=True, consent=self._consent(), clock=self.clock)
+
+        consent = self._compute_consent()
+        node = ComputeNode(enabled=True, consent=consent, clock=self.clock)
         task = self.compute_coord.issue(self.participant_id, "apple")
         proof = node.execute(task, now=int(self.clock()))
         receipt = self.compute_coord.verify(self.participant_id, proof)
@@ -104,9 +137,8 @@ class ParticipationSession:
 
     def exit(self) -> dict:
         self.selection = ParticipationSelection()
-        consent = Consent()
-        self.storage_coord.set_consent(self.participant_id, consent)
-        self.compute_coord.set_consent(self.participant_id, consent)
+        self.storage_coord.set_consent(self.participant_id, Consent())
+        self.compute_coord.set_consent(self.participant_id, Consent())
         return self.snapshot()
 
     def close(self) -> None:
@@ -119,11 +151,19 @@ def demo_matrix() -> list[dict]:
     try:
         cases = [
             ParticipationSelection(),
-            ParticipationSelection(storage=True),
+            ParticipationSelection(storage=True, storage_state="off"),
+            ParticipationSelection(storage=True, storage_state="running"),
+            ParticipationSelection(storage=True, storage_state="paused"),
             ParticipationSelection(compute=True, process_state="off"),
             ParticipationSelection(compute=True, process_state="running"),
             ParticipationSelection(compute=True, process_state="paused"),
-            ParticipationSelection(storage=True, compute=True, rewards=True, process_state="running"),
+            ParticipationSelection(
+                storage=True,
+                compute=True,
+                rewards=True,
+                storage_state="running",
+                process_state="running",
+            ),
         ]
         results = []
         for case in cases:
