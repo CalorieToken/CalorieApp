@@ -1,4 +1,5 @@
 import {
+  contributionSummary,
   createParticipationState,
   hostedFallbackSnapshot,
   transition,
@@ -6,9 +7,16 @@ import {
 
 const $ = id => document.getElementById(id);
 let state = createParticipationState();
+const activity = ["Participation is off. Hosted core remains active."];
 
 function message(text) {
   $("message").textContent = text;
+}
+
+function record(text) {
+  activity.unshift(text);
+  activity.splice(5);
+  $("activityList").innerHTML = activity.map(item => "<li>" + item + "</li>").join("");
 }
 
 function render() {
@@ -34,12 +42,20 @@ function render() {
 
   const fallback = hostedFallbackSnapshot(state, 0);
   $("communityCount").textContent = fallback.volunteerNodes + " volunteer nodes";
+
+  const summary = contributionSummary(state);
+  $("storageSummary").textContent = summary.storageLabel;
+  $("storageDetail").textContent = summary.storageDetail;
+  $("computeSummary").textContent = summary.computeLabel;
+  $("computeDetail").textContent = summary.computeDetail;
+  $("rewardSummary").textContent = summary.rewardsLabel;
+  $("rewardDetail").textContent = summary.rewardsDetail;
 }
 
 function act(action, successMessage) {
   try {
     state = transition(state, action);
-    if (successMessage) message(successMessage);
+    if (successMessage) { message(successMessage); record(successMessage); }
     render();
   } catch (error) {
     if (error.message === "compute-not-enabled") {
@@ -59,8 +75,8 @@ $("computeToggle").onchange = e => act({ type: "SET_COMPUTE", value: e.target.ch
 $("rewardToggle").onchange = e => act({ type: "SET_REWARDS", value: e.target.checked },
   e.target.checked ? "Simulated calT rewards enabled." : "Simulated rewards disabled.");
 
-$("storageLimit").oninput = e => act({ type: "SET_STORAGE_LIMIT", value: e.target.value });
-$("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value });
+$("storageLimit").oninput = e => act({ type: "SET_STORAGE_LIMIT", value: e.target.value }, "Storage limit changed to " + e.target.value + " MB.");
+$("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value }, "Compute limit changed to " + e.target.value + "%.");
 
 $("startBtn").onclick = () => act({ type: "START" }, "Compute participation started within your selected limit.");
 $("pauseBtn").onclick = () => act({ type: "PAUSE" }, "Compute paused. Storage keeps its own separate setting.");
