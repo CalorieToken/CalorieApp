@@ -72,6 +72,7 @@ jobs:
           python -m unittest tools.tests.test_participation_growth_simulator
           python -m unittest tools.tests.test_participation_reliability_simulator
           python -m unittest tools.tests.test_participation_data_release_simulator
+          python -m unittest tools.tests.test_gameverse_character_identity
 
   wordpress-plugin-release-check:
     name: WordPress plugin release check
