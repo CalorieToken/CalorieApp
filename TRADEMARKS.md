@@ -56,3 +56,16 @@ protocol.
 
 Until a separate decision and legal instrument exist, the current ownership
 records control.
+
+
+### CalorieStudio
+
+`CalorieStudio` is the current proposed public name for the creator/workshop
+surface within CalorieVerse. The internal route `/gallery` and legacy
+"Creator Gallery" identifiers may remain for compatibility.
+
+This repository does **not** claim that CalorieStudio is a registered trade
+mark or that the name has received a formal freedom-to-operate clearance.
+Before a commercial brand filing or registered-symbol claim, perform an exact
+EUIPO/TMview/BOIP clearance search for the intended goods and services and
+retain the evidence.
