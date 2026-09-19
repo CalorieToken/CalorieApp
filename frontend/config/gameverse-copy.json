@@ -1,6 +1,6 @@
 {
   "en": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Walk through the Calorie ecosystem as one connected world.",
     "world": "Starter World",
     "identity": "Starter character",
@@ -46,7 +46,7 @@
     "routeReady": "Core landmarks found. The maze route is open."
   },
   "nl": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Loop door het Calorie-ecosysteem als één verbonden wereld.",
     "world": "Startwereld",
     "identity": "Startkarakter",
@@ -92,7 +92,7 @@
     "routeReady": "De kernplekken zijn gevonden. De doolhofroute is open."
   },
   "zh-Hans": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "把 Calorie 生态系统作为一个相连的世界来探索。",
     "world": "起始世界",
     "identity": "初始角色",
@@ -128,7 +128,7 @@
     "routeReady": "核心地标已找到。迷宫路线已开放。"
   },
   "hi": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Calorie इकोसिस्टम को एक जुड़ी हुई दुनिया की तरह खोजें।",
     "world": "आरंभिक दुनिया",
     "identity": "आरंभिक पात्र",
@@ -164,7 +164,7 @@
     "routeReady": "मुख्य स्थलचिह्न मिल गए। भूलभुलैया मार्ग खुला है।"
   },
   "es": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Recorre el ecosistema Calorie como un mundo conectado.",
     "world": "Mundo inicial",
     "identity": "Personaje inicial",
@@ -200,7 +200,7 @@
     "routeReady": "Se encontraron los lugares principales. La ruta del laberinto está abierta."
   },
   "ar": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "استكشف منظومة Calorie كعالم واحد مترابط.",
     "world": "عالم البداية",
     "identity": "شخصية البداية",
@@ -236,7 +236,7 @@
     "routeReady": "تم العثور على المعالم الأساسية. مسار المتاهة مفتوح."
   },
   "fr": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Parcourez l’écosystème Calorie comme un monde connecté.",
     "world": "Monde de départ",
     "identity": "Personnage de départ",
@@ -272,7 +272,7 @@
     "routeReady": "Les repères principaux sont trouvés. La route du labyrinthe est ouverte."
   },
   "bn": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Calorie ইকোসিস্টেমকে একটি সংযুক্ত জগৎ হিসেবে ঘুরে দেখুন।",
     "world": "শুরুর জগৎ",
     "identity": "শুরুর চরিত্র",
@@ -308,7 +308,7 @@
     "routeReady": "মূল ল্যান্ডমার্ক পাওয়া গেছে। গোলকধাঁধার পথ খুলেছে।"
   },
   "pt": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Percorra o ecossistema Calorie como um mundo conectado.",
     "world": "Mundo inicial",
     "identity": "Personagem inicial",
@@ -344,7 +344,7 @@
     "routeReady": "Os pontos principais foram encontrados. A rota do labirinto está aberta."
   },
   "id": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Jelajahi ekosistem Calorie sebagai satu dunia yang terhubung.",
     "world": "Dunia awal",
     "identity": "Karakter awal",
@@ -380,7 +380,7 @@
     "routeReady": "Landmark utama ditemukan. Rute labirin terbuka."
   },
   "ur": {
-    "title": "Calorie Gameverse",
+    "title": "CalorieVerse",
     "subtitle": "Calorie ایکوسسٹم کو ایک جڑی ہوئی دنیا کے طور پر دریافت کریں۔",
     "world": "ابتدائی دنیا",
     "identity": "ابتدائی کردار",
