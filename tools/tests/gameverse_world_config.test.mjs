@@ -47,6 +47,18 @@ test("Gameverse is freedom-first without forcing roles or pay-to-win", async () 
   assert.equal(world.principles.minimum_necessary_restrictions, true);
 });
 
+test("public product family is Calorie Ecosystem with CalorieApp and CalorieVerse", async () => {
+  const world = await json(worldUrl);
+  assert.equal(world.public_name, "CalorieVerse");
+  assert.equal(world.ecosystem_id, "calorie-ecosystem");
+  assert.equal(world.product_family.ecosystem, "Calorie Ecosystem");
+  assert.equal(world.product_family.app, "CalorieApp");
+  assert.equal(world.product_family.metaverse, "CalorieVerse");
+  assert.equal(world.product_family.creator_surface, "Creator Gallery");
+  assert.equal(world.principles.metaverse_and_app_share_same_ecosystem, true);
+  assert.equal(world.principles.creator_gallery_is_native_ecosystem_surface, true);
+});
+
 test("starting character and original world are compatibility invariants", async () => {
   const world = await json(worldUrl);
   assert.equal(world.starter_character.starter_character_id, "starter-original");
