@@ -3,6 +3,7 @@
 import Image from "next/image";\nimport { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
+import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
 import {
   gameverseCopy,
   gameverseRegions,
@@ -263,6 +264,10 @@ export function GameverseWorld() {
                   </>;
                 })() : null}
               </section>
+
+              {selected?.kind === "gallery" ? (
+                <GameverseCreatorGallery ageBand={ageBand} compact />
+              ) : null}
 
               <section className="gameverse-progress-card">
                 <div>
