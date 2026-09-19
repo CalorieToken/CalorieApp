@@ -28,3 +28,25 @@ input[type=range]{min-height:32px}
 .release-choice label{display:block!important;margin:0 0 8px!important;color:#c9d7e4;font-size:12px!important;font-weight:800}
 .release-choice select{width:100%;border:1px solid #2d455b;background:#102130;color:#dce8f4;border-radius:10px;padding:10px 34px 10px 11px;font-weight:700}
 .release-choice small{display:block;margin-top:8px;letter-spacing:0;line-height:1.45;color:#71879d;font-weight:600}
+
+.advanced-card{margin:0 0 18px;border:1px solid #29394d;background:#0b1723;border-radius:18px;overflow:hidden}
+.advanced-card summary{display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:pointer;padding:18px 20px;list-style:none}
+.advanced-card summary::-webkit-details-marker{display:none}
+.advanced-card summary span{display:grid;gap:4px}
+.advanced-card summary strong{font-size:17px}
+.advanced-card summary em{font-style:normal;color:#7890a7;font-size:11px;font-weight:800}
+.advanced-card[open] summary{border-bottom:1px solid #213449}
+.advanced-intro{display:flex;justify-content:space-between;gap:18px;padding:16px 20px 0}
+.advanced-intro p{margin:0;color:#8fa3b7;font-size:12px;line-height:1.5}
+.advanced-intro .prototype-note{max-width:500px;color:#6f8498}
+.advanced-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 20px}
+.advanced-limit,.advanced-options,.task-classes,.advanced-safety{padding:15px;border-radius:14px;background:#0e1d2b;border:1px solid #20354a}
+.advanced-limit>label{display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:800}
+.advanced-limit b{color:#66e3b4}
+.advanced-options,.task-classes{display:grid;gap:10px}
+.advanced-options label,.task-classes label{display:flex;align-items:flex-start;gap:9px;color:#b8c7d5;font-size:12px;line-height:1.35}
+.advanced-options input,.task-classes input{width:18px;height:18px;margin:0;accent-color:#6de3b7;flex:0 0 auto}
+.task-classes{margin:0}.task-classes legend{padding:0 6px;color:#8aa2bb;font-size:11px;font-weight:800;letter-spacing:.08em}
+.advanced-safety strong{display:block;color:#a99aff;font-size:12px}.advanced-safety p{margin:8px 0 0;color:#7f93a7;font-size:12px;line-height:1.45}
+.advanced-card summary:focus-visible{outline:2px solid #8d7bff;outline-offset:-3px}
+@media(max-width:760px){.advanced-intro{flex-direction:column}.advanced-grid{grid-template-columns:1fr}.advanced-card summary{align-items:flex-start;flex-direction:column}.advanced-card summary em{margin-top:2px}}
