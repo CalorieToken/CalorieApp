@@ -26,7 +26,7 @@ export default function GalleryPage() {
         ) : (
           <>
             <AgeExperienceControl band={ageBand} onChange={setAgeBand} />
-            <ParticipationChoiceCard ageBand={ageBand} />
+            <ParticipationChoiceCard ageBand={ageBand} compact />
             <GameverseCreatorGallery ageBand={ageBand} />
           </>
         )}
