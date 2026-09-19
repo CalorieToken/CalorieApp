@@ -131,13 +131,31 @@ $("rewardToggle").onchange = e => act(
 
 $("storageLimit").oninput = e => act({ type: "SET_STORAGE_LIMIT", value: e.target.value }, null, false);
 $("storageLimit").onchange = e => record("Storage limit changed to " + e.target.value + " MB.");
+$("storageReleaseMode").onchange = e => {
+  const labels = {
+    "keep-local": "Keep existing local copies",
+    "handoff-then-delete": "Safe handoff, then delete local copies",
+    "delete-now": "Delete my local copies now",
+  };
+  act(
+    { type: "SET_STORAGE_RELEASE_MODE", value: e.target.value },
+    "Storage stop choice: " + labels[e.target.value] + "."
+  );
+};
 $("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value }, null, false);
 $("computeLimit").onchange = e => record("Compute limit changed to " + e.target.value + "%.");
 
 $("storageStartBtn").onclick = () => act({ type: "START_STORAGE" }, "Storage participation started within your selected limit.");
 $("storagePauseBtn").onclick = () => act({ type: "PAUSE_STORAGE" }, "Storage paused. Compute keeps its own separate setting.");
 $("storageResumeBtn").onclick = () => act({ type: "RESUME_STORAGE" }, "Storage participation resumed.");
-$("storageStopBtn").onclick = () => act({ type: "STOP_STORAGE" }, "Storage work stopped. Existing assigned data is not silently deleted.");
+$("storageStopBtn").onclick = () => {
+  const detail = {
+    "keep-local": "Existing local copies are kept.",
+    "handoff-then-delete": "Safe handoff is requested before local cleanup.",
+    "delete-now": "Local cleanup is requested immediately by your explicit choice.",
+  }[state.storageReleaseMode];
+  act({ type: "STOP_STORAGE" }, "Storage work stopped. " + detail);
+};
 
 $("startBtn").onclick = () => act({ type: "START" }, "Compute participation started within your selected limit.");
 $("pauseBtn").onclick = () => act({ type: "PAUSE" }, "Compute paused. Storage keeps its own separate setting.");
