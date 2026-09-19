@@ -12,7 +12,11 @@
     "crypto_required": false,
     "wallet_required": false,
     "preserve_starting_world": true,
-    "mountains_hidden_until_reveal": true
+    "mountains_hidden_until_reveal": true,
+    "one_persistent_live_world": true,
+    "sequel_replacement_model": false,
+    "internal_versions_are_migrations_not_new_games": true,
+    "preserve_player_world_continuity": true
   },
   "start": {
     "x": 11,
