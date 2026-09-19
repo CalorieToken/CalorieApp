@@ -39,6 +39,14 @@ test("starting character and original world are compatibility invariants", async
   assert.equal(world.principles.preserve_starting_world, true);
 });
 
+test("Gameverse stays one persistent live world instead of a sequel replacement model", async () => {
+  const world = await json(worldUrl);
+  assert.equal(world.principles.one_persistent_live_world, true);
+  assert.equal(world.principles.sequel_replacement_model, false);
+  assert.equal(world.principles.internal_versions_are_migrations_not_new_games, true);
+  assert.equal(world.principles.preserve_player_world_continuity, true);
+});
+
 test("mountain reveal stays hidden in the starter slice", async () => {
   const world = await json(worldUrl);
   assert.equal(world.principles.mountains_hidden_until_reveal, true);
