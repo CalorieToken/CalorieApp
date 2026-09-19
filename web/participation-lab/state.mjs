@@ -79,3 +79,28 @@ export function hostedFallbackSnapshot(state, volunteerNodes = 0) {
       current.storage || current.processState === "running",
   });
 }
+
+export function contributionSummary(state) {
+  const current = createParticipationState(state);
+  return Object.freeze({
+    storageLabel: current.storage ? "ON" : "OFF",
+    storageDetail: current.storage
+      ? `Up to ${current.storageLimitMb >= 1000 ? (current.storageLimitMb / 1000).toFixed(1) + " GB" : current.storageLimitMb + " MB"}`
+      : "No storage shared",
+    computeLabel:
+      current.processState === "running" ? "RUNNING" :
+      current.processState === "paused" ? "PAUSED" : "OFF",
+    computeDetail:
+      current.compute
+        ? current.processState === "off"
+          ? `Enabled · waiting for Start · max ${current.computeLimitPercent}%`
+          : `Max ${current.computeLimitPercent}%`
+        : "No processing shared",
+    rewardsLabel: current.rewards ? "ON" : "OFF",
+    rewardsDetail: current.rewards
+      ? "Simulated calT accounting only"
+      : "No reward participation",
+    contributingNow:
+      current.storage || current.processState === "running",
+  });
+}
