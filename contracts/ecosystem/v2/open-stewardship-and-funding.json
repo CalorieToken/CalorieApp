@@ -1,12 +1,12 @@
 {
   "contract_id": "calorie.ecosystem.open-stewardship-and-funding",
-  "contract_version": "1.0.0",
+  "contract_version": "1.0.1",
   "status": "design-boundary-no-automatic-licence-or-ip-transfer",
   "ecosystem": "calorie-ecosystem",
   "products": [
     "CalorieApp",
     "CalorieVerse",
-    "Creator Gallery"
+    "CalorieStudio"
   ],
   "open_building": {
     "independent_compatible_projects_allowed": true,
@@ -36,7 +36,8 @@
     "wallet_required": false,
     "node_participation_required": false,
     "premium_features_must_be_additive": true,
-    "pay_to_win": false
+    "pay_to_win": false,
+    "ordinary_caloriestudio_browsing_requires_payment": false
   },
   "commercial_sustainability": {
     "premium_app_features_allowed": true,
