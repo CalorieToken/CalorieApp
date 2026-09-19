@@ -141,6 +141,19 @@ export function GameverseCreatorGallery({
         ))}
       </div>
 
+      {compact && drafts.length > 0 ? (
+        <div className="gallery-world-drafts">
+          <small>{copy.localDraft}</small>
+          <strong>{drafts.length} {copy.drafts.toLowerCase()}</strong>
+          <div>
+            {drafts.slice(0, 3).map(draft => (
+              <span key={draft.id}>{draft.title}</span>
+            ))}
+          </div>
+          <p>{copy.localDraftNote}</p>
+        </div>
+      ) : null}
+
       {!compact ? (
         <section className="gallery-workshop" aria-labelledby="gallery-workshop-title">
           <div className="gallery-workshop-copy">
