@@ -10,6 +10,67 @@ Create a highly replayable, modular CalorieToken Showcase open world that combin
 The experience must feel like a real game world rather than a static showcase page, but remain lightweight enough that most movement, scenery, animation and exploration happen client-side. Render/Postgres should primarily handle identity, progress, quests, unlocks, data-backed events and future monetization entitlements.
 
 
+## Campaign visual continuity
+
+The current approved CalorieToken campaign is the visual reference for the game
+and its visible participation interfaces. Preserve its recognizable theme and
+production quality as features are added:
+
+- Use the established CalorieToken/CalorieApp logos, colors and typography as a
+  coherent visual family, with the historical site identity retained where this
+  plan calls for it.
+- Carry forward consistent characters, culturally diverse settings, food,
+  nature, community and people using CalorieApp on phones.
+- For adult-facing scenes, pursue the campaign's realistic visual treatment;
+  child and teen treatments adapt to their age rules while remaining recognizable.
+- Keep motion smooth and screens sharp and readable; avoid warped phone content,
+  blurred/shaking composites and abrupt transitions.
+- Use clear narration with complete openings/endings, sensible pacing and subtle
+  optional music when audio is present. Avoid unnecessary static text overlays.
+- Select approved current assets when implementing a visible scene. Do not treat
+  earlier rejected video revisions or obsolete campaign thumbnails as references.
+- Reuse suitable approved assets before commissioning more media. Retain source
+  and approval/version references with the content pack.
+
+The local participation simulator has no end-user visual interface. Its technical
+output does not establish the style of the future game or participation controls.
+
+## Voluntary participation and reward choice
+
+Ordinary CalorieApp use and core game exploration must remain available without
+running a node, providing storage/compute, claiming rewards, owning crypto,
+connecting an NFT storage provider or using NFT/crypto functions. Each optional
+capability is a separate explicit choice, default off. Refusal, pause or stopping
+must not remove ordinary features or earned game progress.
+
+Node controls must offer indefinite pause, a user-selected timed pause, manual
+resume and full stop. A full stop revokes storage and compute permissions and
+does not automatically restart. Resource budgets are chosen by the participant.
+More verified useful work may earn a larger bounded optional reward; declared
+hardware power, idle time and unneeded/padded data do not create reward eligibility.
+
+For now **CALT on XRPL Testnet is the only token reward/airdrop asset**. Real CAL
+and XRP are not reward currencies. The previously planned optional NFT payment
+rails are a separate feature and remain disabled. The local simulator's
+`CALT_SIMULATED` unit is an internal test-accounting label, not a second token or
+a claim for token redemption. Child/teen non-financial gameplay remains intact.
+
+The latest supply discussion favors starting small and controlled replenishment,
+with no blackholing now. Issuer, amounts and any 100-billion ceiling remain
+undecided; see `CALT_TESTNET_SUPPLY_DISCUSSION.md`. This is design discussion, not
+authorization or implementation of on-chain issuance.
+
+## Long-term ecosystem revenue model
+
+The user clarified that the goal is a revenue model that can fund CalEco
+development and, eventually, the ecosystem DAO. The working direction is a free
+core with optional paid services for organizations and developers. Candidate
+revenue comes from managed food-data/API services, verified data/provenance work,
+and later managed storage/compute or optional platform marketplace services.
+Participant nodes can help provide useful services; CALT test rewards are not
+themselves revenue. See `CALECO_REVENUE_MODEL_DISCUSSION.md` for the proposal and
+its separation from the existing future-DAO governance boundaries.
+
 ## Eleven-language launch requirement
 
 The first playable release must support the same fixed eleven display languages already used by CalorieApp and the WordPress display-language protocol. Do not create a separate game language system.

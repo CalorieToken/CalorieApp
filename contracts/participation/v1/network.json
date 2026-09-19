@@ -1,7 +1,8 @@
 {
   "contract_id": "calorietoken.participation-network",
-  "contract_version": "0.1.0",
-  "status": "architecture-only-disabled-by-default",
+  "contract_version": "0.1.1",
+  "status": "local-synthetic-simulator-disabled-by-default",
+  "simulator_contract": "contracts/participation/v1/simulator.json",
   "official_product_boundary": {
     "wordpress_official_portal": true,
     "calorieapp_official_client": true,
@@ -46,7 +47,14 @@
     "user_selected_bandwidth_limit": true,
     "user_selected_cpu_limit": true,
     "wifi_only_option_required": true,
-    "automatic_silent_participation_forbidden": true
+    "automatic_silent_participation_forbidden": true,
+    "storage_and_compute_separate_opt_ins": true,
+    "reward_opt_in_separate": true,
+    "required_for_core_app_or_game": false,
+    "temporary_pause_and_manual_resume": true,
+    "timed_resume_only_when_selected": true,
+    "full_stop_revokes_resource_permissions": true,
+    "stop_preserves_earned_progress": true
   },
   "trust": {
     "participant_nodes_untrusted_by_default": true,
@@ -58,6 +66,8 @@
   },
   "rewards": {
     "asset": "CALT",
+    "other_reward_assets_enabled": false,
+    "greater_verified_useful_work_can_earn_more": true,
     "network": "xrpl-testnet",
     "adult_testnet_only": true,
     "enabled": false,

@@ -1,0 +1,29 @@
+{
+  "schema_version": "calorietoken.participation-simulator.v1",
+  "status": "local-synthetic-only",
+  "feature_flags": {
+    "participant_node": false,
+    "participant_compute": false,
+    "participant_testnet_settlement": false
+  },
+  "task_type": "store-synthetic-public-shard.v1",
+  "input_policy": "embedded-synthetic-fixtures-only",
+  "digest_algorithm": "sha256",
+  "proof_domain": "calorietoken.synthetic-storage-proof.v1",
+  "challenge_ttl_seconds": 120,
+  "max_storage_bytes": 1048576,
+  "max_transfer_bytes_per_run": 2097152,
+  "reward": {
+    "asset": "CALT",
+    "unit": "CALT_SIMULATED",
+    "accounting_mode": "local-test-accounting-no-token-issuance",
+    "bytes_per_simulated_unit": 256,
+    "work_measure": "verified-allowlisted-shard-bytes-rounded-up",
+    "max_units_per_participant_per_utc_day": 2,
+    "deduplication": "participant-plus-shard-digest-plus-utc-day",
+    "adult_only": true,
+    "separate_reward_opt_in_required": true,
+    "redeemable": false,
+    "onchain_settlement": false
+  }
+}

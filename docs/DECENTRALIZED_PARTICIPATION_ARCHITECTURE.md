@@ -1,6 +1,6 @@
 # Calorie Participation Network — staged decentralization architecture
 
-Status: architecture baseline; disabled by default
+Status: architecture baseline plus local synthetic storage simulator; disabled by default
 Branch: `feat/showcase-open-world-masterplan`
 
 ## Goal
@@ -186,6 +186,12 @@ The existing assessment rejected BigchainDB as the primary/provenance database b
 A future V3 may reassess technologies if their maintenance, cost, governance and privacy characteristics improve, but the participation-network protocol should stay provider-neutral so its data/content model survives technology replacement.
 
 ## First build slice
+
+The local storage/challenge/off-chain accounting slice is now implemented in
+`tools/participation_simulator.py`. Its run instructions, tested boundaries and
+next step are in `docs/PARTICIPATION_SIMULATOR.md`. This does not activate the
+participation network or change the PostgreSQL source of record. Deterministic
+compute, real volunteer onboarding and XRPL settlement remain future steps.
 
 1. Publish a versioned participation contract.
 2. Add a disabled `participant_node` feature flag.

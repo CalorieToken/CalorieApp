@@ -11,7 +11,7 @@ def _contract() -> dict:
 
 def test_participation_network_is_disabled_and_provider_neutral() -> None:
     contract = _contract()
-    assert contract["status"] == "architecture-only-disabled-by-default"
+    assert contract["status"] == "local-synthetic-simulator-disabled-by-default"
     assert contract["bigchaindb"]["selected"] is False
     assert contract["bigchaindb"]["protocol_provider_neutral"] is True
 
