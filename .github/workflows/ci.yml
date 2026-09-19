@@ -68,6 +68,7 @@ jobs:
         run: |
           python -m unittest tools.tests.test_participation_simulator
           python -m unittest tools.tests.test_participation_compute_simulator
+          python -m unittest tools.tests.test_participation_ui_adapter
 
   wordpress-plugin-release-check:
     name: WordPress plugin release check
