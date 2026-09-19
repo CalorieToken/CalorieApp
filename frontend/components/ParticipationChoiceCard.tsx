@@ -90,7 +90,7 @@ export function ParticipationChoiceCard({
         </div>
         <span className={effective.mode === "participant" ? "is-on" : "is-off"}>
           {effective.mode === "participant"
-            ? participationRoleCount(effective) + " active choice" + (participationRoleCount(effective) === 1 ? "" : "s")
+            ? copy.yes + " · " + participationRoleCount(effective)
             : copy.no}
         </span>
       </div>
