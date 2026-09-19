@@ -24,7 +24,7 @@
       "helpbot-garden": "Helpbot Garden",
       "food-data-grove": "Food Data Grove",
       "community-farm": "Community Farm",
-      "creator-gallery": "Creator Gallery",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Participation Lodge",
       "maze-gate": "Maze Gate",
       "misty-ridge": "Misty Ridge"
@@ -35,7 +35,7 @@
       "helpbot-garden": "Ask for guidance and learn what different parts of the ecosystem do.",
       "food-data-grove": "Discover how public food data from OFF and USDA can support CalorieDB over time.",
       "community-farm": "Real food, farms, water, biodiversity and community projects stay central.",
-      "creator-gallery": "Recipes, art, food media, 3D objects and future creator work live here without pay-to-win.",
+      "creator-gallery": "Create and discover recipes, art, food media, 3D objects and future world content in CalorieStudio without pay-to-win.",
       "participation-lodge": "See voluntary storage and compute participation. Adult contribution controls stay opt-in.",
       "maze-gate": "A real route toward the still-hidden mountain area; no teleport shortcut is announced.",
       "misty-ridge": "A quiet approach above the maze. The mountains are closer, but their Calorie colours are still concealed by natural rock, cloud and mist."
@@ -70,7 +70,7 @@
       "helpbot-garden": "Helpbot-tuin",
       "food-data-grove": "Voedingsdatabos",
       "community-farm": "Community-boerderij",
-      "creator-gallery": "Creator Gallery",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Participatiehuis",
       "maze-gate": "Doolhofpoort",
       "misty-ridge": "Mistige kam"
@@ -81,7 +81,7 @@
       "helpbot-garden": "Vraag om begeleiding en leer wat de verschillende delen van het ecosysteem doen.",
       "food-data-grove": "Ontdek hoe openbare voedingsdata van OFF en USDA CalorieDB in de tijd kan ondersteunen.",
       "community-farm": "Echt eten, boerderijen, water, biodiversiteit en communityprojecten blijven centraal.",
-      "creator-gallery": "Recepten, kunst, foodmedia, 3D-objecten en toekomstig creatorwerk zonder pay-to-win.",
+      "creator-gallery": "Maak en ontdek recepten, kunst, foodmedia, 3D-objecten en toekomstige wereldcontent in CalorieStudio zonder pay-to-win.",
       "participation-lodge": "Bekijk vrijwillige opslag- en compute-deelname. Volwassenen houden volledige opt-in controle.",
       "maze-gate": "Een echte route naar het nog verborgen berggebied; geen aangekondigde teleport-shortcut.",
       "misty-ridge": "Een rustige route boven het doolhof. De bergen zijn dichterbij, maar hun Calorie-kleuren blijven nog verborgen door natuurlijke rotsen, wolken en mist."
@@ -116,7 +116,7 @@
       "helpbot-garden": "Helpbot 花园",
       "food-data-grove": "食品数据林",
       "community-farm": "社区农场",
-      "creator-gallery": "创作者画廊",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "参与小屋",
       "maze-gate": "迷宫入口",
       "misty-ridge": "雾岭"
@@ -152,7 +152,7 @@
       "helpbot-garden": "Helpbot गार्डन",
       "food-data-grove": "फूड डेटा ग्रोव",
       "community-farm": "कम्युनिटी फार्म",
-      "creator-gallery": "क्रिएटर गैलरी",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "पार्टिसिपेशन लॉज",
       "maze-gate": "भूलभुलैया द्वार",
       "misty-ridge": "धुंधली रिज"
@@ -188,7 +188,7 @@
       "helpbot-garden": "Jardín Helpbot",
       "food-data-grove": "Bosque de datos alimentarios",
       "community-farm": "Granja comunitaria",
-      "creator-gallery": "Galería de creadores",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Refugio de participación",
       "maze-gate": "Puerta del laberinto",
       "misty-ridge": "Cresta brumosa"
@@ -224,7 +224,7 @@
       "helpbot-garden": "حديقة Helpbot",
       "food-data-grove": "بستان بيانات الغذاء",
       "community-farm": "مزرعة المجتمع",
-      "creator-gallery": "معرض المبدعين",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "نُزل المشاركة",
       "maze-gate": "بوابة المتاهة",
       "misty-ridge": "الحافة الضبابية"
@@ -260,7 +260,7 @@
       "helpbot-garden": "Jardin Helpbot",
       "food-data-grove": "Bosquet des données alimentaires",
       "community-farm": "Ferme communautaire",
-      "creator-gallery": "Galerie des créateurs",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Pavillon de participation",
       "maze-gate": "Porte du labyrinthe",
       "misty-ridge": "Crête brumeuse"
@@ -296,7 +296,7 @@
       "helpbot-garden": "Helpbot বাগান",
       "food-data-grove": "ফুড ডেটা গ্রোভ",
       "community-farm": "কমিউনিটি ফার্ম",
-      "creator-gallery": "ক্রিয়েটর গ্যালারি",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "পার্টিসিপেশন লজ",
       "maze-gate": "গোলকধাঁধা দ্বার",
       "misty-ridge": "কুয়াশাচ্ছন্ন রিজ"
@@ -332,7 +332,7 @@
       "helpbot-garden": "Jardim Helpbot",
       "food-data-grove": "Bosque de dados alimentares",
       "community-farm": "Fazenda comunitária",
-      "creator-gallery": "Galeria de criadores",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Pavilhão de participação",
       "maze-gate": "Portão do labirinto",
       "misty-ridge": "Crista enevoada"
@@ -368,7 +368,7 @@
       "helpbot-garden": "Taman Helpbot",
       "food-data-grove": "Rimbun data makanan",
       "community-farm": "Ladang komunitas",
-      "creator-gallery": "Galeri kreator",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "Pondok partisipasi",
       "maze-gate": "Gerbang labirin",
       "misty-ridge": "Punggung bukit berkabut"
@@ -404,7 +404,7 @@
       "helpbot-garden": "Helpbot باغ",
       "food-data-grove": "فوڈ ڈیٹا گروو",
       "community-farm": "کمیونٹی فارم",
-      "creator-gallery": "کریئیٹر گیلری",
+      "creator-gallery": "CalorieStudio",
       "participation-lodge": "پارٹیسپیشن لاج",
       "maze-gate": "بھول بھلیاں دروازہ",
       "misty-ridge": "دھندلا پہاڑی کنارہ"
