@@ -229,14 +229,25 @@ class ParticipationSession:
         hosted_copy_available: bool = True,
     ) -> dict:
         release_mode = self.selection.storage_release_mode
+
+        # Revoke both contribution permissions before any cleanup/handoff work.
+        # Exiting can never leave a window in which new volunteer work is accepted.
+        self.selection = replace(
+            self.selection,
+            storage=False,
+            compute=False,
+            rewards=False,
+            storage_state="off",
+            process_state="off",
+        )
+        self.storage_coord.set_consent(self.participant_id, Consent())
+        self.compute_coord.set_consent(self.participant_id, Consent())
+
         releases = self.release_existing_storage(
             mode=release_mode,
             healthy_remote_replicas=healthy_remote_replicas,
             hosted_copy_available=hosted_copy_available,
         )
-        self.selection = ParticipationSelection()
-        self.storage_coord.set_consent(self.participant_id, Consent())
-        self.compute_coord.set_consent(self.participant_id, Consent())
         snapshot = self.snapshot()
         snapshot["storage_release_results"] = releases
         snapshot["exit_storage_release_mode"] = release_mode
