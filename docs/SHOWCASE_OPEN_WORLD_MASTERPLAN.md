@@ -35,6 +35,38 @@ production quality as features are added:
 The local participation simulator has no end-user visual interface. Its technical
 output does not establish the style of the future game or participation controls.
 
+## One continuously evolving live Gameverse
+
+The Gameverse is designed as **one persistent live world**, not as a franchise
+sequence of replacement titles such as "Gameverse 2" or "Gameverse 3".
+
+The first public world may begin deliberately small, simple and lightweight, but
+that same world is expected to keep evolving in place over time. New regions,
+systems, quests, social layers, creator tools, visual fidelity, infrastructure
+and ecosystem connections are added to the existing live world instead of
+replacing it with a separate sequel.
+
+Rules:
+
+- there is one continuity of world identity, player identity and progress;
+- the original starting world remains part of the living world as it expands;
+- visual quality may become richer, more realistic and more advanced over time
+  without erasing the recognizable character of the original experience;
+- technical schema, engine, content-pack and protocol versions may change
+  internally, but they are migration mechanisms, not new consumer-facing games;
+- major upgrades must prefer backward-compatible migration of progress, starter
+  character, creator content and world history over resets;
+- expansions should feel like the world becoming larger and deeper while people
+  are already living in it;
+- no planned sequel cadence should be used as an excuse to abandon, freeze or
+  replace the current live Gameverse.
+
+The intended arc is therefore:
+
+`small live world -> richer live world -> larger connected ecosystem -> mature metaverse`
+
+while remaining recognizably the **same Gameverse**.
+
 ## Preserve the starting character while the world grows
 
 Scaling and continued development must not make the project feel like a different
