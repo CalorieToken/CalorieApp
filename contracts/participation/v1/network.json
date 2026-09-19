@@ -1,6 +1,6 @@
 {
   "contract_id": "calorietoken.participation-network",
-  "contract_version": "0.1.2",
+  "contract_version": "0.1.3",
   "status": "local-synthetic-storage-and-compute-simulators-disabled-by-default",
   "simulator_contract": "contracts/participation/v1/simulator.json",
   "official_product_boundary": {
@@ -8,7 +8,9 @@
     "calorieapp_official_client": true,
     "protocol_requires_wordpress_online": false,
     "third_party_compatible_clients_allowed": true,
-    "official_brand_control_remains_with_calorietoken": true
+    "official_brand_control_remains_with_calorietoken": true,
+    "zero_install_browser_entry_required": true,
+    "native_node_install_required": false
   },
   "primary_storage": {
     "private_user_data": "postgresql",
@@ -54,7 +56,8 @@
     "temporary_pause_and_manual_resume": true,
     "timed_resume_only_when_selected": true,
     "full_stop_revokes_resource_permissions": true,
-    "stop_preserves_earned_progress": true
+    "stop_preserves_earned_progress": true,
+    "browser_session_never_auto_enrolled": true
   },
   "trust": {
     "participant_nodes_untrusted_by_default": true,
@@ -63,7 +66,8 @@
     "secrets_sent_to_nodes": false,
     "deterministic_verification_required": true,
     "redundant_result_verification_supported": true,
-    "synthetic_compute_current_boundary": "fixed-code-separate-process-only-not-a-secure-general-purpose-sandbox"
+    "synthetic_compute_current_boundary": "fixed-code-separate-process-only-not-a-secure-general-purpose-sandbox",
+    "browser_background_execution_not_assumed": true
   },
   "rewards": {
     "asset": "CALT",
@@ -122,5 +126,6 @@
     "selected": false,
     "may_be_reassessed_later": true,
     "protocol_provider_neutral": true
-  }
+  },
+  "browser_runtime_contract": "contracts/participation/v1/browser-runtime.json"
 }
