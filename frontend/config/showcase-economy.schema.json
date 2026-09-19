@@ -53,7 +53,8 @@
         "culture_policy",
         "age_modes",
         "discovery_capture",
-        "generosity"
+        "generosity",
+        "newcomer_policy"
       ],
       "properties": {
         "enabled": {
@@ -63,7 +64,7 @@
           "type": "string"
         },
         "distribution_model": {
-          "const": "staged-global-welcome-period"
+          "const": "rolling-newcomer-welcome-with-launch-wave"
         },
         "claim_start": {
           "type": [
@@ -226,6 +227,45 @@
             }
           },
           "additionalProperties": false
+        },
+        "newcomer_policy": {
+          "type": "object",
+          "required": [
+            "globally_available_for_future_newcomers",
+            "one_base_entitlement_per_canonical_game_identity",
+            "personal_window_starts_on_first_eligible_game_start",
+            "personal_window_duration",
+            "returning_player_does_not_reset_newcomer_status",
+            "seasonal_relaunch_does_not_duplicate_base_entitlement",
+            "backend_canonical_start_required_when_enabled"
+          ],
+          "properties": {
+            "globally_available_for_future_newcomers": {
+              "const": true
+            },
+            "one_base_entitlement_per_canonical_game_identity": {
+              "const": true
+            },
+            "personal_window_starts_on_first_eligible_game_start": {
+              "const": true
+            },
+            "personal_window_duration": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "returning_player_does_not_reset_newcomer_status": {
+              "const": true
+            },
+            "seasonal_relaunch_does_not_duplicate_base_entitlement": {
+              "const": true
+            },
+            "backend_canonical_start_required_when_enabled": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -235,20 +275,189 @@
       "required": [
         "enabled",
         "testnet_only",
-        "supported_asset_families"
+        "supported_asset_families",
+        "mode",
+        "settlement"
       ],
       "properties": {
         "enabled": {
           "type": "boolean"
         },
         "testnet_only": {
-          "const": true
+          "type": "boolean"
         },
         "supported_asset_families": {
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "mode": {
+          "const": "testnet-first-mainnet-ready"
+        },
+        "settlement": {
+          "type": "object",
+          "required": [
+            "seller_selects_accepted_rails",
+            "buyer_selects_from_listing_rails",
+            "automatic_cross_currency_conversion",
+            "non_custodial",
+            "explicit_wallet_signature_required",
+            "validated_ledger_result_required",
+            "rails"
+          ],
+          "properties": {
+            "seller_selects_accepted_rails": {
+              "const": true
+            },
+            "buyer_selects_from_listing_rails": {
+              "const": true
+            },
+            "automatic_cross_currency_conversion": {
+              "const": false
+            },
+            "non_custodial": {
+              "const": true
+            },
+            "explicit_wallet_signature_required": {
+              "const": true
+            },
+            "validated_ledger_result_required": {
+              "const": true
+            },
+            "rails": {
+              "type": "object",
+              "required": [
+                "CALT",
+                "CAL",
+                "XRP"
+              ],
+              "properties": {
+                "CALT": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "redeemable",
+                    "feature_flag"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-testnet"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "real_value": {
+                      "const": false
+                    },
+                    "redeemable": {
+                      "const": false
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_calt"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "CAL": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "issuer",
+                    "currency_code",
+                    "feature_flag",
+                    "adult_only",
+                    "independent_release_approval_required",
+                    "jurisdiction_gate_required",
+                    "legal_tax_consumer_review_required"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-mainnet"
+                    },
+                    "enabled": {
+                      "const": false
+                    },
+                    "real_value": {
+                      "const": true
+                    },
+                    "issuer": {
+                      "const": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY"
+                    },
+                    "currency_code": {
+                      "const": "43616C6F72696500000000000000000000000000"
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_cal_mainnet"
+                    },
+                    "adult_only": {
+                      "const": true
+                    },
+                    "independent_release_approval_required": {
+                      "const": true
+                    },
+                    "jurisdiction_gate_required": {
+                      "const": true
+                    },
+                    "legal_tax_consumer_review_required": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "XRP": {
+                  "type": "object",
+                  "required": [
+                    "network",
+                    "enabled",
+                    "real_value",
+                    "native_asset",
+                    "feature_flag",
+                    "adult_only",
+                    "independent_release_approval_required",
+                    "jurisdiction_gate_required",
+                    "legal_tax_consumer_review_required"
+                  ],
+                  "properties": {
+                    "network": {
+                      "const": "xrpl-mainnet"
+                    },
+                    "enabled": {
+                      "const": false
+                    },
+                    "real_value": {
+                      "const": true
+                    },
+                    "native_asset": {
+                      "const": true
+                    },
+                    "feature_flag": {
+                      "const": "showcase_nft_settlement_xrp_mainnet"
+                    },
+                    "adult_only": {
+                      "const": true
+                    },
+                    "independent_release_approval_required": {
+                      "const": true
+                    },
+                    "jurisdiction_gate_required": {
+                      "const": true
+                    },
+                    "legal_tax_consumer_review_required": {
+                      "const": true
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
