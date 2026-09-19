@@ -242,6 +242,37 @@ Historical CalorieApp Testnet NFT/token code is reference material only; do not 
 
 
 
+
+### NFT payment choice: CALT, CAL or XRP
+
+Eligible adult NFT listings should be able to offer a **choice of settlement rail**, rather than forcing every creator and buyer into the same currency.
+
+Supported architecture:
+- **CALT** — XRPL Testnet sandbox settlement; test-only and non-redeemable.
+- **CAL** — optional XRPL Mainnet settlement using the verified Calorie asset identifier; real-value rail, disabled by default until separately approved.
+- **XRP** — optional native XRPL Mainnet settlement; real-value rail, disabled by default until separately approved.
+
+Marketplace behaviour:
+- the creator/seller chooses which of the available rails a listing accepts;
+- the buyer chooses one of the rails offered by that listing;
+- CALT, CAL and XRP remain separate assets; never silently convert CALT into CAL or XRP;
+- do not auto-route through the DEX in the first implementation;
+- every real-value action requires an explicit external-wallet signature and a clear final confirmation containing NFT, network, currency, amount, fees/requirements and destination/offer information;
+- CalorieApp/Showcase remains non-custodial and never stores private keys;
+- ledger ownership/settlement is accepted only after a validated XRPL result;
+- store the chosen settlement asset and validated transaction/offer reference with the marketplace record;
+- use the real CAL issuer/currency identity, never a ticker-only match;
+- Mainnet CAL/XRP NFT settlement is adult-only and remains behind separate feature, jurisdiction, legal/tax/consumer-protection and security gates;
+- children never see real-value NFT purchase/sale flows; teen creator/economy experiences remain non-value/simulated.
+
+XRPL implementation note:
+- an XRPL NFToken offer can be denominated in XRP or a fungible issued token, unless the NFT is minted with the only-XRP restriction;
+- therefore NFTs intended to support both CAL and XRP must not be minted as XRP-only;
+- if an NFT uses an on-ledger transfer fee/royalty and is sold for an issued token such as CAL, the relevant issuer/trust-line requirements must be validated before offering that rail;
+- each on-ledger offer has a specific settlement asset. The application may present multiple seller-approved rails, but it must create/verify bounded offers rather than pretending one ledger offer is magically multi-currency.
+
+The first implementation remains CALT/Testnet. CAL and XRP are prepared as **disabled Mainnet adapters** so the marketplace can later turn them on without redesigning the game economy.
+
 ### CALT simulated CAL reference peg
 
 For gameplay and marketplace intuition, **1 CALT should have a fictional/reference value equal to the current public market reference for 1 CAL**, while remaining a Testnet-only asset with no redemption or legal/economic claim on real CAL.
@@ -285,7 +316,7 @@ Age experience:
 - teen scenes use a non-value learning/simulation version unless a later reviewed policy explicitly changes that boundary;
 - adult 18+ users may opt into the real XRPL Testnet CALT welcome distribution when the feature flag and jurisdiction gate are open.
 
-The airdrop should be discoverable naturally while exploring. It may arrive through different in-world storytelling (market welcome desk, farm co-op crate, harbour terminal, CalorieApp mission, community event, etc.), but all variants resolve to the same canonical entitlement state so moving between cultures/scenes can never create duplicate claims.
+The airdrop should be discoverable naturally while exploring. It may arrive through different in-world storytelling (market welcome desk, farm co-op crate, harbour terminal, CalorieApp mission, community event, etc.), but all variants resolve to the same canonical entitlement state so moving between cultures/scenes can never create duplicate claims. There is no permanent global expiry for the newcomer Testnet airdrop: a player joining much later can still receive the one-time newcomer experience, while returning users do not reset their newcomer status.
 
 Rolling-newcomer rule:
 - there is no permanent global expiry for the existence of the Testnet welcome airdrop;
