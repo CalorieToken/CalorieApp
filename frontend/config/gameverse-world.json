@@ -36,7 +36,8 @@
     "privacy_and_permission_control": true,
     "minimum_necessary_restrictions": true,
     "metaverse_and_app_share_same_ecosystem": true,
-    "creator_gallery_is_native_ecosystem_surface": true
+    "creator_gallery_is_native_ecosystem_surface": true,
+    "caloriestudio_is_native_ecosystem_surface": true
   },
   "start": {
     "x": 11,
@@ -214,6 +215,8 @@
     "ecosystem": "Calorie Ecosystem",
     "app": "CalorieApp",
     "metaverse": "CalorieVerse",
-    "creator_surface": "Creator Gallery"
+    "creator_surface": "CalorieStudio",
+    "creator_surface_route": "/gallery",
+    "creator_surface_internal_legacy_term": "Creator Gallery"
   }
 }
