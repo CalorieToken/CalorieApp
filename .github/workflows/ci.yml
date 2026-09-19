@@ -64,8 +64,10 @@ jobs:
           python -m unittest tools.tests.test_offline_age_custody
           python -m unittest tools.tests.test_tracked_secret_patterns
 
-      - name: Test local synthetic participation simulator
-        run: python -m unittest tools.tests.test_participation_simulator
+      - name: Test local synthetic participation simulators
+        run: |
+          python -m unittest tools.tests.test_participation_simulator
+          python -m unittest tools.tests.test_participation_compute_simulator
 
   wordpress-plugin-release-check:
     name: WordPress plugin release check
