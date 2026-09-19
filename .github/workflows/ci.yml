@@ -332,6 +332,9 @@ jobs:
         # forgotten in a manually maintained list.
         run: node --test tools/tests/*.test.mjs
 
+      - name: Test participation control state machine
+        run: node --test tools/tests/participation_lab_state.test.mjs
+
       - name: Build frontend
         working-directory: frontend
         env:
