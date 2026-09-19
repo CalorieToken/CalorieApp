@@ -22,7 +22,7 @@ test("CalorieVerse interactions stay optional and do not gate the core route", a
   assert.equal(config.principles.local_progress_only, true);
 });
 
-test("first interaction slice covers data, farm, Gallery and Helpbot systems", async () => {
+test("first interaction slice covers data, farm, CalorieStudio and Helpbot systems", async () => {
   const config = await json(configUrl);
   const regions = new Set(config.interactions.map(item => item.region_id));
   for (const region of [
