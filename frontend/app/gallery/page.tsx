@@ -3,6 +3,7 @@
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
+import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 
 export default function GalleryPage() {
   const [ageBand, setAgeBand, resolved = true] = useAgeExperience();
@@ -23,6 +24,7 @@ export default function GalleryPage() {
         ) : (
           <>
             <AgeExperienceControl band={ageBand} onChange={setAgeBand} />
+            <ParticipationChoiceCard ageBand={ageBand} />
             <GameverseCreatorGallery ageBand={ageBand} />
           </>
         )}
