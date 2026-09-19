@@ -13,7 +13,25 @@
     <p>Use CalorieApp and the Gameverse normally, or voluntarily share a little capacity. You stay in control.</p></div>
     <div class="status"><i id="statusDot"></i><div><small>PROCESS STATUS</small><strong id="statusText">OFF</strong></div></div>
   </header>
-  <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section><section class="networkbar"><div><small>COMMUNITY CAPACITY</small><strong id="communityCount">0 volunteer nodes</strong></div><div class="fallback">Hosted core active</div></section>
+  <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section><section class="networkbar">
+  <div>
+    <small>COMMUNITY CAPACITY · SYNTHETIC PREVIEW</small>
+    <strong id="communityCount">0 volunteer nodes</strong>
+    <span id="communityLevel">Hosted only</span>
+    <p id="communityDescription">No volunteer capacity yet. The hosted core handles normal service.</p>
+  </div>
+  <div class="network-actions">
+    <label for="communityPreview">Preview growth</label>
+    <select id="communityPreview">
+      <option value="0">0 nodes</option>
+      <option value="1">1 node</option>
+      <option value="10">10 nodes</option>
+      <option value="100">100 nodes</option>
+      <option value="1000">1000 nodes</option>
+    </select>
+    <div class="fallback">Hosted core active</div>
+  </div>
+</section>
   <section class="overview">
     <div class="overview-copy">
       <small>YOUR CHOICES</small>
