@@ -8,7 +8,16 @@ import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayL
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
+import { CalorieVerseInteractionCard } from "@/components/CalorieVerseInteractionCard";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
+import {
+  CALORIEVERSE_INTERACTION_KEY,
+  completeInteraction,
+  deriveWorldEffects,
+  parseInteractionProgress,
+  resetInteraction,
+  type CalorieVerseInteractionProgress,
+} from "@/lib/calorieVerseInteractions";
 import {
   coreRouteProgress,
   gameverseCopy,
@@ -100,6 +109,7 @@ export function GameverseWorld() {
   const [visited, setVisited] = useState<string[]>([gameverseWorld.start.region_id]);
   const [localGalleryDrafts, setLocalGalleryDrafts] = useState<LocalGalleryDraft[]>([]);
   const [mazeCompleteState, setMazeCompleteState] = useState(false);
+  const [interactionProgress, setInteractionProgress] = useState<CalorieVerseInteractionProgress>({version: 1, completed_ids: []});
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -117,6 +127,7 @@ export function GameverseWorld() {
       }
 
       setLocalGalleryDrafts(parseLocalGalleryDrafts(window.localStorage.getItem(GALLERY_DRAFTS_KEY)));
+      setInteractionProgress(parseInteractionProgress(window.localStorage.getItem(CALORIEVERSE_INTERACTION_KEY)));
 
       const stored = JSON.parse(window.localStorage.getItem(PROGRESS_KEY) ?? "null") as SavedProgress | null;
       if (stored?.version === 1 && typeof stored.current_region_id === "string" && Array.isArray(stored.visited_region_ids)) {
@@ -150,6 +161,18 @@ export function GameverseWorld() {
     }
   }, [loaded, starterId, currentRegionId, visited, mazeCompleteState]);
 
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      window.localStorage.setItem(
+        CALORIEVERSE_INTERACTION_KEY,
+        JSON.stringify(interactionProgress)
+      );
+    } catch {
+      // Optional interactions remain usable in-memory when storage is blocked.
+    }
+  }, [loaded, interactionProgress]);
+
   const regions = useMemo(
     () => ageBand
       ? regionsForAge(ageBand).filter(region => region.id !== "misty-ridge" || mazeCompleteState)
@@ -161,6 +184,7 @@ export function GameverseWorld() {
   const mazeReady = mazeUnlocked(visited);
   const coreProgress = coreRouteProgress(visited);
   const coreRouteIds = new Set(gameverseWorld.progression.maze_required_regions as string[]);
+  const worldEffects = deriveWorldEffects(interactionProgress);
 
   function walkTo(region: GameverseRegion) {
     if (!ageBand || !regionIsInteractive(region, ageBand)) return;
@@ -168,6 +192,14 @@ export function GameverseWorld() {
     setCurrentRegionId(region.id);
     setSelectedRegionId(region.id);
     setVisited(previous => uniqueVisited([...previous, region.id]));
+  }
+
+  function finishInteraction(interactionId: string) {
+    setInteractionProgress(previous => completeInteraction(previous, interactionId));
+  }
+
+  function replayInteraction(interactionId: string) {
+    setInteractionProgress(previous => resetInteraction(previous, interactionId));
   }
 
   if (!ageResolved) return null;
@@ -202,7 +234,16 @@ export function GameverseWorld() {
                 <AgeExperienceControl band={ageBand} onChange={setAgeBand} />
               </header>
 
-              <div className="gameverse-stage" tabIndex={0} aria-label={copy.world}>
+              <div
+                className={[
+                  "gameverse-stage",
+                  worldEffects.farmMarketLink ? "has-farm-market-link" : "",
+                  worldEffects.creatorBeacon ? "has-creator-beacon" : "",
+                  worldEffects.routeWhisper ? "has-route-whisper" : "",
+                ].filter(Boolean).join(" ")}
+                tabIndex={0}
+                aria-label={copy.world}
+              >
                 <div className="gameverse-sky" aria-hidden="true" />
                 <div className="gameverse-sun" aria-hidden="true" />
                 <div className="gameverse-mountain-range" aria-hidden="true">
@@ -213,6 +254,20 @@ export function GameverseWorld() {
                 <div className="gameverse-field field-a" aria-hidden="true" />
                 <div className="gameverse-field field-b" aria-hidden="true" />
                 <div className="gameverse-trees" aria-hidden="true">● ● ● ● ●</div>
+
+                {worldEffects.farmMarketLink ? (
+                  <div className="gameverse-farm-market-link" aria-hidden="true">
+                    <span>●</span><i /><span>◆</span>
+                  </div>
+                ) : null}
+                {worldEffects.creatorBeacon ? (
+                  <div className="gameverse-creator-beacon" aria-hidden="true">◇</div>
+                ) : null}
+                {worldEffects.routeWhisper ? (
+                  <div className="gameverse-route-whisper" aria-hidden="true">
+                    <i /><i /><i />
+                  </div>
+                ) : null}
 
                 {localGalleryDrafts
                   .filter(draft => draft.age_band === ageBand)
@@ -309,6 +364,17 @@ export function GameverseWorld() {
                   </>;
                 })() : null}
               </section>
+
+              {selected ? (
+                <CalorieVerseInteractionCard
+                  regionId={selected.id}
+                  ageBand={ageBand}
+                  locale={locale}
+                  progress={interactionProgress}
+                  onComplete={finishInteraction}
+                  onReset={replayInteraction}
+                />
+              ) : null}
 
               {selected?.kind === "gallery" ? (
                 <GameverseCreatorGallery ageBand={ageBand} compact />
