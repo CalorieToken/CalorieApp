@@ -222,3 +222,422 @@ body {
     z-index: 2;
   }
 }
+
+
+/* Gameverse starter world: lightweight 2.5D ecosystem shell. */
+.gameverse-page {
+  min-height: 100vh;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(80,91,169,.18), transparent 30%),
+    radial-gradient(circle at 88% 20%, rgba(0,141,54,.13), transparent 26%),
+    linear-gradient(180deg, #edf5f3 0%, #f8f3e8 62%, #f5f5f5 100%);
+}
+.gameverse-shell {
+  max-width: 1380px;
+  margin: 0 auto;
+}
+.gameverse-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.gameverse-topbar > details {
+  margin: 0 !important;
+  max-width: 22rem;
+}
+.gameverse-brand {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: .75rem;
+  border: 1px solid rgba(80,91,169,.16);
+  border-radius: 999px;
+  background: rgba(255,255,255,.88);
+  padding: .45rem .9rem .45rem .55rem;
+  color: var(--brand-secondary);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(29,43,54,.07);
+}
+.gameverse-brand img {
+  border-radius: 50%;
+}
+.gameverse-age-entry {
+  max-width: 900px;
+  margin: 8vh auto 0;
+  border: 1px solid rgba(80,91,169,.15);
+  border-radius: 2rem;
+  background: rgba(255,255,255,.92);
+  padding: clamp(1.25rem, 4vw, 3rem);
+  box-shadow: 0 30px 80px rgba(29,43,54,.12);
+}
+.gameverse-age-entry h1,
+.gameverse-heading h1 {
+  margin: .25rem 0 .5rem;
+  color: var(--brand-secondary);
+  font-size: clamp(2rem, 5vw, 4.4rem);
+  line-height: .98;
+  letter-spacing: -.04em;
+}
+.gameverse-age-entry > p:not(.gameverse-kicker),
+.gameverse-heading > div > p:not(.gameverse-kicker) {
+  color: #657786;
+}
+.gameverse-kicker {
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.gameverse-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 1rem;
+}
+.gameverse-stage-panel,
+.gameverse-side > section {
+  border: 1px solid rgba(80,91,169,.14);
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 20px 50px rgba(29,43,54,.08);
+}
+.gameverse-stage-panel {
+  overflow: hidden;
+  border-radius: 2rem;
+}
+.gameverse-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.25rem 1.25rem .7rem;
+}
+.gameverse-heading .calorie-age-summary {
+  margin: 0 !important;
+}
+.gameverse-stage {
+  position: relative;
+  min-height: 600px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, #bfe6f7 0 37%, #d6e8bd 37% 58%, #9fca7e 58% 100%);
+}
+.gameverse-stage:focus-visible {
+  outline: 4px solid var(--brand-accent);
+  outline-offset: -4px;
+}
+.gameverse-sky {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 42%;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.28), transparent),
+    radial-gradient(circle at 68% 22%, rgba(255,255,255,.82) 0 5%, transparent 6%);
+}
+.gameverse-sun {
+  position: absolute;
+  width: 3.4rem;
+  height: 3.4rem;
+  right: 11%;
+  top: 8%;
+  border-radius: 50%;
+  background: rgba(249,178,51,.78);
+  box-shadow: 0 0 38px rgba(249,178,51,.35);
+}
+.gameverse-mountain-range {
+  position: absolute;
+  inset: 20% 0 auto auto;
+  width: 47%;
+  height: 36%;
+  opacity: .72;
+  filter: saturate(.45);
+}
+.gameverse-mountain-range i {
+  position: absolute;
+  bottom: 0;
+  width: 46%;
+  height: 85%;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: linear-gradient(145deg, #64766d, #9aa398 57%, #677269);
+}
+.gameverse-mountain-range i:nth-child(1) { left: 0; transform: scale(.9); opacity: .82; }
+.gameverse-mountain-range i:nth-child(2) { left: 27%; height: 100%; background: linear-gradient(145deg,#5f6968,#8b9390 60%,#616968); }
+.gameverse-mountain-range i:nth-child(3) { right: 0; height: 78%; opacity: .76; }
+.gameverse-mountain-range::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,.26), rgba(255,255,255,.62));
+  filter: blur(10px);
+}
+.gameverse-river {
+  position: absolute;
+  left: -6%;
+  top: 46%;
+  width: 118%;
+  height: 18%;
+  border-radius: 48% 52% 46% 54%;
+  background: linear-gradient(90deg,#83c9d7,#b8e0df,#72bfcd);
+  transform: rotate(-7deg);
+  opacity: .88;
+}
+.gameverse-path {
+  position: absolute;
+  left: 2%;
+  top: 66%;
+  width: 94%;
+  height: 10%;
+  border-radius: 999px;
+  background: #d7bf8e;
+  transform: rotate(-5deg);
+  box-shadow: inset 0 0 0 2px rgba(135,102,54,.08);
+}
+.gameverse-field {
+  position: absolute;
+  border-radius: 50%;
+  background: repeating-linear-gradient(95deg,#d6b95c 0 8px,#e7cd78 8px 16px);
+  opacity: .65;
+}
+.gameverse-field.field-a { left: 42%; bottom: 5%; width: 24%; height: 18%; transform: rotate(8deg); }
+.gameverse-field.field-b { left: 64%; bottom: 8%; width: 14%; height: 13%; transform: rotate(-10deg); }
+.gameverse-trees {
+  position: absolute;
+  left: 3%;
+  top: 34%;
+  color: #2d7446;
+  font-size: clamp(1.3rem, 2.8vw, 2.2rem);
+  letter-spacing: .22em;
+  text-shadow: 0 8px 0 rgba(37,87,51,.14);
+}
+.gameverse-region {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 2.3rem minmax(0,1fr);
+  align-items: center;
+  gap: .45rem;
+  max-width: 10rem;
+  min-height: 2.8rem;
+  transform: translate(-50%,-50%);
+  border: 2px solid rgba(255,255,255,.88);
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  padding: .3rem .65rem .3rem .3rem;
+  color: #314457;
+  font-size: .7rem;
+  font-weight: 850;
+  line-height: 1.05;
+  box-shadow: 0 10px 24px rgba(29,43,54,.17);
+  backdrop-filter: blur(5px);
+}
+.gameverse-region:hover,
+.gameverse-region.is-selected {
+  border-color: var(--brand-secondary);
+  transform: translate(-50%,-50%) scale(1.035);
+}
+.gameverse-region.is-current {
+  box-shadow: 0 0 0 4px rgba(249,178,51,.55), 0 10px 24px rgba(29,43,54,.17);
+}
+.gameverse-region.is-visited:not(.is-current) {
+  border-color: rgba(0,141,54,.48);
+}
+.gameverse-region.is-locked {
+  opacity: .68;
+  filter: grayscale(.45);
+}
+.gameverse-region-icon {
+  display: grid;
+  width: 2.15rem;
+  height: 2.15rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-secondary);
+  color: white;
+  font-size: .72rem;
+}
+.gameverse-region[data-region-kind="calorieapp"] .gameverse-region-icon { background: var(--brand-primary); }
+.gameverse-region[data-region-kind="community"] .gameverse-region-icon { background: #4f8d3a; }
+.gameverse-region[data-region-kind="gallery"] .gameverse-region-icon { background: #925fa8; }
+.gameverse-region[data-region-kind="maze"] .gameverse-region-icon { background: #8b7047; }
+.gameverse-player {
+  position: absolute;
+  z-index: 8;
+  width: 3.4rem;
+  height: 4.1rem;
+  transform: translate(-50%,-82%);
+  transition: left .9s ease, top .9s ease;
+  pointer-events: none;
+}
+.gameverse-player-c,
+.gameverse-mini-avatar {
+  display: grid;
+  place-items: center;
+  border: 5px solid var(--brand-primary);
+  border-right-color: transparent;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--brand-secondary);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.gameverse-player-c {
+  width: 3.4rem;
+  height: 3.4rem;
+  box-shadow: 0 10px 20px rgba(29,43,54,.22);
+}
+.gameverse-player-shadow {
+  display: block;
+  width: 2.5rem;
+  height: .7rem;
+  margin: -.1rem auto 0;
+  border-radius: 50%;
+  background: rgba(29,43,54,.18);
+  filter: blur(2px);
+}
+.gameverse-mountain-note {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  padding: .8rem 1.25rem 1rem;
+  color: #6b7b87;
+  font-size: .78rem;
+}
+.gameverse-mountain-note strong {
+  color: var(--brand-secondary);
+}
+.gameverse-side {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+.gameverse-side > section {
+  border-radius: 1.5rem;
+  padding: 1rem;
+}
+.gameverse-identity-card {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: .8rem;
+  align-items: center;
+}
+.gameverse-mini-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+.gameverse-side small {
+  display: block;
+  color: var(--brand-primary);
+  font-size: .67rem;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.gameverse-side strong {
+  display: block;
+  margin-top: .2rem;
+  color: var(--brand-secondary);
+  overflow-wrap: anywhere;
+}
+.gameverse-side p {
+  color: #6d7f8d;
+  font-size: .83rem;
+  line-height: 1.5;
+}
+.gameverse-place-card h2 {
+  margin: .35rem 0;
+  color: var(--brand-secondary);
+  font-size: 1.5rem;
+}
+.gameverse-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-top: .85rem;
+}
+.gameverse-actions button,
+.gameverse-actions a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--brand-secondary);
+  border-radius: 999px;
+  padding: .55rem .9rem;
+  background: var(--brand-secondary);
+  color: white;
+  font-size: .78rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+.gameverse-actions button:disabled {
+  border-color: #b7c0c7;
+  background: #edf0f2;
+  color: #79858d;
+}
+.gameverse-actions a {
+  border-color: var(--brand-primary);
+  background: white;
+  color: var(--brand-primary);
+}
+.gameverse-lock-note {
+  border-radius: .85rem;
+  background: #f5f2e7;
+  padding: .65rem .75rem;
+  color: #756846 !important;
+}
+.gameverse-fallback {
+  display: inline-block;
+  border-radius: 999px;
+  background: #f0f1f7;
+  padding: .2rem .45rem;
+  color: var(--brand-secondary);
+  font-size: .65rem;
+  font-weight: 800;
+}
+.gameverse-progressbar {
+  height: .55rem;
+  margin: .75rem 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7ebed;
+}
+.gameverse-progressbar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,var(--brand-primary),var(--brand-accent),var(--brand-secondary));
+  transition: width .4s ease;
+}
+.gameverse-layout[data-age-band="child"] .gameverse-stage {
+  filter: saturate(1.1) brightness(1.025);
+}
+.gameverse-layout[data-age-band="child"] .gameverse-region {
+  border-radius: 1.15rem;
+}
+.gameverse-layout[data-age-band="teen"] .gameverse-stage {
+  filter: contrast(1.025) saturate(.98);
+}
+@media (max-width: 980px) {
+  .gameverse-layout { grid-template-columns: 1fr; }
+  .gameverse-side { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 760px) {
+  .gameverse-page { padding: .55rem; }
+  .gameverse-topbar,
+  .gameverse-heading { align-items: stretch; flex-direction: column; }
+  .gameverse-stage { min-height: 560px; }
+  .gameverse-side { grid-template-columns: 1fr; }
+  .gameverse-region { max-width: 7.7rem; font-size: .62rem; grid-template-columns: 1.9rem minmax(0,1fr); }
+  .gameverse-region-icon { width: 1.8rem; height: 1.8rem; }
+  .gameverse-mountain-note { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gameverse-player,
+  .gameverse-progressbar span,
+  .gameverse-region { transition: none; }
+}
