@@ -1,0 +1,179 @@
+{
+  "version": "0.1.0",
+  "status": "local-gallery-sandbox-no-settlement",
+  "principles": {
+    "pay_to_win": false,
+    "wallet_required_to_browse": false,
+    "wallet_required_to_create_local_draft": false,
+    "real_marketplace_enabled": false,
+    "creator_owns_storage": true,
+    "world_and_gallery_share_asset_identity": true
+  },
+  "asset_types": [
+    "recipe",
+    "menu",
+    "food-photo",
+    "gif",
+    "3d-model",
+    "blender-character",
+    "avatar-item",
+    "farm-object",
+    "digital-livestock-character",
+    "restaurant-object",
+    "educational-media",
+    "provenance-story-media",
+    "community-art"
+  ],
+  "assets": [
+    {
+      "id": "recipe-orchard-bowl",
+      "type": "recipe",
+      "title": "Orchard Bowl",
+      "creator": "Starter Kitchen",
+      "region": "community-farm",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "common",
+      "tags": [
+        "fruit",
+        "recipe",
+        "community"
+      ]
+    },
+    {
+      "id": "photo-market-tomatoes",
+      "type": "food-photo",
+      "title": "Market Tomatoes",
+      "creator": "Open Market",
+      "region": "food-data-grove",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "common",
+      "tags": [
+        "tomato",
+        "market",
+        "food-data"
+      ]
+    },
+    {
+      "id": "art-water-cycle",
+      "type": "educational-media",
+      "title": "Farm Water Cycle",
+      "creator": "Community Farm",
+      "region": "community-farm",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "learning",
+      "tags": [
+        "water",
+        "farm",
+        "sustainability"
+      ]
+    },
+    {
+      "id": "model-apple-crate",
+      "type": "3d-model",
+      "title": "Apple Crate 3D",
+      "creator": "World Workshop",
+      "region": "creator-gallery",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "common",
+      "tags": [
+        "3d",
+        "apple",
+        "farm-object"
+      ]
+    },
+    {
+      "id": "avatar-garden-pack",
+      "type": "avatar-item",
+      "title": "Garden Explorer Pack",
+      "creator": "Gallery Studio",
+      "region": "creator-gallery",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "uncommon",
+      "tags": [
+        "avatar",
+        "garden",
+        "cosmetic"
+      ]
+    },
+    {
+      "id": "cow-digital-companion",
+      "type": "digital-livestock-character",
+      "title": "Digital Farm Cow",
+      "creator": "Farm Lab",
+      "region": "community-farm",
+      "ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "game-native",
+      "rarity": "learning",
+      "tags": [
+        "animal",
+        "farm",
+        "non-graphic"
+      ]
+    },
+    {
+      "id": "menu-global-table",
+      "type": "menu",
+      "title": "Global Table Menu",
+      "creator": "Community Kitchen",
+      "region": "creator-gallery",
+      "ages": [
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "simulated-license",
+      "rarity": "uncommon",
+      "tags": [
+        "menu",
+        "culture",
+        "food"
+      ]
+    },
+    {
+      "id": "story-coffee-route",
+      "type": "provenance-story-media",
+      "title": "Coffee Route Story",
+      "creator": "Trace Studio",
+      "region": "food-data-grove",
+      "ages": [
+        "teen",
+        "adult"
+      ],
+      "transfer_mode": "simulated-license",
+      "rarity": "learning",
+      "tags": [
+        "provenance",
+        "coffee",
+        "story"
+      ]
+    }
+  ]
+}
