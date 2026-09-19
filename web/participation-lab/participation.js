@@ -15,14 +15,25 @@ function message(text) {
   $("message").textContent = text;
 }
 
+function renderActivity() {
+  const list = $("activityList");
+  list.replaceChildren(...activity.map(text => {
+    const item = document.createElement("li");
+    item.textContent = text;
+    return item;
+  }));
+}
+
 function record(text) {
   activity.unshift(text);
   activity.splice(5);
-  $("activityList").innerHTML = activity.map(item => "<li>" + item + "</li>").join("");
+  renderActivity();
 }
 
 function render() {
-  const active = state.processState === "running" || state.processState === "paused";
+  const computeActive = state.processState === "running" || state.processState === "paused";
+  const storageActive = state.storageState === "running" || state.storageState === "paused";
+
   $("statusText").textContent = state.processState.toUpperCase();
   $("statusDot").style.background =
     state.processState === "running" ? "#6de3b7" :
@@ -37,22 +48,29 @@ function render() {
     state.storageLimitMb >= 1000 ? (state.storageLimitMb / 1000).toFixed(1) + " GB" : state.storageLimitMb + " MB";
   $("computeValue").textContent = state.computeLimitPercent + "%";
 
-  $("startBtn").disabled = state.processState !== "off";
+  $("storageStartBtn").disabled = !state.storage || state.storageState !== "off";
+  $("storagePauseBtn").disabled = state.storageState !== "running";
+  $("storageResumeBtn").disabled = state.storageState !== "paused";
+  $("storageStopBtn").disabled = !storageActive;
+
+  $("startBtn").disabled = !state.compute || state.processState !== "off";
   $("pauseBtn").disabled = state.processState !== "running";
   $("resumeBtn").disabled = state.processState !== "paused";
-  $("stopBtn").disabled = !active;
+  $("stopBtn").disabled = !computeActive;
 
   const fallback = hostedFallbackSnapshot(state, syntheticCommunityNodes);
   $("communityCount").textContent = fallback.volunteerNodes + " volunteer nodes";
   const community = communityCapacityPreview(syntheticCommunityNodes);
   $("communityLevel").textContent = community.level;
   $("communityDescription").textContent = community.description;
+
   const stage =
     syntheticCommunityNodes >= 1000 ? "strong" :
     syntheticCommunityNodes >= 100 ? "growing" :
     syntheticCommunityNodes >= 1 ? "early" : "hosted";
   const stageWidth = { hosted: 0, early: 22, growing: 62, strong: 100 }[stage];
   $("growthFill").style.width = stageWidth + "%";
+  $("growthMeter").setAttribute("aria-valuenow", String(stageWidth));
   document.querySelectorAll("#growthSteps span[data-stage]").forEach(item => {
     const order = { hosted: 0, early: 1, growing: 2, strong: 3 };
     item.classList.toggle("active", item.dataset.stage === stage);
@@ -68,14 +86,19 @@ function render() {
   $("rewardDetail").textContent = summary.rewardsDetail;
 }
 
-function act(action, successMessage) {
+function act(action, successMessage, shouldRecord = true) {
   try {
     state = transition(state, action);
-    if (successMessage) { message(successMessage); record(successMessage); }
+    if (successMessage) {
+      message(successMessage);
+      if (shouldRecord) record(successMessage);
+    }
     render();
   } catch (error) {
     if (error.message === "compute-not-enabled") {
       message("Turn on compute contribution first — it never starts automatically.");
+    } else if (error.message === "storage-not-enabled") {
+      message("Turn on storage contribution first — it never starts automatically.");
     } else {
       message("That action is not available in the current state.");
     }
@@ -89,17 +112,32 @@ $("communityPreview").onchange = e => {
   render();
 };
 
-$("storageToggle").onchange = e => act({ type: "SET_STORAGE", value: e.target.checked },
-  e.target.checked ? "Storage contribution enabled within your selected limit." : "Storage contribution is off.");
+$("storageToggle").onchange = e => act(
+  { type: "SET_STORAGE", value: e.target.checked },
+  e.target.checked
+    ? "Storage is enabled, but still stopped until you press Start."
+    : "Storage contribution is off."
+);
+$("computeToggle").onchange = e => act(
+  { type: "SET_COMPUTE", value: e.target.checked },
+  e.target.checked
+    ? "Compute is enabled, but still stopped until you press Start."
+    : "Compute contribution is off."
+);
+$("rewardToggle").onchange = e => act(
+  { type: "SET_REWARDS", value: e.target.checked },
+  e.target.checked ? "Simulated calT rewards enabled." : "Simulated rewards disabled."
+);
 
-$("computeToggle").onchange = e => act({ type: "SET_COMPUTE", value: e.target.checked },
-  e.target.checked ? "Compute is available, but still stopped until you press Start." : "Compute contribution is off.");
+$("storageLimit").oninput = e => act({ type: "SET_STORAGE_LIMIT", value: e.target.value }, null, false);
+$("storageLimit").onchange = e => record("Storage limit changed to " + e.target.value + " MB.");
+$("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value }, null, false);
+$("computeLimit").onchange = e => record("Compute limit changed to " + e.target.value + "%.");
 
-$("rewardToggle").onchange = e => act({ type: "SET_REWARDS", value: e.target.checked },
-  e.target.checked ? "Simulated calT rewards enabled." : "Simulated rewards disabled.");
-
-$("storageLimit").oninput = e => act({ type: "SET_STORAGE_LIMIT", value: e.target.value }, "Storage limit changed to " + e.target.value + " MB.");
-$("computeLimit").oninput = e => act({ type: "SET_COMPUTE_LIMIT", value: e.target.value }, "Compute limit changed to " + e.target.value + "%.");
+$("storageStartBtn").onclick = () => act({ type: "START_STORAGE" }, "Storage participation started within your selected limit.");
+$("storagePauseBtn").onclick = () => act({ type: "PAUSE_STORAGE" }, "Storage paused. Compute keeps its own separate setting.");
+$("storageResumeBtn").onclick = () => act({ type: "RESUME_STORAGE" }, "Storage participation resumed.");
+$("storageStopBtn").onclick = () => act({ type: "STOP_STORAGE" }, "Storage work stopped. Existing assigned data is not silently deleted.");
 
 $("startBtn").onclick = () => act({ type: "START" }, "Compute participation started within your selected limit.");
 $("pauseBtn").onclick = () => act({ type: "PAUSE" }, "Compute paused. Storage keeps its own separate setting.");
@@ -107,4 +145,5 @@ $("resumeBtn").onclick = () => act({ type: "RESUME" }, "Compute participation re
 $("stopBtn").onclick = () => act({ type: "STOP" }, "Compute stopped. You can start again whenever you choose.");
 $("exitBtn").onclick = () => act({ type: "EXIT" }, "Participation exited. CalorieApp and Gameverse access remains unchanged.");
 
+renderActivity();
 render();
