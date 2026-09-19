@@ -9,6 +9,7 @@ import { CalorieStudio } from "@/components/CalorieStudio";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 import { CalorieVerseInteractionCard } from "@/components/CalorieVerseInteractionCard";
+import { CalorieVerseIdentityPresence } from "@/components/CalorieVerseIdentityPresence";
 import { CalorieVerseFnbChain } from "@/components/CalorieVerseFnbChain";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import { moveWorld, nearestWorldRegion, safeWorldPosition, worldKeyDirection, type WorldDirection, type WorldPosition } from "@/lib/calorieVerseMovement";
@@ -368,7 +369,7 @@ export function GameverseWorld() {
                 <div className="gameverse-mini-avatar" aria-hidden="true">C</div>
                 <div>
                   <small>{copy.identity}</small>
-                  <strong>{starterId}</strong>
+                  <CalorieVerseIdentityPresence ageBand={ageBand} starterId={starterId} />
                   <p>{copy.identityNote}</p>
                 </div>
               </section>
