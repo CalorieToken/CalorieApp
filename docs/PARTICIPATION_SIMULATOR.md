@@ -142,17 +142,52 @@ arbitrary job runner, payment adapter or blockchain transaction. The Node API is
 single-process; only central accounting concurrency is exercised. Participant
 endpoints require a separately reviewed implementation before real onboarding.
 
+## Second bounded slice: deterministic synthetic compute
+
+The same branch now also contains a separate compute-only demonstration in
+`tools/participation_compute_simulator.py` and a fixed child-process worker in
+`tools/participation_compute_worker.py`. It remains disabled unless the
+synthetic demo flag is supplied.
+
+The task is deliberately narrow: summarize one of the same embedded invented
+public catalog fixtures into a deterministic record count, sorted synthetic IDs
+and sorted label initials. The node cannot submit Python, shell commands, URLs,
+paths or arbitrary input. Compute requires its own explicit consent; storage
+consent alone does not enable it. Pause or any consent revision invalidates
+pending work.
+
+The worker runs as a separate Python process with isolated interpreter mode,
+bounded input/output, a two-second wall-clock deadline and a per-node task-count
+limit. The coordinator independently executes the fixed worker over its own
+allowlisted input and compares the complete canonical result. This is useful
+process isolation for the synthetic drill, **not** a secure sandbox for
+untrusted general-purpose code. No real volunteer device may receive arbitrary
+jobs until a separately reviewed sandbox has been selected.
+
+Compute rewards remain fictitious `CALT_SIMULATED` accounting, adult-only when
+reward opt-in is selected, deduplicated per participant/input/day and capped.
+The compute simulator uses a separate local SQLite ledger from the storage
+simulator, so its demo does not claim a combined cross-service daily accounting
+system. Real settlement remains disabled.
+
+Run:
+
+```bash
+python -m unittest tools.tests.test_participation_compute_simulator -v
+python -m tools.participation_compute_simulator --enable-synthetic-demo
+```
+
 ## Continuity and next step
 
 Continue in small, verified steps, preserving the architecture decisions in
 `DECENTRALIZED_PARTICIPATION_ARCHITECTURE.md` and the campaign visual continuity
 requirements in `SHOWCASE_OPEN_WORLD_MASTERPLAN.md`.
 
-The next bounded technical step is one deterministic **synthetic** public-data
-compute task with separate compute consent, bounded input, independent central
-recomputation and the same reward-accounting boundaries. Choose the execution
-sandbox before accepting tasks on another person's device. Real participant
-storage, replica/reconstruction drills and a participant consent UI follow later.
+The deterministic **synthetic** public-data compute task is now the second bounded
+implementation slice. The next step is a small participation-control UI prototype
+for storage, compute, reward opt-in, resource limits, pause/resume and full stop,
+using synthetic state only. Real participant onboarding, remote transport,
+replica/reconstruction drills and any untrusted-code sandbox remain later work.
 
 Keep PostgreSQL authoritative, personal data protected and provider choice open.
 The broader game and its future participation UI should retain the approved
