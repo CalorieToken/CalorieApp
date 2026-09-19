@@ -9,6 +9,13 @@ Create a highly replayable, modular CalorieToken Showcase open world that combin
 
 The experience must feel like a real game world rather than a static showcase page, but remain lightweight enough that most movement, scenery, animation and exploration happen client-side. Render/Postgres should primarily handle identity, progress, quests, unlocks, data-backed events and future monetization entitlements.
 
+The original Showcase-to-metaverse idea history is preserved in
+`docs/CALORIEVERSE_IDEA_LEDGER.md` and its machine-readable companion
+`contracts/gameverse/v1/calorieverse-idea-ledger.json`. Those files are a
+continuity register: later implementation work must not silently drop earlier
+user ideas merely because a newer subsystem is being built.
+
+
 
 ## Campaign visual continuity
 
