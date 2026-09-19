@@ -1,4 +1,4 @@
-# CalorieVerse / Creator Gallery legal-readiness evidence register
+# CalorieVerse / CalorieStudio legal-readiness evidence register
 
 Status: engineering evidence register — not a legal opinion or launch clearance  
 Last design update: 2026-09-19
@@ -102,7 +102,7 @@ required**.
 Evidence status: **source rules documented; any expanded CalorieVerse/Creator
 Gallery data redistribution needs source-by-source review**.
 
-## Creator Gallery user-generated content
+## CalorieStudio user-generated content
 
 Production public uploads are not legally ready merely because the local creator
 prototype works.
@@ -197,9 +197,9 @@ occurred**.
 ## Current blockers before a commercial public CalorieVerse launch
 
 1. formal CalorieVerse trade-mark clearance/filing decision;
-2. final CalorieVerse/Creator Gallery asset-provenance manifest;
+2. final CalorieVerse/CalorieStudio asset-provenance manifest;
 3. explicit open-component licence manifest before claiming an open-source SDK;
-4. Creator Gallery production Terms/content licence/takedown workflow;
+4. CalorieStudio production Terms/content licence/takedown workflow;
 5. premium-service consumer/VAT/accounting terms for the exact offers;
 6. DSA review once the actual UGC/platform model is fixed;
 7. separate MiCA review before real-token commercial rails;
