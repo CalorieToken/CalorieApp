@@ -7,7 +7,11 @@
     "wallet_required_to_create_local_draft": false,
     "real_marketplace_enabled": false,
     "creator_owns_storage": true,
-    "world_and_gallery_share_asset_identity": true
+    "world_and_gallery_share_asset_identity": true,
+    "participation_optional": true,
+    "shared_participation_preference_with_gameverse": true,
+    "install_required_for_participation": false,
+    "default_mode": "nonparticipant"
   },
   "asset_types": [
     "recipe",
