@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  communityCapacityPreview,
   contributionSummary,
   createParticipationState,
   hostedFallbackSnapshot,
@@ -99,4 +100,21 @@ test("contribution summary remains descriptive and optional", () => {
   assert.equal(active.contributingNow, true);
   assert.match(active.storageDetail, /500 MB/);
   assert.match(active.computeDetail, /30%/);
+});
+
+test("community capacity preview is always labelled synthetic and preserves hosted fallback", () => {
+  const zero = communityCapacityPreview(0);
+  assert.equal(zero.level, "Hosted only");
+  assert.equal(zero.hostedCoreActive, true);
+  assert.equal(zero.isSyntheticPreview, true);
+
+  const early = communityCapacityPreview(1);
+  assert.equal(early.level, "Early community");
+
+  const growing = communityCapacityPreview(100);
+  assert.equal(growing.level, "Growing network");
+
+  const strong = communityCapacityPreview(1000);
+  assert.equal(strong.level, "Strong community");
+  assert.equal(strong.hostedCoreActive, true);
 });
