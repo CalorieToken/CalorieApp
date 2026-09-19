@@ -157,6 +157,24 @@
         "adult"
       ],
       "destination": null
+    },
+    {
+      "id": "misty-ridge",
+      "kind": "ridge",
+      "x": 93,
+      "y": 25,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null,
+      "hidden_until": "maze-complete"
     }
   ]
 }
