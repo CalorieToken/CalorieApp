@@ -36,6 +36,11 @@ export type GameverseCopy = {
   routeProgress: string;
   routeHint: string;
   routeReady: string;
+  freeRoam: string;
+  moveUp: string;
+  moveDown: string;
+  moveLeft: string;
+  moveRight: string;
   locations: Record<string, string>;
   descriptions: Record<string, string>;
 };
