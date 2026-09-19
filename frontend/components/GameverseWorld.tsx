@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
@@ -175,10 +176,10 @@ export function GameverseWorld() {
     <main data-calorieapp-content className="gameverse-page">
       <div className="gameverse-shell" lang={locale}>
         <div className="gameverse-topbar">
-          <a href="/" className="gameverse-brand" aria-label="CalorieApp">
+          <Link href="/" className="gameverse-brand" aria-label="CalorieApp">
             <Image src="/logo.svg" alt="" width={34} height={34} priority />
             <span>{copy.ecosystem}</span>
-          </a>
+          </Link>
           <DisplayLanguagePicker />
         </div>
 
@@ -296,7 +297,7 @@ export function GameverseWorld() {
                         {selected.id === currentRegionId ? "● " + copy.visited : copy.walk}
                       </button>
                       {selected.destination && interactive && !mazeLocked ? (
-                        <a href={selected.destination}>{copy.open}</a>
+                        <Link href={selected.destination}>{copy.open}</Link>
                       ) : null}
                     </div>
                     {selected.kind === "maze" ? (
