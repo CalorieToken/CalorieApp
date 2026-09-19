@@ -35,6 +35,7 @@ export function ParticipationChoiceCard({
   const [choice, setChoice] = useState<ParticipationChoice>({...defaultParticipationChoice});
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
+  const [expanded, setExpanded] = useState(!compact);
 
   useEffect(() => {
     try {
@@ -113,13 +114,26 @@ export function ParticipationChoiceCard({
             <button
               type="button"
               aria-pressed={choice.mode === "participant"}
-              onClick={() => chooseMode("participant")}
+              onClick={() => {
+                chooseMode("participant");
+                if (compact) setExpanded(true);
+              }}
             >
               {copy.yes}
             </button>
           </div>
 
-          {choice.mode === "participant" ? (
+          {compact && choice.mode === "participant" && !expanded ? (
+            <button
+              type="button"
+              className="participation-choice-configure"
+              onClick={() => setExpanded(true)}
+            >
+              {copy.configure}
+            </button>
+          ) : null}
+
+          {choice.mode === "participant" && (!compact || expanded) ? (
             <div className="participation-choice-settings">
               <fieldset>
                 <legend>{copy.roles}</legend>
@@ -186,6 +200,16 @@ export function ParticipationChoiceCard({
               ) : null}
 
               <p className="participation-choice-note">{copy.none}</p>
+
+              {compact ? (
+                <button
+                  type="button"
+                  className="participation-choice-collapse"
+                  onClick={() => setExpanded(false)}
+                >
+                  {copy.title}
+                </button>
+              ) : null}
             </div>
           ) : null}
         </>
