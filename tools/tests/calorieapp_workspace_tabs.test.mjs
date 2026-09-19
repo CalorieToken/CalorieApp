@@ -12,6 +12,7 @@ const {parseHTML} = require('linkedom');
 const ts = require('typescript');
 let selectedAgeBand = 'adult';
 const journeyCopy = JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json', import.meta.url), 'utf8'));
+const setupCopy = JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json', import.meta.url), 'utf8'));
 
 function MockFoodSearch({activeView, onOpenAccount, allowPersonalLog}) {
   const [count, setCount] = React.useState(0);
@@ -42,7 +43,10 @@ function load(window, document) {
     '@/lib/foodUi': {getFoodUi: () => ({copy: {searchTitle: 'Product zoeken'}, locale: 'nl', direction: 'ltr'})},
     '@/config/account-profile-copy.json': {default: profileCopy},
     '@/config/testnet-entry-copy.json': {default: journeyCopy},
-    '@/lib/accountJourney': {readAccountJourney: () => null},
+    '@/config/account-setup-copy.json': {default: setupCopy},
+    '@/lib/accountJourney': {readAccountJourney: () => null, clearAccountJourney: () => {}},
+    '@/lib/appEntryBridge': {connectAppEntry: () => () => {}, clearAccountGuideEntry: () => {}},
+    '@/lib/navigationBridge': {postNavigationTarget: () => false},
   };
   vm.runInNewContext(code, {module, exports: module.exports, window, document, require(name) {
     if (name === 'react' || name === 'react/jsx-runtime') return require(name);
