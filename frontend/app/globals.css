@@ -1198,3 +1198,160 @@ body {
   margin: .8rem 0;
   background: rgba(80,91,169,.12);
 }
+
+
+/* Shared zero-install participation choice for Gameverse and Gallery. */
+.participation-choice {
+  margin: 1rem 0;
+  border: 1px solid rgba(80,91,169,.16);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 90% 5%, rgba(0,141,54,.08), transparent 26%),
+    rgba(255,255,255,.94);
+  padding: 1rem;
+  box-shadow: 0 14px 34px rgba(29,43,54,.07);
+}
+.participation-choice-head {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  align-items: flex-start;
+}
+.participation-choice-head small {
+  color: var(--brand-primary);
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.participation-choice-head h3 {
+  margin: .15rem 0 .35rem;
+  color: var(--brand-secondary);
+  font-size: 1.15rem;
+}
+.participation-choice-head p,
+.participation-choice-note,
+.participation-choice-inactive p {
+  margin: 0;
+  color: #6e7f8b;
+  font-size: .75rem;
+  line-height: 1.45;
+}
+.participation-choice-head > span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: .3rem .55rem;
+  font-size: .64rem;
+  font-weight: 850;
+}
+.participation-choice-head > span.is-off {
+  background: #eef0f2;
+  color: #667580;
+}
+.participation-choice-head > span.is-on {
+  background: #e8f5ed;
+  color: #23673d;
+}
+.participation-choice-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+  margin-top: .8rem;
+}
+.participation-choice-modes button {
+  min-height: 2.75rem;
+  border: 1px solid rgba(80,91,169,.2);
+  border-radius: .8rem;
+  background: white;
+  color: var(--brand-secondary);
+  font-weight: 850;
+}
+.participation-choice-modes button[aria-pressed="true"] {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  color: white;
+}
+.participation-choice-settings {
+  display: grid;
+  gap: .7rem;
+  margin-top: .8rem;
+}
+.participation-choice-settings fieldset {
+  display: grid;
+  gap: .4rem;
+  margin: 0;
+  border: 1px solid rgba(80,91,169,.12);
+  border-radius: .85rem;
+  padding: .7rem;
+}
+.participation-choice-settings legend {
+  padding: 0 .2rem;
+  color: var(--brand-secondary);
+  font-size: .68rem;
+  font-weight: 850;
+}
+.participation-choice-settings fieldset label {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  color: #516675;
+  font-size: .74rem;
+  font-weight: 750;
+}
+.participation-scope {
+  display: grid;
+  gap: .25rem;
+}
+.participation-scope > span {
+  color: #526776;
+  font-size: .68rem;
+  font-weight: 850;
+}
+.participation-scope select {
+  min-height: 2.55rem;
+  border: 1px solid rgba(80,91,169,.2);
+  border-radius: .7rem;
+  background: white;
+  padding: .45rem .6rem;
+  color: #314457;
+}
+.participation-choice-note {
+  border-radius: .75rem;
+  background: #f5f7f8;
+  padding: .6rem .7rem;
+}
+.participation-choice-message {
+  min-height: .9rem;
+  margin: .55rem 0 0;
+  color: #23673d;
+  font-size: .66rem;
+}
+.participation-choice-inactive {
+  margin-top: .8rem;
+  border-radius: .85rem;
+  background: #f4f6f7;
+  padding: .7rem;
+}
+.participation-choice-inactive strong {
+  display: block;
+  margin-bottom: .2rem;
+  color: var(--brand-secondary);
+}
+.participation-choice.is-compact {
+  margin: 0;
+  border-radius: 1.5rem;
+}
+.participation-choice.is-compact .participation-choice-head {
+  display: grid;
+}
+.participation-choice.is-compact .participation-choice-head > span {
+  justify-self: start;
+}
+@media (max-width: 640px) {
+  .participation-choice-head {
+    display: grid;
+  }
+  .participation-choice-head > span {
+    justify-self: start;
+  }
+}
