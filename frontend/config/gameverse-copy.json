@@ -43,7 +43,12 @@
     "route": "Ecosystem route",
     "routeProgress": "landmarks found",
     "routeHint": "Choose your own order. Four ecosystem landmarks open the maze route.",
-    "routeReady": "Core landmarks found. The maze route is open."
+    "routeReady": "Core landmarks found. The maze route is open.",
+    "freeRoam": "Free roam",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "moveLeft": "Move left",
+    "moveRight": "Move right"
   },
   "nl": {
     "title": "CalorieVerse",
@@ -89,7 +94,12 @@
     "route": "Ecosysteemroute",
     "routeProgress": "herkenningspunten gevonden",
     "routeHint": "Kies je eigen volgorde. Vier ecosysteemplekken openen de doolhofroute.",
-    "routeReady": "De kernplekken zijn gevonden. De doolhofroute is open."
+    "routeReady": "De kernplekken zijn gevonden. De doolhofroute is open.",
+    "freeRoam": "Vrij bewegen",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "moveLeft": "Naar links",
+    "moveRight": "Naar rechts"
   },
   "zh-Hans": {
     "title": "CalorieVerse",
@@ -125,7 +135,12 @@
     "route": "生态路线",
     "routeProgress": "已找到地标",
     "routeHint": "按自己的顺序探索。四个生态地标会开启迷宫路线。",
-    "routeReady": "核心地标已找到。迷宫路线已开放。"
+    "routeReady": "核心地标已找到。迷宫路线已开放。",
+    "freeRoam": "自由探索",
+    "moveUp": "向上移动",
+    "moveDown": "向下移动",
+    "moveLeft": "向左移动",
+    "moveRight": "向右移动"
   },
   "hi": {
     "title": "CalorieVerse",
@@ -161,7 +176,12 @@
     "route": "इकोसिस्टम मार्ग",
     "routeProgress": "स्थलचिह्न मिले",
     "routeHint": "अपना क्रम चुनें। चार इकोसिस्टम स्थलचिह्न भूलभुलैया मार्ग खोलते हैं।",
-    "routeReady": "मुख्य स्थलचिह्न मिल गए। भूलभुलैया मार्ग खुला है।"
+    "routeReady": "मुख्य स्थलचिह्न मिल गए। भूलभुलैया मार्ग खुला है।",
+    "freeRoam": "स्वतंत्र घूमना",
+    "moveUp": "ऊपर जाएँ",
+    "moveDown": "नीचे जाएँ",
+    "moveLeft": "बाएँ जाएँ",
+    "moveRight": "दाएँ जाएँ"
   },
   "es": {
     "title": "CalorieVerse",
@@ -197,7 +217,12 @@
     "route": "Ruta del ecosistema",
     "routeProgress": "lugares encontrados",
     "routeHint": "Elige tu propio orden. Cuatro lugares del ecosistema abren la ruta del laberinto.",
-    "routeReady": "Se encontraron los lugares principales. La ruta del laberinto está abierta."
+    "routeReady": "Se encontraron los lugares principales. La ruta del laberinto está abierta.",
+    "freeRoam": "Exploración libre",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo",
+    "moveLeft": "Mover a la izquierda",
+    "moveRight": "Mover a la derecha"
   },
   "ar": {
     "title": "CalorieVerse",
@@ -233,7 +258,12 @@
     "route": "مسار المنظومة",
     "routeProgress": "معالم تم العثور عليها",
     "routeHint": "اختر ترتيبك بنفسك. أربعة معالم من المنظومة تفتح مسار المتاهة.",
-    "routeReady": "تم العثور على المعالم الأساسية. مسار المتاهة مفتوح."
+    "routeReady": "تم العثور على المعالم الأساسية. مسار المتاهة مفتوح.",
+    "freeRoam": "تجول حر",
+    "moveUp": "تحرك للأعلى",
+    "moveDown": "تحرك للأسفل",
+    "moveLeft": "تحرك لليسار",
+    "moveRight": "تحرك لليمين"
   },
   "fr": {
     "title": "CalorieVerse",
@@ -269,7 +299,12 @@
     "route": "Route de l’écosystème",
     "routeProgress": "repères trouvés",
     "routeHint": "Choisissez votre ordre. Quatre repères de l’écosystème ouvrent la route du labyrinthe.",
-    "routeReady": "Les repères principaux sont trouvés. La route du labyrinthe est ouverte."
+    "routeReady": "Les repères principaux sont trouvés. La route du labyrinthe est ouverte.",
+    "freeRoam": "Exploration libre",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "moveLeft": "Aller à gauche",
+    "moveRight": "Aller à droite"
   },
   "bn": {
     "title": "CalorieVerse",
@@ -305,7 +340,12 @@
     "route": "ইকোসিস্টেম পথ",
     "routeProgress": "ল্যান্ডমার্ক পাওয়া গেছে",
     "routeHint": "নিজের ক্রম বেছে নিন। চারটি ইকোসিস্টেম ল্যান্ডমার্ক গোলকধাঁধার পথ খুলবে।",
-    "routeReady": "মূল ল্যান্ডমার্ক পাওয়া গেছে। গোলকধাঁধার পথ খুলেছে।"
+    "routeReady": "মূল ল্যান্ডমার্ক পাওয়া গেছে। গোলকধাঁধার পথ খুলেছে।",
+    "freeRoam": "স্বাধীন চলাফেরা",
+    "moveUp": "উপরে যান",
+    "moveDown": "নিচে যান",
+    "moveLeft": "বামে যান",
+    "moveRight": "ডানে যান"
   },
   "pt": {
     "title": "CalorieVerse",
@@ -341,7 +381,12 @@
     "route": "Rota do ecossistema",
     "routeProgress": "pontos encontrados",
     "routeHint": "Escolha a sua ordem. Quatro pontos do ecossistema abrem a rota do labirinto.",
-    "routeReady": "Os pontos principais foram encontrados. A rota do labirinto está aberta."
+    "routeReady": "Os pontos principais foram encontrados. A rota do labirinto está aberta.",
+    "freeRoam": "Exploração livre",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "moveLeft": "Mover para a esquerda",
+    "moveRight": "Mover para a direita"
   },
   "id": {
     "title": "CalorieVerse",
@@ -377,7 +422,12 @@
     "route": "Rute ekosistem",
     "routeProgress": "landmark ditemukan",
     "routeHint": "Pilih urutanmu sendiri. Empat landmark ekosistem membuka rute labirin.",
-    "routeReady": "Landmark utama ditemukan. Rute labirin terbuka."
+    "routeReady": "Landmark utama ditemukan. Rute labirin terbuka.",
+    "freeRoam": "Jelajah bebas",
+    "moveUp": "Bergerak ke atas",
+    "moveDown": "Bergerak ke bawah",
+    "moveLeft": "Bergerak ke kiri",
+    "moveRight": "Bergerak ke kanan"
   },
   "ur": {
     "title": "CalorieVerse",
@@ -413,6 +463,11 @@
     "route": "ایکوسسٹم راستہ",
     "routeProgress": "نشانات ملے",
     "routeHint": "اپنی ترتیب خود چنیں۔ چار ایکوسسٹم مقامات بھول بھلیاں کا راستہ کھولتے ہیں۔",
-    "routeReady": "بنیادی نشانات مل گئے۔ بھول بھلیاں کا راستہ کھل گیا ہے۔"
+    "routeReady": "بنیادی نشانات مل گئے۔ بھول بھلیاں کا راستہ کھل گیا ہے۔",
+    "freeRoam": "آزاد گھومنا",
+    "moveUp": "اوپر جائیں",
+    "moveDown": "نیچے جائیں",
+    "moveLeft": "بائیں جائیں",
+    "moveRight": "دائیں جائیں"
   }
 }
