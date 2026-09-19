@@ -156,7 +156,8 @@
         "teen",
         "adult"
       ],
-      "destination": "/gallery"
+      "destination": "/studio",
+      "legacy_destination": "/gallery"
     },
     {
       "id": "participation-lodge",
@@ -216,7 +217,8 @@
     "app": "CalorieApp",
     "metaverse": "CalorieVerse",
     "creator_surface": "CalorieStudio",
-    "creator_surface_route": "/gallery",
-    "creator_surface_internal_legacy_term": "Creator Gallery"
+    "creator_surface_route": "/studio",
+    "creator_surface_internal_legacy_term": "Creator Gallery",
+    "creator_surface_legacy_route": "/gallery"
   }
 }
