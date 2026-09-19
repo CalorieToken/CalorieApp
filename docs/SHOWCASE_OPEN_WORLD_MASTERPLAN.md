@@ -199,6 +199,39 @@ with no blackholing now. Issuer, amounts and any 100-billion ceiling remain
 undecided; see `CALT_TESTNET_SUPPLY_DISCUSSION.md`. This is design discussion, not
 authorization or implementation of on-chain issuance.
 
+## Open ecosystem with sustainable founder and treasury funding
+
+CalorieVerse and Creator Gallery are intended to remain open to independent
+builders and voluntary participants while the official products retain a
+sustainable commercial model.
+
+The commercial principle is **free core, optional paid services**:
+
+- entering and exploring CalorieVerse remains free;
+- ordinary Creator Gallery browsing and core creator participation stay free;
+- optional premium CalorieApp/Creator Gallery tooling may be sold;
+- official managed hosting, rendering, API/data and support may be sold;
+- cosmetic/world content may be sold only where it does not create pay-to-win;
+- marketplace/service fees remain a later separately reviewed capability.
+
+Revenue may first recover documented project investment and pay reasonable
+development/operating compensation. As recurring revenue matures, an explicit
+ecosystem-treasury allocation should grow. The long-term goal is for ecosystem
+infrastructure, security, creator tooling and community development to become a
+substantial and potentially primary beneficiary of ecosystem surplus.
+
+No revenue percentage, treasury controller or legal stewardship entity is
+hard-coded yet. Those decisions require recorded approval, accounting/tax review
+and the future governance/handover process.
+
+The ecosystem's open-building path and the official products' commercial rights
+are deliberately separate. Independent builders can create compatible projects
+under their own code/branding, while official marks, hosted services and
+commercial product presentation remain governed separately.
+
+See `docs/ECOSYSTEM_OPEN_STEWARDSHIP_AND_FUNDING.md` and
+`contracts/ecosystem/v2/open-stewardship-and-funding.json`.
+
 ## Long-term ecosystem revenue model
 
 The user clarified that the goal is a revenue model that can fund CalEco
