@@ -39,9 +39,23 @@ class ParticipationSelection:
     rewards: bool = False
     storage_limit_mb: int = 250
     compute_limit_percent: int = 25
+    monthly_bandwidth_limit_mb: int = 500
+    wifi_only: bool = True
+    allow_battery: bool = False
+    idle_compute_only: bool = True
+    auto_start: bool = False
+    allow_storage_tasks: bool = True
+    allow_compute_tasks: bool = True
     storage_release_mode: str = "keep-local"
     storage_state: str = "off"
     process_state: str = "off"
+
+
+@dataclass(frozen=True)
+class DeviceContext:
+    on_wifi: bool = True
+    on_battery: bool = False
+    is_idle: bool = True
 
 
 class ParticipationSession:
@@ -64,6 +78,7 @@ class ParticipationSession:
             self.root / "compute.sqlite", enabled=True, clock=clock
         )
         self.release_coord = StorageReleaseCoordinator(desired_remote_replicas=3)
+        self.bandwidth_used_bytes = 0
         self.participant_id = "sim-ui"
         self.storage_coord.register(self.participant_id, age_band=age_band)
         self.compute_coord.register(self.participant_id, age_band=age_band)
@@ -95,6 +110,19 @@ class ParticipationSession:
             raise SimulationError("storage-limit-out-of-range")
         if selection.compute_limit_percent < 5 or selection.compute_limit_percent > 75:
             raise SimulationError("compute-limit-out-of-range")
+        if (type(selection.monthly_bandwidth_limit_mb) is not int
+                or selection.monthly_bandwidth_limit_mb < 100
+                or selection.monthly_bandwidth_limit_mb > 10000):
+            raise SimulationError("bandwidth-limit-out-of-range")
+        if any(type(value) is not bool for value in (
+                selection.wifi_only,
+                selection.allow_battery,
+                selection.idle_compute_only,
+                selection.auto_start,
+                selection.allow_storage_tasks,
+                selection.allow_compute_tasks,
+        )):
+            raise SimulationError("invalid-advanced-participation-setting")
         if selection.storage_release_mode not in STORAGE_RELEASE_MODES:
             raise SimulationError("invalid-storage-release-mode")
         if selection.storage_state not in LIFECYCLE_STATES:
@@ -110,6 +138,60 @@ class ParticipationSession:
         self.storage_coord.set_consent(self.participant_id, self._storage_consent())
         self.compute_coord.set_consent(self.participant_id, self._compute_consent())
         return self.snapshot()
+
+    def _bandwidth_limit_bytes(self) -> int:
+        return self.selection.monthly_bandwidth_limit_mb * 1024 * 1024
+
+    def _check_runtime_policy(self, task_type: str, context: DeviceContext) -> None:
+        if not isinstance(context, DeviceContext):
+            raise SimulationError("invalid-device-context")
+        if self.bandwidth_used_bytes >= self._bandwidth_limit_bytes():
+            raise SimulationError("monthly-bandwidth-cap-reached")
+        if self.selection.wifi_only and not context.on_wifi:
+            raise SimulationError("wifi-required")
+        if not self.selection.allow_battery and context.on_battery:
+            raise SimulationError("battery-participation-disabled")
+        if task_type == "storage":
+            if not self.selection.allow_storage_tasks:
+                raise SimulationError("storage-task-class-disabled")
+        elif task_type == "compute":
+            if not self.selection.allow_compute_tasks:
+                raise SimulationError("compute-task-class-disabled")
+            if self.selection.idle_compute_only and not context.is_idle:
+                raise SimulationError("compute-requires-idle-device")
+        else:
+            raise SimulationError("unsupported-participation-task-type")
+
+    def auto_start_preview(self, context: DeviceContext = DeviceContext()) -> dict:
+        """Model future auto-start eligibility without starting background work."""
+        eligible: list[str] = []
+        blocked: dict[str, str] = {}
+        if not self.selection.auto_start:
+            return {
+                "auto_start_opted_in": False,
+                "eligible": eligible,
+                "blocked": blocked,
+                "state_changed": False,
+            }
+
+        for task_type, selected in (
+            ("storage", self.selection.storage),
+            ("compute", self.selection.compute),
+        ):
+            if not selected:
+                continue
+            try:
+                self._check_runtime_policy(task_type, context)
+            except SimulationError as error:
+                blocked[task_type] = str(error)
+            else:
+                eligible.append(task_type)
+        return {
+            "auto_start_opted_in": True,
+            "eligible": eligible,
+            "blocked": blocked,
+            "state_changed": False,
+        }
 
     def _local_fixture_shards(self) -> list[tuple[str, Path]]:
         shards = []
@@ -131,17 +213,20 @@ class ParticipationSession:
             "effective_storage_consent": asdict(self._storage_consent()),
             "effective_compute_consent": asdict(self._compute_consent()),
             "retained_local_synthetic_shards": len(self._local_fixture_shards()),
+            "bandwidth_used_bytes": self.bandwidth_used_bytes,
+            "monthly_bandwidth_limit_bytes": self._bandwidth_limit_bytes(),
             "real_network_enabled": False,
             "real_token_settlement": False,
         }
 
-    def run_storage_probe(self) -> dict:
+    def run_storage_probe(self, context: DeviceContext = DeviceContext()) -> dict:
         if not self.selection.storage:
             return {"status": "storage-off"}
         if self.selection.storage_state == "paused":
             return {"status": "storage-paused"}
         if self.selection.storage_state != "running":
             return {"status": "storage-stopped"}
+        self._check_runtime_policy("storage", context)
 
         consent = self._storage_consent()
         node = VolunteerNode(
@@ -154,25 +239,31 @@ class ParticipationSession:
         node.store(challenge.shard, FIXTURES["apple"])
         proof = node.prove(challenge, now=int(self.clock()))
         receipt = self.storage_coord.verify(self.participant_id, proof)
+        self.bandwidth_used_bytes += node.transferred_bytes
         return {
             "status": receipt.status,
             "verified": receipt.verified,
             "synthetic_shard_retained_locally": True,
         }
 
-    def run_compute_probe(self) -> dict:
+    def run_compute_probe(self, context: DeviceContext = DeviceContext()) -> dict:
         if not self.selection.compute:
             return {"status": "compute-off"}
         if self.selection.process_state == "paused":
             return {"status": "compute-paused"}
         if self.selection.process_state != "running":
             return {"status": "compute-stopped"}
+        self._check_runtime_policy("compute", context)
 
         consent = self._compute_consent()
         node = ComputeNode(enabled=True, consent=consent, clock=self.clock)
         task = self.compute_coord.issue(self.participant_id, "apple")
         proof = node.execute(task, now=int(self.clock()))
         receipt = self.compute_coord.verify(self.participant_id, proof)
+        output_bytes = len(json.dumps(
+            proof.output, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("ascii"))
+        self.bandwidth_used_bytes += task.input_bytes + output_bytes
         return {"status": receipt.status, "verified": receipt.verified}
 
     def release_existing_storage(
