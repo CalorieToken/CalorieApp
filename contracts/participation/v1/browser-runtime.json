@@ -1,0 +1,51 @@
+{
+  "contract_id": "calorietoken.browser-participation-runtime",
+  "contract_version": "0.1.0",
+  "status": "design-contract-browser-first-zero-install",
+  "entry": {
+    "install_required": false,
+    "native_app_required": false,
+    "desktop_daemon_required": false,
+    "browser_extension_required": false,
+    "pwa_install_optional_only": true,
+    "launch_surface": "https-link",
+    "ordinary_gameverse_entry_never_starts_participation": true
+  },
+  "runtime": {
+    "preferred_execution": [
+      "web-worker",
+      "wasm"
+    ],
+    "persistent_public_shard_storage": [
+      "opfs",
+      "indexeddb"
+    ],
+    "local_private_data_allowed": false,
+    "service_worker_role": "cache-and-coordination-only-not-guaranteed-continuous-compute",
+    "arbitrary_code_execution": false,
+    "bounded_versioned_tasks_only": true
+  },
+  "lifecycle": {
+    "explicit_opt_in_required": true,
+    "manual_start_default": true,
+    "pause_resume_stop_exit_required": true,
+    "compute_may_run_only_while_browser_allows_execution": true,
+    "browser_close_or_suspend_may_stop_work": true,
+    "hosted_core_fallback_required": true,
+    "no_penalty_for_browser_suspend_or_close": true
+  },
+  "browser_limits": {
+    "continuous_background_execution_guaranteed": false,
+    "persistent_storage_guaranteed": false,
+    "storage_quota_browser_controlled": true,
+    "mobile_background_throttling_expected": true,
+    "wake_lock_optional_and_never_required": true
+  },
+  "scaling": {
+    "browser_session_nodes_first": true,
+    "zero_nodes_healthy": true,
+    "many_small_nodes_supported": true,
+    "protocol_must_not_require_native_client": true,
+    "third_party_native_client_may_exist_later_but_never_required_for_gameverse_access": true
+  }
+}
