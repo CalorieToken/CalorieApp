@@ -9,29 +9,33 @@
 <main class="shell">
   <header class="hero">
     <div><span class="eyebrow">CALORIE ECOSYSTEM · OPTIONAL PARTICIPATION</span>
-    <h1>Participation Lab <span>◌</span></h1>
+    <h1>Participation Lab <span aria-hidden="true">◌</span></h1>
     <p>Use CalorieApp and the Gameverse normally, or voluntarily share a little capacity. You stay in control.</p></div>
-    <div class="status"><i id="statusDot"></i><div><small>PROCESS STATUS</small><strong id="statusText">OFF</strong></div></div>
+    <div class="status"><i id="statusDot" aria-hidden="true"></i><div><small>COMPUTE STATUS</small><strong id="statusText" aria-live="polite">OFF</strong></div></div>
   </header>
-  <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section><section class="networkbar">
-  <div>
-    <small>COMMUNITY CAPACITY · SYNTHETIC PREVIEW</small>
-    <strong id="communityCount">0 volunteer nodes</strong>
-    <span id="communityLevel">Hosted only</span>
-    <p id="communityDescription">No volunteer capacity yet. The hosted core handles normal service.</p>
-  </div>
-  <div class="network-actions">
-    <label for="communityPreview">Preview growth</label>
-    <select id="communityPreview">
-      <option value="0">0 nodes</option>
-      <option value="1">1 node</option>
-      <option value="10">10 nodes</option>
-      <option value="100">100 nodes</option>
-      <option value="1000">1000 nodes</option>
-    </select>
-    <div class="fallback">Hosted core active</div>
-  </div>
-</section>
+
+  <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section>
+
+  <section class="networkbar">
+    <div>
+      <small>COMMUNITY CAPACITY · SYNTHETIC PREVIEW</small>
+      <strong id="communityCount">0 volunteer nodes</strong>
+      <span id="communityLevel">Hosted only</span>
+      <p id="communityDescription">No volunteer capacity yet. The hosted core handles normal service.</p>
+    </div>
+    <div class="network-actions">
+      <label for="communityPreview">Preview growth</label>
+      <select id="communityPreview" aria-describedby="communityDescription">
+        <option value="0">0 nodes</option>
+        <option value="1">1 node</option>
+        <option value="10">10 nodes</option>
+        <option value="100">100 nodes</option>
+        <option value="1000">1000 nodes</option>
+      </select>
+      <div class="fallback">Hosted core active</div>
+    </div>
+  </section>
+
   <section class="overview">
     <div class="overview-copy">
       <small>YOUR CHOICES</small>
@@ -44,50 +48,64 @@
       <div><span>Rewards</span><strong id="rewardSummary">OFF</strong><small id="rewardDetail">No reward participation</small></div>
     </div>
   </section>
+
   <section class="grid">
     <article class="card">
-      <div class="cardhead"><div><small>01 · DATA</small><h2>Storage contribution</h2></div><label class="switch"><input id="storageToggle" type="checkbox"><span></span></label></div>
+      <div class="cardhead"><div><small>01 · DATA</small><h2>Storage contribution</h2></div><label class="switch"><input id="storageToggle" type="checkbox" aria-label="Enable voluntary storage contribution"><span aria-hidden="true"></span></label></div>
       <p>Offer a small, user-limited amount of space for eligible public/synthetic shards.</p>
-      <label>Maximum space <b id="storageValue">250 MB</b></label>
-      <input id="storageLimit" type="range" min="50" max="2000" step="50" value="250">
+      <label for="storageLimit">Maximum space <b id="storageValue">250 MB</b></label>
+      <input id="storageLimit" type="range" min="50" max="2000" step="50" value="250" aria-describedby="storageHint">
       <div class="ticks"><span>50 MB</span><span>2 GB</span></div>
-      <div class="mini"><span>Storage can remain available while compute is stopped.</span></div>
+      <div class="actions" aria-label="Storage controls">
+        <button type="button" id="storageStartBtn" class="primary">Start</button>
+        <button type="button" id="storagePauseBtn">Pause</button>
+        <button type="button" id="storageResumeBtn">Resume</button>
+        <button type="button" id="storageStopBtn">Stop</button>
+      </div>
+      <div class="mini" id="storageHint"><span>Pause or Stop means no new storage work. Existing assigned data is not silently deleted; safe release is a separate step.</span></div>
     </article>
+
     <article class="card">
-      <div class="cardhead"><div><small>02 · PROCESS</small><h2>Compute contribution</h2></div><label class="switch"><input id="computeToggle" type="checkbox"><span></span></label></div>
+      <div class="cardhead"><div><small>02 · PROCESS</small><h2>Compute contribution</h2></div><label class="switch"><input id="computeToggle" type="checkbox" aria-label="Enable voluntary compute contribution"><span aria-hidden="true"></span></label></div>
       <p>Run only bounded, approved tasks within the limits you choose.</p>
-      <label>Maximum effort <b id="computeValue">25%</b></label>
+      <label for="computeLimit">Maximum effort <b id="computeValue">25%</b></label>
       <input id="computeLimit" type="range" min="5" max="75" step="5" value="25">
       <div class="ticks"><span>Light</span><span>Higher</span></div>
-      <div class="actions">
-        <button id="startBtn" class="primary">Start</button><button id="pauseBtn">Pause</button>
-        <button id="resumeBtn">Resume</button><button id="stopBtn">Stop</button>
+      <div class="actions" aria-label="Compute controls">
+        <button type="button" id="startBtn" class="primary">Start</button>
+        <button type="button" id="pauseBtn">Pause</button>
+        <button type="button" id="resumeBtn">Resume</button>
+        <button type="button" id="stopBtn">Stop</button>
       </div>
     </article>
+
     <article class="card reward">
-      <div class="cardhead"><div><small>03 · OPTIONAL</small><h2>calT test rewards</h2></div><label class="switch"><input id="rewardToggle" type="checkbox"><span></span></label></div>
+      <div class="cardhead"><div><small>03 · OPTIONAL</small><h2>calT test rewards</h2></div><label class="switch"><input id="rewardToggle" type="checkbox" aria-label="Enable simulated calT rewards"><span aria-hidden="true"></span></label></div>
       <p>Opt in to simulated calT accounting for verified participation. This prototype mints and transfers nothing.</p>
       <div class="balance"><span>SIMULATED BALANCE</span><strong>0 <em>calT</em></strong></div>
     </article>
+
     <article class="card growth">
       <small>GROW FROM SMALL · ILLUSTRATIVE</small><h2>Every contribution can add capacity.</h2>
       <div class="steps" id="growthSteps">
-        <span data-stage="hosted" class="on">Hosted core</span><i>→</i>
-        <span data-stage="early">Early community</span><i>→</i>
-        <span data-stage="growing">Growing</span><i>→</i>
+        <span data-stage="hosted" class="on">Hosted core</span><i aria-hidden="true">→</i>
+        <span data-stage="early">Early community</span><i aria-hidden="true">→</i>
+        <span data-stage="growing">Growing</span><i aria-hidden="true">→</i>
         <span data-stage="strong">Strong community</span>
       </div>
-      <div class="growthmeter" aria-label="Illustrative participation growth stage">
+      <div class="growthmeter" id="growthMeter" role="progressbar" aria-label="Illustrative participation growth stage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <div id="growthFill"></div>
       </div>
       <p id="growthNote">The ecosystem works at zero participation. This bar is illustrative only; it does not represent live network capacity.</p>
     </article>
   </section>
+
   <section class="activity">
     <div><small>LOCAL PROTOTYPE ACTIVITY</small><h2>Recent choices</h2></div>
-    <ol id="activityList"><li>Participation is off. Hosted core remains active.</li></ol>
+    <ol id="activityList" aria-live="polite"><li>Participation is off. Hosted core remains active.</li></ol>
   </section>
-  <footer><button id="exitBtn" class="danger">Exit participation</button><span id="message">You can change these choices at any time.</span></footer>
+
+  <footer><button type="button" id="exitBtn" class="danger">Exit participation</button><span id="message" role="status" aria-live="polite">You can change these choices at any time.</span></footer>
 </main>
 <script type="module" src="participation.js"></script>
 </body></html>
