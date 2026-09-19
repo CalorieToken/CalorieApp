@@ -115,6 +115,30 @@ Participant nodes are untrusted by default.
 - malformed, non-deterministic or abusive nodes are ignored/revoked without corrupting the canonical state;
 - reward eligibility is separated from data correctness: a ledger/payment event never makes a result true.
 
+## Scale without losing the original product character
+
+Participation capacity may grow from zero volunteers to a large community
+network, but infrastructure scale must not dictate a different user experience.
+The hosted-core path, original CalorieApp/Gameverse visual identity and
+zero-contribution mode remain stable compatibility targets.
+
+Protocol evolution should therefore be backward-compatible and versioned:
+
+- new node/task capabilities are additive and negotiated by capability/version;
+- older supported clients are not forced to enable newly introduced contribution
+  classes;
+- no phase promotion removes ordinary product access or the original
+  zero-participation path;
+- UI and world evolution keep the original Calorie ecosystem's recognizable
+  character even when the backend becomes more distributed;
+- Gameverse identity/progress and the player's starter-character identity are
+  application state, not properties of a specific node provider or network phase;
+- infrastructure migrations must not reset a player's starter character, nickname,
+  progress, unlocked routes or ordinary app access.
+
+This makes "small now, much larger later" a capacity property rather than a
+product-identity rewrite.
+
 ## Progressive PostgreSQL -> decentralized public-data path
 
 This is a gradual **data-plane migration**, not a one-day database replacement.
