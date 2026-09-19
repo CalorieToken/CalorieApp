@@ -104,3 +104,26 @@ export function contributionSummary(state) {
       current.storage || current.processState === "running",
   });
 }
+
+export function communityCapacityPreview(volunteerNodes = 0) {
+  const nodes = Math.max(0, Number(volunteerNodes) || 0);
+  let level = "Hosted only";
+  let description = "No volunteer capacity yet. The hosted core handles normal service.";
+  if (nodes >= 1000) {
+    level = "Strong community";
+    description = "Large voluntary capacity is available while the hosted fallback remains active.";
+  } else if (nodes >= 100) {
+    level = "Growing network";
+    description = "Community capacity is becoming meaningful and can absorb more eligible work.";
+  } else if (nodes >= 1) {
+    level = "Early community";
+    description = "A small amount of voluntary capacity is available alongside the hosted core.";
+  }
+  return Object.freeze({
+    nodes,
+    level,
+    description,
+    hostedCoreActive: true,
+    isSyntheticPreview: true,
+  });
+}
