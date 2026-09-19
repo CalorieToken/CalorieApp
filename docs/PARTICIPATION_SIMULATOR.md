@@ -185,8 +185,9 @@ requirements in `SHOWCASE_OPEN_WORLD_MASTERPLAN.md`.
 
 The deterministic **synthetic** public-data compute task is now the second bounded
 implementation slice. The next step is a small participation-control UI prototype
-for storage, compute, reward opt-in, resource limits, pause/resume and full stop,
-using synthetic state only. Real participant onboarding, remote transport,
+for storage, compute, reward opt-in, resource limits and an explicit lifecycle:
+**Start** when participation is off, **Pause** while running, **Resume** while paused,
+and **Stop** for a full shutdown, using synthetic state only. Real participant onboarding, remote transport,
 replica/reconstruction drills and any untrusted-code sandbox remain later work.
 
 Keep PostgreSQL authoritative, personal data protected and provider choice open.
