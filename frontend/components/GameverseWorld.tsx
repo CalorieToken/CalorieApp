@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";\nimport { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
