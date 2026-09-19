@@ -34,7 +34,9 @@
     "reversible_optional_roles": true,
     "player_expression_with_safety_boundaries": true,
     "privacy_and_permission_control": true,
-    "minimum_necessary_restrictions": true
+    "minimum_necessary_restrictions": true,
+    "metaverse_and_app_share_same_ecosystem": true,
+    "creator_gallery_is_native_ecosystem_surface": true
   },
   "start": {
     "x": 11,
@@ -205,5 +207,13 @@
       "destination": null,
       "hidden_until": "maze-complete"
     }
-  ]
+  ],
+  "public_name": "CalorieVerse",
+  "ecosystem_id": "calorie-ecosystem",
+  "product_family": {
+    "ecosystem": "Calorie Ecosystem",
+    "app": "CalorieApp",
+    "metaverse": "CalorieVerse",
+    "creator_surface": "Creator Gallery"
+  }
 }
