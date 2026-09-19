@@ -243,6 +243,43 @@ Historical CalorieApp Testnet NFT/token code is reference material only; do not 
 
 
 
+
+### User-owned NFT storage and account linking
+
+NFT creators should control where their own media and metadata are stored. CalorieToken should not require every creator to place all NFT files under one CalorieToken-owned storage account.
+
+Principles:
+- use a **Bring Your Own Storage** model;
+- the creator chooses a supported storage provider/account for each NFT project or sets a personal default;
+- the game stores the resulting content identifiers/URIs and verification state, not ownership of the creator's storage account;
+- never ask for or store a Google password, GitHub password or provider password;
+- when a storage provider exposes standards-based OAuth/account linking, use Authorization Code + PKCE or the provider's supported equivalent;
+- if the provider itself offers Google/GitHub/email sign-in, that sign-in remains on the provider's own page; CalorieToken receives only the bounded authorization/connection result needed for storage;
+- where OAuth is not available, support a user-owned API token only through a backend secret vault/encrypted credential record; never embed the token in frontend JavaScript, NFT metadata or public ledger data;
+- users can disconnect a provider without losing the NFT record; the app retains only public CIDs/URIs and non-secret connection metadata required to display already-minted assets;
+- credentials are scoped per user and must never be shared between creators.
+
+Current NFT.Storage reality:
+- NFT.Storage Classic no longer accepts new uploads; its legacy login documentation lists email and GitHub, not Google;
+- existing Classic content remains retrievable, so users with old NFT.Storage data can still attach/import known CIDs;
+- for new creator uploads, use a current hot-IPFS storage provider under the user's own account, then optionally use current NFT.Storage as a long-term preservation layer when its current product/API supports that flow;
+- provider adapters must therefore be replaceable: no NFT or game asset ID may depend on one vendor account.
+
+Storage flow:
+1. creator makes/selects media in the game;
+2. creator chooses **My storage**;
+3. creator links or authorizes a supported provider account, or supplies a personal API credential through the secure backend flow;
+4. the file is uploaded to that user's storage provider and returns an IPFS CID/URI;
+5. metadata is generated, reviewed and stored the same way;
+6. before minting, the game verifies that both media and metadata CIDs are retrievable;
+7. the XRPL NFToken URI references the immutable IPFS-style metadata/content URI;
+8. optional preservation/backup can then be requested through NFT.Storage or another preservation provider;
+9. the game stores only the CID, provider reference, public URI, content digest, verification time and a non-secret connection id.
+
+If the creator edits the asset after a CID has been produced, the edit creates a new CID/version. Never silently replace the media behind an already-minted immutable reference.
+
+Storage costs, quota and provider terms belong to the creator's chosen provider/account unless CalorieToken explicitly sponsors a storage action.
+
 ### NFT payment choice: CALT, CAL or XRP
 
 Eligible adult NFT listings should be able to offer a **choice of settlement rail**, rather than forcing every creator and buyer into the same currency.
