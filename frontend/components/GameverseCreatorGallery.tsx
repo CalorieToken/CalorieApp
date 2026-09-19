@@ -5,7 +5,7 @@ import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import type { AgeBand } from "@/lib/ageExperience";
 import {
   createLocalGalleryDraft,
-  GALLERY_GALLERY_DRAFTS_KEY,
+  GALLERY_DRAFTS_KEY,
   galleryAssetsForAge,
   galleryAssetTypes,
   galleryCopy,
