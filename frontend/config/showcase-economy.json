@@ -36,7 +36,36 @@
     },
     "requires_explicit_wallet_authorization": true,
     "requires_validated_ledger_result": true,
-    "jurisdiction_gate_required": true
+    "jurisdiction_gate_required": true,
+    "discovery_capture": {
+      "reward_basis": "active-observation-exploration-and-meaningful-actions",
+      "raw_screen_time_rewarded": false,
+      "idle_rewarded": false,
+      "refresh_farming_rewarded": false,
+      "equivalent_accessibility_routes_required": true,
+      "per_identity_limits_required": true,
+      "anti_automation_required": true
+    },
+    "generosity": {
+      "enabled": false,
+      "adult_testnet_only": true,
+      "allowed_targets": [
+        "friends",
+        "family",
+        "opt-in-community-support-pools"
+      ],
+      "appreciation_rewards": [
+        "non-financial-reputation",
+        "generosity-badges",
+        "community-progress",
+        "world-improvements",
+        "cooperative-quest-unlocks"
+      ],
+      "calt_from_gifting_itself": false,
+      "circular_transfer_farming_blocked": true,
+      "self_transfer_credit_blocked": true,
+      "socioeconomic_inference_forbidden": true
+    }
   },
   "marketplace": {
     "enabled": false,
