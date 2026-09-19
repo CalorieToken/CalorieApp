@@ -1,5 +1,5 @@
 export const PROCESS_STATES = Object.freeze(["off", "running", "paused"]);
-export const STORAGE_STATES = PROCESS_STATES;
+export const STORAGE_STATES = PROCESS_STATES;\nexport const STORAGE_RELEASE_MODES = Object.freeze(["keep-local", "handoff-then-delete", "delete-now"]);
 
 export function createParticipationState(overrides = {}) {
   const state = {
@@ -16,7 +16,7 @@ export function createParticipationState(overrides = {}) {
 }
 
 export function validateParticipationState(state) {
-  if (!STORAGE_STATES.includes(state.storageState)) throw new Error("invalid-storage-state");
+  if (!STORAGE_STATES.includes(state.storageState)) throw new Error("invalid-storage-state");\n  if (!STORAGE_RELEASE_MODES.includes(state.storageReleaseMode)) throw new Error("invalid-storage-release-mode");
   if (!PROCESS_STATES.includes(state.processState)) throw new Error("invalid-process-state");
   if (state.storageLimitMb < 50 || state.storageLimitMb > 2000) {
     throw new Error("storage-limit-out-of-range");
