@@ -13,7 +13,7 @@ import tempfile
 import time
 
 from tools.participation_compute_simulator import ComputeCoordinator, ComputeNode
-from tools.participation_simulator import Consent, Coordinator, LocalNode, SimulationError
+from tools.participation_simulator import (\n    Consent, Coordinator, FIXTURES, SPEC, SimulationError, VolunteerNode\n)
 
 
 LIFECYCLE_STATES = {"off", "running", "paused"}
@@ -110,15 +110,21 @@ class ParticipationSession:
             return {"status": "storage-stopped"}
 
         consent = self._storage_consent()
-        node = LocalNode(
+        node = VolunteerNode(
+            self.storage_node_dir,
             enabled=True,
             consent=consent,
-            capacity_bytes=self.selection.storage_limit_mb * 1024 * 1024,
+            clock=self.clock,
         )
         challenge = self.storage_coord.issue(self.participant_id, "apple")
-        proof = node.accept_and_prove(challenge, now=int(self.clock()))
+        node.store(challenge.shard, FIXTURES["apple"])
+        proof = node.prove(challenge, now=int(self.clock()))
         receipt = self.storage_coord.verify(self.participant_id, proof)
-        return {"status": receipt.status, "verified": receipt.verified}
+        return {
+            "status": receipt.status,
+            "verified": receipt.verified,
+            "synthetic_shard_retained_locally": True,
+        }
 
     def run_compute_probe(self) -> dict:
         if not self.selection.compute:
