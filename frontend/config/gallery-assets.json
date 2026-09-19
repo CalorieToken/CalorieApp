@@ -11,7 +11,9 @@
     "participation_optional": true,
     "shared_participation_preference_with_gameverse": true,
     "install_required_for_participation": false,
-    "default_mode": "nonparticipant"
+    "default_mode": "nonparticipant",
+    "caloriestudio_is_native_calorieverse_surface": true,
+    "separate_product_ecosystem": false
   },
   "asset_types": [
     "recipe",
@@ -179,5 +181,8 @@
         "story"
       ]
     }
-  ]
+  ],
+  "public_name": "CalorieStudio",
+  "internal_legacy_term": "Creator Gallery",
+  "route_compatibility": "/gallery"
 }
