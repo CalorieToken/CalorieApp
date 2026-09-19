@@ -4,6 +4,7 @@ import Image from "next/image";\nimport { useEffect, useMemo, useState } from "r
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
+import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import {
   gameverseCopy,
   gameverseRegions,
@@ -87,6 +88,7 @@ export function GameverseWorld() {
   const [currentRegionId, setCurrentRegionId] = useState(gameverseWorld.start.region_id);
   const [selectedRegionId, setSelectedRegionId] = useState(gameverseWorld.start.region_id);
   const [visited, setVisited] = useState<string[]>([gameverseWorld.start.region_id]);
+  const [localGalleryDrafts, setLocalGalleryDrafts] = useState<LocalGalleryDraft[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -102,6 +104,8 @@ export function GameverseWorld() {
           render_asset_key: identity.render_asset_key,
         }));
       }
+
+      setLocalGalleryDrafts(parseLocalGalleryDrafts(window.localStorage.getItem(GALLERY_DRAFTS_KEY)));
 
       const stored = JSON.parse(window.localStorage.getItem(PROGRESS_KEY) ?? "null") as SavedProgress | null;
       if (stored?.version === 1 && typeof stored.current_region_id === "string" && Array.isArray(stored.visited_region_ids)) {
@@ -189,6 +193,24 @@ export function GameverseWorld() {
                 <div className="gameverse-field field-a" aria-hidden="true" />
                 <div className="gameverse-field field-b" aria-hidden="true" />
                 <div className="gameverse-trees" aria-hidden="true">● ● ● ● ●</div>
+
+                {localGalleryDrafts
+                  .filter(draft => draft.age_band === ageBand)
+                  .slice(0, 3)
+                  .map((draft, index) => (
+                    <div
+                      className="gameverse-gallery-object"
+                      key={draft.id}
+                      style={{
+                        left: (66 + index * 2.6) + "%",
+                        top: (69 + (index % 2) * 3) + "%",
+                      }}
+                      title={draft.title}
+                      aria-label={draft.title}
+                    >
+                      <span aria-hidden="true">◇</span>
+                    </div>
+                  ))}
 
                 {regions.map(region => {
                   const info = regionCopy(locale, region.id);
