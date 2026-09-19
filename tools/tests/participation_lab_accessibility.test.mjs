@@ -15,9 +15,17 @@ test("participation prototype keeps essential controls keyboard and screen-reade
   assert.match(html, /<label for="storageLimit">/);
   assert.match(html, /<label for="computeLimit">/);
   assert.match(html, /<label for="storageReleaseMode">/);
+  assert.match(html, /<label for="bandwidthLimit">/);
   assert.match(html, /id="message"[^>]*role="status"[^>]*aria-live="polite"/);
   assert.match(html, /id="activityList"[^>]*aria-live="polite"/);
   assert.match(html, /id="growthMeter"[^>]*role="progressbar"/);
+  assert.match(html, /<details class="advanced-card">/);
+  for (const id of [
+    "wifiOnly", "allowBattery", "idleComputeOnly", "autoStart",
+    "allowStorageTasks", "allowComputeTasks",
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*type="checkbox"`));
+  }
 
   for (const id of [
     "storageStartBtn", "storagePauseBtn", "storageResumeBtn", "storageStopBtn",
