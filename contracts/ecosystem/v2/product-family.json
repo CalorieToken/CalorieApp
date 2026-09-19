@@ -1,6 +1,6 @@
 {
   "contract_id": "calorie.ecosystem.product-family",
-  "contract_version": "1.0.1",
+  "contract_version": "1.0.2",
   "status": "product-naming-and-relationship-contract",
   "umbrella": {
     "id": "calorie-ecosystem",
@@ -26,7 +26,8 @@
       "runs_on_ecosystem": "calorie-ecosystem",
       "separate_ecosystem": false,
       "internal_legacy_term": "Creator Gallery",
-      "route_compatibility": "/gallery"
+      "route_compatibility": "/gallery",
+      "canonical_route": "/studio"
     }
   },
   "invariants": {
