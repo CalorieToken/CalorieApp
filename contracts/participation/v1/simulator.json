@@ -25,5 +25,22 @@
     "separate_reward_opt_in_required": true,
     "redeemable": false,
     "onchain_settlement": false
+  },
+  "compute": {
+    "task_type": "catalog-integrity-summary.v1",
+    "proof_domain": "calorietoken.synthetic-compute-proof.v1",
+    "input_policy": "embedded-synthetic-public-catalog-fixtures-only",
+    "worker_mode": "fixed-code-separate-python-process",
+    "worker_timeout_seconds": 2,
+    "deadline_measure": "wall-clock-subprocess-deadline-not-cpu-accounting",
+    "max_input_bytes": 8192,
+    "max_output_bytes": 4096,
+    "max_records_per_task": 32,
+    "max_tasks_per_node_run": 8,
+    "records_per_simulated_unit": 3,
+    "reward_deduplication": "participant-plus-input-digest-plus-utc-day",
+    "daily_cap_uses_reward_policy": true,
+    "ledger_scope": "separate-local-compute-simulator-ledger",
+    "secure_general_purpose_sandbox": false
   }
 }
