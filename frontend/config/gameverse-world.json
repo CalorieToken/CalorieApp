@@ -124,7 +124,7 @@
         "teen",
         "adult"
       ],
-      "destination": null
+      "destination": "/gallery"
     },
     {
       "id": "participation-lodge",
