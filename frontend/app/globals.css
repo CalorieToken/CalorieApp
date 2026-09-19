@@ -1033,3 +1033,27 @@ body {
   font-size: .62rem !important;
   line-height: 1.35 !important;
 }
+
+.gameverse-gallery-object {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  transform: translate(-50%,-50%) rotate(45deg);
+  border: 2px solid rgba(255,255,255,.92);
+  border-radius: .35rem;
+  background: linear-gradient(145deg,#925fa8,#6b55a8);
+  color: white;
+  box-shadow: 0 7px 16px rgba(64,45,78,.24);
+}
+.gameverse-gallery-object span {
+  transform: rotate(-45deg);
+  font-size: .72rem;
+  font-weight: 900;
+}
+.gameverse-layout[data-age-band="child"] .gameverse-gallery-object {
+  border-radius: .55rem;
+  background: linear-gradient(145deg,#8b68aa,#6f96c5);
+}
