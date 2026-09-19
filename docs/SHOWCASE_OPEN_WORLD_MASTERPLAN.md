@@ -185,6 +185,41 @@ The world should support:
 
 Avatar customization should use user-selected appearance options such as presentation, skin tone, hair, face, clothing, body/character style and accessories. Do not infer sensitive identity attributes from Xaman or a photo.
 
+
+## Light multiplayer / metaverse start
+
+The first version should already feel shared, but it must stay lightweight, safe and inexpensive.
+
+Start with:
+- visible online player avatars in selected shared hubs and public paths;
+- nickname-based presence using the existing CalorieApp/Xaman-linked identity, never exposing a wallet address by default;
+- lightweight movement/presence updates rather than server-authoritative physics for every object;
+- simple age-appropriate emotes, gestures and preset reactions;
+- cooperative quests where several players can contribute to a shared objective;
+- shared community/nature/F&B events and global progress meters;
+- opt-in small-group exploration and maze runs;
+- asynchronous collaboration where players can leave useful progress for others without needing everyone online at the same moment;
+- culturally mixed public spaces in which players from all supported regions can participate.
+
+Safety rules for the first multiplayer release:
+- no unrestricted public voice chat;
+- no unrestricted direct messaging;
+- no child-to-adult private social channel;
+- child, teen and adult social experiences remain separated or strictly permission-gated;
+- preset communication should be sufficient for the first release and must exist in all eleven supported display languages;
+- blocking/reporting hooks and moderation-ready identifiers must exist before richer social communication is enabled;
+- location sharing is game-world location only, never real-world precise location.
+
+Cost architecture:
+- keep durable game progress in the existing backend/database layer;
+- keep ephemeral presence separate from durable player history;
+- do not write every movement frame to PostgreSQL;
+- the first presence implementation may use the single backend instance as a lightweight ephemeral presence coordinator because loss of presence on restart is harmless;
+- when multiple backend instances or materially higher concurrency become necessary, move ephemeral presence to a shared Key Value/pub-sub layer rather than turning PostgreSQL into a real-time movement bus;
+- do not enable costly real-time infrastructure merely to simulate ambient NPCs; NPCs, scenery, animation and most world movement stay client-side.
+
+The multiplayer goal is a shared-world feeling, not a massive MMO on day one. A player should be able to see that other real people are exploring, cooperate on selected tasks, meet others through safe preset interactions and contribute to common world goals while the infrastructure remains comfortably inside the project's cost ceiling.
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
