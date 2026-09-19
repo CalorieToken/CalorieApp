@@ -32,6 +32,10 @@ export type GameverseCopy = {
   ageChild: string;
   ageTeen: string;
   ageAdult: string;
+  route: string;
+  routeProgress: string;
+  routeHint: string;
+  routeReady: string;
   locations: Record<string, string>;
   descriptions: Record<string, string>;
 };
