@@ -243,7 +243,7 @@ Historical CalorieApp Testnet NFT/token code is reference material only; do not 
 
 ### Global CALT welcome airdrop
 
-The CALT Testnet economy starts with a staged **welcome airdrop period** for the game launch.
+The CALT Testnet economy starts with a global **welcome airdrop**, and the newcomer path remains available on a rolling basis after the launch campaign because CALT is Testnet-only.
 
 World presentation:
 - the airdrop is a global in-world event, visible across the complete open world rather than one Western/default hub;
@@ -254,8 +254,8 @@ World presentation:
 
 Distribution model:
 - CALT remains XRPL Testnet-only and explicitly non-redeemable;
-- the launch airdrop is distributed over a defined period rather than presented as an instant speculative giveaway;
-- exact amount, cadence, Testnet issuer, currency code and claim window remain configuration values and must not be guessed in code;
+- the public launch can have a defined campaign wave, but every eligible newcomer starts their own bounded onboarding-airdrop window when they first enter the game; therefore a player joining months later can still participate;
+- exact amount, cadence, per-newcomer onboarding-window length, Testnet issuer and currency code remain configuration values and must not be guessed in code;
 - one game identity must not be able to multiply the welcome allocation through scene changes, language changes or repeated reloads;
 - persistent claim/progress state belongs in the backend once the Testnet adapter is enabled;
 - blockchain submission always requires the user's explicit Testnet wallet authorization and validated-ledger verification;
@@ -268,13 +268,22 @@ Age experience:
 
 The airdrop should be discoverable naturally while exploring. It may arrive through different in-world storytelling (market welcome desk, farm co-op crate, harbour terminal, CalorieApp mission, community event, etc.), but all variants resolve to the same canonical entitlement state so moving between cultures/scenes can never create duplicate claims.
 
+Rolling-newcomer rule:
+- there is no permanent global expiry for the existence of the Testnet welcome airdrop;
+- each eligible game identity can receive the newcomer experience once, even if that person joins long after the original public launch;
+- the personal onboarding window begins from a canonical first-eligible/start event recorded by the backend, not from browser storage alone;
+- reinstalling, switching language, changing scene, changing browser, logging out/in or returning after a long absence does not create a second newcomer allocation;
+- seasonal relaunches may change presentation but must not silently create duplicate base entitlements;
+- because CALT is Testnet currency, supply for this sandbox can be configured for ongoing testing, but distribution still uses per-identity caps and anti-abuse rules so gameplay remains meaningful.
+
+
 
 ### Focus, discovery and generosity loop
 
 The staged CALT launch should reward **active observation and good play**, not raw screen time.
 
 Core idea:
-- during the launch period, CALT opportunities can appear naturally throughout world scenes;
+- during each eligible player's newcomer-airdrop window, CALT opportunities can appear naturally throughout world scenes;
 - players who pay attention, explore carefully, notice clues, complete meaningful tasks and make good decisions can discover/catch more eligible CALT opportunities within the configured limits;
 - standing idle, endlessly refreshing, keeping the game open for hours or repeating trivial actions must not increase rewards;
 - accessibility alternatives must exist so reduced-motion, keyboard-only and other players can earn equivalent opportunities without needing fast reflexes.
@@ -297,7 +306,7 @@ This mechanic should make the launch feel like **notice -> earn -> choose -> sha
 
 ### Fair-share CALT catch mechanic
 
-The staged CALT welcome airdrop should feel active and playful rather than passive, while preventing hoarding.
+The rolling CALT newcomer airdrop should feel active and playful rather than passive, while preventing hoarding.
 
 Principles:
 - every eligible adult Testnet player receives a fair base opportunity during the launch period;
