@@ -32,6 +32,21 @@ test("starter world combines the planned Calorie ecosystem surfaces", async () =
   assert.equal(world.principles.zero_participation_path, true);
 });
 
+test("Gameverse is freedom-first without forcing roles or pay-to-win", async () => {
+  const world = await json(worldUrl);
+  assert.equal(world.principles.freedom_first_world, true);
+  assert.equal(world.principles.multiple_valid_playstyles, true);
+  assert.equal(world.principles.mandatory_faction, false);
+  assert.equal(world.principles.mandatory_social_participation, false);
+  assert.equal(world.principles.mandatory_creator_role, false);
+  assert.equal(world.principles.voluntary_economy_only, true);
+  assert.equal(world.principles.pay_to_win, false);
+  assert.equal(world.principles.reversible_optional_roles, true);
+  assert.equal(world.principles.player_expression_with_safety_boundaries, true);
+  assert.equal(world.principles.privacy_and_permission_control, true);
+  assert.equal(world.principles.minimum_necessary_restrictions, true);
+});
+
 test("starting character and original world are compatibility invariants", async () => {
   const world = await json(worldUrl);
   assert.equal(world.starter_character.starter_character_id, "starter-original");
