@@ -1355,3 +1355,24 @@ body {
     justify-self: start;
   }
 }
+
+.participation-choice-configure,
+.participation-choice-collapse {
+  width: 100%;
+  min-height: 2.5rem;
+  margin-top: .55rem;
+  border: 1px solid rgba(80,91,169,.18);
+  border-radius: .75rem;
+  background: white;
+  color: var(--brand-secondary);
+  font-size: .7rem;
+  font-weight: 850;
+}
+.participation-choice-configure:hover,
+.participation-choice-collapse:hover {
+  border-color: var(--brand-primary);
+}
+.participation-choice.is-compact .participation-choice-settings {
+  border-top: 1px solid rgba(80,91,169,.1);
+  padding-top: .65rem;
+}
