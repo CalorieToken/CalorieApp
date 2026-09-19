@@ -35,6 +35,43 @@ production quality as features are added:
 The local participation simulator has no end-user visual interface. Its technical
 output does not establish the style of the future game or participation controls.
 
+## Preserve the starting character while the world grows
+
+Scaling and continued development must not make the project feel like a different
+product. The first playable world establishes a recognizable **starting
+character** for the Gameverse and participation experience: its visual language,
+pace, approachable scale, voluntary-participation ethos, CalorieApp connection,
+food/nature/community focus and the feeling of the original starting world.
+
+Growth is therefore additive rather than replacement-driven:
+
+- the original starting world and its core route remain playable as later regions,
+  systems and community capacity are added;
+- later visual upgrades may improve fidelity, animation and performance, but must
+  preserve recognizable shapes, palette, atmosphere, navigation logic and brand
+  cues instead of restyling the experience into an unrelated game;
+- new realms, node features, DAO/community systems and larger infrastructure are
+  layered around the original experience rather than forcing a redesign of its
+  identity;
+- the simple zero-participation path remains a first-class experience even when
+  community infrastructure becomes large;
+- optional storage, compute, rewards, Web3 and advanced systems remain optional
+  at every scale, so the original "just enter and use/play" character survives;
+- content/version migrations must preserve earned progress and existing user
+  choices wherever technically possible.
+
+For the **player avatar itself**, the initial chosen starter character must also
+remain a persistent valid identity as the game evolves. New bodies, outfits,
+styles or higher-fidelity models may be offered, but an update must not silently
+replace a player's starter choice. Store a stable character identity separately
+from render/model versions so old starter characters can be migrated and remain
+selectable across future content packs and engine revisions.
+
+A future release should only retire a starter visual asset when there is a real
+technical or safety requirement, and then preserve the player's identity and
+progress through an explicit compatible migration rather than resetting the
+character.
+
 ## Voluntary participation and reward choice
 
 Ordinary CalorieApp use and core game exploration must remain available without
