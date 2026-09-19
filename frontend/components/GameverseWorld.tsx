@@ -6,6 +6,7 @@ import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperien
 import { DisplayLanguagePicker, useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
+import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import {
   coreRouteProgress,
@@ -265,6 +266,8 @@ export function GameverseWorld() {
             </section>
 
             <aside className="gameverse-side">
+              <ParticipationChoiceCard ageBand={ageBand} compact />
+
               <section className="gameverse-identity-card">
                 <div className="gameverse-mini-avatar" aria-hidden="true">C</div>
                 <div>
