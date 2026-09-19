@@ -67,6 +67,40 @@ The intended arc is therefore:
 
 while remaining recognizably the **same Gameverse**.
 
+## Freedom-first world design
+
+The Gameverse should feel highly open and self-directed: a world where people
+can explore, create, cooperate, trade where permitted, contribute resources, or
+simply play without being pushed into a prescribed lifestyle or system.
+
+This is a **player-autonomy design principle**, not a political campaign or party
+position. In product terms it means:
+
+- free exploration and multiple valid routes instead of one mandatory questline;
+- no required faction, ideology, creator role, node role, wallet, token, market
+  activity or social participation to enjoy the core world;
+- participation in storage, compute, validation, creator systems, community
+  projects and future economies is opt-in and reversible;
+- players may change their mind, pause a role, leave a group or return to ordinary
+  play without losing core access or unrelated progress;
+- broad avatar, creator and self-expression choices are encouraged within clear
+  age, safety, rights, moderation and performance boundaries;
+- creator ownership, provenance and user control over their own local data and
+  permissions are preferred over platform lock-in;
+- future trade and marketplace systems must use voluntary exchange, transparent
+  terms and no pay-to-win pressure;
+- social features should support communities and cooperation without forcing
+  public visibility, voice, direct messages or persistent presence;
+- the world should tolerate many play styles: explorer, builder, creator, learner,
+  farmer, collector, helper, competitive player, observer or participant node;
+- restrictions should exist only where needed for safety, minors, abuse
+  prevention, legal compliance, technical integrity or the rights of other
+  players.
+
+The practical rule is: **maximum meaningful player freedom, minimum necessary
+coercion**. Freedom for one participant must not remove the safety, access,
+privacy or agency of another.
+
 ## Preserve the starting character while the world grows
 
 Scaling and continued development must not make the project feel like a different
