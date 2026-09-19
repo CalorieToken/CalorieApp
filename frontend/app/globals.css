@@ -1179,3 +1179,22 @@ body {
   .gameverse-maze-card { padding: .8rem; }
   .gameverse-maze-grid { width: min(100%, 17rem); }
 }
+
+.gameverse-region.is-core-route:not(.is-current) {
+  box-shadow:
+    0 0 0 3px rgba(249,178,51,.35),
+    0 10px 24px rgba(29,43,54,.17);
+}
+.gameverse-region.is-core-route:not(.is-current)::after {
+  content: "";
+  position: absolute;
+  inset: -.45rem;
+  border: 1px dashed rgba(249,178,51,.72);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.gameverse-progress-divider {
+  height: 1px;
+  margin: .8rem 0;
+  background: rgba(80,91,169,.12);
+}
