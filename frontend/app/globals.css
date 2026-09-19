@@ -1376,3 +1376,176 @@ body {
   border-top: 1px solid rgba(80,91,169,.1);
   padding-top: .65rem;
 }
+
+
+/* Optional CalorieVerse world interactions and derived world-state cues. */
+.calorieverse-interaction {
+  border: 1px solid rgba(80,91,169,.15);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(249,178,51,.1), transparent 24%),
+    rgba(255,255,255,.94);
+  padding: .9rem;
+  box-shadow: 0 12px 28px rgba(29,43,54,.06);
+}
+.calorieverse-interaction.is-complete {
+  border-color: rgba(0,141,54,.28);
+  background:
+    radial-gradient(circle at 88% 10%, rgba(0,141,54,.1), transparent 24%),
+    rgba(255,255,255,.96);
+}
+.calorieverse-interaction-head {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  align-items: flex-start;
+}
+.calorieverse-interaction-head small {
+  color: var(--brand-primary);
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.calorieverse-interaction-head h3 {
+  margin: .18rem 0 .35rem;
+  color: var(--brand-secondary);
+  font-size: 1rem;
+}
+.calorieverse-interaction-head > span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #f1f3f6;
+  padding: .25rem .45rem;
+  color: #627280;
+  font-size: .6rem;
+  font-weight: 800;
+}
+.calorieverse-interaction > p {
+  margin: .25rem 0;
+  color: #687b88;
+  font-size: .75rem;
+  line-height: 1.45;
+}
+.calorieverse-interaction-optional {
+  color: #8a7958 !important;
+  font-size: .66rem !important;
+}
+.calorieverse-interaction-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .55rem;
+  margin-top: .7rem;
+}
+.calorieverse-interaction-actions button {
+  min-height: 2.5rem;
+  border: 1px solid rgba(80,91,169,.2);
+  border-radius: .75rem;
+  background: var(--brand-secondary);
+  padding: .45rem .75rem;
+  color: white;
+  font-size: .72rem;
+  font-weight: 850;
+}
+.calorieverse-interaction.is-complete .calorieverse-interaction-actions button {
+  background: white;
+  color: var(--brand-secondary);
+}
+.calorieverse-interaction-actions strong {
+  color: #23673d;
+  font-size: .72rem;
+}
+.gameverse-farm-market-link {
+  position: absolute;
+  z-index: 3;
+  left: 54%;
+  top: 46%;
+  display: flex;
+  width: 9rem;
+  align-items: center;
+  gap: .3rem;
+  transform: rotate(-7deg);
+  opacity: .86;
+}
+.gameverse-farm-market-link > span {
+  display: grid;
+  width: 1.3rem;
+  height: 1.3rem;
+  place-items: center;
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: white;
+  font-size: .55rem;
+}
+.gameverse-farm-market-link > span:last-child {
+  border-radius: .3rem;
+  background: var(--brand-accent);
+  color: #67522c;
+}
+.gameverse-farm-market-link > i {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(87,110,73,.85) 0 8px,
+    transparent 8px 13px
+  );
+}
+.gameverse-creator-beacon {
+  position: absolute;
+  z-index: 6;
+  left: 72%;
+  top: 57%;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  transform: rotate(45deg);
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: .4rem;
+  background: #925fa8;
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 0 0 5px rgba(146,95,168,.12), 0 10px 22px rgba(75,49,88,.22);
+}
+.gameverse-creator-beacon::after {
+  content: "";
+  position: absolute;
+  width: .45rem;
+  height: 3.2rem;
+  top: 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg,rgba(146,95,168,.35),transparent);
+}
+.gameverse-route-whisper {
+  position: absolute;
+  z-index: 2;
+  left: 80%;
+  top: 50%;
+  display: flex;
+  gap: .28rem;
+  transform: rotate(-10deg);
+}
+.gameverse-route-whisper i {
+  display: block;
+  width: 1.15rem;
+  height: .2rem;
+  border-radius: 999px;
+  background: rgba(80,91,169,.46);
+}
+.gameverse-route-whisper i:nth-child(2) { opacity: .68; }
+.gameverse-route-whisper i:nth-child(3) { opacity: .42; }
+@media (max-width: 640px) {
+  .calorieverse-interaction-head {
+    display: grid;
+  }
+  .calorieverse-interaction-head > span {
+    justify-self: start;
+  }
+  .gameverse-farm-market-link {
+    width: 6rem;
+  }
+}
