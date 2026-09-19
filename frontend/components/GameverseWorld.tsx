@@ -8,6 +8,7 @@ import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
 import { GameverseMazeRoute } from "@/components/GameverseMazeRoute";
 import { GALLERY_DRAFTS_KEY, parseLocalGalleryDrafts, type LocalGalleryDraft } from "@/lib/galleryEcosystem";
 import {
+  coreRouteProgress,
   gameverseCopy,
   gameverseRegions,
   gameverseWorld,
@@ -41,6 +42,7 @@ function RegionMarker({
   current,
   visited,
   locked,
+  coreRoute,
   label,
   onSelect,
 }: {
@@ -49,6 +51,7 @@ function RegionMarker({
   current: boolean;
   visited: boolean;
   locked: boolean;
+  coreRoute: boolean;
   label: string;
   onSelect(): void;
 }) {
@@ -61,6 +64,7 @@ function RegionMarker({
         current ? "is-current" : "",
         visited ? "is-visited" : "",
         locked ? "is-locked" : "",
+        coreRoute ? "is-core-route" : "",
       ].filter(Boolean).join(" ")}
       style={{ left: region.x + "%", top: region.y + "%" }}
       onClick={onSelect}
@@ -153,6 +157,8 @@ export function GameverseWorld() {
   const selected = regions.find(region => region.id === selectedRegionId) ?? regions[0];
   const current = gameverseRegions.find(region => region.id === currentRegionId) ?? gameverseRegions[0];
   const mazeReady = mazeUnlocked(visited);
+  const coreProgress = coreRouteProgress(visited);
+  const coreRouteIds = new Set(gameverseWorld.progression.maze_required_regions as string[]);
 
   function walkTo(region: GameverseRegion) {
     if (!ageBand || !regionIsInteractive(region, ageBand)) return;
@@ -234,6 +240,7 @@ export function GameverseWorld() {
                       current={currentRegionId === region.id}
                       visited={visited.includes(region.id)}
                       locked={region.kind === "maze" && !mazeReady}
+                      coreRoute={coreRouteIds.has(region.id) && !visited.includes(region.id)}
                       label={info.name}
                       onSelect={() => setSelectedRegionId(region.id)}
                     />
@@ -321,11 +328,17 @@ export function GameverseWorld() {
 
               <section className="gameverse-progress-card">
                 <div>
-                  <small>{copy.ecosystem}</small>
-                  <strong>{uniqueVisited(visited).length} / {regions.length} {copy.visited}</strong>
+                  <small>{copy.route}</small>
+                  <strong>{coreProgress.visited.length} / {coreProgress.total} {copy.routeProgress}</strong>
                 </div>
                 <div className="gameverse-progressbar" aria-hidden="true">
-                  <span style={{ width: Math.min(100, uniqueVisited(visited).length / Math.max(1, regions.length) * 100) + "%" }} />
+                  <span style={{ width: Math.min(100, coreProgress.visited.length / Math.max(1, coreProgress.total) * 100) + "%" }} />
+                </div>
+                <p>{mazeReady ? copy.routeReady : copy.routeHint}</p>
+                <div className="gameverse-progress-divider" />
+                <div>
+                  <small>{copy.ecosystem}</small>
+                  <strong>{uniqueVisited(visited).length} / {regions.length} {copy.visited}</strong>
                 </div>
                 <p>{copy.optional}</p>
               </section>
