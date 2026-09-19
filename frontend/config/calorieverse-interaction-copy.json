@@ -19,10 +19,10 @@
         "done": "The farm water route is balanced and the landscape responds."
       },
       "gallery-world-display": {
-        "title": "Curate a Gallery display",
+        "title": "Curate a CalorieStudio display",
         "body": "Choose to place a simple creator marker in the world. It stays local in this first slice.",
         "action": "Place display",
-        "done": "A creator beacon now appears in the Gallery district."
+        "done": "A creator beacon now appears in the CalorieStudio district."
       },
       "helpbot-local-hint": {
         "title": "Ask for a local hint",
@@ -52,10 +52,10 @@
         "done": "De waterroute van de boerderij is in balans en het landschap reageert."
       },
       "gallery-world-display": {
-        "title": "Stel een Gallery-display samen",
+        "title": "Stel een CalorieStudio-display samen",
         "body": "Plaats vrijwillig een eenvoudige creator-marker in de wereld. In deze eerste versie blijft die lokaal.",
         "action": "Display plaatsen",
-        "done": "Er verschijnt nu een creator-beacon bij het Gallery-district."
+        "done": "Er verschijnt nu een creator-beacon bij het CalorieStudio-district."
       },
       "helpbot-local-hint": {
         "title": "Vraag om een lokale hint",
@@ -85,10 +85,10 @@
         "done": "农场水路已平衡，景观也会响应。"
       },
       "gallery-world-display": {
-        "title": "策划 Gallery 展示",
+        "title": "策划 CalorieStudio 展示",
         "body": "选择在世界中放置一个简单的创作者标记。此版本仅保存在本地。",
         "action": "放置展示",
-        "done": "Gallery 区域现在出现创作者信标。"
+        "done": "CalorieStudio 区域现在出现创作者信标。"
       },
       "helpbot-local-hint": {
         "title": "询问本地提示",
@@ -118,10 +118,10 @@
         "done": "फार्म का जल मार्ग संतुलित है और परिदृश्य प्रतिक्रिया देता है।"
       },
       "gallery-world-display": {
-        "title": "Gallery डिस्प्ले तैयार करें",
+        "title": "CalorieStudio डिस्प्ले तैयार करें",
         "body": "दुनिया में एक सरल creator marker रखने का विकल्प चुनें। इस चरण में यह लोकल रहता है।",
         "action": "डिस्प्ले रखें",
-        "done": "Gallery क्षेत्र में creator beacon दिखाई देता है।"
+        "done": "CalorieStudio क्षेत्र में creator beacon दिखाई देता है।"
       },
       "helpbot-local-hint": {
         "title": "लोकल संकेत पूछें",
@@ -151,10 +151,10 @@
         "done": "La ruta de agua queda equilibrada y el paisaje responde."
       },
       "gallery-world-display": {
-        "title": "Crea una muestra de Gallery",
+        "title": "Crea una muestra de CalorieStudio",
         "body": "Coloca voluntariamente un marcador de creador. En esta primera versión permanece local.",
         "action": "Colocar muestra",
-        "done": "Aparece una baliza de creador en el distrito Gallery."
+        "done": "Aparece una baliza de creador en el distrito CalorieStudio."
       },
       "helpbot-local-hint": {
         "title": "Pide una pista local",
@@ -184,10 +184,10 @@
         "done": "تمت موازنة مسار مياه المزرعة واستجابت البيئة."
       },
       "gallery-world-display": {
-        "title": "نسّق عرض Gallery",
+        "title": "نسّق عرض CalorieStudio",
         "body": "اختر وضع علامة بسيطة للمبدع في العالم. تبقى محلية في هذه المرحلة.",
         "action": "وضع العرض",
-        "done": "تظهر الآن منارة للمبدعين قرب منطقة Gallery."
+        "done": "تظهر الآن منارة للمبدعين قرب منطقة CalorieStudio."
       },
       "helpbot-local-hint": {
         "title": "اطلب تلميحًا محليًا",
@@ -217,10 +217,10 @@
         "done": "Le trajet d’eau est équilibré et le paysage réagit."
       },
       "gallery-world-display": {
-        "title": "Composer une présentation Gallery",
+        "title": "Composer une présentation CalorieStudio",
         "body": "Placez volontairement un repère créateur simple. Il reste local dans cette première version.",
         "action": "Placer la présentation",
-        "done": "Une balise créateur apparaît près du quartier Gallery."
+        "done": "Une balise créateur apparaît près du quartier CalorieStudio."
       },
       "helpbot-local-hint": {
         "title": "Demander un indice local",
@@ -250,10 +250,10 @@
         "done": "ফার্মের পানির পথ ভারসাম্যপূর্ণ এবং দৃশ্যপট সাড়া দেয়।"
       },
       "gallery-world-display": {
-        "title": "Gallery ডিসপ্লে সাজান",
+        "title": "CalorieStudio ডিসপ্লে সাজান",
         "body": "বিশ্বে একটি সহজ creator marker রাখুন। প্রথম সংস্করণে এটি লোকাল থাকে।",
         "action": "ডিসপ্লে রাখুন",
-        "done": "Gallery এলাকায় creator beacon দেখা যায়।"
+        "done": "CalorieStudio এলাকায় creator beacon দেখা যায়।"
       },
       "helpbot-local-hint": {
         "title": "লোকাল হিন্ট নিন",
@@ -283,10 +283,10 @@
         "done": "A rota de água está equilibrada e a paisagem responde."
       },
       "gallery-world-display": {
-        "title": "Organize uma mostra Gallery",
+        "title": "Organize uma mostra CalorieStudio",
         "body": "Coloque voluntariamente um marcador simples de criador. Nesta versão fica local.",
         "action": "Colocar mostra",
-        "done": "Uma baliza de criador aparece no distrito Gallery."
+        "done": "Uma baliza de criador aparece no distrito CalorieStudio."
       },
       "helpbot-local-hint": {
         "title": "Peça uma dica local",
@@ -316,10 +316,10 @@
         "done": "Jalur air farm seimbang dan lanskap merespons."
       },
       "gallery-world-display": {
-        "title": "Kurasi tampilan Gallery",
+        "title": "Kurasi tampilan CalorieStudio",
         "body": "Pilih menempatkan marker kreator sederhana. Pada tahap ini tetap lokal.",
         "action": "Tempatkan tampilan",
-        "done": "Beacon kreator muncul di distrik Gallery."
+        "done": "Beacon kreator muncul di distrik CalorieStudio."
       },
       "helpbot-local-hint": {
         "title": "Minta petunjuk lokal",
@@ -349,10 +349,10 @@
         "done": "فارم کا پانی متوازن ہے اور منظر ردعمل دیتا ہے۔"
       },
       "gallery-world-display": {
-        "title": "Gallery ڈسپلے ترتیب دیں",
+        "title": "CalorieStudio ڈسپلے ترتیب دیں",
         "body": "دنیا میں ایک سادہ creator marker رکھنے کا انتخاب کریں۔ یہ فی الحال لوکل رہتا ہے۔",
         "action": "ڈسپلے رکھیں",
-        "done": "Gallery ضلع میں creator beacon ظاہر ہوتا ہے۔"
+        "done": "CalorieStudio ضلع میں creator beacon ظاہر ہوتا ہے۔"
       },
       "helpbot-local-hint": {
         "title": "لوکل ہنٹ پوچھیں",
