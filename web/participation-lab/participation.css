@@ -23,3 +23,8 @@ button{min-height:44px}
 input[type=range]{min-height:32px}
 @media(max-width:560px){.actions{display:grid;grid-template-columns:1fr 1fr}.actions button{width:100%}.hero h1{font-size:32px;line-height:1.08}.shell{padding:20px 14px}.card{padding:20px}.overview,.activity{padding:17px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.release-choice{margin-top:18px;padding:14px;border:1px solid #21384c;background:#0a1622;border-radius:14px}
+.release-choice label{display:block!important;margin:0 0 8px!important;color:#c9d7e4;font-size:12px!important;font-weight:800}
+.release-choice select{width:100%;border:1px solid #2d455b;background:#102130;color:#dce8f4;border-radius:10px;padding:10px 34px 10px 11px;font-weight:700}
+.release-choice small{display:block;margin-top:8px;letter-spacing:0;line-height:1.45;color:#71879d;font-weight:600}
