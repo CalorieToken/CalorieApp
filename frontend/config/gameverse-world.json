@@ -1,0 +1,162 @@
+{
+  "version": "0.1.0",
+  "world_id": "calorie-gameverse-starter-world",
+  "status": "first-playable-ecosystem-slice",
+  "starter_character": {
+    "starter_character_id": "starter-original",
+    "render_asset_key": "starter-original-v1",
+    "silent_replacement_forbidden": true
+  },
+  "principles": {
+    "zero_participation_path": true,
+    "crypto_required": false,
+    "wallet_required": false,
+    "preserve_starting_world": true,
+    "mountains_hidden_until_reveal": true
+  },
+  "start": {
+    "x": 11,
+    "y": 70,
+    "region_id": "welcome-meadow"
+  },
+  "progression": {
+    "maze_unlock_after_unique_regions": 4,
+    "mountain_reveal_after_maze": false
+  },
+  "regions": [
+    {
+      "id": "welcome-meadow",
+      "kind": "start",
+      "x": 11,
+      "y": 70,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "calorieapp-harbor",
+      "kind": "calorieapp",
+      "x": 24,
+      "y": 58,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "/"
+    },
+    {
+      "id": "helpbot-garden",
+      "kind": "helpbot",
+      "x": 35,
+      "y": 34,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/caloriehelpbot/"
+    },
+    {
+      "id": "food-data-grove",
+      "kind": "caloriedb",
+      "x": 48,
+      "y": 57,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/community/"
+    },
+    {
+      "id": "community-farm",
+      "kind": "community",
+      "x": 60,
+      "y": 31,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": "https://calorietoken.net/calorieecosystem/"
+    },
+    {
+      "id": "creator-gallery",
+      "kind": "gallery",
+      "x": 69,
+      "y": 62,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "participation-lodge",
+      "kind": "participation",
+      "x": 79,
+      "y": 38,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "adult"
+      ],
+      "destination": null
+    },
+    {
+      "id": "maze-gate",
+      "kind": "maze",
+      "x": 89,
+      "y": 57,
+      "visible_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "interactive_ages": [
+        "child",
+        "teen",
+        "adult"
+      ],
+      "destination": null
+    }
+  ]
+}
