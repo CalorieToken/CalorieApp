@@ -249,6 +249,25 @@ These controls apply only to volunteer-node eligible data. They do not delete
 private CalorieApp logs, identity state, Gameverse progress or ordinary product
 data. Private/user data remains outside this volunteer storage plane.
 
+## Conservative resource preferences
+
+The next synthetic policy slice keeps voluntary participation inside explicit
+user-selected device and network limits. Defaults are intentionally conservative:
+
+- manual start remains the default; auto-start is off unless explicitly selected;
+- Wi-Fi-only participation is on by default;
+- battery-powered participation is off by default;
+- compute waits for an idle device by default;
+- a bounded monthly transfer allowance is selected by the user;
+- the compute percentage remains bounded;
+- each versioned task class can be allowed or refused independently;
+- unknown task classes fail closed.
+
+The current resource-policy module only models these decisions. It does **not**
+claim to inspect a real Wi-Fi interface, battery, operating-system idle state or
+native scheduler yet. Those controls must be enforced by the eventual node
+runtime before real participant work is enabled.
+
 ## Participation principles for the UI and Gameverse
 
 Participation is never a prerequisite for using CalorieApp or the Gameverse.
