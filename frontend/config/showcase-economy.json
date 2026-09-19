@@ -1,7 +1,7 @@
 {
   "$schema": "./showcase-economy.schema.json",
   "contract_id": "calorietoken.showcase-economy",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "environment": "xrpl-testnet",
   "ticker": "CALT",
   "display_name": "Calorie Test",
@@ -108,5 +108,28 @@
       "community-art",
       "future-calorie-related-asset"
     ]
+  },
+  "reference_peg": {
+    "enabled": true,
+    "mode": "simulated-1-calt-equals-1-cal-market-reference",
+    "source": "XPMarket-via-WordPress-proxy",
+    "source_route": "/wp-json/calorieapp/v1/xpmarket-widget",
+    "source_asset": "CAL",
+    "source_issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY",
+    "refresh_seconds": 300,
+    "valuation_only": true,
+    "affects_calt_quantity_or_airdrop_amount": false,
+    "redeemable_for_cal": false,
+    "convertible_to_cal_by_calorietoken": false,
+    "reserve_backed": false,
+    "guaranteed_peg": false,
+    "arbitrage_promised": false,
+    "snapshot_marketplace_valuations": true,
+    "require_source_timestamp": true,
+    "stale_policy": {
+      "max_last_known_seconds": 1800,
+      "after_expiry": "hide-reference-valuation"
+    },
+    "display_label": "Simulated CAL reference"
   }
 }
