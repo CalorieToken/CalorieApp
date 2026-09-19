@@ -1,0 +1,26 @@
+{
+  "schema_version": "calorietoken.participation-resource-preferences.v1",
+  "status": "synthetic-policy-only",
+  "purpose": "Keep optional participation inside user-selected device and network limits.",
+  "defaults": {
+    "monthly_bandwidth_limit_mb": 500,
+    "compute_limit_percent": 25,
+    "wifi_only": true,
+    "allow_battery": false,
+    "idle_compute_only": true,
+    "auto_start": false
+  },
+  "supported_task_classes": [
+    "store-synthetic-public-shard.v1",
+    "catalog-integrity-summary.v1"
+  ],
+  "principles": {
+    "ordinary_app_access_requires_participation": false,
+    "ordinary_gameverse_access_requires_participation": false,
+    "auto_start_requires_explicit_opt_in": true,
+    "unknown_task_classes_fail_closed": true,
+    "limits_are_user_changeable": true,
+    "real_device_detection_implemented": false,
+    "real_os_scheduler_integration_implemented": false
+  }
+}
