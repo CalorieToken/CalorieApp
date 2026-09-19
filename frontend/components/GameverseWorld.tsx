@@ -314,6 +314,10 @@ export function GameverseWorld() {
                 <GameverseCreatorGallery ageBand={ageBand} compact />
               ) : null}
 
+              {selected?.kind === "participation" && ageBand === "adult" ? (
+                <ParticipationChoiceCard ageBand={ageBand} />
+              ) : null}
+
               {selected?.kind === "maze" && mazeReady ? (
                 <GameverseMazeRoute
                   locale={locale}
