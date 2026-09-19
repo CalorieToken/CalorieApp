@@ -14,7 +14,7 @@ async function json(url) {
   return JSON.parse(await readFile(url, "utf8"));
 }
 
-test("Gallery ecosystem is world-connected and non-pay-to-win", async () => {
+test("CalorieStudio is world-connected and non-pay-to-win", async () => {
   const [catalog, world] = await Promise.all([json(catalogUrl), json(worldUrl)]);
   assert.equal(catalog.principles.pay_to_win, false);
   assert.equal(catalog.principles.wallet_required_to_browse, false);
@@ -22,13 +22,17 @@ test("Gallery ecosystem is world-connected and non-pay-to-win", async () => {
   assert.equal(catalog.principles.real_marketplace_enabled, false);
   assert.equal(catalog.principles.creator_owns_storage, true);
   assert.equal(catalog.principles.world_and_gallery_share_asset_identity, true);
+  assert.equal(catalog.public_name, "CalorieStudio");
+  assert.equal(catalog.internal_legacy_term, "Creator Gallery");
+  assert.equal(catalog.route_compatibility, "/gallery");
+  assert.equal(catalog.principles.caloriestudio_is_native_calorieverse_surface, true);
 
   const galleryRegion = world.regions.find(region => region.id === "creator-gallery");
   assert.ok(galleryRegion);
   assert.equal(galleryRegion.destination, "/gallery");
 });
 
-test("Gallery catalog covers planned modular creator families without real settlement", async () => {
+test("CalorieStudio catalog covers planned modular creator families without real settlement", async () => {
   const catalog = await json(catalogUrl);
   for (const type of [
     "recipe",
@@ -47,14 +51,14 @@ test("Gallery catalog covers planned modular creator families without real settl
   assert.equal(catalog.assets.some(asset => asset.transfer_mode === "simulated-license"), true);
 });
 
-test("child Gallery assets never require simulated licensing", async () => {
+test("child CalorieStudio assets never require simulated licensing", async () => {
   const catalog = await json(catalogUrl);
   const childAssets = catalog.assets.filter(asset => asset.ages.includes("child"));
   assert.ok(childAssets.length > 0);
   assert.equal(childAssets.every(asset => asset.transfer_mode === "game-native"), true);
 });
 
-test("all eleven display languages have Gallery shell copy", async () => {
+test("all eleven display languages have CalorieStudio shell copy", async () => {
   const copy = await json(copyUrl);
   const locales = ["en", "zh-Hans", "hi", "es", "ar", "fr", "bn", "pt", "id", "ur", "nl"];
   assert.deepEqual(Object.keys(copy).sort(), [...locales].sort());
@@ -66,7 +70,7 @@ test("all eleven display languages have Gallery shell copy", async () => {
   }
 });
 
-test("Gallery UI keeps creation local and explicitly avoids upload mint sale actions", async () => {
+test("CalorieStudio keeps creation local and explicitly avoids upload mint sale actions", async () => {
   const [source, helper] = await Promise.all([
     readFile(componentUrl, "utf8"),
     readFile(helperUrl, "utf8"),
@@ -79,7 +83,7 @@ test("Gallery UI keeps creation local and explicitly avoids upload mint sale act
   assert.doesNotMatch(source, /mintNFT|submitOffer|walletSign|uploadToProvider/);
 });
 
-test("Gameverse embeds the Gallery and direct Gallery route returns to the world", async () => {
+test("CalorieVerse embeds CalorieStudio and its compatibility route returns to the world", async () => {
   const [worldSource, routeSource] = await Promise.all([
     readFile(gameverseUrl, "utf8"),
     readFile(routeUrl, "utf8"),
