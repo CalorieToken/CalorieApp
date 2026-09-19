@@ -14,6 +14,11 @@ export type SettlementRailState = {
 
 const rails = economy.marketplace.settlement.rails;
 
+function settlementNetwork(value: string): SettlementRailState["network"] {
+  if (value === "xrpl-testnet" || value === "xrpl-mainnet") return value;
+  throw new Error("Unsupported showcase settlement network");
+}
+
 export function getSettlementRailState(
   rail: ShowcaseSettlementRail,
   ageBand: ShowcaseAgeBand
@@ -25,7 +30,7 @@ export function getSettlementRailState(
     return {
       rail,
       enabled: false,
-      network: config.network,
+      network: settlementNetwork(config.network),
       realValue: config.real_value,
       adultOnly,
       reason:
@@ -39,7 +44,7 @@ export function getSettlementRailState(
     return {
       rail,
       enabled: false,
-      network: config.network,
+      network: settlementNetwork(config.network),
       realValue: config.real_value,
       adultOnly,
       reason:
@@ -52,7 +57,7 @@ export function getSettlementRailState(
   return {
     rail,
     enabled: true,
-    network: config.network,
+    network: settlementNetwork(config.network),
     realValue: config.real_value,
     adultOnly,
   };
