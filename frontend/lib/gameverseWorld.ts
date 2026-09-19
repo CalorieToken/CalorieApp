@@ -77,9 +77,23 @@ export function uniqueVisited(regionIds: readonly string[]): string[] {
   return [...new Set(regionIds.filter(id => gameverseRegions.some(region => region.id === id)))];
 }
 
+export function coreRouteProgress(regionIds: readonly string[]): {
+  visited: string[];
+  remaining: string[];
+  total: number;
+} {
+  const visitedSet = new Set(uniqueVisited(regionIds));
+  const required = worldConfig.progression.maze_required_regions as string[];
+  return {
+    visited: required.filter(id => visitedSet.has(id)),
+    remaining: required.filter(id => !visitedSet.has(id)),
+    total: required.length,
+  };
+}
+
 export function mazeUnlocked(regionIds: readonly string[]): boolean {
-  const visited = uniqueVisited(regionIds).filter(id => id !== "maze-gate");
-  return visited.length >= worldConfig.progression.maze_unlock_after_unique_regions;
+  const progress = coreRouteProgress(regionIds);
+  return progress.total > 0 && progress.remaining.length === 0;
 }
 
 export function starterIdentity(): {
