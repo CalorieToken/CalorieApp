@@ -1,36 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import { CalorieStudioPage } from "@/components/CalorieStudioPage";
 
-import Link from "next/link";
+export const metadata: Metadata = {
+  title: "CalorieStudio",
+  description: "Compatibility route for CalorieStudio.",
+};
 
-import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
-import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
-import { GameverseCreatorGallery } from "@/components/GameverseCreatorGallery";
-import { ParticipationChoiceCard } from "@/components/ParticipationChoiceCard";
-
-export default function GalleryPage() {
-  const [ageBand, setAgeBand, resolved = true] = useAgeExperience();
-
-  if (!resolved) return null;
-
-  return (
-    <main data-calorieapp-content className="gallery-page">
-      <div className="gallery-page-shell">
-        <header className="gallery-page-topbar">
-          <Link href="/gameverse" className="gallery-back">← Gameverse</Link>
-          <DisplayLanguagePicker />
-        </header>
-        {!ageBand ? (
-          <section className="gallery-age-entry">
-            <AgeExperienceControl band={ageBand} onChange={setAgeBand} />
-          </section>
-        ) : (
-          <>
-            <AgeExperienceControl band={ageBand} onChange={setAgeBand} />
-            <ParticipationChoiceCard ageBand={ageBand} compact />
-            <GameverseCreatorGallery ageBand={ageBand} />
-          </>
-        )}
-      </div>
-    </main>
-  );
+export default function GalleryCompatibilityPage() {
+  return <CalorieStudioPage />;
 }
