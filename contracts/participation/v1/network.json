@@ -1,7 +1,7 @@
 {
   "contract_id": "calorietoken.participation-network",
-  "contract_version": "0.1.1",
-  "status": "local-synthetic-simulator-disabled-by-default",
+  "contract_version": "0.1.2",
+  "status": "local-synthetic-storage-and-compute-simulators-disabled-by-default",
   "simulator_contract": "contracts/participation/v1/simulator.json",
   "official_product_boundary": {
     "wordpress_official_portal": true,
@@ -62,7 +62,8 @@
     "bounded_sandbox_required_for_compute": true,
     "secrets_sent_to_nodes": false,
     "deterministic_verification_required": true,
-    "redundant_result_verification_supported": true
+    "redundant_result_verification_supported": true,
+    "synthetic_compute_current_boundary": "fixed-code-separate-process-only-not-a-secure-general-purpose-sandbox"
   },
   "rewards": {
     "asset": "CALT",
