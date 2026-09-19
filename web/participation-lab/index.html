@@ -11,9 +11,21 @@
     <div><span class="eyebrow">CALORIE ECOSYSTEM · OPTIONAL PARTICIPATION</span>
     <h1>Participation Lab <span>◌</span></h1>
     <p>Use CalorieApp and the Gameverse normally, or voluntarily share a little capacity. You stay in control.</p></div>
-    <div class="status"><i id="statusDot"></i><div><small>NODE STATUS</small><strong id="statusText">OFF</strong></div></div>
+    <div class="status"><i id="statusDot"></i><div><small>PROCESS STATUS</small><strong id="statusText">OFF</strong></div></div>
   </header>
   <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section><section class="networkbar"><div><small>COMMUNITY CAPACITY</small><strong id="communityCount">0 volunteer nodes</strong></div><div class="fallback">Hosted core active</div></section>
+  <section class="overview">
+    <div class="overview-copy">
+      <small>YOUR CHOICES</small>
+      <h2>Your contribution</h2>
+      <p>These are your current voluntary limits, not requirements or guaranteed usage.</p>
+    </div>
+    <div class="overview-items">
+      <div><span>Storage</span><strong id="storageSummary">OFF</strong><small id="storageDetail">No storage shared</small></div>
+      <div><span>Compute</span><strong id="computeSummary">OFF</strong><small id="computeDetail">No processing shared</small></div>
+      <div><span>Rewards</span><strong id="rewardSummary">OFF</strong><small id="rewardDetail">No reward participation</small></div>
+    </div>
+  </section>
   <section class="grid">
     <article class="card">
       <div class="cardhead"><div><small>01 · DATA</small><h2>Storage contribution</h2></div><label class="switch"><input id="storageToggle" type="checkbox"><span></span></label></div>
@@ -44,6 +56,10 @@
       <div class="steps"><span class="on">Hosted core</span><i>→</i><span>Storage</span><i>→</i><span>Compute</span><i>→</i><span>Community scale</span></div>
       <p>The ecosystem works at zero participation. More voluntary nodes can gradually add redundancy and capacity without redesigning the core.</p>
     </article>
+  </section>
+  <section class="activity">
+    <div><small>LOCAL PROTOTYPE ACTIVITY</small><h2>Recent choices</h2></div>
+    <ol id="activityList"><li>Participation is off. Hosted core remains active.</li></ol>
   </section>
   <footer><button id="exitBtn" class="danger">Exit participation</button><span id="message">You can change these choices at any time.</span></footer>
 </main>
