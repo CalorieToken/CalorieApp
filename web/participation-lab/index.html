@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Participation Lab</title>
+<link rel="stylesheet" href="participation.css">
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <div><span class="eyebrow">CALORIE ECOSYSTEM · OPTIONAL PARTICIPATION</span>
+    <h1>Participation Lab <span>◌</span></h1>
+    <p>Use CalorieApp and the Gameverse normally, or voluntarily share a little capacity. You stay in control.</p></div>
+    <div class="status"><i id="statusDot"></i><div><small>NODE STATUS</small><strong id="statusText">OFF</strong></div></div>
+  </header>
+  <section class="notice"><strong>Nothing is required.</strong> Storage, compute and simulated rewards are separate choices. Leaving participation never removes normal app or Gameverse access.</section>
+  <section class="grid">
+    <article class="card">
+      <div class="cardhead"><div><small>01 · DATA</small><h2>Storage contribution</h2></div><label class="switch"><input id="storageToggle" type="checkbox"><span></span></label></div>
+      <p>Offer a small, user-limited amount of space for eligible public/synthetic shards.</p>
+      <label>Maximum space <b id="storageValue">250 MB</b></label>
+      <input id="storageLimit" type="range" min="50" max="2000" step="50" value="250">
+      <div class="ticks"><span>50 MB</span><span>2 GB</span></div>
+      <div class="mini"><span>Storage can remain available while compute is stopped.</span></div>
+    </article>
+    <article class="card">
+      <div class="cardhead"><div><small>02 · PROCESS</small><h2>Compute contribution</h2></div><label class="switch"><input id="computeToggle" type="checkbox"><span></span></label></div>
+      <p>Run only bounded, approved tasks within the limits you choose.</p>
+      <label>Maximum effort <b id="computeValue">25%</b></label>
+      <input id="computeLimit" type="range" min="5" max="75" step="5" value="25">
+      <div class="ticks"><span>Light</span><span>Higher</span></div>
+      <div class="actions">
+        <button id="startBtn" class="primary">Start</button><button id="pauseBtn">Pause</button>
+        <button id="resumeBtn">Resume</button><button id="stopBtn">Stop</button>
+      </div>
+    </article>
+    <article class="card reward">
+      <div class="cardhead"><div><small>03 · OPTIONAL</small><h2>calT test rewards</h2></div><label class="switch"><input id="rewardToggle" type="checkbox"><span></span></label></div>
+      <p>Opt in to simulated calT accounting for verified participation. This prototype mints and transfers nothing.</p>
+      <div class="balance"><span>SIMULATED BALANCE</span><strong>0 <em>calT</em></strong></div>
+    </article>
+    <article class="card growth">
+      <small>GROW FROM SMALL</small><h2>Every contribution can add capacity.</h2>
+      <div class="steps"><span class="on">Hosted core</span><i>→</i><span>Storage</span><i>→</i><span>Compute</span><i>→</i><span>Community scale</span></div>
+      <p>The ecosystem works at zero participation. More voluntary nodes can gradually add redundancy and capacity without redesigning the core.</p>
+    </article>
+  </section>
+  <footer><button id="exitBtn" class="danger">Exit participation</button><span id="message">You can change these choices at any time.</span></footer>
+</main>
+<script src="participation.js"></script>
+</body></html>
