@@ -6,6 +6,7 @@ const catalogUrl = new URL("../../frontend/config/gallery-assets.json", import.m
 const copyUrl = new URL("../../frontend/config/gallery-copy.json", import.meta.url);
 const worldUrl = new URL("../../frontend/config/gameverse-world.json", import.meta.url);
 const componentUrl = new URL("../../frontend/components/GameverseCreatorGallery.tsx", import.meta.url);
+const helperUrl = new URL("../../frontend/lib/galleryEcosystem.ts", import.meta.url);
 const gameverseUrl = new URL("../../frontend/components/GameverseWorld.tsx", import.meta.url);
 const routeUrl = new URL("../../frontend/app/gallery/page.tsx", import.meta.url);
 
@@ -66,12 +67,15 @@ test("all eleven display languages have Gallery shell copy", async () => {
 });
 
 test("Gallery UI keeps creation local and explicitly avoids upload mint sale actions", async () => {
-  const source = await readFile(componentUrl, "utf8");
-  assert.match(source, /calorie\.gallery\.local-drafts\.v1/);
+  const [source, helper] = await Promise.all([
+    readFile(componentUrl, "utf8"),
+    readFile(helperUrl, "utf8"),
+  ]);
+  assert.match(helper, /calorie\.gallery\.local-drafts\.v1/);
   assert.match(source, /window\.localStorage/);
   assert.match(source, /createLocalGalleryDraft/);
   assert.match(source, /gallery-world-drafts/);
-  assert.match(source, /compact && drafts\.length > 0/);
+  assert.match(source, /compact && visibleDrafts\.length > 0/);
   assert.doesNotMatch(source, /mintNFT|submitOffer|walletSign|uploadToProvider/);
 });
 
