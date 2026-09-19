@@ -1,7 +1,7 @@
 {
   "$schema": "./showcase-economy.schema.json",
   "contract_id": "calorietoken.showcase-economy",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "environment": "xrpl-testnet",
   "ticker": "CALT",
   "display_name": "Calorie Test",
@@ -157,6 +157,70 @@
           "legal_tax_consumer_review_required": true
         }
       }
+    },
+    "creator_storage": {
+      "model": "bring-your-own-storage",
+      "platform_shared_storage_credentials": false,
+      "creator_owns_provider_account": true,
+      "per_user_connection_scope": true,
+      "provider_account_linking_preferred": true,
+      "oauth_pkce_when_supported": true,
+      "provider_managed_social_login_only": true,
+      "google_password_never_collected": true,
+      "github_password_never_collected": true,
+      "raw_provider_password_never_collected": true,
+      "api_key_fallback": {
+        "allowed": true,
+        "frontend_storage_forbidden": true,
+        "public_metadata_storage_forbidden": true,
+        "backend_encryption_required": true
+      },
+      "stored_application_fields": [
+        "provider_id",
+        "connection_id_non_secret",
+        "cid",
+        "ipfs_uri",
+        "content_digest",
+        "verification_timestamp",
+        "preservation_status"
+      ],
+      "providers": {
+        "nft_storage_classic": {
+          "mode": "legacy-import-only",
+          "new_uploads": false,
+          "accepted_inputs": [
+            "existing-cid",
+            "existing-ipfs-uri"
+          ],
+          "documented_login_methods": [
+            "email",
+            "github"
+          ],
+          "google_login_assumed": false
+        },
+        "hot_ipfs_provider": {
+          "mode": "creator-selected-current-provider",
+          "provider_examples": [
+            "Pinata",
+            "Lighthouse"
+          ],
+          "account_owned_by_creator": true,
+          "oauth_or_api_key_depends_on_provider": true
+        },
+        "nft_storage_preservation": {
+          "mode": "optional-long-term-preservation",
+          "account_owned_by_creator": true,
+          "requires_existing_ipfs_content": true,
+          "adapter_status": "planned-current-api-verification-required"
+        }
+      },
+      "pre_mint_requirements": {
+        "media_cid_retrievable": true,
+        "metadata_cid_retrievable": true,
+        "immutable_uri_preferred": true,
+        "content_digest_recorded": true
+      },
+      "post_mint_mutation_policy": "new-content-means-new-cid-no-silent-replacement"
     }
   },
   "reference_peg": {
