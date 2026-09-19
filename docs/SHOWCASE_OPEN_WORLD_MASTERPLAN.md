@@ -419,6 +419,37 @@ Anti-hoarding:
 - marketplace/game progression must avoid pay-to-win and wealth-gated access to the core world;
 - anti-sybil and duplicate-entitlement checks must protect the fair launch distribution without requiring invasive tracking.
 
+
+## Voluntary decentralized CalorieDB participation
+
+The CalorieApp / metaverse may invite users to voluntarily contribute a small, user-selected amount of storage, bandwidth or deterministic compute to the wider Calorie ecosystem.
+
+Architecture:
+- PostgreSQL remains the protected primary store for private identity, sessions, personal food logs, consent and other deletion-sensitive data;
+- public/licence-compatible CalorieDB catalog, provenance, NFT/game content and open ecosystem data can gradually become content-addressed, mirrored and verified by participant nodes;
+- participant nodes are opt-in, reversible and resource-capped; ordinary app/game use never silently turns a device into a node;
+- participant compute receives only bounded non-sensitive task inputs and runs in a restricted sandbox;
+- nodes are untrusted by default and results need reproducible/deterministic verification before acceptance;
+- adult Testnet participants may later earn capped CALT credits for verified useful storage/compute work; children receive non-financial rewards and teens use simulation/non-value participation;
+- no reward for merely leaving a tab open, for storing private data, or for circular/spam work.
+
+The migration from PostgreSQL is gradual:
+0. PostgreSQL primary.
+1. Public participant replicas.
+2. Verified participant compute/storage.
+3. Federated public read mirrors.
+4. Selected append-only public datasets move to signed-content protocol as source-of-record, with PostgreSQL becoming cache/index.
+5. Mature distributed public data/compute if enough independent reliable operators exist.
+
+Phase promotion depends on independent operator diversity, replica coverage, reconstruction drills, verification quality, abuse resistance and cost—not raw signup count. Private mutable account data is never forced into the decentralized public layer.
+
+The official WordPress site remains the CalorieToken product/brand portal, bootstrap/documentation surface and official contract registry. The participation protocol itself must remain independently implementable so third parties can build compatible clients, F&B tools, nodes or games without becoming the official CalorieToken product.
+
+BigchainDB is not selected by this plan. The existing project assessment remains valid; the participation protocol stays provider-neutral so V3 can later reassess underlying decentralized technologies without rewriting the ecosystem contract.
+
+Detailed architecture: `docs/DECENTRALIZED_PARTICIPATION_ARCHITECTURE.md`
+Contract: `contracts/participation/v1/network.json`
+
 ## Return factor / strategy
 
 The game must remain interesting after the first visit.
