@@ -70,9 +70,17 @@
       <div class="balance"><span>SIMULATED BALANCE</span><strong>0 <em>calT</em></strong></div>
     </article>
     <article class="card growth">
-      <small>GROW FROM SMALL</small><h2>Every contribution can add capacity.</h2>
-      <div class="steps"><span class="on">Hosted core</span><i>→</i><span>Storage</span><i>→</i><span>Compute</span><i>→</i><span>Community scale</span></div>
-      <p>The ecosystem works at zero participation. More voluntary nodes can gradually add redundancy and capacity without redesigning the core.</p>
+      <small>GROW FROM SMALL · ILLUSTRATIVE</small><h2>Every contribution can add capacity.</h2>
+      <div class="steps" id="growthSteps">
+        <span data-stage="hosted" class="on">Hosted core</span><i>→</i>
+        <span data-stage="early">Early community</span><i>→</i>
+        <span data-stage="growing">Growing</span><i>→</i>
+        <span data-stage="strong">Strong community</span>
+      </div>
+      <div class="growthmeter" aria-label="Illustrative participation growth stage">
+        <div id="growthFill"></div>
+      </div>
+      <p id="growthNote">The ecosystem works at zero participation. This bar is illustrative only; it does not represent live network capacity.</p>
     </article>
   </section>
   <section class="activity">
