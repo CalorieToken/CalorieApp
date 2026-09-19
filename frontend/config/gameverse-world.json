@@ -23,7 +23,18 @@
     "participation_runtime_must_be_browser_accessible": true,
     "single_link_for_everyone": true,
     "participant_and_nonparticipant_share_same_world_entry": true,
-    "node_or_validator_install_required": false
+    "node_or_validator_install_required": false,
+    "freedom_first_world": true,
+    "multiple_valid_playstyles": true,
+    "mandatory_faction": false,
+    "mandatory_social_participation": false,
+    "mandatory_creator_role": false,
+    "voluntary_economy_only": true,
+    "pay_to_win": false,
+    "reversible_optional_roles": true,
+    "player_expression_with_safety_boundaries": true,
+    "privacy_and_permission_control": true,
+    "minimum_necessary_restrictions": true
   },
   "start": {
     "x": 11,
