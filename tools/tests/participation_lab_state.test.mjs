@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  contributionSummary,
   createParticipationState,
   hostedFallbackSnapshot,
   transition,
@@ -75,4 +76,27 @@ test("invalid limits and invalid process transitions fail closed", () => {
   assert.throws(() => createParticipationState({ storageLimitMb: 10 }), /storage-limit-out-of-range/);
   assert.throws(() => createParticipationState({ computeLimitPercent: 100 }), /compute-limit-out-of-range/);
   assert.throws(() => transition(createParticipationState(), { type: "START" }), /compute-not-enabled/);
+});
+
+test("contribution summary remains descriptive and optional", () => {
+  const off = contributionSummary(createParticipationState());
+  assert.equal(off.storageLabel, "OFF");
+  assert.equal(off.computeLabel, "OFF");
+  assert.equal(off.rewardsLabel, "OFF");
+  assert.equal(off.contributingNow, false);
+
+  const active = contributionSummary(createParticipationState({
+    storage: true,
+    compute: true,
+    rewards: true,
+    processState: "running",
+    storageLimitMb: 500,
+    computeLimitPercent: 30,
+  }));
+  assert.equal(active.storageLabel, "ON");
+  assert.equal(active.computeLabel, "RUNNING");
+  assert.equal(active.rewardsLabel, "ON");
+  assert.equal(active.contributingNow, true);
+  assert.match(active.storageDetail, /500 MB/);
+  assert.match(active.computeDetail, /30%/);
 });
