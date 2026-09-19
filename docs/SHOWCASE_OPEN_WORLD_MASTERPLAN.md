@@ -137,6 +137,91 @@ Rules:
 - Game content packs must require complete eleven-locale copy coverage or explicitly fall back to English with a visible fallback state.
 - The WordPress site, CalorieApp and Showcase game should therefore feel like one multilingual ecosystem rather than three separate products.
 
+## Design lessons from established open worlds, RPGs and creator platforms
+
+The Gameverse should learn from successful design patterns without copying any
+other game's characters, worlds, art direction, maps, story, interface or
+proprietary mechanics. The goal is to use proven **design principles** while
+keeping a distinct Calorie identity.
+
+### Exploration and world readability
+
+- Learn from *The Legend of Zelda: Breath of the Wild*: use a small number of
+  consistent world systems that interact with each other, rather than scripting
+  every encounter as an isolated minigame. Food, water, farms, weather, public
+  data, creator objects and route choices should produce understandable effects
+  across multiple areas.
+- Learn from *Elden Ring*: preserve genuine route freedom while controlling pace
+  with strong landmarks, terrain, mystery and optional side paths. The distant
+  natural mountains are therefore a long-range attractor before they ever become
+  a branded reveal.
+- Learn from good open-world level design generally: each destination should
+  reveal or suggest another destination. The player should rarely reach a point
+  of interest and then have no visual or gameplay reason to continue.
+
+### Player-authored stories and quests
+
+- Learn from *The Elder Scrolls*: handcrafted quests carry the important story,
+  while small dynamic activities may adapt to what the player has already seen.
+  Do not procedurally assemble major story beats.
+- Let systems overlap. A food-data task can affect a farm, a Gallery object can
+  appear in the world, a community event can alter a route, and a Helpbot hint
+  can react to progress. These intersections create memorable player stories.
+- Avoid repetitive fetch-quest design as the dominant loop. Even small quests
+  should teach, reveal, transform, connect or let the player make a meaningful
+  choice.
+
+### Sandbox and creator expression
+
+- Learn from *Minecraft*: allow multiple valid ways to enjoy the same world.
+  Exploration, collecting, creating, learning, food-chain role play and
+  community contribution should coexist without one mandatory end-state.
+- Gallery creations should increasingly become usable or visible world objects
+  rather than staying in a separate catalogue screen.
+- The world remains playable for someone who never creates, trades, runs a node,
+  connects a wallet or participates in a marketplace.
+
+### Onboarding and live evolution
+
+- Learn from Fortnite/UEFN and Roblox creator guidance: teach only the essentials
+  first, get the player into meaningful play quickly, and use contextual
+  just-in-time guidance when a player first reaches a new mechanic.
+- Prefer environmental cues, short Helpbot prompts and local interaction hints
+  over a long front-loaded tutorial.
+- Measure onboarding drop-off, route completion and return play when analytics
+  are eventually enabled, but do not turn raw screen time or idle time into a
+  reward target.
+- Expand the Gameverse through additive districts, quests, creator content and
+  world events while keeping the original starting world and starter-character
+  identity stable.
+
+### Social-metaverse safety
+
+- Learn from VRChat's user-control approach: safe defaults come first and richer
+  social visibility is permissioned rather than assumed.
+- The first shared-world release keeps social presence lightweight, age-gated
+  and controllable. No unrestricted child/adult private channels and no
+  unrestricted public voice are introduced merely to make the product look
+  "more metaverse".
+- Avatar/content complexity must be bounded so one participant cannot degrade
+  another player's device or experience.
+
+### Creator economy
+
+- Learn from Roblox and Fortnite creator ecosystems that creators need a clear
+  path from making useful content to reaching players, with strong moderation,
+  discovery and analytics around that loop.
+- Do not copy engagement-payout mechanics directly. Calorie's eventual creator
+  model must reward useful, enjoyable ecosystem content without encouraging
+  idle-time farming, spam, pay-to-win or financial pressure.
+- Marketplace, Mainnet CAL and XRP settlement remain separately gated features.
+  The first creator loop is create -> review -> use/display in the world, with
+  local/off-chain simulation before any real-value rail.
+
+This benchmark set is a design reference, not a feature checklist. Features are
+only adopted when they strengthen the Calorie world's food, nature, community,
+creator and ecosystem identity.
+
 ## Non-negotiable world structure
 
 1. The player starts in a large open world with many explorable places, moving characters, nature, water, villages, markets, farms, cities, F&B businesses, CalorieApp activity, Helpbot guidance and global cultural variety.
