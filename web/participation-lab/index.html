@@ -109,6 +109,42 @@
     </article>
   </section>
 
+  <details class="advanced-card">
+    <summary>
+      <span><small>ADVANCED · OPTIONAL</small><strong>Device & network limits</strong></span>
+      <em>Conservative defaults</em>
+    </summary>
+    <div class="advanced-intro">
+      <p>Keep the normal experience simple. These extra preferences only matter if you voluntarily participate.</p>
+      <p class="prototype-note">Synthetic policy preview: real Wi-Fi, battery and idle-state enforcement belongs in the future node runtime.</p>
+    </div>
+    <div class="advanced-grid">
+      <div class="advanced-limit">
+        <label for="bandwidthLimit">Monthly transfer cap <b id="bandwidthValue">500 MB</b></label>
+        <input id="bandwidthLimit" type="range" min="100" max="10000" step="100" value="500">
+        <div class="ticks"><span>100 MB</span><span>10 GB</span></div>
+      </div>
+
+      <div class="advanced-options" aria-label="Device preferences">
+        <label><input id="wifiOnly" type="checkbox" checked> <span>Wi-Fi only</span></label>
+        <label><input id="allowBattery" type="checkbox"> <span>Allow participation on battery power</span></label>
+        <label><input id="idleComputeOnly" type="checkbox" checked> <span>Run compute only while device is idle</span></label>
+        <label><input id="autoStart" type="checkbox"> <span>Allow auto-start on this device</span></label>
+      </div>
+
+      <fieldset class="task-classes">
+        <legend>Allowed task classes</legend>
+        <label><input id="allowStorageTasks" type="checkbox" checked> <span>Eligible public/synthetic storage shards</span></label>
+        <label><input id="allowComputeTasks" type="checkbox" checked> <span>Bounded catalog-integrity compute</span></label>
+      </fieldset>
+
+      <div class="advanced-safety">
+        <strong id="advancedModeSummary">Manual start · Wi-Fi only · idle compute</strong>
+        <p>Unknown task classes remain blocked. Auto-start is off by default and this web prototype never starts background device work by itself.</p>
+      </div>
+    </div>
+  </details>
+
   <section class="activity">
     <div><small>LOCAL PROTOTYPE ACTIVITY</small><h2>Recent choices</h2></div>
     <ol id="activityList" aria-live="polite"><li>Participation is off. Hosted core remains active.</li></ol>
