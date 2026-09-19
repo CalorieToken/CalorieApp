@@ -166,3 +166,52 @@ test("invalid storage release modes fail closed", () => {
     /invalid-storage-release-mode/
   );
 });
+
+test("advanced resource preferences use conservative defaults", () => {
+  const state = createParticipationState();
+  assert.equal(state.monthlyBandwidthLimitMb, 500);
+  assert.equal(state.wifiOnly, true);
+  assert.equal(state.allowBattery, false);
+  assert.equal(state.idleComputeOnly, true);
+  assert.equal(state.autoStart, false);
+  assert.equal(state.allowStorageTasks, true);
+  assert.equal(state.allowComputeTasks, true);
+});
+
+test("advanced preferences are user-changeable without auto-starting work", () => {
+  let state = createParticipationState({ storage: true, compute: true });
+  state = transition(state, { type: "SET_BANDWIDTH_LIMIT", value: 1200 });
+  state = transition(state, { type: "SET_WIFI_ONLY", value: false });
+  state = transition(state, { type: "SET_ALLOW_BATTERY", value: true });
+  state = transition(state, { type: "SET_IDLE_COMPUTE_ONLY", value: false });
+  state = transition(state, { type: "SET_AUTO_START", value: true });
+  assert.equal(state.monthlyBandwidthLimitMb, 1200);
+  assert.equal(state.wifiOnly, false);
+  assert.equal(state.allowBattery, true);
+  assert.equal(state.idleComputeOnly, false);
+  assert.equal(state.autoStart, true);
+  assert.equal(state.storageState, "off");
+  assert.equal(state.processState, "off");
+});
+
+test("disabling a task class blocks only that task lifecycle", () => {
+  let state = createParticipationState({ storage: true, compute: true });
+  state = transition(state, { type: "SET_STORAGE_TASK_CLASS", value: false });
+  assert.throws(() => transition(state, { type: "START_STORAGE" }), /storage-task-class-disabled/);
+  state = transition(state, { type: "START" });
+  assert.equal(state.processState, "running");
+
+  state = transition(state, { type: "STOP" });
+  state = transition(state, { type: "SET_STORAGE_TASK_CLASS", value: true });
+  state = transition(state, { type: "SET_COMPUTE_TASK_CLASS", value: false });
+  state = transition(state, { type: "START_STORAGE" });
+  assert.equal(state.storageState, "running");
+  assert.throws(() => transition(state, { type: "START" }), /compute-task-class-disabled/);
+});
+
+test("advanced resource limits fail closed when malformed", () => {
+  assert.throws(() => createParticipationState({ monthlyBandwidthLimitMb: 99 }), /bandwidth-limit-out-of-range/);
+  assert.throws(() => createParticipationState({ monthlyBandwidthLimitMb: 10001 }), /bandwidth-limit-out-of-range/);
+  assert.throws(() => createParticipationState({ wifiOnly: "yes" }), /invalid-wifiOnly/);
+  assert.throws(() => createParticipationState({ autoStart: 1 }), /invalid-autoStart/);
+});
