@@ -104,6 +104,25 @@ technical or safety requirement, and then preserve the player's identity and
 progress through an explicit compatible migration rather than resetting the
 character.
 
+## One-link metaverse entry
+
+There is one primary Gameverse link for everyone. A visitor does not choose a
+separate installer or separate product for "player", "node" or "validator" mode.
+
+The link opens the same live Gameverse in ordinary non-participant mode. Inside
+that world, an eligible user may voluntarily enable bounded browser participation
+and choose storage, compute and/or validator/verification roles. They may also do
+nothing and simply continue playing.
+
+No native install, desktop daemon, browser extension or mandatory PWA install is
+part of the participation requirement. Persistent storage may be requested from
+the browser where supported, and compute/validator preferences may be remembered,
+but actual background execution remains subject to normal browser and operating
+system limits.
+
+This rule is part of the product identity: **one world, one link, participation
+optional**.
+
 ## Voluntary participation and reward choice
 
 Ordinary CalorieApp use and core game exploration must remain available without
