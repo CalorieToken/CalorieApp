@@ -70,6 +70,8 @@ test("Gallery UI keeps creation local and explicitly avoids upload mint sale act
   assert.match(source, /calorie\.gallery\.local-drafts\.v1/);
   assert.match(source, /window\.localStorage/);
   assert.match(source, /createLocalGalleryDraft/);
+  assert.match(source, /gallery-world-drafts/);
+  assert.match(source, /compact && drafts\.length > 0/);
   assert.doesNotMatch(source, /mintNFT|submitOffer|walletSign|uploadToProvider/);
 });
 
