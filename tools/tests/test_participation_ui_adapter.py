@@ -1,6 +1,7 @@
 import unittest
 
 from tools.participation_ui_adapter import (
+    DeviceContext,
     ParticipationSelection,
     ParticipationSession,
     demo_matrix,
@@ -206,6 +207,122 @@ class ParticipationUiAdapterTests(unittest.TestCase):
         self.assertTrue(snap["effective_storage_consent"]["storage"])
         self.assertTrue(snap["effective_compute_consent"]["paused"])
         self.assertTrue(snap["effective_compute_consent"]["compute"])
+
+
+    def test_advanced_defaults_are_conservative(self):
+        snap = self.session.snapshot()
+        selection = snap["selection"]
+        self.assertEqual(selection["monthly_bandwidth_limit_mb"], 500)
+        self.assertTrue(selection["wifi_only"])
+        self.assertFalse(selection["allow_battery"])
+        self.assertTrue(selection["idle_compute_only"])
+        self.assertFalse(selection["auto_start"])
+        self.assertTrue(selection["allow_storage_tasks"])
+        self.assertTrue(selection["allow_compute_tasks"])
+
+    def test_wifi_only_blocks_non_wifi_work(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            storage_state="running",
+        ))
+        with self.assertRaisesRegex(SimulationError, "wifi-required"):
+            self.session.run_storage_probe(DeviceContext(on_wifi=False))
+
+    def test_battery_work_is_blocked_by_default(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            storage_state="running",
+        ))
+        with self.assertRaisesRegex(SimulationError, "battery-participation-disabled"):
+            self.session.run_storage_probe(DeviceContext(on_battery=True))
+
+    def test_user_can_explicitly_allow_battery_participation(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            storage_state="running",
+            allow_battery=True,
+        ))
+        result = self.session.run_storage_probe(DeviceContext(on_battery=True))
+        self.assertTrue(result["verified"])
+
+    def test_compute_is_idle_only_by_default(self):
+        self.session.apply(ParticipationSelection(
+            compute=True,
+            process_state="running",
+        ))
+        with self.assertRaisesRegex(SimulationError, "compute-requires-idle-device"):
+            self.session.run_compute_probe(DeviceContext(is_idle=False))
+
+    def test_user_can_disable_idle_only_compute_limit(self):
+        self.session.apply(ParticipationSelection(
+            compute=True,
+            process_state="running",
+            idle_compute_only=False,
+        ))
+        result = self.session.run_compute_probe(DeviceContext(is_idle=False))
+        self.assertTrue(result["verified"])
+
+    def test_task_class_controls_fail_closed(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            storage_state="running",
+            allow_storage_tasks=False,
+        ))
+        with self.assertRaisesRegex(SimulationError, "storage-task-class-disabled"):
+            self.session.run_storage_probe()
+
+        self.session.apply(ParticipationSelection(
+            compute=True,
+            process_state="running",
+            allow_compute_tasks=False,
+        ))
+        with self.assertRaisesRegex(SimulationError, "compute-task-class-disabled"):
+            self.session.run_compute_probe()
+
+    def test_monthly_bandwidth_cap_blocks_new_work(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            storage_state="running",
+            monthly_bandwidth_limit_mb=100,
+        ))
+        self.session.bandwidth_used_bytes = 100 * 1024 * 1024
+        with self.assertRaisesRegex(SimulationError, "monthly-bandwidth-cap-reached"):
+            self.session.run_storage_probe()
+
+    def test_auto_start_is_opt_in_preview_only(self):
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            compute=True,
+            auto_start=False,
+        ))
+        before = self.session.snapshot()["selection"]
+        preview = self.session.auto_start_preview()
+        self.assertFalse(preview["auto_start_opted_in"])
+        self.assertEqual(preview["eligible"], [])
+        self.assertFalse(preview["state_changed"])
+        self.assertEqual(self.session.snapshot()["selection"], before)
+
+        self.session.apply(ParticipationSelection(
+            storage=True,
+            compute=True,
+            auto_start=True,
+        ))
+        before = self.session.snapshot()["selection"]
+        preview = self.session.auto_start_preview()
+        self.assertTrue(preview["auto_start_opted_in"])
+        self.assertEqual(preview["eligible"], ["storage", "compute"])
+        self.assertFalse(preview["state_changed"])
+        self.assertEqual(self.session.snapshot()["selection"], before)
+
+    def test_invalid_advanced_preferences_fail_closed(self):
+        for selection in (
+            ParticipationSelection(monthly_bandwidth_limit_mb=99),
+            ParticipationSelection(monthly_bandwidth_limit_mb=10001),
+            ParticipationSelection(wifi_only="yes"),
+            ParticipationSelection(allow_battery=1),
+        ):
+            with self.assertRaises(SimulationError):
+                self.session.apply(selection)
 
     def test_demo_matrix_covers_expected_paths(self):
         results = demo_matrix()
