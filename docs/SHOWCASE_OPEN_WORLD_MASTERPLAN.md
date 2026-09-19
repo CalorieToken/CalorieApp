@@ -241,6 +241,25 @@ Creation must be modular: recipes, menus, photographs, GIFs, 3D/Blender assets, 
 Historical CalorieApp Testnet NFT/token code is reference material only; do not revive the old hardcoded CalorieTest screen. The new game economy should use adapters so CALT Testnet payments/offers, Testnet NFTs and a local/off-chain simulation can be swapped without rewriting game logic.
 
 
+
+### CALT simulated CAL reference peg
+
+For gameplay and marketplace intuition, **1 CALT should have a fictional/reference value equal to the current public market reference for 1 CAL**, while remaining a Testnet-only asset with no redemption or legal/economic claim on real CAL.
+
+Implementation rules:
+- source the reference price from the existing WordPress CAL market proxy backed by XPMarket, not from an invented hard-coded price;
+- canonical source route: `/wp-json/calorieapp/v1/xpmarket-widget`;
+- verify the returned CAL issuer is `rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY`;
+- the existing proxy already reduces the upstream payload to public CAL fields and caches it for five minutes;
+- treat the peg as **simulated/reference only**: 1 CALT can be displayed as having the same nominal reference price as 1 CAL at that moment, but CALT cannot be redeemed, swapped or converted into CAL by CalorieToken;
+- no guaranteed convertibility, no reserve backing, no arbitrage promise and no future-value promise;
+- marketplace screens must label the figure as a simulated CAL reference, not as real CAL ownership;
+- store or display the source timestamp with valuation snapshots used for game offers so later CAL price moves do not rewrite the historical meaning of an old Testnet trade;
+- if the live source is unavailable, use only a bounded last-known snapshot with a visible stale state; after the stale window expires, hide fiat/reference valuation rather than fabricate a price;
+- CALT quantities, airdrop entitlement and game rewards remain controlled by the Testnet economy rules; the live CAL price only changes the **display/reference valuation**, not how many CALT a player receives.
+
+This gives the sandbox an intuitive connection to the real CAL ecosystem without turning Testnet CALT into a redeemable or investment asset.
+
 ### Global CALT welcome airdrop
 
 The CALT Testnet economy starts with a global **welcome airdrop**, and the newcomer path remains available on a rolling basis after the launch campaign because CALT is Testnet-only.
