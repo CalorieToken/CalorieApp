@@ -1,7 +1,7 @@
 {
   "$schema": "./showcase-economy.schema.json",
   "contract_id": "calorietoken.showcase-economy",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "environment": "xrpl-testnet",
   "ticker": "CALT",
   "display_name": "Calorie Test",
@@ -12,7 +12,7 @@
   "welcome_airdrop": {
     "enabled": false,
     "feature_flag": "showcase_calt_airdrop",
-    "distribution_model": "staged-global-welcome-period",
+    "distribution_model": "rolling-newcomer-welcome-with-launch-wave",
     "claim_start": null,
     "claim_end": null,
     "cadence": null,
@@ -87,11 +87,20 @@
       "calt_generosity_bonus_policy": "if-enabled-later-small-capped-non-circular-abuse-resistant",
       "assistance_targeting": "voluntary-opt-in-or-community-pool-never-inferred-poverty",
       "grind_policy": "reward-focus-and-useful-action-not-screen-time-or-repetition"
+    },
+    "newcomer_policy": {
+      "globally_available_for_future_newcomers": true,
+      "one_base_entitlement_per_canonical_game_identity": true,
+      "personal_window_starts_on_first_eligible_game_start": true,
+      "personal_window_duration": null,
+      "returning_player_does_not_reset_newcomer_status": true,
+      "seasonal_relaunch_does_not_duplicate_base_entitlement": true,
+      "backend_canonical_start_required_when_enabled": true
     }
   },
   "marketplace": {
     "enabled": false,
-    "testnet_only": true,
+    "testnet_only": false,
     "supported_asset_families": [
       "recipe",
       "menu",
@@ -107,7 +116,48 @@
       "provenance-story-media",
       "community-art",
       "future-calorie-related-asset"
-    ]
+    ],
+    "mode": "testnet-first-mainnet-ready",
+    "settlement": {
+      "seller_selects_accepted_rails": true,
+      "buyer_selects_from_listing_rails": true,
+      "automatic_cross_currency_conversion": false,
+      "non_custodial": true,
+      "explicit_wallet_signature_required": true,
+      "validated_ledger_result_required": true,
+      "rails": {
+        "CALT": {
+          "network": "xrpl-testnet",
+          "enabled": false,
+          "real_value": false,
+          "redeemable": false,
+          "feature_flag": "showcase_nft_settlement_calt"
+        },
+        "CAL": {
+          "network": "xrpl-mainnet",
+          "enabled": false,
+          "real_value": true,
+          "issuer": "rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY",
+          "currency_code": "43616C6F72696500000000000000000000000000",
+          "feature_flag": "showcase_nft_settlement_cal_mainnet",
+          "adult_only": true,
+          "independent_release_approval_required": true,
+          "jurisdiction_gate_required": true,
+          "legal_tax_consumer_review_required": true
+        },
+        "XRP": {
+          "network": "xrpl-mainnet",
+          "enabled": false,
+          "real_value": true,
+          "native_asset": true,
+          "feature_flag": "showcase_nft_settlement_xrp_mainnet",
+          "adult_only": true,
+          "independent_release_approval_required": true,
+          "jurisdiction_gate_required": true,
+          "legal_tax_consumer_review_required": true
+        }
+      }
+    }
   },
   "reference_peg": {
     "enabled": true,
