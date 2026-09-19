@@ -348,6 +348,66 @@ class ParticipationSession:
         self._tmp.cleanup()
 
 
+def full_lifecycle_demo() -> dict:
+    """Run one complete voluntary lifecycle without enabling a real network."""
+    now = 45 * 86400 + 3600
+    session = ParticipationSession(enabled=True, clock=lambda: now)
+    events: list[dict] = []
+    try:
+        events.append({"step": "zero-participation", "snapshot": session.snapshot()})
+
+        opted_in = ParticipationSelection(
+            storage=True,
+            compute=True,
+            storage_release_mode="handoff-then-delete",
+            storage_state="off",
+            process_state="off",
+        )
+        events.append({"step": "opt-in-no-auto-start", "snapshot": session.apply(opted_in)})
+
+        storage_running = replace(opted_in, storage_state="running")
+        session.apply(storage_running)
+        events.append({"step": "storage-started", "probe": session.run_storage_probe()})
+
+        both_running = replace(storage_running, process_state="running")
+        session.apply(both_running)
+        events.append({"step": "compute-started", "probe": session.run_compute_probe()})
+
+        compute_paused = replace(both_running, process_state="paused")
+        session.apply(compute_paused)
+        events.append({
+            "step": "compute-paused-storage-continues",
+            "storage_probe": session.run_storage_probe(),
+            "compute_probe": session.run_compute_probe(),
+        })
+
+        session.apply(replace(compute_paused, process_state="running"))
+        stopped = session.stop_storage(
+            healthy_remote_replicas=0,
+            hosted_copy_available=True,
+        )
+        events.append({
+            "step": "storage-stopped-safe-handoff",
+            "snapshot": stopped,
+            "compute_probe": session.run_compute_probe(),
+        })
+
+        exited = session.exit(
+            healthy_remote_replicas=0,
+            hosted_copy_available=True,
+        )
+        events.append({"step": "exit", "snapshot": exited})
+
+        return {
+            "mode": "local-synthetic-voluntary-lifecycle",
+            "events": events,
+            "real_network_enabled": False,
+            "real_token_settlement": False,
+        }
+    finally:
+        session.close()
+
+
 def demo_matrix() -> list[dict]:
     now = 30 * 86400 + 3600
     session = ParticipationSession(enabled=True, clock=lambda: now)
