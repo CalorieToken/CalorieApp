@@ -1,4 +1,5 @@
 import {
+  communityCapacityPreview,
   contributionSummary,
   createParticipationState,
   hostedFallbackSnapshot,
@@ -7,6 +8,7 @@ import {
 
 const $ = id => document.getElementById(id);
 let state = createParticipationState();
+let syntheticCommunityNodes = 0;
 const activity = ["Participation is off. Hosted core remains active."];
 
 function message(text) {
@@ -40,8 +42,11 @@ function render() {
   $("resumeBtn").disabled = state.processState !== "paused";
   $("stopBtn").disabled = !active;
 
-  const fallback = hostedFallbackSnapshot(state, 0);
+  const fallback = hostedFallbackSnapshot(state, syntheticCommunityNodes);
   $("communityCount").textContent = fallback.volunteerNodes + " volunteer nodes";
+  const community = communityCapacityPreview(syntheticCommunityNodes);
+  $("communityLevel").textContent = community.level;
+  $("communityDescription").textContent = community.description;
 
   const summary = contributionSummary(state);
   $("storageSummary").textContent = summary.storageLabel;
@@ -65,6 +70,13 @@ function act(action, successMessage) {
     }
   }
 }
+
+$("communityPreview").onchange = e => {
+  syntheticCommunityNodes = Number(e.target.value);
+  const community = communityCapacityPreview(syntheticCommunityNodes);
+  record("Synthetic preview changed to " + community.nodes + " volunteer nodes · " + community.level + ".");
+  render();
+};
 
 $("storageToggle").onchange = e => act({ type: "SET_STORAGE", value: e.target.checked },
   e.target.checked ? "Storage contribution enabled within your selected limit." : "Storage contribution is off.");
