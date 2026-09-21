@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "world_id": "calorie-gameverse-starter-world",
+  "region_id": "welcome-meadow",
+  "module_id": "welcome-meadow.food-data",
+  "role_id": "food-data-reviewer",
+  "data_class": "invented-local-fixture",
+  "object": { "id": "meadow.food-data.stand", "kind": "food-data", "x": 75, "y": 67 },
+  "sample": {
+    "id": "meadow.food-data.sample.apple",
+    "image": "/images/food-illustrations/apple.svg",
+    "answer_id": "apple",
+    "choices": ["apple", "carrot"]
+  }
+}

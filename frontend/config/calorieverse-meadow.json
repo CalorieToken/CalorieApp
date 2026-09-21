@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "world_id": "calorie-gameverse-starter-world",
+  "region_id": "welcome-meadow",
+  "module_id": "welcome-meadow.garden",
+  "starter_character_id": "starter-original",
+  "start": { "x": 11, "y": 70 },
+  "bounds": { "left": 6, "right": 94, "top": 22, "bottom": 86 },
+  "speed": 19,
+  "interaction_radius": 10,
+  "objects": [
+    { "id": "meadow.apple.orchard", "kind": "apple", "x": 32, "y": 35 },
+    { "id": "meadow.apple.path", "kind": "apple", "x": 49, "y": 66 },
+    { "id": "meadow.apple.tree", "kind": "apple", "x": 79, "y": 42 },
+    { "id": "meadow.garden", "kind": "garden", "x": 53, "y": 32 },
+    { "id": "meadow.guide", "kind": "guide", "x": 16, "y": 36 }
+  ]
+}

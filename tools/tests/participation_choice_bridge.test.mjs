@@ -9,6 +9,7 @@ const galleryConfigUrl = new URL("../../frontend/config/gallery-assets.json", im
 const preferenceUrl = new URL("../../frontend/lib/participationPreference.ts", import.meta.url);
 const cardUrl = new URL("../../frontend/components/ParticipationChoiceCard.tsx", import.meta.url);
 const gameverseUrl = new URL("../../frontend/components/GameverseWorld.tsx", import.meta.url);
+const studioUrl = new URL("../../frontend/components/CalorieStudioPage.tsx", import.meta.url);
 const galleryPageUrl = new URL("../../frontend/app/gallery/page.tsx", import.meta.url);
 
 async function json(url) {
@@ -48,14 +49,16 @@ test("browser participation offers temporary or remembered scopes without raw OS
 });
 
 test("Gallery and Gameverse render the same shared optional participation chooser", async () => {
-  const [gameverse, galleryPage, card, preference] = await Promise.all([
+  const [gameverse, galleryPage, studio, card, preference] = await Promise.all([
     readFile(gameverseUrl, "utf8"),
     readFile(galleryPageUrl, "utf8"),
+    readFile(studioUrl, "utf8"),
     readFile(cardUrl, "utf8"),
     readFile(preferenceUrl, "utf8"),
   ]);
   assert.match(gameverse, /ParticipationChoiceCard ageBand=\{ageBand\} compact/);
-  assert.match(galleryPage, /ParticipationChoiceCard ageBand=\{ageBand\}/);
+  assert.match(galleryPage, /return <CalorieStudioPage \/>/);
+  assert.match(studio, /ParticipationChoiceCard ageBand=\{ageBand\}/);
   assert.match(card, /PARTICIPATION_CHOICE_KEY/);
   assert.match(preference, /calorie\.participation\.choice\.v1/);
   assert.match(preference, /mode: "nonparticipant"/);
