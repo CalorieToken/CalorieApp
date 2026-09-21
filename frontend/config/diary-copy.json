@@ -10,7 +10,7 @@
     "next": "Next period",
     "today": "Today",
     "scope": "Totals and product-grade counts use all entries in this period. Weeks start on Monday. Dates follow your device time zone.",
-    "empty": "No foods logged in this period. Try another date.",
+    "empty": "Add food using the button above, or choose another date.",
     "more": "Load more entries",
     "loaded": "{shown} of {total} entries in this period",
     "deleteHint": "To delete your entire diary, select All dates and clear the text filter first.",
@@ -23,7 +23,12 @@
     "unavailable": "Food search is temporarily unavailable. Your search is saved for another attempt.",
     "retry": "Retry this search",
     "waiting": "Try again in {seconds} s",
-    "summary": "Period overview"
+    "summary": "Period overview",
+    "guide": "Choose a period to see what you recorded. Open a food entry for its portion and details.",
+    "manage": "Manage diary",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "emptyTitle": "No entries in this period"
   },
   "nl": {
     "title": "Jouw voedingsdagboek",
@@ -36,7 +41,7 @@
     "next": "Volgende periode",
     "today": "Vandaag",
     "scope": "Totalen en aantallen productscores gebruiken alle registraties in deze periode. Weken beginnen op maandag. Datums volgen de tijdzone van je apparaat.",
-    "empty": "Geen voeding gelogd in deze periode. Probeer een andere datum.",
+    "empty": "Voeg voeding toe met de knop hierboven, of kies een andere datum.",
     "more": "Meer registraties laden",
     "loaded": "{shown} van {total} registraties in deze periode",
     "deleteHint": "Kies eerst Alle datums en wis het tekstfilter om je hele dagboek te verwijderen.",
@@ -49,7 +54,12 @@
     "unavailable": "Het zoeken is tijdelijk niet beschikbaar. Je zoekopdracht is bewaard voor een volgende poging.",
     "retry": "Zoek opnieuw",
     "waiting": "Opnieuw proberen over {seconds} s",
-    "summary": "Periodeoverzicht"
+    "summary": "Periodeoverzicht",
+    "guide": "Kies een periode om je registraties te bekijken. Open een voedingsmiddel voor de portie en details.",
+    "manage": "Dagboek beheren",
+    "thisWeek": "Deze week",
+    "thisMonth": "Deze maand",
+    "emptyTitle": "Geen registraties in deze periode"
   },
   "es": {
     "title": "Tu diario de alimentos",
@@ -62,7 +72,7 @@
     "next": "Período siguiente",
     "today": "Hoy",
     "scope": "Los totales y recuentos de clasificaciones incluyen todos los registros del período seleccionado. Las semanas empiezan el lunes. Las fechas usan la zona horaria de tu dispositivo.",
-    "empty": "No hay alimentos registrados en este período. Prueba otra fecha.",
+    "empty": "Añade alimentos con el botón de arriba o elige otra fecha.",
     "more": "Cargar más registros",
     "loaded": "{shown} de {total} registros del período",
     "deleteHint": "Para borrar todo el diario, selecciona Todas las fechas y quita el filtro de texto.",
@@ -75,7 +85,12 @@
     "unavailable": "La búsqueda no está disponible temporalmente. Tu consulta se ha guardado.",
     "retry": "Repetir búsqueda",
     "waiting": "Inténtalo en {seconds} s",
-    "summary": "Resumen del período"
+    "summary": "Resumen del período",
+    "guide": "Elige un período para ver tus registros. Abre un alimento para ver su porción y detalles.",
+    "manage": "Gestionar diario",
+    "thisWeek": "Esta semana",
+    "thisMonth": "Este mes",
+    "emptyTitle": "Sin registros en este período"
   },
   "fr": {
     "title": "Votre journal alimentaire",
@@ -88,7 +103,7 @@
     "next": "Période suivante",
     "today": "Aujourd’hui",
     "scope": "Les totaux et les nombres de produits par classe couvrent toutes les entrées de la période choisie. Les semaines commencent le lundi. Les dates suivent le fuseau horaire de votre appareil.",
-    "empty": "Aucun aliment enregistré sur cette période. Essayez une autre date.",
+    "empty": "Ajoutez un aliment avec le bouton ci-dessus ou choisissez une autre date.",
     "more": "Charger plus d’entrées",
     "loaded": "{shown} sur {total} entrées de la période",
     "deleteHint": "Pour effacer tout le journal, choisissez Toutes les dates et retirez le filtre de texte.",
@@ -101,7 +116,12 @@
     "unavailable": "La recherche est temporairement indisponible. Votre requête est conservée.",
     "retry": "Relancer la recherche",
     "waiting": "Réessayer dans {seconds} s",
-    "summary": "Récapitulatif de la période"
+    "summary": "Récapitulatif de la période",
+    "guide": "Choisissez une période pour voir vos enregistrements. Ouvrez un aliment pour sa portion et ses détails.",
+    "manage": "Gérer le journal",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois-ci",
+    "emptyTitle": "Aucun enregistrement sur cette période"
   },
   "pt": {
     "title": "Seu diário alimentar",
@@ -114,7 +134,7 @@
     "next": "Próximo período",
     "today": "Hoje",
     "scope": "Os totais e as contagens por classificação incluem todos os registos do período selecionado. As semanas começam à segunda-feira. As datas seguem o fuso horário do seu dispositivo.",
-    "empty": "Nenhum alimento registrado neste período. Tente outra data.",
+    "empty": "Adicione alimentos com o botão acima ou escolha outra data.",
     "more": "Carregar mais registros",
     "loaded": "{shown} de {total} registros do período",
     "deleteHint": "Para excluir todo o diário, selecione Todas as datas e remova o filtro de texto.",
@@ -127,7 +147,12 @@
     "unavailable": "A pesquisa está temporariamente indisponível. Sua consulta foi mantida.",
     "retry": "Repetir pesquisa",
     "waiting": "Tente em {seconds} s",
-    "summary": "Resumo do período"
+    "summary": "Resumo do período",
+    "guide": "Escolha um período para ver os registos. Abra um alimento para ver a porção e os detalhes.",
+    "manage": "Gerir diário",
+    "thisWeek": "Esta semana",
+    "thisMonth": "Este mês",
+    "emptyTitle": "Sem registos neste período"
   },
   "zh-Hans": {
     "title": "你的饮食日记",
@@ -140,7 +165,7 @@
     "next": "下一时段",
     "today": "今天",
     "scope": "总量和产品等级计数包括所选时段的所有记录。每周从周一开始，日期使用设备时区。",
-    "empty": "此时段没有饮食记录。请选择其他日期。",
+    "empty": "使用上方按钮添加食物，或选择其他日期。",
     "more": "加载更多记录",
     "loaded": "此时段共 {total} 条，已显示 {shown} 条",
     "deleteHint": "要删除整个日记，请先选择所有日期并清除文字筛选。",
@@ -153,7 +178,12 @@
     "unavailable": "搜索暂时不可用。已保留搜索内容。",
     "retry": "重试此搜索",
     "waiting": "{seconds} 秒后重试",
-    "summary": "时段概览"
+    "summary": "时段概览",
+    "guide": "选择时段查看记录。打开食物条目，查看份量和详情。",
+    "manage": "管理日记",
+    "thisWeek": "本周",
+    "thisMonth": "本月",
+    "emptyTitle": "此时段没有记录"
   },
   "id": {
     "title": "Catatan makananmu",
@@ -166,7 +196,7 @@
     "next": "Periode berikutnya",
     "today": "Hari ini",
     "scope": "Total dan jumlah per peringkat produk mencakup semua entri pada periode terpilih. Minggu dimulai pada hari Senin. Tanggal mengikuti zona waktu perangkat Anda.",
-    "empty": "Tidak ada makanan tercatat pada periode ini. Coba tanggal lain.",
+    "empty": "Tambahkan makanan dengan tombol di atas atau pilih tanggal lain.",
     "more": "Muat catatan lainnya",
     "loaded": "{shown} dari {total} catatan periode ini",
     "deleteHint": "Untuk menghapus seluruh catatan, pilih Semua tanggal dan hapus filter teks dahulu.",
@@ -179,7 +209,12 @@
     "unavailable": "Pencarian sementara tidak tersedia. Kueri tetap tersimpan.",
     "retry": "Ulangi pencarian",
     "waiting": "Coba lagi dalam {seconds} dtk",
-    "summary": "Ringkasan periode"
+    "summary": "Ringkasan periode",
+    "guide": "Pilih periode untuk melihat catatan. Buka makanan untuk melihat porsi dan detailnya.",
+    "manage": "Kelola catatan",
+    "thisWeek": "Minggu ini",
+    "thisMonth": "Bulan ini",
+    "emptyTitle": "Tidak ada catatan pada periode ini"
   },
   "hi": {
     "title": "आपकी भोजन डायरी",
@@ -192,7 +227,7 @@
     "next": "अगली अवधि",
     "today": "आज",
     "scope": "कुल मात्रा और उत्पाद ग्रेड की गिनती में चुनी गई अवधि की सभी प्रविष्टियाँ शामिल हैं। सप्ताह सोमवार से शुरू होता है। तारीखें आपके डिवाइस के समय क्षेत्र के अनुसार हैं।",
-    "empty": "इस अवधि में भोजन दर्ज नहीं है। दूसरी तारीख चुनें।",
+    "empty": "ऊपर के बटन से भोजन जोड़ें या दूसरी तारीख चुनें।",
     "more": "और प्रविष्टियाँ लोड करें",
     "loaded": "इस अवधि की {total} में से {shown} प्रविष्टियाँ",
     "deleteHint": "पूरी डायरी हटाने के लिए पहले सभी तारीखें चुनें और टेक्स्ट फ़िल्टर हटाएँ।",
@@ -205,7 +240,12 @@
     "unavailable": "खोज अभी उपलब्ध नहीं है। आपकी खोज सुरक्षित है।",
     "retry": "यही खोज दोहराएँ",
     "waiting": "{seconds} सेकंड में फिर कोशिश करें",
-    "summary": "अवधि का सारांश"
+    "summary": "अवधि का सारांश",
+    "guide": "अपनी प्रविष्टियाँ देखने के लिए अवधि चुनें। मात्रा और विवरण देखने के लिए भोजन खोलें।",
+    "manage": "डायरी प्रबंधित करें",
+    "thisWeek": "इस सप्ताह",
+    "thisMonth": "इस महीने",
+    "emptyTitle": "इस अवधि में कोई प्रविष्टि नहीं"
   },
   "bn": {
     "title": "আপনার খাবারের ডায়েরি",
@@ -218,7 +258,7 @@
     "next": "পরের সময়কাল",
     "today": "আজ",
     "scope": "মোট পরিমাণ ও পণ্যের গ্রেডের গণনায় নির্বাচিত সময়ের সব এন্ট্রি অন্তর্ভুক্ত। সপ্তাহ সোমবারে শুরু হয়। তারিখ আপনার ডিভাইসের সময় অঞ্চল অনুসরণ করে।",
-    "empty": "এই সময়কালে খাবার নথিভুক্ত নেই। অন্য তারিখ বাছুন।",
+    "empty": "উপরের বোতাম দিয়ে খাবার যোগ করুন অথবা অন্য তারিখ বেছে নিন।",
     "more": "আরও এন্ট্রি লোড করুন",
     "loaded": "এই সময়কালের {total}টির মধ্যে {shown}টি এন্ট্রি",
     "deleteHint": "পুরো ডায়েরি মুছতে আগে সব তারিখ বেছে টেক্সট ফিল্টার সরান।",
@@ -231,7 +271,12 @@
     "unavailable": "অনুসন্ধান সাময়িকভাবে অনুপলব্ধ। আপনার অনুসন্ধান রাখা আছে।",
     "retry": "আবার এই অনুসন্ধান করুন",
     "waiting": "{seconds} সেকেন্ড পরে আবার চেষ্টা করুন",
-    "summary": "সময়কালের সারসংক্ষেপ"
+    "summary": "সময়কালের সারসংক্ষেপ",
+    "guide": "আপনার রেকর্ড দেখতে সময়সীমা বেছে নিন। পরিমাণ ও বিস্তারিত দেখতে খাবারের রেকর্ড খুলুন।",
+    "manage": "ডায়েরি পরিচালনা",
+    "thisWeek": "এই সপ্তাহ",
+    "thisMonth": "এই মাস",
+    "emptyTitle": "এই সময়সীমায় কোনো রেকর্ড নেই"
   },
   "ar": {
     "title": "يوميات طعامك",
@@ -244,7 +289,7 @@
     "next": "الفترة التالية",
     "today": "اليوم",
     "scope": "تشمل الإجماليات وأعداد درجات المنتجات كل السجلات في الفترة المحددة. يبدأ الأسبوع يوم الاثنين. تعتمد التواريخ على المنطقة الزمنية لجهازك.",
-    "empty": "لا يوجد طعام مسجل في هذه الفترة. جرّب تاريخًا آخر.",
+    "empty": "أضف طعاماً باستخدام الزر أعلاه أو اختر تاريخاً آخر.",
     "more": "تحميل المزيد من السجلات",
     "loaded": "{shown} من {total} سجلًا في هذه الفترة",
     "deleteHint": "لحذف اليوميات كلها، اختر كل التواريخ وأزل مرشح النص أولًا.",
@@ -257,7 +302,12 @@
     "unavailable": "البحث غير متاح مؤقتًا. احتُفظ ببحثك.",
     "retry": "إعادة هذا البحث",
     "waiting": "حاول بعد {seconds} ث",
-    "summary": "ملخص الفترة"
+    "summary": "ملخص الفترة",
+    "guide": "اختر فترة لعرض سجلاتك. افتح أحد الأطعمة لعرض الكمية والتفاصيل.",
+    "manage": "إدارة اليوميات",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "emptyTitle": "لا توجد سجلات في هذه الفترة"
   },
   "ur": {
     "title": "آپ کی خوراک کی ڈائری",
@@ -270,7 +320,7 @@
     "next": "اگلی مدت",
     "today": "آج",
     "scope": "کل مقدار اور پروڈکٹ گریڈ کی گنتی میں منتخب مدت کے تمام اندراجات شامل ہیں۔ ہفتہ پیر سے شروع ہوتا ہے۔ تاریخیں آپ کے آلے کے ٹائم زون کے مطابق ہیں۔",
-    "empty": "اس مدت میں کوئی کھانا درج نہیں ہے۔ دوسری تاریخ آزمائیں۔",
+    "empty": "اوپر کے بٹن سے کھانا شامل کریں یا کوئی دوسری تاریخ منتخب کریں۔",
     "more": "مزید اندراج لوڈ کریں",
     "loaded": "اس مدت کے {total} میں سے {shown} اندراج",
     "deleteHint": "پوری ڈائری حذف کرنے کے لیے پہلے تمام تاریخیں منتخب کریں اور متن کا فلٹر ہٹائیں۔",
@@ -283,6 +333,11 @@
     "unavailable": "تلاش عارضی طور پر دستیاب نہیں ہے۔ آپ کی تلاش محفوظ ہے۔",
     "retry": "یہ تلاش دوبارہ کریں",
     "waiting": "{seconds} سیکنڈ بعد دوبارہ کوشش کریں",
-    "summary": "مدت کا خلاصہ"
+    "summary": "مدت کا خلاصہ",
+    "guide": "اپنے اندراجات دیکھنے کے لیے مدت منتخب کریں۔ مقدار اور تفصیلات کے لیے کھانے کا اندراج کھولیں۔",
+    "manage": "ڈائری کا انتظام",
+    "thisWeek": "اس ہفتے",
+    "thisMonth": "اس مہینے",
+    "emptyTitle": "اس مدت میں کوئی اندراج نہیں"
   }
 }
