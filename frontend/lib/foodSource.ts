@@ -41,6 +41,19 @@ export function foodFallbackImage(source: FoodSource): string {
   return `/images/food-placeholder-${source === "open_food_facts" ? "off" : source}.svg`;
 }
 
+// OFF selected images have revisioned 100/200/400/full variants. Only shrink
+// recognized large selected-image URLs; never guess variants for raw uploads.
+export function foodImageThumbnail(value?: string | null): string | null {
+  const safe = safeFoodImageUrl(value);
+  if (!safe) return null;
+  const url = new URL(safe);
+  url.pathname = url.pathname.replace(
+    /\/((?:front|ingredients|nutrition|packaging)_[a-z]{2}\.[0-9]+)\.(?:400|full)\.jpg$/,
+    "/$1.200.jpg"
+  );
+  return url.href;
+}
+
 export function validFoodSourceCounts(value: unknown, expectedTotal?: number): FoodSourceCounts | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const record = value as Record<string, unknown>;
