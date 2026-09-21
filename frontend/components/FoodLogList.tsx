@@ -67,31 +67,20 @@ export function FoodLogList({
   }
 
   return (
-    <div lang={ui.locale} dir={ui.direction} className="rounded-2xl border border-brand-secondary/20 bg-white p-5 sm:p-6 shadow-md">
+    <div lang={ui.locale} dir={ui.direction} className="rounded-2xl border border-brand-secondary/20 bg-white p-4 sm:p-6 shadow-md">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-bold text-brand-primary">{ui.copy.loggedTitle}</h3>
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-11 rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-sm font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onRefresh}
             disabled={isLoading || isClearingAll || deletingLogId !== null}
             aria-label={ui.copy.refreshLabel}
           >
             {isLoading ? ui.copy.refreshing : ui.copy.refresh}
           </button>
-          <button
-            type="button"
-            className="rounded-full border-2 border-red-300 bg-transparent px-4 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={onDeleteAllLogs}
-            disabled={
-              isLoading || isClearingAll || deletingLogId !== null || logs.length === 0 || filtering || periodFiltered
-            }
-            aria-label={ui.copy.deleteAllLabel}
-            aria-describedby={filtering || periodFiltered ? `${filterId}-delete-hint` : undefined}
-          >
-            {isClearingAll ? ui.copy.deleting : ui.copy.deleteAll}
-          </button>
+
         </div>
       </div>
 
@@ -106,13 +95,14 @@ export function FoodLogList({
             type="search"
             maxLength={120}
             autoComplete="off"
+            enterKeyHint="search"
             spellCheck={false}
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Escape") clearFilter(); }}
             placeholder={copy.placeholder}
             aria-describedby={`${filterId}-scope ${filterId}-count`}
-            className="min-h-11 min-w-0 flex-1 basis-48 rounded-md border border-brand-secondary/30 bg-white px-3 py-2 text-sm text-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-secondary"
+            className="min-h-11 min-w-0 flex-1 basis-48 rounded-md border border-brand-secondary/30 bg-white px-3 py-2 text-base sm:text-sm text-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-secondary"
           />
           {filter ? (
             <button
@@ -143,12 +133,12 @@ export function FoodLogList({
           <li
             key={item.id ?? `${item.product_name}-log-${index}`}
             data-food-log-id={item.id}
-            className="rounded-lg border border-brand-secondary/10 bg-brand-bg p-4 hover:bg-brand-secondary/5 transition duration-200"
+            className={`rounded-xl border p-4 transition duration-200 ${item.id != null && selectedLogId === item.id ? "border-brand-primary bg-brand-primary/5 ring-2 ring-brand-primary/15" : "border-brand-secondary/10 bg-brand-bg hover:bg-brand-secondary/5"}`}
           >
             <div className="flex items-start justify-between gap-3">
               <button
                 type="button"
-                className="min-w-0 flex-1 text-start"
+                className="min-h-11 min-w-0 flex-1 rounded-lg text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary"
                 onClick={() => onSelectLog(item)}
                 aria-label={formatFoodUi(ui.copy.viewDetails, { product: item.product_name })}
                 aria-expanded={item.id != null && selectedLogId === item.id}
@@ -164,7 +154,7 @@ export function FoodLogList({
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                   <div>
                     <span className="text-brand-secondary/60">{ui.copy.calories}</span>
-                    <p className="font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)}</bdi></p>
+                    <p className="font-bold text-brand-primary"><bdi>{formatNumber(item.calories)}</bdi></p>
                   </div>
                   <div>
                     <span className="text-brand-secondary/60">{ui.copy.protein}</span>
@@ -179,11 +169,12 @@ export function FoodLogList({
                     <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.carbohydrates)}g</bdi></p>
                   </div>
                 </div>
+                <span className="mt-3 inline-flex min-h-11 items-center gap-2 text-xs font-bold text-brand-secondary">{ui.copy.detailsTitle}<span aria-hidden="true">{item.id != null && selectedLogId === item.id ? "▴" : "▾"}</span></span>
               </button>
 
               <button
                 type="button"
-                className="shrink-0 rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 shrink-0 rounded-full border border-red-300 px-3 py-1 text-sm font-semibold text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => item.id && onDeleteLog(item.id)}
                 disabled={!item.id || deletingLogId !== null || isClearingAll || isLoading}
                 aria-label={formatFoodUi(ui.copy.deleteProduct, { product: item.product_name })}
@@ -200,6 +191,21 @@ export function FoodLogList({
           </li>
         ))}
       </ul>
+      <details className="mt-4 rounded-xl border border-brand-secondary/20 p-3">
+        <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">{diaryUi.manage}</summary>
+          <button
+            type="button"
+            className="min-h-11 rounded-full border-2 border-red-300 bg-transparent px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={onDeleteAllLogs}
+            disabled={
+              isLoading || isClearingAll || deletingLogId !== null || logs.length === 0 || filtering || periodFiltered
+            }
+            aria-label={ui.copy.deleteAllLabel}
+            aria-describedby={filtering || periodFiltered ? `${filterId}-delete-hint` : undefined}
+          >
+            {isClearingAll ? ui.copy.deleting : ui.copy.deleteAll}
+          </button>
+      </details>
       <p className="mt-3 text-xs text-brand-secondary/80">{formatFoodUi(diaryUi.loaded, {shown: String(logs.length), total: String(total)})}</p>
       {hasMore ? <button type="button" disabled={isLoading || isClearingAll || deletingLogId !== null} onClick={onLoadMore}
         className="mt-3 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-semibold text-brand-secondary disabled:opacity-50">{diaryUi.more}</button> : null}

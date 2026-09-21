@@ -28,7 +28,7 @@ export function FoodDiaryPeriod({period, date, locale, disabled, onChange}: {
           className="min-h-11 w-full min-w-0 max-w-full rounded-lg border border-brand-secondary/30 bg-white px-2 text-base text-brand-secondary" />
       <button type="button" className={`${button} !px-0 text-xl`} disabled={disabled} aria-label={copy.next} onClick={() => onChange(period, moveDiaryDate(period, date, 1))}><span aria-hidden="true" className="block rtl:rotate-180">›</span></button>
       </div>
-      <button type="button" className={`${button} mt-2 w-full bg-white`} disabled={disabled} onClick={() => onChange(period, localDiaryDate())}>{copy.today}</button>
+      <button type="button" className={`${button} mt-2 w-full bg-white`} disabled={disabled} onClick={() => onChange(period, localDiaryDate())}>{period === "week" ? copy.thisWeek : period === "month" ? copy.thisMonth : copy.today}</button>
     </div> : null}
     <p className="mt-4 font-semibold text-brand-primary" role="status"><bdi>{label}</bdi></p>
     <p className="mt-2 text-xs text-brand-secondary/80">{copy.scope}</p>

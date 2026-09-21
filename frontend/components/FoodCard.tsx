@@ -10,6 +10,7 @@ import { FoodImage } from "@/components/FoodImage";
 type FoodCardProps = {
   item: FoodSearchItem;
   isLogging: boolean;
+  imagePriority?: boolean;
   isDisabled?: boolean;
   canLog?: boolean;
   isSelected?: boolean;
@@ -23,7 +24,7 @@ type FoodCardProps = {
   selectedProductName?: string;
 };
 
-export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName }: FoodCardProps) {
+export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const portionId = useId();
@@ -53,7 +54,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
   return (
     <li lang={locale} dir={direction} className={`scroll-mt-3 rounded-xl border bg-white p-3 shadow-sm transition duration-200 sm:p-4 ${isExpanded ? "border-brand-primary ring-2 ring-brand-primary/15" : "border-brand-secondary/15 hover:shadow-md"}`}>
       <div className="flex min-w-0 items-start gap-3">
-        <FoodImage item={item} size={96} className="h-20 w-20 shrink-0" />
+        <FoodImage item={item} eager={imagePriority} size={96} className="h-20 w-20 shrink-0" />
 
         <div className="min-w-0 flex-1">
           <p className="break-words text-sm font-bold leading-snug text-brand-primary sm:text-base"><bdi>{item.product_name}</bdi></p>

@@ -232,6 +232,7 @@ export function CalorieAppWorkspace() {
         activeView={visibleTab === "account" || visibleTab === "journey" ? null : visibleTab}
         requestedEntry={requestedFoodEntry}
         onOpenAccount={() => selectTab("account", true)}
+        onOpenSearch={() => selectTab("packaged", true)}
         allowPersonalLog={allowPersonalFeatures}
       />
       </>}

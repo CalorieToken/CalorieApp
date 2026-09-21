@@ -185,9 +185,10 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
 
 export type FoodWorkspaceView = "packaged" | "basic" | "diary";
 
-export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonalLog = true, requestedEntry }: {
+export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch, allowPersonalLog = true, requestedEntry }: {
   activeView: FoodWorkspaceView | null;
   onOpenAccount: () => void;
+  onOpenSearch?: () => void;
   allowPersonalLog?: boolean;
   requestedEntry?: { target: AppEntryTarget; serial: number };
 }) {
@@ -1042,6 +1043,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
               <FoodCard
                 key={`${resultsQuery}-${foodKey(item)}-${index}`}
                 item={item}
+                imagePriority={activeView === "packaged" && index === 0}
                 restoreDetails={restoredProductKey === foodKey(item)}
                 selectedProductName={pendingLogIndex === index ? pendingLogItem?.product_name : undefined}
                 isLogging={isLogging === index}
@@ -1090,6 +1092,11 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
       {allowPersonalLog ? <div id="calorie-panel-diary" role="tabpanel" aria-labelledby="calorie-tab-diary"
         hidden={activeView !== "diary"} className="space-y-6">
       {/* Logged Foods Section */}
+      <div className="rounded-2xl border border-brand-primary/20 bg-brand-primary/5 p-4">
+        <p className="text-sm leading-relaxed text-brand-secondary">{diaryUi.guide}</p>
+        {onOpenSearch ? <button type="button" onClick={onOpenSearch}
+          className="mt-3 min-h-11 rounded-full bg-brand-primary px-5 py-3 text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2">{copy.logFood}</button> : null}
+      </div>
       {logError === SIGN_IN_REQUIRED_LOG_MESSAGE ? (
         <div
           role="status"
@@ -1133,7 +1140,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
               <dt className="text-brand-secondary/70">{copy.totalCalories}</dt>
-              <dd className="font-semibold text-brand-accent"><bdi>{displayInteger(summary.calories)} kcal</bdi></dd>
+              <dd className="text-xl font-bold text-brand-primary"><bdi>{displayInteger(summary.calories)} kcal</bdi></dd>
             </div>
             <div className="rounded-lg border border-brand-secondary/10 bg-brand-bg px-3 py-2">
               <dt className="text-brand-secondary/70">{copy.totalProtein}</dt>
@@ -1161,7 +1168,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
 
       {!logError && !isLogsLoading && !hasLogs ? (
         <EmptyState
-          title={copy.emptyLogsTitle}
+          title={diaryUi.emptyTitle}
           description={diaryUi.empty}
         />
       ) : null}
@@ -1183,7 +1190,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
             <h3 className="text-lg font-bold text-brand-primary">{copy.detailsTitle}</h3>
             <button
               type="button"
-              className="rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5"
+              className="min-h-11 rounded-full border-2 border-brand-secondary bg-transparent px-4 py-2 text-sm font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary"
               onClick={(event) => {
                 const trigger = event.currentTarget.closest("li")?.querySelector<HTMLButtonElement>("button[aria-expanded]");
                 setSelectedLogId(null);
@@ -1195,7 +1202,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
           </div>
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-            <FoodImage item={selectedLog} size={112} className="h-28 w-full shrink-0 sm:h-28 sm:w-28" />
+            <FoodImage item={selectedLog} eager size={112} className="h-28 w-full shrink-0 sm:h-28 sm:w-28" />
 
             <div className="min-w-0 flex-1">
               <p className="text-base font-semibold text-brand-primary"><bdi>{selectedLog.product_name}</bdi></p>
