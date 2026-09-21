@@ -25,7 +25,7 @@ particular care to preserve existing behavior.
 - Highlight the selected USDA result and show a keyboard focus ring; use a search
   keyboard hint on its existing search field.
 
-Five runtime files change. No hooks, requests, handlers, permissions, stored data,
+Six runtime files change. No hooks, requests, handlers, permissions, stored data,
 backend, dependencies, login, wallet, WordPress or CalorieVerse implementation
 changes are included.
 
@@ -60,3 +60,23 @@ preserved navigation/portion state. Native iOS input behavior is not certified.
 
 This is an isolated draft review checkpoint. No merge, live deployment or hosting
 configuration change has been performed.
+
+## Clarity follow-up
+
+The owner found the original example unclear and could not see the Open Food
+Facts improvements. Rename the two existing search tabs to “Products & barcodes”
+and “Ingredients by weight”, with matching translations in all eleven locales.
+Clarify the product-search introduction: search a branded product, type a barcode
+or scan its package; data comes from Open Food Facts. Search behavior is unchanged.
+
+Replace the standalone review HTML with a “Nu” / “Voorstel” comparison using
+the actual baseline and candidate search components. Both views start with
+Open Food Facts-style product examples and retain four visible navigation tabs.
+The fixture uses clearly labelled example product data and a public USDA snapshot;
+account and diary panels explain retained functionality without accessing user
+data. It does not make network calls or save food entries. It is a review fixture,
+not a full application or a claim that account/scanner workflows were exercised.
+
+Both fixture variants passed DOM checks for rendering, four tabs, opening product
+details and navigation. The candidate labels and search-keyboard hint were also
+checked. Browser visual acceptance is still pending as described above.
