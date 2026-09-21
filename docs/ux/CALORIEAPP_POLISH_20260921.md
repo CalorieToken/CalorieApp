@@ -25,9 +25,10 @@ particular care to preserve existing behavior.
 - Highlight the selected USDA result and show a keyboard focus ring; use a search
   keyboard hint on its existing search field.
 
-Six runtime files change. No hooks, requests, handlers, permissions, stored data,
-backend, dependencies, login, wallet, WordPress or CalorieVerse implementation
-changes are included.
+The food-search refinement touches six runtime files. The account follow-up below
+adds six more presentation files, including its translated guidance. No backend,
+dependencies, authentication protocol, wallet operations, WordPress or CalorieVerse
+implementation changes are included.
 
 ## Verification
 
@@ -80,3 +81,45 @@ not a full application or a claim that account/scanner workflows were exercised.
 Both fixture variants passed DOM checks for rendering, four tabs, opening product
 details and navigation. The candidate labels and search-keyboard hint were also
 checked. Browser visual acceptance is still pending as described above.
+
+## Account guidance follow-up
+
+The owner approved improving the account entry and Xaman setup guidance.
+
+- Offer three clear paths: browse food without signing in, begin guided practice
+  setup, or use the existing Xaman login action. The actual login/logout controls,
+  handlers, bridge checks and retry conditions are reused unchanged.
+- Fold account settings, profile, privacy and migration routes under a native
+  keyboard-accessible “More account options” disclosure. The signed-in nickname
+  remains in the existing account header. Existing export/import entry events
+  still open the requested account tool.
+- Start with the official Xaman download link and explain returning to the same
+  browser tab. No test account is created by opening this guidance.
+- Divide the existing network and import stages into three smaller instructions
+  each. Keep the six outer stages and saved navigation schema unchanged. Only
+  instruction position is added in memory; it never stores recovery material.
+- Use “recovery code” in the save title and explain Xaman's “Family Seed” term.
+  Existing save/import confirmations, cancellation warning, hidden secret behavior
+  and session cleanup remain enforced.
+- Provide the new copy in all eleven locales; keep Xaman's literal menu labels
+  recognizable. The guide uses numbered visual cues and the official illustrated
+  help link. It does not claim to reproduce Xaman screenshots.
+
+Sources checked on 21 September 2026: https://xaman.app/download and
+https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger.
+This is presentation guidance, not an automatic Xaman configuration change or a
+wallet-free diary implementation. Age restrictions remain unchanged.
+
+Final verification: production build passed with the same two existing lint
+warnings; 129 targeted tests passed. Added interaction checks exercise browsing
+without account creation, installation before creation, nested instructions/back,
+concealed recovery code, and mandatory save/import acknowledgements. A pre-existing
+workspace test fixture also lacked three existing dependencies; its two failures
+were reproduced on the unmodified baseline before repairing that fixture.
+
+The updated offline comparison opens at Account and renders the real baseline and
+candidate guide components. Its account overview is explicitly simplified, and its
+test-account service returns conspicuously invalid example credentials. It cannot
+create a real account, log in or save food. Both versions passed DOM checks for
+the simulated setup, recovery checkpoint, food details and navigation. Candidate
+visual/mobile acceptance and real-device Xaman setup remain release checks.

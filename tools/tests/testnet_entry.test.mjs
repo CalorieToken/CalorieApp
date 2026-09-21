@@ -20,6 +20,7 @@ function load(display = {enabled:true, locale:'en'}) {
     if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>display};
     if(name==='@/lib/locales')return {localeDirection:tag=>['ar','ur'].includes(tag)?'rtl':'ltr'};
     if(name==='@/config/testnet-entry-copy.json')return {default:copy};
+    if(name==='@/config/account-welcome-copy.json')return {default:JSON.parse(readFileSync(new URL('../../frontend/config/account-welcome-copy.json',import.meta.url)))};
     if(name==='@/config/account-setup-copy.json')return {default:setup};
     if(name==='@/lib/navigationBridge')return {postNavigationTarget:()=>false};
     if(name==='@/lib/testnetAccount')return {};

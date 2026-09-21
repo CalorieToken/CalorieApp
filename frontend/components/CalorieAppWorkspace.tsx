@@ -3,6 +3,8 @@
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { FoodSearchPlaceholder, type FoodWorkspaceView } from "@/components/FoodSearchPlaceholder";
+import { AccountWelcome } from "@/components/AccountWelcome";
+import welcomeTranslations from "@/config/account-welcome-copy.json";
 import { TestnetEntry } from "@/components/TestnetEntry";
 import profileTranslations from "@/config/account-profile-copy.json";
 import { XamanLoginPanel, type MeResponse } from "@/components/XamanLoginPanel";
@@ -197,6 +199,9 @@ export function CalorieAppWorkspace() {
         className="calorie-workspace-panel"
       >
         <XamanLoginPanel onAccountChange={setAccount}
+          moreOptionsLabel={(welcomeTranslations[locale as keyof typeof welcomeTranslations] ?? welcomeTranslations.en).more}
+          welcome={loginAction => <AccountWelcome locale={locale}
+            onBrowse={() => selectTab("packaged", true)} onSetup={() => openJourney("test")}>{loginAction}</AccountWelcome>}
           settings={<AgeExperienceControl band={ageBand} onChange={setAgeBand} />}
           guides={<div className="grid gap-2 sm:grid-cols-2">
           <button type="button" onClick={() => openJourney("test")} className="min-h-12 rounded-xl border border-brand-secondary/20 bg-white p-3 text-sm font-bold text-brand-primary">{journey.testRoute}</button>

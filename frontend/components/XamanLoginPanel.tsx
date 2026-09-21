@@ -968,7 +968,9 @@ export async function requestCalorieAppLogout(): Promise<void> {
     : new Error("Unable to log out");
 }
 
-export function XamanLoginPanel({ settings, guides, onAccountChange }: {
+export function XamanLoginPanel({ settings, guides, onAccountChange, welcome, moreOptionsLabel }: {
+  welcome?: (loginAction: ReactNode) => ReactNode;
+  moreOptionsLabel?: string;
   settings?: ReactNode;
   guides?: ReactNode;
   onAccountChange?: (user: MeResponse | null) => void;
@@ -1708,6 +1710,43 @@ export function XamanLoginPanel({ settings, guides, onAccountChange }: {
     }
   }
 
+  const loginAction = isLoggingOut || logoutNeedsRetry ? (
+        <button type="button" onClick={handleLogout} disabled={isLoggingOut}
+          className="mt-4 min-h-11 rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          {isLoggingOut ? authCopy.loggingOut : authCopy.retryLogout}
+        </button>
+      ) : loginSurfaceMode === "standalone" ? (
+        <a
+          href={WORDPRESS_APP_URL}
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          {authCopy.continueWebsite}
+        </a>
+      ) : loginSurfaceMode === "embedded" && !isLoading ? (
+        <a
+          href={BACKEND_WAKE_NAVIGATION_URL ?? "#"}
+          target="_top"
+          referrerPolicy="no-referrer"
+          onClick={handleLoginClick}
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          {authCopy.continueXaman}
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={handleLogin}
+          disabled={isLoading || loginSurfaceMode === "checking"}
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isLoading
+            ? authCopy.preparingXaman
+            : loginSurfaceMode === "checking"
+              ? authCopy.connectingLogin
+              : authCopy.continueXaman}
+        </button>
+      );
+
   return (
     <section
       lang={authLocale}
@@ -1752,17 +1791,6 @@ export function XamanLoginPanel({ settings, guides, onAccountChange }: {
         ) : null}
       </div>
 
-      {accountView !== "overview" ? <button type="button" onClick={() => setAccountView("overview")} className="mt-4 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{profileCopy.back}</button> : null}
-      <div hidden={accountView !== "overview"} className="mt-4 space-y-3" data-account-overview>
-        <nav aria-label={profileCopy.account} className="grid gap-2 sm:grid-cols-3">
-          {(["profile", "settings", "privacy"] as const).map(view => (
-            <button key={view} type="button" disabled={view !== "settings" && !currentUser}
-              onClick={() => setAccountView(view)}
-              className="min-h-12 min-w-0 rounded-xl border border-brand-secondary/20 bg-white px-3 py-3 text-sm font-bold text-brand-primary disabled:opacity-50">{profileCopy[view]}</button>
-          ))}
-        </nav>
-        {guides}
-      </div>
       <div hidden={accountView !== "settings"} className="mt-4" data-account-settings>
         <h3 className="mb-3 text-base font-bold text-brand-primary">{profileCopy.settings}</h3>
         {settings}
@@ -1889,42 +1917,22 @@ export function XamanLoginPanel({ settings, guides, onAccountChange }: {
             </div>
           </details>
         </div>
-      ) : isLoggingOut || logoutNeedsRetry ? (
-        <button type="button" onClick={handleLogout} disabled={isLoggingOut}
-          className="mt-4 min-h-11 rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
-          {isLoggingOut ? authCopy.loggingOut : authCopy.retryLogout}
-        </button>
-      ) : loginSurfaceMode === "standalone" ? (
-        <a
-          href={WORDPRESS_APP_URL}
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-        >
-          {authCopy.continueWebsite}
-        </a>
-      ) : loginSurfaceMode === "embedded" && !isLoading ? (
-        <a
-          href={BACKEND_WAKE_NAVIGATION_URL ?? "#"}
-          target="_top"
-          referrerPolicy="no-referrer"
-          onClick={handleLoginClick}
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-        >
-          {authCopy.continueXaman}
-        </a>
-      ) : (
-        <button
-          type="button"
-          onClick={handleLogin}
-          disabled={isLoading || loginSurfaceMode === "checking"}
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isLoading
-            ? authCopy.preparingXaman
-            : loginSurfaceMode === "checking"
-              ? authCopy.connectingLogin
-              : authCopy.continueXaman}
-        </button>
-      )}
+      ) : welcome && !isLoggingOut && !logoutNeedsRetry && accountView === "overview" ? (
+        welcome(loginAction)
+      ) : loginAction}
+
+      {accountView !== "overview" ? <button type="button" onClick={() => setAccountView("overview")} className="mt-4 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-bold text-brand-secondary">{profileCopy.back}</button> : null}
+      <details hidden={accountView !== "overview"} className="mt-4 space-y-3" data-account-overview>
+        <summary className="min-h-11 cursor-pointer rounded-xl py-3 text-sm font-bold text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary">{moreOptionsLabel ?? profileCopy.account}</summary>
+        <nav aria-label={profileCopy.account} className="grid gap-2 sm:grid-cols-3">
+          {(["profile", "settings", "privacy"] as const).map(view => (
+            <button key={view} type="button" disabled={view !== "settings" && !currentUser}
+              onClick={() => setAccountView(view)}
+              className="min-h-12 min-w-0 rounded-xl border border-brand-secondary/20 bg-white px-3 py-3 text-sm font-bold text-brand-primary disabled:opacity-50">{profileCopy[view]}</button>
+          ))}
+        </nav>
+        {guides}
+      </details>
 
       {isLoading && loginStatus ? (
         <p

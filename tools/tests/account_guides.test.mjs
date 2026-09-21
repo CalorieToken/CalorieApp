@@ -9,6 +9,8 @@ const React=require('react'),{createRoot}=require('react-dom/client'),{parseHTML
 const setup=JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json',import.meta.url)));
 const copy=JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json',import.meta.url)));
 
+const welcome=JSON.parse(readFileSync(new URL('../../frontend/config/account-welcome-copy.json',import.meta.url),'utf8'));
+
 function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testnet={},confirm=()=>true}={}){
  const {window,document}=parseHTML('<html><body><div id="root"></div></body></html>');
  window.parent=window;
@@ -27,12 +29,13 @@ function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testn
   '@/components/AgeExperienceControl':{AgeExperienceControl:()=>null,useAgeExperience:()=>[age,()=>{},true]},
   '@/components/FoodSearchPlaceholder':{FoodSearchPlaceholder:({activeView})=>React.createElement('div',{hidden:!activeView},'Food fixture')},
   '@/components/NicknameProfile':{NicknameProfile:()=>null},
-  '@/components/XamanLoginPanel':{XamanLoginPanel:({guides})=>React.createElement('div',null,'Account fixture: no login requests',guides)},
+  '@/components/XamanLoginPanel':{XamanLoginPanel:({guides,welcome:renderWelcome})=>React.createElement('div',null,'Account fixture: no login requests',renderWelcome?.(React.createElement('button',null,'Sign in fixture')),guides)},
   '@/lib/authUi':{getAuthUi:()=>({copy:{accountTools:'Accountbeheer'}})},
   '@/lib/foodDiary':{diaryCopy:()=>({title:'Dagboek'})},
   '@/lib/foodExperience':{foodExperience:()=>({copy:{sourceTitle:'Basisvoeding',navigation:'Ga naar'}})},
   '@/lib/foodUi':{getFoodUi:()=>({copy:{searchTitle:'Zoeken'},locale:'nl',direction:'ltr'})},
   '@/config/account-profile-copy.json': {default: profileCopy},
+  '@/config/account-welcome-copy.json': {default: welcome},
     '@/config/testnet-entry-copy.json':{default:copy},
   '@/config/account-setup-copy.json':{default:setup},
   '@/lib/navigationBridge':{postNavigationTarget:()=>false,trustedWordPressParentOrigin:()=>null},
@@ -197,5 +200,48 @@ test('public and account links select the relevant tab while a normal app visit 
   const h=harness({hash});
   try{await h.render();assert.equal(h.document.querySelector('#calorie-tab-'+tab).getAttribute('aria-selected'),'true',hash);}
   finally{await h.close();}
+ }
+});
+
+
+test('beginner choices browse without account creation and install before creating a test account',async()=>{
+ let calls=0;const h=harness({testnet:{createTestnetAccount:async()=>{calls++;return {address:'fixture-address',secret:'fixture-secret'};},checkTestnetAccount:async()=>true}});
+ try{
+  await h.render();
+  const choices=h.document.querySelector('[data-account-welcome]');assert.ok(choices);
+  assert.ok(choices.textContent.includes(welcome.nl.existing));
+  const buttons=choices.querySelectorAll('button');
+  await React.act(async()=>buttons[0].dispatchEvent(new h.window.Event('click',{bubbles:true})));
+  assert.equal(h.document.querySelector('#calorie-tab-packaged').getAttribute('aria-selected'),'true');assert.equal(calls,0);
+  await h.click(profileCopy.nl.account);
+  await React.act(async()=>buttons[1].dispatchEvent(new h.window.Event('click',{bubbles:true})));
+  assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.beforeStart);
+  assert.equal(h.document.querySelector('a[href="https://xaman.app/download"]').target,'_blank');
+  assert.equal(calls,0);assert.equal(h.button(setup.nl.create),undefined);
+  await h.click(copy.nl.next);await h.click(setup.nl.create);assert.equal(calls,1);
+  assert.equal(h.button(copy.nl.next).disabled,true,'Saving the recovery code remains mandatory');
+  await h.click(setup.nl.show);
+  const ack=h.document.querySelector('input[type="checkbox"]');
+  const props=ack[Object.keys(ack).find(key=>key.startsWith('__reactProps$'))];
+  await React.act(async()=>props.onChange({target:{checked:true}}));
+  await h.click(copy.nl.next);
+  const instruction=()=>h.document.querySelector('[data-xaman-instruction]').textContent;
+  assert.ok(instruction().includes(welcome.nl.networkSettings));
+  await h.click(copy.nl.next);assert.ok(instruction().includes(welcome.nl.networkDeveloper));
+  await h.click(copy.nl.previous);assert.ok(instruction().includes(welcome.nl.networkSettings));
+  await h.click(copy.nl.next);await h.click(copy.nl.next);assert.ok(instruction().includes(welcome.nl.networkChoose));
+  await h.click(copy.nl.next);assert.ok(instruction().includes(welcome.nl.importAccount));
+  await h.click(copy.nl.next);assert.ok(instruction().includes(welcome.nl.importAccess));
+  await h.click(copy.nl.next);assert.ok(instruction().includes(welcome.nl.importSeed));
+  assert.equal(h.button(copy.nl.next).disabled,true,'Import acknowledgement remains mandatory');
+  assert.equal(h.document.querySelector('#account-guide-secret').textContent,'','Recovery code is concealed after navigation');
+ }finally{await h.close();}
+});
+
+test('beginner guidance covers the same eleven locales without missing messages',()=>{
+ assert.deepEqual(Object.keys(welcome).sort(),Object.keys(setup).sort());
+ for(const [locale,values] of Object.entries(welcome)){
+  assert.deepEqual(Object.keys(values).sort(),Object.keys(welcome.en).sort(),locale);
+  assert.ok(Object.values(values).every(value=>typeof value==='string'&&value.trim()),locale);
  }
 });

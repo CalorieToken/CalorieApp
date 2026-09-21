@@ -13,6 +13,8 @@ const ts = require('typescript');
 let selectedAgeBand = 'adult';
 const journeyCopy = JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json', import.meta.url), 'utf8'));
 
+const welcome=JSON.parse(readFileSync(new URL('../../frontend/config/account-welcome-copy.json',import.meta.url),'utf8'));
+
 function MockFoodSearch({activeView, onOpenAccount, allowPersonalLog}) {
   const [count, setCount] = React.useState(0);
   return React.createElement('div', {id: 'mock-food', 'data-personal-log': String(allowPersonalLog)},
@@ -41,8 +43,13 @@ function load(window, document) {
     '@/lib/foodExperience': {foodExperience: () => ({copy: {sourceTitle: 'Basisvoeding', navigation: 'Ga naar'}})},
     '@/lib/foodUi': {getFoodUi: () => ({copy: {searchTitle: 'Product zoeken'}, locale: 'nl', direction: 'ltr'})},
     '@/config/account-profile-copy.json': {default: profileCopy},
+  '@/config/account-welcome-copy.json': {default: welcome},
+  '@/components/AccountWelcome': {AccountWelcome: () => null},
     '@/config/testnet-entry-copy.json': {default: journeyCopy},
     '@/lib/accountJourney': {readAccountJourney: () => null},
+    '@/config/account-setup-copy.json': {default: JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json',import.meta.url),'utf8'))},
+    '@/lib/appEntryBridge': {connectAppEntry: () => () => {}, clearAccountGuideEntry: () => {}},
+    '@/lib/navigationBridge': {postNavigationTarget: () => false},
   };
   vm.runInNewContext(code, {module, exports: module.exports, window, document, require(name) {
     if (name === 'react' || name === 'react/jsx-runtime') return require(name);
