@@ -167,7 +167,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
     <form onSubmit={search} className="mt-4 flex flex-wrap items-end gap-3">
       <label className="min-w-0 flex-1 basis-48 text-sm font-semibold text-brand-primary">{copy.query}
         <input ref={queryInput} value={query} onChange={event => editQuery(event.target.value)} maxLength={160} required
-          disabled={disabled || state === "loading"} type="search" autoComplete="off"
+          disabled={disabled || state === "loading"} type="search" autoComplete="off" enterKeyHint="search"
           className="mt-2 min-h-11 w-full min-w-0 rounded-lg border border-brand-secondary/40 px-3 text-base" />
       </label>
       <button type="submit" disabled={disabled || state === "loading" || !query.trim()}
@@ -176,7 +176,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
     <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
     {matches.length ? <ul ref={resultsList} style={{ overflowAnchor: "none" }} className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
       <button type="button" disabled={disabled} data-fdc-id={food.fdc_id} aria-expanded={anchorId === food.fdc_id} onClick={() => choose(food)}
-        className="min-h-11 w-full rounded-lg border border-brand-secondary/20 p-3 text-start text-sm text-brand-primary hover:bg-brand-bg disabled:opacity-50">
+        className={`min-h-11 w-full rounded-lg border p-3 text-start text-sm text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-secondary disabled:opacity-50 ${anchorId === food.fdc_id ? "border-brand-primary bg-brand-primary/5" : "border-brand-secondary/20 hover:bg-brand-bg"}`}>
         <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
         <bdi className="mt-1 block text-xs text-brand-secondary">FDC {food.fdc_id} &middot; {food.data_type} &middot; {food.edition}</bdi>
       </button>

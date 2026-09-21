@@ -22,19 +22,20 @@ export function SearchBar({
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   return (
-    <form className="mt-5 flex flex-col gap-3 sm:flex-row" onSubmit={onSubmit} lang={locale} dir={direction}>
-      <label htmlFor="food-search" className="sr-only">
+    <form className="mt-4 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto]" onSubmit={onSubmit} lang={locale} dir={direction}>
+      <label htmlFor="food-search" className="text-sm font-semibold text-brand-primary sm:col-span-2">
         {copy.searchLabel}
       </label>
       <div className="relative min-w-0 flex-1">
         <input
           id="food-search"
           type="search"
+          enterKeyHint="search"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder={copy.searchPlaceholder}
           dir="auto"
-          className="w-full truncate rounded-full border-2 border-brand-secondary/30 bg-white py-3 ps-5 pe-12 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
+          className="min-h-12 w-full truncate rounded-full border-2 border-brand-secondary/30 bg-white py-3 ps-5 pe-12 text-base outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 sm:text-sm"
           aria-label={copy.searchInputLabel}
           title={query || copy.searchPlaceholder}
         />
@@ -45,7 +46,7 @@ export function SearchBar({
       </div>
       <button
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-primary px-8 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap"
+        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-primary px-8 py-3 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap"
         disabled={isLoading || retrySeconds > 0}
         aria-busy={isLoading}
       >

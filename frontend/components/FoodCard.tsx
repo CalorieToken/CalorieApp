@@ -70,7 +70,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
           <p className="mt-2 text-xs text-brand-secondary/75">
             {item.serving_size ? <>{copy.serving}: <bdi>{displayServingSize(item.serving_size, copy)}</bdi></> : copy.sourceReference}
           </p>
-          <p className="mt-1 text-sm font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
+          <p className="mt-1 text-sm font-semibold text-brand-primary"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
           className="min-h-11 flex-1 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-expanded={detailsOpen} aria-controls={detailsId}
           aria-label={formatFoodUi(copy.viewDetails, { product: item.product_name })}>
-          {detailsOpen ? copy.backToList : formatFoodUi(copy.viewDetails, { product: item.product_name })}
+          {detailsOpen ? copy.backToList : copy.detailsAndCompare}
         </button>
       </div>
 
@@ -123,7 +123,7 @@ export function FoodCard({ item, isLogging, isDisabled = false, canLog = true, i
           <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
               <span className="text-brand-secondary/70">{copy.calories}</span>
-              <p className="font-semibold text-brand-accent"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
+              <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
             </div>
             <div>
               <span className="text-brand-secondary/70">{copy.protein}</span>

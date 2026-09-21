@@ -960,7 +960,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, allowPersonal
       {/* Search Section */}
       <div id="calorie-panel-packaged" role="tabpanel" aria-labelledby="calorie-tab-packaged"
         hidden={activeView !== "packaged"}
-        className="rounded-2xl border border-brand-secondary/20 bg-white p-5 shadow-md transition duration-200 sm:p-6">
+        className="rounded-2xl border border-brand-secondary/20 bg-white p-4 shadow-md transition duration-200 sm:p-6">
         <h2 className="text-lg font-bold text-brand-primary">{copy.searchTitle}</h2>
         <p className="mt-1 text-sm text-brand-secondary/80">
           {copy.searchIntro}

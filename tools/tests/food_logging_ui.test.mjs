@@ -11,6 +11,7 @@ const localeRegistry = JSON.parse(await readFile(new URL("../../frontend/config/
 const usdaReference = JSON.parse(await readFile(new URL("../../frontend/data/usda-reference-foods.json", import.meta.url), "utf8"));
 const usdaCopy = JSON.parse(await readFile(new URL("../../frontend/config/usda-reference-copy.json", import.meta.url), "utf8"));
 const foodUiCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-ui-copy.json", import.meta.url), "utf8"));
+const appEntryCopy = JSON.parse(await readFile(new URL("../../frontend/config/app-entry-copy.json", import.meta.url), "utf8"));
 const foodSourceCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-source-copy.json", import.meta.url), "utf8"));
 async function loadLibrary(name, imports, globals = {}) {
   const source = await readFile(new URL(`../../frontend/lib/${name}.ts`, import.meta.url), "utf8");
@@ -179,6 +180,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/lib/usdaReference") return usdaMath;
       if (specifier === "@/lib/foodBarcode") return barcode;
       if (specifier === "@/config/barcode-copy.json") return { default: barcodeCopy };
+      if (specifier === "@/config/app-entry-copy.json") return { default: appEntryCopy };
       if (specifier === "@/lib/foodSearchReadiness") return readiness;
       if (specifier === "@/lib/foodSearchAvailability") return {
         foodSearchRetryAt: (status, header) => searchAvailability.foodSearchRetryAt(status, header, now),
