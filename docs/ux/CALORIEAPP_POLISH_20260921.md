@@ -123,3 +123,45 @@ test-account service returns conspicuously invalid example credentials. It canno
 create a real account, log in or save food. Both versions passed DOM checks for
 the simulated setup, recovery checkpoint, food details and navigation. Candidate
 visual/mobile acceptance and real-device Xaman setup remain release checks.
+
+## Diary and product-image follow-up
+
+The owner approved improving the diary and publishing this combined update after
+the checks pass, then added a request to make product photos load faster.
+
+- Add a translated diary introduction and a direct button back to product search.
+  Use period-specific empty-state guidance and “This week” / “This month” shortcuts.
+- Improve calorie contrast, touch targets, keyboard focus and selected-entry
+  highlighting. Make opening entry details visible. Group bulk deletion under
+  “Manage diary”; its confirmation and filtering/period safeguards are unchanged.
+- Request OFF's documented 200px variant only for recognized revisioned large
+  selected-image URLs in compact cards. Preserve the product, revision, language,
+  query parameters and trusted image origin. Do not guess raw-upload variants.
+- If the thumbnail fails, retry the original URL once before using the existing
+  local illustration. Load the first active search result eagerly with high
+  priority; keep other cards lazy and decoding asynchronous. Detail images retain
+  original resolution. No server proxy, dependency, search request or data change.
+
+Image filename reference:
+https://openfoodfacts.github.io/openfoodfacts-server/api/how-to-download-images/
+No real-world latency measurement or guaranteed external image speed is claimed.
+
+Final candidate verification: Next production build passed, with the same two
+existing cleanup warnings. All 144 targeted food/account/authentication/locale
+tests passed, including image fallback and URL handling. Tracked-secret boundary
+and diff whitespace checks passed. The only pre-existing test expectation changed
+was the translated empty-state title, which now comes from diary-copy.
+
+Publishing is authorized, but currently blocked: GitHub and Render connector calls
+return HTTP 400 “Invalid MCP request metadata”. Git read access remains available, but pushing the review branch also fails because
+no GitHub write credentials are available. The diary/image follow-up is committed
+locally and exported as a patch. No Render CLI credentials are configured. Do not
+claim this candidate is live; its frontend release/deployment and live verification
+still need completion after restoring Render access or authorizing dashboard use.
+The previous standalone comparison predates the diary/image follow-up.
+
+Dashboard continuation: the owner explicitly authorized browser dashboard use.
+The GitHub signed-in dashboard is available, and the tested diary/image files are
+being saved to the same review branch through its normal upload interface. The
+Render dashboard requires sign-in. Release merge, frontend deployment and live
+verification remain pending; no production deployment is claimed by this record.
