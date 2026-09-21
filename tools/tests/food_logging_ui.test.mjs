@@ -49,6 +49,7 @@ const experienceCopy = JSON.parse(await readFile(new URL("../../frontend/config/
 const experience = await loadLibrary("foodExperience", {
   "@/config/food-experience-copy.json": { default: experienceCopy }, "@/lib/locales": locales,
 });
+const illustration = await loadLibrary("foodIllustration", {});
 const usdaMath = await loadLibrary("usdaReference", {});
 const barcode = await loadLibrary("foodBarcode", {});
 const barcodeCopy = JSON.parse(await readFile(new URL("../../frontend/config/barcode-copy.json", import.meta.url), "utf8"));
@@ -172,6 +173,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/lib/foodUi") return foodUi;
       if (specifier === "@/lib/foodExperience") return experience;
       if (specifier === "@/lib/foodSource") return foodSource;
+      if (specifier === "@/lib/foodIllustration") return illustration;
       if (specifier === "@/lib/nutritionSummaryBridge") return {
         nutritionSummaryMessage: (input) => input,
         postNutritionSummaryToParent: () => false,
@@ -962,7 +964,7 @@ test("bulk deletion keeps its explicit confirmation and uses the current display
   assert.equal(deletions.length, 1);
   assert.equal(deletions[0].url, "/api/backend/logs");
   assert.equal(list(), undefined);
-  assert.ok(nodes(h.tree, node => node.type === "EmptyState").some(node => node.props.title === foodUiCopy.ar.emptyLogsTitle));
+  assert.ok(nodes(h.tree, node => node.type === "EmptyState").some(node => node.props.title === diary.diaryCopy("ar").emptyTitle));
 });
 
 test("period coverage preserves all recorded counts and never supplies an averaged health marker", async () => {
@@ -1274,4 +1276,31 @@ test('USDA alternatives return to the exact previous food, grams and list positi
   assert.equal(list.props.ref.current.scrollTop,181);
   assert.equal(app.requests.length,1);
   assert.equal(app.focusEvents.filter(e=>e.type==='scroll').length,0);
+});
+
+
+test("product thumbnails retry the original once, then show the local illustration without blocking controls", async () => {
+  const h = await harness("FoodImage");
+  const item = {...foods[0],image_url:"https://images.openfoodfacts.org/images/products/123/456/789/0123/front_en.7.400.jpg"};
+  const image=()=>nodes(h.tree,node=>node.type==="Image")[0];
+  h.render({item,eager:true});
+  assert.equal(image().props.src,item.image_url.replace(".400.jpg",".200.jpg"));
+  assert.equal(image().props.loading,"eager");assert.equal(image().props.fetchPriority,"high");
+  assert.equal(image().props.decoding,"async");
+  image().props.onError();h.render();assert.equal(image().props.src,item.image_url);
+  image().props.onError();h.render();assert.match(image().props.src,/^\/images\/food-illustrations\//);
+  assert.equal(image().props.onError,undefined,"Stop retries when both OFF image variants fail");
+  const other={...item,image_url:item.image_url.replace(".7.",".8.")};
+  h.render({item:other});assert.equal(image().props.src,other.image_url.replace(".400.jpg",".200.jpg"));
+  assert.equal(image().props.loading,"lazy");assert.equal(image().props.fetchPriority,"auto");
+  h.render({item:other,size:112,eager:true});
+  assert.equal(image().props.src,other.image_url,"Detail view retains original resolution for an available image");
+  assert.deepEqual(h.requests,[],"Images do not use the search or logging backend");
+});
+
+test("thumbnail URLs preserve product, language, revision and query and reject untrusted sources",()=>{
+ const base="https://images.openfoodfacts.org/images/products/123/456/789/0123/";
+ for(const size of ['400','full'])assert.equal(foodSource.foodImageThumbnail(base+'front_nl.45.'+size+'.jpg?v=1'),base+'front_nl.45.200.jpg?v=1');
+ for(const file of ['front_en.1.100.jpg','front_en.1.200.jpg','1.jpg','1.400.jpg','front.jpg'])assert.equal(foodSource.foodImageThumbnail(base+file),base+file);
+ for(const url of ['https://tracker.example/front_en.1.400.jpg','javascript:alert(1)',null])assert.equal(foodSource.foodImageThumbnail(url),null);
 });
