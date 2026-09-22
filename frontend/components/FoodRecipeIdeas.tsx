@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { discoveryCopy } from "@/lib/foodDiscovery";
 import type { FoodSearchItem } from "@/components/foodTypes";
 import { cuisines, diets, meals, recipeCopy, recipeIdeas, type RecipePreferences } from "@/lib/foodRecipes";
 
@@ -11,6 +12,7 @@ export function FoodRecipeIdeas({ food, locale }: { food: FoodSearchItem; locale
   const contentLanguage = locale.startsWith("nl") ? "nl" : "en";
   return <details className="mt-3 rounded-xl border border-brand-secondary/20 p-3">
     <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-brand-secondary">{copy.title}</summary>
+    <p className="mt-2 text-xs leading-relaxed text-brand-secondary">{discoveryCopy(locale).suggestionNote}</p>
     <p className="mt-2 text-xs leading-relaxed text-brand-secondary">{copy.note}</p>
     <div className="mt-3 grid gap-2 sm:grid-cols-3">
       {([{ key: "diet", title: copy.diet, values: diets }, { key: "cuisine", title: copy.cuisine, values: cuisines }, { key: "meal", title: copy.meal, values: meals }] as const).map(field => <label key={field.key} className="min-w-0 text-xs font-semibold text-brand-secondary">{field.title}

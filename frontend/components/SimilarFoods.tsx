@@ -20,6 +20,7 @@ export function SimilarFoods({ item, foods, locale, disabled, canChoose = true, 
   return <details className="mt-4 rounded-xl border border-brand-secondary/20 bg-brand-bg p-3">
     <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-brand-secondary focus-visible:ring-2 focus-visible:ring-brand-primary">{copy.alternatives}</summary>
     <p className="mt-2 text-sm font-semibold text-brand-primary">{copy.similarTo.replace("{food}", item.product_name)}</p>
+    <p className="mt-2 text-xs leading-relaxed text-brand-secondary">{copy.suggestionNote}</p>
     <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{copy.gradeNote}</p>
     <div className="mt-3 flex flex-wrap gap-2">{([["all", copy.allAlternatives], ["organic", copy.organicLabel], ["welfare", copy.welfareLabel]] as const).map(([value, label]) =>
       <button type="button" key={value} aria-pressed={preference === value} onClick={() => setPreference(value)} className={`min-h-11 rounded-full border px-3 py-2 text-xs font-semibold ${preference === value ? "border-brand-secondary bg-brand-secondary text-white" : "border-brand-secondary/30 text-brand-secondary"}`}>{label}</button>)}</div>
