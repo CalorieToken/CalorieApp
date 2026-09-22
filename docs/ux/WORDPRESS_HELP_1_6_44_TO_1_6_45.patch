@@ -1,0 +1,520 @@
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help.js
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help.js
+@@ -5,7 +5,7 @@
+   var cfg = window.CalorieTokenHelp;
+   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
+   var views = [], locale = 'en';
+-  var visibleTopics = ['app','search','scan','compare','usda','contribute','diary','account','test','move','export','history','exchange','market','xamanSwap','crosschain','trustline','donations','docs','usecases','community','showcases','siteNavigation','troubleshoot','legal'];
++  var visibleTopics = ['app','search','scan','compare','recipes','usda','contribute','diary','account','test','move','export','history','exchange','market','xamanSwap','crosschain','trustline','donations','docs','usecases','community','showcases','siteNavigation','troubleshoot','legal'];
+   visibleTopics=visibleTopics.filter(function(key){return !!cfg.copy.en.topics[key];});
+   var adultOnlyTopics = ['test','move','export','account','diary','exchange','market','xamanSwap','crosschain','trustline','donations'];
+   var primaryTopics = {
+@@ -18,7 +18,7 @@
+     foodSearch:['Search foods','/calorieapp/#food-search'],foodScan:['Scan food','/calorieapp/#food-scan'],foodCompare:['Compare foods','/calorieapp/#food-compare'],
+     foodBasic:['Basic foods','/calorieapp/#basic-foods'],foodDiary:['Food diary','/calorieapp/#food-diary'],
+     account:['My account','/calorieapp/#account'],accountExport:['Export tools','/calorieapp/#account-export'],accountMove:['Move to a real account','/calorieapp/#move-account'],testAccount:['Set up a test account','/calorieapp/#test-account'],
+-    app:['CalorieApp','/calorieapp/'], test:['XRPL Testnet','/calorieapp/#test-account'],
++    app:['CalorieApp','/index.php/calorieapp/'], test:['XRPL Testnet','/index.php/calorieapp/#ctstyle-testnet'],
+     home:['Home','/'],whitepaperPage:['Whitepaper','/whitepaper/'],roadmapPage:['Roadmap','/roadmap/'],
+     tokenomics:['Tokenomics','/tokenomics-update/'],richlist:['Holders','/richlist/'],
+     blog:['Blog','/blog/'],community:['Community hub','/community-voting-hub-info/'],showcases:['Showcases','/showcases/'],merch:['Merch & NFTs','/merchnfts/'],
+@@ -41,6 +41,7 @@
+     xaman:['Xaman · Testnet','https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger']
+   };
+   var keywords = {
++    recipes:['recipe','recipes','recept','recepten','receptidee','receptsuggesties','eetstijl','eetgewoonte','keuken','halal','kosher','koosjer','vegetarisch','recette','recettes','receta','receita','resep','食谱','रेसिपी','وصفة','রেসিপি','ترکیب'],
+     search:['zoeken','zoek','voedsel zoeken','search','find food','rechercher','chercher','buscar','pesquisar','cari','搜索','खोज','بحث','খুঁজ','تلاش'],
+     scan:['scan','scannen','barcode','barcodes','scanner','code-barres','条码','बारकोड','باركود','বারকোড','código de barras','kode batang','بارکوڈ'],
+     account:['account','accountbeheer','accountfuncties','profiel','profile','nickname','bijnaam','login','logout','aanmelden','inloggen','uitloggen','compte','cuenta','conta','akun','账户','खाता','حساب','অ্যাকাউন্ট','اکاؤنٹ'],
+@@ -48,7 +49,7 @@
+     move:['overstappen','overzetten','echt account','real account','mainnet','compte réel','cuenta real','conta real','akun nyata','真实账户','वास्तविक खाता','حساب حقيقي','বাস্তব অ্যাকাউন্ট','حقیقی اکاؤنٹ'],
+     diary:['dagboek','eetdagboek','diary','food log','journal alimentaire','diario','diário','catatan makanan','饮食记录','भोजन डायरी','يوميات الطعام','খাদ্য ডায়েরি','غذائی ڈائری'],
+     usda:['usda','fdc','foundation','sr legacy','nutri-score','nutri score','nutriscore','ingredient','ingredients','ingrediënt','ingrediënten','basisvoeding','食材','सामग्री','مكون','مكوّن','উপকরণ','ingrediente','ingrédient','bahan','اجزا'],
+-    compare:['compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
++    compare:['keurmerk','keurmerken','label','labels','beter leven','biologisch','ecologisch','ecologischer','ecologische','diervriendelijk','diervriendelijke','dierenwelzijn','plantaardig','plantaardige','vegan','gezondere','gezonder','andere merken','eco','ecological','animal welfare','plant based','plant-based','healthier','other brands','végétal','bien-être animal','vegetal','bienestar animal','nabati','kesejahteraan hewan','植物性','动物福利','पौध','पशु कल्याण','نباتي','رفق بالحيوان','উদ্ভিদভিত্তিক','প্রাণীকল্যাণ','نباتاتی','جانوروں کی فلاح','compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
+     donations:['donation','donations','donate','donatie','donaties','doneren','donation balance','donatiesaldo','consolidation','consolidatie','捐赠','दान','تبرع','অনুদান','donación','donaciones','dons','donativos','donasi','عطیات'],
+     test:['test','testnet','faucet','proberen','oefenen','testaccount','recovery seed','herstelcode','private key','测试','昵称','导出','导入','परीक्ष','उपनाम','निर्यात','आयात','اختبار','اسم مستعار','تصدير','استيراد','পরীক্ষা','ডাকনাম','রপ্তানি','আমদানি','apodo','exportar','importar','surnom','exporter','importer','alcunha','ekspor','impor','آزمائش','نک نیم'],
+     trustline:['trustline','trust set','issuer','uitgever','hex','信任','ट्रस्ट','ثقة','ট্রাস্ট','ٹرسٹ'],
+@@ -122,6 +123,7 @@
+     else if(candidates.includes('market')&&(candidates.includes('troubleshoot')||candidates.includes('legal')))selected='troubleshoot';
+     else if (candidates.includes('legal') && !candidates.includes('troubleshoot') && !candidates.includes('account')) selected='legal';
+     else if (candidates.includes('contribute')) selected='contribute';
++    else if (candidates.includes('recipes')) selected='recipes';
+     else if (candidates.includes('compare')) selected='compare';
+     else if (candidates.includes('usda')) selected='usda';
+     else if (candidates.includes('move')) selected='move';
+@@ -175,7 +177,7 @@
+       return {title:data.title,text:[note,ageCopy.helpText].filter(Boolean).join(' '),links:['app','faq'],actions:['foodSearch','foodScan']};
+     }
+     if(!data)return data;
+-    var actions={app:['foodSearch','foodScan','foodDiary'],search:['foodSearch'],scan:['foodScan'],compare:['foodCompare'],usda:['foodBasic'],diary:['foodDiary'],account:['account','testAccount','accountMove','accountExport'],test:['testAccount','account'],move:['accountMove'],export:['accountExport'],exchange:['exchange','trustline'],market:['market'],xamanSwap:['xamanSwap'],crosschain:['crosschain'],trustline:['trustline']};
++    var actions={app:['foodSearch','foodScan','foodDiary'],search:['foodSearch'],scan:['foodScan'],compare:['foodCompare'],recipes:['foodSearch','foodBasic'],usda:['foodBasic'],diary:['foodDiary'],account:['account','testAccount','accountMove','accountExport'],test:['testAccount','account'],move:['accountMove'],export:['accountExport'],exchange:['exchange','trustline'],market:['market'],xamanSwap:['xamanSwap'],crosschain:['crosschain'],trustline:['trustline']};
+     return Object.assign({},data,{actions:actions[key]||[]});
+   }
+   function answer(view,key,focusReply) {
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help-label-bootstrap.js
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help-label-bootstrap.js
+@@ -9,7 +9,7 @@
+     var copy=cfg.copy[tag];if(!copy||typeof copy!=='object')return;
+     if(!copy.linkLabels||typeof copy.linkLabels!=='object')copy.linkLabels={};
+     Object.keys(labels[tag]).forEach(function(key){if(!Object.prototype.hasOwnProperty.call(copy.linkLabels,key))copy.linkLabels[key]=labels[tag][key];});
+-    var directTopics={search:['foodSearch','foodSearchHelp'],compare:['foodCompare','foodCompareHelp'],scan:['foodScan','foodScanHelp'],account:['account','accountHelp'],export:['accountExport','accountExportHelp'],move:['accountMove','accountMoveHelp'],diary:['foodDiary','foodDiaryHelp']};
++    var directTopics={recipes:['foodRecipes','foodRecipesHelp'],search:['foodSearch','foodSearchHelp'],compare:['foodCompare','foodCompareHelp'],scan:['foodScan','foodScanHelp'],account:['account','accountHelp'],export:['accountExport','accountExportHelp'],move:['accountMove','accountMoveHelp'],diary:['foodDiary','foodDiaryHelp']};
+     if(copy.topics)Object.keys(directTopics).forEach(function(key){var fields=directTopics[key];copy.topics[key]={title:labels[tag][fields[0]],text:labels[tag][fields[1]],links:[]};});
+     var additions=topics&&topics[tag];
+     if(!additions||!copy.topics||typeof copy.topics!=='object')return;
+@@ -37,6 +37,14 @@
+     Object.assign(copy.linkLabels,current.linkLabels||{});
+     if(typeof current.updatedLabel==='string')copy.updatedLabel=current.updatedLabel;
+   });
++  // The reviewed site account answer must also retain the current sign-in guidance.
++  Object.keys(cfg.copy).forEach(function(tag){
++    var current=cfg.copy[tag].topics&&cfg.copy[tag].topics.account,addition=topics&&topics[tag]&&topics[tag].account;
++    if(!current||!addition)return;
++    if(typeof current.text==='string'&&!current.text.includes(addition.text))current.text+=' '+addition.text;
++    if(!Array.isArray(current.steps))current.steps=[];
++    if(!current.steps.includes(addition.step))current.steps.push(addition.step);
++  });
+   Object.keys(cfg.copy).forEach(function(tag){var topic=cfg.copy[tag].topics&&cfg.copy[tag].topics.usda;if(topic&&Array.isArray(topic.links)&&!topic.links.includes('contributeUsda'))topic.links.push('contributeUsda');});
+   if(window.CalorieTokenMarkets)window.CalorieTokenMarkets.patchHelp(cfg);
+ })();
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help-topic-additions.json
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help-topic-additions.json
+@@ -11,6 +11,26 @@
+     "test": {
+       "text": "This recovery seed stays only in this open tab. CalorieApp and WordPress servers do not receive or save it. After a reload or closing the tab, we cannot recover it.",
+       "step": "To stop, choose “Cancel guide”. Returning to account management only pauses the guide. If you have not confirmed that your recovery code is saved, read and confirm the cancellation message."
++    },
++    "compare": {
++      "text": "Alternatives can come from different brands. A better listed Nutri-Score is highlighted only for recognised similar foods with known grades; it is not a personal health recommendation. Grades reported by Open Food Facts; check the label. Ingredients, allergens and score versions can differ. A search direction for your preferences. Environmental impact and animal-welfare standards are not verified; check ingredients and certification. Recorded by Open Food Facts, not independently verified by CalorieApp. Check the packaging. Missing information means unknown, not uncertified.",
++      "step": "Open the product details and choose Also compare. Search other brands, or explore plant-based options where offered. Check the ingredients and labels before choosing. Organic label / Animal welfare label: No matching alternative with this recorded label in these results."
++    },
++    "account": {
++      "text": "The login panel opens near the bottom of the screen without moving the page to the top or closing the expanded app view. After successful sign-in, the page still refreshes to update your account.",
++      "step": "Choose an existing account to sign in with Xaman, or Guided setup for the test-account steps. Never enter your recovery seed in Help or the FAQ."
++    },
++    "diary": {
++      "text": "After saving a portion, use the Diary button to open your diary. Moving between tabs does not save another portion.",
++      "step": "Choose Add food to return to food search. At the end of a results list, continue scrolling to move through the page."
++    },
++    "search": {
++      "text": "Packaged food uses Open Food Facts; Basic food uses USDA. With no packaged-food results, the Basic food button opens the other search tab.",
++      "step": "Choose your portion and save it explicitly. Small icons beside the text identify calories, protein, fat and carbohydrates; the leaf identifies a plant-based search option, not a certification."
++    },
++    "recipes": {
++      "text": "Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself.",
++      "step": "Eating style → Cuisine inspiration → Meal. No matching idea in this small selection yet, or not enough product information for your eating style. You can change your preferences."
+     }
+   },
+   "nl": {
+@@ -25,6 +45,26 @@
+     "test": {
+       "text": "Deze herstelcode blijft alleen in dit geopende tabblad. De servers van CalorieApp en WordPress ontvangen of bewaren hem niet. Na vernieuwen of sluiten kunnen wij hem niet terughalen.",
+       "step": "Stoppen doe je met “Stappenplan annuleren”. Teruggaan naar Accountbeheer pauzeert het stappenplan alleen. Heb je nog niet bevestigd dat je de herstelcode hebt bewaard, lees en bevestig dan de annuleringsmelding."
++    },
++    "compare": {
++      "text": "Alternatieven kunnen van verschillende merken komen. Een betere vermelde Nutri-Score wordt alleen uitgelicht bij herkende vergelijkbare voeding met bekende scores; dit is geen persoonlijk gezondheidsadvies. Scores volgens Open Food Facts; controleer het etiket. Ingrediënten, allergenen en scoreversies kunnen verschillen. Een zoekrichting die bij je voorkeuren kan passen. Milieu-impact en dierenwelzijn zijn niet geverifieerd; controleer ingrediënten en keurmerken. Vermeld door Open Food Facts, niet onafhankelijk gecontroleerd door CalorieApp. Controleer de verpakking. Ontbrekende informatie betekent onbekend, niet ongecertificeerd.",
++      "step": "Open de productdetails en kies Vergelijk ook. Zoek andere merken of bekijk plantaardige opties waar die worden aangeboden. Controleer ingrediënten en etiketten voordat je kiest. Biologisch label / Dierenwelzijnslabel: In deze resultaten staat geen passend alternatief met dit vermelde label."
++    },
++    "account": {
++      "text": "Het inlogpaneel opent onderaan in beeld zonder de pagina naar boven te verplaatsen of de vergrote appweergave te sluiten. Na succesvol inloggen wordt de pagina nog wel vernieuwd om je account bij te werken.",
++      "step": "Kies een bestaand account om met Xaman in te loggen, of Begeleide start voor de stappen van een testaccount. Vul je herstelcode nooit in bij Help of de FAQ."
++    },
++    "diary": {
++      "text": "Na het opslaan van een portie kun je met de knop Eetdagboek naar je dagboek. Wisselen van tabblad slaat niet nogmaals een portie op.",
++      "step": "Kies Voeding toevoegen om terug te gaan naar zoeken. Aan het einde van een resultatenlijst kun je verder scrollen door de pagina."
++    },
++    "search": {
++      "text": "Verpakte voeding gebruikt Open Food Facts; Basisvoeding gebruikt USDA. Bij geen resultaten voor verpakte voeding opent de knop Basisvoeding het andere zoektabblad.",
++      "step": "Kies je portie en sla deze zelf op. Kleine icoontjes naast de tekst duiden calorieën, eiwitten, vetten en koolhydraten aan; het blaadje duidt een plantaardige zoekoptie aan, geen keurmerk."
++    },
++    "recipes": {
++      "text": "Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek.",
++      "step": "Eetstijl → Keukeninspiratie → Eetmoment. Nog geen passend idee in deze kleine selectie, of onvoldoende productinformatie voor je eetstijl. Je kunt je voorkeuren aanpassen."
+     }
+   },
+   "zh-Hans": {
+@@ -39,6 +79,26 @@
+     "test": {
+       "text": "恢复密钥仅保留在当前打开的标签页中。CalorieApp 和 WordPress 服务器不会接收或保存它。刷新或关闭标签页后，我们无法找回。",
+       "step": "若要停止，请选择“取消指南”。返回账户管理只会暂停指南。如果尚未确认已保存恢复码，请阅读并确认取消提示。"
++    },
++    "compare": {
++      "text": "替代品可来自不同品牌。只有识别为同类食品且双方等级已知时，才突出显示来源中更好的 Nutri-Score；这不是个人健康建议。 评分来自 Open Food Facts；请核对标签。配料、过敏原和评分版本可能不同。 根据你的偏好提供搜索方向。环境影响和动物福利标准未经核实；请查看配料和认证。 由 Open Food Facts 记录，未经 CalorieApp 独立核实。请查看包装。资料缺失表示未知，并非未认证。",
++      "step": "打开产品详情并选择比较。搜索其他品牌，或在提供时查看植物性选项。选择前检查配料和标签。 有机标签 / 动物福利标签: 这些结果中没有带此记录标签的合适替代品。"
++    },
++    "account": {
++      "text": "登录面板在屏幕下方打开，不会将页面跳到顶部或关闭放大的应用视图。登录成功后，页面仍会刷新以更新账户。",
++      "step": "选择已有账户以通过 Xaman 登录，或选择引导设置查看测试账户步骤。切勿在帮助或 FAQ 中输入恢复密钥。"
++    },
++    "diary": {
++      "text": "保存份量后，使用日记按钮打开日记。切换标签不会再次保存份量。",
++      "step": "选择添加食物返回搜索。滚动到结果列表末尾后，可继续滚动页面。"
++    },
++    "search": {
++      "text": "包装食品使用 Open Food Facts，基础食品使用 USDA。包装食品无结果时，基础食品按钮可打开另一个搜索标签。",
++      "step": "选择份量并自行保存。文字旁的小图标表示热量、蛋白质、脂肪和碳水化合物；叶片表示植物性搜索选项，并非认证。"
++    },
++    "recipes": {
++      "text": "可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。",
++      "step": "饮食方式 → 菜系灵感 → 用餐时间. 这个小型精选集中暂无匹配灵感，或产品信息不足以确认饮食方式。可调整偏好。"
+     }
+   },
+   "hi": {
+@@ -53,6 +113,26 @@
+     "test": {
+       "text": "यह रिकवरी सीड केवल इस खुले टैब में रहता है। CalorieApp और WordPress के सर्वर इसे प्राप्त या सहेजते नहीं हैं। टैब रीफ़्रेश या बंद करने के बाद हम इसे वापस नहीं ला सकते।",
+       "step": "रोकने के लिए “गाइड रद्द करें” चुनें। खाता प्रबंधन पर लौटने से गाइड केवल रुकती है। अगर आपने रिकवरी कोड सुरक्षित रखने की पुष्टि नहीं की है, तो रद्द करने का संदेश पढ़कर पुष्टि करें।"
++    },
++    "compare": {
++      "text": "विकल्प अलग-अलग ब्रांड के हो सकते हैं। बेहतर दर्ज Nutri-Score केवल पहचाने गए समान खाद्य पदार्थों और ज्ञात ग्रेड के लिए दिखता है; यह व्यक्तिगत स्वास्थ्य सलाह नहीं है। स्कोर Open Food Facts से हैं; लेबल जाँचें। सामग्री, एलर्जेन और स्कोर के संस्करण अलग हो सकते हैं। आपकी पसंद के अनुसार खोज का सुझाव। पर्यावरणीय प्रभाव और पशु कल्याण मानक सत्यापित नहीं हैं; सामग्री और प्रमाणन जाँचें। Open Food Facts में दर्ज, CalorieApp ने स्वतंत्र पुष्टि नहीं की। पैकेज जाँचें। जानकारी न होने का अर्थ अज्ञात है, अप्रमाणित नहीं।",
++      "step": "उत्पाद विवरण खोलकर तुलना चुनें। दूसरे ब्रांड खोजें या उपलब्ध पौध-आधारित विकल्प देखें। चुनने से पहले सामग्री और लेबल जाँचें। जैविक लेबल / पशु कल्याण लेबल: इन परिणामों में इस दर्ज लेबल वाला उपयुक्त विकल्प नहीं है।"
++    },
++    "account": {
++      "text": "लॉगिन पैनल नीचे खुलता है, पृष्ठ ऊपर नहीं कूदता और बड़ा ऐप दृश्य बंद नहीं होता। सफल लॉगिन के बाद खाता अपडेट करने के लिए पृष्ठ फिर भी रीफ़्रेश होता है।",
++      "step": "Xaman से प्रवेश के लिए मौजूदा खाता चुनें या परीक्षण खाते के लिए निर्देशित सेटअप। सहायता या FAQ में रिकवरी सीड कभी न डालें।"
++    },
++    "diary": {
++      "text": "मात्रा सहेजने के बाद डायरी बटन से डायरी खोलें। टैब बदलने पर मात्रा फिर से नहीं सहेजी जाती।",
++      "step": "खोज पर लौटने के लिए भोजन जोड़ें चुनें। परिणाम सूची के अंत में पृष्ठ पर आगे स्क्रॉल कर सकते हैं।"
++    },
++    "search": {
++      "text": "पैक भोजन Open Food Facts और मूल खाद्य पदार्थ USDA का उपयोग करते हैं। पैक भोजन के परिणाम न मिलने पर मूल खाद्य बटन दूसरा खोज टैब खोलता है।",
++      "step": "मात्रा चुनकर स्वयं सहेजें। पाठ के पास चिह्न कैलोरी, प्रोटीन, वसा और कार्बोहाइड्रेट बताते हैं; पत्ती पौध-आधारित खोज का संकेत है, प्रमाणन नहीं।"
++    },
++    "recipes": {
++      "text": "बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।",
++      "step": "खान-पान शैली → पाकशैली प्रेरणा → भोजन का समय. इस छोटे चयन में अभी उपयुक्त विचार नहीं है या आपकी शैली के लिए उत्पाद जानकारी कम है। प्राथमिकताएँ बदल सकते हैं।"
+     }
+   },
+   "es": {
+@@ -67,6 +147,26 @@
+     "test": {
+       "text": "Esta clave solo permanece en esta pestaña abierta. Los servidores de CalorieApp y WordPress no la reciben ni la guardan. No podemos recuperarla tras recargar o cerrar la pestaña.",
+       "step": "Para detenerlo, elige « Cancelar guía ». Volver a la gestión de la cuenta solo pausa la guía. Si no has confirmado que guardaste el código de recuperación, lee y confirma el mensaje de cancelación."
++    },
++    "compare": {
++      "text": "Las alternativas pueden ser de marcas distintas. Solo se destaca un Nutri-Score publicado mejor entre alimentos similares reconocidos con notas conocidas; no es consejo de salud personal. Puntuaciones de Open Food Facts; comprueba la etiqueta. Los ingredientes, alérgenos y versiones del cálculo pueden variar. Una orientación de búsqueda según tus preferencias. El impacto ambiental y el bienestar animal no están verificados; revisa ingredientes y certificaciones. Registrado por Open Food Facts, sin verificación independiente de CalorieApp. Revisa el envase. Sin datos significa desconocido, no sin certificar.",
++      "step": "Abre los detalles y elige comparar. Busca otras marcas u opciones vegetales cuando se ofrezcan. Revisa ingredientes y etiquetas antes de elegir. Etiqueta ecológica / Sello de bienestar animal: No hay alternativas adecuadas con esta etiqueta registrada en estos resultados."
++    },
++    "account": {
++      "text": "El panel de acceso se abre abajo sin saltar al inicio ni cerrar la vista ampliada. Tras iniciar sesión, la página se actualiza para mostrar tu cuenta.",
++      "step": "Elige una cuenta existente para entrar con Xaman o la configuración guiada para una cuenta de prueba. Nunca escribas tu semilla de recuperación en Ayuda o FAQ."
++    },
++    "diary": {
++      "text": "Tras guardar una porción, abre el diario con su botón. Cambiar de pestaña no vuelve a guardar la porción.",
++      "step": "Elige añadir alimento para volver a buscar. Al final de la lista de resultados puedes seguir desplazándote por la página."
++    },
++    "search": {
++      "text": "Los alimentos envasados usan Open Food Facts; los básicos, USDA. Sin resultados de envasados, el botón de alimentos básicos abre la otra pestaña de búsqueda.",
++      "step": "Elige la porción y guárdala expresamente. Los iconos junto al texto indican calorías, proteínas, grasas y carbohidratos; la hoja indica una búsqueda vegetal, no una certificación."
++    },
++    "recipes": {
++      "text": "Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas.",
++      "step": "Estilo de alimentación → Inspiración culinaria → Comida. Esta pequeña selección aún no incluye una idea adecuada, o faltan datos para tu estilo de alimentación. Puedes cambiar tus preferencias."
+     }
+   },
+   "ar": {
+@@ -81,6 +181,26 @@
+     "test": {
+       "text": "يبقى مفتاح الاسترداد في علامة التبويب المفتوحة هذه فقط. لا تستقبله خوادم CalorieApp وWordPress ولا تحفظه. بعد تحديث علامة التبويب أو إغلاقها لا يمكننا استعادته.",
+       "step": "للتوقف اختر «إلغاء الدليل». الرجوع إلى إدارة الحساب يوقف الدليل مؤقتًا فقط. إذا لم تؤكد حفظ رمز الاسترداد، فاقرأ رسالة الإلغاء وأكدها."
++    },
++    "compare": {
++      "text": "قد تأتي البدائل من علامات مختلفة. لا تُبرز درجة Nutri-Score المسجلة الأفضل إلا لأطعمة متشابهة معروفة التصنيف؛ وليست نصيحة صحية شخصية. الدرجات من Open Food Facts؛ تحقّق من الملصق. قد تختلف المكونات ومسببات الحساسية وإصدارات التقييم. اتجاه للبحث يناسب تفضيلاتك. لم يتم التحقق من الأثر البيئي ومعايير الرفق بالحيوان؛ راجع المكونات والشهادات. مسجل في Open Food Facts ولم تتحقق منه CalorieApp مستقلاً. راجع العبوة. غياب المعلومات يعني غير معروف وليس غير معتمد.",
++      "step": "افتح تفاصيل المنتج واختر المقارنة. ابحث عن علامات أخرى أو خيارات نباتية عند توفرها. تحقق من المكونات والملصقات قبل الاختيار. ملصق عضوي / ملصق رعاية الحيوان: لا بديل مناسب بهذا الملصق المسجل ضمن هذه النتائج."
++    },
++    "account": {
++      "text": "تفتح لوحة الدخول أسفل الشاشة دون الانتقال لأعلى الصفحة أو إغلاق العرض الموسع. بعد نجاح الدخول تُحدّث الصفحة لعرض حسابك.",
++      "step": "اختر حساباً موجوداً للدخول عبر Xaman أو الإعداد الموجّه لحساب تجريبي. لا تدخل عبارة الاسترداد أبداً في المساعدة أو الأسئلة الشائعة."
++    },
++    "diary": {
++      "text": "بعد حفظ الحصة افتح اليوميات بزرها. تغيير التبويب لا يحفظ الحصة مرة أخرى.",
++      "step": "اختر إضافة طعام للعودة إلى البحث. عند نهاية قائمة النتائج يمكنك متابعة تمرير الصفحة."
++    },
++    "search": {
++      "text": "الأطعمة المعبأة تستخدم Open Food Facts والأساسية تستخدم USDA. عند عدم وجود نتائج للمعبأة يفتح زر الأطعمة الأساسية تبويب البحث الآخر.",
++      "step": "اختر الحصة واحفظها بنفسك. الرموز بجوار النص تشير للسعرات والبروتين والدهون والكربوهيدرات؛ الورقة تشير لبحث نباتي وليست شهادة اعتماد."
++    },
++    "recipes": {
++      "text": "أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك.",
++      "step": "نمط الأكل → إلهام المطبخ → الوجبة. لا فكرة مناسبة بعد ضمن هذه المجموعة الصغيرة، أو معلومات المنتج غير كافية لنمط أكلك. يمكنك تغيير التفضيلات."
+     }
+   },
+   "fr": {
+@@ -95,6 +215,26 @@
+     "test": {
+       "text": "Cette clé reste uniquement dans cet onglet ouvert. Les serveurs de CalorieApp et de WordPress ne la reçoivent ni ne la conservent. Après actualisation ou fermeture de l’onglet, nous ne pouvons pas la récupérer.",
+       "step": "Pour arrêter, choisissez « Annuler le guide ». Revenir à la gestion du compte met seulement le guide en pause. Si vous n’avez pas confirmé la sauvegarde du code de récupération, lisez puis confirmez le message d’annulation."
++    },
++    "compare": {
++      "text": "Les alternatives peuvent provenir de différentes marques. Un meilleur Nutri-Score déclaré est signalé uniquement pour des aliments reconnus similaires dont les notes sont connues ; ce n’est pas un conseil de santé personnel. Scores fournis par Open Food Facts ; vérifiez l’étiquette. Les ingrédients, allergènes et versions du calcul peuvent varier. Une piste de recherche selon vos préférences. L’impact environnemental et le bien-être animal ne sont pas vérifiés ; consultez ingrédients et certifications. Indiqué par Open Food Facts, sans vérification indépendante de CalorieApp. Vérifiez l’emballage. Une information absente signifie inconnu, pas non certifié.",
++      "step": "Ouvrez les détails et choisissez de comparer. Cherchez d’autres marques ou explorez les options végétales proposées. Vérifiez ingrédients et étiquettes avant de choisir. Label biologique / Label de bien-être animal: Aucune alternative adaptée avec ce label indiqué dans ces résultats."
++    },
++    "account": {
++      "text": "Le panneau de connexion s’ouvre en bas sans remonter la page ni fermer la vue agrandie. Après connexion, la page est actualisée pour mettre à jour votre compte.",
++      "step": "Choisissez un compte existant pour vous connecter avec Xaman, ou la configuration guidée pour un compte de test. Ne saisissez jamais votre phrase de récupération dans Aide ou FAQ."
++    },
++    "diary": {
++      "text": "Après avoir enregistré une portion, ouvrez le journal avec son bouton. Changer d’onglet n’enregistre pas une seconde portion.",
++      "step": "Choisissez Ajouter un aliment pour revenir à la recherche. En fin de liste, continuez à faire défiler la page."
++    },
++    "search": {
++      "text": "Les aliments emballés utilisent Open Food Facts ; les aliments de base utilisent USDA. Sans résultat emballé, le bouton des aliments de base ouvre l’autre onglet de recherche.",
++      "step": "Choisissez la portion puis enregistrez-la. Les icônes accompagnent les libellés calories, protéines, lipides et glucides ; la feuille indique une recherche végétale, pas une certification."
++    },
++    "recipes": {
++      "text": "Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées.",
++      "step": "Style alimentaire → Inspiration culinaire → Repas. Pas encore d’idée adaptée dans cette petite sélection, ou informations insuffisantes pour votre style alimentaire. Vous pouvez modifier vos préférences."
+     }
+   },
+   "bn": {
+@@ -109,6 +249,26 @@
+     "test": {
+       "text": "এই রিকভারি কোড শুধু এই খোলা ট্যাবেই থাকে। CalorieApp ও WordPress-এর সার্ভার এটি গ্রহণ বা সংরক্ষণ করে না। ট্যাব রিফ্রেশ বা বন্ধ করার পর আমরা এটি ফিরিয়ে দিতে পারব না।",
+       "step": "থামাতে “নির্দেশিকা বাতিল করুন” বেছে নিন। অ্যাকাউন্ট পরিচালনায় ফিরে গেলে নির্দেশিকা শুধু বিরতিতে থাকে। পুনরুদ্ধার কোড সংরক্ষণের নিশ্চয়তা না দিলে বাতিলের বার্তাটি পড়ে নিশ্চিত করুন।"
++    },
++    "compare": {
++      "text": "বিকল্প ভিন্ন ব্র্যান্ডের হতে পারে। পরিচিত একই ধরনের খাবারের জানা গ্রেড থাকলেই ভালো নথিভুক্ত Nutri-Score দেখানো হয়; এটি ব্যক্তিগত স্বাস্থ্য পরামর্শ নয়। স্কোর Open Food Facts থেকে; লেবেল যাচাই করুন। উপাদান, অ্যালার্জেন ও স্কোরের সংস্করণ আলাদা হতে পারে। আপনার পছন্দ অনুযায়ী খোঁজার একটি দিক। পরিবেশগত প্রভাব ও প্রাণীকল্যাণের মান যাচাই করা হয়নি; উপাদান ও সনদ দেখুন। Open Food Facts-এ নথিভুক্ত, CalorieApp স্বাধীনভাবে যাচাই করেনি। প্যাকেট দেখুন। তথ্য না থাকা মানে অজানা, অসনদপ্রাপ্ত নয়।",
++      "step": "পণ্যের বিবরণ খুলে তুলনা বেছে নিন। অন্য ব্র্যান্ড খুঁজুন বা থাকলে উদ্ভিদভিত্তিক বিকল্প দেখুন। বাছার আগে উপাদান ও লেবেল যাচাই করুন। জৈব লেবেল / প্রাণীকল্যাণ লেবেল: এই ফলে এই নথিভুক্ত লেবেলসহ উপযুক্ত বিকল্প নেই।"
++    },
++    "account": {
++      "text": "লগইন প্যানেল নিচে খোলে, পৃষ্ঠা উপরে লাফায় না এবং বড় অ্যাপ ভিউ বন্ধ হয় না। সফল লগইনের পর অ্যাকাউন্ট আপডেট করতে পৃষ্ঠা তবু রিফ্রেশ হয়।",
++      "step": "Xaman দিয়ে ঢুকতে বিদ্যমান অ্যাকাউন্ট বা পরীক্ষার অ্যাকাউন্টের জন্য নির্দেশিত সেটআপ বেছে নিন। সাহায্য বা FAQ-তে রিকভারি সিড দেবেন না।"
++    },
++    "diary": {
++      "text": "পরিমাণ সংরক্ষণের পর ডায়েরি বোতামে ডায়েরি খুলুন। ট্যাব বদলালে আবার সংরক্ষণ হয় না।",
++      "step": "খোঁজায় ফিরতে খাবার যোগ করুন বেছে নিন। ফলের তালিকা শেষে পৃষ্ঠা স্ক্রল করা চালিয়ে যেতে পারেন।"
++    },
++    "search": {
++      "text": "প্যাকেটজাত খাবারে Open Food Facts এবং মৌলিক খাবারে USDA ব্যবহৃত হয়। প্যাকেটজাত ফল না থাকলে মৌলিক খাবার বোতাম অন্য অনুসন্ধান ট্যাব খোলে।",
++      "step": "পরিমাণ বেছে নিজে সংরক্ষণ করুন। লেখার পাশের আইকন ক্যালরি, প্রোটিন, চর্বি ও কার্বোহাইড্রেট বোঝায়; পাতা উদ্ভিদভিত্তিক খোঁজ বোঝায়, সনদ নয়।"
++    },
++    "recipes": {
++      "text": "বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।",
++      "step": "খাদ্যাভ্যাস → রান্নার অনুপ্রেরণা → খাবারের সময়. এই ছোট নির্বাচনে উপযুক্ত ধারণা নেই, বা আপনার খাদ্যাভ্যাসের জন্য পণ্যের তথ্য কম। পছন্দ বদলাতে পারেন।"
+     }
+   },
+   "pt": {
+@@ -123,6 +283,26 @@
+     "test": {
+       "text": "Esta chave permanece apenas neste separador aberto. Os servidores da CalorieApp e do WordPress não a recebem nem guardam. Após atualizar ou fechar o separador, não a podemos recuperar.",
+       "step": "Para parar, escolha « Cancelar guia ». Voltar à gestão da conta apenas pausa o guia. Se ainda não confirmou que guardou o código de recuperação, leia e confirme a mensagem de cancelamento."
++    },
++    "compare": {
++      "text": "As alternativas podem ser de marcas diferentes. Uma melhor nota Nutri-Score declarada só é destacada para alimentos reconhecidos como semelhantes com notas conhecidas; não é aconselhamento de saúde pessoal. Pontuações do Open Food Facts; confira o rótulo. Ingredientes, alergénios e versões do cálculo podem variar. Uma direção de pesquisa segundo as suas preferências. O impacto ambiental e o bem-estar animal não foram verificados; confira ingredientes e certificações. Registado no Open Food Facts, sem verificação independente pela CalorieApp. Confira a embalagem. Sem dados significa desconhecido, não sem certificação.",
++      "step": "Abra os detalhes e escolha comparar. Pesquise outras marcas ou explore opções vegetais quando disponíveis. Confira ingredientes e rótulos antes de escolher. Rótulo biológico / Selo de bem-estar animal: Não há alternativa adequada com este selo registado nestes resultados."
++    },
++    "account": {
++      "text": "O painel de acesso abre em baixo sem saltar para o topo nem fechar a vista ampliada. Após iniciar sessão, a página atualiza para mostrar a conta.",
++      "step": "Escolha uma conta existente para entrar com Xaman ou a configuração guiada para uma conta de teste. Nunca introduza a frase de recuperação na Ajuda ou FAQ."
++    },
++    "diary": {
++      "text": "Depois de guardar uma porção, abra o diário pelo botão. Mudar de separador não guarda a porção novamente.",
++      "step": "Escolha adicionar alimento para voltar à pesquisa. No fim da lista de resultados, continue a percorrer a página."
++    },
++    "search": {
++      "text": "Alimentos embalados usam Open Food Facts; alimentos básicos usam USDA. Sem resultados de embalados, o botão de alimentos básicos abre o outro separador de pesquisa.",
++      "step": "Escolha a porção e guarde-a explicitamente. Os ícones junto ao texto indicam calorias, proteínas, gorduras e hidratos de carbono; a folha indica uma pesquisa vegetal, não uma certificação."
++    },
++    "recipes": {
++      "text": "Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário.",
++      "step": "Estilo alimentar → Inspiração culinária → Refeição. Ainda não há ideia adequada nesta pequena seleção, ou faltam dados para o seu estilo alimentar. Pode alterar as preferências."
+     }
+   },
+   "id": {
+@@ -137,6 +317,26 @@
+     "test": {
+       "text": "Kunci pemulihan ini hanya berada di tab yang terbuka ini. Server CalorieApp dan WordPress tidak menerima atau menyimpannya. Setelah memuat ulang atau menutup tab, kami tidak dapat memulihkannya.",
+       "step": "Untuk berhenti, pilih “Batalkan panduan”. Kembali ke pengelolaan akun hanya menjeda panduan. Jika Anda belum mengonfirmasi bahwa kode pemulihan sudah disimpan, baca dan konfirmasi pesan pembatalan."
++    },
++    "compare": {
++      "text": "Alternatif dapat berasal dari merek berbeda. Nutri-Score tercatat yang lebih baik hanya ditandai untuk makanan yang dikenali sejenis dan memiliki nilai; ini bukan saran kesehatan pribadi. Skor dari Open Food Facts; periksa label. Bahan, alergen, dan versi perhitungan bisa berbeda. Arah pencarian sesuai preferensi Anda. Dampak lingkungan dan standar kesejahteraan hewan belum diverifikasi; periksa bahan dan sertifikasi. Dicatat Open Food Facts, belum diverifikasi mandiri oleh CalorieApp. Periksa kemasan. Data kosong berarti tidak diketahui, bukan tanpa sertifikasi.",
++      "step": "Buka detail produk dan pilih bandingkan. Cari merek lain atau jelajahi pilihan nabati jika tersedia. Periksa bahan dan label sebelum memilih. Label organik / Label kesejahteraan hewan: Tidak ada alternatif sesuai dengan label tercatat ini dalam hasil ini."
++    },
++    "account": {
++      "text": "Panel masuk terbuka di bagian bawah tanpa melompat ke atas atau menutup tampilan aplikasi yang diperbesar. Setelah masuk, halaman tetap dimuat ulang untuk memperbarui akun.",
++      "step": "Pilih akun yang sudah ada untuk masuk dengan Xaman, atau panduan penyiapan untuk akun uji. Jangan masukkan frasa pemulihan di Bantuan atau FAQ."
++    },
++    "diary": {
++      "text": "Setelah menyimpan porsi, buka buku harian melalui tombolnya. Berpindah tab tidak menyimpan porsi lagi.",
++      "step": "Pilih tambah makanan untuk kembali mencari. Di akhir daftar hasil, lanjutkan menggulir halaman."
++    },
++    "search": {
++      "text": "Makanan kemasan memakai Open Food Facts; makanan dasar memakai USDA. Jika kemasan tidak ditemukan, tombol makanan dasar membuka tab pencarian lainnya.",
++      "step": "Pilih porsi dan simpan secara sengaja. Ikon di samping teks menunjukkan kalori, protein, lemak dan karbohidrat; daun menunjukkan pencarian nabati, bukan sertifikasi."
++    },
++    "recipes": {
++      "text": "Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan.",
++      "step": "Pola makan → Inspirasi masakan → Waktu makan. Belum ada ide sesuai dalam pilihan kecil ini, atau informasi produk belum cukup untuk pola makan Anda. Preferensi dapat diubah."
+     }
+   },
+   "ur": {
+@@ -151,6 +351,26 @@
+     "test": {
+       "text": "یہ بحالی کلید صرف اس کھلے ٹیب میں رہتی ہے۔ CalorieApp اور WordPress کے سرور اسے وصول یا محفوظ نہیں کرتے۔ ٹیب ریفریش یا بند ہونے کے بعد ہم اسے واپس نہیں لا سکتے۔",
+       "step": "رکنے کے لیے «رہنما منسوخ کریں» منتخب کریں۔ اکاؤنٹ انتظام پر واپس جانے سے رہنما صرف عارضی طور پر رکتا ہے۔ اگر بحالی کوڈ محفوظ کرنے کی تصدیق نہیں کی تو منسوخی کا پیغام پڑھ کر تصدیق کریں۔"
++    },
++    "compare": {
++      "text": "متبادل مختلف برانڈز سے ہو سکتے ہیں۔ بہتر درج شدہ Nutri-Score صرف پہچانی گئی ملتی جلتی غذاؤں کے معلوم گریڈ پر دکھایا جاتا ہے؛ یہ ذاتی صحت کا مشورہ نہیں۔ اسکور Open Food Facts سے ہیں؛ لیبل دیکھیں۔ اجزاء، الرجی پیدا کرنے والے مادے اور اسکور کے ورژن مختلف ہو سکتے ہیں۔ آپ کی ترجیحات کے مطابق تلاش کی ایک سمت۔ ماحولیاتی اثرات اور جانوروں کی فلاح کے معیارات کی تصدیق نہیں ہوئی؛ اجزاء اور سرٹیفیکیشن دیکھیں۔ Open Food Facts میں درج ہے، CalorieApp نے آزاد تصدیق نہیں کی۔ پیکٹ دیکھیں۔ معلومات نہ ہونے کا مطلب نامعلوم ہے، غیر مصدقہ نہیں۔",
++      "step": "مصنوع کی تفصیل کھول کر موازنہ منتخب کریں۔ دوسرے برانڈ یا دستیاب نباتاتی اختیارات تلاش کریں۔ انتخاب سے پہلے اجزا اور لیبل دیکھیں۔ نامیاتی لیبل / جانوروں کی فلاح کا لیبل: ان نتائج میں اس درج لیبل والا موزوں متبادل نہیں ہے۔"
++    },
++    "account": {
++      "text": "لاگ ان پینل نیچے کھلتا ہے، صفحہ اوپر نہیں اچھلتا اور بڑا ایپ منظر بند نہیں ہوتا۔ کامیاب لاگ ان کے بعد اکاؤنٹ اپ ڈیٹ کرنے کے لیے صفحہ پھر بھی تازہ ہوتا ہے۔",
++      "step": "Xaman سے داخل ہونے کے لیے موجودہ اکاؤنٹ یا آزمائشی اکاؤنٹ کے لیے رہنمائی والا سیٹ اپ چنیں۔ مدد یا FAQ میں ریکوری سیڈ کبھی نہ لکھیں۔"
++    },
++    "diary": {
++      "text": "مقدار محفوظ کرنے کے بعد ڈائری بٹن سے ڈائری کھولیں۔ ٹیب بدلنے سے مقدار دوبارہ محفوظ نہیں ہوتی۔",
++      "step": "تلاش پر واپس آنے کے لیے غذا شامل کریں چنیں۔ نتائج کی فہرست کے آخر میں صفحہ مزید اسکرول کر سکتے ہیں۔"
++    },
++    "search": {
++      "text": "پیک شدہ غذا Open Food Facts اور بنیادی غذا USDA استعمال کرتی ہے۔ پیک شدہ نتائج نہ ملنے پر بنیادی غذا کا بٹن دوسرا تلاش ٹیب کھولتا ہے۔",
++      "step": "مقدار چن کر خود محفوظ کریں۔ متن کے ساتھ نشان کیلوریز، پروٹین، چکنائی اور کاربوہائیڈریٹس بتاتے ہیں؛ پتا نباتاتی تلاش کا نشان ہے، تصدیقی مہر نہیں۔"
++    },
++    "recipes": {
++      "text": "بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔",
++      "step": "کھانے کا انداز → پکوان کی تحریک → کھانے کا وقت. اس چھوٹے انتخاب میں مناسب خیال نہیں یا آپ کے انداز کے لیے مصنوع کی معلومات کم ہیں۔ ترجیحات بدل سکتے ہیں۔"
+     }
+   }
+ }
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help-link-labels.json
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help-link-labels.json
+@@ -34,7 +34,9 @@
+     "accountHelp": "Your nickname is saved with your CalorieApp account and shown in the app and website login widget after you sign in. You can change or remove it here. It is not sent to Xaman or XRPL.",
+     "accountExportHelp": "Sign in first to open export and privacy tools. No account action was started.",
+     "accountMoveHelp": "Do not convert or reuse the test wallet. Create a fresh Mainnet account in Xaman.",
+-    "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items."
++    "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items.",
++    "foodRecipes": "Recipe ideas",
++    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself."
+   },
+   "nl": {
+     "app": "CalorieApp",
+@@ -71,7 +73,9 @@
+     "accountHelp": "Je nickname wordt bij je CalorieApp-account opgeslagen en na inloggen getoond in de app en de loginwidget op de website. Je kunt hem hier wijzigen of verwijderen. Hij wordt niet naar Xaman of XRPL gestuurd.",
+     "accountExportHelp": "Log eerst in om export- en privacyfuncties te openen. Er is nog geen accountactie gestart.",
+     "accountMoveHelp": "Zet de testwallet niet om en hergebruik hem niet. Maak in Xaman een volledig nieuw Mainnet-account.",
+-    "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren."
++    "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren.",
++    "foodRecipes": "Receptideeën",
++    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek."
+   },
+   "zh-Hans": {
+     "app": "CalorieApp",
+@@ -108,7 +112,9 @@
+     "accountHelp": "昵称会保存在你的 CalorieApp 账户中，登录后显示在应用和网站登录组件中。你可以在此更改或删除昵称。昵称不会发送至 Xaman 或 XRPL。",
+     "accountExportHelp": "请先登录，再打开导出和隐私工具。尚未启动任何账户操作。",
+     "accountMoveHelp": "不要转换或重复使用测试钱包。请在 Xaman 中创建全新的主网账户。",
+-    "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。"
++    "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。",
++    "foodRecipes": "食谱灵感",
++    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。"
+   },
+   "hi": {
+     "app": "CalorieApp",
+@@ -145,7 +151,9 @@
+     "accountHelp": "आपका उपनाम आपके CalorieApp खाते में सहेजा जाता है और लॉगिन के बाद ऐप और वेबसाइट के लॉगिन विजेट में दिखता है। आप इसे यहाँ बदल या हटा सकते हैं। इसे Xaman या XRPL पर नहीं भेजा जाता।",
+     "accountExportHelp": "एक्सपोर्ट और गोपनीयता उपकरण खोलने के लिए पहले साइन इन करें। कोई खाता कार्रवाई शुरू नहीं हुई है।",
+     "accountMoveHelp": "टेस्ट वॉलेट को बदलें या दोबारा उपयोग न करें। Xaman में नया Mainnet खाता बनाएँ।",
+-    "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।"
++    "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।",
++    "foodRecipes": "रेसिपी के विचार",
++    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।"
+   },
+   "es": {
+     "app": "CalorieApp",
+@@ -182,7 +190,9 @@
+     "accountHelp": "Tu apodo se guarda en tu cuenta de CalorieApp y aparece en la aplicación y en el widget de acceso de la web al iniciar sesión. Puedes cambiarlo o eliminarlo aquí. No se envía a Xaman ni a XRPL.",
+     "accountExportHelp": "Inicia sesión primero para abrir las herramientas de exportación y privacidad. No se inició ninguna acción de cuenta.",
+     "accountMoveHelp": "No conviertas ni reutilices la cartera de prueba. Crea una cuenta Mainnet completamente nueva en Xaman.",
+-    "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros."
++    "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros.",
++    "foodRecipes": "Ideas de recetas",
++    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas."
+   },
+   "ar": {
+     "app": "CalorieApp",
+@@ -219,7 +229,9 @@
+     "accountHelp": "يُحفظ اسمك المستعار في حساب CalorieApp ويظهر في التطبيق وأداة تسجيل الدخول على الموقع بعد تسجيل دخولك. يمكنك تغييره أو حذفه هنا. لا يُرسل إلى Xaman أو XRPL.",
+     "accountExportHelp": "سجّل الدخول أولًا لفتح أدوات التصدير والخصوصية. لم يبدأ أي إجراء على الحساب.",
+     "accountMoveHelp": "لا تحوّل محفظة الاختبار ولا تعِد استخدامها. أنشئ حساب Mainnet جديدًا بالكامل في Xaman.",
+-    "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها."
++    "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها.",
++    "foodRecipes": "أفكار وصفات",
++    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك."
+   },
+   "fr": {
+     "app": "CalorieApp",
+@@ -256,7 +268,9 @@
+     "accountHelp": "Votre pseudonyme est enregistré dans votre compte CalorieApp et apparaît dans l’application et le widget de connexion du site après connexion. Vous pouvez le modifier ou le supprimer ici. Il n’est pas envoyé à Xaman ou à XRPL.",
+     "accountExportHelp": "Connectez-vous d’abord pour ouvrir les outils d’export et de confidentialité. Aucune action sur le compte n’a été lancée.",
+     "accountMoveHelp": "Ne convertissez ni ne réutilisez le portefeuille test. Créez un tout nouveau compte Mainnet dans Xaman.",
+-    "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments."
++    "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments.",
++    "foodRecipes": "Idées de recettes",
++    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées."
+   },
+   "bn": {
+     "app": "CalorieApp",
+@@ -293,7 +307,9 @@
+     "accountHelp": "আপনার ডাকনাম CalorieApp অ্যাকাউন্টে সংরক্ষিত থাকে এবং লগইনের পরে অ্যাপ ও ওয়েবসাইটের লগইন উইজেটে দেখা যায়। এখানে এটি বদলাতে বা মুছতে পারেন। এটি Xaman বা XRPL-এ পাঠানো হয় না।",
+     "accountExportHelp": "এক্সপোর্ট ও গোপনীয়তার সরঞ্জাম খুলতে আগে সাইন ইন করুন। কোনো অ্যাকাউন্ট কাজ শুরু হয়নি।",
+     "accountMoveHelp": "টেস্ট ওয়ালেট রূপান্তর বা পুনর্ব্যবহার করবেন না। Xaman-এ সম্পূর্ণ নতুন Mainnet অ্যাকাউন্ট তৈরি করুন।",
+-    "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।"
++    "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।",
++    "foodRecipes": "রেসিপির ধারণা",
++    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।"
+   },
+   "pt": {
+     "app": "CalorieApp",
+@@ -330,7 +346,9 @@
+     "accountHelp": "Seu apelido é salvo na sua conta CalorieApp e aparece no aplicativo e no widget de login do site após entrar. Você pode alterá-lo ou removê-lo aqui. Ele não é enviado ao Xaman nem ao XRPL.",
+     "accountExportHelp": "Inicie sessão primeiro para abrir as ferramentas de exportação e privacidade. Nenhuma ação da conta foi iniciada.",
+     "accountMoveHelp": "Não converta nem reutilize a carteira de teste. Crie uma conta Mainnet totalmente nova no Xaman.",
+-    "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos."
++    "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos.",
++    "foodRecipes": "Ideias de receitas",
++    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário."
+   },
+   "id": {
+     "app": "CalorieApp",
+@@ -367,7 +385,9 @@
+     "accountHelp": "Nama panggilan disimpan di akun CalorieApp dan ditampilkan di aplikasi serta widget masuk situs setelah Anda masuk. Anda dapat mengubah atau menghapusnya di sini. Nama tidak dikirim ke Xaman atau XRPL.",
+     "accountExportHelp": "Masuk terlebih dahulu untuk membuka alat ekspor dan privasi. Belum ada tindakan akun yang dimulai.",
+     "accountMoveHelp": "Jangan konversi atau gunakan ulang dompet uji. Buat akun Mainnet yang sepenuhnya baru di Xaman.",
+-    "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan."
++    "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan.",
++    "foodRecipes": "Ide resep",
++    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan."
+   },
+   "ur": {
+     "app": "CalorieApp",
+@@ -404,6 +424,8 @@
+     "accountHelp": "آپ کا عرفی نام CalorieApp اکاؤنٹ میں محفوظ ہوتا ہے اور لاگ ان کے بعد ایپ اور ویب سائٹ کے لاگ ان ویجٹ میں دکھائی دیتا ہے۔ آپ اسے یہاں تبدیل یا حذف کر سکتے ہیں۔ اسے Xaman یا XRPL کو نہیں بھیجا جاتا۔",
+     "accountExportHelp": "ایکسپورٹ اور رازداری کے اوزار کھولنے کے لیے پہلے سائن اِن کریں۔ اکاؤنٹ کی کوئی کارروائی شروع نہیں ہوئی۔",
+     "accountMoveHelp": "ٹیسٹ والٹ کو تبدیل یا دوبارہ استعمال نہ کریں۔ Xaman میں بالکل نیا Mainnet اکاؤنٹ بنائیں۔",
+-    "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔"
++    "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔",
++    "foodRecipes": "ترکیب کے خیالات",
++    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔"
+   }
+ }
+--- a/wordpress-plugins/calorietoken-heading-repair/calorietoken-heading-repair.php
++++ b/wordpress-plugins/calorietoken-heading-repair/calorietoken-heading-repair.php
+@@ -2,14 +2,14 @@
+ /**
+  * Plugin Name: CalorieToken Heading and Language Repair
+  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
+- * Version: 1.6.44
++ * Version: 1.6.45
+  * Requires at least: 6.0
+  * Requires PHP: 7.4
+  * License: GPL-2.0-or-later
+  */
+ namespace CalorieToken\HeadingRepair;
+ if (!defined('ABSPATH')) { exit; }
+-const VERSION = '1.6.44';
++const VERSION = '1.6.45';
+ require_once __DIR__ . '/market-rates.php';
+ function plugin_source_matches($plugin, $name, $hashes) {
+     $path = WP_PLUGIN_DIR . '/' . $plugin . '/' . $name;

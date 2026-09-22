@@ -165,3 +165,17 @@ The GitHub signed-in dashboard is available, and the tested diary/image files ar
 being saved to the same review branch through its normal upload interface. The
 Render dashboard requires sign-in. Release merge, frontend deployment and live
 verification remain pending; no production deployment is claimed by this record.
+
+## Owner-reported deployment — 22 September 2026
+
+The owner reports “live” after receiving dashboard instructions to deploy the
+specific tested commit e98119e82dabf6465e367bac25b790bf5b280c5f on the frontend.
+Treat this as owner-reported deployment success, not independent verification.
+The Render deployment-status connector still returns HTTP 400 invalid request
+metadata. A direct frontend check times out at the network proxy (HTTP 000), and
+the public web reader cannot access the app. No application failure is established
+by these access errors. Post-deployment UI and exact deployed-SHA checks remain open.
+The source review PR remains unmerged at the last verified checkpoint; the last
+verified release-branch head is e23f9d8896e1f0565be8e006b3e618defd686c87. Reconcile
+the release branch with the verified live commit before a future latest-commit
+deployment. No backend deployment or service configuration change was requested.
