@@ -1,0 +1,705 @@
+[
+  {
+    "id": "porridge-oat",
+    "cuisine": "dutch",
+    "diet": "plant",
+    "meals": [
+      "breakfast"
+    ],
+    "families": [
+      "oat"
+    ],
+    "nl": {
+      "title": "Warme havermout met fruit",
+      "ingredients": "Ingrediënten: {food}, appel, banaan, water en kaneel.",
+      "method": "Kook de havermout met water volgens de verpakking. Was en snijd het fruit, voeg het toe en breng op smaak met kaneel."
+    },
+    "en": {
+      "title": "Warm oats with fruit",
+      "ingredients": "Ingredients: {food}, apple, banana, water and cinnamon.",
+      "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
+    }
+  },
+  {
+    "id": "porridge-apple",
+    "cuisine": "dutch",
+    "diet": "plant",
+    "meals": [
+      "breakfast"
+    ],
+    "families": [
+      "apple"
+    ],
+    "nl": {
+      "title": "Warme havermout met fruit",
+      "ingredients": "Ingrediënten: havermout, {food}, banaan, water en kaneel.",
+      "method": "Kook de havermout met water volgens de verpakking. Was en snijd het fruit, voeg het toe en breng op smaak met kaneel."
+    },
+    "en": {
+      "title": "Warm oats with fruit",
+      "ingredients": "Ingredients: oats, {food}, banana, water and cinnamon.",
+      "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
+    }
+  },
+  {
+    "id": "porridge-banana",
+    "cuisine": "dutch",
+    "diet": "plant",
+    "meals": [
+      "breakfast"
+    ],
+    "families": [
+      "banana"
+    ],
+    "nl": {
+      "title": "Warme havermout met fruit",
+      "ingredients": "Ingrediënten: havermout, appel, {food}, water en kaneel.",
+      "method": "Kook de havermout met water volgens de verpakking. Was en snijd het fruit, voeg het toe en breng op smaak met kaneel."
+    },
+    "en": {
+      "title": "Warm oats with fruit",
+      "ingredients": "Ingredients: oats, apple, {food}, water and cinnamon.",
+      "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
+    }
+  },
+  {
+    "id": "mash-potato",
+    "cuisine": "dutch",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "potato"
+    ],
+    "nl": {
+      "title": "Stamppot met witte bonen",
+      "ingredients": "Ingrediënten: {food}, boerenkool, gare witte bonen en olijfolie.",
+      "method": "Kook de geschilde aardappelen en boerenkool gaar. Verwarm de gare bonen apart, stamp alles samen en voeg een beetje olijfolie toe."
+    },
+    "en": {
+      "title": "Vegetable mash with white beans",
+      "ingredients": "Ingredients: {food}, kale, cooked white beans and olive oil.",
+      "method": "Boil the peeled potatoes and kale until tender. Heat the cooked beans separately, mash everything together and add a little olive oil."
+    }
+  },
+  {
+    "id": "pasta-pasta",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "pasta"
+    ],
+    "nl": {
+      "title": "Mediterrane pastabowl",
+      "ingredients": "Ingrediënten: {food}, tomaten, kikkererwten, komkommer, citroen en olijfolie.",
+      "method": "Bereid pasta en kikkererwten volgens de verpakking; gebruik de kikkererwten volledig gaar. Was en snijd de groenten en meng met de pasta, kikkererwten, citroen en olie."
+    },
+    "en": {
+      "title": "Mediterranean-inspired pasta bowl",
+      "ingredients": "Ingredients: {food}, tomatoes, chickpeas, cucumber, lemon and olive oil.",
+      "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
+    }
+  },
+  {
+    "id": "pasta-tomato",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Mediterrane pastabowl",
+      "ingredients": "Ingrediënten: pasta, {food}, kikkererwten, komkommer, citroen en olijfolie.",
+      "method": "Bereid pasta en kikkererwten volgens de verpakking; gebruik de kikkererwten volledig gaar. Was en snijd de groenten en meng met de pasta, kikkererwten, citroen en olie."
+    },
+    "en": {
+      "title": "Mediterranean-inspired pasta bowl",
+      "ingredients": "Ingredients: pasta, {food}, chickpeas, cucumber, lemon and olive oil.",
+      "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
+    }
+  },
+  {
+    "id": "pasta-chickpea",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "chickpea"
+    ],
+    "nl": {
+      "title": "Mediterrane pastabowl",
+      "ingredients": "Ingrediënten: pasta, tomaten, {food}, komkommer, citroen en olijfolie.",
+      "method": "Bereid pasta en kikkererwten volgens de verpakking; gebruik de kikkererwten volledig gaar. Was en snijd de groenten en meng met de pasta, kikkererwten, citroen en olie."
+    },
+    "en": {
+      "title": "Mediterranean-inspired pasta bowl",
+      "ingredients": "Ingredients: pasta, tomatoes, {food}, cucumber, lemon and olive oil.",
+      "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
+    }
+  },
+  {
+    "id": "omelette-egg",
+    "cuisine": "mediterranean",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "egg"
+    ],
+    "nl": {
+      "title": "Omelet met tomaat en kaas",
+      "ingredients": "Ingrediënten: {food}, tomaten, kaas, olijfolie en kruiden.",
+      "method": "Was en snijd de tomaat en bak deze kort in olie. Voeg geklutste eieren en kaas toe. Laat de eieren helemaal stollen en werk af met kruiden."
+    },
+    "en": {
+      "title": "Tomato and cheese omelette",
+      "ingredients": "Ingredients: {food}, tomatoes, cheese, olive oil and herbs.",
+      "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
+    }
+  },
+  {
+    "id": "omelette-tomato",
+    "cuisine": "mediterranean",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Omelet met tomaat en kaas",
+      "ingredients": "Ingrediënten: eieren, {food}, kaas, olijfolie en kruiden.",
+      "method": "Was en snijd de tomaat en bak deze kort in olie. Voeg geklutste eieren en kaas toe. Laat de eieren helemaal stollen en werk af met kruiden."
+    },
+    "en": {
+      "title": "Tomato and cheese omelette",
+      "ingredients": "Ingredients: eggs, {food}, cheese, olive oil and herbs.",
+      "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
+    }
+  },
+  {
+    "id": "omelette-cheese",
+    "cuisine": "mediterranean",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "cheese"
+    ],
+    "nl": {
+      "title": "Omelet met tomaat en kaas",
+      "ingredients": "Ingrediënten: eieren, tomaten, {food}, olijfolie en kruiden.",
+      "method": "Was en snijd de tomaat en bak deze kort in olie. Voeg geklutste eieren en kaas toe. Laat de eieren helemaal stollen en werk af met kruiden."
+    },
+    "en": {
+      "title": "Tomato and cheese omelette",
+      "ingredients": "Ingredients: eggs, tomatoes, {food}, olive oil and herbs.",
+      "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
+    }
+  },
+  {
+    "id": "dal-lentil",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "lentil"
+    ],
+    "nl": {
+      "title": "Linzen-dal met rijst",
+      "ingredients": "Ingrediënten: {food}, rijst, tomaten, ui, olie, water en kerriekruiden.",
+      "method": "Bak de gesneden ui en kruiden zachtjes in olie. Voeg tomaat, linzen en water toe en laat koken volgens de bereidingstijd van de linzen. Kook de rijst apart en serveer erbij."
+    },
+    "en": {
+      "title": "Lentil dal with rice",
+      "ingredients": "Ingredients: {food}, rice, tomatoes, onion, oil, water and curry spices.",
+      "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
+    }
+  },
+  {
+    "id": "dal-rice",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "rice"
+    ],
+    "nl": {
+      "title": "Linzen-dal met rijst",
+      "ingredients": "Ingrediënten: linzen, {food}, tomaten, ui, olie, water en kerriekruiden.",
+      "method": "Bak de gesneden ui en kruiden zachtjes in olie. Voeg tomaat, linzen en water toe en laat koken volgens de bereidingstijd van de linzen. Kook de rijst apart en serveer erbij."
+    },
+    "en": {
+      "title": "Lentil dal with rice",
+      "ingredients": "Ingredients: lentils, {food}, tomatoes, onion, oil, water and curry spices.",
+      "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
+    }
+  },
+  {
+    "id": "dal-tomato",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Linzen-dal met rijst",
+      "ingredients": "Ingrediënten: linzen, rijst, {food}, ui, olie, water en kerriekruiden.",
+      "method": "Bak de gesneden ui en kruiden zachtjes in olie. Voeg tomaat, linzen en water toe en laat koken volgens de bereidingstijd van de linzen. Kook de rijst apart en serveer erbij."
+    },
+    "en": {
+      "title": "Lentil dal with rice",
+      "ingredients": "Ingredients: lentils, rice, {food}, onion, oil, water and curry spices.",
+      "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
+    }
+  },
+  {
+    "id": "chickpea-chickpea",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "chickpea"
+    ],
+    "nl": {
+      "title": "Kikkererwten met spinazie",
+      "ingredients": "Ingrediënten: {food}, tomaten, spinazie, ui, komijn, olie en water.",
+      "method": "Bereid de kikkererwten volgens de verpakking tot ze gaar zijn. Bak ui en komijn in olie, voeg tomaat en wat water toe. Warm de gare kikkererwten mee en laat de gewassen spinazie slinken."
+    },
+    "en": {
+      "title": "Chickpeas with spinach",
+      "ingredients": "Ingredients: {food}, tomatoes, spinach, onion, cumin, oil and water.",
+      "method": "Cook chickpeas following the package until tender. Fry onion and cumin in oil, add tomatoes and a little water. Heat the cooked chickpeas in the sauce and wilt the washed spinach."
+    }
+  },
+  {
+    "id": "chickpea-tomato",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Kikkererwten met spinazie",
+      "ingredients": "Ingrediënten: kikkererwten, {food}, spinazie, ui, komijn, olie en water.",
+      "method": "Bereid de kikkererwten volgens de verpakking tot ze gaar zijn. Bak ui en komijn in olie, voeg tomaat en wat water toe. Warm de gare kikkererwten mee en laat de gewassen spinazie slinken."
+    },
+    "en": {
+      "title": "Chickpeas with spinach",
+      "ingredients": "Ingredients: chickpeas, {food}, spinach, onion, cumin, oil and water.",
+      "method": "Cook chickpeas following the package until tender. Fry onion and cumin in oil, add tomatoes and a little water. Heat the cooked chickpeas in the sauce and wilt the washed spinach."
+    }
+  },
+  {
+    "id": "stirfry-tofu",
+    "cuisine": "eastAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tofu"
+    ],
+    "nl": {
+      "title": "Tofu-groentepan met rijst",
+      "ingredients": "Ingrediënten: {food}, rijst, broccoli, wortel, gember, olie en sojasaus.",
+      "method": "Kook de rijst volgens de verpakking. Bereid de tofu volgens de verpakking. Was en snijd de groenten en roerbak ze met gember in olie tot ze gaar zijn. Meng met tofu en een beetje sojasaus."
+    },
+    "en": {
+      "title": "Tofu and vegetable rice bowl",
+      "ingredients": "Ingredients: {food}, rice, broccoli, carrot, ginger, oil and soy sauce.",
+      "method": "Cook rice following the package. Prepare tofu according to its package. Wash and cut vegetables and stir-fry with ginger in oil until cooked. Combine with tofu and a little soy sauce."
+    }
+  },
+  {
+    "id": "stirfry-rice",
+    "cuisine": "eastAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "rice"
+    ],
+    "nl": {
+      "title": "Tofu-groentepan met rijst",
+      "ingredients": "Ingrediënten: tofu, {food}, broccoli, wortel, gember, olie en sojasaus.",
+      "method": "Kook de rijst volgens de verpakking. Bereid de tofu volgens de verpakking. Was en snijd de groenten en roerbak ze met gember in olie tot ze gaar zijn. Meng met tofu en een beetje sojasaus."
+    },
+    "en": {
+      "title": "Tofu and vegetable rice bowl",
+      "ingredients": "Ingredients: tofu, {food}, broccoli, carrot, ginger, oil and soy sauce.",
+      "method": "Cook rice following the package. Prepare tofu according to its package. Wash and cut vegetables and stir-fry with ginger in oil until cooked. Combine with tofu and a little soy sauce."
+    }
+  },
+  {
+    "id": "soup-tofu",
+    "cuisine": "eastAsian",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tofu"
+    ],
+    "nl": {
+      "title": "Groentenoedelsoep met tofu",
+      "ingredients": "Ingrediënten: {food}, noedels zonder ei, groentebouillon, paksoi en gember.",
+      "method": "Breng de bouillon met gember aan de kook. Voeg gewassen paksoi, noedels en tofu toe en bereid ze volgens de verpakkingen."
+    },
+    "en": {
+      "title": "Vegetable noodle soup with tofu",
+      "ingredients": "Ingredients: {food}, egg-free noodles, vegetable stock, bok choy and ginger.",
+      "method": "Bring stock and ginger to a boil. Add washed bok choy, noodles and tofu and cook according to their packages."
+    }
+  },
+  {
+    "id": "salad-lentil",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "lentil"
+    ],
+    "nl": {
+      "title": "Linzensalade met citroen",
+      "ingredients": "Ingrediënten: {food}, tomaten, komkommer, peterselie, citroen en olijfolie.",
+      "method": "Kook de linzen gaar volgens de verpakking en laat ze afkoelen. Was en snijd de groenten en peterselie. Meng met linzen, citroensap en olie."
+    },
+    "en": {
+      "title": "Lemon and lentil salad",
+      "ingredients": "Ingredients: {food}, tomatoes, cucumber, parsley, lemon and olive oil.",
+      "method": "Cook lentils following the package and let cool. Wash and chop vegetables and parsley. Mix with lentils, lemon juice and oil."
+    }
+  },
+  {
+    "id": "salad-tomato",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Linzensalade met citroen",
+      "ingredients": "Ingrediënten: linzen, {food}, komkommer, peterselie, citroen en olijfolie.",
+      "method": "Kook de linzen gaar volgens de verpakking en laat ze afkoelen. Was en snijd de groenten en peterselie. Meng met linzen, citroensap en olie."
+    },
+    "en": {
+      "title": "Lemon and lentil salad",
+      "ingredients": "Ingredients: lentils, {food}, cucumber, parsley, lemon and olive oil.",
+      "method": "Cook lentils following the package and let cool. Wash and chop vegetables and parsley. Mix with lentils, lemon juice and oil."
+    }
+  },
+  {
+    "id": "pita-bread",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "bread"
+    ],
+    "nl": {
+      "title": "Pita met kikkererwten en groente",
+      "ingredients": "Ingrediënten: {food}, kikkererwten, komkommer, tomaat, citroen en olijfolie.",
+      "method": "Kook kikkererwten volgens de verpakking tot ze gaar zijn. Prak ze met citroen en olie. Vul het brood met de kikkererwten en gewassen, gesneden groenten."
+    },
+    "en": {
+      "title": "Chickpea and vegetable pita",
+      "ingredients": "Ingredients: {food}, chickpeas, cucumber, tomato, lemon and olive oil.",
+      "method": "Cook chickpeas following the package until tender. Mash with lemon and oil. Fill the bread with chickpeas and washed, chopped vegetables."
+    }
+  },
+  {
+    "id": "pita-chickpea",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "chickpea"
+    ],
+    "nl": {
+      "title": "Pita met kikkererwten en groente",
+      "ingredients": "Ingrediënten: pitabrood, {food}, komkommer, tomaat, citroen en olijfolie.",
+      "method": "Kook kikkererwten volgens de verpakking tot ze gaar zijn. Prak ze met citroen en olie. Vul het brood met de kikkererwten en gewassen, gesneden groenten."
+    },
+    "en": {
+      "title": "Chickpea and vegetable pita",
+      "ingredients": "Ingredients: pita bread, {food}, cucumber, tomato, lemon and olive oil.",
+      "method": "Cook chickpeas following the package until tender. Mash with lemon and oil. Fill the bread with chickpeas and washed, chopped vegetables."
+    }
+  },
+  {
+    "id": "beans-rice",
+    "cuisine": "latinAmerican",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "rice"
+    ],
+    "nl": {
+      "title": "Rijstbowl met bonen en limoen",
+      "ingredients": "Ingrediënten: {food}, tomaten, gare zwarte bonen, mais, limoen, komijn en olie.",
+      "method": "Kook de rijst volgens de verpakking. Verwarm de gare bonen en mais met komijn en wat olie. Serveer met gewassen, gesneden tomaat en limoensap."
+    },
+    "en": {
+      "title": "Bean and lime rice bowl",
+      "ingredients": "Ingredients: {food}, tomatoes, cooked black beans, corn, lime, cumin and oil.",
+      "method": "Cook rice following the package. Heat cooked beans and corn with cumin and a little oil. Serve with washed, chopped tomato and lime juice."
+    }
+  },
+  {
+    "id": "beans-tomato",
+    "cuisine": "latinAmerican",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "Rijstbowl met bonen en limoen",
+      "ingredients": "Ingrediënten: rijst, {food}, gare zwarte bonen, mais, limoen, komijn en olie.",
+      "method": "Kook de rijst volgens de verpakking. Verwarm de gare bonen en mais met komijn en wat olie. Serveer met gewassen, gesneden tomaat en limoensap."
+    },
+    "en": {
+      "title": "Bean and lime rice bowl",
+      "ingredients": "Ingredients: rice, {food}, cooked black beans, corn, lime, cumin and oil.",
+      "method": "Cook rice following the package. Heat cooked beans and corn with cumin and a little oil. Serve with washed, chopped tomato and lime juice."
+    }
+  },
+  {
+    "id": "stew-rice",
+    "cuisine": "westAfrican",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "rice"
+    ],
+    "nl": {
+      "title": "West-Afrikaans geïnspireerde groentestoof",
+      "ingredients": "Ingrediënten: {food}, tomaten, zoete aardappel, ui, pindakaas, olie en water.",
+      "method": "Bak ui in olie. Voeg gesneden tomaat, geschilde zoete aardappel en water toe en stoof tot de groente gaar is. Roer pindakaas erdoor. Kook rijst apart en serveer erbij."
+    },
+    "en": {
+      "title": "West African-inspired vegetable stew",
+      "ingredients": "Ingredients: {food}, tomatoes, sweet potato, onion, peanut butter, oil and water.",
+      "method": "Fry onion in oil. Add chopped tomatoes, peeled sweet potato and water and simmer until vegetables are tender. Stir in peanut butter. Cook rice separately and serve together."
+    }
+  },
+  {
+    "id": "stew-tomato",
+    "cuisine": "westAfrican",
+    "diet": "plant",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "tomato"
+    ],
+    "nl": {
+      "title": "West-Afrikaans geïnspireerde groentestoof",
+      "ingredients": "Ingrediënten: rijst, {food}, zoete aardappel, ui, pindakaas, olie en water.",
+      "method": "Bak ui in olie. Voeg gesneden tomaat, geschilde zoete aardappel en water toe en stoof tot de groente gaar is. Roer pindakaas erdoor. Kook rijst apart en serveer erbij."
+    },
+    "en": {
+      "title": "West African-inspired vegetable stew",
+      "ingredients": "Ingredients: rice, {food}, sweet potato, onion, peanut butter, oil and water.",
+      "method": "Fry onion in oil. Add chopped tomatoes, peeled sweet potato and water and simmer until vegetables are tender. Stir in peanut butter. Cook rice separately and serve together."
+    }
+  },
+  {
+    "id": "yogurt-yogurt",
+    "cuisine": "any",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "families": [
+      "yogurt"
+    ],
+    "nl": {
+      "title": "Yoghurtbowl met fruit",
+      "ingredients": "Ingrediënten: {food}, appel, banaan, kant-en-klare muesli.",
+      "method": "Was en snijd het fruit. Schep yoghurt in een kom, voeg het fruit toe en strooi er muesli over."
+    },
+    "en": {
+      "title": "Yogurt and fruit bowl",
+      "ingredients": "Ingredients: {food}, apple, banana, ready-to-eat muesli.",
+      "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
+    }
+  },
+  {
+    "id": "yogurt-apple",
+    "cuisine": "any",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "families": [
+      "apple"
+    ],
+    "nl": {
+      "title": "Yoghurtbowl met fruit",
+      "ingredients": "Ingrediënten: yoghurt, {food}, banaan, kant-en-klare muesli.",
+      "method": "Was en snijd het fruit. Schep yoghurt in een kom, voeg het fruit toe en strooi er muesli over."
+    },
+    "en": {
+      "title": "Yogurt and fruit bowl",
+      "ingredients": "Ingredients: yogurt, {food}, banana, ready-to-eat muesli.",
+      "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
+    }
+  },
+  {
+    "id": "yogurt-banana",
+    "cuisine": "any",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "families": [
+      "banana"
+    ],
+    "nl": {
+      "title": "Yoghurtbowl met fruit",
+      "ingredients": "Ingrediënten: yoghurt, appel, {food}, kant-en-klare muesli.",
+      "method": "Was en snijd het fruit. Schep yoghurt in een kom, voeg het fruit toe en strooi er muesli over."
+    },
+    "en": {
+      "title": "Yogurt and fruit bowl",
+      "ingredients": "Ingredients: yogurt, apple, {food}, ready-to-eat muesli.",
+      "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
+    }
+  },
+  {
+    "id": "milk-milk",
+    "cuisine": "any",
+    "diet": "vegetarian",
+    "meals": [
+      "breakfast"
+    ],
+    "families": [
+      "milk"
+    ],
+    "nl": {
+      "title": "Havermoutpap met melk",
+      "ingredients": "Ingrediënten: {food}, havermout, banaan en kaneel.",
+      "method": "Verwarm melk en havermout volgens de bereidingsinstructies van de havermout. Roer regelmatig. Voeg gesneden banaan en kaneel toe."
+    },
+    "en": {
+      "title": "Milk porridge",
+      "ingredients": "Ingredients: {food}, oats, banana and cinnamon.",
+      "method": "Heat milk and oats following the oat package instructions, stirring regularly. Add sliced banana and cinnamon."
+    }
+  },
+  {
+    "id": "chicken-chicken",
+    "cuisine": "mediterranean",
+    "diet": "any",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "chicken"
+    ],
+    "nl": {
+      "title": "Kip met groente en couscous",
+      "ingredients": "Ingrediënten: {food}, couscous, courgette, paprika, olijfolie en kruiden.",
+      "method": "Bereid kip veilig volgens de verpakking en houd rauwe kip apart van andere ingrediënten. Bak de gewassen, gesneden groenten gaar. Bereid couscous volgens de verpakking en serveer met volledig gare kip."
+    },
+    "en": {
+      "title": "Chicken with vegetables and couscous",
+      "ingredients": "Ingredients: {food}, couscous, zucchini, bell pepper, olive oil and herbs.",
+      "method": "Prepare chicken safely according to the package and keep raw chicken separate from other ingredients. Cook the washed, chopped vegetables. Prepare couscous according to the package and serve with fully cooked chicken."
+    }
+  },
+  {
+    "id": "fish-fish",
+    "cuisine": "mediterranean",
+    "diet": "any",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "families": [
+      "fish"
+    ],
+    "nl": {
+      "title": "Vis met aardappel en groente",
+      "ingredients": "Ingrediënten: {food}, aardappel, broccoli, citroen en olijfolie.",
+      "method": "Bereid de vis volledig gaar volgens de verpakking. Kook geschilde aardappelen en gewassen broccoli gaar. Serveer met citroen en een beetje olijfolie."
+    },
+    "en": {
+      "title": "Fish with potatoes and vegetables",
+      "ingredients": "Ingredients: {food}, potatoes, broccoli, lemon and olive oil.",
+      "method": "Cook fish fully according to its package. Boil peeled potatoes and washed broccoli until tender. Serve with lemon and a little olive oil."
+    }
+  }
+]
