@@ -1,0 +1,23 @@
+<div id="ct-calorieapp-features" aria-label="CalorieApp features">
+  <style>
+    #ct-calorieapp-features{margin:24px auto 0;max-width:1040px;text-align:start}
+    #ct-calorieapp-features .ct-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    #ct-calorieapp-features .ct-feature{padding:16px;border:1px solid #505ba930;border-radius:16px;background:#fff;color:#384173}
+    #ct-calorieapp-features h3{margin:0 0 6px;font-size:17px;color:#505ba9;line-height:1.4}
+    #ct-calorieapp-features p{margin:0;font-size:14px;line-height:1.6}
+    #ct-calorieapp-features svg{width:22px;height:22px;vertical-align:middle;margin-inline-end:7px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    #ct-calorieapp-features [lang="nl"]{display:none}
+    html[data-ct-display-locale="nl"] #ct-calorieapp-features [lang="en"]{display:none}
+    html[data-ct-display-locale="nl"] #ct-calorieapp-features [lang="nl"]{display:block}
+    #ct-calorieapp-features iframe{display:block;width:100%;max-width:560px;height:195px;margin:16px auto 0;border:0;border-radius:16px;background:#fff}
+    @media(max-width:560px){#ct-calorieapp-features .ct-feature-grid{grid-template-columns:1fr}}
+  </style>
+  <div class="ct-feature-grid">
+    <div class="ct-feature"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><span lang="en">Find and compare</span><span lang="nl">Zoeken en vergelijken</span></h3><p lang="en">Open Food Facts and USDA, with clear sources. Explore other brands, recorded Nutri-Scores and labels, two alternatives at a time.</p><p lang="nl">Open Food Facts en USDA, met duidelijke bronnen. Bekijk andere merken, vermelde Nutri-Scores en keurmerken, twee alternatieven tegelijk.</p></div>
+    <div class="ct-feature"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0ZM8 3v4m4-4v4m4-4v4M7 22h10"/></svg><span lang="en">640 recipe choices</span><span lang="nl">640 receptkeuzes</span></h3><p lang="en">80 base ideas with seven variations each, inspired by cuisines across the world. Illustrations, measured ingredients and explained nutrition estimates.</p><p lang="nl">80 basisideeën met elk zeven varianten, geïnspireerd op keukens wereldwijd. Met illustraties, gewogen ingrediënten en uitleg bij voedingsschattingen.</p></div>
+    <div class="ct-feature"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h14v18H6V3ZM3 7h5M3 12h5M3 17h5m3-9h5m-5 5h5"/></svg><span lang="en">Log your portion</span><span lang="nl">Log jouw portie</span></h3><p lang="en">Review a recipe serving before saving. For packaged pieces, enter how many you ate, the pack count and net weight, or the weight per piece.</p><p lang="nl">Controleer je receptportie vóór het opslaan. Vul bij losse stuks zelf in hoeveel je at, hoeveel er in het pak zaten en het nettogewicht, of het gewicht per stuk.</p></div>
+    <div class="ct-feature"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 8-3 5-5 3 3-5 5-3Z"/></svg><span lang="en">Step-by-step guidance</span><span lang="nl">Begeleiding per stap</span></h3><p lang="en">Clear sections and Back controls. Xaman setup starts with your device and official app-store links, including help returning to the app.</p><p lang="nl">Duidelijke onderdelen en terugknoppen. Xaman instellen begint bij jouw apparaat en de officiële appwinkels, met hulp om terug te keren naar de app.</p></div>
+  </div>
+  <iframe id="ct-showcase-app-activity" src="https://app.calorietoken.net/showcase-activity?locale=en" title="CalorieApp active sessions" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <script>(function(){var frame=document.getElementById('ct-showcase-app-activity');if(!frame)return;function language(){var nl=document.documentElement.getAttribute('data-ct-display-locale')==='nl';var url='https://app.calorietoken.net/showcase-activity?locale='+(nl?'nl':'en');if(frame.getAttribute('src')!==url)frame.setAttribute('src',url);frame.title=nl?'CalorieApp actieve sessies':'CalorieApp active sessions';}language();new MutationObserver(language).observe(document.documentElement,{attributes:true,attributeFilter:['data-ct-display-locale']});})();</script>
+</div>

@@ -37,13 +37,15 @@
     Object.assign(copy.linkLabels,current.linkLabels||{});
     if(typeof current.updatedLabel==='string')copy.updatedLabel=current.updatedLabel;
   });
-  // The reviewed site account answer must also retain the current sign-in guidance.
+  // Reviewed site answers retain the current app, installation and sign-in guidance.
   Object.keys(cfg.copy).forEach(function(tag){
-    var current=cfg.copy[tag].topics&&cfg.copy[tag].topics.account,addition=topics&&topics[tag]&&topics[tag].account;
+    ['app','test','account'].forEach(function(key){
+    var current=cfg.copy[tag].topics&&cfg.copy[tag].topics[key],addition=topics&&topics[tag]&&topics[tag][key];
     if(!current||!addition)return;
     if(typeof current.text==='string'&&!current.text.includes(addition.text))current.text+=' '+addition.text;
     if(!Array.isArray(current.steps))current.steps=[];
     if(!current.steps.includes(addition.step))current.steps.push(addition.step);
+    });
   });
   Object.keys(cfg.copy).forEach(function(tag){var topic=cfg.copy[tag].topics&&cfg.copy[tag].topics.usda;if(topic&&Array.isArray(topic.links)&&!topic.links.includes('contributeUsda'))topic.links.push('contributeUsda');});
   if(window.CalorieTokenMarkets)window.CalorieTokenMarkets.patchHelp(cfg);

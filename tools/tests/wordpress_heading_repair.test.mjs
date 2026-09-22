@@ -529,7 +529,9 @@ test('current site help and market integrations survive the recipe and account a
     CalorieTokenMarkets:{patchHelp(){marketCalls++;}},
   }};
   vm.runInNewContext(helpBootstrap,context);vm.runInNewContext(helpBootstrap,context);
-  assert.equal(copy.nl.topics.app.text,'Current website guidance.');
+  assert.ok(copy.nl.topics.app.text.startsWith('Current website guidance.'));
+  assert.equal(copy.nl.topics.app.text.split(helpTopics.nl.app.text).length-1,1);
+  assert.ok(copy.nl.topics.app.steps.includes(helpTopics.nl.app.step));
   assert.ok(copy.nl.topics.account.text.startsWith('Current account guidance.'));
   assert.equal(copy.nl.topics.account.text.split(helpTopics.nl.account.text).length-1,1);
   assert.ok(copy.nl.topics.account.steps.includes('Keep this step.'));

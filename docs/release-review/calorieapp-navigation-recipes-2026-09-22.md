@@ -26,3 +26,16 @@ Sources checked: https://www.opennutrition.app/download and https://www.opennutr
 ## Verification
 
 Production build succeeds. Targeted tests cover account navigation and recovery checkpoints, source boundaries, food logging, piece-to-gram conversion and explicit POST payload, recipe weights/servings and every ingredient's agreement with the USDA snapshot, all illustrations, variant count, alternative paging/filtering, activity expiry/capacity and the WordPress focus-control script. Live deployment status and browser checks must be recorded separately after publication.
+
+
+## Live verification
+
+Frontend commit `6df3b7e2299b9a4e62f5c964c164824f218c2032` was deployed explicitly on Render, deploy `dep-daovkl80cd8s73b78o60`, live at 2026-09-22 03:48:47 UTC. The GitHub tree `e403158ba83f5e968757b34f6b755819472d4d18` exactly matches the tested local source tree. The existing backend and service sizes were unchanged.
+
+93 targeted tests passed. Production build passed with only the two pre-existing TestnetEntry cleanup-ref lint warnings. A local production HTTP check caught internal/public origin normalization in the session counter; the route was corrected to validate the public Host and fetch-site, then its bounded-body, wrong-origin, no-store, count and Showcase route checks passed.
+
+Live browser verification confirmed the deployed SHA, Dutch navigation, USDA search, recipe variation selection, source-based nutrition, two-serving review (without a diary POST), ingredient navigation and return to the recipe section, successful 80 × 80 image rendering, and the Android installation link. The live activity endpoint and route returned 200 and an actual session count; a generated WebP returned 200. No Render error logs were present after deployment. Physical mobile-device behavior was not tested.
+
+Showcase page 7945 received only a match-once insertion after its existing Explore CalorieToken link. `docs/live-wordpress/showcase-calorieapp-features-2026-09-22.html` records the inserted block. The Dutch feature text and localized counter iframe were verified on the public page. The existing videos and page content were not replaced.
+
+Still pending: WordPress focus controls and shared help/FAQ assets. The current tools expose plugin files as read-only and the plugin editor denies access. Prepared changes include app-focus.js, app-focus.css, help-link-labels.json, help-topic-additions.json and help-label-bootstrap.js. They require a merge into the current live plugin; do not install the older PHP plugin from this checkout over it.

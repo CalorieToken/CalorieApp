@@ -30,13 +30,13 @@
     "testAccount": "Set up a test account",
     "foodSearchHelp": "Enter a food name to view its nutrition details.",
     "foodScanHelp": "Scan the bars on packaged food or enter the digits below.",
-    "foodCompareHelp": "Search for a food, open its details and choose “Also compare” to explore similar products.",
+    "foodCompareHelp": "Compare → Filter alternatives → Different brand → Better recorded Nutri-Score → Organic label → Animal welfare label",
     "accountHelp": "Your nickname is saved with your CalorieApp account and shown in the app and website login widget after you sign in. You can change or remove it here. It is not sent to Xaman or XRPL.",
     "accountExportHelp": "Sign in first to open export and privacy tools. No account action was started.",
     "accountMoveHelp": "Do not convert or reuse the test wallet. Create a fresh Mainnet account in Xaman.",
     "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items.",
     "foodRecipes": "Recipe ideas",
-    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log."
+    "foodRecipesHelp": "Choose a cuisine, eating style or meal. Open a base recipe and optionally choose a variation. Log a serving as an estimate. Check ingredients, allergens and any halal or kosher certification. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log."
   },
   "nl": {
     "app": "CalorieApp",
@@ -69,13 +69,13 @@
     "testAccount": "Testaccount instellen",
     "foodSearchHelp": "Voer een voedingsmiddel in om de voedingswaarden te bekijken.",
     "foodScanHelp": "Scan de streepjes op de verpakking of vul hieronder de cijfers in.",
-    "foodCompareHelp": "Zoek een voedingsmiddel, open de details en kies “Vergelijk ook” om vergelijkbare producten te bekijken.",
+    "foodCompareHelp": "Vergelijken → Alternatieven filteren → Ander merk → Betere geregistreerde Nutri-Score → Biologisch label → Dierenwelzijnslabel",
     "accountHelp": "Je nickname wordt bij je CalorieApp-account opgeslagen en na inloggen getoond in de app en de loginwidget op de website. Je kunt hem hier wijzigen of verwijderen. Hij wordt niet naar Xaman of XRPL gestuurd.",
     "accountExportHelp": "Log eerst in om export- en privacyfuncties te openen. Er is nog geen accountactie gestart.",
     "accountMoveHelp": "Zet de testwallet niet om en hergebruik hem niet. Maak in Xaman een volledig nieuw Mainnet-account.",
     "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren.",
     "foodRecipes": "Receptideeën",
-    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek. Ideeën om te bekijken, geen medisch of diëtistisch advies. Vergelijkbare producten kunnen andere ingrediënten, allergenen en bereidingswijzen hebben. Controleer het etiket en je hoeveelheid; je kiest zelf wat je bekijkt of logt."
+    "foodRecipesHelp": "Kies een keuken, eetstijl of eetmoment. Open een basisrecept en kies eventueel een variant. Je kunt een portie als schatting loggen. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Geen medisch of diëtistisch advies. Controleer ingrediënten, allergenen en bereiding op de verpakking. Je kiest en logt zelf je hoeveelheid."
   },
   "zh-Hans": {
     "app": "CalorieApp",
@@ -108,13 +108,13 @@
     "testAccount": "设置测试账户",
     "foodSearchHelp": "输入食品名称以查看营养信息。",
     "foodScanHelp": "扫描包装上的条码，或在下方输入数字。",
-    "foodCompareHelp": "搜索一种食品，打开详情，然后选择“也可以比较”以查看相似产品。",
+    "foodCompareHelp": "也可以比较 → 筛选替代食品 → 其他品牌 → 记录的 Nutri-Score 更优 → 有机标签 → 动物福利标签",
     "accountHelp": "昵称会保存在你的 CalorieApp 账户中，登录后显示在应用和网站登录组件中。你可以在此更改或删除昵称。昵称不会发送至 Xaman 或 XRPL。",
     "accountExportHelp": "请先登录，再打开导出和隐私工具。尚未启动任何账户操作。",
     "accountMoveHelp": "不要转换或重复使用测试钱包。请在 Xaman 中创建全新的主网账户。",
     "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。",
     "foodRecipes": "食谱灵感",
-    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。"
+    "foodRecipesHelp": "选择菜系、饮食方式或用餐时间。打开基础食谱并选择变化版本。可将一份估算值记入日记。请核对食材、过敏原及清真或犹太洁食认证。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。"
   },
   "hi": {
     "app": "CalorieApp",
@@ -147,13 +147,13 @@
     "testAccount": "टेस्ट खाता सेट करें",
     "foodSearchHelp": "पोषण की जानकारी देखने के लिए भोजन का नाम लिखें।",
     "foodScanHelp": "पैकेट पर बने बारकोड को स्कैन करें या नीचे अंक दर्ज करें।",
-    "foodCompareHelp": "कोई खाद्य पदार्थ खोजें, उसका विवरण खोलें और मिलते-जुलते उत्पाद देखने के लिए “यह भी तुलना करें” चुनें।",
+    "foodCompareHelp": "इनसे भी तुलना करें → विकल्प छाँटें → अन्य ब्रांड → दर्ज Nutri-Score बेहतर → जैविक लेबल → पशु कल्याण लेबल",
     "accountHelp": "आपका उपनाम आपके CalorieApp खाते में सहेजा जाता है और लॉगिन के बाद ऐप और वेबसाइट के लॉगिन विजेट में दिखता है। आप इसे यहाँ बदल या हटा सकते हैं। इसे Xaman या XRPL पर नहीं भेजा जाता।",
     "accountExportHelp": "एक्सपोर्ट और गोपनीयता उपकरण खोलने के लिए पहले साइन इन करें। कोई खाता कार्रवाई शुरू नहीं हुई है।",
     "accountMoveHelp": "टेस्ट वॉलेट को बदलें या दोबारा उपयोग न करें। Xaman में नया Mainnet खाता बनाएँ।",
     "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।",
     "foodRecipes": "रेसिपी के विचार",
-    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।"
+    "foodRecipesHelp": "व्यंजन, खानपान शैली या समय चुनें। मूल रेसिपी खोलें और चाहें तो बदलाव चुनें। एक परोस का अनुमान दर्ज कर सकते हैं। सामग्री, एलर्जी और हलाल या कोशर प्रमाणन जाँचें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।"
   },
   "es": {
     "app": "CalorieApp",
@@ -186,13 +186,13 @@
     "testAccount": "Configurar cuenta de prueba",
     "foodSearchHelp": "Introduce un alimento para ver su información nutricional.",
     "foodScanHelp": "Escanea las barras del envase o introduce los dígitos abajo.",
-    "foodCompareHelp": "Busca un alimento, abre sus detalles y elige “Comparar también” para explorar productos similares.",
+    "foodCompareHelp": "Compara también → Filtrar alternativas → Otra marca → Mejor Nutri-Score registrado → Etiqueta ecológica → Sello de bienestar animal",
     "accountHelp": "Tu apodo se guarda en tu cuenta de CalorieApp y aparece en la aplicación y en el widget de acceso de la web al iniciar sesión. Puedes cambiarlo o eliminarlo aquí. No se envía a Xaman ni a XRPL.",
     "accountExportHelp": "Inicia sesión primero para abrir las herramientas de exportación y privacidad. No se inició ninguna acción de cuenta.",
     "accountMoveHelp": "No conviertas ni reutilices la cartera de prueba. Crea una cuenta Mainnet completamente nueva en Xaman.",
     "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros.",
     "foodRecipes": "Ideas de recetas",
-    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar."
+    "foodRecipesHelp": "Elige cocina, estilo o comida. Abre una receta y una variante si deseas. Registra una porción estimada. Comprueba ingredientes, alérgenos y certificaciones halal o kosher. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar."
   },
   "ar": {
     "app": "CalorieApp",
@@ -225,13 +225,13 @@
     "testAccount": "إعداد حساب اختبار",
     "foodSearchHelp": "أدخل اسم غذاء للاطّلاع على تفاصيله الغذائية.",
     "foodScanHelp": "امسح الخطوط على العبوة أو أدخل الأرقام أدناه.",
-    "foodCompareHelp": "ابحث عن طعام وافتح تفاصيله، ثم اختر خيار المقارنة لاستكشاف منتجات مشابهة.",
+    "foodCompareHelp": "قارن أيضًا → تصفية البدائل → علامة تجارية أخرى → Nutri-Score مسجّل أفضل → ملصق عضوي → ملصق رعاية الحيوان",
     "accountHelp": "يُحفظ اسمك المستعار في حساب CalorieApp ويظهر في التطبيق وأداة تسجيل الدخول على الموقع بعد تسجيل دخولك. يمكنك تغييره أو حذفه هنا. لا يُرسل إلى Xaman أو XRPL.",
     "accountExportHelp": "سجّل الدخول أولًا لفتح أدوات التصدير والخصوصية. لم يبدأ أي إجراء على الحساب.",
     "accountMoveHelp": "لا تحوّل محفظة الاختبار ولا تعِد استخدامها. أنشئ حساب Mainnet جديدًا بالكامل في Xaman.",
     "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها.",
     "foodRecipes": "أفكار وصفات",
-    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله."
+    "foodRecipesHelp": "اختر المطبخ أو نمط الأكل أو الوجبة. افتح وصفة واختر تنويعًا إن رغبت. سجّل الحصة كتقدير. تحقّق من المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله."
   },
   "fr": {
     "app": "CalorieApp",
@@ -264,13 +264,13 @@
     "testAccount": "Configurer un compte test",
     "foodSearchHelp": "Saisissez un aliment pour consulter ses valeurs nutritionnelles.",
     "foodScanHelp": "Scannez les barres de l’emballage ou saisissez les chiffres ci-dessous.",
-    "foodCompareHelp": "Recherchez un aliment, ouvrez ses détails puis choisissez l’option de comparaison pour découvrir des produits similaires.",
+    "foodCompareHelp": "Comparez aussi → Filtrer les alternatives → Autre marque → Meilleur Nutri-Score enregistré → Label biologique → Label de bien-être animal",
     "accountHelp": "Votre pseudonyme est enregistré dans votre compte CalorieApp et apparaît dans l’application et le widget de connexion du site après connexion. Vous pouvez le modifier ou le supprimer ici. Il n’est pas envoyé à Xaman ou à XRPL.",
     "accountExportHelp": "Connectez-vous d’abord pour ouvrir les outils d’export et de confidentialité. Aucune action sur le compte n’a été lancée.",
     "accountMoveHelp": "Ne convertissez ni ne réutilisez le portefeuille test. Créez un tout nouveau compte Mainnet dans Xaman.",
     "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments.",
     "foodRecipes": "Idées de recettes",
-    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer."
+    "foodRecipesHelp": "Choisissez une cuisine, un style ou un repas. Ouvrez une recette et une variante au choix. Enregistrez une portion estimée. Vérifiez ingrédients, allergènes et certifications halal ou casher. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer."
   },
   "bn": {
     "app": "CalorieApp",
@@ -303,13 +303,13 @@
     "testAccount": "টেস্ট অ্যাকাউন্ট সেট করুন",
     "foodSearchHelp": "পুষ্টির তথ্য দেখতে খাবারের নাম লিখুন।",
     "foodScanHelp": "প্যাকেটের বারকোড স্ক্যান করুন অথবা নিচে সংখ্যাগুলো লিখুন।",
-    "foodCompareHelp": "একটি খাবার খুঁজুন, তার বিবরণ খুলুন এবং একই ধরনের পণ্য দেখতে তুলনার বিকল্প বেছে নিন।",
+    "foodCompareHelp": "এগুলোর সঙ্গেও তুলনা করুন → বিকল্প বাছাই → অন্য ব্র্যান্ড → নথিভুক্ত Nutri-Score তুলনায় ভালো → জৈব লেবেল → প্রাণীকল্যাণ লেবেল",
     "accountHelp": "আপনার ডাকনাম CalorieApp অ্যাকাউন্টে সংরক্ষিত থাকে এবং লগইনের পরে অ্যাপ ও ওয়েবসাইটের লগইন উইজেটে দেখা যায়। এখানে এটি বদলাতে বা মুছতে পারেন। এটি Xaman বা XRPL-এ পাঠানো হয় না।",
     "accountExportHelp": "এক্সপোর্ট ও গোপনীয়তার সরঞ্জাম খুলতে আগে সাইন ইন করুন। কোনো অ্যাকাউন্ট কাজ শুরু হয়নি।",
     "accountMoveHelp": "টেস্ট ওয়ালেট রূপান্তর বা পুনর্ব্যবহার করবেন না। Xaman-এ সম্পূর্ণ নতুন Mainnet অ্যাকাউন্ট তৈরি করুন।",
     "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।",
     "foodRecipes": "রেসিপির ধারণা",
-    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।"
+    "foodRecipesHelp": "রান্না, খাদ্যাভ্যাস বা খাবারের সময় বেছে নিন। রেসিপি ও বিকল্প খুলুন। এক পরিবেশনের অনুমান ডায়েরিতে যোগ করা যায়। উপকরণ, অ্যালার্জেন এবং হালাল বা কোশার সনদ যাচাই করুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।"
   },
   "pt": {
     "app": "CalorieApp",
@@ -342,13 +342,13 @@
     "testAccount": "Configurar conta de teste",
     "foodSearchHelp": "Introduza um alimento para consultar os seus valores nutricionais.",
     "foodScanHelp": "Digitalize as barras da embalagem ou introduza os dígitos abaixo.",
-    "foodCompareHelp": "Pesquise um alimento, abra os detalhes e escolha a opção de comparação para explorar produtos semelhantes.",
+    "foodCompareHelp": "Compare também → Filtrar alternativas → Outra marca → Melhor Nutri-Score registado → Rótulo biológico → Selo de bem-estar animal",
     "accountHelp": "Seu apelido é salvo na sua conta CalorieApp e aparece no aplicativo e no widget de login do site após entrar. Você pode alterá-lo ou removê-lo aqui. Ele não é enviado ao Xaman nem ao XRPL.",
     "accountExportHelp": "Inicie sessão primeiro para abrir as ferramentas de exportação e privacidade. Nenhuma ação da conta foi iniciada.",
     "accountMoveHelp": "Não converta nem reutilize a carteira de teste. Crie uma conta Mainnet totalmente nova no Xaman.",
     "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos.",
     "foodRecipes": "Ideias de receitas",
-    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar."
+    "foodRecipesHelp": "Escolha cozinha, estilo ou refeição. Abra uma receita e uma variante se desejar. Registe uma porção estimada. Verifique ingredientes, alergénios e certificações halal ou kosher. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar."
   },
   "id": {
     "app": "CalorieApp",
@@ -381,13 +381,13 @@
     "testAccount": "Siapkan akun uji",
     "foodSearchHelp": "Masukkan nama makanan untuk melihat informasi gizinya.",
     "foodScanHelp": "Pindai garis pada kemasan atau masukkan angkanya di bawah.",
-    "foodCompareHelp": "Cari makanan, buka rinciannya, lalu pilih opsi perbandingan untuk melihat produk serupa.",
+    "foodCompareHelp": "Bandingkan juga → Filter alternatif → Merek lain → Nutri-Score tercatat lebih baik → Label organik → Label kesejahteraan hewan",
     "accountHelp": "Nama panggilan disimpan di akun CalorieApp dan ditampilkan di aplikasi serta widget masuk situs setelah Anda masuk. Anda dapat mengubah atau menghapusnya di sini. Nama tidak dikirim ke Xaman atau XRPL.",
     "accountExportHelp": "Masuk terlebih dahulu untuk membuka alat ekspor dan privasi. Belum ada tindakan akun yang dimulai.",
     "accountMoveHelp": "Jangan konversi atau gunakan ulang dompet uji. Buat akun Mainnet yang sepenuhnya baru di Xaman.",
     "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan.",
     "foodRecipes": "Ide resep",
-    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat."
+    "foodRecipesHelp": "Pilih masakan, pola makan atau waktu makan. Buka resep dan pilih variasi. Catat porsi sebagai perkiraan. Periksa bahan, alergen dan sertifikasi halal atau kosher. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat."
   },
   "ur": {
     "app": "CalorieApp",
@@ -420,12 +420,12 @@
     "testAccount": "ٹیسٹ اکاؤنٹ ترتیب دیں",
     "foodSearchHelp": "غذائیت کی تفصیل دیکھنے کے لیے غذا کا نام لکھیں۔",
     "foodScanHelp": "پیکٹ کی لکیریں اسکین کریں یا نیچے ہندسے درج کریں۔",
-    "foodCompareHelp": "کوئی غذا تلاش کریں، اس کی تفصیلات کھولیں اور ملتی جلتی مصنوعات دیکھنے کے لیے موازنے کا اختیار منتخب کریں۔",
+    "foodCompareHelp": "ان سے بھی موازنہ کریں → متبادل چھانٹیں → دوسرا برانڈ → درج شدہ Nutri-Score بہتر → نامیاتی لیبل → جانوروں کی فلاح کا لیبل",
     "accountHelp": "آپ کا عرفی نام CalorieApp اکاؤنٹ میں محفوظ ہوتا ہے اور لاگ ان کے بعد ایپ اور ویب سائٹ کے لاگ ان ویجٹ میں دکھائی دیتا ہے۔ آپ اسے یہاں تبدیل یا حذف کر سکتے ہیں۔ اسے Xaman یا XRPL کو نہیں بھیجا جاتا۔",
     "accountExportHelp": "ایکسپورٹ اور رازداری کے اوزار کھولنے کے لیے پہلے سائن اِن کریں۔ اکاؤنٹ کی کوئی کارروائی شروع نہیں ہوئی۔",
     "accountMoveHelp": "ٹیسٹ والٹ کو تبدیل یا دوبارہ استعمال نہ کریں۔ Xaman میں بالکل نیا Mainnet اکاؤنٹ بنائیں۔",
     "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔",
     "foodRecipes": "ترکیب کے خیالات",
-    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔"
+    "foodRecipesHelp": "کھانے کا انداز، پکوان یا وقت منتخب کریں۔ بنیادی ترکیب اور تبدیلی کھولیں۔ ایک حصے کا تخمینہ درج کیا جا سکتا ہے۔ اجزا، الرجی اور حلال یا کوشر تصدیق چیک کریں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔"
   }
 }
