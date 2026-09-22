@@ -227,6 +227,7 @@ test("the actual Nutri-Score control renders a recorded badge and an A–E indic
     "@/components/FoodRecipeIdeas": { FoodRecipeIdeas: () => null },
     "@/components/FoodExplore": { FoodExplore: () => null } };
   imports["@/lib/foodIllustration"] = loadModule("../../frontend/lib/foodIllustration.ts", {});
+  imports["@/components/FoodPropertyIcon"] = loadModule("../../frontend/components/FoodPropertyIcon.tsx", imports);
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;
