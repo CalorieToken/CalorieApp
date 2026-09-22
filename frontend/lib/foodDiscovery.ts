@@ -167,6 +167,7 @@ const packagedGroups: Record<string, string[]> = {
   soup: ["soup", "soep", "soupe", "sopa"],
   sauce: ["sauce", "saus", "salsa"],
   pizza: ["pizza"],
+  plantdrink: ["oat drink", "oat milk", "oatmilk", "havermelk", "haverdrink", "sojadrink", "sojamelk", "soy drink", "soy milk", "soymilk", "almond drink", "almond milk", "amandelmelk", "rice drink", "rice milk", "rijstdrink", "rijstmelk", "boisson avoine", "lait d'avoine", "bebida de avena", "leche de avena", "leite de aveia"],
   chocolate: ["chocolate", "chocolade", "chocolat", "巧克力", "चॉकलेट"],
 };
 const sensitiveFood = /\b(infant|baby|formula|supplement|medical|therapeutic|enteral|zuigeling|medisch)\b/i;
@@ -279,5 +280,5 @@ export function foodSourceUrl(food: FoodSearchItem): string | null {
 /** Recipe ideas only use recognised basic foods, not medical foods or mixed ready meals. */
 export function recipeFamily(food: FoodSearchItem): string | null {
   const family = packagedFamily(food);
-  return family && Object.hasOwn(families, family) ? family : null;
+  return family && (Object.hasOwn(families, family) || family === "plantdrink") ? family : null;
 }
