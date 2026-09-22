@@ -21,6 +21,7 @@
   var contentUpdates = config.contentUpdates, usecases = config.usecases, articleNotes = config.articleNotes;
   var blogView = null, blogLocale = null;
   var blogFallback = config.blog.copy.en;
+  var blogTextKeys = ['description','action','settings','load','retry'];
   function selectedLocale() {
     var requested = new URL(window.location.href).searchParams.get('ui_lang') || document.documentElement.lang || 'en';
     var exact = config.locales.find(function (item) { return item.tag.toLowerCase() === requested.toLowerCase(); });
@@ -103,32 +104,34 @@
   function renderBlogHelp(locale) {
     var panel = blogPanel();
     if (!blogView || panel !== blogView.panel || blogView.help.parentElement !== panel
-      || !Object.keys(blogFallback).every(function (key) { return blogView[key].parentElement === blogView.help; })
+      || !blogTextKeys.every(function (key) { return blogView[key].parentElement === blogView.help; })
       || blogView.action.getAttribute("href") !== "https://x.com/CalorieToken") return;
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     var definition = config && Array.isArray(config.locales)
       && config.locales.find(function (item) { return item.tag === locale; });
     var copy = definition && config.copy && config.copy[locale];
-    if (!copy || !Object.keys(blogFallback).every(function (key) {
+    if (!copy || !blogTextKeys.every(function (key) {
       return typeof copy[key] === "string" && copy[key].trim();
     })) { copy = blogFallback; locale = "en"; }
-    // These three text nodes belong to the helper, outside the CMP/X subtree.
-    Object.keys(blogFallback).forEach(function (key) {
+    var permitted=false;
+    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
+    // These text nodes belong to the helper, outside the CMP/X subtree.
+    blogTextKeys.forEach(function (key) {
       var node = blogView[key];
-      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) node.childNodes[0].data = copy[key];
+      var value=key==='description'&&permitted ? (copy.consentedDescription||'X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X.') : copy[key];
+      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 && node.childNodes[0].data!==value) node.childNodes[0].data = value;
     });
     blogView.help.setAttribute("lang", locale);
     blogView.help.setAttribute("dir", ["ar", "ur"].indexOf(locale) !== -1 ? "rtl" : "ltr");
-    // Complianz's delegated native button opens settings. We do not grant or
-    // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
+    // The shared settings link opens native preferences, with a policy-page fallback.
     var ready = panel.classList.contains('ctstyle-x-ready');
     function setHidden(node, value) { if (node.hidden !== value) node.hidden = value; }
-    setHidden(blogView.description, ready);
-    setHidden(blogView.settings, typeof window.cmplz_has_service_consent !== "function"
-      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner"));
-    var permitted=false;
-    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
-    setHidden(blogView.load, ready || permitted || blogView.settings.hidden);
+    setHidden(blogView.description, false);
+    setHidden(blogView.settings, false);
+    var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
+      && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
+    setHidden(blogView.load, ready || permitted || !consentAvailable);
+    setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -153,14 +156,19 @@
       link = link || label("a", "calorieapp-x-fallback", blogFallback.action);
       link.setAttribute("href", "https://x.com/CalorieToken");
       link.setAttribute("rel", "noopener noreferrer");
-      var settings = label("button", "calorieapp-x-settings cmplz-manage-consent", blogFallback.settings);
-      settings.setAttribute("type", "button"); settings.hidden = true;
+      var settings = label("a", "calorieapp-x-settings ctstyle-cookie-settings", blogFallback.settings);
+      settings.setAttribute("href", home + "/cookie-policy-eu/");
       var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
       load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
       load.setAttribute("data-category", "marketing"); load.hidden = true;
-      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);
+      var retry = label("button", "calorieapp-x-retry", blogFallback.retry);
+      retry.type = "button"; retry.hidden = true;
+      retry.addEventListener("click", function () {
+        if (window.CalorieTokenBlogTimeline && typeof window.CalorieTokenBlogTimeline.retry === "function") window.CalorieTokenBlogTimeline.retry();
+      });
+      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings); help.appendChild(retry);
       panel.appendChild(help); panel.classList.add("calorieapp-social-panel");
-      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load };
+      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load, retry: retry };
     }
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     renderBlogHelp(blogLocale || (config && config.initialLocale) || "en");
