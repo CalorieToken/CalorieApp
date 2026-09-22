@@ -1,0 +1,135 @@
+{
+  "contract_id": "calorie-community.network",
+  "contract_version": "1.0.0-draft",
+  "status": "preview-only",
+  "purpose": "Define one low-maintenance moderated forum/chat foundation that can serve the CalorieToken WordPress community surface, CalorieApp, CalorieEco/Calorie Ecosystem and later CalorieVerse without mixing private app data with public discussion.",
+  "public_names": {
+    "community": "Calorie Community",
+    "app": "CalorieApp",
+    "ecosystem": "CalorieEco / Calorie Ecosystem",
+    "food_data": "CalorieDB (CalDB)",
+    "metaverse": "CalorieVerse"
+  },
+  "launch_flags": {
+    "network_enabled": false,
+    "persistent_message_writes": false,
+    "wordpress_surface_enabled": false,
+    "caldb_bridge_enabled": false,
+    "calorieverse_presence_enabled": false,
+    "direct_messages_enabled": false,
+    "voice_enabled": false,
+    "attachments_enabled": false
+  },
+  "channels": [
+    {"id": "general", "purpose": "General project and community discussion"},
+    {"id": "calorieapp", "purpose": "CalorieApp use, food logging and feature help"},
+    {"id": "food-data", "purpose": "Food-data discussion and explicit contribution guidance"},
+    {"id": "calorieverse", "purpose": "CalorieVerse world, events and cooperative activity"},
+    {"id": "builders", "purpose": "Open building, integrations and technical collaboration"},
+    {"id": "help", "purpose": "Helpbot-assisted support and frequently repeated questions"}
+  ],
+  "age_profiles": {
+    "child": {
+      "free_text_posting": false,
+      "preset_reactions": true,
+      "curated_read": true,
+      "private_adult_channel": false
+    },
+    "teen": {
+      "free_text_posting": true,
+      "default_moderation": "queue-before-publication",
+      "direct_messages": false,
+      "private_adult_channel": false
+    },
+    "adult": {
+      "free_text_posting": true,
+      "default_moderation": "automated-screen-then-publish-or-queue",
+      "direct_messages": false
+    }
+  },
+  "moderation": {
+    "automated_assistant_name": "CalorieGuard",
+    "assistant_is_human": false,
+    "assistant_may_generate_fake_community_activity": false,
+    "assistant_may_irreversibly_ban_users": false,
+    "controls": [
+      "per-account-and-per-origin-rate-limits",
+      "duplicate-message-detection",
+      "link-count-and-link-reputation-screening",
+      "new-account-probation",
+      "message-length-limits",
+      "safe-text-rendering-without-raw-html",
+      "moderation-queue-for-suspicious-content",
+      "report-and-block-workflows",
+      "audit-events-for-moderation-decisions"
+    ],
+    "initial_limits": {
+      "message_characters": 500,
+      "links_per_message": 2,
+      "post_cooldown_seconds": 8
+    }
+  },
+  "identity_and_privacy": {
+    "public_wallet_address_by_default": false,
+    "precise_location_sharing": false,
+    "food_diary_shared_by_default": false,
+    "nickname_and_locale_may_be_reused_after_authenticated_consent": true,
+    "forum_profile_separate_from_private_food_log": true,
+    "message_export_and_erasure_path_required_before_persistence": true
+  },
+  "data_boundaries": {
+    "calorieapp": {
+      "may_read": ["display nickname", "display locale", "age-experience decision"],
+      "must_not_auto_publish": ["food diary", "account secrets", "wallet seed", "private identity data"]
+    },
+    "caldb": {
+      "forum_messages_are_catalog_records": false,
+      "automatic_promotion_from_chat": false,
+      "required_path": "explicit-contribute-action -> structured candidate -> quarantine -> provenance/licence checks -> moderation -> eligible public record"
+    },
+    "calorieeco": {
+      "community_events_may_reference_projects": true,
+      "financial_transactions_from_chat": false,
+      "investment_advice_from_automation": false
+    },
+    "calorieverse": {
+      "shared_channel_ids_allowed": true,
+      "shared_moderation_policy_allowed": true,
+      "movement_or_presence_is_reward_evidence": false,
+      "public_wallet_presence": false,
+      "private_child_adult_channel": false
+    }
+  },
+  "event_envelope": {
+    "version": 1,
+    "required_fields": [
+      "event_id",
+      "event_type",
+      "occurred_at",
+      "actor_subject_id",
+      "channel_id",
+      "payload_version"
+    ],
+    "never_include": [
+      "wallet seed",
+      "raw session token",
+      "private food diary payload",
+      "precise real-world location"
+    ]
+  },
+  "scaling": {
+    "initial_source_of_truth": "hosted PostgreSQL service",
+    "wordpress_role": "presentation and entry shell, not a second message database",
+    "realtime_transport": "deferred; SSE or WebSocket may be added behind the same event contract",
+    "optional_federation": "future only after abuse, identity, deletion, retention and moderation semantics are proven",
+    "blockchain_message_storage": false,
+    "zero_participant_fallback": true
+  },
+  "review_gate": [
+    "No production API or database table is activated by this contract.",
+    "No WordPress page is created by this contract.",
+    "No CalDB contribution is created from discussion text.",
+    "No CalorieVerse multiplayer or presence is activated.",
+    "No merge or deployment is implied."
+  ]
+}
