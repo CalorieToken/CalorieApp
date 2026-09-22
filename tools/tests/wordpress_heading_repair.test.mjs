@@ -225,7 +225,7 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
       <div data-calorieapp-embed-loading data-loading-ready="1"><strong>CalorieApp is starting</strong><p data-calorieapp-loading-message></p>
         <button data-calorieapp-loading-retry>Try again</button><button data-calorieapp-loading-reveal>Show app</button></div>
       <iframe title="CalorieApp" src="https://app.calorietoken.net/?embedded=1&amp;locale=en"></iframe>
-    </div></div>
+    </div></div><nav class="calorieapp-page-tools"><a href="/">Home</a></nav>
   </body></html>`);
   Object.defineProperty(window,'location',{value:new URL('https://calorietoken.net/calorieapp/?ui_lang=nl'),configurable:true});
   Object.defineProperty(document,'readyState',{value:'complete',configurable:true});
@@ -241,6 +241,14 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
   assert.equal(reveals,1);
   assert.equal(loader.hidden,true);
   assert.equal(stage.getAttribute('aria-busy'),'false');
+  const focusButton=document.getElementById('ct-calorieapp-focus-toggle');
+  assert.ok(document.querySelector('.calorieapp-page-tools').contains(focusButton));
+  focusButton.click();
+  assert.equal(document.body.classList.contains('ct-calorieapp-focus'),true);
+  assert.equal(focusButton.getAttribute('aria-pressed'),'true');
+  focusButton.click();
+  assert.equal(document.body.classList.contains('ct-calorieapp-focus'),false);
+  assert.equal(focusButton.getAttribute('aria-pressed'),'false');
 });
 
 test('help links hand off fixed destinations to the native app and never rebuild the old guide', () => {
