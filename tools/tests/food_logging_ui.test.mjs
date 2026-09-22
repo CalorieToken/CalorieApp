@@ -1415,3 +1415,19 @@ test('recipe preferences remain collapsed initially and never log food or trigge
   assert.deepEqual(h.requests,[]);
   assert.equal(nodes(h.tree,n=>n.type==='button').length,0);
 });
+
+test('plant drinks compare across brands without replacing oats in a recipe',()=>{
+  const drink={...foods[0],product_name:'Organic oat drink original',brand:'lifestyle',barcode:'8719979203245'};
+  const alternative={...drink,product_name:'Haverdrink',brand:'Albert Heijn',barcode:'8718907855167'};
+  const oats={...drink,product_name:'Havermout',brand:'Other',barcode:'1234567890123'};
+  assert.deepEqual(Array.from(discovery.packagedAlternatives(drink,[alternative,oats]),f=>f.barcode),[alternative.barcode]);
+  assert.equal(discovery.alternativeSearchQuery(drink),'oat drink');
+  for(const name of ['Organic oat drink original','Haverdrink','Oat milk','Rice drink','Soy milk','Amandelmelk']){
+    const ideas=recipes.recipeIdeas({...drink,product_name:name},{diet:'any',cuisine:'any',meal:'any'});
+    assert.deepEqual(Array.from(ideas,r=>r.id),['porridge-plantdrink'],name);
+    assert.match(ideas[0].nl.ingredients,/\{food\}, havermout/);
+  }
+  assert.equal(recipes.recipeIdeas(drink,{diet:'plant',cuisine:'any',meal:'any'}).length,0,'A name still does not certify packaged ingredients');
+  assert.equal(recipes.recipeIdeas({...drink,labels_tags:['en:vegan']},{diet:'plant',cuisine:'any',meal:'any'}).length,1);
+  assert.equal(recipes.recipeIdeas({...drink,product_name:'Oat drink soup'},{diet:'any',cuisine:'any',meal:'any'}).length,0);
+});
