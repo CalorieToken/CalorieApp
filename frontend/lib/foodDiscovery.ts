@@ -144,3 +144,140 @@ export function usdaLogItem(food: UsdaFood, grams: number): FoodSearchItem | nul
     brand: `USDA FoodData Central · FDC ${food.fdc_id}`, serving_size: `${grams} g edible · ${food.edition}`,
     barcode: null, image_url: null, nutri_score: null, portion_percentage: 100 };
 }
+
+/** Brand names never establish nutritional similarity. Keep the original label for display. */
+export function unbrandedFoodName(food: FoodSearchItem): string {
+  let name = normalizeFoodText(food.product_name);
+  const brands = (food.brand ?? "").split(/[,;]+/).map(normalizeFoodText).filter(Boolean).sort((a, b) => b.length - a.length);
+  for (const brand of brands) {
+    const escaped = brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    name = name.replace(new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}(?=$|[^\\p{L}\\p{N}])`, "gu"), "$1 ");
+  }
+  return name.replace(/\s+/g, " ").trim();
+}
+
+const packagedGroups: Record<string, string[]> = {
+  juice: ["juice", "sap", "jus", "zumo", "suco", "果汁"],
+  icecream: ["ice cream", "icecream", "ijs", "glace", "helado", "sorvete"],
+  jam: ["jam", "marmalade", "confiture", "mermelada"],
+  readymeal: ["ready meal", "maaltijd", "lasagne", "lasagna", "risotto"],
+  spread: ["spread", "pindakaas", "peanut butter", "hazelnut spread", "chocopasta"],
+  biscuit: ["biscuit", "biscuits", "cookie", "cookies", "koek", "koekjes", "galletas"],
+  crisps: ["crisps", "chips", "tortilla chips"],
+  soup: ["soup", "soep", "soupe", "sopa"],
+  sauce: ["sauce", "saus", "salsa"],
+  pizza: ["pizza"],
+  chocolate: ["chocolate", "chocolade", "chocolat", "巧克力", "चॉकलेट"],
+};
+const sensitiveFood = /\b(infant|baby|formula|supplement|medical|therapeutic|enteral|zuigeling|medisch)\b/i;
+const containsTerm = (text: string, term: string) => {
+  const pieces = words(term), tokens = words(text);
+  return pieces.length > 0 && tokens.some((_, index) => pieces.every((piece, offset) => tokens[index + offset] === piece));
+};
+
+function packagedFamily(food: FoodSearchItem): string | null {
+  const name = unbrandedFoodName(food);
+  if (sensitiveFood.test(food.product_name)) return null;
+  const family = foodFamily(name);
+  for (const [key, terms] of Object.entries(packagedGroups)) {
+    // Chocolate milk/cereal/yogurt are not chocolate bars.
+    if (key === "chocolate" && family) continue;
+    if (terms.some(term => containsTerm(name, term))) return key;
+  }
+  return family;
+}
+
+export function alternativeSearchQuery(food: FoodSearchItem): string {
+  if (sensitiveFood.test(food.product_name)) return "";
+  const name = unbrandedFoodName(food);
+  const family = packagedFamily(food);
+  // Use the category term actually present on the label, retaining its language.
+  const terms = family ? packagedGroups[family] ?? families[family] ?? [] : [];
+  return (terms.find(term => containsTerm(name, normalizeFoodText(term))) ?? name)
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|l)\b/gi, " ").replace(/\s+/g, " ").trim().slice(0, 160);
+}
+
+function knownGrade(food: FoodSearchItem): string | null {
+  const grade = food.nutri_score?.trim().toUpperCase();
+  return grade && /^[A-E]$/.test(grade) ? grade : null;
+}
+
+/** Recorded grades are a limited comparison cue, never a newly calculated health score. */
+export function betterRecordedGrade(current: FoodSearchItem, candidate: FoodSearchItem): { from: string; to: string } | null {
+  const family = packagedFamily(current), from = knownGrade(current), to = knownGrade(candidate);
+  if (current.nutriscore_version && candidate.nutriscore_version && current.nutriscore_version !== candidate.nutriscore_version) return null;
+  if (!family || family !== packagedFamily(candidate) || !from || !to || to >= from) return null;
+  return { from, to };
+}
+
+export function packagedAlternatives(current: FoodSearchItem, candidates: FoodSearchItem[], limit = 4): FoodSearchItem[] {
+  const name = unbrandedFoodName(current), family = packagedFamily(current);
+  const tokens = new Set(significantWords(name));
+  if (!name || sensitiveFood.test(current.product_name) || limit <= 0) return [];
+  const brandOf = (food: FoodSearchItem) => normalizeFoodText(food.brand ?? "");
+  const idOf = (food: FoodSearchItem) => food.barcode?.trim() || `${unbrandedFoodName(food)}|${brandOf(food)}`;
+  const seen = new Set([idOf(current)]);
+  const pool = candidates.flatMap((food, order) => {
+    const id = idOf(food), candidateName = unbrandedFoodName(food);
+    if (seen.has(id) || !candidateName || sensitiveFood.test(food.product_name)) return [];
+    seen.add(id);
+    const candidateTokens = new Set(significantWords(candidateName));
+    const shared = [...tokens].filter(token => candidateTokens.has(token)).length;
+    const overlap = shared / Math.max(tokens.size, candidateTokens.size, 1);
+    const candidateFamily = packagedFamily(food);
+    if (family && candidateFamily && family !== candidateFamily) return [];
+    const sameFamily = family !== null && family === candidateFamily;
+    if (!sameFamily && !(shared >= 2 && overlap >= 0.5)) return [];
+    // Duplicate labels from the same brand add little choice; another brand is useful.
+    if (candidateName === name && brandOf(food) === brandOf(current)) return [];
+    return [{ food, order, score: (sameFamily ? 2 : 0) + overlap }];
+  });
+  const chosen: FoodSearchItem[] = [], brands = new Set([brandOf(current)]);
+  // Reserve one place for an evidenced better grade among comparable foods.
+  const better = pool.filter(entry => betterRecordedGrade(current, entry.food)).sort((a, b) =>
+    knownGrade(a.food)!.localeCompare(knownGrade(b.food)!) || b.score - a.score || a.order - b.order)[0];
+  if (better) { chosen.push(better.food); brands.add(brandOf(better.food)); }
+  while (chosen.length < limit) {
+    const next = pool.filter(entry => !chosen.includes(entry.food)).sort((a, b) =>
+      Number(Boolean(brandOf(b.food)) && !brands.has(brandOf(b.food))) - Number(Boolean(brandOf(a.food)) && !brands.has(brandOf(a.food))) ||
+      b.score - a.score || a.order - b.order)[0];
+    if (!next) break;
+    chosen.push(next.food); brands.add(brandOf(next.food));
+  }
+  return chosen;
+}
+
+/** An explicit search direction, not a certification of the returned products. */
+export function plantAlternativeQuery(food: FoodSearchItem, locale: string): string | null {
+  const family = packagedFamily(food), copy = discoveryCopy(locale);
+  if (!family) return null;
+  return ({ milk: copy.plantMilk, yogurt: copy.plantYogurt, cheese: copy.plantCheese,
+    chicken: copy.plantProtein, fish: copy.plantProtein, egg: copy.plantProtein } as Record<string, string>)[family] ?? null;
+}
+
+export type FoodLabel = { name: string; scope: "organic" | "welfare" | "fishery" };
+/** Exact provider tags only. A recorded label is not our own certification. */
+export function recordedFoodLabels(food: FoodSearchItem, locale: string): FoodLabel[] {
+  const tags = new Set(food.labels_tags ?? []), result: FoodLabel[] = [];
+  if (tags.has("en:eu-organic")) result.push({ name: "EU Organic", scope: "organic" });
+  else if (tags.has("en:organic")) result.push({ name: discoveryCopy(locale).organicClaim, scope: "organic" });
+  const levels = new Set([...tags].flatMap(tag => {
+    const match = /^(?:en|nl):beter-leven-([123])-(?:star|stars|ster|sterren)$/.exec(tag);
+    return match ? [Number(match[1])] : [];
+  }));
+  // Conflicting star levels cannot support a clear claim.
+  if (levels.size === 1) result.push({ name: `Beter Leven ${"★".repeat([...levels][0])}`, scope: "welfare" });
+  if (tags.has("en:msc")) result.push({ name: "MSC", scope: "fishery" });
+  if (tags.has("en:asc")) result.push({ name: "ASC", scope: "fishery" });
+  return result;
+}
+
+export function foodSourceUrl(food: FoodSearchItem): string | null {
+  return /^(?:\d{8}|\d{12,14})$/.test(food.barcode ?? "") ? `https://world.openfoodfacts.org/product/${food.barcode}` : null;
+}
+
+/** Recipe ideas only use recognised basic foods, not medical foods or mixed ready meals. */
+export function recipeFamily(food: FoodSearchItem): string | null {
+  const family = packagedFamily(food);
+  return family && Object.hasOwn(families, family) ? family : null;
+}

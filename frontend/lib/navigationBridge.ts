@@ -27,8 +27,12 @@ export function trustedWordPressParentOrigin(): string | null {
  */
 export function postNavigationTarget(
   target: CalorieAppNavigationTarget,
-  element: Pick<Element, "getBoundingClientRect"> | null
+  element: (Pick<Element, "getBoundingClientRect"> & Partial<Pick<Element, "scrollIntoView">>) | null,
+  reveal = false
 ): boolean {
+  // Only explicit user navigation opts in. Nearest alignment keeps visible
+  // content still and respects inner result lists without smooth-scroll races.
+  if (reveal) element?.scrollIntoView?.({ block: "nearest", inline: "nearest", behavior: "instant" });
   const origin = trustedWordPressParentOrigin();
   if (!origin || !element) return false;
   const rectangle = element.getBoundingClientRect();
