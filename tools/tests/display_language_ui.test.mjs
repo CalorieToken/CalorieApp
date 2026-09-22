@@ -171,8 +171,12 @@ test("actual food controls render the eleven languages and escape literal produc
     "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
     "@/lib/navigationBridge": { postNavigationTarget: () => false },
     "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => display },
+    "@/components/FoodLabels": { FoodLabels: () => null },
+    "@/components/FoodRecipeIdeas": { FoodRecipeIdeas: () => null },
+    "@/components/FoodExplore": { FoodExplore: () => null },
   };
   imports["@/lib/foodIllustration"] = loadModule("../../frontend/lib/foodIllustration.ts", {});
+  imports["@/components/FoodPropertyIcon"] = loadModule("../../frontend/components/FoodPropertyIcon.tsx", imports);
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   imports["@/components/NutriScoreBar"] = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   const { SearchBar } = loadModule("../../frontend/components/SearchBar.tsx", imports);
@@ -218,8 +222,12 @@ test("the actual Nutri-Score control renders a recorded badge and an A–E indic
   });
   const imports = { "@/lib/foodUi": foodUi, "@/lib/foodExperience": experience, "@/lib/foodSource": foodSource,
     "@/lib/navigationBridge": { postNavigationTarget: () => false },
-    "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) } };
+    "@/components/DisplayLanguageProvider": { useDisplayLanguage: () => ({ enabled: true, locale: "nl" }) },
+    "@/components/FoodLabels": { FoodLabels: () => null },
+    "@/components/FoodRecipeIdeas": { FoodRecipeIdeas: () => null },
+    "@/components/FoodExplore": { FoodExplore: () => null } };
   imports["@/lib/foodIllustration"] = loadModule("../../frontend/lib/foodIllustration.ts", {});
+  imports["@/components/FoodPropertyIcon"] = loadModule("../../frontend/components/FoodPropertyIcon.tsx", imports);
   imports["@/components/FoodImage"] = loadModule("../../frontend/components/FoodImage.tsx", imports);
   const score = loadModule("../../frontend/components/NutriScoreBar.tsx", imports);
   imports["@/components/NutriScoreBar"] = score;

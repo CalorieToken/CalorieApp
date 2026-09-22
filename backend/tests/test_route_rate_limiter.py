@@ -111,6 +111,8 @@ def test_current_public_route_budgets_are_explicit_and_reviewable() -> None:
             60,
         ),
         ("GET", "/api/identity/me"): ("identity_me", 240, 60),
+        ("POST", "/api/identity/profile"): ("identity_profile", 60, 60),
+        ("POST", "/api/identity/profile/wordpress"): ("identity_widget_profile", 240, 60),
         ("GET", "/api/identity/export"): ("identity_export", 30, 60),
         ("POST", "/api/identity/import"): ("identity_import", 5, 60),
         ("DELETE", "/api/identity/account"): (

@@ -99,6 +99,8 @@ def test_current_route_limits_are_narrow_and_explicit() -> None:
         ("POST", "/api/identity/login/start"): 2 * 1024,
         ("POST", "/api/identity/login/state/validate"): 2 * 1024,
         ("POST", "/api/identity/bridge/code"): 2 * 1024,
+        ("POST", "/api/identity/profile"): 2 * 1024,
+        ("POST", "/api/identity/profile/wordpress"): 2 * 1024,
         ("POST", "/api/identity/callback"): 4 * 1024,
         ("POST", "/api/identity/login/status"): 4 * 1024,
         ("POST", "/api/identity/import"): 5 * 1024 * 1024,

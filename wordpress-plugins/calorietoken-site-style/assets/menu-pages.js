@@ -21,6 +21,7 @@
   var contentUpdates = config.contentUpdates, usecases = config.usecases, articleNotes = config.articleNotes;
   var blogView = null, blogLocale = null;
   var blogFallback = config.blog.copy.en;
+  var blogTextKeys = ['description','action','settings','load','retry'];
   function selectedLocale() {
     var requested = new URL(window.location.href).searchParams.get('ui_lang') || document.documentElement.lang || 'en';
     var exact = config.locales.find(function (item) { return item.tag.toLowerCase() === requested.toLowerCase(); });
@@ -68,8 +69,8 @@
   }
   var legacyBuyGuideMarkup = [
     "<h2>Before you start</h2><p>Calorie (CAL) is a token on the XRP Ledger. Use a supported wallet and check the token’s issuer, not just its name or logo.</p><p><strong>Currency:</strong> Calorie (CAL)<br><strong>Issuer:</strong> <span style=\"overflow-wrap:anywhere\">rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY</span><br><strong>Currency code:</strong> <span style=\"overflow-wrap:anywhere\">43616C6F72696500000000000000000000000000</span></p>",
-    "<h2>Choose a trading interface</h2><p><strong><a href=\"https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY\" target=\"_blank\" rel=\"noopener noreferrer\">XPMarket</a></strong><br>Open the CAL token page, then choose an available trade or swap.</p><p><strong><a href=\"https://sologenic.org/\" target=\"_blank\" rel=\"noopener noreferrer\">Sologenic</a></strong><br>Open the DEX and select Calorie/XRP. Verify the issuer above.</p><p><strong><a href=\"https://xumm.app/detect/xapp:xumm.dex?base=43616C6F72696500000000000000000000000000+rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY&amp;quote=xrp\" target=\"_blank\" rel=\"noopener noreferrer\">Xaman DEX</a></strong><br>Open the DEX xApp in Xaman and verify the selected Calorie/XRP pair.</p><p><strong><a href=\"https://www.xrptoolkit.com/\" target=\"_blank\" rel=\"noopener noreferrer\">XRP Toolkit</a></strong><br>Connect a supported wallet and open Trade. Select Calorie by its issuer.</p><p>These are external services. Available pairs, liquidity, fees and regional access may change. No centralized exchange listing is confirmed on this page.</p>",
-    "<h2>How to buy CAL on the XRP Ledger</h2><ol><li>Set up a supported XRPL wallet using its official website or app. Keep your recovery phrase private.</li><li>Add enough XRP for the intended trade and the wallet’s displayed reserve and network fees.</li><li>Open one of the interfaces above. Select Calorie/CAL and verify the complete issuer address shown here.</li><li>If your wallet requests a CAL trust line, review it before approving. Then enter the amount and inspect the quoted price, liquidity, fees and slippage.</li><li>Approve only the transaction you intend in your wallet. Wait for the ledger result and check your resulting balance.</li></ol><p>Reserve requirements can change; follow your wallet’s current values and the <a href=\"https://xrpl.org/docs/tutorials/best-practices/account-management/calculate-reserves\" target=\"_blank\" rel=\"noopener noreferrer\">official XRPL reserve documentation</a>. Never enter a recovery phrase on a trading website.</p>",
+    "<h2>Choose a trading route</h2><p><strong><a href=\"https://xpmarket.com/dex/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP\" target=\"_blank\" rel=\"noopener noreferrer\">XPMarket · CAL/XRP order book</a></strong><br>Open the CAL/XRP market directly and review issuer, price, liquidity, fees and price impact before continuing.</p><p><strong><a href=\"https://xpmarket.com/swap/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY/XRP/market\" target=\"_blank\" rel=\"noopener noreferrer\">XPMarket · CAL/XRP swap</a></strong><br>Use the swap route when available and review the final wallet request before approving it.</p><p>XPMarket is an external service. Availability, liquidity, fees and regional access may change. CalorieToken does not execute the trade or custody your wallet.</p>",
+    "<h2>How to buy CAL on the XRP Ledger</h2><ol><li>Set up a supported XRPL wallet using its official website or app. Keep your recovery phrase private.</li><li>Add enough XRP for the intended trade and the wallet’s displayed reserve and network fees.</li><li>Open one of the XPMarket routes above. Verify Calorie/CAL and the complete issuer address shown here before continuing.</li><li>If your wallet requests a CAL trust line, review it before approving. Then enter the amount and inspect the quoted price, liquidity, fees and slippage.</li><li>Approve only the transaction you intend in your wallet. Wait for the ledger result and check your resulting balance.</li></ol><p>Reserve requirements can change; follow your wallet’s current values and the <a href=\"https://xrpl.org/docs/tutorials/best-practices/account-management/calculate-reserves\" target=\"_blank\" rel=\"noopener noreferrer\">official XRPL reserve documentation</a>. Never enter a recovery phrase on a trading website.</p>",
     "<p>Trading can result in loss. This page provides practical links and instructions, not an investment recommendation. CAL trading is separate from CalorieApp’s food search and personal food log.</p>",
   ].join("");
   function normalizedMarkup(markup) {
@@ -103,32 +104,34 @@
   function renderBlogHelp(locale) {
     var panel = blogPanel();
     if (!blogView || panel !== blogView.panel || blogView.help.parentElement !== panel
-      || !Object.keys(blogFallback).every(function (key) { return blogView[key].parentElement === blogView.help; })
+      || !blogTextKeys.every(function (key) { return blogView[key].parentElement === blogView.help; })
       || blogView.action.getAttribute("href") !== "https://x.com/CalorieToken") return;
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     var definition = config && Array.isArray(config.locales)
       && config.locales.find(function (item) { return item.tag === locale; });
     var copy = definition && config.copy && config.copy[locale];
-    if (!copy || !Object.keys(blogFallback).every(function (key) {
+    if (!copy || !blogTextKeys.every(function (key) {
       return typeof copy[key] === "string" && copy[key].trim();
     })) { copy = blogFallback; locale = "en"; }
-    // These three text nodes belong to the helper, outside the CMP/X subtree.
-    Object.keys(blogFallback).forEach(function (key) {
+    var permitted=false;
+    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
+    // These text nodes belong to the helper, outside the CMP/X subtree.
+    blogTextKeys.forEach(function (key) {
       var node = blogView[key];
-      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) node.childNodes[0].data = copy[key];
+      var value=key==='description'&&permitted ? (copy.consentedDescription||'X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X.') : copy[key];
+      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 && node.childNodes[0].data!==value) node.childNodes[0].data = value;
     });
     blogView.help.setAttribute("lang", locale);
     blogView.help.setAttribute("dir", ["ar", "ur"].indexOf(locale) !== -1 ? "rtl" : "ltr");
-    // Complianz's delegated native button opens settings. We do not grant or
-    // revoke consent or reload the page. A separate Blog module initializes the widget only with service consent.
+    // The shared settings link opens native preferences, with a policy-page fallback.
     var ready = panel.classList.contains('ctstyle-x-ready');
     function setHidden(node, value) { if (node.hidden !== value) node.hidden = value; }
-    setHidden(blogView.description, ready);
-    setHidden(blogView.settings, typeof window.cmplz_has_service_consent !== "function"
-      || !document.querySelector("#cmplz-cookiebanner-container .cmplz-cookiebanner"));
-    var permitted=false;
-    try { permitted=typeof window.cmplz_has_service_consent === 'function' && window.cmplz_has_service_consent('twitter') === true; } catch (_) { /* Keep the CMP authoritative. */ }
-    setHidden(blogView.load, ready || permitted || blogView.settings.hidden);
+    setHidden(blogView.description, false);
+    setHidden(blogView.settings, false);
+    var consentAvailable=typeof window.cmplz_has_service_consent === 'function'
+      && !!document.querySelector('#cmplz-cookiebanner-container .cmplz-cookiebanner');
+    setHidden(blogView.load, ready || permitted || !consentAvailable);
+    setHidden(blogView.retry, ready || !permitted || panel.classList.contains('ctstyle-x-loading'));
   }
   function refineBlogHelp() {
     var panel = blogPanel();
@@ -153,14 +156,19 @@
       link = link || label("a", "calorieapp-x-fallback", blogFallback.action);
       link.setAttribute("href", "https://x.com/CalorieToken");
       link.setAttribute("rel", "noopener noreferrer");
-      var settings = label("button", "calorieapp-x-settings cmplz-manage-consent", blogFallback.settings);
-      settings.setAttribute("type", "button"); settings.hidden = true;
+      var settings = label("a", "calorieapp-x-settings ctstyle-cookie-settings", blogFallback.settings);
+      settings.setAttribute("href", home + "/cookie-policy-eu/");
       var load = label("button", "calorieapp-x-load cmplz-accept-service", blogFallback.load);
       load.setAttribute("type", "button"); load.setAttribute("data-service", "twitter");
       load.setAttribute("data-category", "marketing"); load.hidden = true;
-      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings);
+      var retry = label("button", "calorieapp-x-retry", blogFallback.retry);
+      retry.type = "button"; retry.hidden = true;
+      retry.addEventListener("click", function () {
+        if (window.CalorieTokenBlogTimeline && typeof window.CalorieTokenBlogTimeline.retry === "function") window.CalorieTokenBlogTimeline.retry();
+      });
+      help.appendChild(description); help.appendChild(load); help.appendChild(link); help.appendChild(settings); help.appendChild(retry);
       panel.appendChild(help); panel.classList.add("calorieapp-social-panel");
-      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load };
+      blogView = { panel: panel, help: help, description: description, action: link, settings: settings, load: load, retry: retry };
     }
     var config = window.CalorieTokenSiteStyleMenu && window.CalorieTokenSiteStyleMenu.blog;
     renderBlogHelp(blogLocale || (config && config.initialLocale) || "en");

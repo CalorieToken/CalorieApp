@@ -18,6 +18,7 @@ function load(display = {enabled:true, locale:'en'}) {
   vm.runInNewContext(compiled,{module,exports:module.exports,process:{env:{}},require(name){
     if(name==='react'||name==='react/jsx-runtime')return require(name);
     if(name==='@/components/DisplayLanguageProvider')return {useDisplayLanguage:()=>display};
+    if(name==='@/components/XamanInstallGuide')return {XamanInstallGuide:()=>null};
     if(name==='@/lib/locales')return {localeDirection:tag=>['ar','ur'].includes(tag)?'rtl':'ltr'};
     if(name==='@/config/testnet-entry-copy.json')return {default:copy};
     if(name==='@/config/account-welcome-copy.json')return {default:JSON.parse(readFileSync(new URL('../../frontend/config/account-welcome-copy.json',import.meta.url)))};

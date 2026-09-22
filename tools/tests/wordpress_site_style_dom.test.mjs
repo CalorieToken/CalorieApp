@@ -229,7 +229,7 @@ test('X readiness and translated cookie controls settle without a DOM observer f
     await new Promise(resolve=>setTimeout(resolve,0));
     assert.equal(h.observerOverflow.length,0,'Visible X state must not repeatedly rewrite the same hidden attributes');
     assert.equal(h.first.classList.contains('ctstyle-x-ready'),true);
-    assert.equal(h.first.querySelector('.calorieapp-x-description').hidden,true);
+    assert.equal(h.first.querySelector('.calorieapp-x-description').hidden,false);
     const deliveries=h.observers.reduce((sum,o)=>sum+o.deliveries,0);
     await new Promise(resolve=>setTimeout(resolve,0));
     assert.equal(h.observers.reduce((sum,o)=>sum+o.deliveries,0),deliveries,'The real DOM mutation queue settles');
