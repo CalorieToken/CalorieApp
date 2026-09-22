@@ -1,18 +1,18 @@
 <?php
 /**
  * Plugin Name: CalorieApp Account Profile
- * Description: Shows the saved CalorieApp nickname in the login widget and presents sign-in in one inline panel.
- * Version: 0.1.1
+ * Description: Shows the saved CalorieApp nickname and a compact sign-in card without scrolling the page.
+ * Version: 0.1.2
  * Requires PHP: 7.4
  */
 namespace CalorieApp\AccountProfile;
 if (!defined('ABSPATH')) { exit; }
 
 function enqueue() {
-    wp_enqueue_script('calorieapp-account-profile', plugins_url('assets/profile-widget.js', __FILE__), [], '0.1.1', true);
-    wp_enqueue_style('calorieapp-account-profile', plugins_url('assets/profile-widget.css', __FILE__), [], '0.1.1');
-    wp_enqueue_script('calorieapp-login-panel', plugins_url('assets/login-panel.js', __FILE__), ['calorieapp-account-profile'], '0.1.1', true);
-    wp_enqueue_style('calorieapp-login-panel', plugins_url('assets/login-panel.css', __FILE__), [], '0.1.1');
+    wp_enqueue_script('calorieapp-account-profile', plugins_url('assets/profile-widget.js', __FILE__), [], '0.1.2', true);
+    wp_enqueue_style('calorieapp-account-profile', plugins_url('assets/profile-widget.css', __FILE__), [], '0.1.2');
+    wp_enqueue_script('calorieapp-login-panel', plugins_url('assets/login-panel.js', __FILE__), ['calorieapp-account-profile'], '0.1.2', true);
+    wp_enqueue_style('calorieapp-login-panel', plugins_url('assets/login-panel.css', __FILE__), [], '0.1.2');
     // Public configuration only: safe even when the surrounding page is cached.
     wp_add_inline_script('calorieapp-account-profile', 'window.CalorieAppAccountProfile=' . wp_json_encode([
         'endpoint' => admin_url('admin-ajax.php'),
