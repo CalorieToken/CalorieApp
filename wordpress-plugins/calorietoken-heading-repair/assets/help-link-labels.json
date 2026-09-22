@@ -36,7 +36,7 @@
     "accountMoveHelp": "Do not convert or reuse the test wallet. Create a fresh Mainnet account in Xaman.",
     "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items.",
     "foodRecipes": "Recipe ideas",
-    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself."
+    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log."
   },
   "nl": {
     "app": "CalorieApp",
@@ -75,7 +75,7 @@
     "accountMoveHelp": "Zet de testwallet niet om en hergebruik hem niet. Maak in Xaman een volledig nieuw Mainnet-account.",
     "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren.",
     "foodRecipes": "Receptideeën",
-    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek."
+    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek. Ideeën om te bekijken, geen medisch of diëtistisch advies. Vergelijkbare producten kunnen andere ingrediënten, allergenen en bereidingswijzen hebben. Controleer het etiket en je hoeveelheid; je kiest zelf wat je bekijkt of logt."
   },
   "zh-Hans": {
     "app": "CalorieApp",
@@ -114,7 +114,7 @@
     "accountMoveHelp": "不要转换或重复使用测试钱包。请在 Xaman 中创建全新的主网账户。",
     "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。",
     "foodRecipes": "食谱灵感",
-    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。"
+    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。"
   },
   "hi": {
     "app": "CalorieApp",
@@ -153,7 +153,7 @@
     "accountMoveHelp": "टेस्ट वॉलेट को बदलें या दोबारा उपयोग न करें। Xaman में नया Mainnet खाता बनाएँ।",
     "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।",
     "foodRecipes": "रेसिपी के विचार",
-    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।"
+    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।"
   },
   "es": {
     "app": "CalorieApp",
@@ -192,7 +192,7 @@
     "accountMoveHelp": "No conviertas ni reutilices la cartera de prueba. Crea una cuenta Mainnet completamente nueva en Xaman.",
     "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros.",
     "foodRecipes": "Ideas de recetas",
-    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas."
+    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar."
   },
   "ar": {
     "app": "CalorieApp",
@@ -231,7 +231,7 @@
     "accountMoveHelp": "لا تحوّل محفظة الاختبار ولا تعِد استخدامها. أنشئ حساب Mainnet جديدًا بالكامل في Xaman.",
     "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها.",
     "foodRecipes": "أفكار وصفات",
-    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك."
+    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله."
   },
   "fr": {
     "app": "CalorieApp",
@@ -270,7 +270,7 @@
     "accountMoveHelp": "Ne convertissez ni ne réutilisez le portefeuille test. Créez un tout nouveau compte Mainnet dans Xaman.",
     "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments.",
     "foodRecipes": "Idées de recettes",
-    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées."
+    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer."
   },
   "bn": {
     "app": "CalorieApp",
@@ -309,7 +309,7 @@
     "accountMoveHelp": "টেস্ট ওয়ালেট রূপান্তর বা পুনর্ব্যবহার করবেন না। Xaman-এ সম্পূর্ণ নতুন Mainnet অ্যাকাউন্ট তৈরি করুন।",
     "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।",
     "foodRecipes": "রেসিপির ধারণা",
-    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।"
+    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।"
   },
   "pt": {
     "app": "CalorieApp",
@@ -348,7 +348,7 @@
     "accountMoveHelp": "Não converta nem reutilize a carteira de teste. Crie uma conta Mainnet totalmente nova no Xaman.",
     "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos.",
     "foodRecipes": "Ideias de receitas",
-    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário."
+    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar."
   },
   "id": {
     "app": "CalorieApp",
@@ -387,7 +387,7 @@
     "accountMoveHelp": "Jangan konversi atau gunakan ulang dompet uji. Buat akun Mainnet yang sepenuhnya baru di Xaman.",
     "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan.",
     "foodRecipes": "Ide resep",
-    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan."
+    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat."
   },
   "ur": {
     "app": "CalorieApp",
@@ -426,6 +426,6 @@
     "accountMoveHelp": "ٹیسٹ والٹ کو تبدیل یا دوبارہ استعمال نہ کریں۔ Xaman میں بالکل نیا Mainnet اکاؤنٹ بنائیں۔",
     "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔",
     "foodRecipes": "ترکیب کے خیالات",
-    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔"
+    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔"
   }
 }

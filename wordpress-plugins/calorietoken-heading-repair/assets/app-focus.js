@@ -128,7 +128,12 @@
     button.type='button';button.id='ct-calorieapp-focus-toggle';button.className='ct-calorieapp-focus-toggle';button.setAttribute('aria-pressed','false');
     icon.className='ct-calorieapp-focus-icon';icon.setAttribute('aria-hidden','true');icon.textContent='⛶';
     label.className='ct-calorieapp-focus-label';note.className='ct-calorieapp-focus-note';status.className='ct-calorieapp-focus-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-    button.append(icon,label);toolbar.append(button,note,status);frame.before(toolbar);
+    button.append(icon,label);toolbar.append(button,note,status);
+    var pageTools=document.querySelector('.calorieapp-page-tools');
+    if(pageTools){
+      toolbar.classList.add('calorieapp-page-tool-position','ct-calorieapp-focus-docked');
+      button.classList.add('calorieapp-page-tool');pageTools.append(toolbar);
+    }else{frame.before(toolbar);}
     focus={frame:frame,button:button,label:label,status:status,toolbar:toolbar,scrollY:0};
     button.addEventListener('click',function(event){
       event.stopPropagation();

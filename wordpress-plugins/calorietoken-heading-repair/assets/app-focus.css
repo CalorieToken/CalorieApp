@@ -335,3 +335,18 @@ body.ctstyle-enabled #ct-testnet-guide-layer img{display:block;width:auto;max-wi
 body.ctstyle-enabled #ct-testnet-guide-layer [hidden]{display:none!important}
 @media(min-width:640px){body.ctstyle-enabled #ct-testnet-guide-layer .ctstyle-testnet-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:420px){body.ctstyle-enabled #ct-testnet-guide-layer{padding:8px}body.ctstyle-enabled #ct-testnet-guide-layer .ct-testnet-guide-panel{padding:16px}}
+
+/* App sizing belongs to the existing floating page controls. */
+#ct-calorieapp-focus-toolbar{position:fixed!important;z-index:2147483500!important;top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;inset-inline-start:auto!important;inset-inline-end:max(16px,env(safe-area-inset-right))!important;display:flex!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#ct-calorieapp-focus-toolbar.ct-calorieapp-focus-docked{position:static!important;inset:auto!important;flex:0 0 48px;align-items:center;justify-content:center;gap:0!important;width:48px;max-width:48px!important}
+#ct-calorieapp-focus-toggle{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;padding:0!important;border:2px solid #505ba9!important;border-radius:12px!important;background:#505ba9!important;color:#fff!important;box-shadow:0 3px 10px #27325f26;cursor:pointer;-webkit-user-select:none;user-select:none}
+#ct-calorieapp-focus-toggle:hover{background:#3f4b91!important;border-color:#3f4b91!important}
+#ct-calorieapp-focus-toggle .ct-calorieapp-focus-icon{font-size:24px;line-height:1}
+#ct-calorieapp-focus-toolbar .ct-calorieapp-focus-note{display:none!important}
+#ct-calorieapp-focus-toggle .ct-calorieapp-focus-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+body.ct-calorieapp-focus .calorieapp-page-tools:has(#ct-calorieapp-focus-toolbar){display:flex!important;z-index:2147483500!important}
+body.ct-calorieapp-focus .calorieapp-page-tools>.calorieapp-page-tool-position:not(#ct-calorieapp-focus-toolbar){display:none!important}
+@media(max-width:767px){#ct-calorieapp-focus-toolbar.ct-calorieapp-focus-docked{width:44px!important;max-width:44px!important;flex-basis:44px!important}#ct-calorieapp-focus-toggle{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border-radius:10px!important}}
+/* Keep help controls from selecting text on a double click or touch drag.
+   Answer text and the question input intentionally retain normal selection. */
+#ctstyle-app-launcher summary,#ctstyle-app-launcher button{-webkit-user-select:none;user-select:none}
