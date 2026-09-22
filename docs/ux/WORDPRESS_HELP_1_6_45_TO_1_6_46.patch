@@ -1,0 +1,257 @@
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/app-focus.css
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/app-focus.css
+@@ -335,3 +335,18 @@
+ body.ctstyle-enabled #ct-testnet-guide-layer [hidden]{display:none!important}
+ @media(min-width:640px){body.ctstyle-enabled #ct-testnet-guide-layer .ctstyle-testnet-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+ @media(max-width:420px){body.ctstyle-enabled #ct-testnet-guide-layer{padding:8px}body.ctstyle-enabled #ct-testnet-guide-layer .ct-testnet-guide-panel{padding:16px}}
++
++/* App sizing belongs to the existing floating page controls. */
++#ct-calorieapp-focus-toolbar{position:fixed!important;z-index:2147483500!important;top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;inset-inline-start:auto!important;inset-inline-end:max(16px,env(safe-area-inset-right))!important;display:flex!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
++#ct-calorieapp-focus-toolbar.ct-calorieapp-focus-docked{position:static!important;inset:auto!important;flex:0 0 48px;align-items:center;justify-content:center;gap:0!important;width:48px;max-width:48px!important}
++#ct-calorieapp-focus-toggle{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;padding:0!important;border:2px solid #505ba9!important;border-radius:12px!important;background:#505ba9!important;color:#fff!important;box-shadow:0 3px 10px #27325f26;cursor:pointer;-webkit-user-select:none;user-select:none}
++#ct-calorieapp-focus-toggle:hover{background:#3f4b91!important;border-color:#3f4b91!important}
++#ct-calorieapp-focus-toggle .ct-calorieapp-focus-icon{font-size:24px;line-height:1}
++#ct-calorieapp-focus-toolbar .ct-calorieapp-focus-note{display:none!important}
++#ct-calorieapp-focus-toggle .ct-calorieapp-focus-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
++body.ct-calorieapp-focus .calorieapp-page-tools:has(#ct-calorieapp-focus-toolbar){display:flex!important;z-index:2147483500!important}
++body.ct-calorieapp-focus .calorieapp-page-tools>.calorieapp-page-tool-position:not(#ct-calorieapp-focus-toolbar){display:none!important}
++@media(max-width:767px){#ct-calorieapp-focus-toolbar.ct-calorieapp-focus-docked{width:44px!important;max-width:44px!important;flex-basis:44px!important}#ct-calorieapp-focus-toggle{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border-radius:10px!important}}
++/* Keep help controls from selecting text on a double click or touch drag.
++   Answer text and the question input intentionally retain normal selection. */
++#ctstyle-app-launcher summary,#ctstyle-app-launcher button{-webkit-user-select:none;user-select:none}
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/app-focus.js
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/app-focus.js
+@@ -128,7 +128,12 @@
+     button.type='button';button.id='ct-calorieapp-focus-toggle';button.className='ct-calorieapp-focus-toggle';button.setAttribute('aria-pressed','false');
+     icon.className='ct-calorieapp-focus-icon';icon.setAttribute('aria-hidden','true');icon.textContent='⛶';
+     label.className='ct-calorieapp-focus-label';note.className='ct-calorieapp-focus-note';status.className='ct-calorieapp-focus-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+-    button.append(icon,label);toolbar.append(button,note,status);frame.before(toolbar);
++    button.append(icon,label);toolbar.append(button,note,status);
++    var pageTools=document.querySelector('.calorieapp-page-tools');
++    if(pageTools){
++      toolbar.classList.add('calorieapp-page-tool-position','ct-calorieapp-focus-docked');
++      button.classList.add('calorieapp-page-tool');pageTools.append(toolbar);
++    }else{frame.before(toolbar);}
+     focus={frame:frame,button:button,label:label,status:status,toolbar:toolbar,scrollY:0};
+     button.addEventListener('click',function(event){
+       event.stopPropagation();
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help-link-labels.json
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help-link-labels.json
+@@ -36,7 +36,7 @@
+     "accountMoveHelp": "Do not convert or reuse the test wallet. Create a fresh Mainnet account in Xaman.",
+     "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items.",
+     "foodRecipes": "Recipe ideas",
+-    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself."
++    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log."
+   },
+   "nl": {
+     "app": "CalorieApp",
+@@ -75,7 +75,7 @@
+     "accountMoveHelp": "Zet de testwallet niet om en hergebruik hem niet. Maak in Xaman een volledig nieuw Mainnet-account.",
+     "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren.",
+     "foodRecipes": "Receptideeën",
+-    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek."
++    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek. Ideeën om te bekijken, geen medisch of diëtistisch advies. Vergelijkbare producten kunnen andere ingrediënten, allergenen en bereidingswijzen hebben. Controleer het etiket en je hoeveelheid; je kiest zelf wat je bekijkt of logt."
+   },
+   "zh-Hans": {
+     "app": "CalorieApp",
+@@ -114,7 +114,7 @@
+     "accountMoveHelp": "不要转换或重复使用测试钱包。请在 Xaman 中创建全新的主网账户。",
+     "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。",
+     "foodRecipes": "食谱灵感",
+-    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。"
++    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。"
+   },
+   "hi": {
+     "app": "CalorieApp",
+@@ -153,7 +153,7 @@
+     "accountMoveHelp": "टेस्ट वॉलेट को बदलें या दोबारा उपयोग न करें। Xaman में नया Mainnet खाता बनाएँ।",
+     "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।",
+     "foodRecipes": "रेसिपी के विचार",
+-    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।"
++    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।"
+   },
+   "es": {
+     "app": "CalorieApp",
+@@ -192,7 +192,7 @@
+     "accountMoveHelp": "No conviertas ni reutilices la cartera de prueba. Crea una cuenta Mainnet completamente nueva en Xaman.",
+     "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros.",
+     "foodRecipes": "Ideas de recetas",
+-    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas."
++    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar."
+   },
+   "ar": {
+     "app": "CalorieApp",
+@@ -231,7 +231,7 @@
+     "accountMoveHelp": "لا تحوّل محفظة الاختبار ولا تعِد استخدامها. أنشئ حساب Mainnet جديدًا بالكامل في Xaman.",
+     "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها.",
+     "foodRecipes": "أفكار وصفات",
+-    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك."
++    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله."
+   },
+   "fr": {
+     "app": "CalorieApp",
+@@ -270,7 +270,7 @@
+     "accountMoveHelp": "Ne convertissez ni ne réutilisez le portefeuille test. Créez un tout nouveau compte Mainnet dans Xaman.",
+     "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments.",
+     "foodRecipes": "Idées de recettes",
+-    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées."
++    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer."
+   },
+   "bn": {
+     "app": "CalorieApp",
+@@ -309,7 +309,7 @@
+     "accountMoveHelp": "টেস্ট ওয়ালেট রূপান্তর বা পুনর্ব্যবহার করবেন না। Xaman-এ সম্পূর্ণ নতুন Mainnet অ্যাকাউন্ট তৈরি করুন।",
+     "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।",
+     "foodRecipes": "রেসিপির ধারণা",
+-    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।"
++    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।"
+   },
+   "pt": {
+     "app": "CalorieApp",
+@@ -348,7 +348,7 @@
+     "accountMoveHelp": "Não converta nem reutilize a carteira de teste. Crie uma conta Mainnet totalmente nova no Xaman.",
+     "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos.",
+     "foodRecipes": "Ideias de receitas",
+-    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário."
++    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar."
+   },
+   "id": {
+     "app": "CalorieApp",
+@@ -387,7 +387,7 @@
+     "accountMoveHelp": "Jangan konversi atau gunakan ulang dompet uji. Buat akun Mainnet yang sepenuhnya baru di Xaman.",
+     "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan.",
+     "foodRecipes": "Ide resep",
+-    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan."
++    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat."
+   },
+   "ur": {
+     "app": "CalorieApp",
+@@ -426,6 +426,6 @@
+     "accountMoveHelp": "ٹیسٹ والٹ کو تبدیل یا دوبارہ استعمال نہ کریں۔ Xaman میں بالکل نیا Mainnet اکاؤنٹ بنائیں۔",
+     "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔",
+     "foodRecipes": "ترکیب کے خیالات",
+-    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔"
++    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔"
+   }
+ }
+--- a/wordpress-plugins/calorietoken-heading-repair/assets/help-topic-additions.json
++++ b/wordpress-plugins/calorietoken-heading-repair/assets/help-topic-additions.json
+@@ -29,7 +29,7 @@
+       "step": "Choose your portion and save it explicitly. Small icons beside the text identify calories, protein, fat and carbohydrates; the leaf identifies a plant-based search option, not a certification."
+     },
+     "recipes": {
+-      "text": "Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself.",
++      "text": "Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log.",
+       "step": "Eating style → Cuisine inspiration → Meal. No matching idea in this small selection yet, or not enough product information for your eating style. You can change your preferences."
+     }
+   },
+@@ -63,7 +63,7 @@
+       "step": "Kies je portie en sla deze zelf op. Kleine icoontjes naast de tekst duiden calorieën, eiwitten, vetten en koolhydraten aan; het blaadje duidt een plantaardige zoekoptie aan, geen keurmerk."
+     },
+     "recipes": {
+-      "text": "Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek.",
++      "text": "Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek. Ideeën om te bekijken, geen medisch of diëtistisch advies. Vergelijkbare producten kunnen andere ingrediënten, allergenen en bereidingswijzen hebben. Controleer het etiket en je hoeveelheid; je kiest zelf wat je bekijkt of logt.",
+       "step": "Eetstijl → Keukeninspiratie → Eetmoment. Nog geen passend idee in deze kleine selectie, of onvoldoende productinformatie voor je eetstijl. Je kunt je voorkeuren aanpassen."
+     }
+   },
+@@ -97,7 +97,7 @@
+       "step": "选择份量并自行保存。文字旁的小图标表示热量、蛋白质、脂肪和碳水化合物；叶片表示植物性搜索选项，并非认证。"
+     },
+     "recipes": {
+-      "text": "可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。",
++      "text": "可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。",
+       "step": "饮食方式 → 菜系灵感 → 用餐时间. 这个小型精选集中暂无匹配灵感，或产品信息不足以确认饮食方式。可调整偏好。"
+     }
+   },
+@@ -131,7 +131,7 @@
+       "step": "मात्रा चुनकर स्वयं सहेजें। पाठ के पास चिह्न कैलोरी, प्रोटीन, वसा और कार्बोहाइड्रेट बताते हैं; पत्ती पौध-आधारित खोज का संकेत है, प्रमाणन नहीं।"
+     },
+     "recipes": {
+-      "text": "बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।",
++      "text": "बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।",
+       "step": "खान-पान शैली → पाकशैली प्रेरणा → भोजन का समय. इस छोटे चयन में अभी उपयुक्त विचार नहीं है या आपकी शैली के लिए उत्पाद जानकारी कम है। प्राथमिकताएँ बदल सकते हैं।"
+     }
+   },
+@@ -165,7 +165,7 @@
+       "step": "Elige la porción y guárdala expresamente. Los iconos junto al texto indican calorías, proteínas, grasas y carbohidratos; la hoja indica una búsqueda vegetal, no una certificación."
+     },
+     "recipes": {
+-      "text": "Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas.",
++      "text": "Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar.",
+       "step": "Estilo de alimentación → Inspiración culinaria → Comida. Esta pequeña selección aún no incluye una idea adecuada, o faltan datos para tu estilo de alimentación. Puedes cambiar tus preferencias."
+     }
+   },
+@@ -199,7 +199,7 @@
+       "step": "اختر الحصة واحفظها بنفسك. الرموز بجوار النص تشير للسعرات والبروتين والدهون والكربوهيدرات؛ الورقة تشير لبحث نباتي وليست شهادة اعتماد."
+     },
+     "recipes": {
+-      "text": "أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك.",
++      "text": "أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله.",
+       "step": "نمط الأكل → إلهام المطبخ → الوجبة. لا فكرة مناسبة بعد ضمن هذه المجموعة الصغيرة، أو معلومات المنتج غير كافية لنمط أكلك. يمكنك تغيير التفضيلات."
+     }
+   },
+@@ -233,7 +233,7 @@
+       "step": "Choisissez la portion puis enregistrez-la. Les icônes accompagnent les libellés calories, protéines, lipides et glucides ; la feuille indique une recherche végétale, pas une certification."
+     },
+     "recipes": {
+-      "text": "Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées.",
++      "text": "Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer.",
+       "step": "Style alimentaire → Inspiration culinaire → Repas. Pas encore d’idée adaptée dans cette petite sélection, ou informations insuffisantes pour votre style alimentaire. Vous pouvez modifier vos préférences."
+     }
+   },
+@@ -267,7 +267,7 @@
+       "step": "পরিমাণ বেছে নিজে সংরক্ষণ করুন। লেখার পাশের আইকন ক্যালরি, প্রোটিন, চর্বি ও কার্বোহাইড্রেট বোঝায়; পাতা উদ্ভিদভিত্তিক খোঁজ বোঝায়, সনদ নয়।"
+     },
+     "recipes": {
+-      "text": "বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।",
++      "text": "বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।",
+       "step": "খাদ্যাভ্যাস → রান্নার অনুপ্রেরণা → খাবারের সময়. এই ছোট নির্বাচনে উপযুক্ত ধারণা নেই, বা আপনার খাদ্যাভ্যাসের জন্য পণ্যের তথ্য কম। পছন্দ বদলাতে পারেন।"
+     }
+   },
+@@ -301,7 +301,7 @@
+       "step": "Escolha a porção e guarde-a explicitamente. Os ícones junto ao texto indicam calorias, proteínas, gorduras e hidratos de carbono; a folha indica uma pesquisa vegetal, não uma certificação."
+     },
+     "recipes": {
+-      "text": "Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário.",
++      "text": "Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar.",
+       "step": "Estilo alimentar → Inspiração culinária → Refeição. Ainda não há ideia adequada nesta pequena seleção, ou faltam dados para o seu estilo alimentar. Pode alterar as preferências."
+     }
+   },
+@@ -335,7 +335,7 @@
+       "step": "Pilih porsi dan simpan secara sengaja. Ikon di samping teks menunjukkan kalori, protein, lemak dan karbohidrat; daun menunjukkan pencarian nabati, bukan sertifikasi."
+     },
+     "recipes": {
+-      "text": "Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan.",
++      "text": "Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat.",
+       "step": "Pola makan → Inspirasi masakan → Waktu makan. Belum ada ide sesuai dalam pilihan kecil ini, atau informasi produk belum cukup untuk pola makan Anda. Preferensi dapat diubah."
+     }
+   },
+@@ -369,7 +369,7 @@
+       "step": "مقدار چن کر خود محفوظ کریں۔ متن کے ساتھ نشان کیلوریز، پروٹین، چکنائی اور کاربوہائیڈریٹس بتاتے ہیں؛ پتا نباتاتی تلاش کا نشان ہے، تصدیقی مہر نہیں۔"
+     },
+     "recipes": {
+-      "text": "بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔",
++      "text": "بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔",
+       "step": "کھانے کا انداز → پکوان کی تحریک → کھانے کا وقت. اس چھوٹے انتخاب میں مناسب خیال نہیں یا آپ کے انداز کے لیے مصنوع کی معلومات کم ہیں۔ ترجیحات بدل سکتے ہیں۔"
+     }
+   }
+--- a/wordpress-plugins/calorietoken-heading-repair/calorietoken-heading-repair.php
++++ b/wordpress-plugins/calorietoken-heading-repair/calorietoken-heading-repair.php
+@@ -2,14 +2,14 @@
+ /**
+  * Plugin Name: CalorieToken Heading and Language Repair
+  * Description: Reversible, hash-gated heading repair plus compact account presentation, CalorieApp focus, age-appropriate routing and a private aggregate source/product-grade summary. Does not replace or edit the installed Site Style plugin.
+- * Version: 1.6.45
++ * Version: 1.6.46
+  * Requires at least: 6.0
+  * Requires PHP: 7.4
+  * License: GPL-2.0-or-later
+  */
+ namespace CalorieToken\HeadingRepair;
+ if (!defined('ABSPATH')) { exit; }
+-const VERSION = '1.6.45';
++const VERSION = '1.6.46';
+ require_once __DIR__ . '/market-rates.php';
+ function plugin_source_matches($plugin, $name, $hashes) {
+     $path = WP_PLUGIN_DIR . '/' . $plugin . '/' . $name;
