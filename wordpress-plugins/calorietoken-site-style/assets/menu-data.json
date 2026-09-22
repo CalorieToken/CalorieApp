@@ -1661,7 +1661,7 @@
   "faqUpdates": [
     {
       "before": "Calorie's mission is to establish a diverse network of partners within the food and beverage industry, integrate payment applications for companies and consumers, contribute to corporate social responsibility, and promote a healthier financial lifestyle.",
-      "after": "CalorieToken explores digital tools for the food and beverage sector. The current CalorieApp preview focuses on food search, nutrition information and a personal food log. Payment applications and business integrations belong to the wider project vision."
+      "after": "CalorieToken explores food-data and digital tools for the food and beverage sector. The current CalorieApp focuses on sourced food search, nutrition information, portions, comparisons, recipe inspiration and a personal food log. Payment and business features are separate development work and are not required to use the food experience."
     },
     {
       "before": "Calorie is a token built on the XRP Ledger, with a specific focus on the food and beverage industry. The goal of Calorie is to become the world's food token, providing a digital solution for payments and transactions within this industry.",
@@ -1681,7 +1681,7 @@
     },
     {
       "before": "Calorie intends to offer POS system applications for companies in the F&B industry, develop customer web-apps, and implement transaction applications to make payments and transactions more seamless for both businesses and consumers.",
-      "after": "Point-of-sale and business payment integrations remain possible future developments. They are not available as merchant services in the current CalorieApp preview."
+      "after": "A voluntary sales and inventory pilot is being developed separately from the current food experience. It is not accepting merchant registrations or payments yet. Any future transaction flow requires an explicit choice by both parties and its own release, legal and operational checks."
     },
     {
       "before": "Calorie envisions its widespread integration in the food and beverage industry on a global scale. It will serve as a currency for consumers, producers/merchants, and investors, while also being a token governments can use to aid citizens' basic needs.",
@@ -1689,7 +1689,7 @@
     },
     {
       "before": "Calorie aims to help users track their digital Calorie spending alongside their actual calorie intake. An application is in development to track both Calorie payments and nutritional values of consumed products. This assists users in managing their expenses and making healthier choices.",
-      "after": "CalorieApp helps users explore nutrition information and keep a personal food log. Combined payment and expense tracking belongs to the earlier broader vision and is not a feature of the current preview."
+      "after": "CalorieApp helps users explore sourced nutrition information and keep a personal food log. It does not diagnose, prescribe a diet or provide medical advice. Combined payment and expense tracking is being explored only as a separate voluntary pilot and is not part of the current live food flow."
     },
     {
       "before": "Calorie's use of the XRPL with its speed, low cost, scalability, and sustainability benefits existing systems. It helps companies implement more efficient and socially responsible practices.",
@@ -1701,11 +1701,11 @@
     },
     {
       "before": "CalorieApp is an upcoming all-in-one application that's being developed for consumers, producers, merchants, and investors within the food and beverage industry. This innovative app aims to transform how we engage with the food sector by providing an intuitive interface that simplifies transactions, enables easy nutritional tracking, and facilitates convenient expense management.",
-      "after": "CalorieApp is the project's browser-based preview for food search, nutrition information and a personal food log, using Open Food Facts. Website sign-in is connected through Xaman. Retail payments, an integrated exchange and business expense management are outside the current preview."
+      "after": "CalorieApp is the project's browser-based food application. It searches Open Food Facts and USDA data, shows source-aware nutrition information, portions, comparisons and recipe inspiration, and lets signed-in users keep a personal food log. Website sign-in is connected through Xaman. Buying or holding CAL is not required for food search or logging."
     },
     {
       "before": "CalorieApp will be introduced in alpha and beta versions, initially catering to consumers with simple functionalities. Feedback from users during the beta phase will be used to improve the app before its official launch. The app will then undergo further enhancements to accommodate various user groups and corporate clients.",
-      "after": "The browser preview can already be explored from the CalorieApp page. The current roadmap records eight milestones and their status. Earlier Android and Testnet prototypes remain development history; additional services will need their own implementation and release announcement."
+      "after": "The browser application can already be explored from the CalorieApp page. Current work focuses on public feedback, usability and source clarity. Earlier Android and Testnet prototypes remain development history; commerce, participation, CalorieVerse and other broader concepts need their own implementation, testing and release announcement."
     },
     {
       "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes. This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
