@@ -1,0 +1,28 @@
+{
+  "version": "voluntary-pilot-candidate-2026-09-22",
+  "public_enabled": false,
+  "mainnet_enabled": false,
+  "testnet_enabled": false,
+  "app_rail": "calorieapp",
+  "website_xaman_credential_fallback": false,
+  "live_migration_registered": false,
+  "transaction_types": ["Payment"],
+  "automatic_signing": false,
+  "automatic_exchange": false,
+  "fees_enabled": false,
+  "food_diary_link_requires_separate_confirmation": true,
+  "testnet_uses_separate_practice_diary": true,
+  "release_blockers": [
+    "Verified separate CalorieApp rail endpoint and credentials; never website credential fallback",
+    "Network-bound wallet proof, checksum, freshness, revocation and merchant ownership checks",
+    "CALT exact Testnet currency code and issuer with evidence",
+    "Signing request lifecycle, maximum network fee, transfer-rate and account/trustline checks",
+    "Server-pinned network RPC, bounded timeouts, normalized transaction adapter and ledger reconciliation",
+    "PostgreSQL migration, cross-process stock/budget concurrency and rollback proof",
+    "Authenticated API, request limits, CSRF, pagination and adult/jurisdiction admission",
+    "Consumer and merchant data export, withdrawal, retention and erasure integration",
+    "Unpaid/expired reservations, failed signatures, returns/refunds and disputed payments",
+    "Reviewed eleven-language disclosures and accessibility/mobile acceptance",
+    "Role-specific legal/privacy/security review, current public notices and applicable operator eligibility"
+  ]
+}

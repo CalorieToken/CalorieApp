@@ -3,6 +3,7 @@
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AgeExperienceControl, useAgeExperience } from "@/components/AgeExperienceControl";
 import { FoodSearchPlaceholder, type FoodWorkspaceView } from "@/components/FoodSearchPlaceholder";
+import { PricingNotice } from "@/components/PricingNotice";
 import { AccountWelcome } from "@/components/AccountWelcome";
 import welcomeTranslations from "@/config/account-welcome-copy.json";
 import { TestnetEntry } from "@/components/TestnetEntry";
@@ -213,6 +214,7 @@ export function CalorieAppWorkspace() {
         hidden={visibleTab !== "account"}
         className="calorie-workspace-panel"
       >
+        <div className="mb-3"><PricingNotice locale={locale} /></div>
         <XamanLoginPanel onAccountChange={setAccount}
           moreOptionsLabel={(welcomeTranslations[locale as keyof typeof welcomeTranslations] ?? welcomeTranslations.en).more}
           welcome={loginAction => <AccountWelcome locale={locale}

@@ -88,3 +88,19 @@ Authentication identifiers and food logs are application data, not assets
 licensed for public reuse. Their processing is governed by applicable privacy
 law, the public privacy notice, retention rules, and security controls—not by
 the repository licence.
+
+## Recipe estimates and proposed merchant pilot — 22 September 2026
+
+The recipe ingredient catalogue retains USDA identifiers and a stated weight
+basis. The 640 named choices comprise 80 base titles and seven measured variants
+per base, not 640 independently sourced traditional recipes. Estimated recipe
+values are derived calculations and are not republished as an original USDA
+product, OFF record or medical recommendation. Generated illustrations are
+examples, not evidence of a specific food or certification.
+
+The isolated pilot candidate accepts a separately labelled merchant-entered
+nutrition snapshot per sale unit. Before any public integration, preserve source
+licences and attribution and obtain authority for any merchant-uploaded content.
+A payment is neither a food-data licence nor proof of accuracy. Private purchase
+and diary records are not public food data or a source for resale. OpenNutrition
+has not been integrated; its distinct conditions require a separate review.

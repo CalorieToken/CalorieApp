@@ -22,3 +22,16 @@ scheduled or guaranteed.
 ## Website continuation
 
 See the [September 2026 update](website-update-2026-09.md) for current website/app additions and outstanding live acceptance. The Community Voting Hub is informational; no vote, proposal submission or rewards programme is active. Broader participation and pilots remain separately reviewed future work.
+
+## 22 September 2026 preparation
+
+A voluntary merchant/consumer pilot is being prepared for inventory, sales, food
+and drink expenses, and separately confirmed diary entries. It is **not live**.
+Real and practice networks must remain separate; no payment acceptance, CALT
+availability, regulatory approval or launch date is promised.
+
+Available CalorieApp functions are currently free of subscription and CalorieApp
+transaction fees. Possible future optional premium features and clearly disclosed
+fees are under preparation, with no price or start date announced. There is no
+automatic paid conversion or retroactive charge; external provider and network
+fees are separate.

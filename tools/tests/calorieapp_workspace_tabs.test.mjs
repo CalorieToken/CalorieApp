@@ -34,6 +34,7 @@ function load(window, document) {
   const imports = {
     '@/components/AgeExperienceControl': {AgeExperienceControl: () => null, useAgeExperience: () => [selectedAgeBand, () => {}]},
     '@/components/FoodSearchPlaceholder': {FoodSearchPlaceholder: MockFoodSearch},
+    '@/components/PricingNotice': {PricingNotice: () => null},
     '@/components/TestnetEntry': {TestnetEntry: () => React.createElement('section', {id: 'mock-journey'}, 'Journey')},
     '@/components/NicknameProfile': {NicknameProfile: () => React.createElement('p', {id: 'mock-nickname'}, 'Nickname')},
     '@/components/XamanLoginPanel': {XamanLoginPanel: ({guides}) => React.createElement('div', null, 'Account panel', guides)},

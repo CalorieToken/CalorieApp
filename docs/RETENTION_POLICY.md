@@ -168,3 +168,14 @@ Primary references:
   <https://www.cnil.fr/fr/achat-de-contenus-numeriques-quelle-duree-de-conservation-des-comptes-inactifs>
 - OWASP Logging Cheat Sheet:
   <https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html>
+
+## Unreleased pilot records — 22 September 2026
+
+No pilot records are currently collected by the live app. The isolated candidate
+does not register its tables in production migrations. Do not apply the existing
+consumer inactivity/erasure schedule indiscriminately to future shared merchant
+invoices, private expense records or a separate practice diary. Purpose-specific
+periods, controller duties, applicable accounting obligations and narrow legal
+holds must be decided and disclosed before collection. Consumer food history is
+not merchant accounting data. Ledger transactions cannot be erased by deleting
+a private CalorieApp link. See `docs/pilot/LEGAL_ALIGNMENT_2026-09-22.md`.

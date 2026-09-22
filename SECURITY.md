@@ -43,3 +43,21 @@ or Render without their authorization.
 
 No bug-bounty payment or reward is promised unless separately agreed in
 writing.
+
+## Unreleased merchant/consumer pilot candidate (22 September 2026)
+
+`backend/app/pilot/` is not registered in the live API or migration runner.
+`contracts/pilot/v1/release.json` records blockers; passing isolated tests does
+not authorize activation. The adapter must use the separately verified
+CalorieApp payment rail, never fall back to website Xaman credentials or accept
+wallet secrets. Browsers cannot supply ledger evidence or grant themselves a
+merchant/consumer identity. Require authenticated actor binding, network-specific
+wallet proof and freshness, explicit purchase review, the correct issuer and
+actual delivered amount, transaction idempotency, bounded fees and stock locks.
+
+No food data belongs in public transaction metadata. Public transaction hashes
+must not act as receipt-access tokens. Pending signatures and late ledger
+confirmations require reconciliation before stock is released. Complete
+PostgreSQL concurrency, access control, export/erasure, retention, refunds,
+request limits and device tests before enabling the pilot. The free-launch
+pricing contract cannot silently activate fees or premium billing.

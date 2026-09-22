@@ -138,3 +138,19 @@ services have already changed. The other WordPress workstream must coordinate
 its Help and privacy explanations with the rollout; old tab-only descriptions
 must not accompany the deployed profile feature. Existing retention and deletion
 policies and release flags are unchanged.
+
+## Pilot and free pricing candidate — 22 September 2026
+
+The isolated merchant/consumer pilot is not enabled and collects no live purchase
+or inventory records. Its schema and tests are outside public API registration
+and active migrations. A compact pricing notice explains the current free phase
+without adding tracking or billing. Future optional paid services need a new
+explicit choice and purpose-specific records; there is no automatic conversion.
+
+The proposed pilot adds private invoices, exact payment references, stock and
+expense records. These are not covered merely by the old food-log export or
+erasure implementation. Consumer/merchant access, lawful bases, processor roles,
+separate diary confirmation, export, deletion and retention require integration
+before activation. No full-wallet scan or on-chain food data is proposed. See
+`docs/pilot/LEGAL_ALIGNMENT_2026-09-22.md`; prepared notice additions have not
+replaced the live privacy page.

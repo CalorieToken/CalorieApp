@@ -1,0 +1,19 @@
+{
+  "version": "free-launch-2026-09-22",
+  "mode": "free-launch",
+  "billing_enabled": false,
+  "subscription_price_minor": 0,
+  "platform_transaction_fee_bps": 0,
+  "platform_transaction_fee_fixed": "0",
+  "automatic_renewal": false,
+  "trial_end_date": null,
+  "future_prices": null,
+  "current_features_paywalled": false,
+  "accrue_deferred_fees": false,
+  "food_data_resale": false,
+  "candidate_premium_features": ["advanced-reports", "team-tools", "merchant-integrations"],
+  "candidate_revenue_models": ["optional-subscription", "disclosed-transaction-fee"],
+  "always_unmetered_rights": ["privacy-request", "data-export", "account-deletion-request", "withdrawal-of-optional-consent"],
+  "activation_requires": ["new-reviewed-price-version", "clear-total-price-and-tax-display", "applicable-legal-assessment", "explicit-new-customer-acceptance", "cancellation-and-refund-process", "tested-billing-and-reconciliation"],
+  "network_fees": "External XRP network fees may apply and are not CalorieApp revenue. Testnet units have no monetary value."
+}

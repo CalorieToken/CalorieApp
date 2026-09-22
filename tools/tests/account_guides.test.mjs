@@ -24,6 +24,7 @@ function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testn
  const old=new Map(['window','document','IS_REACT_ACT_ENVIRONMENT'].map(key=>[key,Object.getOwnPropertyDescriptor(globalThis,key)]));
  globalThis.window=window;globalThis.document=document;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
  const imports={
+  '../../contracts/pilot/v1/pricing.json': {default: JSON.parse(readFileSync(new URL('../../contracts/pilot/v1/pricing.json',import.meta.url),'utf8'))},
   'react':React,'react/jsx-runtime':require('react/jsx-runtime'),
   '@/components/DisplayLanguageProvider':{useDisplayLanguage:()=>({enabled:true,locale:'nl'})},
   '@/lib/locales':{localeDirection:()=> 'ltr'},

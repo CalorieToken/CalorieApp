@@ -1,7 +1,7 @@
 {
   "en": {
     "app": {
-      "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label. Product results and diary entries now stay inside bounded lists, while portion controls and selected details are brought into view so you do not have to move repeatedly between the top and bottom of the page.",
+      "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label. Product results and diary entries now stay inside bounded lists, while portion controls and selected details are brought into view so you do not have to move repeatedly between the top and bottom of the page. Available CalorieApp features are currently free: no subscription or CalorieApp transaction fee. External network or provider fees may still apply. Future paid features will need a new, explicit choice; there is no automatic paid conversion.",
       "step": "Account · Search · Basic foods · Food diary. Inside a product: Nutrition · Compare · Recipe ideas · Labels and source. The top bar shows your location and where Back takes you."
     },
     "usda": {
@@ -35,7 +35,7 @@
   },
   "nl": {
     "app": {
-      "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron. Productresultaten en dagboekregels blijven nu in begrensde lijsten, terwijl de portiekeuze en geselecteerde details in beeld worden gebracht; je hoeft daardoor niet steeds van boven naar beneden te scrollen.",
+      "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron. Productresultaten en dagboekregels blijven nu in begrensde lijsten, terwijl de portiekeuze en geselecteerde details in beeld worden gebracht; je hoeft daardoor niet steeds van boven naar beneden te scrollen. Beschikbare CalorieApp-functies zijn nu gratis: geen abonnement of CalorieApp-transactiekosten. Een netwerk of externe dienst kan wel kosten rekenen. Toekomstige betaalde functies vragen een nieuwe, bewuste keuze; niets wordt automatisch betaald.",
       "step": "Je account · Zoeken · Basisvoeding · Eetdagboek. Binnen een product: Voeding · Vergelijken · Receptideeën · Keurmerken en bron. Bovenaan zie je waar je bent en waar Terug je brengt."
     },
     "usda": {
@@ -69,7 +69,7 @@
   },
   "zh-Hans": {
     "app": {
-      "text": "当来源照片缺失、损坏或网址不受信任时，应用会显示带有 OFF、USDA 或其他来源标签的本地中性插图。 产品结果和日记条目现在位于有界滚动列表中，份量控件和所选详情会自动进入视野，无需反复滚动页面顶部和底部。",
+      "text": "当来源照片缺失、损坏或网址不受信任时，应用会显示带有 OFF、USDA 或其他来源标签的本地中性插图。 产品结果和日记条目现在位于有界滚动列表中，份量控件和所选详情会自动进入视野，无需反复滚动页面顶部和底部。 目前可用的 CalorieApp 功能免费：无订阅费或 CalorieApp 交易手续费。 外部网络或服务商仍可能收费。将来的付费功能需要您重新明确选择，不会自动转为付费。",
       "step": "我的账户 · 搜索食品 · 基础食物与食材 · 你的饮食日记"
     },
     "usda": {
@@ -103,7 +103,7 @@
   },
   "hi": {
     "app": {
-      "text": "स्रोत की फोटो न होने, टूटने या URL भरोसेमंद न होने पर ऐप OFF, USDA या अन्य स्रोत लेबल के साथ एक तटस्थ स्थानीय चित्र दिखाता है। उत्पाद परिणाम और डायरी प्रविष्टियाँ अब सीमित सूचियों में रहती हैं और मात्रा नियंत्रण व चुना विवरण सामने लाया जाता है, इसलिए ऊपर-नीचे बार-बार स्क्रॉल नहीं करना पड़ता।",
+      "text": "स्रोत की फोटो न होने, टूटने या URL भरोसेमंद न होने पर ऐप OFF, USDA या अन्य स्रोत लेबल के साथ एक तटस्थ स्थानीय चित्र दिखाता है। उत्पाद परिणाम और डायरी प्रविष्टियाँ अब सीमित सूचियों में रहती हैं और मात्रा नियंत्रण व चुना विवरण सामने लाया जाता है, इसलिए ऊपर-नीचे बार-बार स्क्रॉल नहीं करना पड़ता। CalorieApp की उपलब्ध सुविधाएँ अभी निःशुल्क हैं: कोई सदस्यता या CalorieApp लेनदेन शुल्क नहीं। बाहरी नेटवर्क या प्रदाता शुल्क ले सकते हैं। भविष्य की सशुल्क सुविधाओं के लिए आपकी नई, स्पष्ट सहमति ज़रूरी होगी; अपने आप शुल्क नहीं लगेगा।",
       "step": "मेरा खाता · खाद्य पदार्थ खोजें · सामान्य खाद्य पदार्थ और सामग्री · आपकी भोजन डायरी"
     },
     "usda": {
@@ -137,7 +137,7 @@
   },
   "es": {
     "app": {
-      "text": "Si falta la foto de la fuente, está rota o su URL no es de confianza, la app muestra una ilustración local neutra con la etiqueta OFF, USDA u otra fuente. Los resultados y las entradas del diario permanecen en listas acotadas; los controles de porción y el detalle seleccionado se acercan a la vista para evitar desplazamientos repetidos entre arriba y abajo.",
+      "text": "Si falta la foto de la fuente, está rota o su URL no es de confianza, la app muestra una ilustración local neutra con la etiqueta OFF, USDA u otra fuente. Los resultados y las entradas del diario permanecen en listas acotadas; los controles de porción y el detalle seleccionado se acercan a la vista para evitar desplazamientos repetidos entre arriba y abajo. Las funciones disponibles de CalorieApp son gratuitas por ahora: sin suscripción ni comisión de CalorieApp por transacción. Las redes o proveedores externos pueden cobrar. Las futuras funciones de pago requerirán una nueva elección expresa; no habrá conversión automática a pago.",
       "step": "Mi cuenta · Buscar alimentos · Alimentos básicos e ingredientes · Tu diario de alimentos"
     },
     "usda": {
@@ -171,7 +171,7 @@
   },
   "ar": {
     "app": {
-      "text": "إذا كانت صورة المصدر مفقودة أو معطلة أو كان عنوانها غير موثوق، يعرض التطبيق رسماً محلياً محايداً مع تصنيف OFF أو USDA أو مصدر آخر. تبقى نتائج المنتجات وإدخالات اليوميات داخل قوائم محدودة، وتظهر أدوات الحصة والتفاصيل المحددة قريبًا لتجنب التمرير المتكرر بين أعلى الصفحة وأسفلها.",
+      "text": "إذا كانت صورة المصدر مفقودة أو معطلة أو كان عنوانها غير موثوق، يعرض التطبيق رسماً محلياً محايداً مع تصنيف OFF أو USDA أو مصدر آخر. تبقى نتائج المنتجات وإدخالات اليوميات داخل قوائم محدودة، وتظهر أدوات الحصة والتفاصيل المحددة قريبًا لتجنب التمرير المتكرر بين أعلى الصفحة وأسفلها. ميزات CalorieApp المتاحة مجانية حاليًا: لا اشتراك ولا رسوم معاملات من CalorieApp. قد تفرض الشبكات أو الجهات الخارجية رسومًا. تتطلب الميزات المدفوعة مستقبلًا اختيارًا جديدًا وصريحًا؛ لا يوجد انتقال تلقائي إلى الدفع.",
       "step": "حسابي · البحث عن الأغذية · الأطعمة الأساسية والمكونات · يوميات طعامك"
     },
     "usda": {
@@ -205,7 +205,7 @@
   },
   "fr": {
     "app": {
-      "text": "Si la photo source manque, ne fonctionne pas ou vient d’une URL non fiable, l’app affiche une illustration locale neutre avec l’étiquette OFF, USDA ou autre source. Les résultats et entrées du journal restent dans des listes bornées ; les contrôles de portion et le détail sélectionné sont rapprochés de la vue pour éviter les allers-retours en haut et en bas.",
+      "text": "Si la photo source manque, ne fonctionne pas ou vient d’une URL non fiable, l’app affiche une illustration locale neutre avec l’étiquette OFF, USDA ou autre source. Les résultats et entrées du journal restent dans des listes bornées ; les contrôles de portion et le détail sélectionné sont rapprochés de la vue pour éviter les allers-retours en haut et en bas. Les fonctions disponibles de CalorieApp sont actuellement gratuites : sans abonnement ni frais de transaction CalorieApp. Des frais de réseau ou de prestataires externes peuvent s’appliquer. Les futures fonctions payantes nécessiteront un nouveau choix explicite ; aucun passage automatique au payant.",
       "step": "Mon compte · Rechercher des aliments · Aliments de base et ingrédients · Votre journal alimentaire"
     },
     "usda": {
@@ -239,7 +239,7 @@
   },
   "bn": {
     "app": {
-      "text": "উৎসের ছবি না থাকলে, নষ্ট হলে বা URL বিশ্বস্ত না হলে অ্যাপ OFF, USDA বা অন্য উৎসের লেবেলসহ একটি নিরপেক্ষ স্থানীয় ছবি দেখায়। পণ্যের ফলাফল ও ডায়েরি এন্ট্রি এখন সীমাবদ্ধ তালিকায় থাকে এবং পরিমাণ নিয়ন্ত্রণ ও নির্বাচিত বিস্তারিত সামনে আসে, তাই বারবার ওপর-নিচে স্ক্রল করতে হয় না।",
+      "text": "উৎসের ছবি না থাকলে, নষ্ট হলে বা URL বিশ্বস্ত না হলে অ্যাপ OFF, USDA বা অন্য উৎসের লেবেলসহ একটি নিরপেক্ষ স্থানীয় ছবি দেখায়। পণ্যের ফলাফল ও ডায়েরি এন্ট্রি এখন সীমাবদ্ধ তালিকায় থাকে এবং পরিমাণ নিয়ন্ত্রণ ও নির্বাচিত বিস্তারিত সামনে আসে, তাই বারবার ওপর-নিচে স্ক্রল করতে হয় না। CalorieApp-এর উপলব্ধ সুবিধাগুলো এখন বিনামূল্যে: কোনো সাবস্ক্রিপশন বা CalorieApp লেনদেন ফি নেই। বাইরের নেটওয়ার্ক বা সেবাদাতা ফি নিতে পারে। ভবিষ্যতের সশুল্ক সুবিধার জন্য নতুন করে আপনার স্পষ্ট সম্মতি লাগবে; স্বয়ংক্রিয়ভাবে টাকা নেওয়া হবে না।",
       "step": "আমার অ্যাকাউন্ট · খাদ্য খুঁজুন · সাধারণ খাবার ও উপকরণ · আপনার খাবারের ডায়েরি"
     },
     "usda": {
@@ -273,7 +273,7 @@
   },
   "pt": {
     "app": {
-      "text": "Se a fotografia da fonte estiver ausente, danificada ou vier de um URL não confiável, a app mostra uma ilustração local neutra com a etiqueta OFF, USDA ou outra fonte. Os resultados e registos do diário ficam em listas limitadas, enquanto os controlos de porção e os detalhes selecionados são trazidos para perto, evitando deslocações repetidas entre o topo e o fundo.",
+      "text": "Se a fotografia da fonte estiver ausente, danificada ou vier de um URL não confiável, a app mostra uma ilustração local neutra com a etiqueta OFF, USDA ou outra fonte. Os resultados e registos do diário ficam em listas limitadas, enquanto os controlos de porção e os detalhes selecionados são trazidos para perto, evitando deslocações repetidas entre o topo e o fundo. As funções disponíveis do CalorieApp são gratuitas neste momento: sem assinatura ou taxa de transação do CalorieApp. Redes ou fornecedores externos podem cobrar taxas. As futuras funções pagas exigirão uma nova escolha explícita; não haverá conversão automática para pagamento.",
       "step": "Minha conta · Pesquisar alimentos · Alimentos básicos e ingredientes · Seu diário alimentar"
     },
     "usda": {
@@ -307,7 +307,7 @@
   },
   "id": {
     "app": {
-      "text": "Jika foto sumber tidak ada, rusak, atau URL-nya tidak tepercaya, aplikasi menampilkan ilustrasi lokal netral dengan label OFF, USDA, atau sumber lain. Hasil produk dan entri catatan kini berada dalam daftar terbatas; kontrol porsi dan detail pilihan dibawa ke tampilan agar tidak perlu berulang kali menggulir dari atas ke bawah.",
+      "text": "Jika foto sumber tidak ada, rusak, atau URL-nya tidak tepercaya, aplikasi menampilkan ilustrasi lokal netral dengan label OFF, USDA, atau sumber lain. Hasil produk dan entri catatan kini berada dalam daftar terbatas; kontrol porsi dan detail pilihan dibawa ke tampilan agar tidak perlu berulang kali menggulir dari atas ke bawah. Fitur CalorieApp yang tersedia saat ini gratis: tanpa langganan atau biaya transaksi CalorieApp. Jaringan atau penyedia eksternal dapat mengenakan biaya. Fitur berbayar di masa mendatang memerlukan pilihan baru yang tegas; tidak ada peralihan otomatis ke layanan berbayar.",
       "step": "Akun saya · Cari makanan · Makanan dasar dan bahan · Catatan makananmu"
     },
     "usda": {
@@ -341,7 +341,7 @@
   },
   "ur": {
     "app": {
-      "text": "اگر ماخذ کی تصویر موجود نہ ہو، خراب ہو یا URL قابلِ اعتماد نہ ہو تو ایپ OFF، USDA یا دیگر ماخذ کے لیبل کے ساتھ غیر جانب دار مقامی تصویر دکھاتی ہے۔ پروڈکٹ نتائج اور ڈائری اندراجات اب محدود فہرستوں میں رہتے ہیں اور مقدار کے کنٹرول و منتخب تفصیل سامنے آتے ہیں، اس لیے بار بار اوپر نیچے اسکرول نہیں کرنا پڑتا۔",
+      "text": "اگر ماخذ کی تصویر موجود نہ ہو، خراب ہو یا URL قابلِ اعتماد نہ ہو تو ایپ OFF، USDA یا دیگر ماخذ کے لیبل کے ساتھ غیر جانب دار مقامی تصویر دکھاتی ہے۔ پروڈکٹ نتائج اور ڈائری اندراجات اب محدود فہرستوں میں رہتے ہیں اور مقدار کے کنٹرول و منتخب تفصیل سامنے آتے ہیں، اس لیے بار بار اوپر نیچے اسکرول نہیں کرنا پڑتا۔ CalorieApp کی دستیاب خصوصیات فی الحال مفت ہیں: کوئی سبسکرپشن یا CalorieApp لین دین فیس نہیں۔ بیرونی نیٹ ورک یا سروس فراہم کنندہ فیس لے سکتے ہیں۔ آئندہ بامعاوضہ خصوصیات کے لیے آپ کا نیا، واضح انتخاب ضروری ہوگا؛ خودکار ادائیگی شروع نہیں ہوگی۔",
       "step": "میرا اکاؤنٹ · غذائیں تلاش کریں · بنیادی غذائیں اور اجزا · آپ کی خوراک کی ڈائری"
     },
     "usda": {

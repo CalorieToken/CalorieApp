@@ -304,3 +304,14 @@ dependencies, data, names, and assets retain their own rights and terms.
 CalorieToken is identified by the project owner as a registered trade mark for
 specified services. A trade-mark registration is not regulatory authorisation.
 No trade-mark licence is granted by this repository.
+
+### Voluntary pilot and premium preparation — not live
+
+The isolated [pilot candidate](docs/pilot/PILOT_AND_PREMIUM_2026-09-22.md) prepares
+merchant inventory, sales, consumer expenses and optional diary linking. It is
+not mounted in the API or registered in production migrations. The requested
+separate app rail, CALT identity and release gates remain unresolved. The
+[pricing contract](contracts/pilot/v1/pricing.json) keeps all current app charges
+at zero; no automatic paid conversion is enabled. See the
+[legal alignment draft](docs/pilot/LEGAL_ALIGNMENT_2026-09-22.md) for notice scope
+and publication boundaries.
