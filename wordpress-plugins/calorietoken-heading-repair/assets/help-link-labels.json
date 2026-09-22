@@ -34,7 +34,9 @@
     "accountHelp": "Your nickname is saved with your CalorieApp account and shown in the app and website login widget after you sign in. You can change or remove it here. It is not sent to Xaman or XRPL.",
     "accountExportHelp": "Sign in first to open export and privacy tools. No account action was started.",
     "accountMoveHelp": "Do not convert or reuse the test wallet. Create a fresh Mainnet account in Xaman.",
-    "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items."
+    "foodDiaryHelp": "Food search is available to everyone. Sign in with Xaman to save and manage items.",
+    "foodRecipes": "Recipe ideas",
+    "foodRecipesHelp": "Recipe ideas. Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself."
   },
   "nl": {
     "app": "CalorieApp",
@@ -71,7 +73,9 @@
     "accountHelp": "Je nickname wordt bij je CalorieApp-account opgeslagen en na inloggen getoond in de app en de loginwidget op de website. Je kunt hem hier wijzigen of verwijderen. Hij wordt niet naar Xaman of XRPL gestuurd.",
     "accountExportHelp": "Log eerst in om export- en privacyfuncties te openen. Er is nog geen accountactie gestart.",
     "accountMoveHelp": "Zet de testwallet niet om en hergebruik hem niet. Maak in Xaman een volledig nieuw Mainnet-account.",
-    "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren."
+    "foodDiaryHelp": "Iedereen kan voeding zoeken. Log in met Xaman om producten op te slaan en te beheren.",
+    "foodRecipes": "Receptideeën",
+    "foodRecipesHelp": "Receptideeën. Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek."
   },
   "zh-Hans": {
     "app": "CalorieApp",
@@ -108,7 +112,9 @@
     "accountHelp": "昵称会保存在你的 CalorieApp 账户中，登录后显示在应用和网站登录组件中。你可以在此更改或删除昵称。昵称不会发送至 Xaman 或 XRPL。",
     "accountExportHelp": "请先登录，再打开导出和隐私工具。尚未启动任何账户操作。",
     "accountMoveHelp": "不要转换或重复使用测试钱包。请在 Xaman 中创建全新的主网账户。",
-    "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。"
+    "foodDiaryHelp": "所有人都可以搜索食品。使用 Xaman 登录后即可保存和管理记录。",
+    "foodRecipes": "食谱灵感",
+    "foodRecipesHelp": "食谱灵感. 可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。"
   },
   "hi": {
     "app": "CalorieApp",
@@ -145,7 +151,9 @@
     "accountHelp": "आपका उपनाम आपके CalorieApp खाते में सहेजा जाता है और लॉगिन के बाद ऐप और वेबसाइट के लॉगिन विजेट में दिखता है। आप इसे यहाँ बदल या हटा सकते हैं। इसे Xaman या XRPL पर नहीं भेजा जाता।",
     "accountExportHelp": "एक्सपोर्ट और गोपनीयता उपकरण खोलने के लिए पहले साइन इन करें। कोई खाता कार्रवाई शुरू नहीं हुई है।",
     "accountMoveHelp": "टेस्ट वॉलेट को बदलें या दोबारा उपयोग न करें। Xaman में नया Mainnet खाता बनाएँ।",
-    "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।"
+    "foodDiaryHelp": "भोजन कोई भी खोज सकता है। रिकॉर्ड सहेजने और संभालने के लिए Xaman से साइन इन करें।",
+    "foodRecipes": "रेसिपी के विचार",
+    "foodRecipesHelp": "रेसिपी के विचार. बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें।"
   },
   "es": {
     "app": "CalorieApp",
@@ -182,7 +190,9 @@
     "accountHelp": "Tu apodo se guarda en tu cuenta de CalorieApp y aparece en la aplicación y en el widget de acceso de la web al iniciar sesión. Puedes cambiarlo o eliminarlo aquí. No se envía a Xaman ni a XRPL.",
     "accountExportHelp": "Inicia sesión primero para abrir las herramientas de exportación y privacidad. No se inició ninguna acción de cuenta.",
     "accountMoveHelp": "No conviertas ni reutilices la cartera de prueba. Crea una cuenta Mainnet completamente nueva en Xaman.",
-    "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros."
+    "foodDiaryHelp": "Todo el mundo puede buscar alimentos. Inicia sesión con Xaman para guardar y gestionar registros.",
+    "foodRecipes": "Ideas de recetas",
+    "foodRecipesHelp": "Ideas de recetas. Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas."
   },
   "ar": {
     "app": "CalorieApp",
@@ -219,7 +229,9 @@
     "accountHelp": "يُحفظ اسمك المستعار في حساب CalorieApp ويظهر في التطبيق وأداة تسجيل الدخول على الموقع بعد تسجيل دخولك. يمكنك تغييره أو حذفه هنا. لا يُرسل إلى Xaman أو XRPL.",
     "accountExportHelp": "سجّل الدخول أولًا لفتح أدوات التصدير والخصوصية. لم يبدأ أي إجراء على الحساب.",
     "accountMoveHelp": "لا تحوّل محفظة الاختبار ولا تعِد استخدامها. أنشئ حساب Mainnet جديدًا بالكامل في Xaman.",
-    "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها."
+    "foodDiaryHelp": "البحث عن الأغذية متاح للجميع. سجّل الدخول باستخدام Xaman لحفظ السجلات وإدارتها.",
+    "foodRecipes": "أفكار وصفات",
+    "foodRecipesHelp": "أفكار وصفات. أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك."
   },
   "fr": {
     "app": "CalorieApp",
@@ -256,7 +268,9 @@
     "accountHelp": "Votre pseudonyme est enregistré dans votre compte CalorieApp et apparaît dans l’application et le widget de connexion du site après connexion. Vous pouvez le modifier ou le supprimer ici. Il n’est pas envoyé à Xaman ou à XRPL.",
     "accountExportHelp": "Connectez-vous d’abord pour ouvrir les outils d’export et de confidentialité. Aucune action sur le compte n’a été lancée.",
     "accountMoveHelp": "Ne convertissez ni ne réutilisez le portefeuille test. Créez un tout nouveau compte Mainnet dans Xaman.",
-    "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments."
+    "foodDiaryHelp": "La recherche d’aliments est accessible à tous. Connectez-vous avec Xaman pour enregistrer et gérer des aliments.",
+    "foodRecipes": "Idées de recettes",
+    "foodRecipesHelp": "Idées de recettes. Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées."
   },
   "bn": {
     "app": "CalorieApp",
@@ -293,7 +307,9 @@
     "accountHelp": "আপনার ডাকনাম CalorieApp অ্যাকাউন্টে সংরক্ষিত থাকে এবং লগইনের পরে অ্যাপ ও ওয়েবসাইটের লগইন উইজেটে দেখা যায়। এখানে এটি বদলাতে বা মুছতে পারেন। এটি Xaman বা XRPL-এ পাঠানো হয় না।",
     "accountExportHelp": "এক্সপোর্ট ও গোপনীয়তার সরঞ্জাম খুলতে আগে সাইন ইন করুন। কোনো অ্যাকাউন্ট কাজ শুরু হয়নি।",
     "accountMoveHelp": "টেস্ট ওয়ালেট রূপান্তর বা পুনর্ব্যবহার করবেন না। Xaman-এ সম্পূর্ণ নতুন Mainnet অ্যাকাউন্ট তৈরি করুন।",
-    "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।"
+    "foodDiaryHelp": "সবাই খাদ্য খুঁজতে পারেন। রেকর্ড সংরক্ষণ ও পরিচালনা করতে Xaman দিয়ে সাইন ইন করুন।",
+    "foodRecipes": "রেসিপির ধারণা",
+    "foodRecipesHelp": "রেসিপির ধারণা. বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন।"
   },
   "pt": {
     "app": "CalorieApp",
@@ -330,7 +346,9 @@
     "accountHelp": "Seu apelido é salvo na sua conta CalorieApp e aparece no aplicativo e no widget de login do site após entrar. Você pode alterá-lo ou removê-lo aqui. Ele não é enviado ao Xaman nem ao XRPL.",
     "accountExportHelp": "Inicie sessão primeiro para abrir as ferramentas de exportação e privacidade. Nenhuma ação da conta foi iniciada.",
     "accountMoveHelp": "Não converta nem reutilize a carteira de teste. Crie uma conta Mainnet totalmente nova no Xaman.",
-    "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos."
+    "foodDiaryHelp": "Todos podem pesquisar alimentos. Inicie sessão com Xaman para guardar e gerir registos.",
+    "foodRecipes": "Ideias de receitas",
+    "foodRecipesHelp": "Ideias de receitas. Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário."
   },
   "id": {
     "app": "CalorieApp",
@@ -367,7 +385,9 @@
     "accountHelp": "Nama panggilan disimpan di akun CalorieApp dan ditampilkan di aplikasi serta widget masuk situs setelah Anda masuk. Anda dapat mengubah atau menghapusnya di sini. Nama tidak dikirim ke Xaman atau XRPL.",
     "accountExportHelp": "Masuk terlebih dahulu untuk membuka alat ekspor dan privasi. Belum ada tindakan akun yang dimulai.",
     "accountMoveHelp": "Jangan konversi atau gunakan ulang dompet uji. Buat akun Mainnet yang sepenuhnya baru di Xaman.",
-    "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan."
+    "foodDiaryHelp": "Semua orang dapat mencari makanan. Masuk dengan Xaman untuk menyimpan dan mengelola catatan.",
+    "foodRecipes": "Ide resep",
+    "foodRecipesHelp": "Ide resep. Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan."
   },
   "ur": {
     "app": "CalorieApp",
@@ -404,6 +424,8 @@
     "accountHelp": "آپ کا عرفی نام CalorieApp اکاؤنٹ میں محفوظ ہوتا ہے اور لاگ ان کے بعد ایپ اور ویب سائٹ کے لاگ ان ویجٹ میں دکھائی دیتا ہے۔ آپ اسے یہاں تبدیل یا حذف کر سکتے ہیں۔ اسے Xaman یا XRPL کو نہیں بھیجا جاتا۔",
     "accountExportHelp": "ایکسپورٹ اور رازداری کے اوزار کھولنے کے لیے پہلے سائن اِن کریں۔ اکاؤنٹ کی کوئی کارروائی شروع نہیں ہوئی۔",
     "accountMoveHelp": "ٹیسٹ والٹ کو تبدیل یا دوبارہ استعمال نہ کریں۔ Xaman میں بالکل نیا Mainnet اکاؤنٹ بنائیں۔",
-    "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔"
+    "foodDiaryHelp": "غذا ہر کوئی تلاش کر سکتا ہے۔ ریکارڈ محفوظ کرنے اور ان کا انتظام کرنے کے لیے Xaman سے سائن اِن کریں۔",
+    "foodRecipes": "ترکیب کے خیالات",
+    "foodRecipesHelp": "ترکیب کے خیالات. بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔"
   }
 }

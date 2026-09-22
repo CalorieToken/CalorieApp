@@ -5,8 +5,9 @@
   var cfg = window.CalorieTokenHelp;
   if (!cfg || !cfg.copy || window.CalorieTokenHelpUI) return;
   var views = [], locale = 'en';
-  var visibleTopics = ['app','search','scan','compare','usda','diary','account','test','move','export','history','exchange','trustline','donations','docs','troubleshoot','legal'];
-  var adultOnlyTopics = ['test','move','export','account','diary','exchange','trustline','donations'];
+  var visibleTopics = ['app','search','scan','compare','recipes','usda','contribute','diary','account','test','move','export','history','exchange','market','xamanSwap','crosschain','trustline','donations','docs','usecases','community','showcases','siteNavigation','troubleshoot','legal'];
+  visibleTopics=visibleTopics.filter(function(key){return !!cfg.copy.en.topics[key];});
+  var adultOnlyTopics = ['test','move','export','account','diary','exchange','market','xamanSwap','crosschain','trustline','donations'];
   var primaryTopics = {
     child:['app','usda','docs','legal'],
     teen:['app','usda','docs','legal'],
@@ -18,8 +19,13 @@
     foodBasic:['Basic foods','/calorieapp/#basic-foods'],foodDiary:['Food diary','/calorieapp/#food-diary'],
     account:['My account','/calorieapp/#account'],accountExport:['Export tools','/calorieapp/#account-export'],accountMove:['Move to a real account','/calorieapp/#move-account'],testAccount:['Set up a test account','/calorieapp/#test-account'],
     app:['CalorieApp','/index.php/calorieapp/'], test:['XRPL Testnet','/index.php/calorieapp/#ctstyle-testnet'],
-    faq:['FAQ','/index.php/faq/'], trustline:['CAL Trustline','/index.php/trustline/'],
-    exchange:['CAL & Crypto','/index.php/how-to-buy-calorie/'], privacy:['Privacy Policy','/index.php/privacy-policy/'],
+    home:['Home','/'],whitepaperPage:['Whitepaper','/whitepaper/'],roadmapPage:['Roadmap','/roadmap/'],
+    tokenomics:['Tokenomics','/tokenomics-update/'],richlist:['Holders','/richlist/'],
+    blog:['Blog','/blog/'],community:['Community hub','/community-voting-hub-info/'],showcases:['Showcases','/showcases/'],merch:['Merch & NFTs','/merchnfts/'],
+    delivery:['Delivery','/delivery/'],cafes:['Cafés','/cafes/'],takeaway:['Takeaway','/takeaway/'],restaurants:['Restaurants','/restaurants/'],groceries:['Groceries','/groceries/'],wholesalers:['Wholesalers','/wholesalers/'],
+    faq:['FAQ','/index.php/faq/'], trustline:['CAL Trustline','/how-to-buy-calorie/#ct-cal-trustline'],
+    exchange:['CAL & Crypto','/how-to-buy-calorie/#ctstyle-own-dex'],
+    market:['CAL market overview','/how-to-buy-calorie/#ct-cal-market'],xamanSwap:['Swap inside Xaman','/how-to-buy-calorie/#ct-xaman-swap'],crosschain:['SWFT','/how-to-buy-calorie/#ctstyle-external-exchange'], privacy:['Privacy Policy','/index.php/privacy-policy/'],
     terms:['Terms & Conditions','/index.php/terms-conditions/'], contact:['Contact','/index.php/contact/'],
     docs:['GitHub · Publications','https://github.com/CalorieToken/Publications'],
     whitepaper:['Whitepaper','https://github.com/CalorieToken/Publications/blob/main/whitepaper/CalorieToken-Whitepaper.pdf'],
@@ -28,12 +34,14 @@
     history:['Roadmap archive','https://github.com/CalorieToken/Publications/blob/main/roadmap/archive/README.md'],
     appSource:['GitHub · CalorieApp','https://github.com/CalorieToken/CalorieApp'],
     foodDiscovery:['GitHub · USDA / Open Food Facts','https://github.com/CalorieToken/CalorieApp/blob/herstel/vervolg-20260915/docs/public/food-discovery-2026-09.md'],
+    contribute:['Contribute food data','/contribute-food-data/'],contributeOff:['Open Food Facts','/contribute-food-data/#off'],contributeUsda:['USDA · FoodData Central','/contribute-food-data/#usda'],contributePlan:['Calorie data plan','/contribute-food-data/#calorie-data-plan'],
     usda:['USDA · FoodData Central','https://fdc.nal.usda.gov/'],
     donations:['Donations','/donate/'],
     donationWallet:['Bithomp · XRP','https://bithomp.com/explorer/rEfiRssDCQd466z2bi63vi64u2rYiMrnhL'],
     xaman:['Xaman · Testnet','https://help.xaman.app/app/learning-more-about-xaman/how-to-access-testnet-on-xrp-ledger']
   };
   var keywords = {
+    recipes:['recipe','recipes','recept','recepten','receptidee','receptsuggesties','eetstijl','eetgewoonte','keuken','halal','kosher','koosjer','vegetarisch','recette','recettes','receta','receita','resep','食谱','रेसिपी','وصفة','রেসিপি','ترکیب'],
     search:['zoeken','zoek','voedsel zoeken','search','find food','rechercher','chercher','buscar','pesquisar','cari','搜索','खोज','بحث','খুঁজ','تلاش'],
     scan:['scan','scannen','barcode','barcodes','scanner','code-barres','条码','बारकोड','باركود','বারকোড','código de barras','kode batang','بارکوڈ'],
     account:['account','accountbeheer','accountfuncties','profiel','profile','nickname','bijnaam','login','logout','aanmelden','inloggen','uitloggen','compte','cuenta','conta','akun','账户','खाता','حساب','অ্যাকাউন্ট','اکاؤنٹ'],
@@ -41,11 +49,14 @@
     move:['overstappen','overzetten','echt account','real account','mainnet','compte réel','cuenta real','conta real','akun nyata','真实账户','वास्तविक खाता','حساب حقيقي','বাস্তব অ্যাকাউন্ট','حقیقی اکاؤنٹ'],
     diary:['dagboek','eetdagboek','diary','food log','journal alimentaire','diario','diário','catatan makanan','饮食记录','भोजन डायरी','يوميات الطعام','খাদ্য ডায়েরি','غذائی ڈائری'],
     usda:['usda','fdc','foundation','sr legacy','nutri-score','nutri score','nutriscore','ingredient','ingredients','ingrediënt','ingrediënten','basisvoeding','食材','सामग्री','مكون','مكوّن','উপকরণ','ingrediente','ingrédient','bahan','اجزا'],
-    compare:['compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
+    compare:['keurmerk','keurmerken','label','labels','beter leven','biologisch','ecologisch','ecologischer','ecologische','diervriendelijk','diervriendelijke','dierenwelzijn','plantaardig','plantaardige','vegan','gezondere','gezonder','andere merken','eco','ecological','animal welfare','plant based','plant-based','healthier','other brands','végétal','bien-être animal','vegetal','bienestar animal','nabati','kesejahteraan hewan','植物性','动物福利','पौध','पशु कल्याण','نباتي','رفق بالحيوان','উদ্ভিদভিত্তিক','প্রাণীকল্যাণ','نباتاتی','جانوروں کی فلاح','compare','comparison','similar','alternative','alternatives','alternatief','alternatieven','vergelijk','vergelijken','vergelijkbaar','vergelijkbare','比较','相似','तुलना','विकल्प','قارن','مقارنة','তুলনা','বিকল্প','comparar','similares','comparer','semblable','semelhante','bandingkan','serupa','موازنہ','متبادل'],
     donations:['donation','donations','donate','donatie','donaties','doneren','donation balance','donatiesaldo','consolidation','consolidatie','捐赠','दान','تبرع','অনুদান','donación','donaciones','dons','donativos','donasi','عطیات'],
     test:['test','testnet','faucet','proberen','oefenen','testaccount','recovery seed','herstelcode','private key','测试','昵称','导出','导入','परीक्ष','उपनाम','निर्यात','आयात','اختبار','اسم مستعار','تصدير','استيراد','পরীক্ষা','ডাকনাম','রপ্তানি','আমদানি','apodo','exportar','importar','surnom','exporter','importer','alcunha','ekspor','impor','آزمائش','نک نیم'],
     trustline:['trustline','trust set','issuer','uitgever','hex','信任','ट्रस्ट','ثقة','ট্রাস্ট','ٹرسٹ'],
-    exchange:['exchange','swft','dex','kopen','verkopen','wisselen','buy','sell','swap','bitcoin','btc','eth','兑换','खरीद','شراء','বিনিময়','trocar','tukar','خرید'],
+    market:['koers','prijs','price','chart','grafiek','market cap','volume','liquidity','liquiditeit','market metrics','holders','houders','koerswijziging','wisselkoers','valuta','currency','fiat','usd','eur','gbp','jpy','cny','chf','prix','cours','volumen','liquidez','liquidité','precio','preço','harga','likuiditas','价格','成交量','流动性','कीमत','मात्रा','तरलता','سعر','السيولة','حجم التداول','দাম','লেনদেনের পরিমাণ','قیمت','تجارتی حجم'],
+    xamanSwap:['xaman swap','swap xaman','xaman','xumm'],
+    crosschain:['swft','sftw','allchain','bridge','cross chain','cross-chain','bitcoin','btc','eth','跨链','بين الشبكات'],
+    exchange:['exchange','magnetic','xpmarket','xrpl.to','platform','dex','kopen','verkopen','wisselen','buy','sell','swap','bitcoin','btc','eth','兑换','खरीद','شراء','বিনিময়','trocar','tukar','خرید'],
     legal:['privacy','licence','license','licentie','legal','juridisch','mica','cookie','terms','voorwaarden','copyright','disclosure','garantie','profit','rendement','隐私','गोपनीय','خصوص','গোপনীয়','privacidade','lisensi','شرائط'],
     docs:['roadmap','whitepaper','documents','documenten','publication','publicatie','bron','source','路线','दस्तावेज़','وثائق','নথি','dokumen','دستاویز'],
     app:['barcode','barcodes','scannen','scan','条码','बारकोड','باركود','বারকোড','código de barras','code-barres','kode batang','بارکوڈ','calorieapp','food','voeding','dagboek','login','logout','aanmelden','inloggen','uitloggen','diary','portion','portie','食品','भोजन','طعام','খাবার','alimento','makanan','کھانا'],
@@ -54,6 +65,14 @@
     voice:['microphone','microfoon','dictation','dicteren','voice','spraak','micrófono','micrófone','microfone','voix','suara','语音','आवाज़','الصوت','কথা','آواز'],
     contact:['contact','support','email','e-mail','ticket','contacto','联系','संपर्क','اتصال','যোগাযোগ','contato','kontak','رابطہ']
   };
+  Object.assign(keywords,{
+    usecases:['usecase','usecases','use case','delivery','bezorging','cafes','cafés','takeaway','afhalen','restaurants','groceries','boodschappen','wholesalers','groothandel','cas d’usage','caso de uso','casos de uso','penerapan','应用构想','使用场景','उपयोग','استخدام','ব্যবহারের ধারণা','استعمال'],
+    contribute:['contribute','bijdragen','voedingsdata','open food facts','openfoodfacts','missing product','product photo','add product','food data','ontbrekend product','product toevoegen','verpakkingsfoto','foto toevoegen','bigchaindb','bigchain','provenance','calorie database','caloriedb','food database','voedseldatabase','herkomst','wijzigingsgeschiedenis','contribuer','données alimentaires','produit manquant','base de données alimentaire','contribuir','datos alimentarios','producto ausente','base de datos alimentaria','dados alimentares','banco de dados de alimentos','berkontribusi','data pangan','basis data pangan','贡献','添加产品','食品数据库','योगदान','उत्पाद जोड़','खाद्य डेटाबेस','المساهمة','إضافة منتج','قاعدة بيانات غذائية','অবদান','পণ্য যোগ','খাদ্য ডেটাবেস','تعاون','مصنوعات شامل','غذائی ڈیٹابیس'],
+    community:['community','gemeenschap','voting','vote','voting hub','stemmen','stemming','merch','nft','blog','communauté','comunidad','comunidade','komunitas','社区','समुदाय','المجتمع','কমিউনিটি','کمیونٹی'],
+    showcases:['showcases','showcase','video','youtube','carrousel','carousel','tour','rondleiding','vijf jaar','five years','vidéo','vídeo','视频','वीडियो','فيديو','ভিডিও','ویڈیو'],
+    siteNavigation:['language','taal','vertaling','slogan','rtl','arabic','arabisch','urdu','menu','navigation','navigatie','floating buttons','zwevende knoppen','langue','idioma','bahasa','语言','भाषा','اللغة','العربية','ভাষা','زبان']
+  });
+  keywords.docs.push('tokenomics','tokenomica','tokenomique','richlist','houderslijst','distribution','verdeling','代币经济','टोकन अर्थव्यवस्था','اقتصاد الرمز','টোকেন অর্থনীতি','ٹوکن اکنامکس');
   function allowed() {
     return document.body && document.body.matches('.ctstyle-enabled,.ctstyle-footer-only') &&
       !document.body.matches('.page-id-8001,.brz-ed') && !document.querySelector('.brz-ed,#brz-ed-iframe,[contenteditable="true"]') &&
@@ -84,7 +103,7 @@
   function link(id) {
     var route=routes[id], a=el('a',routeLabel(id),'ctstyle-help-link');
     a.lang=locale; a.dir=['ar','ur'].includes(locale)?'rtl':'ltr';
-    a.href=route[1].startsWith('/') ? window.location.origin+route[1] : route[1];
+    if(route[1].startsWith('/')){var destination=new URL(route[1],window.location.origin);destination.searchParams.set('ui_lang',locale);a.href=destination.href;}else a.href=route[1];
     if (!route[1].startsWith('/')) { a.target='_blank'; a.rel='noopener noreferrer'; }
     return a;
   }
@@ -100,7 +119,11 @@
     });
     // Contact is returned only when explicitly requested, never as a failure path.
     var selected=null;
-    if (candidates.includes('legal') && !candidates.includes('troubleshoot')) selected='legal';
+    if(candidates.includes('siteNavigation'))selected='siteNavigation';
+    else if(candidates.includes('market')&&(candidates.includes('troubleshoot')||candidates.includes('legal')))selected='troubleshoot';
+    else if (candidates.includes('legal') && !candidates.includes('troubleshoot') && !candidates.includes('account')) selected='legal';
+    else if (candidates.includes('contribute')) selected='contribute';
+    else if (candidates.includes('recipes')) selected='recipes';
     else if (candidates.includes('compare')) selected='compare';
     else if (candidates.includes('usda')) selected='usda';
     else if (candidates.includes('move')) selected='move';
@@ -110,6 +133,14 @@
     else if (candidates.includes('search')) selected='search';
     else if (candidates.includes('diary')) selected='diary';
     else if (candidates.includes('account')) selected='account';
+    else if(candidates.includes('trustline'))selected='trustline';
+    else if(candidates.includes('market'))selected='market';
+    else if(candidates.includes('crosschain'))selected='crosschain';
+    else if(candidates.includes('xamanSwap'))selected='xamanSwap';
+    else if(candidates.includes('usecases'))selected='usecases';
+    else if(candidates.includes('showcases'))selected='showcases';
+    else if(candidates.includes('community'))selected='community';
+    else if(candidates.includes('docs'))selected='docs';
     else if(candidates.length===1)selected=candidates[0];
     var age=getAgeBand();
     return age!=='adult'&&adultOnlyTopics.includes(selected)?'ageSafety':selected;
@@ -146,7 +177,7 @@
       return {title:data.title,text:[note,ageCopy.helpText].filter(Boolean).join(' '),links:['app','faq'],actions:['foodSearch','foodScan']};
     }
     if(!data)return data;
-    var actions={app:['foodSearch','foodScan','foodDiary'],search:['foodSearch'],scan:['foodScan'],compare:['foodCompare'],usda:['foodBasic'],diary:['foodDiary'],account:['account','testAccount','accountMove','accountExport'],test:['testAccount','account'],move:['accountMove'],export:['accountExport']};
+    var actions={app:['foodSearch','foodScan','foodDiary'],search:['foodSearch'],scan:['foodScan'],compare:['foodCompare'],recipes:['foodSearch','foodBasic'],usda:['foodBasic'],diary:['foodDiary'],account:['account','testAccount','accountMove','accountExport'],test:['testAccount','account'],move:['accountMove'],export:['accountExport'],exchange:['exchange','trustline'],market:['market'],xamanSwap:['xamanSwap'],crosschain:['crosschain'],trustline:['trustline']};
     return Object.assign({},data,{actions:actions[key]||[]});
   }
   function answer(view,key,focusReply) {
