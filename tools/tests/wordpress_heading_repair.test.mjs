@@ -301,8 +301,8 @@ test('CalorieHelp additions cover all locales and append without replacing exist
   assert.deepEqual(Object.keys(helpTopics).sort(), locales.sort());
   const copy = {};
   for (const tag of locales) {
-    assert.deepEqual(Object.keys(helpTopics[tag]).sort(), ['app', 'test', 'usda']);
-    for (const key of ['app', 'test', 'usda']) {
+    assert.deepEqual(Object.keys(helpTopics[tag]).sort(), ['account', 'app', 'compare', 'diary', 'recipes', 'search', 'test', 'usda']);
+    for (const key of Object.keys(helpTopics[tag])) {
       assert.deepEqual(Object.keys(helpTopics[tag][key]).sort(), ['step', 'text']);
       assert.ok(helpTopics[tag][key].text.trim());
       assert.ok(helpTopics[tag][key].step.trim());
@@ -389,11 +389,11 @@ test('CalorieHelp creates the missing USDA knowledge topic from reviewed local c
 test('CalorieHelp renders the open-C mascot and switches compact knowledge by age', () => {
   const copy=JSON.parse(JSON.stringify(baseHelpData));
   const bootstrapContext={window:{
-    CalorieTokenHelp:{copy,page:0},CalorieTokenHeadingRepairLabels:helpLabels,
+    CalorieTokenHelp:{copy,page:6855},CalorieTokenHeadingRepairLabels:helpLabels,
     CalorieTokenHeadingRepairTopics:helpTopics,CalorieTokenHeadingRepairAvatar:'https://calorietoken.net/mascot.png',
   }};
   vm.runInNewContext(helpBootstrap,bootstrapContext,{filename:'help-label-bootstrap.js'});
-  const {document,window}=parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled">
+  const {document,window}=parseHTML(`<!doctype html><html lang="nl"><body class="ctstyle-enabled"><h1 class="ctstyle-title">FAQ</h1>
     <aside id="ctstyle-app-launcher"><details><summary><span class="ctstyle-help-icon">?</span><span class="ctstyle-help-caption">CalorieHelp</span></summary>
       <div class="ctstyle-app-launcher-panel"><label for="ctstyle-language-select">Taal</label><select id="ctstyle-language-select"><option value="nl" selected>Nederlands</option></select></div>
     </details></aside></body></html>`);
@@ -415,7 +415,7 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
   assert.equal(document.querySelector('.ctstyle-help-icon').classList.contains('ctstyle-help-mascot'),true);
   assert.match(widget.querySelector('input').placeholder,/Nutri-Score/);
   const visibleChild=Array.from(widget.querySelectorAll('button[data-topic]')).filter(button=>!button.hidden).map(button=>button.dataset.topic);
-  assert.deepEqual(visibleChild,['app','usda','docs','legal','search','scan','compare']);
+  assert.deepEqual(visibleChild,['app','usda','docs','legal','search','scan','compare','recipes']);
   widget.querySelector('button[data-topic="app"]').click();
   assert.match(widget.querySelector('.ctstyle-help-reply').textContent,/Openbaar eten zoeken/);
   assert.doesNotMatch(widget.querySelector('.ctstyle-help-reply').textContent,/eetdagboek/i);
@@ -428,7 +428,14 @@ test('CalorieHelp renders the open-C mascot and switches compact knowledge by ag
   assert.equal(widget.querySelector('.ctstyle-help-more').hidden,false);
   widget.querySelector('button[data-topic="app"]').click();
   assert.match(widget.querySelector('.ctstyle-help-reply').textContent,/eetdagboek/i);
-  for(const [question,hash] of [['voedsel zoeken','#food-search'],['voedsel scannen','#food-scan'],['voedsel vergelijken','#food-compare'],['mijn account','#account'],['testaccount aanmaken','#test-account'],['gegevens exporteren','#account-export'],['overstappen naar echt account','#move-account']]){
+  const faq=document.getElementById('ctstyle-faq-help');
+  assert.ok(faq);
+  for(const key of ['compare','recipes','search','account','diary']) {
+    widget.querySelector(`button[data-topic="${key}"]`).click();
+    const answer=widget.querySelector('.ctstyle-help-reply>div').textContent;
+    assert.equal(faq.querySelector(`details[data-topic="${key}"]>div`).textContent,answer,`FAQ and help agree: ${key}`);
+  }
+  for(const [question,hash] of [['voedsel zoeken','#food-search'],['voedsel scannen','#food-scan'],['voedsel vergelijken','#food-compare'],['diervriendelijke alternatieven','#food-compare'],['keurmerken','#food-compare'],['recepten voor mijn eetstijl','#food-search'],['mijn account','#account'],['testaccount aanmaken','#test-account'],['gegevens exporteren','#account-export'],['overstappen naar echt account','#move-account']]){
     input.value=question;widget.querySelector('form').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
     assert.ok([...widget.querySelectorAll('.ctstyle-help-reply .ctstyle-help-actions a')].some(link=>link.href.endsWith(hash)),question);
   }

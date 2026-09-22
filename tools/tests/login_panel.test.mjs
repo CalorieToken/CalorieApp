@@ -55,7 +55,7 @@ test('routine progress stays quiet; real errors and retry remain visible',()=>{
   for(const progress of ['Xaman opened','Signing','WordPress signed in','Activating session']){
     h.status.textContent=progress;h.render();assert.equal(h.summary(),copy.nl.waiting);
   }
-  assert.equal(h.calls.focus,1);assert.equal(h.calls.scroll,1);
+  assert.equal(h.calls.focus,1);assert.equal(h.calls.scroll,0);
   h.status.classList.add('is-error');h.status.textContent='Request expired';h.retry.hidden=false;h.render();
   assert.equal(h.summary(),'Request expired');assert.equal(h.retry.hidden,false);
   h.status.classList.remove('is-error');h.qr.hidden=true;h.render();assert.equal(h.summary(),copy.nl.preparing);
@@ -94,8 +94,8 @@ test('completed controls stay hidden on replay, while a genuinely new request ca
   h.qr.hidden=false;h.open.hidden=false;h.status.classList.add('is-error');h.status.textContent='Request expired';h.retry.hidden=false;h.render();
   assert.equal(h.open.hidden,true);assert.equal(h.root.querySelector('details').hidden,true);assert.equal(h.retry.hidden,false);assert.equal(h.summary(),'Request expired');
 });
-test('fullscreen exits through the existing control once; all app languages keep usable sign-in copy',()=>{
-  const h=fixture();h.document.body.classList.add('ct-calorieapp-focus');h.show();h.render();assert.equal(h.calls.focusToggle,1);
+test('sign-in preserves fullscreen and scroll position; all app languages keep usable copy',()=>{
+  const h=fixture();h.document.body.classList.add('ct-calorieapp-focus');h.show();h.render();assert.equal(h.calls.focusToggle,0);assert.equal(h.calls.scroll,0);assert.equal(h.document.body.classList.contains('ct-calorieapp-focus'),true);
   for(const [locale,row] of Object.entries(copy)){
     assert.deepEqual(Object.keys(row).sort(),Object.keys(copy.en).sort());
     h.document.documentElement.lang=locale;h.render();assert.equal(h.panel.lang,locale);assert.equal(h.summary(),row.preparing);

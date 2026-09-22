@@ -39,3 +39,15 @@ test('unapproved parents, missing elements and invalid offsets receive no naviga
   assert.equal(approved.api.postNavigationTarget('calorieapp-diary',{getBoundingClientRect:()=>({top:Number.NaN})}),false);
   assert.equal(approved.sent.length,0);
 });
+
+test('explicit reveal uses nearest immediate alignment and keeps parent messages bounded',()=>{
+  const env=load(),scrolls=[];
+  const element={getBoundingClientRect:()=>({top:42}),scrollIntoView:options=>scrolls.push(options)};
+  env.api.postNavigationTarget('calorieapp-add',element);
+  assert.equal(scrolls.length,0,'Background notifications never scroll');
+  env.api.postNavigationTarget('calorieapp-add',element,true);
+  assert.deepEqual(JSON.parse(JSON.stringify(scrolls)),[{block:'nearest',inline:'nearest',behavior:'instant'}]);
+  const untrusted=load('https://untrusted.invalid/');
+  untrusted.api.postNavigationTarget('calorieapp-add',element,true);
+  assert.equal(untrusted.sent.length,0,'Local navigation does not expand parent trust');
+});

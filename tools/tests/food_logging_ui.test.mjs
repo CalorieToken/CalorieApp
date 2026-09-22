@@ -37,6 +37,12 @@ const discoveryCatalogue = JSON.parse(await readFile(new URL("../../frontend/pub
 const discovery = await loadLibrary("foodDiscovery", {
   "@/config/food-discovery-copy.json": { default: discoveryTranslations }, "@/lib/locales": locales,
 });
+const recipeTranslations = JSON.parse(await readFile(new URL("../../frontend/config/food-recipe-copy.json", import.meta.url), "utf8"));
+const recipeCatalogue = JSON.parse(await readFile(new URL("../../frontend/data/food-recipes.json", import.meta.url), "utf8"));
+const recipes = await loadLibrary("foodRecipes", {
+  "@/data/food-recipes.json": {default: recipeCatalogue}, "@/config/food-recipe-copy.json": {default: recipeTranslations},
+  "@/lib/foodDiscovery": discovery, "@/lib/locales": locales,
+});
 const foodLogFilter = await loadLibrary("foodLogFilter", {
   "@/config/food-log-filter-copy.json": { default: filterCopy },
   "@/lib/locales": locales,
@@ -192,6 +198,7 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       };
       if (specifier === "@/lib/locales") return locales;
       if (specifier === "@/lib/foodDiscovery") return discovery;
+      if (specifier === "@/lib/foodRecipes") return recipes;
       if (specifier === "@/data/usda-reference-foods.json") return { default: usdaReference };
       if (specifier === "@/config/usda-reference-copy.json") return { default: usdaCopy };
       if (specifier.startsWith("@/components/")) {
@@ -1149,7 +1156,7 @@ test('Food discovery keeps all eleven locales, exact identifiers, word boundarie
     assert.deepEqual(Object.keys(c).sort(),Object.keys(discoveryTranslations.en).sort());
     for(const [key,value] of Object.entries(c)) {
       assert.ok(value.trim());
-      assert.deepEqual(value.match(/\{\w+\}/g),discoveryTranslations.en[key].match(/\{\w+\}/g));
+      assert.deepEqual((value.match(/\{\w+\}/g) ?? []).sort(),(discoveryTranslations.en[key].match(/\{\w+\}/g) ?? []).sort());
     }
   }
   const foods=[{fdc_id:123,description:'Rice, white, cooked',data_type:'Foundation'}, {fdc_id:1234,description:'Licorice candy',data_type:'SR Legacy'}];
@@ -1172,7 +1179,8 @@ test('Similar choices preserve the normal portion flow and never save merely by 
   const compared=app.cards()[1].props.comparison;
   const selected=app.cards()[2].props.item;
   compared.props.onChoose(selected);app.render();
-  assert.equal(app.cards()[1].props.isSelected,true);
+  assert.equal(app.cards()[2].props.isSelected,true);
+  assert.equal(app.cards()[1].props.isSelected,false);
   assert.equal(app.controls().type,'form');
   assert.equal(app.requests.filter(r=>r.options?.method==='POST').length,0);
   const card=await harness('FoodCard');const tree=card.render({item:foods[0],isLogging:false,onLog(){},formatNumber:String,comparison:{type:'details',props:{children:'Compare'}}});
@@ -1303,4 +1311,107 @@ test("thumbnail URLs preserve product, language, revision and query and reject u
  for(const size of ['400','full'])assert.equal(foodSource.foodImageThumbnail(base+'front_nl.45.'+size+'.jpg?v=1'),base+'front_nl.45.200.jpg?v=1');
  for(const file of ['front_en.1.100.jpg','front_en.1.200.jpg','1.jpg','1.400.jpg','front.jpg'])assert.equal(foodSource.foodImageThumbnail(base+file),base+file);
  for(const url of ['https://tracker.example/front_en.1.400.jpg','javascript:alert(1)',null])assert.equal(foodSource.foodImageThumbnail(url),null);
+});
+
+test('packaged alternatives diversify brands, retain identical labels across brands and reserve a better recorded grade', () => {
+  const product = (name,brand,barcode,grade) => ({...foods[0],product_name:name,brand,barcode,nutri_score:grade});
+  const original=product('Acme whole milk','Acme','1','D');
+  const same=product('Acme half fat milk','Acme','2','C');
+  const sameLabel=product('Whole milk','Other','3','D');
+  const better=product('Skimmed milk','Fresh','4','B');
+  const unrelated=product('Acme tomato sauce','Acme','5','A');
+  const infant=product('Infant milk formula','Baby brand','6','A');
+  const duplicateLabel=product('Acme whole milk','Acme','7','D');
+  const ranked=discovery.packagedAlternatives(original,[original,same,unrelated,infant,duplicateLabel,sameLabel,better,better]);
+  assert.deepEqual(Array.from(ranked,p=>p.barcode),['4','3','2']);
+  assert.deepEqual(JSON.parse(JSON.stringify(discovery.betterRecordedGrade(original,better))),{from:'D',to:'B'});
+  for(const bad of [unrelated,infant,{...better,nutri_score:null},{...better,nutri_score:'unknown'},{...better,nutri_score:'E'}]) assert.equal(discovery.betterRecordedGrade(original,bad),null);
+  assert.equal(discovery.betterRecordedGrade({...original,nutri_score:null},better),null);
+  assert.equal(discovery.packagedAlternatives(infant,[original,better]).length,0);
+  assert.equal(discovery.packagedAlternatives(original,[better],0).length,0);
+});
+
+test('alternative search removes whole brand phrases and preserves a useful category without automatic requests', () => {
+  const product=(product_name,brand)=>({...foods[0],product_name,brand});
+  assert.equal(discovery.alternativeSearchQuery(product('Acme havermout 500 g','Acme')),'havermout');
+  assert.equal(discovery.alternativeSearchQuery(product('Acme tomatensoep 500 ml','Acme')),'tomatensoep');
+  assert.equal(discovery.unbrandedFoodName(product('Milky melk','Milk')),'milky melk','Do not remove brand substrings from food words');
+  assert.equal(discovery.unbrandedFoodName(product('A+B melk','A+B')),'melk','Brand regex characters are literal');
+  assert.equal(discovery.alternativeSearchQuery(product('Acme baby formula','Acme')),'');
+  assert.equal(discovery.packagedAlternatives(product('Acme red snack','Acme'),[product('Acme red cleaner','Acme')]).length,0,'Brand overlap is not food similarity');
+  for(const locale of Object.keys(discoveryTranslations)) {
+    assert.equal(discovery.plantAlternativeQuery(product('Milk','Acme'),locale),discoveryTranslations[locale].plantMilk);
+    assert.ok(discoveryTranslations[locale].plantNote.trim());
+    assert.ok(discoveryTranslations[locale].gradeNote.trim());
+  }
+  assert.equal(discovery.plantAlternativeQuery(product('Baby milk formula','Acme'),'nl'),null);
+  assert.equal(discovery.plantAlternativeQuery(product('Rice','Acme'),'nl'),null);
+});
+
+test('successful product feedback offers diary navigation without saving or switching automatically', async()=>{
+  const h=await harness('FoodCard'); let opened=0;
+  const props={item:foods[0],isLogging:false,onLog(){},formatNumber:String,onOpenDiary(){opened++;},diaryLabel:'Open diary'};
+  h.render(props); assert.equal(nodes(h.tree,n=>n.type==='button'&&text(n)==='Open diary').length,0);
+  h.render({...props,feedback:{message:'Saved',isError:false}});
+  assert.equal(opened,0);button(h.tree,'Open diary').props.onClick();assert.equal(opened,1);
+  h.render({...props,feedback:{message:'Failed',isError:true}});
+  assert.equal(nodes(h.tree,n=>n.type==='button'&&text(n)==='Open diary').length,0);
+});
+
+test('recorded labels distinguish source claims and refuse invented, ambiguous or unsafe evidence',()=>{
+  const product={...foods[0],product_name:'Organic vegan friendly food',barcode:'1234567890123'};
+  assert.deepEqual(Array.from(discovery.recordedFoodLabels(product,'nl')),[]);
+  const labelled={...product,labels_tags:['en:organic','en:eu-organic','en:msc','en:vegan','en:animal-friendly','nl:beter-leven-2-sterren']};
+  const labels=discovery.recordedFoodLabels(labelled,'nl');
+  assert.deepEqual(Array.from(labels,l=>l.name),['EU Organic','Beter Leven ★★','MSC']);
+  assert.equal(labels.find(l=>l.name==='MSC').scope,'fishery','MSC is not an animal-welfare claim');
+  assert.equal(discovery.recordedFoodLabels({...labelled,labels_tags:[...labelled.labels_tags,'nl:beter-leven-3-sterren']},'nl').some(l=>l.scope==='welfare'),false);
+  assert.equal(discovery.foodSourceUrl(product),'https://world.openfoodfacts.org/product/1234567890123');
+  for(const barcode of ['javascript:alert(1)','123/../../admin','123',null])assert.equal(discovery.foodSourceUrl({...product,barcode}),null);
+  const milk={...product,product_name:'Milk',nutri_score:'D',nutriscore_version:'2021'};
+  assert.equal(discovery.betterRecordedGrade(milk,{...milk,nutri_score:'B',nutriscore_version:'2023'}),null);
+  assert.equal(discovery.betterRecordedGrade({...product,product_name:'Apple',nutri_score:'D'},{...product,product_name:'Apple juice',nutri_score:'A'}),null);
+});
+
+test('label alternatives filter existing comparable results without inventing evidence or making requests',async()=>{
+  const h=await harness('SimilarFoods');const milk={...foods[0],product_name:'Whole milk',barcode:'1234567890123'};
+  const organic={...milk,barcode:'1234567890124',brand:'Another',labels_tags:['en:eu-organic']};
+  const fish={...organic,barcode:'1234567890125',product_name:'Fish'};
+  h.render({item:milk,foods:[milk,organic,fish],locale:'nl',disabled:false,onChoose(){},onSearch(){}});
+  button(h.tree,discoveryTranslations.nl.organicLabel).props.onClick();h.render();
+  assert.match(text(h.tree),/EU Organic/);assert.doesNotMatch(text(h.tree),/Fish/);
+  button(h.tree,discoveryTranslations.nl.welfareLabel).props.onClick();h.render();
+  assert.match(text(h.tree),/geen passend alternatief/);assert.deepEqual(h.requests,[]);
+});
+
+test('recipe ideas respect explicit cuisine, meal and source-supported eating style without assuming culture',()=>{
+  const rice={...foods[0],product_name:'Rice',brand:'USDA FoodData Central · FDC 123',barcode:null};
+  const prefs={diet:'plant',cuisine:'southAsian',meal:'dinner'};
+  const result=recipes.recipeIdeas(rice,prefs);assert.ok(result.length>0&&result.length<=2);
+  assert.ok(result.every(r=>r.cuisine==='southAsian'&&r.diet==='plant'&&r.meals.includes('dinner')));
+  assert.equal(recipes.recipeIdeas({...rice,brand:'Brand',barcode:'1234567890123'},prefs).length,0,'Unknown packaged ingredients cannot establish a plant-based diet');
+  assert.ok(recipes.recipeIdeas({...rice,brand:'Brand',barcode:'1234567890123',labels_tags:['en:vegan']},prefs).length);
+  for(const name of ['Infant rice formula','Apple juice','Chocolate ice cream','Rice ready meal'])assert.equal(recipes.recipeIdeas({...rice,product_name:name},{diet:'any',cuisine:'any',meal:'any'}).length,0,name);
+  assert.equal(recipes.recipeIdeas(rice,{...prefs,meal:'breakfast'}).length,0);
+  assert.deepEqual(Object.keys(recipeTranslations).sort(),Object.keys(discoveryTranslations).sort());
+  for(const [locale,copy] of Object.entries(recipeTranslations)){
+    for(const value of Object.values(copy))assert.ok(value.trim(),locale);
+    assert.deepEqual(Object.keys(copy).sort(),Object.keys(recipeTranslations.en).sort());
+  }
+  for(const recipe of recipeCatalogue)for(const locale of ['nl','en']){
+    assert.equal((recipe[locale].ingredients.match(/\{food\}/g)||[]).length,1);
+    assert.ok(recipe[locale].method.trim());
+  }
+});
+
+test('recipe preferences remain collapsed initially and never log food or trigger a provider request',async()=>{
+  const h=await harness('FoodRecipeIdeas');
+  h.render({food:{...foods[0],product_name:'Rice'},locale:'nl'});
+  assert.equal(nodes(h.tree,n=>n.type==='details')[0].props.open,undefined);
+  assert.equal(nodes(h.tree,n=>n.type==='li').length,2);
+  const selects=nodes(h.tree,n=>n.type==='select');assert.equal(selects.length,3);
+  selects[1].props.onChange({target:{value:'westAfrican'}});h.render();
+  assert.match(text(h.tree),/West-Afrikaans geïnspireerde/);
+  assert.deepEqual(h.requests,[]);
+  assert.equal(nodes(h.tree,n=>n.type==='button').length,0);
 });
