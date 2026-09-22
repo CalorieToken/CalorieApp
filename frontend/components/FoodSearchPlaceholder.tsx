@@ -1,5 +1,7 @@
 "use client";
 
+import { FoodPropertyIcon } from "@/components/FoodPropertyIcon";
+
 import { FoodBarcodeScanner } from "@/components/FoodBarcodeScanner";
 import entryTranslations from "@/config/app-entry-copy.json";
 import type { AppEntryTarget } from "@/lib/appEntryBridge";
@@ -112,6 +114,8 @@ function normalizeFoodItem(value: unknown): FoodSearchItem | null {
     brand: toOptionalText(raw.brand),
     serving_size: toOptionalText(raw.serving_size),
     nutri_score: toOptionalText(raw.nutri_score)?.toUpperCase() ?? null,
+    labels_tags: Array.isArray(raw.labels_tags) ? raw.labels_tags.slice(0, 100).filter((tag): tag is string => typeof tag === "string" && tag.length <= 100) : [],
+    nutriscore_version: ["2021", "2023"].includes(String(raw.nutriscore_version)) ? String(raw.nutriscore_version) : null,
   };
 }
 
@@ -185,10 +189,12 @@ function formatLoggedAt(value: string | null | undefined, locale?: string, unkno
 
 export type FoodWorkspaceView = "packaged" | "basic" | "diary";
 
-export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch, allowPersonalLog = true, requestedEntry }: {
+export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch, onOpenBasic, onOpenDiary, allowPersonalLog = true, requestedEntry }: {
   activeView: FoodWorkspaceView | null;
   onOpenAccount: () => void;
   onOpenSearch?: () => void;
+  onOpenBasic?: () => void;
+  onOpenDiary?: () => void;
   allowPersonalLog?: boolean;
   requestedEntry?: { target: AppEntryTarget; serial: number };
 }) {
@@ -209,6 +215,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
   }, [requestedEntry, activeView]);
   const portionFormRef = useRef<HTMLFormElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const revealAlternativeResults = useRef(false);
   const resultsListRef = useRef<HTMLUListElement>(null);
   const restoreResultsPosition = useRef<number | null>(null);
   const [alternativeHistory, setAlternativeHistory] = useState<AlternativeSearch[]>([]);
@@ -371,6 +378,14 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
       // The restored card is already at the remembered list position.
     }
   }, [results]);
+
+  useEffect(() => {
+    if (!revealAlternativeResults.current || isLoading || activeView !== "packaged") return;
+    revealAlternativeResults.current = false;
+    const heading = resultsHeadingRef.current;
+    heading?.focus({ preventScroll: true });
+    postNavigationTarget("calorieapp-add", heading, true);
+  }, [results, isLoading, activeView]);
 
   const fetchLogs = useCallback(async (before?: number) => {
     if (!allowPersonalLog) {
@@ -597,6 +612,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
   }
 
   function cancelSearch() {
+    revealAlternativeResults.current = false;
     searchAbortControllerRef.current?.abort();
     searchRequestIdRef.current += 1;
     searchInFlightRef.current = false;
@@ -615,12 +631,14 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
       scrollTop: resultsListRef.current?.scrollTop ?? 0,
     }]);
     setQuery(nextQuery);
+    revealAlternativeResults.current = true;
     void runSearch(nextQuery, false, true);
   }
 
   function returnToProduct() {
     const previous = alternativeHistory[alternativeHistory.length - 1];
     if (!previous || logMutationInFlightRef.current) return;
+    revealAlternativeResults.current = false;
     searchAbortControllerRef.current?.abort();
     searchRequestIdRef.current += 1;
     searchInFlightRef.current = false;
@@ -926,10 +944,10 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
           <p className="mt-1 break-words text-sm font-bold text-brand-primary"><bdi>{pendingLogItem.product_name}</bdi></p>
           {pendingLogItem.brand ? <p className="mt-1 break-words text-xs text-brand-secondary/80"><bdi>{pendingLogItem.brand}</bdi></p> : null}
           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            <p><span className="text-brand-secondary/70">{copy.calories}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.calories)} kcal</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.protein}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.protein)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.fat}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.fat)} g</bdi></p>
-            <p><span className="text-brand-secondary/70">{copy.carbohydrates}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
+            <p><span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="calories" />{copy.calories}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.calories)} kcal</bdi></p>
+            <p><span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="protein" />{copy.protein}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.protein)} g</bdi></p>
+            <p><span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="fat" />{copy.fat}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.fat)} g</bdi></p>
+            <p><span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="carbohydrates" />{copy.carbohydrates}:</span> <bdi className="mt-1 block font-semibold">{displayNumber(portionPreview.carbohydrates)} g</bdi></p>
           </div>
         </div>
       ) : null}
@@ -1025,6 +1043,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
                 {barcodeCopy.contributeLink}
               </a>
             </p>
+            {onOpenBasic ? <button type="button" onClick={onOpenBasic}
+              className="mt-3 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-semibold text-brand-secondary focus-visible:ring-2 focus-visible:ring-brand-primary">{experience.copy.sourceTitle}</button> : null}
           </div>
         ) : null}
 
@@ -1038,7 +1058,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
         </h3> : null}
         {hasResults ? (
           <div className="mt-4 min-w-0">
-          <ul ref={resultsListRef} style={{ overflowAnchor: "none" }} className="max-h-[60dvh] space-y-3 overflow-y-auto overscroll-contain pe-1">
+          <ul ref={resultsListRef} style={{ overflowAnchor: "none" }} className="max-h-[60dvh] space-y-3 overflow-y-auto overscroll-y-auto pe-1">
             {results.map((item, index) => (
               <FoodCard
                 key={`${resultsQuery}-${foodKey(item)}-${index}`}
@@ -1058,11 +1078,13 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
                     : translateFoodStatus(logFeedback.message, copy),
                 } : null}
                 onLog={() => onLogFood(item, index)}
+                onOpenDiary={onOpenDiary}
+                diaryLabel={diaryUi.title}
                 formatNumber={displayNumber}
                 comparison={<SimilarFoods item={item} foods={results} locale={locale}
                   disabled={isLogging !== null || isLoading || searchWaitSeconds > 0}
                   canChoose={allowPersonalLog}
-                  onChoose={food => { if (results.includes(food)) onLogFood(food, index); }}
+                  onChoose={food => { const chosenIndex = results.indexOf(food); if (chosenIndex >= 0) onLogFood(food, chosenIndex); }}
                   onSearch={food => searchAlternatives(item, food)} />}>
                 {pendingLogIndex === index ? portionControls : null}
               </FoodCard>
@@ -1087,6 +1109,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
               ? formatFoodUi(experience.copy.addedFood, { product: logFeedback.added.product })
               : translateFoodStatus(logFeedback.message, copy)}</p> : null} />
         <UsdaReferenceFoods />
+        {allowPersonalLog && logFeedback?.index === -1 && !logFeedback.isError && onOpenDiary ? <button type="button" onClick={onOpenDiary}
+          className="min-h-11 rounded-full border-2 border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary focus-visible:ring-2 focus-visible:ring-brand-secondary">{diaryUi.title}</button> : null}
       </div>
 
       {allowPersonalLog ? <div id="calorie-panel-diary" role="tabpanel" aria-labelledby="calorie-tab-diary"
@@ -1219,19 +1243,19 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
 
               <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                 <div>
-                  <span className="text-brand-secondary/70">{copy.calories}</span>
+                  <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="calories" />{copy.calories}</span>
                   <p className="font-semibold text-brand-accent"><bdi>{displayNumber(selectedLog.calories)} kcal</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">{copy.protein}</span>
+                  <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="protein" />{copy.protein}</span>
                   <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.protein)}g</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">{copy.fat}</span>
+                  <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="fat" />{copy.fat}</span>
                   <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.fat)}g</bdi></p>
                 </div>
                 <div>
-                  <span className="text-brand-secondary/70">{copy.carbs}</span>
+                  <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="carbohydrates" />{copy.carbs}</span>
                   <p className="font-semibold text-brand-primary"><bdi>{displayNumber(selectedLog.carbohydrates)}g</bdi></p>
                 </div>
               </div>

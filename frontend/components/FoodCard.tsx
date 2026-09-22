@@ -1,11 +1,16 @@
 "use client";
 
+import { FoodPropertyIcon } from "@/components/FoodPropertyIcon";
+import { FoodLabels } from "@/components/FoodLabels";
+import { FoodRecipeIdeas } from "@/components/FoodRecipeIdeas";
+
 import { FoodSearchItem } from "@/components/foodTypes";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { displayServingSize, formatFoodUi, getFoodUi } from "@/lib/foodUi";
 import { NutriScoreBar } from "@/components/NutriScoreBar";
 import { FoodImage } from "@/components/FoodImage";
+import { postNavigationTarget } from "@/lib/navigationBridge";
 
 type FoodCardProps = {
   item: FoodSearchItem;
@@ -22,9 +27,11 @@ type FoodCardProps = {
   feedback?: { message: string; isError: boolean } | null;
   restoreDetails?: boolean;
   selectedProductName?: string;
+  onOpenDiary?: () => void;
+  diaryLabel?: string;
 };
 
-export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName }: FoodCardProps) {
+export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName, onOpenDiary, diaryLabel }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const portionId = useId();
@@ -32,14 +39,21 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
   const portionRef = useRef<HTMLDivElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
   const wasExpandedRef = useRef(false);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const revealDetails = useRef(false);
   // Restored details must exist before the parent restores the list offset.
   const [detailsOpen, setDetailsOpen] = useState(restoreDetails);
   const isExpanded = canLog && (isSelected || Boolean(children));
   useEffect(() => { if (restoreDetails) setDetailsOpen(true); }, [restoreDetails]);
+  useEffect(() => {
+    if (detailsOpen && revealDetails.current) postNavigationTarget("calorieapp-add", detailsRef.current, true);
+    revealDetails.current = false;
+  }, [detailsOpen]);
 
   useEffect(() => {
     if (children && isExpanded && !wasExpandedRef.current) {
       portionRef.current?.focus({ preventScroll: true });
+      postNavigationTarget("calorieapp-add", portionRef.current, true);
     } else if (!isExpanded && wasExpandedRef.current) {
       if (isDisabled || isLogging) return;
       // Restore keyboard focus after the portion controls are removed, while
@@ -91,7 +105,7 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
         >
           {isLogging ? copy.logging : isExpanded ? copy.chooseBelow : copy.logFood}
         </button> : null}
-        <button type="button" onClick={() => setDetailsOpen(value => !value)}
+        <button type="button" onClick={() => { revealDetails.current = !detailsOpen; setDetailsOpen(value => !value); }}
           className="min-h-11 flex-1 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-expanded={detailsOpen} aria-controls={detailsId}
           aria-label={formatFoodUi(copy.viewDetails, { product: item.product_name })}>
@@ -119,27 +133,31 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
           {feedback.message}
         </p>
       ) : null}
+      {canLog && feedback && !feedback.isError && onOpenDiary ? <button type="button" onClick={onOpenDiary}
+        className="mt-2 min-h-11 rounded-full border-2 border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary focus-visible:ring-2 focus-visible:ring-brand-secondary">{diaryLabel}</button> : null}
 
-      {detailsOpen ? <div id={detailsId} className="mt-3 border-t border-brand-secondary/15 pt-3">
+      {detailsOpen ? <div id={detailsId} ref={detailsRef} className="mt-3 border-t border-brand-secondary/15 pt-3">
           <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
-              <span className="text-brand-secondary/70">{copy.calories}</span>
+              <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="calories" />{copy.calories}</span>
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.calories)} kcal</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">{copy.protein}</span>
+              <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="protein" />{copy.protein}</span>
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.protein)}g</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">{copy.fat}</span>
+              <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="fat" />{copy.fat}</span>
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.fat)}g</bdi></p>
             </div>
             <div>
-              <span className="text-brand-secondary/70">{copy.carbs}</span>
+              <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="carbohydrates" />{copy.carbs}</span>
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.carbohydrates)}g</bdi></p>
             </div>
           </div>
+          <FoodLabels food={item} locale={locale} />
           {comparison}
+          <FoodRecipeIdeas key={item.barcode || item.product_name} food={item} locale={locale} />
         </div> : null}
     </li>
   );

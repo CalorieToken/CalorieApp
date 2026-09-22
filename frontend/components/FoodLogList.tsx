@@ -128,7 +128,7 @@ export function FoodLogList({
         ) : null}
       </div>
 
-      <ul className="mt-4 max-h-[60dvh] space-y-2 overflow-y-auto overscroll-contain pe-1" style={{ overflowAnchor: "none" }}>
+      <ul className="mt-4 max-h-[60dvh] space-y-2 overflow-y-auto overscroll-y-auto pe-1" style={{ overflowAnchor: "none" }}>
         {visibleLogs.map((item, index) => (
           <li
             key={item.id ?? `${item.product_name}-log-${index}`}

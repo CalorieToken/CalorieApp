@@ -12,6 +12,8 @@ export type FoodSearchItem = {
   brand?: string | null;
   serving_size?: string | null;
   nutri_score?: string | null;
+  labels_tags?: string[];
+  nutriscore_version?: string | null;
 };
 
 export type FoodSearchResponse = {

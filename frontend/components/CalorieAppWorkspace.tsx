@@ -97,6 +97,8 @@ export function CalorieAppWorkspace() {
       const index = tabs.findIndex((item) => item.id === tab);
       window.requestAnimationFrame(() => tabRefs.current[index]?.focus({ preventScroll: true }));
     }
+    window.requestAnimationFrame(() => postNavigationTarget("calorieapp-navigation",
+      document.getElementById(`calorie-tab-${tab}`) ?? document.getElementById(`calorie-panel-${tab}`), true));
   }
 
   function handleTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
@@ -122,6 +124,7 @@ export function CalorieAppWorkspace() {
     setReturnToJourney(true);
     setActiveTab(destination);
     window.requestAnimationFrame(() => document.getElementById(`calorie-tab-${destination}`)?.focus({ preventScroll: true }));
+    window.requestAnimationFrame(() => postNavigationTarget("calorieapp-navigation", document.getElementById(`calorie-tab-${destination}`), true));
   }, []);
 
   const cancelJourney = useCallback(() => {
@@ -135,6 +138,7 @@ export function CalorieAppWorkspace() {
     setJourneyInstance(current => current + 1);
     setActiveTab("account");
     window.requestAnimationFrame(() => document.getElementById("calorie-tab-account")?.focus({ preventScroll: true }));
+    window.requestAnimationFrame(() => postNavigationTarget("calorieapp-account", document.getElementById("calorie-tab-account"), true));
   }, []);
 
   function openAccountTools(destination?: "export" | "import" | "session") {
@@ -233,6 +237,8 @@ export function CalorieAppWorkspace() {
         requestedEntry={requestedFoodEntry}
         onOpenAccount={() => selectTab("account", true)}
         onOpenSearch={() => selectTab("packaged", true)}
+        onOpenBasic={() => selectTab("basic", true)}
+        onOpenDiary={() => selectTab("diary", true)}
         allowPersonalLog={allowPersonalFeatures}
       />
       </>}

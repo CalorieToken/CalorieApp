@@ -1,5 +1,8 @@
 "use client";
 
+import { FoodPropertyIcon } from "@/components/FoodPropertyIcon";
+import { FoodRecipeIdeas } from "@/components/FoodRecipeIdeas";
+
 import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { FoodSearchItem } from "@/components/foodTypes";
 import { discoveryCopy, edibleGrams, searchUsda, similarFoodNames, usdaLogItem, usdaNutrition } from "@/lib/foodDiscovery";
@@ -143,7 +146,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
       </label>
       {grams === null ? <p role="alert" className="mt-2 text-sm text-red-700">{copy.invalidGrams}</p> : null}
       {!confirmation ? <dl data-testid="usda-nutrition-preview" className="mt-4 grid grid-cols-2 gap-3">{([['calories', copy.calories, 'kcal'], ['protein', copy.protein, 'g'], ['fat', copy.fat, 'g'], ['carbohydrates', copy.carbohydrates, 'g']] as const).map(([key, label, unit]) => <div key={key} className="min-w-0 break-words">
-        <dt className="text-sm text-brand-secondary">{label}</dt><dd className="mt-1 font-semibold text-brand-primary">{values[key] === null ? copy.unavailable : <bdi>{number.format(values[key]!)} {unit}</bdi>}</dd>
+        <dt className="flex items-center gap-1.5 text-sm text-brand-secondary"><FoodPropertyIcon kind={key} />{label}</dt><dd className="mt-1 font-semibold text-brand-primary">{values[key] === null ? copy.unavailable : <bdi>{number.format(values[key]!)} {unit}</bdi>}</dd>
       </div>)}</dl> : null}
       <p className="mt-3 text-sm text-brand-secondary">{ui.copy.gradeUnavailable}</p>
       {canLog && !logItem && grams !== null ? <p className="mt-2 text-sm text-brand-secondary">{copy.cannotLog}</p> : null}
@@ -156,6 +159,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
         <p className="text-sm text-brand-secondary">{copy.suggestionNote}</p><ul className="mt-2 space-y-2">{alternatives.map(food => <li key={food.fdc_id}><button type="button" disabled={disabled} onClick={() => choose(food, true)}
           className="min-h-11 w-full rounded-lg border border-brand-secondary/30 bg-white p-3 text-start text-sm text-brand-secondary"><bdi lang="en">{food.description}</bdi></button></li>)}</ul>
       </details> : null}
+      {logItem ? <FoodRecipeIdeas key={selected.fdc_id} food={logItem} locale={locale} /> : null}
     </div> : feedback;
 
   return <section data-testid="usda-food-search" className="min-w-0 rounded-xl border border-brand-secondary/20 bg-white p-4 sm:p-5" lang={ui.locale} dir={ui.direction}>
@@ -174,7 +178,7 @@ export function UsdaFoodSearch({ locale, disabled, canLog = true, onChoose, onEd
         className="min-h-11 rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{state === "loading" ? copy.loading : copy.search}</button>
     </form>
     <p role="status" className="mt-3 text-sm text-brand-secondary">{state === "failed" ? copy.failed : state === "loading" ? copy.loading : !selected && submitted !== null && catalogue ? matches.length ? copy.found.replace("{count}", number.format(matches.length)) : copy.empty : ""}</p>
-    {matches.length ? <ul ref={resultsList} style={{ overflowAnchor: "none" }} className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-contain pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
+    {matches.length ? <ul ref={resultsList} style={{ overflowAnchor: "none" }} className="mt-3 max-h-[55dvh] space-y-2 overflow-y-auto overscroll-y-auto pe-1">{matches.slice(0, limit).map(food => <li key={food.fdc_id}>
       <button type="button" disabled={disabled} data-fdc-id={food.fdc_id} aria-expanded={anchorId === food.fdc_id} onClick={() => choose(food)}
         className={`min-h-11 w-full rounded-lg border p-3 text-start text-sm text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-secondary disabled:opacity-50 ${anchorId === food.fdc_id ? "border-brand-primary bg-brand-primary/5" : "border-brand-secondary/20 hover:bg-brand-bg"}`}>
         <bdi lang="en" className="block break-words font-semibold">{food.description}</bdi>
