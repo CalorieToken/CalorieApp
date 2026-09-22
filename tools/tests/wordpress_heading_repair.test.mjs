@@ -329,7 +329,7 @@ test('CalorieHelp additions cover all locales and append without replacing exist
     assert.ok(topic.text.startsWith(`Existing ${key === 'usda' ? 'USDA' : key} answer.`));
     assert.equal(topic.text.split(helpTopics[tag][key].text).length - 1, 1);
     assert.equal(topic.steps.filter(step => step === helpTopics[tag][key].step).length, 1);
-    assert.deepEqual(topic.links, [key]);
+    assert.deepEqual(topic.links, key === 'usda' ? [key, 'contributeUsda'] : [key]);
   }
   assert.match(context.window.CalorieTokenHelp.avatar, /caloriehelp-mascot-v2\.png\?ver=1\.5\.5$/);
 });
@@ -382,7 +382,7 @@ test('CalorieHelp creates the missing USDA knowledge topic from reviewed local c
     assert.ok(usda.title.trim(),tag);
     assert.equal(usda.text,helpTopics[tag].usda.text);
     assert.deepEqual(Array.from(usda.steps),[helpTopics[tag].usda.step]);
-    assert.deepEqual(Array.from(usda.links),['usda','foodDiscovery']);
+    assert.deepEqual(Array.from(usda.links),['usda','foodDiscovery','contributeUsda']);
   }
 });
 
@@ -507,4 +507,20 @@ test('release stays hash-gated, non-persistent and compact', () => {
   assert.match(helpSource, /details\.dataset\.topic=key/);
   assert.match(css, /width:min\(440px,calc\(100vw - 24px\)\)/);
   assert.match(css, /\.ctstyle-help-mascot>/);
+});
+
+test('current site help and market integrations survive the recipe and account additions',()=>{
+  const copy=JSON.parse(JSON.stringify(baseHelpData));let marketCalls=0;
+  const context={window:{CalorieTokenHelp:{copy},CalorieTokenHeadingRepairLabels:helpLabels,
+    CalorieTokenHeadingRepairTopics:helpTopics,
+    CalorieTokenHeadingRepairSiteHelp:{nl:{topics:{app:{title:'Live app',text:'Current website guidance.'},account:{title:'Live account',text:'Current account guidance.',steps:['Keep this step.']}}}},
+    CalorieTokenMarkets:{patchHelp(){marketCalls++;}},
+  }};
+  vm.runInNewContext(helpBootstrap,context);vm.runInNewContext(helpBootstrap,context);
+  assert.equal(copy.nl.topics.app.text,'Current website guidance.');
+  assert.ok(copy.nl.topics.account.text.startsWith('Current account guidance.'));
+  assert.equal(copy.nl.topics.account.text.split(helpTopics.nl.account.text).length-1,1);
+  assert.ok(copy.nl.topics.account.steps.includes('Keep this step.'));
+  assert.ok(copy.nl.topics.recipes.text.includes(helpTopics.nl.recipes.text));
+  assert.equal(marketCalls,2);
 });
