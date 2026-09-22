@@ -242,13 +242,17 @@ test('CalorieApp embed prepares the resolved language without restarting its fir
   assert.equal(loader.hidden,true);
   assert.equal(stage.getAttribute('aria-busy'),'false');
   const focusButton=document.getElementById('ct-calorieapp-focus-toggle');
-  assert.ok(document.querySelector('.calorieapp-page-tools').contains(focusButton));
+  assert.ok(stage.contains(focusButton));
+  assert.equal(document.querySelector('.calorieapp-page-tools').contains(focusButton),false);
+  const expandPath=focusButton.querySelector('path').getAttribute('d');
   focusButton.click();
   assert.equal(document.body.classList.contains('ct-calorieapp-focus'),true);
   assert.equal(focusButton.getAttribute('aria-pressed'),'true');
+  assert.notEqual(focusButton.querySelector('path').getAttribute('d'),expandPath);
   focusButton.click();
   assert.equal(document.body.classList.contains('ct-calorieapp-focus'),false);
   assert.equal(focusButton.getAttribute('aria-pressed'),'false');
+  assert.equal(focusButton.querySelector('path').getAttribute('d'),expandPath);
 });
 
 test('help links hand off fixed destinations to the native app and never rebuild the old guide', () => {

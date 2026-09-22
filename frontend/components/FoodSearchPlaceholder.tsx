@@ -1,6 +1,9 @@
 "use client";
 
 import { FoodPropertyIcon } from "@/components/FoodPropertyIcon";
+import { FoodPiecePortion } from "@/components/FoodPiecePortion";
+import { canCountPieces, emptyPieceAmount, piecePortion } from "@/lib/foodPieces";
+import piecesTranslations from "@/config/food-pieces-copy.json";
 
 import { FoodBarcodeScanner } from "@/components/FoodBarcodeScanner";
 import entryTranslations from "@/config/app-entry-copy.json";
@@ -49,7 +52,7 @@ import {
 } from "@/lib/backendRequest";
 
 const BACKEND_BASE_URL = "/api/backend";
-type PortionOption = "whole" | "half" | "quarter" | "custom";
+type PortionOption = "whole" | "half" | "quarter" | "custom" | "pieces";
 type AlternativeSearch = {
   query: string; resultsQuery: string; results: FoodSearchItem[];
   barcode: boolean; product: string; productKey: string; scrollTop: number;
@@ -270,6 +273,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
   const [pendingLogIndex, setPendingLogIndex] = useState<number | null>(null);
   const [portionOption, setPortionOption] = useState<PortionOption>("whole");
   const [customPortion, setCustomPortion] = useState("30");
+  const [pieces, setPieces] = useState(emptyPieceAmount);
+  const [requestedIngredient, setRequestedIngredient] = useState<{ fdcId: number; grams: number; serial: number }>();
   const [portionError, setPortionError] = useState<string | null>(null);
   const [logFeedback, setLogFeedback] = useState<{
     index: number;
@@ -331,16 +336,17 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
     }));
   }, [diaryOverview, diaryPeriod, isLogsLoading, locale, logError]);
 
+  const countedPortion = useMemo(() => pendingLogItem && portionOption === "pieces" ? piecePortion(pendingLogItem, pieces, locale) : null, [pendingLogItem, portionOption, pieces, locale]);
   const selectedPortionPercentage = useMemo(
-    () => pendingLogIndex === -1 ? 100 : getPortionPercentage(portionOption, customPortion),
-    [portionOption, customPortion, pendingLogIndex]
+    () => pendingLogIndex === -1 ? 100 : portionOption === "pieces" ? countedPortion ? 100 : null : getPortionPercentage(portionOption, customPortion),
+    [portionOption, customPortion, pendingLogIndex, countedPortion]
   );
   const portionPreview = useMemo(() => {
     if (!pendingLogItem || selectedPortionPercentage === null) {
       return null;
     }
-    return scaleNutrition(pendingLogItem, selectedPortionPercentage);
-  }, [pendingLogItem, selectedPortionPercentage]);
+    return portionOption === "pieces" ? countedPortion : scaleNutrition(pendingLogItem, selectedPortionPercentage);
+  }, [pendingLogItem, selectedPortionPercentage, portionOption, countedPortion]);
 
   const clearPrivateLogState = useCallback(() => {
     // Invalidate any request that began under the previous authentication
@@ -659,6 +665,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
     setPendingLogIndex(index);
     setPortionOption("whole");
     setCustomPortion("30");
+    setPieces(emptyPieceAmount);
     setPortionError(null);
     setLogFeedback(null);
   }
@@ -669,6 +676,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
     setPendingLogIndex(null);
     setPortionOption("whole");
     setCustomPortion("30");
+    setPieces(emptyPieceAmount);
     setPortionError(null);
   }
 
@@ -681,13 +689,13 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
       return;
     }
 
-    if (selectedPortionPercentage === null) {
+    if (selectedPortionPercentage === null || !portionPreview) {
       // The field already presents one inline validation message.
       return;
     }
 
     const selectionId = logSelectionIdRef.current;
-    const payload = scaleNutrition(pendingLogItem, selectedPortionPercentage);
+    const payload = portionPreview;
 
     logMutationInFlightRef.current = true;
     setIsLogging(pendingLogIndex);
@@ -837,6 +845,8 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
     portionFormRef.current?.focus({ preventScroll: true });
   }, [pendingLogItem, pendingLogIndex]);
 
+  const pieceCopy = piecesTranslations[locale as keyof typeof piecesTranslations] ?? piecesTranslations.en;
+  const recipePortion = pendingLogItem?.brand?.startsWith("CalorieApp recipe estimate ·");
   const portionControls = pendingLogItem ? (
     <form
       ref={portionFormRef}
@@ -847,9 +857,11 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
       aria-busy={isLogging !== null}
     >
       <h3 className="text-sm font-bold text-brand-primary">{pendingLogIndex === -1 ? experience.copy.confirmTitle : copy.portionTitle}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{pendingLogIndex === -1 ? experience.copy.confirmAmount : experience.copy.portionBasis}</p>
+      <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{recipePortion ? (locale === "nl" ? "Controleer je gekozen receptportie en de schatting voordat je opslaat." : "Review your selected recipe serving and estimate before saving.") : pendingLogIndex === -1 ? experience.copy.confirmAmount : experience.copy.portionBasis}</p>
       {pendingLogIndex !== -1 && pendingLogItem.serving_size ? <p className="mt-2 text-sm text-brand-secondary">{copy.serving}: <bdi>{displayServingSize(pendingLogItem.serving_size, copy)}</bdi></p> : null}
       {pendingLogIndex !== -1 ? <>
+      {canCountPieces(pendingLogItem) ? <button type="button" disabled={isLogging !== null} aria-pressed={portionOption === "pieces"} onClick={() => setPortionOption(portionOption === "pieces" ? "whole" : "pieces")} className="mt-3 min-h-11 rounded-full border-2 border-brand-secondary px-4 py-2 text-sm font-semibold text-brand-secondary">{portionOption === "pieces" ? pieceCopy.percent : pieceCopy.title}</button> : null}
+      {portionOption === "pieces" ? <FoodPiecePortion value={pieces} onChange={setPieces} locale={locale} disabled={isLogging !== null} valid={Boolean(countedPortion)} /> : <>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <button
           type="button"
@@ -935,10 +947,11 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
         </p>
       ) : null}
 
+      </>}
       </> : null}
       {portionPreview ? (
         <div className="mt-4 rounded-lg border border-brand-secondary/10 bg-white p-3">
-          <p className="text-sm text-brand-secondary/80">{pendingLogIndex === -1
+          <p className="text-sm text-brand-secondary/80">{portionOption === "pieces" ? portionPreview.serving_size : pendingLogIndex === -1
             ? formatFoodUi(experience.copy.selectedAmount, { amount: displayUsdaGramAmount(pendingLogItem.serving_size, locale) })
             : formatFoodUi(copy.portionPreview, { percentage: displayPercentage(selectedPortionPercentage ?? 100) })}</p>
           <p className="mt-1 break-words text-sm font-bold text-brand-primary"><bdi>{pendingLogItem.product_name}</bdi></p>
@@ -1078,10 +1091,12 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
                     : translateFoodStatus(logFeedback.message, copy),
                 } : null}
                 onLog={() => onLogFood(item, index)}
+                onChooseRecipe={recipe => onLogFood(recipe, index)}
+                onIngredient={(fdcId, grams) => { if (isLogging !== null || isLoading) return; setRequestedIngredient(previous => ({ fdcId, grams, serial: (previous?.serial ?? 0) + 1 })); onOpenBasic?.(); }}
                 onOpenDiary={onOpenDiary}
                 diaryLabel={diaryUi.title}
                 formatNumber={displayNumber}
-                comparison={<SimilarFoods item={item} foods={results} locale={locale}
+                comparison={<SimilarFoods item={item} foods={results} locale={locale} embedded
                   disabled={isLogging !== null || isLoading || searchWaitSeconds > 0}
                   canChoose={allowPersonalLog}
                   onChoose={food => { const chosenIndex = results.indexOf(food); if (chosenIndex >= 0) onLogFood(food, chosenIndex); }}
@@ -1098,6 +1113,7 @@ export function FoodSearchPlaceholder({ activeView, onOpenAccount, onOpenSearch,
       <div id="calorie-panel-basic" role="tabpanel" aria-labelledby="calorie-tab-basic"
         hidden={activeView !== "basic"} className="space-y-5">
         <UsdaFoodSearch locale={locale} disabled={isLogging !== null || isLoading} canLog={allowPersonalLog}
+          requestedIngredient={requestedIngredient}
           onEditing={() => {
             if (pendingLogIndex === -1) cancelPortionLogging();
             setLogFeedback(current => current?.index === -1 ? null : current);

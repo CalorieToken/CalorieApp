@@ -3,6 +3,7 @@
 import { FoodPropertyIcon } from "@/components/FoodPropertyIcon";
 import { FoodLabels } from "@/components/FoodLabels";
 import { FoodRecipeIdeas } from "@/components/FoodRecipeIdeas";
+import { FoodExplore } from "@/components/FoodExplore";
 
 import { FoodSearchItem } from "@/components/foodTypes";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
@@ -29,14 +30,17 @@ type FoodCardProps = {
   selectedProductName?: string;
   onOpenDiary?: () => void;
   diaryLabel?: string;
+  onChooseRecipe?: (food: FoodSearchItem) => void;
+  onIngredient?: (fdcId: number, grams: number) => void;
 };
 
-export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName, onOpenDiary, diaryLabel }: FoodCardProps) {
+export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = false, canLog = true, isSelected = false, controlsId, onLog, formatNumber, children, comparison, feedback, restoreDetails = false, selectedProductName, onOpenDiary, diaryLabel, onChooseRecipe, onIngredient }: FoodCardProps) {
   const display = useDisplayLanguage();
   const { copy, locale, direction } = getFoodUi(display.enabled ? display.locale : "en");
   const portionId = useId();
   const detailsId = useId();
   const portionRef = useRef<HTMLDivElement>(null);
+  const detailsButtonRef = useRef<HTMLButtonElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
   const wasExpandedRef = useRef(false);
   const detailsRef = useRef<HTMLDivElement>(null);
@@ -105,7 +109,7 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
         >
           {isLogging ? copy.logging : isExpanded ? copy.chooseBelow : copy.logFood}
         </button> : null}
-        <button type="button" onClick={() => { revealDetails.current = !detailsOpen; setDetailsOpen(value => !value); }}
+        <button ref={detailsButtonRef} type="button" onClick={() => { revealDetails.current = !detailsOpen; setDetailsOpen(value => !value); }}
           className="min-h-11 flex-1 rounded-full border-2 border-brand-secondary bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition hover:bg-brand-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-expanded={detailsOpen} aria-controls={detailsId}
           aria-label={formatFoodUi(copy.viewDetails, { product: item.product_name })}>
@@ -137,6 +141,8 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
         className="mt-2 min-h-11 rounded-full border-2 border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary focus-visible:ring-2 focus-visible:ring-brand-secondary">{diaryLabel}</button> : null}
 
       {detailsOpen ? <div id={detailsId} ref={detailsRef} className="mt-3 border-t border-brand-secondary/15 pt-3">
+          <FoodExplore locale={locale} productName={item.product_name} initialSection={restoreDetails ? "comparison" : "nutrition"}
+          onBack={() => { setDetailsOpen(false); detailsButtonRef.current?.focus({ preventScroll: true }); }} backLabel={copy.backToList} nutrition={
           <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <div>
               <span className="inline-flex items-center gap-1.5 text-brand-secondary/80"><FoodPropertyIcon kind="calories" />{copy.calories}</span>
@@ -155,9 +161,9 @@ export function FoodCard({ item, isLogging, imagePriority = false, isDisabled = 
               <p className="font-semibold text-brand-primary"><bdi>{formatNumber(item.carbohydrates)}g</bdi></p>
             </div>
           </div>
-          <FoodLabels food={item} locale={locale} />
-          {comparison}
-          <FoodRecipeIdeas key={item.barcode || item.product_name} food={item} locale={locale} />
+          } comparison={comparison}
+          labels={<FoodLabels food={item} locale={locale} embedded />}
+          recipes={<FoodRecipeIdeas key={item.barcode || item.product_name} food={item} locale={locale} embedded onLog={canLog ? onChooseRecipe : undefined} onIngredient={onIngredient} disabled={isDisabled || isLogging} />} />
         </div> : null}
     </li>
   );

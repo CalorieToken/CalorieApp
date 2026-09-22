@@ -11,6 +11,7 @@ import { XamanLoginPanel, type MeResponse } from "@/components/XamanLoginPanel";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
 import { diaryCopy } from "@/lib/foodDiary";
 import { foodExperience } from "@/lib/foodExperience";
+import { discoveryCopy } from "@/lib/foodDiscovery";
 import { getFoodUi } from "@/lib/foodUi";
 import journeyTranslations from "@/config/testnet-entry-copy.json";
 import setupTranslations from "@/config/account-setup-copy.json";
@@ -34,6 +35,7 @@ export function CalorieAppWorkspace() {
   const [account, setAccount] = useState<MeResponse | null>(null);
   const profileCopy = profileTranslations[locale as keyof typeof profileTranslations] ?? profileTranslations.en;
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("account");
+  const [tabHistory, setTabHistory] = useState<WorkspaceTab[]>([]);
   const [requestedJourney, setRequestedJourney] = useState<{ step: "test" | "move"; serial: number }>();
   const [returnToJourney, setReturnToJourney] = useState(false);
   const [journeyInstance, setJourneyInstance] = useState(0);
@@ -91,7 +93,8 @@ export function CalorieAppWorkspace() {
     }
   }, [ageBand, allowPersonalFeatures]);
 
-  function selectTab(tab: WorkspaceTab, focus = false) {
+  function selectTab(tab: WorkspaceTab, focus = false, remember = true) {
+    if (remember && tab !== visibleTab && visibleTab !== "journey") setTabHistory(history => [...history.slice(-9), visibleTab]);
     setActiveTab(tab);
     if (focus) {
       const index = tabs.findIndex((item) => item.id === tab);
@@ -158,6 +161,14 @@ export function CalorieAppWorkspace() {
     >
       {ageResolved && !allowPersonalFeatures && visibleTab !== "journey" ? <AgeExperienceControl band={ageBand} onChange={setAgeBand} /> : null}
       {!ageResolved || !ageBand ? null : <>
+      {visibleTab !== "journey" ? <div className="sticky top-0 z-20 mb-2 flex min-h-11 flex-wrap items-center justify-between gap-x-3 rounded-lg border border-brand-secondary/15 bg-white px-3 py-1 text-xs text-brand-secondary">
+        <p>CalorieApp <span aria-hidden="true">›</span> <strong>{tabs.find(tab => tab.id === visibleTab)?.label}</strong></p>
+        {tabHistory.length && tabs.some(tab => tab.id === tabHistory[tabHistory.length - 1]) ? <button type="button"
+          onClick={() => { const previous = tabHistory[tabHistory.length - 1]; setTabHistory(history => history.slice(0, -1)); selectTab(previous, true, false); }}
+          className="min-h-11 font-semibold underline focus-visible:ring-2 focus-visible:ring-brand-secondary">
+          ← {discoveryCopy(locale).backToProduct.replace("{food}", tabs.find(tab => tab.id === tabHistory[tabHistory.length - 1])!.label)}
+        </button> : null}
+      </div> : null}
       {allowPersonalFeatures && account && visibleTab !== "journey" ? <button type="button" onClick={() => selectTab("account", true)} className="mb-3 flex min-h-11 max-w-full items-center gap-2 rounded-full border border-brand-primary/20 bg-white px-4 py-2 text-sm font-bold text-brand-primary" data-account-identity>
         <span aria-hidden="true">●</span><bdi className="min-w-0 break-words">{account.nickname ? profileCopy.hello.replace("{nickname}", account.nickname) : profileCopy.account}</bdi>
       </button> : null}

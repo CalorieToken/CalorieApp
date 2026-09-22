@@ -40,6 +40,7 @@ function load(window, document) {
     '@/components/DisplayLanguageProvider': {useDisplayLanguage: () => ({enabled: true, locale: 'nl'})},
     '@/lib/authUi': {getAuthUi: () => ({copy: {accountTools: 'Account'}, locale: 'nl', direction: 'ltr'})},
     '@/lib/foodDiary': {diaryCopy: () => ({title: 'Eetdagboek'})},
+    '@/lib/foodDiscovery': {discoveryCopy: () => ({backToProduct: 'Terug naar {food}'})},
     '@/lib/foodExperience': {foodExperience: () => ({copy: {sourceTitle: 'Basisvoeding', navigation: 'Ga naar'}})},
     '@/lib/foodUi': {getFoodUi: () => ({copy: {searchTitle: 'Product zoeken'}, locale: 'nl', direction: 'ltr'})},
     '@/config/account-profile-copy.json': {default: profileCopy},

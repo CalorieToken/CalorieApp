@@ -2,7 +2,7 @@
   "en": {
     "app": {
       "text": "If a source photo is missing, broken or untrusted, the app shows a neutral local illustration with an OFF, USDA or other-source label. Product results and diary entries now stay inside bounded lists, while portion controls and selected details are brought into view so you do not have to move repeatedly between the top and bottom of the page.",
-      "step": "My account · Search Foods · Basic foods and ingredients · Your food diary"
+      "step": "Account · Search · Basic foods · Food diary. Inside a product: Nutrition · Compare · Recipe ideas · Labels and source. The top bar shows your location and where Back takes you."
     },
     "usda": {
       "text": "USDA supplies nutrient data here, not a product Nutri-Score. A USDA entry is therefore shown as USDA and is not treated as an OFF product with a missing grade.",
@@ -10,18 +10,18 @@
     },
     "test": {
       "text": "This recovery seed stays only in this open tab. CalorieApp and WordPress servers do not receive or save it. After a reload or closing the tab, we cannot recover it.",
-      "step": "To stop, choose “Cancel guide”. Returning to account management only pauses the guide. If you have not confirmed that your recovery code is saved, read and confirm the cancellation message."
+      "step": "To stop, choose “Cancel guide”. Returning to account management only pauses the guide. If you have not confirmed that your recovery code is saved, read and confirm the cancellation message. An app store is where you install apps on your phone. Android uses Google Play (Play Store); iPhone uses the App Store. The button below opens the correct Xaman listing. Keep these instructions open on your computer. Pick up your phone and choose Android or iPhone below. Install Xaman on that phone."
     },
     "compare": {
       "text": "Alternatives can come from different brands. A better listed Nutri-Score is highlighted only for recognised similar foods with known grades; it is not a personal health recommendation. Grades reported by Open Food Facts; check the label. Ingredients, allergens and score versions can differ. A search direction for your preferences. Environmental impact and animal-welfare standards are not verified; check ingredients and certification. Recorded by Open Food Facts, not independently verified by CalorieApp. Check the packaging. Missing information means unknown, not uncertified.",
-      "step": "Open the product details and choose Also compare. Search other brands, or explore plant-based options where offered. Check the ingredients and labels before choosing. Organic label / Animal welfare label: No matching alternative with this recorded label in these results."
+      "step": "Compare → Filter alternatives → Different brand → Better recorded Nutri-Score → Organic label → Animal welfare label"
     },
     "account": {
       "text": "The login panel opens near the bottom of the screen without moving the page to the top or closing the expanded app view. After successful sign-in, the page still refreshes to update your account.",
       "step": "Choose an existing account to sign in with Xaman, or Guided setup for the test-account steps. Never enter your recovery seed in Help or the FAQ."
     },
     "diary": {
-      "text": "After saving a portion, use the Diary button to open your diary. Moving between tabs does not save another portion.",
+      "text": "After saving a portion, use the Diary button to open your diary. Moving between tabs does not save another portion. Log by number of pieces: No count on the pack? Count them yourself. Use the net weight without packaging and check that nutrition is per 100 g. We assume equal-size pieces; weigh your portion if they differ.",
       "step": "Choose Add food to return to food search. At the end of a results list, continue scrolling to move through the page."
     },
     "search": {
@@ -29,14 +29,14 @@
       "step": "Choose your portion and save it explicitly. Small icons beside the text identify calories, protein, fat and carbohydrates; the leaf identifies a plant-based search option, not a certification."
     },
     "recipes": {
-      "text": "Ideas to adapt, not calculated meals. Check ingredients, allergens and any halal or kosher certification. Add the amounts you use to your diary yourself. Ideas to explore, not medical or dietetic advice. Similar foods can have different ingredients, allergens and preparation. Check the label and your amount; you decide what to choose or log.",
-      "step": "Eating style → Cuisine inspiration → Meal. No matching idea in this small selection yet, or not enough product information for your eating style. You can change your preferences."
+      "text": "Choose a cuisine, eating style or meal. Open a base recipe and optionally choose a variation. Log a serving as an estimate. Check ingredients, allergens and any halal or kosher certification. Serving illustration; ingredients may differ.",
+      "step": "Open a recipe → choose the base recipe or a variation → check ingredients and estimates → choose servings → Log this recipe → review and confirm. View in USDA opens an ingredient; use Back to return."
     }
   },
   "nl": {
     "app": {
       "text": "Ontbreekt de bronfoto, werkt die niet of is de URL niet vertrouwd, dan toont de app een neutrale lokale illustratie met het label OFF, USDA of overige bron. Productresultaten en dagboekregels blijven nu in begrensde lijsten, terwijl de portiekeuze en geselecteerde details in beeld worden gebracht; je hoeft daardoor niet steeds van boven naar beneden te scrollen.",
-      "step": "Mijn account · Voedingsmiddelen zoeken · Basisvoeding en ingrediënten · Jouw voedingsdagboek"
+      "step": "Je account · Zoeken · Basisvoeding · Eetdagboek. Binnen een product: Voeding · Vergelijken · Receptideeën · Keurmerken en bron. Bovenaan zie je waar je bent en waar Terug je brengt."
     },
     "usda": {
       "text": "USDA levert hier voedingsgegevens, geen Nutri-Score voor het product. Een USDA-registratie staat daarom als USDA en niet als OFF-product met een ontbrekende score.",
@@ -44,18 +44,18 @@
     },
     "test": {
       "text": "Deze herstelcode blijft alleen in dit geopende tabblad. De servers van CalorieApp en WordPress ontvangen of bewaren hem niet. Na vernieuwen of sluiten kunnen wij hem niet terughalen.",
-      "step": "Stoppen doe je met “Stappenplan annuleren”. Teruggaan naar Accountbeheer pauzeert het stappenplan alleen. Heb je nog niet bevestigd dat je de herstelcode hebt bewaard, lees en bevestig dan de annuleringsmelding."
+      "step": "Stoppen doe je met “Stappenplan annuleren”. Teruggaan naar Accountbeheer pauzeert het stappenplan alleen. Heb je nog niet bevestigd dat je de herstelcode hebt bewaard, lees en bevestig dan de annuleringsmelding. De appwinkel is de plek waar je apps op je telefoon zet. Android gebruikt Google Play (Play Store); iPhone gebruikt de App Store. De knop hieronder opent meteen de juiste Xaman-pagina. Laat deze uitleg op je computer openstaan. Pak je telefoon en kies hieronder Android of iPhone. Xaman installeer je op die telefoon."
     },
     "compare": {
       "text": "Alternatieven kunnen van verschillende merken komen. Een betere vermelde Nutri-Score wordt alleen uitgelicht bij herkende vergelijkbare voeding met bekende scores; dit is geen persoonlijk gezondheidsadvies. Scores volgens Open Food Facts; controleer het etiket. Ingrediënten, allergenen en scoreversies kunnen verschillen. Een zoekrichting die bij je voorkeuren kan passen. Milieu-impact en dierenwelzijn zijn niet geverifieerd; controleer ingrediënten en keurmerken. Vermeld door Open Food Facts, niet onafhankelijk gecontroleerd door CalorieApp. Controleer de verpakking. Ontbrekende informatie betekent onbekend, niet ongecertificeerd.",
-      "step": "Open de productdetails en kies Vergelijk ook. Zoek andere merken of bekijk plantaardige opties waar die worden aangeboden. Controleer ingrediënten en etiketten voordat je kiest. Biologisch label / Dierenwelzijnslabel: In deze resultaten staat geen passend alternatief met dit vermelde label."
+      "step": "Vergelijken → Alternatieven filteren → Ander merk → Betere geregistreerde Nutri-Score → Biologisch label → Dierenwelzijnslabel"
     },
     "account": {
       "text": "Het inlogpaneel opent onderaan in beeld zonder de pagina naar boven te verplaatsen of de vergrote appweergave te sluiten. Na succesvol inloggen wordt de pagina nog wel vernieuwd om je account bij te werken.",
       "step": "Kies een bestaand account om met Xaman in te loggen, of Begeleide start voor de stappen van een testaccount. Vul je herstelcode nooit in bij Help of de FAQ."
     },
     "diary": {
-      "text": "Na het opslaan van een portie kun je met de knop Eetdagboek naar je dagboek. Wisselen van tabblad slaat niet nogmaals een portie op.",
+      "text": "Na het opslaan van een portie kun je met de knop Eetdagboek naar je dagboek. Wisselen van tabblad slaat niet nogmaals een portie op. Log op aantal stuks: Staat het aantal niet op het pak? Tel zelf. Gebruik het nettogewicht (zonder verpakking) en controleer dat de voedingswaarden per 100 g zijn. We rekenen met even zware stuks; weeg je portie bij ongelijke stuks.",
       "step": "Kies Voeding toevoegen om terug te gaan naar zoeken. Aan het einde van een resultatenlijst kun je verder scrollen door de pagina."
     },
     "search": {
@@ -63,8 +63,8 @@
       "step": "Kies je portie en sla deze zelf op. Kleine icoontjes naast de tekst duiden calorieën, eiwitten, vetten en koolhydraten aan; het blaadje duidt een plantaardige zoekoptie aan, geen keurmerk."
     },
     "recipes": {
-      "text": "Ideeën om zelf aan te passen, geen berekende maaltijden. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Voeg gebruikte hoeveelheden zelf toe aan je dagboek. Ideeën om te bekijken, geen medisch of diëtistisch advies. Vergelijkbare producten kunnen andere ingrediënten, allergenen en bereidingswijzen hebben. Controleer het etiket en je hoeveelheid; je kiest zelf wat je bekijkt of logt.",
-      "step": "Eetstijl → Keukeninspiratie → Eetmoment. Nog geen passend idee in deze kleine selectie, of onvoldoende productinformatie voor je eetstijl. Je kunt je voorkeuren aanpassen."
+      "text": "Kies een keuken, eetstijl of eetmoment. Open een basisrecept en kies eventueel een variant. Je kunt een portie als schatting loggen. Controleer ingrediënten, allergenen en eventuele halal- of koosjere keurmerken. Serveersuggestie als illustratie; ingrediënten kunnen afwijken.",
+      "step": "Open een recept → kies Basisrecept of een variant → bekijk ingrediënten en geschatte waarden → kies je aantal porties → Log dit recept → controleer en bevestig. Via Bekijk in USDA kun je een ingrediënt onderzoeken; gebruik Terug om terug te keren."
     }
   },
   "zh-Hans": {
@@ -78,18 +78,18 @@
     },
     "test": {
       "text": "恢复密钥仅保留在当前打开的标签页中。CalorieApp 和 WordPress 服务器不会接收或保存它。刷新或关闭标签页后，我们无法找回。",
-      "step": "若要停止，请选择“取消指南”。返回账户管理只会暂停指南。如果尚未确认已保存恢复码，请阅读并确认取消提示。"
+      "step": "若要停止，请选择“取消指南”。返回账户管理只会暂停指南。如果尚未确认已保存恢复码，请阅读并确认取消提示。 应用商店用于安装手机应用：Android 使用 Google Play，iPhone 使用 App Store。下方按钮会打开 Xaman 页面。 在电脑上保留此指南。拿起手机，选择 Android 或 iPhone，并在手机上安装 Xaman。"
     },
     "compare": {
       "text": "替代品可来自不同品牌。只有识别为同类食品且双方等级已知时，才突出显示来源中更好的 Nutri-Score；这不是个人健康建议。 评分来自 Open Food Facts；请核对标签。配料、过敏原和评分版本可能不同。 根据你的偏好提供搜索方向。环境影响和动物福利标准未经核实；请查看配料和认证。 由 Open Food Facts 记录，未经 CalorieApp 独立核实。请查看包装。资料缺失表示未知，并非未认证。",
-      "step": "打开产品详情并选择比较。搜索其他品牌，或在提供时查看植物性选项。选择前检查配料和标签。 有机标签 / 动物福利标签: 这些结果中没有带此记录标签的合适替代品。"
+      "step": "也可以比较 → 筛选替代食品 → 其他品牌 → 记录的 Nutri-Score 更优 → 有机标签 → 动物福利标签"
     },
     "account": {
       "text": "登录面板在屏幕下方打开，不会将页面跳到顶部或关闭放大的应用视图。登录成功后，页面仍会刷新以更新账户。",
       "step": "选择已有账户以通过 Xaman 登录，或选择引导设置查看测试账户步骤。切勿在帮助或 FAQ 中输入恢复密钥。"
     },
     "diary": {
-      "text": "保存份量后，使用日记按钮打开日记。切换标签不会再次保存份量。",
+      "text": "保存份量后，使用日记按钮打开日记。切换标签不会再次保存份量。 按个数记录: 包装未标数量时可自行数。使用净重及每100克营养值。默认每个等重；不等重时请称量食用份量。",
       "step": "选择添加食物返回搜索。滚动到结果列表末尾后，可继续滚动页面。"
     },
     "search": {
@@ -97,8 +97,8 @@
       "step": "选择份量并自行保存。文字旁的小图标表示热量、蛋白质、脂肪和碳水化合物；叶片表示植物性搜索选项，并非认证。"
     },
     "recipes": {
-      "text": "可自行调整的灵感，并非已计算营养的餐食。请核对配料、过敏原及清真或犹太洁食认证。自行记录实际用量。 这些是供您探索的选项，不是医生或营养师的建议。相似食品的配料、过敏原和做法可能不同。请核对标签和食用量，由您决定选择或记录哪一种。",
-      "step": "饮食方式 → 菜系灵感 → 用餐时间. 这个小型精选集中暂无匹配灵感，或产品信息不足以确认饮食方式。可调整偏好。"
+      "text": "选择菜系、饮食方式或用餐时间。打开基础食谱并选择变化版本。可将一份估算值记入日记。请核对食材、过敏原及清真或犹太洁食认证。 食用示意图；配料可能不同。",
+      "step": "营养信息 → 食谱灵感 → 饮食方式 → 菜系灵感 → 用餐时间"
     }
   },
   "hi": {
@@ -112,18 +112,18 @@
     },
     "test": {
       "text": "यह रिकवरी सीड केवल इस खुले टैब में रहता है। CalorieApp और WordPress के सर्वर इसे प्राप्त या सहेजते नहीं हैं। टैब रीफ़्रेश या बंद करने के बाद हम इसे वापस नहीं ला सकते।",
-      "step": "रोकने के लिए “गाइड रद्द करें” चुनें। खाता प्रबंधन पर लौटने से गाइड केवल रुकती है। अगर आपने रिकवरी कोड सुरक्षित रखने की पुष्टि नहीं की है, तो रद्द करने का संदेश पढ़कर पुष्टि करें।"
+      "step": "रोकने के लिए “गाइड रद्द करें” चुनें। खाता प्रबंधन पर लौटने से गाइड केवल रुकती है। अगर आपने रिकवरी कोड सुरक्षित रखने की पुष्टि नहीं की है, तो रद्द करने का संदेश पढ़कर पुष्टि करें। ऐप स्टोर से फ़ोन में ऐप लगते हैं: Android पर Google Play और iPhone पर App Store। नीचे का बटन Xaman का पेज खोलेगा। यह गाइड कंप्यूटर पर खुली रखें। फ़ोन लें और Android या iPhone चुनें। Xaman उसी फ़ोन पर लगाएँ।"
     },
     "compare": {
       "text": "विकल्प अलग-अलग ब्रांड के हो सकते हैं। बेहतर दर्ज Nutri-Score केवल पहचाने गए समान खाद्य पदार्थों और ज्ञात ग्रेड के लिए दिखता है; यह व्यक्तिगत स्वास्थ्य सलाह नहीं है। स्कोर Open Food Facts से हैं; लेबल जाँचें। सामग्री, एलर्जेन और स्कोर के संस्करण अलग हो सकते हैं। आपकी पसंद के अनुसार खोज का सुझाव। पर्यावरणीय प्रभाव और पशु कल्याण मानक सत्यापित नहीं हैं; सामग्री और प्रमाणन जाँचें। Open Food Facts में दर्ज, CalorieApp ने स्वतंत्र पुष्टि नहीं की। पैकेज जाँचें। जानकारी न होने का अर्थ अज्ञात है, अप्रमाणित नहीं।",
-      "step": "उत्पाद विवरण खोलकर तुलना चुनें। दूसरे ब्रांड खोजें या उपलब्ध पौध-आधारित विकल्प देखें। चुनने से पहले सामग्री और लेबल जाँचें। जैविक लेबल / पशु कल्याण लेबल: इन परिणामों में इस दर्ज लेबल वाला उपयुक्त विकल्प नहीं है।"
+      "step": "इनसे भी तुलना करें → विकल्प छाँटें → अन्य ब्रांड → दर्ज Nutri-Score बेहतर → जैविक लेबल → पशु कल्याण लेबल"
     },
     "account": {
       "text": "लॉगिन पैनल नीचे खुलता है, पृष्ठ ऊपर नहीं कूदता और बड़ा ऐप दृश्य बंद नहीं होता। सफल लॉगिन के बाद खाता अपडेट करने के लिए पृष्ठ फिर भी रीफ़्रेश होता है।",
       "step": "Xaman से प्रवेश के लिए मौजूदा खाता चुनें या परीक्षण खाते के लिए निर्देशित सेटअप। सहायता या FAQ में रिकवरी सीड कभी न डालें।"
     },
     "diary": {
-      "text": "मात्रा सहेजने के बाद डायरी बटन से डायरी खोलें। टैब बदलने पर मात्रा फिर से नहीं सहेजी जाती।",
+      "text": "मात्रा सहेजने के बाद डायरी बटन से डायरी खोलें। टैब बदलने पर मात्रा फिर से नहीं सहेजी जाती। संख्या से दर्ज करें: पैक पर संख्या न हो तो खुद गिनें। शुद्ध वजन और प्रति 100 ग्राम मान लें। टुकड़े बराबर माने जाते हैं; अलग हों तो अपनी मात्रा तौलें।",
       "step": "खोज पर लौटने के लिए भोजन जोड़ें चुनें। परिणाम सूची के अंत में पृष्ठ पर आगे स्क्रॉल कर सकते हैं।"
     },
     "search": {
@@ -131,8 +131,8 @@
       "step": "मात्रा चुनकर स्वयं सहेजें। पाठ के पास चिह्न कैलोरी, प्रोटीन, वसा और कार्बोहाइड्रेट बताते हैं; पत्ती पौध-आधारित खोज का संकेत है, प्रमाणन नहीं।"
     },
     "recipes": {
-      "text": "बदलने योग्य विचार, गणना किया हुआ भोजन नहीं। सामग्री, एलर्जेन और हलाल या कोशर प्रमाणन जाँचें। इस्तेमाल की मात्रा खुद डायरी में जोड़ें। ये देखने के लिए विकल्प हैं, डॉक्टर या आहार विशेषज्ञ की सलाह नहीं। मिलते-जुलते खाद्य पदार्थों की सामग्री, एलर्जी कारक और तैयारी अलग हो सकती है। लेबल और मात्रा जाँचें; क्या चुनना या दर्ज करना है, यह आप तय करते हैं।",
-      "step": "खान-पान शैली → पाकशैली प्रेरणा → भोजन का समय. इस छोटे चयन में अभी उपयुक्त विचार नहीं है या आपकी शैली के लिए उत्पाद जानकारी कम है। प्राथमिकताएँ बदल सकते हैं।"
+      "text": "व्यंजन, खानपान शैली या समय चुनें। मूल रेसिपी खोलें और चाहें तो बदलाव चुनें। एक परोस का अनुमान दर्ज कर सकते हैं। सामग्री, एलर्जी और हलाल या कोशर प्रमाणन जाँचें। परोसने का चित्र; सामग्री अलग हो सकती है।",
+      "step": "पोषण → रेसिपी के विचार → खान-पान शैली → पाकशैली प्रेरणा → भोजन का समय"
     }
   },
   "es": {
@@ -146,18 +146,18 @@
     },
     "test": {
       "text": "Esta clave solo permanece en esta pestaña abierta. Los servidores de CalorieApp y WordPress no la reciben ni la guardan. No podemos recuperarla tras recargar o cerrar la pestaña.",
-      "step": "Para detenerlo, elige « Cancelar guía ». Volver a la gestión de la cuenta solo pausa la guía. Si no has confirmado que guardaste el código de recuperación, lee y confirma el mensaje de cancelación."
+      "step": "Para detenerlo, elige « Cancelar guía ». Volver a la gestión de la cuenta solo pausa la guía. Si no has confirmado que guardaste el código de recuperación, lee y confirma el mensaje de cancelación. La tienda sirve para instalar aplicaciones: Google Play en Android y App Store en iPhone. El botón abre la ficha de Xaman. Deja esta guía abierta en el ordenador. Toma tu teléfono y elige Android o iPhone. Instala Xaman en ese teléfono."
     },
     "compare": {
       "text": "Las alternativas pueden ser de marcas distintas. Solo se destaca un Nutri-Score publicado mejor entre alimentos similares reconocidos con notas conocidas; no es consejo de salud personal. Puntuaciones de Open Food Facts; comprueba la etiqueta. Los ingredientes, alérgenos y versiones del cálculo pueden variar. Una orientación de búsqueda según tus preferencias. El impacto ambiental y el bienestar animal no están verificados; revisa ingredientes y certificaciones. Registrado por Open Food Facts, sin verificación independiente de CalorieApp. Revisa el envase. Sin datos significa desconocido, no sin certificar.",
-      "step": "Abre los detalles y elige comparar. Busca otras marcas u opciones vegetales cuando se ofrezcan. Revisa ingredientes y etiquetas antes de elegir. Etiqueta ecológica / Sello de bienestar animal: No hay alternativas adecuadas con esta etiqueta registrada en estos resultados."
+      "step": "Compara también → Filtrar alternativas → Otra marca → Mejor Nutri-Score registrado → Etiqueta ecológica → Sello de bienestar animal"
     },
     "account": {
       "text": "El panel de acceso se abre abajo sin saltar al inicio ni cerrar la vista ampliada. Tras iniciar sesión, la página se actualiza para mostrar tu cuenta.",
       "step": "Elige una cuenta existente para entrar con Xaman o la configuración guiada para una cuenta de prueba. Nunca escribas tu semilla de recuperación en Ayuda o FAQ."
     },
     "diary": {
-      "text": "Tras guardar una porción, abre el diario con su botón. Cambiar de pestaña no vuelve a guardar la porción.",
+      "text": "Tras guardar una porción, abre el diario con su botón. Cambiar de pestaña no vuelve a guardar la porción. Registrar por unidades: Cuenta las unidades si faltan. Usa el peso neto y valores por 100 g. Se suponen unidades iguales; pesa la porción si son distintas.",
       "step": "Elige añadir alimento para volver a buscar. Al final de la lista de resultados puedes seguir desplazándote por la página."
     },
     "search": {
@@ -165,8 +165,8 @@
       "step": "Elige la porción y guárdala expresamente. Los iconos junto al texto indican calorías, proteínas, grasas y carbohidratos; la hoja indica una búsqueda vegetal, no una certificación."
     },
     "recipes": {
-      "text": "Ideas adaptables, sin cálculos nutricionales de la comida. Revisa ingredientes, alérgenos y certificaciones halal o kosher. Registra tú las cantidades usadas. Ideas para explorar, no consejos médicos ni dietéticos. Los alimentos similares pueden tener ingredientes, alérgenos y preparaciones diferentes. Revisa la etiqueta y la cantidad; tú decides qué elegir o registrar.",
-      "step": "Estilo de alimentación → Inspiración culinaria → Comida. Esta pequeña selección aún no incluye una idea adecuada, o faltan datos para tu estilo de alimentación. Puedes cambiar tus preferencias."
+      "text": "Elige cocina, estilo o comida. Abre una receta y una variante si deseas. Registra una porción estimada. Comprueba ingredientes, alérgenos y certificaciones halal o kosher. Ilustración orientativa; los ingredientes pueden variar.",
+      "step": "Nutrición → Ideas de recetas → Estilo de alimentación → Inspiración culinaria → Comida"
     }
   },
   "ar": {
@@ -180,18 +180,18 @@
     },
     "test": {
       "text": "يبقى مفتاح الاسترداد في علامة التبويب المفتوحة هذه فقط. لا تستقبله خوادم CalorieApp وWordPress ولا تحفظه. بعد تحديث علامة التبويب أو إغلاقها لا يمكننا استعادته.",
-      "step": "للتوقف اختر «إلغاء الدليل». الرجوع إلى إدارة الحساب يوقف الدليل مؤقتًا فقط. إذا لم تؤكد حفظ رمز الاسترداد، فاقرأ رسالة الإلغاء وأكدها."
+      "step": "للتوقف اختر «إلغاء الدليل». الرجوع إلى إدارة الحساب يوقف الدليل مؤقتًا فقط. إذا لم تؤكد حفظ رمز الاسترداد، فاقرأ رسالة الإلغاء وأكدها. متجر التطبيقات لتثبيت التطبيقات: Google Play على Android وApp Store على iPhone. الزر يفتح صفحة Xaman. أبقِ الدليل مفتوحاً على الحاسوب. خذ هاتفك واختر Android أو iPhone. ثبّت Xaman على الهاتف."
     },
     "compare": {
       "text": "قد تأتي البدائل من علامات مختلفة. لا تُبرز درجة Nutri-Score المسجلة الأفضل إلا لأطعمة متشابهة معروفة التصنيف؛ وليست نصيحة صحية شخصية. الدرجات من Open Food Facts؛ تحقّق من الملصق. قد تختلف المكونات ومسببات الحساسية وإصدارات التقييم. اتجاه للبحث يناسب تفضيلاتك. لم يتم التحقق من الأثر البيئي ومعايير الرفق بالحيوان؛ راجع المكونات والشهادات. مسجل في Open Food Facts ولم تتحقق منه CalorieApp مستقلاً. راجع العبوة. غياب المعلومات يعني غير معروف وليس غير معتمد.",
-      "step": "افتح تفاصيل المنتج واختر المقارنة. ابحث عن علامات أخرى أو خيارات نباتية عند توفرها. تحقق من المكونات والملصقات قبل الاختيار. ملصق عضوي / ملصق رعاية الحيوان: لا بديل مناسب بهذا الملصق المسجل ضمن هذه النتائج."
+      "step": "قارن أيضًا → تصفية البدائل → علامة تجارية أخرى → Nutri-Score مسجّل أفضل → ملصق عضوي → ملصق رعاية الحيوان"
     },
     "account": {
       "text": "تفتح لوحة الدخول أسفل الشاشة دون الانتقال لأعلى الصفحة أو إغلاق العرض الموسع. بعد نجاح الدخول تُحدّث الصفحة لعرض حسابك.",
       "step": "اختر حساباً موجوداً للدخول عبر Xaman أو الإعداد الموجّه لحساب تجريبي. لا تدخل عبارة الاسترداد أبداً في المساعدة أو الأسئلة الشائعة."
     },
     "diary": {
-      "text": "بعد حفظ الحصة افتح اليوميات بزرها. تغيير التبويب لا يحفظ الحصة مرة أخرى.",
+      "text": "بعد حفظ الحصة افتح اليوميات بزرها. تغيير التبويب لا يحفظ الحصة مرة أخرى. التسجيل بعدد القطع: عُدّ القطع إذا لم يُذكر عددها. استخدم الوزن الصافي والقيم لكل 100 غرام. نفترض قطعاً متساوية؛ زِن الحصة إذا اختلفت.",
       "step": "اختر إضافة طعام للعودة إلى البحث. عند نهاية قائمة النتائج يمكنك متابعة تمرير الصفحة."
     },
     "search": {
@@ -199,8 +199,8 @@
       "step": "اختر الحصة واحفظها بنفسك. الرموز بجوار النص تشير للسعرات والبروتين والدهون والكربوهيدرات؛ الورقة تشير لبحث نباتي وليست شهادة اعتماد."
     },
     "recipes": {
-      "text": "أفكار قابلة للتعديل وليست وجبات محسوبة غذائياً. راجع المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. سجّل الكميات المستخدمة بنفسك. أفكار للاستكشاف، وليست نصيحة طبية أو من اختصاصي تغذية. قد تختلف مكونات الأغذية المتشابهة ومسببات الحساسية وطرق تحضيرها. راجع الملصق والكمية؛ أنت تختار ما تريد استخدامه أو تسجيله.",
-      "step": "نمط الأكل → إلهام المطبخ → الوجبة. لا فكرة مناسبة بعد ضمن هذه المجموعة الصغيرة، أو معلومات المنتج غير كافية لنمط أكلك. يمكنك تغيير التفضيلات."
+      "text": "اختر المطبخ أو نمط الأكل أو الوجبة. افتح وصفة واختر تنويعًا إن رغبت. سجّل الحصة كتقدير. تحقّق من المكونات ومسببات الحساسية وشهادات الحلال أو الكوشر. رسم توضيحي للتقديم؛ قد تختلف المكونات.",
+      "step": "القيم الغذائية → أفكار وصفات → نمط الأكل → إلهام المطبخ → الوجبة"
     }
   },
   "fr": {
@@ -214,18 +214,18 @@
     },
     "test": {
       "text": "Cette clé reste uniquement dans cet onglet ouvert. Les serveurs de CalorieApp et de WordPress ne la reçoivent ni ne la conservent. Après actualisation ou fermeture de l’onglet, nous ne pouvons pas la récupérer.",
-      "step": "Pour arrêter, choisissez « Annuler le guide ». Revenir à la gestion du compte met seulement le guide en pause. Si vous n’avez pas confirmé la sauvegarde du code de récupération, lisez puis confirmez le message d’annulation."
+      "step": "Pour arrêter, choisissez « Annuler le guide ». Revenir à la gestion du compte met seulement le guide en pause. Si vous n’avez pas confirmé la sauvegarde du code de récupération, lisez puis confirmez le message d’annulation. La boutique permet d’installer des applications : Google Play sur Android, App Store sur iPhone. Le bouton ouvre la fiche Xaman. Gardez ce guide ouvert sur votre ordinateur. Prenez votre téléphone et choisissez Android ou iPhone. Installez Xaman sur ce téléphone."
     },
     "compare": {
       "text": "Les alternatives peuvent provenir de différentes marques. Un meilleur Nutri-Score déclaré est signalé uniquement pour des aliments reconnus similaires dont les notes sont connues ; ce n’est pas un conseil de santé personnel. Scores fournis par Open Food Facts ; vérifiez l’étiquette. Les ingrédients, allergènes et versions du calcul peuvent varier. Une piste de recherche selon vos préférences. L’impact environnemental et le bien-être animal ne sont pas vérifiés ; consultez ingrédients et certifications. Indiqué par Open Food Facts, sans vérification indépendante de CalorieApp. Vérifiez l’emballage. Une information absente signifie inconnu, pas non certifié.",
-      "step": "Ouvrez les détails et choisissez de comparer. Cherchez d’autres marques ou explorez les options végétales proposées. Vérifiez ingrédients et étiquettes avant de choisir. Label biologique / Label de bien-être animal: Aucune alternative adaptée avec ce label indiqué dans ces résultats."
+      "step": "Comparez aussi → Filtrer les alternatives → Autre marque → Meilleur Nutri-Score enregistré → Label biologique → Label de bien-être animal"
     },
     "account": {
       "text": "Le panneau de connexion s’ouvre en bas sans remonter la page ni fermer la vue agrandie. Après connexion, la page est actualisée pour mettre à jour votre compte.",
       "step": "Choisissez un compte existant pour vous connecter avec Xaman, ou la configuration guidée pour un compte de test. Ne saisissez jamais votre phrase de récupération dans Aide ou FAQ."
     },
     "diary": {
-      "text": "Après avoir enregistré une portion, ouvrez le journal avec son bouton. Changer d’onglet n’enregistre pas une seconde portion.",
+      "text": "Après avoir enregistré une portion, ouvrez le journal avec son bouton. Changer d’onglet n’enregistre pas une seconde portion. Enregistrer par nombre de pièces: Comptez les pièces si nécessaire. Utilisez le poids net et les valeurs pour 100 g. Les pièces sont supposées égales ; sinon, pesez la portion.",
       "step": "Choisissez Ajouter un aliment pour revenir à la recherche. En fin de liste, continuez à faire défiler la page."
     },
     "search": {
@@ -233,8 +233,8 @@
       "step": "Choisissez la portion puis enregistrez-la. Les icônes accompagnent les libellés calories, protéines, lipides et glucides ; la feuille indique une recherche végétale, pas une certification."
     },
     "recipes": {
-      "text": "Des idées à adapter, sans calcul nutritionnel du repas. Vérifiez ingrédients, allergènes et certifications halal ou casher. Enregistrez vous-même les quantités utilisées. Des pistes à explorer, pas des conseils médicaux ou diététiques. Des aliments similaires peuvent avoir des ingrédients, des allergènes et des préparations différents. Vérifiez l’étiquette et la quantité ; vous choisissez quoi consulter ou enregistrer.",
-      "step": "Style alimentaire → Inspiration culinaire → Repas. Pas encore d’idée adaptée dans cette petite sélection, ou informations insuffisantes pour votre style alimentaire. Vous pouvez modifier vos préférences."
+      "text": "Choisissez une cuisine, un style ou un repas. Ouvrez une recette et une variante au choix. Enregistrez une portion estimée. Vérifiez ingrédients, allergènes et certifications halal ou casher. Illustration de présentation ; les ingrédients peuvent varier.",
+      "step": "Nutrition → Idées de recettes → Style alimentaire → Inspiration culinaire → Repas"
     }
   },
   "bn": {
@@ -248,18 +248,18 @@
     },
     "test": {
       "text": "এই রিকভারি কোড শুধু এই খোলা ট্যাবেই থাকে। CalorieApp ও WordPress-এর সার্ভার এটি গ্রহণ বা সংরক্ষণ করে না। ট্যাব রিফ্রেশ বা বন্ধ করার পর আমরা এটি ফিরিয়ে দিতে পারব না।",
-      "step": "থামাতে “নির্দেশিকা বাতিল করুন” বেছে নিন। অ্যাকাউন্ট পরিচালনায় ফিরে গেলে নির্দেশিকা শুধু বিরতিতে থাকে। পুনরুদ্ধার কোড সংরক্ষণের নিশ্চয়তা না দিলে বাতিলের বার্তাটি পড়ে নিশ্চিত করুন।"
+      "step": "থামাতে “নির্দেশিকা বাতিল করুন” বেছে নিন। অ্যাকাউন্ট পরিচালনায় ফিরে গেলে নির্দেশিকা শুধু বিরতিতে থাকে। পুনরুদ্ধার কোড সংরক্ষণের নিশ্চয়তা না দিলে বাতিলের বার্তাটি পড়ে নিশ্চিত করুন। অ্যাপ স্টোর থেকে ফোনে অ্যাপ ইনস্টল হয়: Android-এ Google Play, iPhone-এ App Store। নিচের বোতাম Xaman-এর পৃষ্ঠা খুলবে। কম্পিউটারে নির্দেশনা খোলা রাখুন। ফোন নিয়ে Android বা iPhone বাছুন। সেই ফোনে Xaman ইনস্টল করুন।"
     },
     "compare": {
       "text": "বিকল্প ভিন্ন ব্র্যান্ডের হতে পারে। পরিচিত একই ধরনের খাবারের জানা গ্রেড থাকলেই ভালো নথিভুক্ত Nutri-Score দেখানো হয়; এটি ব্যক্তিগত স্বাস্থ্য পরামর্শ নয়। স্কোর Open Food Facts থেকে; লেবেল যাচাই করুন। উপাদান, অ্যালার্জেন ও স্কোরের সংস্করণ আলাদা হতে পারে। আপনার পছন্দ অনুযায়ী খোঁজার একটি দিক। পরিবেশগত প্রভাব ও প্রাণীকল্যাণের মান যাচাই করা হয়নি; উপাদান ও সনদ দেখুন। Open Food Facts-এ নথিভুক্ত, CalorieApp স্বাধীনভাবে যাচাই করেনি। প্যাকেট দেখুন। তথ্য না থাকা মানে অজানা, অসনদপ্রাপ্ত নয়।",
-      "step": "পণ্যের বিবরণ খুলে তুলনা বেছে নিন। অন্য ব্র্যান্ড খুঁজুন বা থাকলে উদ্ভিদভিত্তিক বিকল্প দেখুন। বাছার আগে উপাদান ও লেবেল যাচাই করুন। জৈব লেবেল / প্রাণীকল্যাণ লেবেল: এই ফলে এই নথিভুক্ত লেবেলসহ উপযুক্ত বিকল্প নেই।"
+      "step": "এগুলোর সঙ্গেও তুলনা করুন → বিকল্প বাছাই → অন্য ব্র্যান্ড → নথিভুক্ত Nutri-Score তুলনায় ভালো → জৈব লেবেল → প্রাণীকল্যাণ লেবেল"
     },
     "account": {
       "text": "লগইন প্যানেল নিচে খোলে, পৃষ্ঠা উপরে লাফায় না এবং বড় অ্যাপ ভিউ বন্ধ হয় না। সফল লগইনের পর অ্যাকাউন্ট আপডেট করতে পৃষ্ঠা তবু রিফ্রেশ হয়।",
       "step": "Xaman দিয়ে ঢুকতে বিদ্যমান অ্যাকাউন্ট বা পরীক্ষার অ্যাকাউন্টের জন্য নির্দেশিত সেটআপ বেছে নিন। সাহায্য বা FAQ-তে রিকভারি সিড দেবেন না।"
     },
     "diary": {
-      "text": "পরিমাণ সংরক্ষণের পর ডায়েরি বোতামে ডায়েরি খুলুন। ট্যাব বদলালে আবার সংরক্ষণ হয় না।",
+      "text": "পরিমাণ সংরক্ষণের পর ডায়েরি বোতামে ডায়েরি খুলুন। ট্যাব বদলালে আবার সংরক্ষণ হয় না। টুকরোর সংখ্যা দিয়ে লিখুন: প্যাকেটে সংখ্যা না থাকলে গুনে নিন। নিট ওজন ও প্রতি ১০০ গ্রাম মান ব্যবহার করুন। সমান টুকরো ধরা হয়; অসমান হলে খাওয়ার অংশ ওজন করুন।",
       "step": "খোঁজায় ফিরতে খাবার যোগ করুন বেছে নিন। ফলের তালিকা শেষে পৃষ্ঠা স্ক্রল করা চালিয়ে যেতে পারেন।"
     },
     "search": {
@@ -267,8 +267,8 @@
       "step": "পরিমাণ বেছে নিজে সংরক্ষণ করুন। লেখার পাশের আইকন ক্যালরি, প্রোটিন, চর্বি ও কার্বোহাইড্রেট বোঝায়; পাতা উদ্ভিদভিত্তিক খোঁজ বোঝায়, সনদ নয়।"
     },
     "recipes": {
-      "text": "বদলানো যায় এমন ধারণা, পুষ্টি গণনা করা খাবার নয়। উপাদান, অ্যালার্জেন ও হালাল বা কোশার সনদ দেখুন। ব্যবহৃত পরিমাণ নিজে ডায়েরিতে লিখুন। এগুলো দেখার জন্য কিছু ধারণা, চিকিৎসক বা পুষ্টিবিদের পরামর্শ নয়। একই রকম খাবারের উপাদান, অ্যালার্জেন ও প্রস্তুতপ্রণালি আলাদা হতে পারে। লেবেল ও পরিমাণ যাচাই করুন; কী বাছবেন বা লিখে রাখবেন, সিদ্ধান্ত আপনার।",
-      "step": "খাদ্যাভ্যাস → রান্নার অনুপ্রেরণা → খাবারের সময়. এই ছোট নির্বাচনে উপযুক্ত ধারণা নেই, বা আপনার খাদ্যাভ্যাসের জন্য পণ্যের তথ্য কম। পছন্দ বদলাতে পারেন।"
+      "text": "রান্না, খাদ্যাভ্যাস বা খাবারের সময় বেছে নিন। রেসিপি ও বিকল্প খুলুন। এক পরিবেশনের অনুমান ডায়েরিতে যোগ করা যায়। উপকরণ, অ্যালার্জেন এবং হালাল বা কোশার সনদ যাচাই করুন। পরিবেশনের চিত্র; উপাদান ভিন্ন হতে পারে।",
+      "step": "পুষ্টি → রেসিপির ধারণা → খাদ্যাভ্যাস → রান্নার অনুপ্রেরণা → খাবারের সময়"
     }
   },
   "pt": {
@@ -282,18 +282,18 @@
     },
     "test": {
       "text": "Esta chave permanece apenas neste separador aberto. Os servidores da CalorieApp e do WordPress não a recebem nem guardam. Após atualizar ou fechar o separador, não a podemos recuperar.",
-      "step": "Para parar, escolha « Cancelar guia ». Voltar à gestão da conta apenas pausa o guia. Se ainda não confirmou que guardou o código de recuperação, leia e confirme a mensagem de cancelamento."
+      "step": "Para parar, escolha « Cancelar guia ». Voltar à gestão da conta apenas pausa o guia. Se ainda não confirmou que guardou o código de recuperação, leia e confirme a mensagem de cancelamento. A loja permite instalar aplicações: Google Play no Android e App Store no iPhone. O botão abre a página do Xaman. Deixe este guia aberto no computador. Pegue no telefone e escolha Android ou iPhone. Instale o Xaman nesse telefone."
     },
     "compare": {
       "text": "As alternativas podem ser de marcas diferentes. Uma melhor nota Nutri-Score declarada só é destacada para alimentos reconhecidos como semelhantes com notas conhecidas; não é aconselhamento de saúde pessoal. Pontuações do Open Food Facts; confira o rótulo. Ingredientes, alergénios e versões do cálculo podem variar. Uma direção de pesquisa segundo as suas preferências. O impacto ambiental e o bem-estar animal não foram verificados; confira ingredientes e certificações. Registado no Open Food Facts, sem verificação independente pela CalorieApp. Confira a embalagem. Sem dados significa desconhecido, não sem certificação.",
-      "step": "Abra os detalhes e escolha comparar. Pesquise outras marcas ou explore opções vegetais quando disponíveis. Confira ingredientes e rótulos antes de escolher. Rótulo biológico / Selo de bem-estar animal: Não há alternativa adequada com este selo registado nestes resultados."
+      "step": "Compare também → Filtrar alternativas → Outra marca → Melhor Nutri-Score registado → Rótulo biológico → Selo de bem-estar animal"
     },
     "account": {
       "text": "O painel de acesso abre em baixo sem saltar para o topo nem fechar a vista ampliada. Após iniciar sessão, a página atualiza para mostrar a conta.",
       "step": "Escolha uma conta existente para entrar com Xaman ou a configuração guiada para uma conta de teste. Nunca introduza a frase de recuperação na Ajuda ou FAQ."
     },
     "diary": {
-      "text": "Depois de guardar uma porção, abra o diário pelo botão. Mudar de separador não guarda a porção novamente.",
+      "text": "Depois de guardar uma porção, abra o diário pelo botão. Mudar de separador não guarda a porção novamente. Registar por unidades: Conte as unidades se necessário. Use o peso líquido e valores por 100 g. Pressupomos unidades iguais; caso contrário, pese a porção.",
       "step": "Escolha adicionar alimento para voltar à pesquisa. No fim da lista de resultados, continue a percorrer a página."
     },
     "search": {
@@ -301,8 +301,8 @@
       "step": "Escolha a porção e guarde-a explicitamente. Os ícones junto ao texto indicam calorias, proteínas, gorduras e hidratos de carbono; a folha indica uma pesquisa vegetal, não uma certificação."
     },
     "recipes": {
-      "text": "Ideias para adaptar, sem cálculo nutricional da refeição. Confira ingredientes, alergénios e certificações halal ou kosher. Registe as quantidades usadas no diário. Ideias para explorar, não aconselhamento médico ou nutricional. Alimentos semelhantes podem ter ingredientes, alergénios e preparações diferentes. Confira o rótulo e a quantidade; você decide o que escolher ou registar.",
-      "step": "Estilo alimentar → Inspiração culinária → Refeição. Ainda não há ideia adequada nesta pequena seleção, ou faltam dados para o seu estilo alimentar. Pode alterar as preferências."
+      "text": "Escolha cozinha, estilo ou refeição. Abra uma receita e uma variante se desejar. Registe uma porção estimada. Verifique ingredientes, alergénios e certificações halal ou kosher. Ilustração de apresentação; os ingredientes podem variar.",
+      "step": "Nutrição → Ideias de receitas → Estilo alimentar → Inspiração culinária → Refeição"
     }
   },
   "id": {
@@ -316,18 +316,18 @@
     },
     "test": {
       "text": "Kunci pemulihan ini hanya berada di tab yang terbuka ini. Server CalorieApp dan WordPress tidak menerima atau menyimpannya. Setelah memuat ulang atau menutup tab, kami tidak dapat memulihkannya.",
-      "step": "Untuk berhenti, pilih “Batalkan panduan”. Kembali ke pengelolaan akun hanya menjeda panduan. Jika Anda belum mengonfirmasi bahwa kode pemulihan sudah disimpan, baca dan konfirmasi pesan pembatalan."
+      "step": "Untuk berhenti, pilih “Batalkan panduan”. Kembali ke pengelolaan akun hanya menjeda panduan. Jika Anda belum mengonfirmasi bahwa kode pemulihan sudah disimpan, baca dan konfirmasi pesan pembatalan. Toko aplikasi adalah tempat memasang aplikasi: Google Play di Android dan App Store di iPhone. Tombol membuka halaman Xaman. Biarkan panduan terbuka di komputer. Ambil ponsel dan pilih Android atau iPhone. Pasang Xaman di ponsel itu."
     },
     "compare": {
       "text": "Alternatif dapat berasal dari merek berbeda. Nutri-Score tercatat yang lebih baik hanya ditandai untuk makanan yang dikenali sejenis dan memiliki nilai; ini bukan saran kesehatan pribadi. Skor dari Open Food Facts; periksa label. Bahan, alergen, dan versi perhitungan bisa berbeda. Arah pencarian sesuai preferensi Anda. Dampak lingkungan dan standar kesejahteraan hewan belum diverifikasi; periksa bahan dan sertifikasi. Dicatat Open Food Facts, belum diverifikasi mandiri oleh CalorieApp. Periksa kemasan. Data kosong berarti tidak diketahui, bukan tanpa sertifikasi.",
-      "step": "Buka detail produk dan pilih bandingkan. Cari merek lain atau jelajahi pilihan nabati jika tersedia. Periksa bahan dan label sebelum memilih. Label organik / Label kesejahteraan hewan: Tidak ada alternatif sesuai dengan label tercatat ini dalam hasil ini."
+      "step": "Bandingkan juga → Filter alternatif → Merek lain → Nutri-Score tercatat lebih baik → Label organik → Label kesejahteraan hewan"
     },
     "account": {
       "text": "Panel masuk terbuka di bagian bawah tanpa melompat ke atas atau menutup tampilan aplikasi yang diperbesar. Setelah masuk, halaman tetap dimuat ulang untuk memperbarui akun.",
       "step": "Pilih akun yang sudah ada untuk masuk dengan Xaman, atau panduan penyiapan untuk akun uji. Jangan masukkan frasa pemulihan di Bantuan atau FAQ."
     },
     "diary": {
-      "text": "Setelah menyimpan porsi, buka buku harian melalui tombolnya. Berpindah tab tidak menyimpan porsi lagi.",
+      "text": "Setelah menyimpan porsi, buka buku harian melalui tombolnya. Berpindah tab tidak menyimpan porsi lagi. Catat berdasarkan jumlah potong: Hitung sendiri jika tidak tercantum. Gunakan berat bersih dan nilai per 100 g. Potongan dianggap sama; timbang porsi jika berbeda.",
       "step": "Pilih tambah makanan untuk kembali mencari. Di akhir daftar hasil, lanjutkan menggulir halaman."
     },
     "search": {
@@ -335,8 +335,8 @@
       "step": "Pilih porsi dan simpan secara sengaja. Ikon di samping teks menunjukkan kalori, protein, lemak dan karbohidrat; daun menunjukkan pencarian nabati, bukan sertifikasi."
     },
     "recipes": {
-      "text": "Ide yang dapat disesuaikan, bukan makanan dengan gizi terhitung. Periksa bahan, alergen, serta sertifikasi halal atau kosher. Catat sendiri jumlah yang digunakan. Ide untuk dijelajahi, bukan saran dokter atau ahli gizi. Makanan serupa dapat memiliki bahan, alergen, dan cara pengolahan berbeda. Periksa label dan jumlahnya; Anda yang memilih apa yang dilihat atau dicatat.",
-      "step": "Pola makan → Inspirasi masakan → Waktu makan. Belum ada ide sesuai dalam pilihan kecil ini, atau informasi produk belum cukup untuk pola makan Anda. Preferensi dapat diubah."
+      "text": "Pilih masakan, pola makan atau waktu makan. Buka resep dan pilih variasi. Catat porsi sebagai perkiraan. Periksa bahan, alergen dan sertifikasi halal atau kosher. Ilustrasi penyajian; bahan dapat berbeda.",
+      "step": "Gizi → Ide resep → Pola makan → Inspirasi masakan → Waktu makan"
     }
   },
   "ur": {
@@ -350,18 +350,18 @@
     },
     "test": {
       "text": "یہ بحالی کلید صرف اس کھلے ٹیب میں رہتی ہے۔ CalorieApp اور WordPress کے سرور اسے وصول یا محفوظ نہیں کرتے۔ ٹیب ریفریش یا بند ہونے کے بعد ہم اسے واپس نہیں لا سکتے۔",
-      "step": "رکنے کے لیے «رہنما منسوخ کریں» منتخب کریں۔ اکاؤنٹ انتظام پر واپس جانے سے رہنما صرف عارضی طور پر رکتا ہے۔ اگر بحالی کوڈ محفوظ کرنے کی تصدیق نہیں کی تو منسوخی کا پیغام پڑھ کر تصدیق کریں۔"
+      "step": "رکنے کے لیے «رہنما منسوخ کریں» منتخب کریں۔ اکاؤنٹ انتظام پر واپس جانے سے رہنما صرف عارضی طور پر رکتا ہے۔ اگر بحالی کوڈ محفوظ کرنے کی تصدیق نہیں کی تو منسوخی کا پیغام پڑھ کر تصدیق کریں۔ ایپ اسٹور فون پر ایپس نصب کرنے کی جگہ ہے: Android پر Google Play اور iPhone پر App Store۔ بٹن Xaman کا صفحہ کھولتا ہے۔ یہ رہنمائی کمپیوٹر پر کھلی رکھیں۔ فون لیں اور Android یا iPhone چنیں۔ Xaman اسی فون پر نصب کریں۔"
     },
     "compare": {
       "text": "متبادل مختلف برانڈز سے ہو سکتے ہیں۔ بہتر درج شدہ Nutri-Score صرف پہچانی گئی ملتی جلتی غذاؤں کے معلوم گریڈ پر دکھایا جاتا ہے؛ یہ ذاتی صحت کا مشورہ نہیں۔ اسکور Open Food Facts سے ہیں؛ لیبل دیکھیں۔ اجزاء، الرجی پیدا کرنے والے مادے اور اسکور کے ورژن مختلف ہو سکتے ہیں۔ آپ کی ترجیحات کے مطابق تلاش کی ایک سمت۔ ماحولیاتی اثرات اور جانوروں کی فلاح کے معیارات کی تصدیق نہیں ہوئی؛ اجزاء اور سرٹیفیکیشن دیکھیں۔ Open Food Facts میں درج ہے، CalorieApp نے آزاد تصدیق نہیں کی۔ پیکٹ دیکھیں۔ معلومات نہ ہونے کا مطلب نامعلوم ہے، غیر مصدقہ نہیں۔",
-      "step": "مصنوع کی تفصیل کھول کر موازنہ منتخب کریں۔ دوسرے برانڈ یا دستیاب نباتاتی اختیارات تلاش کریں۔ انتخاب سے پہلے اجزا اور لیبل دیکھیں۔ نامیاتی لیبل / جانوروں کی فلاح کا لیبل: ان نتائج میں اس درج لیبل والا موزوں متبادل نہیں ہے۔"
+      "step": "ان سے بھی موازنہ کریں → متبادل چھانٹیں → دوسرا برانڈ → درج شدہ Nutri-Score بہتر → نامیاتی لیبل → جانوروں کی فلاح کا لیبل"
     },
     "account": {
       "text": "لاگ ان پینل نیچے کھلتا ہے، صفحہ اوپر نہیں اچھلتا اور بڑا ایپ منظر بند نہیں ہوتا۔ کامیاب لاگ ان کے بعد اکاؤنٹ اپ ڈیٹ کرنے کے لیے صفحہ پھر بھی تازہ ہوتا ہے۔",
       "step": "Xaman سے داخل ہونے کے لیے موجودہ اکاؤنٹ یا آزمائشی اکاؤنٹ کے لیے رہنمائی والا سیٹ اپ چنیں۔ مدد یا FAQ میں ریکوری سیڈ کبھی نہ لکھیں۔"
     },
     "diary": {
-      "text": "مقدار محفوظ کرنے کے بعد ڈائری بٹن سے ڈائری کھولیں۔ ٹیب بدلنے سے مقدار دوبارہ محفوظ نہیں ہوتی۔",
+      "text": "مقدار محفوظ کرنے کے بعد ڈائری بٹن سے ڈائری کھولیں۔ ٹیب بدلنے سے مقدار دوبارہ محفوظ نہیں ہوتی۔ ٹکڑوں کی تعداد سے درج کریں: پیک پر تعداد نہ ہو تو خود گنیں۔ خالص وزن اور فی 100 گرام قدریں استعمال کریں۔ ٹکڑے برابر فرض ہیں؛ مختلف ہوں تو اپنی مقدار تولیں۔",
       "step": "تلاش پر واپس آنے کے لیے غذا شامل کریں چنیں۔ نتائج کی فہرست کے آخر میں صفحہ مزید اسکرول کر سکتے ہیں۔"
     },
     "search": {
@@ -369,8 +369,8 @@
       "step": "مقدار چن کر خود محفوظ کریں۔ متن کے ساتھ نشان کیلوریز، پروٹین، چکنائی اور کاربوہائیڈریٹس بتاتے ہیں؛ پتا نباتاتی تلاش کا نشان ہے، تصدیقی مہر نہیں۔"
     },
     "recipes": {
-      "text": "بدلے جا سکنے والے خیالات، غذائی حساب شدہ کھانے نہیں۔ اجزا، الرجی اور حلال یا کوشر تصدیق دیکھیں۔ استعمال کردہ مقدار خود ڈائری میں لکھیں۔ یہ دیکھنے کے لیے تجاویز ہیں، ڈاکٹر یا ماہرِ غذائیت کا مشورہ نہیں۔ ملتی جلتی غذاؤں کے اجزا، الرجی پیدا کرنے والے مادے اور تیاری مختلف ہو سکتے ہیں۔ لیبل اور مقدار دیکھیں؛ کیا منتخب یا درج کرنا ہے، یہ آپ طے کرتے ہیں۔",
-      "step": "کھانے کا انداز → پکوان کی تحریک → کھانے کا وقت. اس چھوٹے انتخاب میں مناسب خیال نہیں یا آپ کے انداز کے لیے مصنوع کی معلومات کم ہیں۔ ترجیحات بدل سکتے ہیں۔"
+      "text": "کھانے کا انداز، پکوان یا وقت منتخب کریں۔ بنیادی ترکیب اور تبدیلی کھولیں۔ ایک حصے کا تخمینہ درج کیا جا سکتا ہے۔ اجزا، الرجی اور حلال یا کوشر تصدیق چیک کریں۔ پیش کرنے کی تصویر؛ اجزاء مختلف ہو سکتے ہیں۔",
+      "step": "غذائی معلومات → ترکیب کے خیالات → کھانے کا انداز → پکوان کی تحریک → کھانے کا وقت"
     }
   }
 }

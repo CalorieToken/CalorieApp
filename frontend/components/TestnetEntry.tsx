@@ -1,4 +1,5 @@
 "use client";
+import { XamanInstallGuide } from "@/components/XamanInstallGuide";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDisplayLanguage } from "@/components/DisplayLanguageProvider";
@@ -250,7 +251,7 @@ export function TestnetEntry({ active = true, requestedJourney, cancelRequest = 
         {index === 0 ? <>
           <h3 className="mt-4 text-base font-bold text-brand-primary">{welcome.installTitle}</h3>
           <p className="mt-2 text-sm leading-relaxed text-brand-secondary">{welcome.installText}</p>
-          <a href="https://xaman.app/download" target="_blank" rel="noopener noreferrer" className={`${secondary} mt-4 inline-flex items-center`}>{welcome.download} ↗</a>
+          <XamanInstallGuide locale={locale} onReady={() => go(1)} />
           <p className="mt-3 text-sm leading-relaxed text-brand-secondary">{setup.ready}</p>
           <p className="mt-3 rounded-xl bg-brand-bg p-3 text-sm leading-relaxed text-brand-secondary">{welcome.returnHere}</p>
           {warning(setup.testOnly)}

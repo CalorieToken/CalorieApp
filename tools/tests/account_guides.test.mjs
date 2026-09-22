@@ -9,6 +9,7 @@ const React=require('react'),{createRoot}=require('react-dom/client'),{parseHTML
 const setup=JSON.parse(readFileSync(new URL('../../frontend/config/account-setup-copy.json',import.meta.url)));
 const copy=JSON.parse(readFileSync(new URL('../../frontend/config/testnet-entry-copy.json',import.meta.url)));
 
+const install=JSON.parse(readFileSync(new URL('../../frontend/config/xaman-install-copy.json',import.meta.url),'utf8'));
 const welcome=JSON.parse(readFileSync(new URL('../../frontend/config/account-welcome-copy.json',import.meta.url),'utf8'));
 
 function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testnet={},confirm=()=>true}={}){
@@ -31,11 +32,13 @@ function harness({importEnabled=false,stored=new Map(),hash='',age='adult',testn
   '@/components/NicknameProfile':{NicknameProfile:()=>null},
   '@/components/XamanLoginPanel':{XamanLoginPanel:({guides,welcome:renderWelcome})=>React.createElement('div',null,'Account fixture: no login requests',renderWelcome?.(React.createElement('button',null,'Sign in fixture')),guides)},
   '@/lib/authUi':{getAuthUi:()=>({copy:{accountTools:'Accountbeheer'}})},
+  '@/lib/foodDiscovery':{discoveryCopy:()=>({backToProduct:'Terug naar {food}'})},
   '@/lib/foodDiary':{diaryCopy:()=>({title:'Dagboek'})},
   '@/lib/foodExperience':{foodExperience:()=>({copy:{sourceTitle:'Basisvoeding',navigation:'Ga naar'}})},
   '@/lib/foodUi':{getFoodUi:()=>({copy:{searchTitle:'Zoeken'},locale:'nl',direction:'ltr'})},
   '@/config/account-profile-copy.json': {default: profileCopy},
   '@/config/account-welcome-copy.json': {default: welcome},
+  '@/config/xaman-install-copy.json': {default: install},
     '@/config/testnet-entry-copy.json':{default:copy},
   '@/config/account-setup-copy.json':{default:setup},
   '@/lib/navigationBridge':{postNavigationTarget:()=>false,trustedWordPressParentOrigin:()=>null},
@@ -216,9 +219,14 @@ test('beginner choices browse without account creation and install before creati
   await h.click(profileCopy.nl.account);
   await React.act(async()=>buttons[1].dispatchEvent(new h.window.Event('click',{bubbles:true})));
   assert.equal(h.document.querySelector('#account-journey-title').textContent,setup.nl.beforeStart);
-  assert.equal(h.document.querySelector('a[href="https://xaman.app/download"]').target,'_blank');
-  assert.equal(calls,0);assert.equal(h.button(setup.nl.create),undefined);
-  await h.click(copy.nl.next);await h.click(setup.nl.create);assert.equal(calls,1);
+  await h.click('Android');
+  assert.equal(h.document.querySelector('a[href="https://play.google.com/store/apps/details?id=com.xrpllabs.xumm"]').target,'_blank');
+  await h.click('iPhone');
+  assert.ok(h.document.querySelector('a[href="https://apps.apple.com/app/id1492302343"]'));
+  assert.equal(calls,0);
+  await h.click(install.nl.already);
+  assert.equal(calls,0);assert.ok(h.button(setup.nl.create));
+  await h.click(setup.nl.create);assert.equal(calls,1);
   assert.equal(h.button(copy.nl.next).disabled,true,'Saving the recovery code remains mandatory');
   await h.click(setup.nl.show);
   const ack=h.document.querySelector('input[type="checkbox"]');

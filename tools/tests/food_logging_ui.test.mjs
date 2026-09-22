@@ -37,6 +37,10 @@ const discoveryCatalogue = JSON.parse(await readFile(new URL("../../frontend/pub
 const discovery = await loadLibrary("foodDiscovery", {
   "@/config/food-discovery-copy.json": { default: discoveryTranslations }, "@/lib/locales": locales,
 });
+const pieces = await loadLibrary("foodPieces", {"@/lib/foodDiscovery": discovery});
+const piecesCopy = JSON.parse(await readFile(new URL("../../frontend/config/food-pieces-copy.json", import.meta.url), "utf8"));
+const ingredientCatalogue = JSON.parse(await readFile(new URL("../../frontend/data/recipe-ingredients.json", import.meta.url), "utf8"));
+const recipeNutrition = await loadLibrary("recipeNutrition", {"@/data/recipe-ingredients.json": {default:ingredientCatalogue}});
 const recipeTranslations = JSON.parse(await readFile(new URL("../../frontend/config/food-recipe-copy.json", import.meta.url), "utf8"));
 const recipeCatalogue = JSON.parse(await readFile(new URL("../../frontend/data/food-recipes.json", import.meta.url), "utf8"));
 const recipes = await loadLibrary("foodRecipes", {
@@ -82,7 +86,7 @@ const foods = Array.from({ length: 30 }, (_, index) => ({
 function nodes(tree, predicate) {
   if (Array.isArray(tree)) return tree.flatMap((child) => nodes(child, predicate));
   if (!tree || typeof tree !== "object") return [];
-  return [...(predicate(tree) ? [tree] : []), ...nodes(tree.props?.children, predicate)];
+  return [...(predicate(tree) ? [tree] : []), ...nodes(tree.props?.children, predicate), ...(tree.type === "FoodExplore" ? ["nutrition", "comparison", "recipes", "labels"].flatMap(key => nodes(tree.props[key], predicate)) : [])];
 }
 
 function text(tree) {
@@ -199,6 +203,9 @@ async function harness(componentName = "FoodSearchPlaceholder", postResponse, lo
       if (specifier === "@/lib/locales") return locales;
       if (specifier === "@/lib/foodDiscovery") return discovery;
       if (specifier === "@/lib/foodRecipes") return recipes;
+      if (specifier === "@/lib/recipeNutrition") return recipeNutrition;
+      if (specifier === "@/lib/foodPieces") return pieces;
+      if (specifier === "@/config/food-pieces-copy.json") return {default:piecesCopy};
       if (specifier === "@/data/usda-reference-foods.json") return { default: usdaReference };
       if (specifier === "@/config/usda-reference-copy.json") return { default: usdaCopy };
       if (specifier.startsWith("@/components/")) {
@@ -1276,7 +1283,7 @@ test('USDA alternatives return to the exact previous food, grams and list positi
   const name=nodes(selected(),n=>n.type==='h3').map(text)[0];
   nodes(selected(),n=>n.type==='input')[0].props.onChange({target:{value:'75'}});app.render();
   const list=nodes(app.tree,n=>n.type==='ul'&&n.props.ref)[0];list.props.ref.current.scrollTop=181;
-  const alternative=nodes(selected(),n=>n.type==='details')[0];
+  const alternative=nodes(selected(),n=>n.type==='FoodExplore')[0].props.comparison;
   nodes(alternative,n=>n.type==='button')[0].props.onClick();app.render();
   button(app.tree,discoveryTranslations.en.backToProduct.replace('{food}',name)).props.onClick();app.render();
   assert.equal(nodes(selected(),n=>n.type==='h3').map(text)[0],name);
@@ -1378,16 +1385,16 @@ test('label alternatives filter existing comparable results without inventing ev
   const organic={...milk,barcode:'1234567890124',brand:'Another',labels_tags:['en:eu-organic']};
   const fish={...organic,barcode:'1234567890125',product_name:'Fish'};
   h.render({item:milk,foods:[milk,organic,fish],locale:'nl',disabled:false,onChoose(){},onSearch(){}});
-  button(h.tree,discoveryTranslations.nl.organicLabel).props.onClick();h.render();
+  nodes(h.tree,n=>n.type==='select')[0].props.onChange({target:{value:"organic"}});h.render();
   assert.match(text(h.tree),/EU Organic/);assert.doesNotMatch(text(h.tree),/Fish/);
-  button(h.tree,discoveryTranslations.nl.welfareLabel).props.onClick();h.render();
+  nodes(h.tree,n=>n.type==='select')[0].props.onChange({target:{value:"welfare"}});h.render();
   assert.match(text(h.tree),/geen passend alternatief/);assert.deepEqual(h.requests,[]);
 });
 
 test('recipe ideas respect explicit cuisine, meal and source-supported eating style without assuming culture',()=>{
   const rice={...foods[0],product_name:'Rice',brand:'USDA FoodData Central · FDC 123',barcode:null};
   const prefs={diet:'plant',cuisine:'southAsian',meal:'dinner'};
-  const result=recipes.recipeIdeas(rice,prefs);assert.ok(result.length>0&&result.length<=2);
+  const result=recipes.recipeIdeas(rice,prefs);assert.ok(result.length>0);
   assert.ok(result.every(r=>r.cuisine==='southAsian'&&r.diet==='plant'&&r.meals.includes('dinner')));
   assert.equal(recipes.recipeIdeas({...rice,brand:'Brand',barcode:'1234567890123'},prefs).length,0,'Unknown packaged ingredients cannot establish a plant-based diet');
   assert.ok(recipes.recipeIdeas({...rice,brand:'Brand',barcode:'1234567890123',labels_tags:['en:vegan']},prefs).length);
@@ -1411,9 +1418,9 @@ test('recipe preferences remain collapsed initially and never log food or trigge
   assert.equal(nodes(h.tree,n=>n.type==='li').length,2);
   const selects=nodes(h.tree,n=>n.type==='select');assert.equal(selects.length,3);
   selects[1].props.onChange({target:{value:'westAfrican'}});h.render();
-  assert.match(text(h.tree),/West-Afrikaans geïnspireerde/);
+  assert.ok(nodes(h.tree,n=>n.type?.name==='RecipeIdeaCard').every(n=>n.props.idea.cuisine==='westAfrican'));
   assert.deepEqual(h.requests,[]);
-  assert.equal(nodes(h.tree,n=>n.type==='button').length,0);
+  assert.equal(nodes(h.tree,n=>n.type==='button'&&n.props.onClick&&/Log/.test(text(n))).length,0);
 });
 
 test('plant drinks compare across brands without replacing oats in a recipe',()=>{
@@ -1424,10 +1431,95 @@ test('plant drinks compare across brands without replacing oats in a recipe',()=
   assert.equal(discovery.alternativeSearchQuery(drink),'oat drink');
   for(const name of ['Organic oat drink original','Haverdrink','Oat milk','Rice drink','Soy milk','Amandelmelk']){
     const ideas=recipes.recipeIdeas({...drink,product_name:name},{diet:'any',cuisine:'any',meal:'any'});
-    assert.deepEqual(Array.from(ideas,r=>r.id),['porridge-plantdrink'],name);
+    assert.ok(ideas.some(r=>r.id==='porridge-plantdrink'),name);
+    assert.ok(ideas.every(r=>r.families.includes('plantdrink')),name);
     assert.match(ideas[0].nl.ingredients,/\{food\}, havermout/);
   }
   assert.equal(recipes.recipeIdeas(drink,{diet:'plant',cuisine:'any',meal:'any'}).length,0,'A name still does not certify packaged ingredients');
-  assert.equal(recipes.recipeIdeas({...drink,labels_tags:['en:vegan']},{diet:'plant',cuisine:'any',meal:'any'}).length,1);
+  assert.ok(recipes.recipeIdeas({...drink,labels_tags:['en:vegan']},{diet:'plant',cuisine:'any',meal:'any'}).length >= 3);
   assert.equal(recipes.recipeIdeas({...drink,product_name:'Oat drink soup'},{diet:'any',cuisine:'any',meal:'any'}).length,0);
+});
+
+
+test('piece quantities calculate actual grams, permit portions over 100 g, and reject missing or inconsistent inputs', () => {
+  const food={...foods[0],serving_size:'100 g / 100 ml (source reference)'};
+  const amount={eaten:'3',total:'12',weight:'300',basis:'pack'};
+  assert.equal(pieces.piecePortion(food,amount,'nl').calories,150);
+  assert.match(pieces.piecePortion(food,amount,'nl').serving_size,/3 stuks \/ 12 · 75 g/);
+  assert.equal(pieces.piecePortion(food,{...amount,eaten:'5'},'nl').calories,250);
+  assert.equal(pieces.piecePortion(food,{...amount,basis:'piece',weight:'25'},'nl').calories,150);
+  for(const invalid of [{weight:''},{total:''},{total:'2'},{total:'12.5'},{eaten:'0'},{weight:'Infinity'},{weight:'-10'}])assert.equal(pieces.piecePortion(food,{...amount,...invalid},'en'),null);
+  assert.equal(pieces.piecePortion({...food,serving_size:'1 cookie'},amount,'nl'),null);
+});
+
+test('world recipes expose over 555 named choices with complete source-based estimates and matching available illustrations',async()=>{
+  const choices=new Set();
+  for(const recipe of recipeCatalogue){
+    assert.ok(recipes.cuisines.includes(recipe.cuisine),recipe.id);
+    assert.equal(recipes.recipeVariants(recipe).length,8);
+    await readFile(new URL(`../../frontend/public/images/recipes/${recipe.image}.webp`,import.meta.url));
+    for(const variant of recipes.recipeVariants(recipe)){
+      choices.add(variant.en.title);
+      assert.equal(new Set(variant.ingredients.map(i=>i.key)).size,variant.ingredients.length);
+      const estimate=recipeNutrition.estimateRecipe(variant);assert.ok(estimate,variant.id);
+      const one=recipeNutrition.recipeLogItem(variant,1,'en'),two=recipeNutrition.recipeLogItem(variant,2,'en');
+      assert.equal(one.nutri_score,null);assert.equal(one.barcode,null);
+      assert.match(one.brand,/CalorieApp recipe estimate/);
+      assert.ok(Math.abs(two.calories-one.calories*2)<0.02);
+      assert.ok(estimate.perServing.calories>0&&estimate.perServing.calories<2000,variant.id);
+      if(variant.id!==recipe.id)assert.ok(estimate.total.calories>recipeNutrition.estimateRecipe(recipe).total.calories,variant.id);
+    }
+  }
+  assert.ok(choices.size>555,`Distinct named choices: ${choices.size}`);
+  for(const ingredient of Object.values(ingredientCatalogue.ingredients)){
+    const original=discoveryCatalogue.foods.find(f=>f.fdc_id===ingredient.fdc_id);assert.ok(original);
+    const values=discovery.usdaNutrition(original,100);
+    for(const key of recipeNutrition.nutritionKeys)assert.equal(ingredient.per100g[key],values[key],ingredient.description+': '+key);
+  }
+});
+
+test('recipe estimates use gram weights and serving counts, with no invented values for missing ingredients',()=>{
+  const recipe={id:'fixture',servings:2,ingredients:[{key:'rice',grams:100}],nl:{title:'Rijst'},en:{title:'Rice'}};
+  const source=ingredientCatalogue.ingredients.rice.per100g;
+  const item=recipeNutrition.recipeLogItem(recipe,1,'nl');assert.equal(item.calories,Math.round(source.calories/2*100)/100);
+  assert.equal(recipeNutrition.recipeLogItem(recipe,0,'nl'),null);
+  assert.equal(recipeNutrition.estimateRecipe({...recipe,ingredients:[{key:'missing',grams:100}]}),null);
+  assert.equal(recipeNutrition.estimateRecipe({...recipe,servings:0}),null);
+});
+
+test('more alternatives remain paged and respect brand and grade filters',async()=>{
+  const h=await harness('SimilarFoods');
+  const milk={...foods[0],product_name:'Whole milk',nutri_score:'D'};
+  const candidates=Array.from({length:9},(_,i)=>({...milk,product_name:`Milk ${i}`,barcode:String(9999999999990+i),brand:`Other ${i}`,nutri_score:i%2?'B':'E'}));
+  h.render({item:milk,foods:candidates,locale:'nl',disabled:false,onChoose(){},onSearch(){}});
+  assert.equal(nodes(h.tree,n=>n.type==='li').length,2);assert.match(text(h.tree),/1\s*–\s*2\s*\/\s*9/);
+  nodes(h.tree,n=>n.type==='button'&&n.props['aria-label']===discoveryTranslations.nl.next)[0].props.onClick();h.render();
+  assert.match(text(h.tree),/3\s*–\s*4\s*\/\s*9/);
+  nodes(h.tree,n=>n.type==='select')[0].props.onChange({target:{value:'grade'}});h.render();
+  assert.match(text(h.tree),/1\s*–\s*2\s*\/\s*4/);assert.deepEqual(h.requests,[]);
+});
+
+const activity=await loadLibrary('appActivity',{});
+test('activity counts short-lived app sessions without accumulating users or retaining stale sessions',()=>{
+  const counter=activity.createActivityCounter(2),a='00000000-0000-4000-8000-000000000001',b='00000000-0000-4000-8000-000000000002',c='00000000-0000-4000-8000-000000000003';
+  assert.equal(counter.touch('wallet-address',0),false);
+  assert.equal(counter.touch(a,0),true);counter.touch(a,1000);assert.equal(counter.snapshot(1000).active,1);
+  counter.touch(b,1000);assert.equal(counter.snapshot(1000).active,2);
+  assert.equal(counter.touch(c,1000),false);assert.equal(counter.snapshot(1000).active,null);
+  assert.equal(counter.snapshot(301000).active,0);
+  counter.touch(a,302000);assert.equal(counter.snapshot(302000).active,1);
+});
+
+
+test('piece logging sends the reviewed 75 g portion only after explicit save', async()=>{
+  const food={...foods[0],serving_size:'100 g / 100 ml (source reference)'};
+  const h=await harness('FoodSearchPlaceholder',undefined,undefined,async()=>({ok:true,json:async()=>({results:[food]})}));
+  h.render();await h.flush();await h.search();h.choose(0);
+  button(h.tree,piecesCopy.en.title).props.onClick();h.render();
+  assert.equal(h.requests.some(r=>r.url.endsWith('/log-food')),false);
+  assert.equal(nodes(h.controls(),n=>n.type==='button'&&n.props.type==='submit')[0].props.disabled,true);
+  nodes(h.tree,n=>n.type==='FoodPiecePortion')[0].props.onChange({eaten:'3',total:'12',weight:'300',basis:'pack'});h.render();
+  h.submit();await h.flush();
+  const posts=h.requests.filter(r=>r.url.endsWith('/log-food'));assert.equal(posts.length,1);
+  const payload=JSON.parse(posts[0].options.body);assert.equal(payload.calories,150);assert.equal(payload.portion_percentage,100);assert.match(payload.serving_size,/75 g/);
 });

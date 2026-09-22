@@ -114,6 +114,8 @@
   function updateLabels(preferred){
     var c=copy(preferred),active=document.body.classList.contains('ct-calorieapp-focus');
     if(focus.label)focus.label.textContent=active?c.shrink:c.expand;
+    var icon=focus.button&&focus.button.querySelector('path');
+    if(icon)icon.setAttribute('d',active?'M9 3v6H3 M3 3l6 6 M15 3v6h6 M21 3l-6 6 M9 21v-6H3 M3 21l6-6 M15 21v-6h6 M21 21l-6-6':'M9 3H3v6 M3 3l6 6 M15 3h6v6 M21 3l-6 6 M9 21H3v-6 M3 21l6-6 M15 21h6v-6 M21 21l-6-6');
     if(focus.button){focus.button.title=active?c.shrink:c.expand;focus.button.setAttribute('aria-label',active?c.shrink:c.expand);}
     var note=focus.toolbar&&focus.toolbar.querySelector('.ct-calorieapp-focus-note');if(note)note.textContent=c.hint;
     if(sessionNode){sessionNode.querySelector('.ct-calorieapp-session-label').textContent=c.session;sessionValue.textContent=c[sessionState]||c.unavailable;}
@@ -126,14 +128,11 @@
     var frame=frames[0],toolbar=document.createElement('div'),button=document.createElement('button'),icon=document.createElement('span'),label=document.createElement('span'),note=document.createElement('span'),status=document.createElement('span');repairEmbed(frame);
     toolbar.id='ct-calorieapp-focus-toolbar';toolbar.className='ct-calorieapp-focus-toolbar';
     button.type='button';button.id='ct-calorieapp-focus-toggle';button.className='ct-calorieapp-focus-toggle';button.setAttribute('aria-pressed','false');
-    icon.className='ct-calorieapp-focus-icon';icon.setAttribute('aria-hidden','true');icon.textContent='⛶';
+    icon.className='ct-calorieapp-focus-icon';icon.setAttribute('aria-hidden','true');var svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('width','24');svg.setAttribute('height','24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.8');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.setAttribute('focusable','false');svg.append(path);icon.append(svg);
     label.className='ct-calorieapp-focus-label';note.className='ct-calorieapp-focus-note';status.className='ct-calorieapp-focus-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     button.append(icon,label);toolbar.append(button,note,status);
-    var pageTools=document.querySelector('.calorieapp-page-tools');
-    if(pageTools){
-      toolbar.classList.add('calorieapp-page-tool-position','ct-calorieapp-focus-docked');
-      button.classList.add('calorieapp-page-tool');pageTools.append(toolbar);
-    }else{frame.before(toolbar);}
+    frame.before(toolbar);
     focus={frame:frame,button:button,label:label,status:status,toolbar:toolbar,scrollY:0};
     button.addEventListener('click',function(event){
       event.stopPropagation();

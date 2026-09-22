@@ -18,7 +18,31 @@
       "title": "Warm oats with fruit",
       "ingredients": "Ingredients: {food}, apple, banana, water and cinnamon.",
       "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
-    }
+    },
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
   },
   {
     "id": "porridge-apple",
@@ -39,7 +63,31 @@
       "title": "Warm oats with fruit",
       "ingredients": "Ingredients: oats, {food}, banana, water and cinnamon.",
       "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
-    }
+    },
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
   },
   {
     "id": "porridge-banana",
@@ -60,7 +108,31 @@
       "title": "Warm oats with fruit",
       "ingredients": "Ingredients: oats, apple, {food}, water and cinnamon.",
       "method": "Cook the oats with water following the package. Wash and cut the fruit, add it and season with cinnamon."
-    }
+    },
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
   },
   {
     "id": "mash-potato",
@@ -82,7 +154,31 @@
       "title": "Vegetable mash with white beans",
       "ingredients": "Ingredients: {food}, kale, cooked white beans and olive oil.",
       "method": "Boil the peeled potatoes and kale until tender. Heat the cooked beans separately, mash everything together and add a little olive oil."
-    }
+    },
+    "image": "mash",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "whitebeans",
+        "grams": 240.0
+      },
+      {
+        "key": "kale",
+        "grams": 200.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ]
   },
   {
     "id": "pasta-pasta",
@@ -104,7 +200,31 @@
       "title": "Mediterranean-inspired pasta bowl",
       "ingredients": "Ingredients: {food}, tomatoes, chickpeas, cucumber, lemon and olive oil.",
       "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
-    }
+    },
+    "image": "pasta",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pasta",
+        "grams": 140.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 180.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "basil",
+        "grams": 8.0
+      }
+    ]
   },
   {
     "id": "pasta-tomato",
@@ -126,7 +246,31 @@
       "title": "Mediterranean-inspired pasta bowl",
       "ingredients": "Ingredients: pasta, {food}, chickpeas, cucumber, lemon and olive oil.",
       "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
-    }
+    },
+    "image": "pasta",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pasta",
+        "grams": 140.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 180.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "basil",
+        "grams": 8.0
+      }
+    ]
   },
   {
     "id": "pasta-chickpea",
@@ -148,7 +292,31 @@
       "title": "Mediterranean-inspired pasta bowl",
       "ingredients": "Ingredients: pasta, tomatoes, {food}, cucumber, lemon and olive oil.",
       "method": "Prepare pasta and chickpeas following their packages; use fully cooked chickpeas. Wash and chop the vegetables and combine with pasta, chickpeas, lemon and oil."
-    }
+    },
+    "image": "pasta",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pasta",
+        "grams": 140.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 180.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "basil",
+        "grams": 8.0
+      }
+    ]
   },
   {
     "id": "omelette-egg",
@@ -171,7 +339,27 @@
       "title": "Tomato and cheese omelette",
       "ingredients": "Ingredients: {food}, tomatoes, cheese, olive oil and herbs.",
       "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
-    }
+    },
+    "image": "eggs",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cheese",
+        "grams": 40.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "omelette-tomato",
@@ -194,7 +382,27 @@
       "title": "Tomato and cheese omelette",
       "ingredients": "Ingredients: eggs, {food}, cheese, olive oil and herbs.",
       "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
-    }
+    },
+    "image": "eggs",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cheese",
+        "grams": 40.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "omelette-cheese",
@@ -217,7 +425,27 @@
       "title": "Tomato and cheese omelette",
       "ingredients": "Ingredients: eggs, tomatoes, {food}, olive oil and herbs.",
       "method": "Wash and chop the tomato and briefly fry it in oil. Add beaten eggs and cheese. Cook until the eggs are fully set and finish with herbs."
-    }
+    },
+    "image": "eggs",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cheese",
+        "grams": 40.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "dal-lentil",
@@ -239,7 +467,43 @@
       "title": "Lentil dal with rice",
       "ingredients": "Ingredients: {food}, rice, tomatoes, onion, oil, water and curry spices.",
       "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
-    }
+    },
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 600.0
+      }
+    ]
   },
   {
     "id": "dal-rice",
@@ -261,7 +525,43 @@
       "title": "Lentil dal with rice",
       "ingredients": "Ingredients: lentils, {food}, tomatoes, onion, oil, water and curry spices.",
       "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
-    }
+    },
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 600.0
+      }
+    ]
   },
   {
     "id": "dal-tomato",
@@ -283,7 +583,43 @@
       "title": "Lentil dal with rice",
       "ingredients": "Ingredients: lentils, rice, {food}, onion, oil, water and curry spices.",
       "method": "Gently fry chopped onion and spices in oil. Add tomatoes, lentils and water and simmer for the cooking time stated for the lentils. Cook the rice separately and serve together."
-    }
+    },
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 600.0
+      }
+    ]
   },
   {
     "id": "chickpea-chickpea",
@@ -305,7 +641,39 @@
       "title": "Chickpeas with spinach",
       "ingredients": "Ingredients: {food}, tomatoes, spinach, onion, cumin, oil and water.",
       "method": "Cook chickpeas following the package until tender. Fry onion and cumin in oil, add tomatoes and a little water. Heat the cooked chickpeas in the sauce and wilt the washed spinach."
-    }
+    },
+    "image": "chickpea",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chickpea",
+        "grams": 300.0
+      },
+      {
+        "key": "spinach",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 100.0
+      }
+    ]
   },
   {
     "id": "chickpea-tomato",
@@ -327,7 +695,39 @@
       "title": "Chickpeas with spinach",
       "ingredients": "Ingredients: chickpeas, {food}, spinach, onion, cumin, oil and water.",
       "method": "Cook chickpeas following the package until tender. Fry onion and cumin in oil, add tomatoes and a little water. Heat the cooked chickpeas in the sauce and wilt the washed spinach."
-    }
+    },
+    "image": "chickpea",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chickpea",
+        "grams": 300.0
+      },
+      {
+        "key": "spinach",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 100.0
+      }
+    ]
   },
   {
     "id": "stirfry-tofu",
@@ -349,7 +749,39 @@
       "title": "Tofu and vegetable rice bowl",
       "ingredients": "Ingredients: {food}, rice, broccoli, carrot, ginger, oil and soy sauce.",
       "method": "Cook rice following the package. Prepare tofu according to its package. Wash and cut vegetables and stir-fry with ginger in oil until cooked. Combine with tofu and a little soy sauce."
-    }
+    },
+    "image": "tofu",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 250.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      }
+    ]
   },
   {
     "id": "stirfry-rice",
@@ -371,7 +803,39 @@
       "title": "Tofu and vegetable rice bowl",
       "ingredients": "Ingredients: tofu, {food}, broccoli, carrot, ginger, oil and soy sauce.",
       "method": "Cook rice following the package. Prepare tofu according to its package. Wash and cut vegetables and stir-fry with ginger in oil until cooked. Combine with tofu and a little soy sauce."
-    }
+    },
+    "image": "tofu",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 250.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      }
+    ]
   },
   {
     "id": "soup-tofu",
@@ -393,7 +857,35 @@
       "title": "Vegetable noodle soup with tofu",
       "ingredients": "Ingredients: {food}, egg-free noodles, vegetable stock, bok choy and ginger.",
       "method": "Bring stock and ginger to a boil. Add washed bok choy, noodles and tofu and cook according to their packages."
-    }
+    },
+    "image": "soup",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 200.0
+      },
+      {
+        "key": "noodles",
+        "grams": 100.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "spinach",
+        "grams": 100.0
+      },
+      {
+        "key": "miso",
+        "grams": 25.0
+      },
+      {
+        "key": "water",
+        "grams": 700.0
+      }
+    ]
   },
   {
     "id": "salad-lentil",
@@ -415,7 +907,39 @@
       "title": "Lemon and lentil salad",
       "ingredients": "Ingredients: {food}, tomatoes, cucumber, parsley, lemon and olive oil.",
       "method": "Cook lentils following the package and let cool. Wash and chop vegetables and parsley. Mix with lentils, lemon juice and oil."
-    }
+    },
+    "image": "salad",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "parsley",
+        "grams": 15.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 300.0
+      }
+    ]
   },
   {
     "id": "salad-tomato",
@@ -437,7 +961,39 @@
       "title": "Lemon and lentil salad",
       "ingredients": "Ingredients: lentils, {food}, cucumber, parsley, lemon and olive oil.",
       "method": "Cook lentils following the package and let cool. Wash and chop vegetables and parsley. Mix with lentils, lemon juice and oil."
-    }
+    },
+    "image": "salad",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "parsley",
+        "grams": 15.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 300.0
+      }
+    ]
   },
   {
     "id": "pita-bread",
@@ -459,7 +1015,35 @@
       "title": "Chickpea and vegetable pita",
       "ingredients": "Ingredients: {food}, chickpeas, cucumber, tomato, lemon and olive oil.",
       "method": "Cook chickpeas following the package until tender. Mash with lemon and oil. Fill the bread with chickpeas and washed, chopped vegetables."
-    }
+    },
+    "image": "wrap",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pita",
+        "grams": 120.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 240.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "tahini",
+        "grams": 20.0
+      },
+      {
+        "key": "lemon",
+        "grams": 20.0
+      }
+    ]
   },
   {
     "id": "pita-chickpea",
@@ -481,7 +1065,35 @@
       "title": "Chickpea and vegetable pita",
       "ingredients": "Ingredients: pita bread, {food}, cucumber, tomato, lemon and olive oil.",
       "method": "Cook chickpeas following the package until tender. Mash with lemon and oil. Fill the bread with chickpeas and washed, chopped vegetables."
-    }
+    },
+    "image": "wrap",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pita",
+        "grams": 120.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 240.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "tahini",
+        "grams": 20.0
+      },
+      {
+        "key": "lemon",
+        "grams": 20.0
+      }
+    ]
   },
   {
     "id": "beans-rice",
@@ -503,7 +1115,39 @@
       "title": "Bean and lime rice bowl",
       "ingredients": "Ingredients: {food}, tomatoes, cooked black beans, corn, lime, cumin and oil.",
       "method": "Cook rice following the package. Heat cooked beans and corn with cumin and a little oil. Serve with washed, chopped tomato and lime juice."
-    }
+    },
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "corn",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "cilantro",
+        "grams": 10.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "beans-tomato",
@@ -525,7 +1169,39 @@
       "title": "Bean and lime rice bowl",
       "ingredients": "Ingredients: rice, {food}, cooked black beans, corn, lime, cumin and oil.",
       "method": "Cook rice following the package. Heat cooked beans and corn with cumin and a little oil. Serve with washed, chopped tomato and lime juice."
-    }
+    },
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "corn",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "cilantro",
+        "grams": 10.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "stew-rice",
@@ -547,7 +1223,43 @@
       "title": "West African-inspired vegetable stew",
       "ingredients": "Ingredients: {food}, tomatoes, sweet potato, onion, peanut butter, oil and water.",
       "method": "Fry onion in oil. Add chopped tomatoes, peeled sweet potato and water and simmer until vegetables are tender. Stir in peanut butter. Cook rice separately and serve together."
-    }
+    },
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "pepper",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "beans",
+        "grams": 200.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      }
+    ]
   },
   {
     "id": "stew-tomato",
@@ -569,7 +1281,43 @@
       "title": "West African-inspired vegetable stew",
       "ingredients": "Ingredients: rice, {food}, sweet potato, onion, peanut butter, oil and water.",
       "method": "Fry onion in oil. Add chopped tomatoes, peeled sweet potato and water and simmer until vegetables are tender. Stir in peanut butter. Cook rice separately and serve together."
-    }
+    },
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "pepper",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "beans",
+        "grams": 200.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      }
+    ]
   },
   {
     "id": "yogurt-yogurt",
@@ -591,7 +1339,27 @@
       "title": "Yogurt and fruit bowl",
       "ingredients": "Ingredients: {food}, apple, banana, ready-to-eat muesli.",
       "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
-    }
+    },
+    "image": "yogurt",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "oat",
+        "grams": 30.0
+      }
+    ]
   },
   {
     "id": "yogurt-apple",
@@ -613,7 +1381,27 @@
       "title": "Yogurt and fruit bowl",
       "ingredients": "Ingredients: yogurt, {food}, banana, ready-to-eat muesli.",
       "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
-    }
+    },
+    "image": "yogurt",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "oat",
+        "grams": 30.0
+      }
+    ]
   },
   {
     "id": "yogurt-banana",
@@ -635,7 +1423,27 @@
       "title": "Yogurt and fruit bowl",
       "ingredients": "Ingredients: yogurt, apple, {food}, ready-to-eat muesli.",
       "method": "Wash and cut the fruit. Spoon yogurt into a bowl, add fruit and sprinkle with muesli."
-    }
+    },
+    "image": "yogurt",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "oat",
+        "grams": 30.0
+      }
+    ]
   },
   {
     "id": "milk-milk",
@@ -656,7 +1464,27 @@
       "title": "Milk porridge",
       "ingredients": "Ingredients: {food}, oats, banana and cinnamon.",
       "method": "Heat milk and oats following the oat package instructions, stirring regularly. Add sliced banana and cinnamon."
-    }
+    },
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "milk",
+        "grams": 400.0
+      },
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
   },
   {
     "id": "chicken-chicken",
@@ -678,7 +1506,35 @@
       "title": "Chicken with vegetables and couscous",
       "ingredients": "Ingredients: {food}, couscous, zucchini, bell pepper, olive oil and herbs.",
       "method": "Prepare chicken safely according to the package and keep raw chicken separate from other ingredients. Cook the washed, chopped vegetables. Prepare couscous according to the package and serve with fully cooked chicken."
-    }
+    },
+    "image": "chicken",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chicken",
+        "grams": 250.0
+      },
+      {
+        "key": "couscous",
+        "grams": 120.0
+      },
+      {
+        "key": "zucchini",
+        "grams": 200.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "fish-fish",
@@ -700,7 +1556,31 @@
       "title": "Fish with potatoes and vegetables",
       "ingredients": "Ingredients: {food}, potatoes, broccoli, lemon and olive oil.",
       "method": "Cook fish fully according to its package. Boil peeled potatoes and washed broccoli until tender. Serve with lemon and a little olive oil."
-    }
+    },
+    "image": "fish",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 250.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
   },
   {
     "id": "porridge-plantdrink",
@@ -721,6 +1601,3344 @@
       "title": "Porridge with a plant drink",
       "ingredients": "Ingredients: {food}, oats, banana and cinnamon.",
       "method": "Heat the drink and oats following the oat package instructions, stirring regularly. Add sliced banana and cinnamon."
+    },
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "plantdrink",
+        "grams": 400.0
+      },
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "coconut-rice",
+    "cuisine": "southeastAsian",
+    "diet": "plant",
+    "families": [
+      "rice"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "nl": {
+      "title": "Kokosrijst met bonen en limoen",
+      "ingredients": "Ingrediënten: {food}, kokosmelk, water, bonen uit blik, paprika en limoen.",
+      "method": "Kook de rijst in water met een scheut kokosmelk volgens de verpakking. Bak de paprika, warm de uitgelekte bonen mee en serveer met limoen."
+    },
+    "en": {
+      "title": "Coconut rice with beans and lime",
+      "ingredients": "Ingredients: {food}, coconut milk, water, canned beans, pepper and lime.",
+      "method": "Cook the rice in water with a little coconut milk following the package. Sauté the pepper, heat the drained beans and serve with lime."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 100.0
+      },
+      {
+        "key": "water",
+        "grams": 200.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "ginger-tofu",
+    "cuisine": "southeastAsian",
+    "diet": "plant",
+    "families": [
+      "tofu"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "tofu",
+    "nl": {
+      "title": "Gember-limoentofu met groente",
+      "ingredients": "Ingrediënten: {food}, rijst, broccoli, wortel, gember, limoen, olie en sojasaus.",
+      "method": "Kook de rijst. Bak blokjes tofu in olie, voeg gesneden groente en gember toe en bak gaar. Breng op smaak met limoen en sojasaus."
+    },
+    "en": {
+      "title": "Ginger-lime tofu with vegetables",
+      "ingredients": "Ingredients: {food}, rice, broccoli, carrot, ginger, lime, oil and soy sauce.",
+      "method": "Cook the rice. Pan-fry tofu cubes in oil, add chopped vegetables and ginger and cook through. Season with lime and soy sauce."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 250.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      }
+    ]
+  },
+  {
+    "id": "caribbean-rice",
+    "cuisine": "caribbean",
+    "diet": "plant",
+    "families": [
+      "rice",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "nl": {
+      "title": "Caribisch geïnspireerde rijst met bonen",
+      "ingredients": "Ingrediënten: {food}, rijst of tomaat naar behoefte, bonen uit blik, paprika, tijm en kokosmelk.",
+      "method": "Kook de rijst volgens de verpakking met wat kokosmelk en water. Stoof tomaat, paprika, tijm en uitgelekte bonen en schep op de rijst."
+    },
+    "en": {
+      "title": "Caribbean-inspired rice and beans",
+      "ingredients": "Ingredients: {food}, rice or tomato as needed, canned beans, pepper, thyme and coconut milk.",
+      "method": "Cook rice following the package with some coconut milk and water. Simmer tomato, pepper, thyme and drained beans and serve over the rice."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "thyme",
+        "grams": 2.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 100.0
+      },
+      {
+        "key": "water",
+        "grams": 200.0
+      }
+    ]
+  },
+  {
+    "id": "caribbean-potato",
+    "cuisine": "caribbean",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "nl": {
+      "title": "Aardappel met bonen, tijm en limoen",
+      "ingredients": "Ingrediënten: {food}, bonen uit blik, paprika, tijm, limoen en olie.",
+      "method": "Snijd de aardappel in stukken en kook gaar. Bak de paprika in olie, warm de bonen mee en meng met de aardappel, tijm en limoen."
+    },
+    "en": {
+      "title": "Potatoes with beans, thyme and lime",
+      "ingredients": "Ingredients: {food}, canned beans, pepper, thyme, lime and oil.",
+      "method": "Cut the potatoes and boil until tender. Sauté pepper in oil, heat the beans and combine with potatoes, thyme and lime."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "thyme",
+        "grams": 2.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "north-african-lentils",
+    "cuisine": "northAfrican",
+    "diet": "plant",
+    "families": [
+      "lentil",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "nl": {
+      "title": "Linzenstoof met komijn en citroen",
+      "ingredients": "Ingrediënten: {food}, linzen of tomaat naar behoefte, wortel, ui, komijn, citroen en water.",
+      "method": "Fruit ui en komijn. Voeg linzen, tomaat, wortel en water toe; laat de linzen gaar worden volgens de verpakking. Werk af met citroen."
+    },
+    "en": {
+      "title": "Lentil stew with cumin and lemon",
+      "ingredients": "Ingredients: {food}, lentils or tomato as needed, carrot, onion, cumin, lemon and water.",
+      "method": "Soften onion with cumin. Add lentils, tomato, carrot and water; simmer until the lentils are tender, following the package. Finish with lemon."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 500.0
+      }
+    ]
+  },
+  {
+    "id": "north-african-chickpeas",
+    "cuisine": "northAfrican",
+    "diet": "plant",
+    "families": [
+      "chickpea"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chickpea",
+    "nl": {
+      "title": "Kikkererwtenstoof met pompoen",
+      "ingredients": "Ingrediënten: {food}, pompoen, tomaat, ui, kaneel, komijn en water.",
+      "method": "Gebruik gare kikkererwten. Stoof ui, tomaat en blokjes pompoen met kruiden en wat water tot de pompoen zacht is. Warm de kikkererwten mee."
+    },
+    "en": {
+      "title": "Chickpea and pumpkin stew",
+      "ingredients": "Ingredients: {food}, pumpkin, tomato, onion, cinnamon, cumin and water.",
+      "method": "Use cooked chickpeas. Simmer onion, tomato and pumpkin cubes with spices and a little water until soft. Heat the chickpeas in the stew."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chickpea",
+        "grams": 300.0
+      },
+      {
+        "key": "pumpkin",
+        "grams": 300.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 200.0
+      }
+    ]
+  },
+  {
+    "id": "east-african-lentils",
+    "cuisine": "eastAfrican",
+    "diet": "plant",
+    "families": [
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "nl": {
+      "title": "Oost-Afrikaans geïnspireerde kruidige linzen",
+      "ingredients": "Ingrediënten: {food}, ui, knoflook, tomaat, gember, milde paprika, water en rijst.",
+      "method": "Fruit ui, knoflook en gember. Voeg tomaat, linzen, paprika en water toe en kook de linzen gaar volgens de verpakking. Serveer met apart gekookte rijst."
+    },
+    "en": {
+      "title": "East-African-inspired spiced lentils",
+      "ingredients": "Ingredients: {food}, onion, garlic, tomato, ginger, mild paprika, water and rice.",
+      "method": "Soften onion, garlic and ginger. Add tomato, lentils, paprika and water and cook the lentils following the package. Serve with separately cooked rice."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "garlic",
+        "grams": 6.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 600.0
+      }
+    ]
+  },
+  {
+    "id": "east-african-potato",
+    "cuisine": "eastAfrican",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "nl": {
+      "title": "Aardappel-koolpan met kurkuma",
+      "ingredients": "Ingrediënten: {food}, witte kool, wortel, ui, kurkuma, olie en water.",
+      "method": "Bak ui met kurkuma in olie. Voeg aardappel, wortel en kool toe en stoof met wat water onder een deksel tot alles gaar is."
+    },
+    "en": {
+      "title": "Potato and cabbage with turmeric",
+      "ingredients": "Ingredients: {food}, cabbage, carrot, onion, turmeric, oil and water.",
+      "method": "Sauté onion with turmeric in oil. Add potato, carrot and cabbage and cook with a little water under a lid until tender."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "cabbage",
+        "grams": 250.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ]
+  },
+  {
+    "id": "nordic-oats",
+    "cuisine": "european",
+    "diet": "plant",
+    "families": [
+      "oat",
+      "apple"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "image": "porridge",
+    "nl": {
+      "title": "Noords geïnspireerde appel-havermout",
+      "ingredients": "Ingrediënten: {food}, havermout of appel naar behoefte, water, kaneel en pompoenpitten.",
+      "method": "Kook de havermout met water volgens de verpakking. Rasp de gewassen appel erdoor en voeg kaneel en pompoenpitten toe."
+    },
+    "en": {
+      "title": "Nordic-inspired apple oats",
+      "ingredients": "Ingredients: {food}, oats or apple as needed, water, cinnamon and pumpkin seeds.",
+      "method": "Cook oats in water following the package. Stir in grated washed apple and add cinnamon and pumpkin seeds."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 200.0
+      },
+      {
+        "key": "water",
+        "grams": 400.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      },
+      {
+        "key": "seeds",
+        "grams": 20.0
+      }
+    ]
+  },
+  {
+    "id": "potato-salad",
+    "cuisine": "european",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "nl": {
+      "title": "Warme aardappelsalade met dille",
+      "ingredients": "Ingrediënten: {food}, komkommer, witte bonen uit blik, dille, mosterd, azijn en olie.",
+      "method": "Kook de aardappel gaar. Meng mosterd, azijn en olie en schep door de warme aardappel met bonen, komkommer en dille."
+    },
+    "en": {
+      "title": "Warm potato salad with dill",
+      "ingredients": "Ingredients: {food}, cucumber, canned white beans, dill, mustard, vinegar and oil.",
+      "method": "Boil the potatoes until tender. Mix mustard, vinegar and oil and toss with warm potatoes, beans, cucumber and dill."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "whitebeans",
+        "grams": 200.0
+      },
+      {
+        "key": "dill",
+        "grams": 8.0
+      },
+      {
+        "key": "mustard",
+        "grams": 15.0
+      },
+      {
+        "key": "vinegar",
+        "grams": 20.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "american-pancakes",
+    "cuisine": "northAmerican",
+    "diet": "vegetarian",
+    "families": [
+      "oat",
+      "banana",
+      "egg",
+      "milk"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "pancake",
+    "nl": {
+      "title": "Havermout-banaanpannenkoekjes",
+      "ingredients": "Ingrediënten: {food}, havermout, banaan, ei en melk voor zover nog nodig, bakpoeder en olie.",
+      "method": "Maal de havermout fijn. Meng met geprakte banaan, ei, een scheut melk en wat bakpoeder. Bak kleine pannenkoekjes in olie en gaar ze aan beide kanten volledig."
+    },
+    "en": {
+      "title": "Oat and banana pancakes",
+      "ingredients": "Ingredients: {food}, oats, banana, egg and milk as needed, baking powder and oil.",
+      "method": "Grind the oats. Mix with mashed banana, egg, a splash of milk and a little baking powder. Cook small pancakes in oil until fully set on both sides."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 100.0
+      },
+      {
+        "key": "banana",
+        "grams": 150.0
+      },
+      {
+        "key": "egg",
+        "grams": 100.0
+      },
+      {
+        "key": "milk",
+        "grams": 100.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "bakingpowder",
+        "grams": 4
+      }
+    ]
+  },
+  {
+    "id": "american-bean-bowl",
+    "cuisine": "northAmerican",
+    "diet": "plant",
+    "families": [
+      "rice",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "nl": {
+      "title": "Bonen-groentebowl met rijst",
+      "ingredients": "Ingrediënten: {food}, rijst of tomaat naar behoefte, bonen uit blik, maïs, paprika, limoen en olie.",
+      "method": "Kook de rijst. Bak paprika en tomaat in olie, warm bonen en maïs mee en serveer bovenop de rijst met limoen."
+    },
+    "en": {
+      "title": "Bean and vegetable rice bowl",
+      "ingredients": "Ingredients: {food}, rice or tomato as needed, canned beans, corn, pepper, lime and oil.",
+      "method": "Cook the rice. Sauté pepper and tomato in oil, heat beans and corn and serve over rice with lime."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "corn",
+        "grams": 120.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "japanese-soup",
+    "cuisine": "eastAsian",
+    "diet": "plant",
+    "families": [
+      "tofu"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "soup",
+    "nl": {
+      "title": "Japanse inspiratie: tofu-noedelsoep",
+      "ingredients": "Ingrediënten: {food}, noedels, paksoi, wortel, plantaardige bouillon, miso en lente-ui.",
+      "method": "Kook de noedels volgens de verpakking. Laat wortel en ui in water gaar worden. Voeg spinazie en tofu toe en verwarm door. Roer de miso er van het vuur door."
+    },
+    "en": {
+      "title": "Japanese-inspired tofu noodle soup",
+      "ingredients": "Ingredients: {food}, noodles, pak choi, carrot, vegetable stock, miso and spring onion.",
+      "method": "Cook the noodles following the package. Simmer carrot and onion in water until tender. Add spinach and tofu and heat through. Stir in the miso off the heat."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 200.0
+      },
+      {
+        "key": "noodles",
+        "grams": 100.0
+      },
+      {
+        "key": "spinach",
+        "grams": 100.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "miso",
+        "grams": 25.0
+      },
+      {
+        "key": "onion",
+        "grams": 30.0
+      },
+      {
+        "key": "water",
+        "grams": 700.0
+      }
+    ]
+  },
+  {
+    "id": "korean-rice",
+    "cuisine": "eastAsian",
+    "diet": "vegetarian",
+    "families": [
+      "rice",
+      "egg"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "eggs",
+    "nl": {
+      "title": "Koreaans geïnspireerde rijst met groente en ei",
+      "ingredients": "Ingrediënten: {food}, rijst of ei naar behoefte, wortel, spinazie, sesamolie en sojasaus.",
+      "method": "Kook de rijst. Bak wortel en spinazie kort en bereid het ei tot het volledig gestold is. Leg alles in een kom en voeg naar smaak sesamolie en sojasaus toe."
+    },
+    "en": {
+      "title": "Korean-inspired vegetable rice with egg",
+      "ingredients": "Ingredients: {food}, rice or egg as needed, carrot, spinach, sesame oil and soy sauce.",
+      "method": "Cook rice. Sauté carrot and spinach and cook the egg until fully set. Arrange in a bowl and season with sesame oil and soy sauce."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "egg",
+        "grams": 100.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "spinach",
+        "grams": 150.0
+      },
+      {
+        "key": "sesameoil",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      }
+    ]
+  },
+  {
+    "id": "indian-potato",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "nl": {
+      "title": "Aardappel-bloemkoolpan met komijn",
+      "ingredients": "Ingrediënten: {food}, bloemkool, tomaat, ui, komijn, kurkuma, olie en water.",
+      "method": "Fruit ui met kruiden in olie. Voeg kleine aardappelstukken, bloemkool en tomaat toe. Stoof met wat water afgedekt tot de groente gaar is."
+    },
+    "en": {
+      "title": "Potato and cauliflower with cumin",
+      "ingredients": "Ingredients: {food}, cauliflower, tomato, onion, cumin, turmeric, oil and water.",
+      "method": "Soften onion with spices in oil. Add small potato pieces, cauliflower and tomato. Cook covered with a little water until tender."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "cauliflower",
+        "grams": 250.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ]
+  },
+  {
+    "id": "yogurt-raita",
+    "cuisine": "southAsian",
+    "diet": "vegetarian",
+    "families": [
+      "yogurt"
+    ],
+    "meals": [
+      "lunch",
+      "snack"
+    ],
+    "image": "dip",
+    "nl": {
+      "title": "Yoghurtdip met komkommer en komijn",
+      "ingredients": "Ingrediënten: {food}, komkommer, munt en geroosterde komijn.",
+      "method": "Was en rasp de komkommer en druk het vocht eruit. Roer door de yoghurt met munt en komijn. Serveer als bijgerecht."
+    },
+    "en": {
+      "title": "Yogurt dip with cucumber and cumin",
+      "ingredients": "Ingredients: {food}, cucumber, mint and toasted cumin.",
+      "method": "Wash and grate cucumber and squeeze out excess liquid. Stir into yogurt with mint and cumin. Serve as a side dish."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 250.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "mint",
+        "grams": 8.0
+      },
+      {
+        "key": "cumin",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "flatbread-hummus",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "families": [
+      "bread",
+      "chickpea"
+    ],
+    "meals": [
+      "lunch",
+      "snack"
+    ],
+    "image": "wrap",
+    "nl": {
+      "title": "Platbrood met hummus en knapperige groente",
+      "ingredients": "Ingrediënten: {food}, platbrood of gare kikkererwten naar behoefte, tahin, citroen, komkommer en tomaat.",
+      "method": "Pureer gare kikkererwten met tahin, citroen en wat water. Bestrijk het brood en beleg met gewassen, gesneden groente."
+    },
+    "en": {
+      "title": "Flatbread with hummus and crunchy vegetables",
+      "ingredients": "Ingredients: {food}, flatbread or cooked chickpeas as needed, tahini, lemon, cucumber and tomato.",
+      "method": "Blend cooked chickpeas with tahini, lemon and a little water. Spread on the bread and top with washed, chopped vegetables."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pita",
+        "grams": 120.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 240.0
+      },
+      {
+        "key": "tahini",
+        "grams": 20.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      }
+    ]
+  },
+  {
+    "id": "mediterranean-toast",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "families": [
+      "bread",
+      "tomato"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch",
+      "snack"
+    ],
+    "image": "toast",
+    "nl": {
+      "title": "Geroosterd brood met tomaat en basilicum",
+      "ingredients": "Ingrediënten: {food}, brood of tomaat naar behoefte, basilicum, knoflook en olijfolie.",
+      "method": "Rooster het brood. Meng blokjes gewassen tomaat met basilicum en olie. Wrijf het brood licht in met knoflook en verdeel de tomaat erover."
+    },
+    "en": {
+      "title": "Tomato and basil toast",
+      "ingredients": "Ingredients: {food}, bread or tomato as needed, basil, garlic and olive oil.",
+      "method": "Toast the bread. Toss washed diced tomato with basil and oil. Rub the toast lightly with garlic and spoon the tomato on top."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "bread",
+        "grams": 160.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "basil",
+        "grams": 10.0
+      },
+      {
+        "key": "garlic",
+        "grams": 4.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "mediterranean-chicken",
+    "cuisine": "mediterranean",
+    "diet": "any",
+    "families": [
+      "chicken"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chicken",
+    "nl": {
+      "title": "Citroenkip met couscous",
+      "ingredients": "Ingrediënten: {food}, couscous, courgette, paprika, citroen, olie en oregano.",
+      "method": "Bereid couscous volgens de verpakking. Bak kip en groente met olie en oregano tot de kip helemaal gaar is. Serveer met citroen."
+    },
+    "en": {
+      "title": "Lemon chicken with couscous",
+      "ingredients": "Ingredients: {food}, couscous, zucchini, pepper, lemon, oil and oregano.",
+      "method": "Prepare couscous following the package. Cook chicken and vegetables with oil and oregano until the chicken is fully cooked. Serve with lemon."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chicken",
+        "grams": 250.0
+      },
+      {
+        "key": "couscous",
+        "grams": 120.0
+      },
+      {
+        "key": "zucchini",
+        "grams": 200.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "oregano",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "southeast-fish",
+    "cuisine": "southeastAsian",
+    "diet": "any",
+    "families": [
+      "fish"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "fish",
+    "nl": {
+      "title": "Vis met gember, limoen en groente",
+      "ingredients": "Ingrediënten: {food}, rijst, wortel, broccoli, gember, limoen en olie.",
+      "method": "Kook de rijst en gaar de groente. Bereid de vis met gember en olie tot deze helemaal gaar is; volg de verpakking. Serveer met limoen."
+    },
+    "en": {
+      "title": "Fish with ginger, lime and vegetables",
+      "ingredients": "Ingredients: {food}, rice, carrot, broccoli, ginger, lime and oil.",
+      "method": "Cook rice and vegetables. Cook the fish with ginger and oil until fully cooked, following the package. Serve with lime."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "nordic-fish",
+    "cuisine": "european",
+    "diet": "any",
+    "families": [
+      "fish"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "fish",
+    "nl": {
+      "title": "Vis met dille en aardappelen",
+      "ingredients": "Ingrediënten: {food}, aardappel, broccoli, dille, citroen en olie.",
+      "method": "Kook aardappelen en broccoli gaar. Bereid de vis met olie en dille tot deze helemaal gaar is, volgens de verpakking. Serveer met citroen."
+    },
+    "en": {
+      "title": "Fish with dill and potatoes",
+      "ingredients": "Ingredients: {food}, potato, broccoli, dill, lemon and oil.",
+      "method": "Boil potatoes and broccoli until tender. Cook the fish with oil and dill until fully cooked, following the package. Serve with lemon."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 250.0
+      },
+      {
+        "key": "dill",
+        "grams": 8.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "dutch-yogurt",
+    "cuisine": "dutch",
+    "diet": "vegetarian",
+    "families": [
+      "yogurt",
+      "apple",
+      "banana"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "image": "yogurt",
+    "nl": {
+      "title": "Yoghurt met appel, banaan en havervlokken",
+      "ingredients": "Ingrediënten: {food}, yoghurt of fruit naar behoefte, havervlokken en kaneel.",
+      "method": "Was en snijd het fruit. Schep op de yoghurt en voeg havervlokken en kaneel toe."
+    },
+    "en": {
+      "title": "Yogurt with apple, banana and oat flakes",
+      "ingredients": "Ingredients: {food}, yogurt or fruit as needed, oat flakes and cinnamon.",
+      "method": "Wash and cut the fruit. Spoon onto yogurt and add oat flakes and cinnamon."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "banana",
+        "grams": 120.0
+      },
+      {
+        "key": "oat",
+        "grams": 30.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "plant-pancakes",
+    "cuisine": "northAmerican",
+    "diet": "plant",
+    "families": [
+      "oat",
+      "banana",
+      "plantdrink"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "image": "pancake",
+    "nl": {
+      "title": "Plantaardige banaan-haverpannenkoekjes",
+      "ingredients": "Ingrediënten: {food}, havermout, banaan en plantaardige drink voor zover nodig, bakpoeder en olie.",
+      "method": "Maal de havermout en meng met geprakte banaan, plantaardige drink en wat bakpoeder tot dik beslag. Bak kleine pannenkoekjes in olie tot beide kanten gaar zijn."
+    },
+    "en": {
+      "title": "Plant-based banana oat pancakes",
+      "ingredients": "Ingredients: {food}, oats, banana and plant drink as needed, baking powder and oil.",
+      "method": "Grind oats and mix with mashed banana, plant drink and a little baking powder to make a thick batter. Cook small pancakes in oil until both sides are done."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 100.0
+      },
+      {
+        "key": "banana",
+        "grams": 180.0
+      },
+      {
+        "key": "plantdrink",
+        "grams": 120.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "bakingpowder",
+        "grams": 4
+      }
+    ]
+  },
+  {
+    "id": "warm-cinnamon-oats",
+    "cuisine": "european",
+    "diet": "vegetarian",
+    "families": [
+      "milk"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "image": "porridge",
+    "nl": {
+      "title": "Romige kaneelpap met appel",
+      "ingredients": "Ingrediënten: {food}, havermout, appel, kaneel en water naar behoefte.",
+      "method": "Verwarm melk en havermout volgens de verpakking; voeg zo nodig water toe. Roer gewassen appelstukjes en kaneel door de warme pap."
+    },
+    "en": {
+      "title": "Creamy cinnamon porridge with apple",
+      "ingredients": "Ingredients: {food}, oats, apple, cinnamon and water as needed.",
+      "method": "Cook milk and oats following the package, adding water if needed. Stir washed apple pieces and cinnamon into the warm porridge."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "milk",
+        "grams": 400.0
+      },
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 150.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "tropical-plant-oats",
+    "cuisine": "caribbean",
+    "diet": "plant",
+    "families": [
+      "oat",
+      "banana",
+      "plantdrink"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "image": "porridge",
+    "nl": {
+      "title": "Tropische havermout met banaan en kokos",
+      "ingredients": "Ingrediënten: {food}, havermout, banaan en plantaardige drink voor zover nodig, kokosrasp en water.",
+      "method": "Kook havermout met plantaardige drink en water volgens de verpakking. Voeg banaan en kokos toe."
+    },
+    "en": {
+      "title": "Tropical oats with banana and coconut",
+      "ingredients": "Ingredients: {food}, oats, banana and plant drink as needed, shredded coconut and water.",
+      "method": "Cook oats with plant drink and water following the package. Add banana and coconut."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "banana",
+        "grams": 150.0
+      },
+      {
+        "key": "plantdrink",
+        "grams": 300.0
+      },
+      {
+        "key": "coconut",
+        "grams": 20.0
+      },
+      {
+        "key": "water",
+        "grams": 100.0
+      }
+    ]
+  },
+  {
+    "id": "latin-egg",
+    "cuisine": "latinAmerican",
+    "diet": "vegetarian",
+    "families": [
+      "egg",
+      "tomato"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "eggs",
+    "nl": {
+      "title": "Roerei met tomaat en paprika",
+      "ingredients": "Ingrediënten: {food}, ei of tomaat naar behoefte, paprika, ui, olie en brood.",
+      "method": "Bak ui, paprika en tomaat zacht in olie. Voeg losgeklopt ei toe en roer tot volledig gestold. Serveer met brood."
+    },
+    "en": {
+      "title": "Scrambled eggs with tomato and pepper",
+      "ingredients": "Ingredients: {food}, egg or tomato as needed, pepper, onion, oil and bread.",
+      "method": "Soften onion, pepper and tomato in oil. Add beaten egg and stir until fully set. Serve with bread."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "bread",
+        "grams": 120.0
+      }
+    ]
+  },
+  {
+    "id": "cheese-toast",
+    "cuisine": "european",
+    "diet": "vegetarian",
+    "families": [
+      "cheese",
+      "bread"
+    ],
+    "meals": [
+      "lunch",
+      "snack"
+    ],
+    "image": "toast",
+    "nl": {
+      "title": "Warme toast met kaas en tomaat",
+      "ingredients": "Ingrediënten: {food}, brood of kaas naar behoefte, tomaat en oregano; kies vegetarisch gestremde kaas.",
+      "method": "Beleg brood met plakjes tomaat en kaas. Verwarm tot de kaas gesmolten is en voeg oregano toe."
+    },
+    "en": {
+      "title": "Warm cheese and tomato toast",
+      "ingredients": "Ingredients: {food}, bread or cheese as needed, tomato and oregano; choose vegetarian-rennet cheese.",
+      "method": "Top bread with sliced tomato and cheese. Heat until the cheese melts and finish with oregano."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "bread",
+        "grams": 160.0
+      },
+      {
+        "key": "cheese",
+        "grams": 60.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "oregano",
+        "grams": 2.0
+      }
+    ]
+  },
+  {
+    "id": "cheese-omelette",
+    "cuisine": "dutch",
+    "diet": "vegetarian",
+    "families": [
+      "cheese",
+      "egg"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "eggs",
+    "nl": {
+      "title": "Omelet met kaas en tuinkruiden",
+      "ingredients": "Ingrediënten: {food}, ei of kaas naar behoefte, bieslook en olie; kies vegetarisch gestremde kaas.",
+      "method": "Klop het ei en meng met geraspte kaas en peterselie. Bak in olie tot volledig gestold."
+    },
+    "en": {
+      "title": "Cheese and herb omelette",
+      "ingredients": "Ingredients: {food}, egg or cheese as needed, chives and oil; choose vegetarian-rennet cheese.",
+      "method": "Beat the egg and mix with grated cheese and parsley. Cook in oil until fully set."
+    },
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "cheese",
+        "grams": 50.0
+      },
+      {
+        "key": "parsley",
+        "grams": 8.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ]
+  },
+  {
+    "id": "pacific-fish",
+    "cuisine": "oceania",
+    "diet": "any",
+    "families": [
+      "fish"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "fish",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "sweetpotato",
+        "grams": 350.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 100.0
+      }
+    ],
+    "nl": {
+      "title": "Pacifisch geïnspireerde vis met limoen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Gaar de zoete aardappel en broccoli. Bereid de vis helemaal gaar in kokosmelk met een beetje water. Serveer met limoen."
+    },
+    "en": {
+      "title": "Pacific-inspired fish with lime",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook the sweet potato and broccoli. Cook the fish fully in coconut milk with a little water. Serve with lime."
+    }
+  },
+  {
+    "id": "australian-oats",
+    "cuisine": "oceania",
+    "diet": "plant",
+    "families": [
+      "oat",
+      "apple"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "image": "porridge",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "oat",
+        "grams": 80.0
+      },
+      {
+        "key": "apple",
+        "grams": 200.0
+      },
+      {
+        "key": "coconut",
+        "grams": 20.0
+      },
+      {
+        "key": "plantdrink",
+        "grams": 250.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      }
+    ],
+    "nl": {
+      "title": "Australisch geïnspireerde appel-kokoshaver",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook havermout met plantaardige drink en water volgens de verpakking. Meng appel, kokos en kaneel erdoor."
+    },
+    "en": {
+      "title": "Australian-inspired apple coconut oats",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook oats with plant drink and water following the package. Stir in apple, coconut and cinnamon."
+    }
+  },
+  {
+    "id": "pacific-rice",
+    "cuisine": "oceania",
+    "diet": "plant",
+    "families": [
+      "rice"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 120.0
+      },
+      {
+        "key": "water",
+        "grams": 180.0
+      },
+      {
+        "key": "beans",
+        "grams": 200.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      }
+    ],
+    "nl": {
+      "title": "Kokosrijst met bonen en groente",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook de rijst in water met kokosmelk. Gaar de gesneden groente, warm de bonen mee en meng met limoen."
+    },
+    "en": {
+      "title": "Coconut rice with beans and vegetables",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice in water with coconut milk. Cook the chopped vegetables, heat the beans and finish with lime."
+    }
+  },
+  {
+    "id": "oceania-chicken",
+    "cuisine": "oceania",
+    "diet": "any",
+    "families": [
+      "chicken"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chicken",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chicken",
+        "grams": 250.0
+      },
+      {
+        "key": "potato",
+        "grams": 350.0
+      },
+      {
+        "key": "carrot",
+        "grams": 200.0
+      },
+      {
+        "key": "zucchini",
+        "grams": 150.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "thyme",
+        "grams": 2.0
+      }
+    ],
+    "nl": {
+      "title": "Citroen-tijmkip met geroosterde groente",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Bereid aardappel, wortel en courgette in olie met tijm tot gaar. Bak de kip volledig gaar en serveer met citroen."
+    },
+    "en": {
+      "title": "Lemon thyme chicken with roasted vegetables",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook potato, carrot and zucchini in oil with thyme until tender. Cook chicken fully and serve with lemon."
+    }
+  },
+  {
+    "id": "south-african-beans",
+    "cuisine": "southAfrican",
+    "diet": "plant",
+    "families": [
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chickpea",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "beans",
+        "grams": 300.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "cumin",
+        "grams": 2.0
+      }
+    ],
+    "nl": {
+      "title": "Zuid-Afrikaans geïnspireerde bonen-groentestoof",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit ui en kruiden. Voeg wortel, paprika en tomaat toe en stoof zacht. Warm de gare bonen mee."
+    },
+    "en": {
+      "title": "Southern-African-inspired bean vegetable stew",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion with spices. Add carrot, pepper and tomato and simmer until tender. Heat the cooked beans in the stew."
+    }
+  },
+  {
+    "id": "south-african-rice",
+    "cuisine": "southAfrican",
+    "diet": "plant",
+    "families": [
+      "rice"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "lentil",
+        "grams": 80.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "peas",
+        "grams": 150.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 1.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 500.0
+      }
+    ],
+    "nl": {
+      "title": "Gele rijst met linzen en groente",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook rijst en linzen volgens hun eigen verpakking. Bak wortel en erwten met kruiden, gaar ze en meng alles."
+    },
+    "en": {
+      "title": "Yellow rice with lentils and vegetables",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice and lentils separately following their packages. Cook carrots and peas with spices and combine."
+    }
+  },
+  {
+    "id": "cape-potato",
+    "cuisine": "southAfrican",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ],
+    "nl": {
+      "title": "Kaaps geïnspireerde kruidige aardappelen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit de ui met kruiden. Voeg aardappel, tomaat en water toe en laat gaar worden. Warm de kikkererwten mee."
+    },
+    "en": {
+      "title": "Cape-inspired spiced potatoes",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion with spices. Add potato, tomato and water and simmer until tender. Heat the chickpeas in the pan."
+    }
+  },
+  {
+    "id": "west-african-peanut",
+    "cuisine": "westAfrican",
+    "diet": "plant",
+    "families": [
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "sweetpotato",
+        "grams": 250.0
+      },
+      {
+        "key": "spinach",
+        "grams": 150.0
+      },
+      {
+        "key": "peanutbutter",
+        "grams": 40.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "water",
+        "grams": 350.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Tomaat-pindastoof met groente",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit ui, voeg tomaat, zoete aardappel en water toe en stoof gaar. Roer pindakaas en spinazie erdoor en warm door."
+    },
+    "en": {
+      "title": "Tomato peanut vegetable stew",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion, add tomato, sweet potato and water and simmer until tender. Stir in peanut butter and spinach and heat through."
+    }
+  },
+  {
+    "id": "west-african-chicken",
+    "cuisine": "westAfrican",
+    "diet": "any",
+    "families": [
+      "chicken"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chicken",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chicken",
+        "grams": 250.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "water",
+        "grams": 250.0
+      }
+    ],
+    "nl": {
+      "title": "West-Afrikaans geïnspireerde tomatenkip",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Bak ui en kip in olie. Voeg tomaat, paprika en kruiden toe en stoof tot de kip volledig gaar is. Serveer met apart gekookte rijst."
+    },
+    "en": {
+      "title": "West-African-inspired tomato chicken",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook onion and chicken in oil. Add tomato, pepper and spices and simmer until the chicken is fully cooked. Serve with separately cooked rice."
+    }
+  },
+  {
+    "id": "ethiopian-chickpeas",
+    "cuisine": "eastAfrican",
+    "diet": "plant",
+    "families": [
+      "chickpea"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chickpea",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chickpea",
+        "grams": 300.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "garlic",
+        "grams": 6.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ],
+    "nl": {
+      "title": "Ethiopisch geïnspireerde kikkererwtenstoof",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit ui, knoflook en gember. Voeg tomaat en paprika toe, laat zacht worden en warm de gare kikkererwten mee."
+    },
+    "en": {
+      "title": "Ethiopian-inspired chickpea stew",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion, garlic and ginger. Add tomato and paprika, simmer until soft and heat the cooked chickpeas in the sauce."
+    }
+  },
+  {
+    "id": "moroccan-couscous",
+    "cuisine": "northAfrican",
+    "diet": "plant",
+    "families": [
+      "chickpea"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "chickpea",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "couscous",
+        "grams": 120.0
+      },
+      {
+        "key": "chickpea",
+        "grams": 240.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "zucchini",
+        "grams": 150.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 200.0
+      }
+    ],
+    "nl": {
+      "title": "Marokkaans geïnspireerde groentecouscous",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Bereid couscous volgens de verpakking. Stoof de groente met komijn en olie, warm de kikkererwten mee en serveer op de couscous."
+    },
+    "en": {
+      "title": "Moroccan-inspired vegetable couscous",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Prepare couscous following the package. Simmer vegetables with cumin and oil, heat the chickpeas and serve over couscous."
+    }
+  },
+  {
+    "id": "brazilian-rice",
+    "cuisine": "latinAmerican",
+    "diet": "plant",
+    "families": [
+      "rice"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "blackbeans",
+        "grams": 300.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "garlic",
+        "grams": 6.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      }
+    ],
+    "nl": {
+      "title": "Braziliaans geïnspireerde rijst met zwarte bonen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook de rijst. Fruit ui en knoflook, voeg tomaat en gare zwarte bonen toe en warm door. Serveer met limoen."
+    },
+    "en": {
+      "title": "Brazilian-inspired rice and black beans",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice. Soften onion and garlic, add tomato and cooked black beans and heat through. Serve with lime."
+    }
+  },
+  {
+    "id": "andean-potato",
+    "cuisine": "latinAmerican",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "corn",
+        "grams": 150.0
+      },
+      {
+        "key": "beans",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "cilantro",
+        "grams": 10.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Andes-geïnspireerde aardappel-maïsbowl",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook aardappelen gaar. Warm maïs en bonen, meng met aardappelen en tomaat en werk af met limoen en koriander."
+    },
+    "en": {
+      "title": "Andean-inspired potato and corn bowl",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Boil potatoes until tender. Heat corn and beans, combine with potato and tomato and finish with lime and cilantro."
+    }
+  },
+  {
+    "id": "mexican-rice",
+    "cuisine": "latinAmerican",
+    "diet": "plant",
+    "families": [
+      "rice",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "beans",
+        "grams": 200.0
+      },
+      {
+        "key": "corn",
+        "grams": 100.0
+      },
+      {
+        "key": "onion",
+        "grams": 80.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 200.0
+      }
+    ],
+    "nl": {
+      "title": "Mexicaans geïnspireerde tomatenrijst",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit ui en rijst in olie. Voeg tomaat, komijn en water toe en gaar volgens de rijstverpakking. Warm bonen en maïs mee."
+    },
+    "en": {
+      "title": "Mexican-inspired tomato rice",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion and rice in oil. Add tomato, cumin and water and cook following the rice package. Heat beans and corn in the rice."
+    }
+  },
+  {
+    "id": "caribbean-fish",
+    "cuisine": "caribbean",
+    "diet": "any",
+    "families": [
+      "fish"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "fish",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "pepper",
+        "grams": 150.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "thyme",
+        "grams": 2.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "water",
+        "grams": 100.0
+      }
+    ],
+    "nl": {
+      "title": "Caribisch geïnspireerde vis met kokos",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook de rijst. Laat tomaat, paprika, kokosmelk en tijm zacht pruttelen. Voeg vis toe en gaar volledig. Serveer met limoen."
+    },
+    "en": {
+      "title": "Caribbean-inspired coconut fish",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice. Simmer tomato, pepper, coconut milk and thyme. Add fish and cook fully. Serve with lime."
+    }
+  },
+  {
+    "id": "caribbean-yogurt",
+    "cuisine": "caribbean",
+    "diet": "vegetarian",
+    "families": [
+      "yogurt",
+      "banana"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "image": "yogurt",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "banana",
+        "grams": 200.0
+      },
+      {
+        "key": "coconut",
+        "grams": 20.0
+      },
+      {
+        "key": "oat",
+        "grams": 30.0
+      }
+    ],
+    "nl": {
+      "title": "Banaan-kokosyoghurt",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Snijd de banaan en schep op yoghurt. Voeg kokosrasp en havervlokken toe."
+    },
+    "en": {
+      "title": "Banana coconut yogurt",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Slice banana and spoon onto yogurt. Add coconut and oat flakes."
+    }
+  },
+  {
+    "id": "indonesian-tofu",
+    "cuisine": "southeastAsian",
+    "diet": "plant",
+    "families": [
+      "tofu"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "tofu",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 250.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 200.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "peanutbutter",
+        "grams": 35.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      },
+      {
+        "key": "water",
+        "grams": 80.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Indonesisch geïnspireerde tofu met pindasaus",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook de rijst en gaar de groente. Bak tofu. Roer pindakaas, water, limoen en sojasaus tot saus, warm even en serveer."
+    },
+    "en": {
+      "title": "Indonesian-inspired tofu with peanut sauce",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice and vegetables. Pan-fry tofu. Stir peanut butter, water, lime and soy sauce into a sauce, heat briefly and serve."
+    }
+  },
+  {
+    "id": "vietnamese-noodles",
+    "cuisine": "southeastAsian",
+    "diet": "plant",
+    "families": [
+      "tofu"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "soup",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "noodles",
+        "grams": 120.0
+      },
+      {
+        "key": "tofu",
+        "grams": 200.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "mint",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Vietnamees geïnspireerde noedels met tofu",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Bereid de noedels volgens de verpakking. Bak de tofu en snijd komkommer en wortel fijn. Meng met limoen, munt en sojasaus."
+    },
+    "en": {
+      "title": "Vietnamese-inspired tofu noodles",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Prepare noodles following the package. Pan-fry tofu and finely slice cucumber and carrot. Combine with lime, mint and soy sauce."
+    }
+  },
+  {
+    "id": "thai-coconut-soup",
+    "cuisine": "southeastAsian",
+    "diet": "plant",
+    "families": [
+      "tofu"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "soup",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "tofu",
+        "grams": 250.0
+      },
+      {
+        "key": "mushroom",
+        "grams": 150.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 150.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "lime",
+        "grams": 30.0
+      },
+      {
+        "key": "water",
+        "grams": 500.0
+      }
+    ],
+    "nl": {
+      "title": "Thais geïnspireerde kokossoep met tofu",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Laat gember, wortel en champignons in water en kokosmelk garen. Voeg tofu toe, warm door en voeg limoen toe."
+    },
+    "en": {
+      "title": "Thai-inspired coconut tofu soup",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Simmer ginger, carrot and mushrooms in water and coconut milk. Add tofu, heat through and finish with lime."
+    }
+  },
+  {
+    "id": "chinese-tomato-egg",
+    "cuisine": "eastAsian",
+    "diet": "vegetarian",
+    "families": [
+      "egg",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "eggs",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "tomato",
+        "grams": 300.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "onion",
+        "grams": 60.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Chinees geïnspireerd roerei met tomaat",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook de rijst. Bak ui en tomaat zacht. Voeg losgeklopt ei toe en roer tot volledig gestold. Serveer met rijst en een beetje sojasaus."
+    },
+    "en": {
+      "title": "Chinese-inspired tomato and egg",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice. Soften onion and tomato. Add beaten egg and stir until fully set. Serve with rice and a little soy sauce."
+    }
+  },
+  {
+    "id": "japanese-ginger-fish",
+    "cuisine": "eastAsian",
+    "diet": "any",
+    "families": [
+      "fish"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "fish",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "fish",
+        "grams": 250.0
+      },
+      {
+        "key": "rice",
+        "grams": 120.0
+      },
+      {
+        "key": "broccoli",
+        "grams": 250.0
+      },
+      {
+        "key": "ginger",
+        "grams": 10.0
+      },
+      {
+        "key": "soy",
+        "grams": 15.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Japanse inspiratie: gembervis met rijst",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook rijst en broccoli. Bereid vis met gember, olie en sojasaus tot helemaal gaar."
+    },
+    "en": {
+      "title": "Japanese-inspired ginger fish and rice",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook rice and broccoli. Cook fish with ginger, oil and soy sauce until fully cooked."
+    }
+  },
+  {
+    "id": "indian-rice-lentils",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "families": [
+      "rice",
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "lentil",
+        "grams": 100.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "peas",
+        "grams": 100.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "cumin",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 650.0
+      }
+    ],
+    "nl": {
+      "title": "Khichdi-geïnspireerde rijst en linzen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Spoel rijst en linzen en kook samen met water, kruiden, wortel en erwten tot alles zacht is. Voeg zo nodig meer water toe."
+    },
+    "en": {
+      "title": "Khichdi-inspired rice and lentils",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Rinse rice and lentils and simmer with water, spices, carrot and peas until tender. Add water as needed."
+    }
+  },
+  {
+    "id": "sri-lankan-lentils",
+    "cuisine": "southAsian",
+    "diet": "plant",
+    "families": [
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "coconutmilk",
+        "grams": 120.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "turmeric",
+        "grams": 2.0
+      },
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "water",
+        "grams": 500.0
+      }
+    ],
+    "nl": {
+      "title": "Sri Lankaans geïnspireerde kokoslinzen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook linzen met ui, tomaat, kurkuma en water. Voeg kokosmelk toe als ze gaar zijn en warm door. Serveer met apart gekookte rijst."
+    },
+    "en": {
+      "title": "Sri Lankan-inspired coconut lentils",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook lentils with onion, tomato, turmeric and water. Once tender, add coconut milk and heat through. Serve with separately cooked rice."
+    }
+  },
+  {
+    "id": "levantine-lentils",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "families": [
+      "rice",
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "rice",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "rice",
+        "grams": 100.0
+      },
+      {
+        "key": "lentil",
+        "grams": 100.0
+      },
+      {
+        "key": "onion",
+        "grams": 250.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 15.0
+      },
+      {
+        "key": "water",
+        "grams": 500.0
+      }
+    ],
+    "nl": {
+      "title": "Mujaddara-geïnspireerde rijst met linzen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook linzen en rijst volgens de verpakking. Bak gesneden ui langzaam in olie tot goudbruin en meng met de rijst, linzen en komijn."
+    },
+    "en": {
+      "title": "Mujaddara-inspired lentil rice",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook lentils and rice following their packages. Slowly fry sliced onion in oil until golden and combine with rice, lentils and cumin."
+    }
+  },
+  {
+    "id": "turkish-lentil-soup",
+    "cuisine": "middleEastern",
+    "diet": "plant",
+    "families": [
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "curry",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      },
+      {
+        "key": "cumin",
+        "grams": 3.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "water",
+        "grams": 800.0
+      }
+    ],
+    "nl": {
+      "title": "Turks geïnspireerde linzensoep",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Fruit ui. Voeg linzen, wortel, tomaat, komijn en water toe en kook gaar. Pureer naar wens en serveer met citroen."
+    },
+    "en": {
+      "title": "Turkish-inspired lentil soup",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Soften onion. Add lentils, carrot, tomato, cumin and water and simmer until tender. Blend if desired and serve with lemon."
+    }
+  },
+  {
+    "id": "greek-chickpea-salad",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "families": [
+      "chickpea",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "salad",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "chickpea",
+        "grams": 300.0
+      },
+      {
+        "key": "tomato",
+        "grams": 250.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 50.0
+      },
+      {
+        "key": "lemon",
+        "grams": 30.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "oregano",
+        "grams": 2.0
+      }
+    ],
+    "nl": {
+      "title": "Grieks geïnspireerde kikkererwtensalade",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Gebruik gare kikkererwten. Meng met gewassen, gesneden groente en een dressing van citroen, olie en oregano."
+    },
+    "en": {
+      "title": "Greek-inspired chickpea salad",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Use cooked chickpeas. Mix with washed chopped vegetables and a dressing of lemon, oil and oregano."
+    }
+  },
+  {
+    "id": "italian-lentil-pasta",
+    "cuisine": "mediterranean",
+    "diet": "plant",
+    "families": [
+      "pasta",
+      "lentil",
+      "tomato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "pasta",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "pasta",
+        "grams": 140.0
+      },
+      {
+        "key": "lentil",
+        "grams": 80.0
+      },
+      {
+        "key": "tomato",
+        "grams": 350.0
+      },
+      {
+        "key": "carrot",
+        "grams": 100.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "basil",
+        "grams": 8.0
+      },
+      {
+        "key": "water",
+        "grams": 300.0
+      }
+    ],
+    "nl": {
+      "title": "Italiaans geïnspireerde pasta met linzensaus",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook pasta apart. Fruit ui en wortel, voeg tomaat, linzen en water toe en laat de linzen gaar worden. Serveer met basilicum."
+    },
+    "en": {
+      "title": "Italian-inspired pasta with lentil sauce",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook pasta separately. Soften onion and carrot, add tomato, lentils and water and simmer until the lentils are tender. Serve with basil."
+    }
+  },
+  {
+    "id": "spanish-potato-egg",
+    "cuisine": "mediterranean",
+    "diet": "vegetarian",
+    "families": [
+      "potato",
+      "egg"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "eggs",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 350.0
+      },
+      {
+        "key": "egg",
+        "grams": 200.0
+      },
+      {
+        "key": "onion",
+        "grams": 100.0
+      },
+      {
+        "key": "oil",
+        "grams": 15.0
+      },
+      {
+        "key": "tomato",
+        "grams": 150.0
+      }
+    ],
+    "nl": {
+      "title": "Spaans geïnspireerde aardappelomelet",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook dunne aardappelschijfjes gaar. Bak de ui, voeg aardappel en losgeklopt ei toe en gaar onder een deksel volledig. Serveer met tomaat."
+    },
+    "en": {
+      "title": "Spanish-inspired potato omelette",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Boil thin potato slices until tender. Cook onion, add potato and beaten egg and cook covered until fully set. Serve with tomato."
+    }
+  },
+  {
+    "id": "french-lentil-salad",
+    "cuisine": "european",
+    "diet": "plant",
+    "families": [
+      "lentil"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "salad",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "lentil",
+        "grams": 120.0
+      },
+      {
+        "key": "carrot",
+        "grams": 150.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "mustard",
+        "grams": 15.0
+      },
+      {
+        "key": "vinegar",
+        "grams": 20.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "parsley",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 350.0
+      }
+    ],
+    "nl": {
+      "title": "Frans geïnspireerde linzensalade",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook linzen en wortel gaar. Meng mosterd, azijn en olie en schep met tomaat en peterselie door de linzen."
+    },
+    "en": {
+      "title": "French-inspired lentil salad",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook lentils and carrot until tender. Mix mustard, vinegar and oil and toss with lentils, tomato and parsley."
+    }
+  },
+  {
+    "id": "scandinavian-toast",
+    "cuisine": "european",
+    "diet": "vegetarian",
+    "families": [
+      "bread",
+      "cheese"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "toast",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "ryebread",
+        "grams": 160.0
+      },
+      {
+        "key": "cheese",
+        "grams": 60.0
+      },
+      {
+        "key": "cucumber",
+        "grams": 150.0
+      },
+      {
+        "key": "dill",
+        "grams": 8.0
+      }
+    ],
+    "nl": {
+      "title": "Noords geïnspireerd brood met kaas en komkommer",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Beleg roggebrood met kaas en komkommer. Kies vegetarisch gestremde kaas als dat bij je eetstijl hoort. Voeg dille toe."
+    },
+    "en": {
+      "title": "Nordic-inspired cheese and cucumber bread",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Top rye bread with cheese and cucumber. Choose vegetarian-rennet cheese if required by your eating style. Finish with dill."
+    }
+  },
+  {
+    "id": "dutch-leek-potato",
+    "cuisine": "dutch",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "mash",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "leek",
+        "grams": 250.0
+      },
+      {
+        "key": "whitebeans",
+        "grams": 250.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "water",
+        "grams": 150.0
+      }
+    ],
+    "nl": {
+      "title": "Stamppot met prei en witte bonen",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Kook aardappelen gaar. Gaar de prei, warm de bonen mee en stamp met de aardappel, olie en wat kookwater."
+    },
+    "en": {
+      "title": "Leek and white-bean potato mash",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Boil potatoes until tender. Cook leek, heat the beans and mash with potatoes, oil and a little cooking water."
+    }
+  },
+  {
+    "id": "dutch-apple-pancake",
+    "cuisine": "dutch",
+    "diet": "vegetarian",
+    "families": [
+      "apple",
+      "oat",
+      "egg",
+      "milk"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "pancake",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "apple",
+        "grams": 200.0
+      },
+      {
+        "key": "oat",
+        "grams": 100.0
+      },
+      {
+        "key": "egg",
+        "grams": 100.0
+      },
+      {
+        "key": "milk",
+        "grams": 120.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      }
+    ],
+    "nl": {
+      "title": "Appel-haverpannenkoekjes met kaneel",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Maal havermout fijn en meng met ei, melk en kaneel. Voeg geraspte appel toe en bak kleine pannenkoekjes tot volledig gaar."
+    },
+    "en": {
+      "title": "Apple oat pancakes with cinnamon",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Grind oats and mix with egg, milk and cinnamon. Add grated apple and cook small pancakes until fully set."
+    }
+  },
+  {
+    "id": "american-avocado-toast",
+    "cuisine": "northAmerican",
+    "diet": "plant",
+    "families": [
+      "bread",
+      "tomato"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "image": "toast",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "bread",
+        "grams": 160.0
+      },
+      {
+        "key": "avocado",
+        "grams": 150.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "lime",
+        "grams": 20.0
+      },
+      {
+        "key": "blackpepper",
+        "grams": 1.0
+      }
+    ],
+    "nl": {
+      "title": "Avocadotoast met tomaat",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Rooster het brood. Prak avocado met limoen, bestrijk het brood en beleg met gewassen tomaat en peper."
+    },
+    "en": {
+      "title": "Avocado and tomato toast",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Toast bread. Mash avocado with lime, spread on toast and top with washed tomato and pepper."
+    }
+  },
+  {
+    "id": "american-potato-bowl",
+    "cuisine": "northAmerican",
+    "diet": "plant",
+    "families": [
+      "potato"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "image": "potato",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "potato",
+        "grams": 400.0
+      },
+      {
+        "key": "beans",
+        "grams": 240.0
+      },
+      {
+        "key": "corn",
+        "grams": 150.0
+      },
+      {
+        "key": "tomato",
+        "grams": 200.0
+      },
+      {
+        "key": "oil",
+        "grams": 10.0
+      },
+      {
+        "key": "paprika",
+        "grams": 3.0
+      }
+    ],
+    "nl": {
+      "title": "Aardappel-bonenbowl met maïs",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Gaar de aardappelstukken in olie met paprikapoeder. Warm bonen en maïs en serveer met de aardappel en tomaat."
+    },
+    "en": {
+      "title": "Potato bean bowl with corn",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Cook potato pieces in oil with paprika until tender. Heat beans and corn and serve with potatoes and tomato."
+    }
+  },
+  {
+    "id": "north-american-apple-yogurt",
+    "cuisine": "northAmerican",
+    "diet": "vegetarian",
+    "families": [
+      "apple",
+      "yogurt"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "image": "yogurt",
+    "servings": 2,
+    "ingredients": [
+      {
+        "key": "apple",
+        "grams": 200.0
+      },
+      {
+        "key": "yogurt",
+        "grams": 300.0
+      },
+      {
+        "key": "oat",
+        "grams": 40.0
+      },
+      {
+        "key": "cinnamon",
+        "grams": 2.0
+      },
+      {
+        "key": "seeds",
+        "grams": 15.0
+      }
+    ],
+    "nl": {
+      "title": "Appel-kaneelyoghurt met havervlokken",
+      "ingredients": "Ingrediënten: {food}; gebruik de afgewogen basisingrediënten hieronder.",
+      "method": "Was en snijd de appel en meng met yoghurt. Voeg havervlokken, kaneel en pompoenpitten toe."
+    },
+    "en": {
+      "title": "Apple cinnamon yogurt with oats",
+      "ingredients": "Ingredients: {food}; use the weighed base ingredients below.",
+      "method": "Wash and chop apple and combine with yogurt. Add oats, cinnamon and pumpkin seeds."
     }
   }
 ]

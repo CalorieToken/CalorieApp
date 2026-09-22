@@ -1,10 +1,12 @@
 import { DisplayLanguagePicker } from "@/components/DisplayLanguageProvider";
 import { AppIntroduction, AppSourceFooter } from "@/components/AppIntroduction";
 import { CalorieAppWorkspace } from "@/components/CalorieAppWorkspace";
+import { AppActivityHeartbeat } from "@/components/AppActivityHeartbeat";
 
 export default function Home() {
   return (
     <main data-calorieapp-content className="w-full px-2 pb-28 pt-3 sm:px-4 sm:py-10">
+      <AppActivityHeartbeat />
       <div className="mx-auto w-full max-w-3xl lg:max-w-6xl overflow-hidden rounded-3xl border border-brand-secondary/10 bg-white shadow-xl">
         <div className="h-1.5 bg-gradient-to-r from-brand-primary via-brand-accent to-brand-secondary" />
         <div className="p-3 sm:p-10">

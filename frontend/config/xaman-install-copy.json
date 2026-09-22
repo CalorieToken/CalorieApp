@@ -1,0 +1,123 @@
+{
+  "nl": {
+    "device": "Welke telefoon heb je?",
+    "computer": "Ik zit op een computer",
+    "desktop": "Laat deze uitleg op je computer openstaan. Pak je telefoon en kies hieronder Android of iPhone. Xaman installeer je op die telefoon.",
+    "store": "De appwinkel is de plek waar je apps op je telefoon zet. Android gebruikt Google Play (Play Store); iPhone gebruikt de App Store. De knop hieronder opent meteen de juiste Xaman-pagina.",
+    "install": "Tik op Installeren (Android) of Download (iPhone) en wacht tot het klaar is. De app heet Xaman: XRP Ledger Wallet, van XRPL Labs. Vraagt de winkel om inloggen? Doe dat alleen op je telefoon in Google Play of de App Store.",
+    "open": "Tik daarna op Openen. Staat er al Openen in de winkel? Dan is Xaman al geïnstalleerd. Volg de welkomststappen van Xaman op je telefoon. Voor deze oefenroute hoef je geen crypto te kopen.",
+    "return": "Ga terug naar de browser waarin CalorieApp openstaat. Op Android gebruik je de knop voor recente apps (vaak een vierkantje) of veeg je vanaf onder omhoog en houd je even vast. Op iPhone veeg je vanaf onder omhoog en pauzeer je; met een thuisknop druk je die twee keer. Kies de browser. Op de computer ga je gewoon hier verder.",
+    "already": "Xaman staat al op mijn telefoon → verder",
+    "change": "Andere telefoon kiezen"
+  },
+  "en": {
+    "device": "Which phone do you have?",
+    "computer": "I am on a computer",
+    "desktop": "Keep these instructions open on your computer. Pick up your phone and choose Android or iPhone below. Install Xaman on that phone.",
+    "store": "An app store is where you install apps on your phone. Android uses Google Play (Play Store); iPhone uses the App Store. The button below opens the correct Xaman listing.",
+    "install": "Tap Install (Android) or Get (iPhone) and wait. The app is Xaman: XRP Ledger Wallet, by XRPL Labs. If the store asks you to sign in, do so only in Google Play or the App Store on your phone.",
+    "open": "Then tap Open. If the store already shows Open, Xaman is already installed. Follow Xaman’s welcome steps on your phone. You do not need to buy crypto for this practice route.",
+    "return": "Return to the browser with CalorieApp. On Android, use the recent-apps button (often a square) or swipe up from the bottom and hold. On iPhone, swipe up and pause; with a Home button, press it twice. Select your browser. If using a computer, continue here.",
+    "already": "Xaman is already on my phone → continue",
+    "change": "Choose another phone"
+  },
+  "es": {
+    "device": "¿Qué teléfono tienes?",
+    "computer": "Estoy en un ordenador",
+    "desktop": "Deja esta guía abierta en el ordenador. Toma tu teléfono y elige Android o iPhone. Instala Xaman en ese teléfono.",
+    "store": "La tienda sirve para instalar aplicaciones: Google Play en Android y App Store en iPhone. El botón abre la ficha de Xaman.",
+    "install": "Pulsa Instalar u Obtener y espera. Busca Xaman: XRP Ledger Wallet, de XRPL Labs. Si te piden iniciar sesión, hazlo solo en la tienda de tu teléfono.",
+    "open": "Pulsa Abrir. Si ya aparece Abrir, Xaman está instalado. Sigue sus pasos de bienvenida. No necesitas comprar criptomonedas para practicar.",
+    "return": "Vuelve al navegador con CalorieApp usando las aplicaciones recientes de tu teléfono. En el ordenador, continúa aquí.",
+    "already": "Ya tengo Xaman → continuar",
+    "change": "Elegir otro teléfono"
+  },
+  "fr": {
+    "device": "Quel téléphone avez-vous ?",
+    "computer": "Je suis sur ordinateur",
+    "desktop": "Gardez ce guide ouvert sur votre ordinateur. Prenez votre téléphone et choisissez Android ou iPhone. Installez Xaman sur ce téléphone.",
+    "store": "La boutique permet d’installer des applications : Google Play sur Android, App Store sur iPhone. Le bouton ouvre la fiche Xaman.",
+    "install": "Touchez Installer ou Obtenir et patientez. Choisissez Xaman: XRP Ledger Wallet, de XRPL Labs. Connectez-vous uniquement dans la boutique de votre téléphone si elle le demande.",
+    "open": "Touchez Ouvrir. Si Ouvrir apparaît déjà, Xaman est installé. Suivez ses étapes d’accueil. Aucun achat de crypto n’est nécessaire pour cet essai.",
+    "return": "Revenez au navigateur avec CalorieApp via les applications récentes de votre téléphone. Sur ordinateur, continuez ici.",
+    "already": "Xaman est déjà installé → continuer",
+    "change": "Choisir un autre téléphone"
+  },
+  "pt": {
+    "device": "Qual é o seu telefone?",
+    "computer": "Estou num computador",
+    "desktop": "Deixe este guia aberto no computador. Pegue no telefone e escolha Android ou iPhone. Instale o Xaman nesse telefone.",
+    "store": "A loja permite instalar aplicações: Google Play no Android e App Store no iPhone. O botão abre a página do Xaman.",
+    "install": "Toque em Instalar ou Obter e aguarde. Escolha Xaman: XRP Ledger Wallet, da XRPL Labs. Se necessário, inicie sessão apenas na loja do telefone.",
+    "open": "Toque em Abrir. Se já aparecer Abrir, o Xaman está instalado. Siga as boas-vindas do Xaman. Não precisa comprar criptomoedas para este teste.",
+    "return": "Volte ao navegador com o CalorieApp pelas aplicações recentes do telefone. No computador, continue aqui.",
+    "already": "Já tenho Xaman → continuar",
+    "change": "Escolher outro telefone"
+  },
+  "id": {
+    "device": "Ponsel apa yang Anda gunakan?",
+    "computer": "Saya memakai komputer",
+    "desktop": "Biarkan panduan terbuka di komputer. Ambil ponsel dan pilih Android atau iPhone. Pasang Xaman di ponsel itu.",
+    "store": "Toko aplikasi adalah tempat memasang aplikasi: Google Play di Android dan App Store di iPhone. Tombol membuka halaman Xaman.",
+    "install": "Ketuk Instal atau Dapatkan dan tunggu. Pilih Xaman: XRP Ledger Wallet dari XRPL Labs. Jika diminta masuk, lakukan hanya di toko aplikasi ponsel.",
+    "open": "Ketuk Buka. Jika sudah tertulis Buka, Xaman telah terpasang. Ikuti langkah sambutan Xaman. Tidak perlu membeli kripto untuk latihan ini.",
+    "return": "Kembali ke browser CalorieApp melalui daftar aplikasi terbaru ponsel. Jika memakai komputer, lanjutkan di sini.",
+    "already": "Xaman sudah terpasang → lanjut",
+    "change": "Pilih ponsel lain"
+  },
+  "zh-Hans": {
+    "device": "你使用哪种手机？",
+    "computer": "我在用电脑",
+    "desktop": "在电脑上保留此指南。拿起手机，选择 Android 或 iPhone，并在手机上安装 Xaman。",
+    "store": "应用商店用于安装手机应用：Android 使用 Google Play，iPhone 使用 App Store。下方按钮会打开 Xaman 页面。",
+    "install": "点击安装或获取并等待。应用名称是 Xaman: XRP Ledger Wallet，开发者是 XRPL Labs。如需登录，请只在手机应用商店中登录。",
+    "open": "然后点击打开。如果已经显示打开，说明已安装。按 Xaman 欢迎提示操作。此练习不需要购买加密货币。",
+    "return": "通过手机最近使用的应用返回打开 CalorieApp 的浏览器。如果使用电脑，在此继续即可。",
+    "already": "手机已安装 Xaman → 继续",
+    "change": "选择其他手机"
+  },
+  "hi": {
+    "device": "आपके पास कौन सा फ़ोन है?",
+    "computer": "मैं कंप्यूटर पर हूँ",
+    "desktop": "यह गाइड कंप्यूटर पर खुली रखें। फ़ोन लें और Android या iPhone चुनें। Xaman उसी फ़ोन पर लगाएँ।",
+    "store": "ऐप स्टोर से फ़ोन में ऐप लगते हैं: Android पर Google Play और iPhone पर App Store। नीचे का बटन Xaman का पेज खोलेगा।",
+    "install": "Install या Get दबाकर प्रतीक्षा करें। ऐप Xaman: XRP Ledger Wallet है, XRPL Labs का। लॉगिन माँगे तो केवल फ़ोन के ऐप स्टोर में करें।",
+    "open": "फिर Open दबाएँ। Open पहले से दिखे तो ऐप लगा हुआ है। Xaman के स्वागत चरण पूरे करें। अभ्यास के लिए क्रिप्टो खरीदना ज़रूरी नहीं।",
+    "return": "फ़ोन के हाल के ऐप से CalorieApp वाले ब्राउज़र में लौटें। कंप्यूटर पर हों तो यहीं आगे बढ़ें।",
+    "already": "Xaman पहले से है → आगे",
+    "change": "दूसरा फ़ोन चुनें"
+  },
+  "bn": {
+    "device": "আপনার কোন ফোন আছে?",
+    "computer": "আমি কম্পিউটারে আছি",
+    "desktop": "কম্পিউটারে নির্দেশনা খোলা রাখুন। ফোন নিয়ে Android বা iPhone বাছুন। সেই ফোনে Xaman ইনস্টল করুন।",
+    "store": "অ্যাপ স্টোর থেকে ফোনে অ্যাপ ইনস্টল হয়: Android-এ Google Play, iPhone-এ App Store। নিচের বোতাম Xaman-এর পৃষ্ঠা খুলবে।",
+    "install": "Install বা Get চাপুন ও অপেক্ষা করুন। XRPL Labs-এর Xaman: XRP Ledger Wallet বাছুন। লগইন চাইলে শুধু ফোনের অ্যাপ স্টোরে করুন।",
+    "open": "এরপর Open চাপুন। আগে থেকেই Open দেখালে অ্যাপ ইনস্টল আছে। Xaman-এর শুরুর ধাপগুলো অনুসরণ করুন। অনুশীলনের জন্য ক্রিপ্টো কিনতে হবে না।",
+    "return": "ফোনের সাম্প্রতিক অ্যাপ থেকে CalorieApp খোলা ব্রাউজারে ফিরুন। কম্পিউটারে থাকলে এখানেই এগিয়ে যান।",
+    "already": "Xaman আগে থেকেই আছে → এগিয়ে যান",
+    "change": "অন্য ফোন বাছুন"
+  },
+  "ar": {
+    "device": "ما نوع هاتفك؟",
+    "computer": "أستخدم حاسوباً",
+    "desktop": "أبقِ الدليل مفتوحاً على الحاسوب. خذ هاتفك واختر Android أو iPhone. ثبّت Xaman على الهاتف.",
+    "store": "متجر التطبيقات لتثبيت التطبيقات: Google Play على Android وApp Store على iPhone. الزر يفتح صفحة Xaman.",
+    "install": "اضغط تثبيت أو الحصول وانتظر. اختر Xaman: XRP Ledger Wallet من XRPL Labs. إذا طُلب تسجيل الدخول، فافعل ذلك فقط في متجر الهاتف.",
+    "open": "اضغط فتح. إذا ظهر فتح مسبقاً، فالتطبيق مثبت. اتبع خطوات الترحيب في Xaman. لا تحتاج لشراء عملات رقمية لهذا التدريب.",
+    "return": "عُد إلى متصفح CalorieApp عبر التطبيقات الأخيرة في الهاتف. على الحاسوب، تابع هنا.",
+    "already": "لدي Xaman بالفعل ← متابعة",
+    "change": "اختيار هاتف آخر"
+  },
+  "ur": {
+    "device": "آپ کا فون کون سا ہے؟",
+    "computer": "میں کمپیوٹر پر ہوں",
+    "desktop": "یہ رہنمائی کمپیوٹر پر کھلی رکھیں۔ فون لیں اور Android یا iPhone چنیں۔ Xaman اسی فون پر نصب کریں۔",
+    "store": "ایپ اسٹور فون پر ایپس نصب کرنے کی جگہ ہے: Android پر Google Play اور iPhone پر App Store۔ بٹن Xaman کا صفحہ کھولتا ہے۔",
+    "install": "Install یا Get دبائیں اور انتظار کریں۔ XRPL Labs کی Xaman: XRP Ledger Wallet چنیں۔ لاگ ان صرف فون کے ایپ اسٹور میں کریں۔",
+    "open": "پھر Open دبائیں۔ پہلے سے Open ہو تو ایپ نصب ہے۔ Xaman کے ابتدائی مراحل مکمل کریں۔ مشق کے لیے کرپٹو خریدنا ضروری نہیں۔",
+    "return": "فون کی حالیہ ایپس سے CalorieApp والے براؤزر میں واپس آئیں۔ کمپیوٹر پر یہاں جاری رکھیں۔",
+    "already": "Xaman پہلے سے موجود ہے ← جاری رکھیں",
+    "change": "دوسرا فون چنیں"
+  }
+}
