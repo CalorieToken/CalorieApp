@@ -82,6 +82,9 @@ class FoodSearchResult(BaseModel):
     brand: Optional[str] = None
     serving_size: Optional[str] = None
     nutri_score: Optional[str] = None
+    # Optional source metadata is discovery-only, not a diary/schema migration.
+    labels_tags: list[str] = Field(default_factory=list)
+    nutriscore_version: Optional[str] = None
 
 
 class FoodSearchResponse(BaseModel):
