@@ -77,7 +77,7 @@ def test_readiness_checks_database_revision(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ready",
-        "database_revision": "20260902_0016",
+        "database_revision": "20260917_0017",
         "service": "calorieapp-backend",
     }
 

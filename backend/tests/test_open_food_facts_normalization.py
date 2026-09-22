@@ -20,10 +20,32 @@ from app.services.open_food_facts import (
     _FALLBACK_MAX_ATTEMPTS,
     _extract_image_url,
     _extract_nutri_score,
+    _extract_label_tags,
+    _normalize_products,
     _curl_fetch,
     _to_float,
     search_food_products,
 )
+
+
+def test_label_metadata_is_bounded_and_never_inferred_from_product_names() -> None:
+    assert _extract_label_tags({"product_name": "Organic vegan milk"}) == []
+    for value in (None, "en:organic", {}, 1):
+        assert _extract_label_tags({"labels_tags": value}) == []
+    assert _extract_label_tags({"labels_tags": ["en:organic", None, {}, "", "x" * 101, "en:organic"]}) == ["en:organic"]
+    assert len(_extract_label_tags({"labels_tags": [f"en:label-{i}" for i in range(200)]})) == 100
+
+
+def test_search_metadata_preserves_labels_and_version_without_changing_nutrition() -> None:
+    product = {"product_name": "Milk", "labels_tags": ["en:eu-organic"], "nutriscore_version": "2023",
+               "nutriments": {"energy-kcal_100g": 50, "proteins_100g": 3, "fat_100g": 2, "carbohydrates_100g": 4}}
+    result = _normalize_products({"products": [product]})[0]
+    assert result.labels_tags == ["en:eu-organic"]
+    assert result.nutriscore_version == "2023"
+    assert (result.calories, result.protein, result.fat, result.carbohydrates) == (50, 3, 2, 4)
+    result = _normalize_products({"products": [{**product, "nutriscore_version": "invented", "labels_tags": None}]})[0]
+    assert result.nutriscore_version is None
+    assert result.labels_tags == []
 
 
 @pytest.fixture(autouse=True)
