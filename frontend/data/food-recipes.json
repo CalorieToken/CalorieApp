@@ -701,5 +701,26 @@
       "ingredients": "Ingredients: {food}, potatoes, broccoli, lemon and olive oil.",
       "method": "Cook fish fully according to its package. Boil peeled potatoes and washed broccoli until tender. Serve with lemon and a little olive oil."
     }
+  },
+  {
+    "id": "porridge-plantdrink",
+    "cuisine": "any",
+    "diet": "plant",
+    "meals": [
+      "breakfast"
+    ],
+    "families": [
+      "plantdrink"
+    ],
+    "nl": {
+      "title": "Havermoutpap met plantaardige drink",
+      "ingredients": "Ingrediënten: {food}, havermout, banaan en kaneel.",
+      "method": "Verwarm de drink en havermout volgens de bereidingsinstructies van de havermout. Roer regelmatig. Voeg gesneden banaan en kaneel toe."
+    },
+    "en": {
+      "title": "Porridge with a plant drink",
+      "ingredients": "Ingredients: {food}, oats, banana and cinnamon.",
+      "method": "Heat the drink and oats following the oat package instructions, stirring regularly. Add sliced banana and cinnamon."
+    }
   }
 ]
