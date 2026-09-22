@@ -125,70 +125,92 @@
     "publicPage": true,
     "copy": {
       "en": {
-        "description": "Posts are supplied by X and may not load here. Open the profile directly or review your cookie choices.",
+        "description": "Allow X to load posts here. If the panel stays empty, your browser or X may be blocking the embedded content. You can open the profile directly on X.",
         "action": "Open @CalorieToken on X",
         "settings": "Cookie settings",
-        "load": "Load X posts (allow X)"
+        "load": "Load X posts (allow X)",
+        "retry": "Try loading X again",
+        "consentedDescription": "X is allowed. If no posts appear, your browser or X may be blocking them. Open the profile directly on X."
       },
       "zh-Hans": {
-        "description": "帖子由 X 提供，可能无法在此加载。您可以直接打开主页，或查看您的 Cookie 选项。",
+        "description": "允许 X 后可在此加载帖子。如果面板仍为空白，可能是浏览器或 X 阻止了嵌入内容。你可以直接在 X 上打开该账号主页。",
         "action": "在 X 上打开 @CalorieToken",
         "settings": "Cookie 设置",
-        "load": "加载 X 帖子（允许 X）"
+        "load": "加载 X 帖子（允许 X）",
+        "retry": "重新加载 X",
+        "consentedDescription": "已允许 X。如果没有显示帖子，可能是浏览器或 X 阻止了内容。请直接在 X 上打开该账号主页。"
       },
       "hi": {
-        "description": "पोस्ट X से मिलती हैं और हो सकता है कि यहाँ लोड न हों। प्रोफ़ाइल सीधे खोलें या अपनी कुकी संबंधी पसंद की समीक्षा करें।",
+        "description": "यहाँ पोस्ट लोड करने के लिए X को अनुमति दें। यदि पैनल खाली रहता है, तो आपका ब्राउज़र या X एम्बेड की गई सामग्री को रोक रहा हो सकता है। आप प्रोफ़ाइल सीधे X पर खोल सकते हैं।",
         "action": "X पर @CalorieToken खोलें",
         "settings": "कुकी सेटिंग",
-        "load": "X पोस्ट लोड करें (X को अनुमति दें)"
+        "load": "X पोस्ट लोड करें (X को अनुमति दें)",
+        "retry": "X दोबारा लोड करें",
+        "consentedDescription": "X को अनुमति दी गई है। अगर पोस्ट नहीं दिखतीं, तो आपका ब्राउज़र या X उन्हें रोक रहा हो सकता है। प्रोफ़ाइल सीधे X पर खोलें।"
       },
       "es": {
-        "description": "X proporciona las publicaciones y es posible que no se carguen aquí. Abre el perfil directamente o revisa tus preferencias de cookies.",
+        "description": "Permite X para cargar publicaciones aquí. Si el panel sigue vacío, tu navegador o X podrían estar bloqueando el contenido integrado. Puedes abrir el perfil directamente en X.",
         "action": "Abrir @CalorieToken en X",
         "settings": "Configuración de cookies",
-        "load": "Cargar publicaciones (permitir X)"
+        "load": "Cargar publicaciones (permitir X)",
+        "retry": "Volver a cargar X",
+        "consentedDescription": "X está permitido. Si no aparecen publicaciones, tu navegador o X podrían estar bloqueándolas. Abre el perfil directamente en X."
       },
       "ar": {
-        "description": "يوفّر X المنشورات، وقد لا يتم تحميلها هنا. افتح الملف الشخصي مباشرة أو راجع خيارات ملفات تعريف الارتباط.",
+        "description": "اسمح لـ X بتحميل المنشورات هنا. إذا بقيت اللوحة فارغة، فقد يكون المتصفح أو X يحظر المحتوى المضمّن. يمكنك فتح الملف الشخصي مباشرة على X.",
         "action": "افتح ⁦@CalorieToken⁩ على X",
         "settings": "إعدادات ملفات تعريف الارتباط",
-        "load": "تحميل منشورات X (السماح لـ X)"
+        "load": "تحميل منشورات X (السماح لـ X)",
+        "retry": "إعادة تحميل X",
+        "consentedDescription": "تم السماح لـ X. إذا لم تظهر المنشورات، فقد يكون المتصفح أو X يحظرها. افتح الملف الشخصي مباشرة على X."
       },
       "fr": {
-        "description": "Les publications sont fournies par X et peuvent ne pas se charger ici. Ouvrez directement le profil ou consultez vos choix de cookies.",
+        "description": "Autorisez X pour charger les publications ici. Si le panneau reste vide, votre navigateur ou X bloque peut-être le contenu intégré. Vous pouvez ouvrir le profil directement sur X.",
         "action": "Ouvrir @CalorieToken sur X",
         "settings": "Paramètres des cookies",
-        "load": "Charger les publications (autoriser X)"
+        "load": "Charger les publications (autoriser X)",
+        "retry": "Recharger X",
+        "consentedDescription": "X est autorisé. Si aucune publication ne s’affiche, votre navigateur ou X les bloque peut-être. Ouvrez le profil directement sur X."
       },
       "bn": {
-        "description": "পোস্টগুলো X থেকে আসে এবং এখানে লোড নাও হতে পারে। সরাসরি প্রোফাইল খুলুন অথবা আপনার কুকি পছন্দগুলো দেখুন।",
+        "description": "এখানে পোস্ট লোড করতে X-কে অনুমতি দিন। প্যানেল খালি থাকলে আপনার ব্রাউজার বা X এমবেড করা বিষয়বস্তু আটকে দিতে পারে। আপনি সরাসরি X-এ প্রোফাইল খুলতে পারেন।",
         "action": "X-এ @CalorieToken খুলুন",
         "settings": "কুকি সেটিংস",
-        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)"
+        "load": "X পোস্ট লোড করুন (X-কে অনুমতি দিন)",
+        "retry": "X আবার লোড করুন",
+        "consentedDescription": "X-কে অনুমতি দেওয়া হয়েছে। পোস্ট না দেখা গেলে আপনার ব্রাউজার বা X সেগুলি আটকে দিতে পারে। সরাসরি X-এ প্রোফাইল খুলুন।"
       },
       "pt": {
-        "description": "As publicações são fornecidas pelo X e podem não carregar aqui. Abra o perfil diretamente ou reveja as suas preferências de cookies.",
+        "description": "Permita o X para carregar publicações aqui. Se o painel continuar vazio, o navegador ou o X poderá estar a bloquear o conteúdo incorporado. Pode abrir o perfil diretamente no X.",
         "action": "Abrir @CalorieToken no X",
         "settings": "Definições de cookies",
-        "load": "Carregar publicações (permitir X)"
+        "load": "Carregar publicações (permitir X)",
+        "retry": "Carregar X novamente",
+        "consentedDescription": "O X está autorizado. Se não aparecerem publicações, o navegador ou o X poderá estar a bloqueá-las. Abra o perfil diretamente no X."
       },
       "id": {
-        "description": "Postingan disediakan oleh X dan mungkin tidak dimuat di sini. Buka profil secara langsung atau tinjau pilihan cookie Anda.",
+        "description": "Izinkan X untuk memuat postingan di sini. Jika panel tetap kosong, browser Anda atau X mungkin memblokir konten sematan. Anda dapat membuka profil langsung di X.",
         "action": "Buka @CalorieToken di X",
         "settings": "Pengaturan cookie",
-        "load": "Muat postingan X (izinkan X)"
+        "load": "Muat postingan X (izinkan X)",
+        "retry": "Muat ulang X",
+        "consentedDescription": "X sudah diizinkan. Jika postingan tidak muncul, browser Anda atau X mungkin memblokirnya. Buka profil langsung di X."
       },
       "ur": {
-        "description": "پوسٹس X فراہم کرتا ہے اور ممکن ہے یہاں لوڈ نہ ہوں۔ براہ راست پروفائل کھولیں یا کوکیز کے بارے میں اپنے انتخاب کا جائزہ لیں۔",
+        "description": "یہاں پوسٹس لوڈ کرنے کے لیے X کو اجازت دیں۔ اگر پینل خالی رہے تو آپ کا براؤزر یا X ایمبیڈ کردہ مواد کو روک رہا ہو سکتا ہے۔ آپ پروفائل براہِ راست X پر کھول سکتے ہیں۔",
         "action": "X پر ⁦@CalorieToken⁩ کھولیں",
         "settings": "کوکی کی ترتیبات",
-        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)"
+        "load": "X پوسٹس لوڈ کریں (X کی اجازت دیں)",
+        "retry": "X دوبارہ لوڈ کریں",
+        "consentedDescription": "X کی اجازت دی گئی ہے۔ اگر پوسٹس نظر نہیں آتیں تو آپ کا براؤزر یا X انہیں روک رہا ہو سکتا ہے۔ پروفائل براہِ راست X پر کھولیں۔"
       },
       "nl": {
-        "description": "Berichten worden door X geleverd en laden hier mogelijk niet. Open het profiel rechtstreeks of bekijk je cookievoorkeuren.",
+        "description": "Sta X toe om berichten hier te laden. Blijft het venster leeg, dan kan je browser of X de ingesloten inhoud blokkeren. Je kunt het profiel rechtstreeks op X openen.",
         "action": "Open @CalorieToken op X",
         "settings": "Cookie-instellingen",
-        "load": "X-posts laden (X toestaan)"
+        "load": "X-posts laden (X toestaan)",
+        "retry": "X opnieuw laden",
+        "consentedDescription": "X is toegestaan. Zie je geen berichten? Je browser of X kan ze blokkeren. Open het profiel rechtstreeks op X."
       }
     },
     "locales": [
@@ -1661,47 +1683,47 @@
   "faqUpdates": [
     {
       "before": "Calorie's mission is to establish a diverse network of partners within the food and beverage industry, integrate payment applications for companies and consumers, contribute to corporate social responsibility, and promote a healthier financial lifestyle.",
-      "after": "CalorieToken explores food-data and digital tools for the food and beverage sector. The current CalorieApp focuses on sourced food search, nutrition information, portions, comparisons, recipe inspiration and a personal food log. Payment and business features are separate development work and are not required to use the food experience."
+      "after": "CalorieToken explores food-data and digital tools for the food and beverage sector. The current CalorieApp v3 focuses on sourced food search, nutrition information, comparisons, recipe ideas, portion review and optional personal food logging. Payment and business functions are separate development work and are not required to use the food experience."
     },
     {
       "before": "Calorie is a token built on the XRP Ledger, with a specific focus on the food and beverage industry. The goal of Calorie is to become the world's food token, providing a digital solution for payments and transactions within this industry.",
-      "after": "Calorie (CAL) is the project's token on the XRP Ledger. Food and beverage applications are its long-term focus. Buying or holding CAL is not required to search for food or keep a food log in CalorieApp."
+      "after": "Calorie (CAL) is the project's token on the XRP Ledger. Food and beverage applications are its long-term focus. Buying or holding CAL is not required to search, compare or log food in CalorieApp."
     },
     {
       "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes.",
-      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value."
+      "after": "CAL uses the XRP Ledger for token transactions. Actual speed, cost, liquidity and availability depend on the transaction, network state and external service. CAL does not guarantee savings, merchant acceptance, sustainability outcomes or a stable value."
     },
     {
       "before": "This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
-      "after": "Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
+      "after": "Linking food data and transaction information remains a research direction. The current food experience keeps nutrition/logging separate from the still-unreleased payment and inventory pilot."
     },
     {
       "before": "Calorie aims to provide a solution for obtaining food from various distributors, including home delivery services, supermarkets, wholesalers, and hospitality establishments. By distributing digital tokens instead of physical money or food stamps, Calorie facilitates more efficient and secure transactions in meeting people's basic food needs.",
-      "after": "The use-case illustrations explore delivery, shops, hospitality and supply chains. They describe concepts. Ordering, merchant payments and token-based food assistance would require further development and participating organisations."
+      "after": "Delivery, retail, hospitality and supply-chain uses remain broader project concepts. Current CalorieApp v3 is a food-information and optional logging application; it does not operate a food-benefit programme or merchant payment network."
     },
     {
       "before": "Calorie intends to offer POS system applications for companies in the F&B industry, develop customer web-apps, and implement transaction applications to make payments and transactions more seamless for both businesses and consumers.",
-      "after": "A voluntary sales and inventory pilot is being developed separately from the current food experience. It is not accepting merchant registrations or payments yet. Any future transaction flow requires an explicit choice by both parties and its own release, legal and operational checks."
+      "after": "A voluntary sales and inventory pilot is being developed separately from the live food experience. The current POS screen is practice-only: it does not create real payments, real revenue or durable inventory, and Testnet/Mainnet payment rails remain disabled until separately released."
     },
     {
       "before": "Calorie envisions its widespread integration in the food and beverage industry on a global scale. It will serve as a currency for consumers, producers/merchants, and investors, while also being a token governments can use to aid citizens' basic needs.",
-      "after": "The wider vision includes useful food data tools and possible payment applications for consumers and businesses. The roadmap separates current work from longer-term ideas; future adoption is not guaranteed."
+      "after": "The wider vision includes useful food-data tools and possible payment applications for consumers and businesses. The roadmap separates current functions from longer-term ideas. Adoption, listings, merchant acceptance and public-sector use are not guaranteed."
     },
     {
       "before": "Calorie aims to help users track their digital Calorie spending alongside their actual calorie intake. An application is in development to track both Calorie payments and nutritional values of consumed products. This assists users in managing their expenses and making healthier choices.",
-      "after": "CalorieApp helps users explore sourced nutrition information and keep a personal food log. It does not diagnose, prescribe a diet or provide medical advice. Combined payment and expense tracking is being explored only as a separate voluntary pilot and is not part of the current live food flow."
+      "after": "CalorieApp helps users explore sourced nutrition information and keep an optional personal food log. It does not diagnose, prescribe a diet or provide medical advice. Combined payment and expense tracking is being explored only as a separate voluntary pilot and is not part of the current live food flow."
     },
     {
       "before": "Calorie's use of the XRPL with its speed, low cost, scalability, and sustainability benefits existing systems. It helps companies implement more efficient and socially responsible practices.",
-      "after": "Responsible food information and practical tools are project goals. Using a ledger alone does not establish a measurable social or environmental benefit; those outcomes need evidence from an implemented use case."
+      "after": "Responsible food information and practical tools are project goals. Using XRPL does not by itself prove a social, environmental or efficiency benefit; any such outcome needs evidence from the implemented use case."
     },
     {
       "before": "Calorie's versatility allows it to cater to multiple F&B sectors, enabling governments to distribute tokens for food needs efficiently. This includes supermarkets, restaurants, and home delivery services.",
-      "after": "Token-based food assistance is a proposed use case. This page does not announce an operating government programme or an accepted food-benefit payment service."
+      "after": "Token-based food assistance is a proposed use case only. This page does not announce an operating government programme, accepted food-benefit payment service or public-sector partnership."
     },
     {
       "before": "CalorieApp is an upcoming all-in-one application that's being developed for consumers, producers, merchants, and investors within the food and beverage industry. This innovative app aims to transform how we engage with the food sector by providing an intuitive interface that simplifies transactions, enables easy nutritional tracking, and facilitates convenient expense management.",
-      "after": "CalorieApp is the project's browser-based food application. It searches Open Food Facts and USDA data, shows source-aware nutrition information, portions, comparisons and recipe inspiration, and lets signed-in users keep a personal food log. Website sign-in is connected through Xaman. Buying or holding CAL is not required for food search or logging."
+      "after": "CalorieApp v3 is the project's browser-based food application. It searches Open Food Facts and USDA data, shows source-aware nutrition information, comparisons and recipe ideas, supports portion review and lets signed-in users keep an optional personal food log. Food search/logging does not require buying CAL."
     },
     {
       "before": "CalorieApp will be introduced in alpha and beta versions, initially catering to consumers with simple functionalities. Feedback from users during the beta phase will be used to improve the app before its official launch. The app will then undergo further enhancements to accommodate various user groups and corporate clients.",
@@ -1709,7 +1731,7 @@
     },
     {
       "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes. This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
-      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value. Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
+      "after": "CAL uses the XRP Ledger for token transactions, but actual speed, cost, liquidity and availability depend on the transaction and external service. CAL does not guarantee savings, merchant acceptance, sustainability outcomes or a stable value. Linking food data and transaction information remains research; the live food experience stays separate from unreleased payment functionality."
     }
   ],
   "merchUpdates": [
