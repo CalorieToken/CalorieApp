@@ -50,7 +50,7 @@ _FALLBACK_MAX_ATTEMPTS = 1
 _MAX_UPSTREAM_ATTEMPTS_PER_SEARCH = _PRIMARY_MAX_ATTEMPTS + _FALLBACK_MAX_ATTEMPTS
 _OPEN_FOOD_FACTS_FIELDS = (
     "product_name,code,image_front_url,image_url,image_small_url,image_front_small_url,"
-    "brands,serving_size,nutriscore_grade,nutriments"
+    "brands,serving_size,nutriscore_grade,nutriments,labels_tags,nutriscore_version"
 )
 
 _OPEN_FOOD_FACTS_ADMISSION = AdapterAdmissionController(
@@ -283,6 +283,15 @@ async def _fetch_product(code: str) -> dict[str, Any]:
         return {"products": [product]}
 
 
+def _extract_label_tags(product: dict[str, Any]) -> list[str]:
+    values = product.get("labels_tags")
+    if not isinstance(values, list):
+        return []
+    # Bound untrusted provider metadata; never derive labels from marketing text.
+    return list(dict.fromkeys(value for value in values[:100]
+                             if isinstance(value, str) and 0 < len(value) <= 100))
+
+
 def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
     results: list[FoodSearchResult] = []
     products = payload.get("products", []) if isinstance(payload, dict) else None
@@ -341,6 +350,9 @@ def _normalize_products(payload: dict[str, Any]) -> list[FoodSearchResult]:
                 brand=_extract_brand(product),
                 serving_size=serving_size,
                 nutri_score=_extract_nutri_score(product),
+                labels_tags=_extract_label_tags(product),
+                nutriscore_version=(str(product.get("nutriscore_version"))
+                                    if product.get("nutriscore_version") in ("2021", "2023", 2021, 2023) else None),
         )
         try:
             # Every offered result must fit the existing diary contract. Do not
