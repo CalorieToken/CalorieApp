@@ -1,16 +1,19 @@
-/* Keep sign-in in the page, with one status and optional QR instructions. */
+/* Show one compact sign-in card without moving the page or exiting app focus. */
 [data-calorieapp-embed] .calorieapp-login-modal.calorieapp-login-inline {
-  position: relative !important;
-  inset: auto !important;
-  z-index: auto !important;
+  position: fixed !important;
+  inset: auto 12px max(12px, env(safe-area-inset-bottom)) !important;
+  z-index: 2147483520 !important;
   display: block !important;
-  width: 100% !important;
-  max-height: none !important;
-  overflow: visible !important;
-  margin: 0 0 16px !important;
+  width: min(560px, calc(100% - 24px)) !important;
+  max-height: 72vh !important;
+  max-height: 72dvh !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  margin: 0 auto !important;
   padding: 0 !important;
   background: transparent !important;
-  scroll-margin-top: 90px;
+  border-radius: 20px;
+  box-shadow: 0 12px 48px #27325f40;
 }
 [data-calorieapp-embed] .calorieapp-login-inline[hidden],
 [data-calorieapp-embed] .calorieapp-login-inline .calorieapp-login-status,

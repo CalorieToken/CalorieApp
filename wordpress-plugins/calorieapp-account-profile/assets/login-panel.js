@@ -78,12 +78,9 @@
 
       if (!panel.hidden && !wasVisible) {
         returnFocus = document.activeElement;
-        // The existing focus controller owns the fullscreen iframe. Leave it
-        // through its own control so the in-page sign-in panel stays visible.
-        var focusToggle = document.getElementById("ct-calorieapp-focus-toggle");
-        if (document.body.classList.contains("ct-calorieapp-focus") && focusToggle) focusToggle.click();
+        // The compact fixed card is visible in both page and app focus view.
+        // Keep the user's scroll position and fullscreen choice intact.
         title.focus({ preventScroll: true });
-        panel.scrollIntoView({ block: "start", behavior: "auto" });
       } else if (panel.hidden && wasVisible) {
         qrDetails.open = false;
         if (panel.contains(document.activeElement)) {
