@@ -36,8 +36,19 @@
     var row = unique(root, '[data-brz-custom-id="qzyfxcwgwvmqaychwaxfgllbvrxwptqijdnb"]');
     if (!graphic || !row || !unique(graphic, 'img[title="Tokenomics update 2024 10"]')) return null;
     var chart = graphic.parentElement, container = row.parentElement;
-    return chart?.parentElement === container && container?.classList.contains("brz-container")
-      ? { root: root, chart: chart, row: row, container: container } : null;
+    if (!(chart?.parentElement === container && container?.classList.contains("brz-container"))) return null;
+    // The public Brizy page currently contains two identical Tokenomics Update
+    // headings in this same owned content root. Hide only the later exact duplicate;
+    // keep the first title and never touch headings outside this recognised root.
+    var headings = Array.from(root.querySelectorAll("h1")).filter(function (heading) {
+      return String(heading.textContent || "").replace(/\s+/g, " ").trim().toLowerCase() === "tokenomics update";
+    });
+    if (headings.length === 2 && headings[0] !== headings[1]) {
+      headings[1].hidden = true;
+      headings[1].setAttribute("aria-hidden", "true");
+      headings[1].closest(".brz-wrapper")?.classList.add("ctstyle-tokenomics-duplicate-title");
+    }
+    return { root: root, chart: chart, row: row, container: container };
   }
   function node(tag, text, attributes) {
     var element = document.createElement(tag);
