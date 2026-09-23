@@ -168,7 +168,19 @@
     var guide = guides.length === 1 ? guides[0] : null;
     if (!guide || guide.dataset.calorieappBuyGuide === "1"
       || guide.closest(protectedSelector)) return;
-    if (normalizedMarkup(guide.innerHTML) !== normalizedMarkup(legacyBuyGuideMarkup)) return;
+    var legacy = normalizedMarkup(guide.innerHTML) === normalizedMarkup(legacyBuyGuideMarkup);
+    var providerLinks = Array.from(guide.querySelectorAll("a[href]")).map(function (a) { return a.href; });
+    var knownLegacyProviders = [
+      "https://xpmarket.com/token/Calorie-rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY",
+      "https://sologenic.org/",
+      "https://xumm.app/detect/xapp:xumm.dex?base=43616C6F72696500000000000000000000000000+rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY&quote=xrp",
+      "https://www.xrptoolkit.com/"
+    ];
+    var knownLegacyShape = providerLinks.length >= 4
+      && knownLegacyProviders.every(function (href) { return providerLinks.indexOf(href) !== -1; })
+      && /Choose a trading (?:interface|route)/i.test(plain(guide.textContent))
+      && /How to buy CAL on the XRP Ledger/i.test(plain(guide.textContent));
+    if (!legacy && !knownLegacyShape) return;
     guide.dataset.calorieappBuyGuide = "1";
     guide.innerHTML = [
       "<header class=\"cal-buy-hero\"><p class=\"cal-buy-eyebrow\" data-cal-buy-copy=\"eyebrow\">XRPL buying and selling guide</p><h2 data-cal-buy-copy=\"title\">Buy or sell CAL in four clear steps</h2><p data-cal-buy-copy=\"intro\">CAL trades on the XRP Ledger DEX. Verify the complete issuer and currency code, not just the name or logo.</p><dl class=\"cal-buy-identity\"><div><dt data-cal-buy-copy=\"assetLabel\">Asset</dt><dd><code dir=\"ltr\">Calorie (CAL)</code></dd></div><div><dt data-cal-buy-copy=\"issuerLabel\">Issuer</dt><dd><code dir=\"ltr\">rNqGa93B8ewQP9mUwpwqA19SApbf62U7PY</code></dd></div><div><dt data-cal-buy-copy=\"currencyLabel\">Currency code</dt><dd><code dir=\"ltr\">43616C6F72696500000000000000000000000000</code></dd></div></dl></header>",
