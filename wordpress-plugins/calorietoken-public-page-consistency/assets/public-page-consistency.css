@@ -1,0 +1,120 @@
+/*
+ * Targeted public-page repair only.
+ * Do not alter Brizy data, account state, forms, wallets or payment controls.
+ */
+body.page-id-8144 #masthead.site-header,
+body.page-id-8263 #masthead.site-header,
+body.page-id-8144 article.page > .entry-header,
+body.page-id-8263 article.page > .entry-header {
+  display:none!important;
+}
+
+/* Keep the page-owned shared header and suppress any fallback clone injected later. */
+body.page-id-8144 .ctstyle-header-fallback:not(.ct-public-inline-header),
+body.page-id-8263 .ctstyle-header-fallback:not(.ct-public-inline-header) {
+  display:none!important;
+}
+
+body.page-id-8144 .entry-content > .ct-public-inline-header,
+body.page-id-8263 .entry-content > .ct-public-inline-header {
+  box-sizing:border-box!important;
+  position:relative!important;
+  left:50%!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:-50vw!important;
+  margin-right:-50vw!important;
+}
+
+body.page-id-8144 .entry-content > .ct-public-inline-title,
+body.page-id-8263 .entry-content > .ct-public-inline-title {
+  box-sizing:border-box!important;
+  position:relative!important;
+  left:50%!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:-50vw!important;
+  margin-right:-50vw!important;
+}
+
+/* The two pages should use the same centered page canvas as the accepted site pages. */
+body.page-id-8144 .entry-content,
+body.page-id-8263 .entry-content {
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+body.page-id-8263 #ct-collaborate {
+  box-sizing:border-box!important;
+  width:min(1040px,calc(100% - 28px))!important;
+  max-width:1040px!important;
+  margin:0 auto 48px!important;
+  padding:28px!important;
+  direction:ltr;
+  text-align:start;
+}
+
+body.page-id-8263 #ct-collaborate .ct-page-nav {
+  display:none!important;
+}
+
+/* Never stretch a collapsed source card to the height of its open neighbour. */
+body.page-id-8144 .ct-contribute #food-source-guide {
+  align-items:start!important;
+}
+body.page-id-8144 .ct-contribute #food-source-guide > .ct-contribute-card {
+  align-self:start!important;
+  height:auto!important;
+  min-height:0!important;
+}
+body.page-id-8144 .ct-contribute details.ct-contribute-card:not([open]) {
+  min-height:0!important;
+  height:auto!important;
+}
+
+body.page-id-8144 .ct-contribute,
+body.page-id-8263 #ct-collaborate {
+  unicode-bidi:normal;
+}
+
+/* English is the explicit fallback when a page-specific translation is unavailable. */
+html:not([data-ct-display-locale="nl"]) body.page-id-8144 .ct-contribute [lang="nl"],
+html:not([data-ct-display-locale="nl"]) body.page-id-8263 #ct-collaborate [lang="nl"] {
+  display:none!important;
+}
+html[data-ct-display-locale="nl"] body.page-id-8144 .ct-contribute [lang="en"],
+html[data-ct-display-locale="nl"] body.page-id-8263 #ct-collaborate [lang="en"] {
+  display:none!important;
+}
+
+@media (min-width:1051px) {
+  body.page-id-8144 .ct-public-inline-header .ctstyle-desktop-nav,
+  body.page-id-8263 .ct-public-inline-header .ctstyle-desktop-nav {
+    display:block!important;
+  }
+  body.page-id-8144 .ct-public-inline-header .ctstyle-mobile-nav,
+  body.page-id-8263 .ct-public-inline-header .ctstyle-mobile-nav {
+    display:none!important;
+  }
+}
+
+@media (max-width:1050px) {
+  body.page-id-8144 .ct-public-inline-header .ctstyle-desktop-nav,
+  body.page-id-8263 .ct-public-inline-header .ctstyle-desktop-nav {
+    display:none!important;
+  }
+  body.page-id-8144 .ct-public-inline-header .ctstyle-mobile-nav,
+  body.page-id-8263 .ct-public-inline-header .ctstyle-mobile-nav {
+    display:block!important;
+  }
+}
+
+@media (max-width:680px) {
+  body.page-id-8263 #ct-collaborate {
+    width:calc(100% - 24px)!important;
+    padding:20px 16px!important;
+  }
+}
