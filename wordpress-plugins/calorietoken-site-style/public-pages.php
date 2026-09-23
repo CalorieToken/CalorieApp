@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Narrow, recoverable publication requested for this release. No Brizy writes. */
 final class PublicPages {
-    const KEY = 'ctstyle_public_pages_142';
+    const KEY = 'ctstyle_public_pages_144';
     public static function is_document() {
         if (is_page(array(531,586,7860,7876))) { return true; }
         $id = (int) get_option('ctstyle_public_hub_id', 0);
@@ -15,15 +15,30 @@ final class PublicPages {
         return $path;
     }
     public static function legal_update($id, $content) {
-        if (!in_array($id, array(531,586), true) || strpos($content, 'ICTHendrikse') === false ||
-            strpos($content, '73774693') === false || strpos($content, '25 August 2026') === false ||
-            strpos($content, 'CalorieApp V1') === false || strpos($content, 'ctstyle-public-update') !== false) { return null; }
-        $extra = @file_get_contents(__DIR__ . '/content/' . ($id === 531 ? 'privacy' : 'terms') . '.html');
-        if (!is_string($extra) || $extra === '') { return null; }
-        // Exact old product-version wording, leaving rights and provider clauses intact.
+        if (!in_array($id, array(531,586), true)) { return null; }
+        $name = $id === 531 ? 'privacy' : 'terms';
+        $extra = @file_get_contents(__DIR__ . '/content/' . $name . '.html');
+        $legacy = @file_get_contents(__DIR__ . '/content/' . $name . '-20260910.html');
+        if (!is_string($extra) || trim($extra) === '' || !is_string($legacy) || trim($legacy) === '') { return null; }
+
+        // A current managed section needs no write.
+        if (strpos($content, trim($extra)) !== false) { return $content; }
+
+        // Upgrade only the exact section previously shipped by this plugin.
+        // If an operator edited that section, the exact legacy bytes no longer match
+        // and the page is preserved for manual review.
+        if (strpos($content, 'ctstyle-public-update') !== false) {
+            $legacy_trimmed = trim($legacy);
+            if (substr_count($content, $legacy_trimmed) !== 1) { return null; }
+            return str_replace($legacy_trimmed, trim($extra), $content);
+        }
+
+        // First-time migration from the historical legal pages.
+        if (strpos($content, 'ICTHendrikse') === false || strpos($content, '73774693') === false ||
+            strpos($content, '25 August 2026') === false || strpos($content, 'CalorieApp V1') === false) { return null; }
         $content = str_replace('CalorieApp V1', 'CalorieApp V2', $content);
         $content = str_replace('25 August 2026', '10 September 2026', $content);
-        return $content . "\n" . $extra;
+        return $content . "\n" . trim($extra) . "\n";
     }
     public static function migrate() {
         if (!is_admin() || !current_user_can('manage_options') || !current_user_can('publish_pages') ||
@@ -45,9 +60,9 @@ final class PublicPages {
             foreach (array(531,586) as $id) {
                 $post = get_post($id);
                 if (!$post || $post->post_type !== 'page' || $post->post_status !== 'publish') { $errors[] = 'Page ' . $id . ' was not updated.'; continue; }
-                if (strpos($post->post_content, 'ctstyle-public-update') !== false) { continue; }
                 $updated = self::legal_update($id, $post->post_content);
-                if ($updated === null) { $errors[] = 'Page ' . $id . ' has different source text; it was preserved.'; continue; }
+                if ($updated === null) { $errors[] = 'Page ' . $id . ' has different or operator-edited source text; it was preserved.'; continue; }
+                if ($updated === $post->post_content) { continue; }
                 $backup_key = self::KEY . '_before_' . $id;
                 if (!add_option($backup_key, array('content'=>$post->post_content,'sha256'=>hash('sha256',$post->post_content),'modified'=>$post->post_modified_gmt), '', false)) {
                     $backup = get_option($backup_key);

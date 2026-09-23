@@ -17,7 +17,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Find food, explore nutrition and keep your food diary. CalorieApp food search and food logging do not require buying CAL.",
+        "text": "Find food, compare products and alternatives, explore nutrition and recipe ideas, and keep an optional food diary. Buying CAL or connecting a wallet is not required.",
         "links": [
           "app",
           "faq"
@@ -69,6 +69,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Accounts & profiles",
+        "text": "A CalorieApp account is separate from a wallet. Choose Consumer, Business or Both. A wallet is optional and only needed for wallet-specific features; richer consumer and merchant profile functions are being developed in stages.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS & payment pilot",
+        "text": "POS, inventory, sales/expense tracking and payment-request features are voluntary pilots. Practice, Testnet and any live mode must be clearly labelled. A purchase is never automatically logged as eaten. Fiat or card rails are external provider services; XRPL payments require explicit user action.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco & contributions",
+        "text": "CalDB and CalEco connect food, source and ecosystem data under explicit permissions. Public interfaces are for explicitly public food/source data. Private food logs, receipts, inventory or sales records and wallet-linked private data stay private. Food-data contributions can use the Contribute Food Data page.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -90,7 +116,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Zoek voeding, bekijk voedingswaarden en houd je eetdagboek bij. Voor voedsel zoeken en je voedingslogboek in CalorieApp hoef je geen CAL te kopen.",
+        "text": "Zoek voedingsmiddelen, vergelijk producten en alternatieven, bekijk voedingsinformatie en receptideeën en houd optioneel een eetdagboek bij. CAL kopen of een wallet koppelen is niet nodig.",
         "links": [
           "app",
           "faq"
@@ -142,6 +168,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Accounts & profielen",
+        "text": "Een CalorieApp-account staat los van een wallet. Kies Consumer, Business of Both. Een wallet is optioneel en alleen nodig voor wallet-specifieke functies; uitgebreidere consumenten- en ondernemersprofielen worden stapsgewijs ontwikkeld.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS & betaalpilot",
+        "text": "POS, voorraad, omzet-/uitgaventracking en betaalverzoeken zijn vrijwillige pilots. Oefenmodus, Testnet en eventuele live-modus moeten duidelijk herkenbaar blijven. Een aankoop wordt nooit automatisch als gegeten gelogd. Fiat- of kaartbetalingen lopen via externe aanbieders; XRPL-betalingen vereisen een expliciete actie van de gebruiker.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco & bijdragen",
+        "text": "CalDB en CalEco verbinden voedsel-, bron- en ecosysteemdata onder expliciete toestemmingen. Openbare interfaces zijn alleen voor expliciet openbare voedsel- en brondata. Privé-eetlogs, bonnen, voorraad- of verkoopgegevens en wallet-gekoppelde privédata blijven privé. Voor bijdragen aan voedseldata is de pagina Contribute Food Data beschikbaar.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -163,7 +215,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "查找食物、了解营养并记录饮食。 使用 CalorieApp 搜索食物和记录饮食无需购买 CAL。",
+        "text": "查找食品、比较产品和替代品、查看营养信息和食谱建议，并可选择记录饮食日记。无需购买 CAL，也无需连接钱包。",
         "links": [
           "app",
           "faq"
@@ -215,6 +267,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "账户与个人资料",
+        "text": "CalorieApp 账户与钱包彼此独立。可选择 Consumer、Business 或 Both。钱包是可选的，只在钱包专用功能中需要；更完整的消费者和商家资料功能将分阶段开发。",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS 与支付试点",
+        "text": "POS、库存、销售/支出记录和支付请求属于自愿试点。练习、Testnet 和任何未来的实时模式必须清楚标识。购买不会自动记为已食用。法币或银行卡通道由外部服务商提供；XRPL 支付必须由用户明确发起。",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB、CalEco 与数据贡献",
+        "text": "CalDB 和 CalEco 仅在明确授权下连接食品、来源和生态系统数据。公开接口只用于明确公开的食品/来源数据。私人饮食记录、收据、库存或销售记录以及与钱包关联的私人数据仍保持私密。食品数据贡献可通过 Contribute Food Data 页面提交。",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -236,7 +314,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "खाद्य पदार्थ खोजें, पोषण देखें और अपनी भोजन डायरी रखें। CalorieApp में भोजन खोजने और दर्ज करने के लिए CAL खरीदना आवश्यक नहीं है।",
+        "text": "खाद्य खोजें, उत्पादों और विकल्पों की तुलना करें, पोषण और रेसिपी सुझाव देखें और चाहें तो भोजन डायरी रखें। CAL खरीदना या वॉलेट जोड़ना आवश्यक नहीं है।",
         "links": [
           "app",
           "faq"
@@ -288,6 +366,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "अकाउंट और प्रोफ़ाइल",
+        "text": "CalorieApp अकाउंट वॉलेट से अलग है। Consumer, Business या Both चुनें। वॉलेट वैकल्पिक है और केवल वॉलेट-विशिष्ट सुविधाओं के लिए चाहिए; अधिक विस्तृत उपभोक्ता और व्यापारी प्रोफ़ाइल सुविधाएँ चरणों में विकसित हो रही हैं।",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS और भुगतान पायलट",
+        "text": "POS, इन्वेंटरी, बिक्री/खर्च ट्रैकिंग और भुगतान अनुरोध स्वैच्छिक पायलट हैं। अभ्यास, Testnet और किसी भी लाइव मोड को साफ़ तौर पर अलग दिखाया जाना चाहिए। खरीदारी को अपने-आप खाया हुआ भोजन नहीं माना जाता। फिएट या कार्ड रेल बाहरी प्रदाताओं की सेवाएँ हैं; XRPL भुगतान के लिए उपयोगकर्ता की स्पष्ट कार्रवाई आवश्यक है।",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco और योगदान",
+        "text": "CalDB और CalEco स्पष्ट अनुमति के तहत भोजन, स्रोत और इकोसिस्टम डेटा को जोड़ते हैं। सार्वजनिक इंटरफ़ेस केवल स्पष्ट रूप से सार्वजनिक भोजन/स्रोत डेटा के लिए हैं। निजी भोजन लॉग, रसीदें, इन्वेंटरी या बिक्री रिकॉर्ड और वॉलेट से जुड़ा निजी डेटा निजी रहता है। भोजन डेटा योगदान के लिए Contribute Food Data पेज का उपयोग किया जा सकता है।",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -309,7 +413,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Busca alimentos, consulta nutrientes y lleva tu diario alimentario. Buscar alimentos y registrarlos en CalorieApp no requiere comprar CAL.",
+        "text": "Busca alimentos, compara productos y alternativas, consulta nutrición e ideas de recetas y lleva, si quieres, un diario de alimentación. No necesitas comprar CAL ni conectar una billetera.",
         "links": [
           "app",
           "faq"
@@ -361,6 +465,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Cuentas y perfiles",
+        "text": "Una cuenta de CalorieApp es independiente de una billetera. Elige Consumer, Business o Both. La billetera es opcional y solo se necesita para funciones específicas de wallet; los perfiles ampliados de consumidores y comercios se desarrollan por etapas.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "Piloto de POS y pagos",
+        "text": "El POS, inventario, seguimiento de ventas/gastos y solicitudes de pago son pilotos voluntarios. El modo de práctica, Testnet y cualquier modo en vivo deben estar claramente diferenciados. Una compra nunca se registra automáticamente como comida consumida. Las vías fiat o de tarjeta pertenecen a proveedores externos; los pagos XRPL requieren una acción explícita del usuario.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco y contribuciones",
+        "text": "CalDB y CalEco conectan datos de alimentos, fuentes y ecosistema bajo permisos explícitos. Las interfaces públicas son solo para datos de alimentos/fuentes marcados expresamente como públicos. Los diarios privados, recibos, inventario o ventas y los datos privados vinculados a wallets siguen siendo privados. Las contribuciones de datos alimentarios pueden hacerse desde Contribute Food Data.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -382,7 +512,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "ابحث عن الطعام واستكشف التغذية واحتفظ بيومياتك الغذائية. لا يتطلب البحث عن الطعام وتسجيله في CalorieApp شراء CAL.",
+        "text": "ابحث عن الأغذية، وقارن المنتجات والبدائل، واطّلع على المعلومات الغذائية وأفكار الوصفات، واحتفظ بسجل طعام اختياري. لا يلزم شراء CAL أو ربط محفظة.",
         "links": [
           "app",
           "faq"
@@ -434,6 +564,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "الحسابات والملفات الشخصية",
+        "text": "حساب CalorieApp منفصل عن المحفظة. اختر Consumer أو Business أو Both. المحفظة اختيارية ولا تُطلب إلا للوظائف الخاصة بالمحفظة؛ ويجري تطوير ملفات أوسع للمستهلكين والتجار على مراحل.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "تجربة POS والدفع",
+        "text": "وظائف POS والمخزون وتتبع المبيعات/المصروفات وطلبات الدفع هي تجارب اختيارية. يجب تمييز وضع التدريب وTestnet وأي وضع مباشر بوضوح. لا تُسجل عملية الشراء تلقائياً كطعام تم تناوله. مسارات الدفع بالعملة الورقية أو البطاقات تقدمها جهات خارجية؛ ومدفوعات XRPL تتطلب إجراءً صريحاً من المستخدم.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB وCalEco والمساهمات",
+        "text": "يربط CalDB وCalEco بيانات الأغذية والمصادر والنظام البيئي ضمن أذونات صريحة. الواجهات العامة مخصصة فقط لبيانات الأغذية/المصادر المعلنة صراحةً كبيانات عامة. سجلات الطعام الخاصة والإيصالات وبيانات المخزون أو المبيعات والبيانات الخاصة المرتبطة بالمحفظة تبقى خاصة. يمكن إرسال مساهمات بيانات الأغذية عبر صفحة Contribute Food Data.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -455,7 +611,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Recherchez des aliments, consultez leur nutrition et tenez votre journal alimentaire. La recherche et le journal alimentaires de CalorieApp ne nécessitent pas l’achat de CAL.",
+        "text": "Recherchez des aliments, comparez produits et alternatives, consultez les informations nutritionnelles et des idées de recettes, et tenez si vous le souhaitez un journal alimentaire. Acheter CAL ou connecter un portefeuille n’est pas nécessaire.",
         "links": [
           "app",
           "faq"
@@ -507,6 +663,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Comptes et profils",
+        "text": "Un compte CalorieApp est distinct d’un portefeuille. Choisissez Consumer, Business ou Both. Le portefeuille est facultatif et seulement nécessaire pour les fonctions qui lui sont propres ; les profils enrichis de consommateurs et de commerçants sont développés par étapes.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "Pilote POS et paiement",
+        "text": "Le POS, l’inventaire, le suivi des ventes/dépenses et les demandes de paiement sont des pilotes volontaires. Les modes d’entraînement, Testnet et tout mode réel doivent rester clairement distingués. Un achat n’est jamais enregistré automatiquement comme aliment consommé. Les rails fiat ou carte relèvent de prestataires externes ; les paiements XRPL exigent une action explicite de l’utilisateur.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco et contributions",
+        "text": "CalDB et CalEco relient les données alimentaires, de source et d’écosystème selon des autorisations explicites. Les interfaces publiques concernent uniquement les données alimentaires/de source explicitement publiques. Les journaux privés, reçus, stocks ou ventes et les données privées liées à un portefeuille restent privés. Les contributions de données alimentaires passent par la page Contribute Food Data.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -528,7 +710,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "খাবার খুঁজুন, পুষ্টির তথ্য দেখুন ও খাবারের ডায়েরি রাখুন। CalorieApp-এ খাবার খুঁজতে বা লিখে রাখতে CAL কেনার প্রয়োজন নেই।",
+        "text": "খাবার খুঁজুন, পণ্য ও বিকল্প তুলনা করুন, পুষ্টি তথ্য ও রেসিপির ধারণা দেখুন এবং চাইলে ব্যক্তিগত খাবারের ডায়েরি রাখুন। CAL কেনা বা ওয়ালেট যুক্ত করা দরকার নেই।",
         "links": [
           "app",
           "faq"
@@ -580,6 +762,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "অ্যাকাউন্ট ও প্রোফাইল",
+        "text": "CalorieApp অ্যাকাউন্ট ওয়ালেট থেকে আলাদা। Consumer, Business বা Both বেছে নিন। ওয়ালেট ঐচ্ছিক এবং শুধু ওয়ালেট-নির্দিষ্ট ফিচারের জন্য দরকার; আরও বিস্তৃত ভোক্তা ও ব্যবসায়ী প্রোফাইল ধাপে ধাপে তৈরি হচ্ছে।",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS ও পেমেন্ট পাইলট",
+        "text": "POS, ইনভেন্টরি, বিক্রি/খরচ ট্র্যাকিং এবং পেমেন্ট রিকোয়েস্ট স্বেচ্ছামূলক পাইলট। অনুশীলন, Testnet এবং ভবিষ্যতের যেকোনো লাইভ মোড স্পষ্টভাবে আলাদা দেখাতে হবে। কেনাকাটা কখনও স্বয়ংক্রিয়ভাবে খাওয়া খাবার হিসেবে লগ হয় না। ফিয়াট বা কার্ড রেল বাইরের সেবাদাতার; XRPL পেমেন্টে ব্যবহারকারীর স্পষ্ট পদক্ষেপ দরকার।",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco ও অবদান",
+        "text": "CalDB ও CalEco স্পষ্ট অনুমতির ভিত্তিতে খাবার, উৎস ও ইকোসিস্টেম ডেটা যুক্ত করে। পাবলিক ইন্টারফেস শুধু স্পষ্টভাবে পাবলিক করা খাবার/উৎস ডেটার জন্য। ব্যক্তিগত খাবার লগ, রসিদ, ইনভেন্টরি বা বিক্রির রেকর্ড এবং ওয়ালেট-সংযুক্ত ব্যক্তিগত ডেটা ব্যক্তিগতই থাকে। খাবার ডেটার অবদানের জন্য Contribute Food Data পেজ ব্যবহার করা যায়।",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -601,7 +809,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Procure alimentos, explore a nutrição e mantenha o seu diário alimentar. A pesquisa e o registo de alimentos na CalorieApp não exigem a compra de CAL.",
+        "text": "Encontre alimentos, compare produtos e alternativas, consulte nutrição e ideias de receitas e mantenha, se quiser, um diário alimentar. Não é necessário comprar CAL nem ligar uma carteira.",
         "links": [
           "app",
           "faq"
@@ -653,6 +861,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Contas e perfis",
+        "text": "Uma conta CalorieApp é separada de uma carteira. Escolha Consumer, Business ou Both. A carteira é opcional e só é necessária para funções específicas de carteira; perfis mais completos de consumidores e comerciantes estão a ser desenvolvidos por etapas.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "Piloto de POS e pagamentos",
+        "text": "POS, inventário, acompanhamento de vendas/despesas e pedidos de pagamento são pilotos voluntários. Prática, Testnet e qualquer modo real devem ficar claramente identificados. Uma compra nunca é registada automaticamente como alimento consumido. Os meios fiat ou cartão pertencem a prestadores externos; pagamentos XRPL exigem uma ação explícita do utilizador.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco e contribuições",
+        "text": "CalDB e CalEco ligam dados de alimentos, fontes e ecossistema mediante permissões explícitas. As interfaces públicas destinam-se apenas a dados de alimentos/fontes explicitamente públicos. Diários privados, recibos, inventário ou vendas e dados privados ligados a carteiras continuam privados. As contribuições de dados alimentares podem ser feitas na página Contribute Food Data.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -674,7 +908,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "Cari makanan, jelajahi nutrisi, dan catat buku harian makanan Anda. Pencarian dan pencatatan makanan di CalorieApp tidak memerlukan pembelian CAL.",
+        "text": "Cari makanan, bandingkan produk dan alternatif, lihat informasi gizi dan ide resep, serta simpan jurnal makanan opsional. Membeli CAL atau menghubungkan dompet tidak diperlukan.",
         "links": [
           "app",
           "faq"
@@ -726,6 +960,32 @@
         "links": [
           "contact"
         ]
+      },
+      "account": {
+        "title": "Akun & profil",
+        "text": "Akun CalorieApp terpisah dari dompet. Pilih Consumer, Business, atau Both. Dompet bersifat opsional dan hanya diperlukan untuk fitur khusus dompet; profil konsumen dan merchant yang lebih lengkap dikembangkan secara bertahap.",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "Pilot POS & pembayaran",
+        "text": "POS, inventaris, pelacakan penjualan/pengeluaran, dan permintaan pembayaran adalah pilot sukarela. Mode latihan, Testnet, dan mode live apa pun harus diberi label dengan jelas. Pembelian tidak pernah otomatis dicatat sebagai makanan yang dimakan. Jalur fiat atau kartu adalah layanan penyedia eksternal; pembayaran XRPL memerlukan tindakan eksplisit pengguna.",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB, CalEco & kontribusi",
+        "text": "CalDB dan CalEco menghubungkan data makanan, sumber, dan ekosistem berdasarkan izin eksplisit. Antarmuka publik hanya untuk data makanan/sumber yang secara eksplisit bersifat publik. Log makanan pribadi, struk, inventaris atau catatan penjualan, dan data privat yang terkait dompet tetap privat. Kontribusi data makanan dapat dilakukan melalui halaman Contribute Food Data.",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
+        ]
       }
     }
   },
@@ -747,7 +1007,7 @@
     "topics": {
       "app": {
         "title": "CalorieApp",
-        "text": "کھانے تلاش کریں، غذائیت دیکھیں اور اپنی خوراک کی ڈائری رکھیں۔ CalorieApp میں خوراک تلاش کرنے اور درج کرنے کے لیے CAL خریدنا ضروری نہیں۔",
+        "text": "کھانا تلاش کریں، مصنوعات اور متبادل کا موازنہ کریں، غذائی معلومات اور ترکیبوں کے خیالات دیکھیں، اور چاہیں تو ذاتی فوڈ ڈائری رکھیں۔ CAL خریدنا یا والیٹ جوڑنا ضروری نہیں۔",
         "links": [
           "app",
           "faq"
@@ -798,6 +1058,32 @@
         "text": "منصوبے کے رابطے Contact صفحے پر ہیں۔ یہ مدد پیغام نہیں بھیجتی اور ٹکٹ نہیں کھولتی۔",
         "links": [
           "contact"
+        ]
+      },
+      "account": {
+        "title": "اکاؤنٹس اور پروفائلز",
+        "text": "CalorieApp اکاؤنٹ والیٹ سے الگ ہے۔ Consumer، Business یا Both منتخب کریں۔ والیٹ اختیاری ہے اور صرف والیٹ سے متعلق مخصوص خصوصیات کے لیے درکار ہے؛ صارف اور تاجر کے زیادہ تفصیلی پروفائل مرحلہ وار تیار ہو رہے ہیں۔",
+        "links": [
+          "app",
+          "faq"
+        ]
+      },
+      "pilot": {
+        "title": "POS اور ادائیگی پائلٹ",
+        "text": "POS، انوینٹری، فروخت/اخراجات کی ٹریکنگ اور ادائیگی کی درخواستیں رضاکارانہ پائلٹ ہیں۔ پریکٹس، Testnet اور کسی بھی لائیو موڈ کو واضح طور پر الگ دکھانا ضروری ہے۔ خریداری کو کبھی خودکار طور پر کھایا ہوا کھانا نہیں سمجھا جاتا۔ فیاٹ یا کارڈ ریل بیرونی فراہم کنندگان کی خدمات ہیں؛ XRPL ادائیگی کے لیے صارف کی واضح کارروائی ضروری ہے۔",
+        "links": [
+          "app",
+          "faq",
+          "terms"
+        ]
+      },
+      "data": {
+        "title": "CalDB، CalEco اور شراکتیں",
+        "text": "CalDB اور CalEco واضح اجازتوں کے تحت کھانے، ماخذ اور ایکوسسٹم ڈیٹا کو جوڑتے ہیں۔ عوامی انٹرفیس صرف اس کھانے/ماخذ ڈیٹا کے لیے ہیں جسے واضح طور پر عوامی قرار دیا گیا ہو۔ نجی فوڈ لاگز، رسیدیں، انوینٹری یا فروخت کے ریکارڈ اور والیٹ سے منسلک نجی ڈیٹا نجی ہی رہتا ہے۔ کھانے کے ڈیٹا کی شراکت کے لیے Contribute Food Data صفحہ استعمال کیا جا سکتا ہے۔",
+        "links": [
+          "contribute",
+          "privacy",
+          "docs"
         ]
       }
     }

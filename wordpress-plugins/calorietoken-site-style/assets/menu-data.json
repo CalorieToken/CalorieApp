@@ -1639,55 +1639,55 @@
   "faqUpdates": [
     {
       "before": "Calorie's mission is to establish a diverse network of partners within the food and beverage industry, integrate payment applications for companies and consumers, contribute to corporate social responsibility, and promote a healthier financial lifestyle.",
-      "after": "CalorieToken explores digital tools for the food and beverage sector. The current CalorieApp preview focuses on food search, nutrition information and a personal food log. Payment applications and business integrations belong to the wider project vision."
+      "after": "CalorieToken develops food-data and digital tools for the food and beverage sector. CalorieApp is food-first: sourced food search, nutrition information, comparisons, alternatives, recipe ideas and optional personal food logging. Accounts can be Consumer, Business or Both and do not require a wallet. Payment, POS and business functions are separate voluntary pilot areas."
     },
     {
       "before": "Calorie is a token built on the XRP Ledger, with a specific focus on the food and beverage industry. The goal of Calorie is to become the world's food token, providing a digital solution for payments and transactions within this industry.",
-      "after": "Calorie (CAL) is the project's token on the XRP Ledger. Food and beverage applications are its long-term focus. Buying or holding CAL is not required to search for food or keep a food log in CalorieApp."
+      "after": "Calorie (CAL) is the project's token on the XRP Ledger. Food and beverage applications are its long-term focus. Buying or holding CAL is not required to search, compare or log food in CalorieApp, and a CalorieApp account does not require a wallet."
     },
     {
       "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes.",
-      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value."
+      "after": "CAL uses the XRP Ledger for token transactions. Actual speed, cost, liquidity and availability depend on the transaction, network state and external service. CAL does not guarantee savings, merchant acceptance, sustainability outcomes or a stable value. Real XRPL transaction hashes are only meaningful for validated ledger transactions; external fiat, cash or card flows remain separate."
     },
     {
       "before": "This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
-      "after": "Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
+      "after": "CalDB and CalEco can connect food, source and transaction information only where a feature explicitly does so. Public interfaces are intended for explicitly public food and source data. Personal food logs, receipts, private inventory or sales records and wallet-linked private data are not made public simply because the wider ecosystem can use shared data."
     },
     {
       "before": "Calorie aims to provide a solution for obtaining food from various distributors, including home delivery services, supermarkets, wholesalers, and hospitality establishments. By distributing digital tokens instead of physical money or food stamps, Calorie facilitates more efficient and secure transactions in meeting people's basic food needs.",
-      "after": "The use-case illustrations explore delivery, shops, hospitality and supply chains. They describe concepts. Ordering, merchant payments and token-based food assistance would require further development and participating organisations."
+      "after": "Delivery, retail, hospitality and supply-chain uses remain broader project directions. Merchant profiles, menus, inventory, offers, opening hours, dine-in, takeaway, delivery and farmer-to-consumer discovery are being designed as staged business features; availability will depend on the released pilot or service."
     },
     {
       "before": "Calorie intends to offer POS system applications for companies in the F&B industry, develop customer web-apps, and implement transaction applications to make payments and transactions more seamless for both businesses and consumers.",
-      "after": "Point-of-sale and business payment integrations remain possible future developments. They are not available as merchant services in the current CalorieApp preview."
+      "after": "A voluntary POS and payment pilot is being developed separately from the core food experience. Practice, Testnet and any later live payment modes must remain clearly distinguished. Merchant inventory, sales and expense tracking are pilot functions, and using them is not required to use CalorieApp for food search or logging."
     },
     {
       "before": "Calorie envisions its widespread integration in the food and beverage industry on a global scale. It will serve as a currency for consumers, producers/merchants, and investors, while also being a token governments can use to aid citizens' basic needs.",
-      "after": "The wider vision includes useful food data tools and possible payment applications for consumers and businesses. The roadmap separates current work from longer-term ideas; future adoption is not guaranteed."
+      "after": "The wider vision includes useful food-data tools, searchable consumer and merchant services, provenance and optional payment applications. The roadmap separates current functions, pilots and longer-term ideas. Adoption, listings, merchant acceptance and public-sector use are not guaranteed."
     },
     {
       "before": "Calorie aims to help users track their digital Calorie spending alongside their actual calorie intake. An application is in development to track both Calorie payments and nutritional values of consumed products. This assists users in managing their expenses and making healthier choices.",
-      "after": "CalorieApp helps users explore nutrition information and keep a personal food log. Combined payment and expense tracking belongs to the earlier broader vision and is not a feature of the current preview."
+      "after": "CalorieApp can keep nutrition and optional personal food logs alongside separate expense or payment records where a user chooses those pilot features. A purchase is never automatically treated as food that was eaten. The app does not diagnose, prescribe a diet or provide medical advice."
     },
     {
       "before": "Calorie's use of the XRPL with its speed, low cost, scalability, and sustainability benefits existing systems. It helps companies implement more efficient and socially responsible practices.",
-      "after": "Responsible food information and practical tools are project goals. Using a ledger alone does not establish a measurable social or environmental benefit; those outcomes need evidence from an implemented use case."
+      "after": "Responsible food information, data quality and practical tools are project goals. Using XRPL, CalDB or CalEco does not by itself prove a social, environmental or efficiency benefit; any such outcome needs evidence from the implemented use case."
     },
     {
       "before": "Calorie's versatility allows it to cater to multiple F&B sectors, enabling governments to distribute tokens for food needs efficiently. This includes supermarkets, restaurants, and home delivery services.",
-      "after": "Token-based food assistance is a proposed use case. This page does not announce an operating government programme or an accepted food-benefit payment service."
+      "after": "Token-based food assistance remains a proposed use case only. This page does not announce an operating government programme, accepted food-benefit payment service or public-sector partnership."
     },
     {
       "before": "CalorieApp is an upcoming all-in-one application that's being developed for consumers, producers, merchants, and investors within the food and beverage industry. This innovative app aims to transform how we engage with the food sector by providing an intuitive interface that simplifies transactions, enables easy nutritional tracking, and facilitates convenient expense management.",
-      "after": "CalorieApp is the project's browser-based preview for food search, nutrition information and a personal food log, using Open Food Facts. Website sign-in is connected through Xaman. Retail payments, an integrated exchange and business expense management are outside the current preview."
+      "after": "CalorieApp is the project's browser-based food application. It supports sourced food search, nutrition information, comparisons, alternatives, recipe ideas and optional personal logging, with multiple food-data sources. Accounts are wallet-independent and can be Consumer, Business or Both. A wallet is optional for XRPL-specific functions; it is not required for the food experience."
     },
     {
       "before": "CalorieApp will be introduced in alpha and beta versions, initially catering to consumers with simple functionalities. Feedback from users during the beta phase will be used to improve the app before its official launch. The app will then undergo further enhancements to accommodate various user groups and corporate clients.",
-      "after": "The browser preview can already be explored from the CalorieApp page. The current roadmap records eight milestones and their status. Earlier Android and Testnet prototypes remain development history; additional services will need their own implementation and release announcement."
+      "after": "CalorieApp is already available as a browser application and continues to evolve through staged releases and pilots. Food features, account functions, contribution tools and business/payment pilots can progress independently, and each live capability should be distinguished from Testnet, practice-only or planned functionality."
     },
     {
       "before": "By operating on the XRPL, Calorie offers several advantages over traditional fiat money, including speed, sustainability, and lower costs. The XRPL is known for its superior speed and scalability, making it an ideal choice for transforming applications across payments, foreign exchanges, and other industries. Furthermore, within Calorie's framework, the plan is to seamlessly integrate and combine food and beverage (F&B) related data with transaction hashes. This upcoming integration of F&B data aims to enhance the utility of transactions, offering the potential for valuable insights and opening up possibilities for innovative use cases within the food and beverage sector. As our app is still in development, we are excited about the prospect of bringing these capabilities to fruition",
-      "after": "CAL uses the XRP Ledger for token transactions. Actual transaction costs and trading conditions depend on the transaction and service. A token does not guarantee savings, merchant acceptance or a stable value. Linking food data to payment transactions remains a research direction. The current CalorieApp preview provides food information and personal food logging."
+      "after": "CAL uses the XRP Ledger for token transactions. Actual speed, cost, liquidity and availability depend on the transaction, network state and external service. CAL does not guarantee savings, merchant acceptance, sustainability outcomes or a stable value. CalDB and CalEco can connect food, source and transaction information only where a feature explicitly does so; public food/source data and private user records remain separate."
     }
   ],
   "merchUpdates": [
