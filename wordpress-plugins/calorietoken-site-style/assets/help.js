@@ -10,6 +10,7 @@
     faq:['FAQ','/index.php/faq/'], trustline:['CAL Trustline','/index.php/trustline/'],
     exchange:['CAL & Crypto','/index.php/how-to-buy-calorie/'], privacy:['Privacy Policy','/index.php/privacy-policy/'],
     terms:['Terms & Conditions','/index.php/terms-conditions/'], contact:['Contact','/index.php/contact/'],
+    contribute:['Contribute Food Data','/index.php/contribute-food-data/'],
     docs:['GitHub · Publications','https://github.com/CalorieToken/Publications'],
     whitepaper:['Whitepaper','https://github.com/CalorieToken/Publications/blob/main/whitepaper/CalorieToken-Whitepaper.pdf'],
     roadmap:['Roadmap Explained','https://github.com/CalorieToken/Publications/blob/main/roadmap/README.md'],
@@ -22,6 +23,9 @@
     legal:['privacy','licence','license','licentie','legal','juridisch','mica','cookie','terms','voorwaarden','copyright','disclosure','garantie','profit','rendement','隐私','गोपनीय','خصوص','গোপনীয়','privacidade','lisensi','شرائط'],
     docs:['roadmap','whitepaper','documents','documenten','publication','publicatie','usda','bron','source','路线','दस्तावेज़','وثائق','নথি','dokumen','دستاویز'],
     app:['calorieapp','food','voeding','dagboek','login','logout','aanmelden','inloggen','uitloggen','diary','portion','portie','食品','भोजन','طعام','খাবার','alimento','makanan','کھانا'],
+    account:['account','accounts','profile','profiel','consumer','business','merchant','ondernemer','账户','अकाउंट','حساب','অ্যাকাউন্ট','cuenta','compte','conta','akun','اکاؤنٹ'],
+    pilot:['pos','inventory','voorraad','menu','payment request','betaalverzoek','fiat','checkout','pilot','试点','भुगतान','دفع','পেমেন্ট','pago','paiement','pagamento','pembayaran','ادائیگی'],
+    data:['caldb','caleco','contribute','contribution','bijdrage','provenance','herkomst','public data','openbare data','贡献','योगदान','مساهمة','অবদান','contribución','contribution','contribuição','kontribusi','شراکت'],
     contact:['contact','support','email','e-mail','ticket','contacto','联系','संपर्क','اتصال','যোগাযোগ','contato','kontak','رابطہ']
   };
   function allowed() {
@@ -76,11 +80,11 @@
     // No action, field name, history, persistence, analytics or provider call.
     form.append(label,input,submit);
     var quick=el('div',null,'ctstyle-help-topics'), choices=[];
-    ['app','test','trustline','exchange','legal','docs'].forEach(function (key) { var b=el('button');b.type='button';b.dataset.topic=key;quick.append(b);choices.push(b); });
+    ['app','account','data','pilot','test','trustline','exchange','legal','docs'].forEach(function (key) { var b=el('button');b.type='button';b.dataset.topic=key;quick.append(b);choices.push(b); });
     var reply=el('div',null,'ctstyle-help-reply');reply.hidden=true;reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');
     var privacy=el('p',null,'ctstyle-discovery-small'); root.append(title,intro,form,quick,reply,privacy);
     var faq=[];
-    if (inline) ['app','test','trustline','exchange','legal','docs'].forEach(function (key) {
+    if (inline) ['app','account','data','pilot','test','trustline','exchange','legal','docs'].forEach(function (key) {
       var details=el('details',null,'ctstyle-faq-item'), summary=el('summary'), body=el('p'), links=el('div',null,'ctstyle-help-links');
       cfg.copy.en.topics[key].links.forEach(function (id) {links.append(link(id));});
       details.append(summary,body,links);root.append(details);faq.push({key:key,title:summary,body:body});
