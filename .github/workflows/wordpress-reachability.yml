@@ -1,0 +1,54 @@
+name: Independent public WordPress reachability
+
+on:
+  push:
+    branches:
+      - monitor/external-wordpress-health-20261028
+    paths:
+      - ".github/workflows/wordpress-reachability.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "7,37 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-wordpress-reachability
+  cancel-in-progress: true
+
+jobs:
+  wordpress-public:
+    name: "wordpress ${{ matrix.site }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: calorietoken-home
+            target: https://calorietoken.net/
+          - site: calorietoken-calorieapp
+            target: https://calorietoken.net/calorieapp/
+          - site: icthendrikse-home
+            target: https://icthendrikse.nl/
+    env:
+      TARGET_URL: ${{ matrix.target }}
+    steps:
+      - name: Check published site from independent GitHub network
+        shell: bash
+        run: |
+          set -euo pipefail
+          http_code="$(
+            curl --silent --show-error --location \
+              --proto '=https' --proto-redir '=https' --max-redirs 2 \
+              --connect-timeout 8 --max-time 15 --retry 0 \
+              --user-agent 'CalorieToken-External-Reachability/1.0' \
+              --output /dev/null --write-out '%{http_code}' \
+              "$TARGET_URL"
+          )"
+          echo "Independent GET: ${TARGET_URL}; final HTTP: ${http_code}"
+          if [[ "$http_code" != "200" ]]; then
+            echo "::error::The public page did not respond with HTTP 200 (got ${http_code})."
+            exit 1
+          fi
